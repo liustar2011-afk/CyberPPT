@@ -861,6 +861,56 @@ class FullProseSourceCoverageTests(unittest.TestCase):
         )
         self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
+    def test_documented_long_anchor_compression_is_a_warning(self) -> None:
+        statement = "企业人员培训、企业实训SaaS和院校年度课程实训产品构成的可测核心潜在市场约0.5—1.7亿元/年。"
+        page = replace(
+            self._page(statement),
+            onscreen_text="【长期空间】\n  三类市场｜约0.5—1.7亿元/年",
+            module_titles=("长期空间",),
+            anchor_coverage_notes=(
+                "ST001 的市场构成与测算区间在【长期空间】压缩呈现，"
+                "完整语义保留在完整文字稿。"
+            ),
+        )
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p11-u02",
+                "priority": "P1",
+                "statement": statement,
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["企业人员培训", "0.5—1.7亿元/年"],
+                "onscreen_required": True,
+                "onscreen_anchors": [statement.rstrip("。")],
+            }]},
+        )
+        gap = next(item for item in issues if item.code == "ONSCREEN_CONTENT_UNIT_GAP")
+        self.assertEqual("warning", gap.severity)
+
+    def test_undocumented_long_anchor_compression_remains_an_error(self) -> None:
+        statement = "企业人员培训、企业实训SaaS和院校年度课程实训产品构成的可测核心潜在市场约0.5—1.7亿元/年。"
+        page = replace(
+            self._page(statement),
+            onscreen_text="【长期空间】\n  三类市场｜约0.5—1.7亿元/年",
+            module_titles=("长期空间",),
+        )
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p11-u02",
+                "priority": "P1",
+                "statement": statement,
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["企业人员培训", "0.5—1.7亿元/年"],
+                "onscreen_required": True,
+                "onscreen_anchors": [statement.rstrip("。")],
+            }]},
+        )
+        gap = next(item for item in issues if item.code == "ONSCREEN_CONTENT_UNIT_GAP")
+        self.assertEqual("error", gap.severity)
+
     def test_p0_content_unit_gap_requires_a_specific_disposition_not_a_ban(self) -> None:
         # P0 gaps stay waivable via 锚点覆盖说明 like P1/P2 -- an absolute ban
         # fought the project's own short-phrase-not-Word-paragraph writing

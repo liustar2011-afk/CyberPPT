@@ -81,6 +81,7 @@ class ScriptPage:
     field_order: tuple[str, ...] = ()
     coaching_tip: str = ""
     speaker_notes: str = ""
+    anchor_coverage_notes: str = ""
     contract_receipt: dict[str, object] | None = None
     prose_paragraph_map: tuple[tuple[tuple[str, ...], str], ...] = ()
 

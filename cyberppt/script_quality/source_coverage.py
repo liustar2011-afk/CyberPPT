@@ -381,6 +381,33 @@ def _full_prose_paragraph_boundary_issues(
     return issues
 
 
+def _documented_long_onscreen_compression(
+    page: ScriptPage,
+    *,
+    statement: str,
+    source_refs: tuple[str, ...],
+    onscreen_anchors: tuple[str, ...],
+) -> bool:
+    """Recognize a reviewed short-phrase rendering of a long source anchor.
+
+    Source anchors that exceed a short-phrase reading unit often combine the business object, condition and
+    rationale that belong in the speaker layer.  They must remain traceable in
+    full prose, but forcing their literal text into the audience layer creates
+    unreadable slides.  A downgrade therefore needs three independent proofs:
+    a long anchor, full-prose retention, and a note that names both the source
+    record and the visible module receiving the compressed expression.
+    """
+
+    notes = page.anchor_coverage_notes
+    if not notes or not any(len(re.sub(r"\s+", "", anchor)) > 20 for anchor in onscreen_anchors):
+        return False
+    if not any(ref in notes for ref in source_refs):
+        return False
+    if not any(title and title in notes for title in page.module_titles):
+        return False
+    return _source_statement_overlap(statement, page.full_prose) >= 0.35
+
+
 def _page_content_unit_coverage_issues(
     page: ScriptPage,
     contract: dict[str, object],
@@ -472,18 +499,32 @@ def _page_content_unit_coverage_issues(
                 and _source_statement_overlap(anchor, onscreen_surface) < 0.85
             )
             if missing:
+                documented_compression = _documented_long_onscreen_compression(
+                    page,
+                    statement=statement,
+                    source_refs=source_refs,
+                    onscreen_anchors=onscreen_anchors,
+                )
                 issues.append(_issue(
                     "ONSCREEN_CONTENT_UNIT_GAP",
                     page,
                     (
+                        "较长来源锚点已在完整文字稿保留，并在锚点覆盖说明中定位至可见模块；"
+                        "上屏采用短语化表达，保留为审阅提示。"
+                        if documented_compression else
                         "提纲指定的内容单元来自P0级来源事实，没有进入上屏文字；"
                         "可以用锚点覆盖说明处理，但必须具体指出该内容实际落在页面的哪个模块或副标题，不能只写笼统的已压缩。"
                         if priority == "P0" else
                         "提纲指定的重要内容单元没有进入上屏文字，页面视觉表达丢失关键业务特征。"
                     ),
-                    "以短语化、条目化方式恢复 onscreen_anchors；可以压缩句式，不能删除业务对象或关键动作。",
+                    (
+                        "审阅锚点覆盖说明与对应可见模块；如业务对象或关键动作缺失，恢复短语化表达。"
+                        if documented_compression else
+                        "以短语化、条目化方式恢复 onscreen_anchors；可以压缩句式，不能删除业务对象或关键动作。"
+                    ),
                     source_ids=source_refs,
                     evidence=(f"unit_id={unit_id}", f"priority={priority}", *missing),
+                    severity="warning" if documented_compression else "error",
                 ))
     return issues
 

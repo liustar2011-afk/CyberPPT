@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from cyberppt.stage02_handoff import (
     HANDOFF_JSON,
+    audit_authorizes_stage02,
     audit_stage02_handoff,
     build_stage02_handoff,
     prepare_stage02_handoff,
@@ -24,6 +25,15 @@ def _binding(path: Path, semantic_digest: Callable[[Path], str]) -> dict[str, st
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "semantic_sha256": semantic_digest(path),
     }
+
+
+class Stage02AuditAuthorizationTests(unittest.TestCase):
+    def test_only_a_passed_audit_authorizes_stage02(self) -> None:
+        self.assertTrue(audit_authorizes_stage02({"status": "passed", "issues": []}))
+        self.assertFalse(audit_authorizes_stage02({
+            "status": "rewrite_required",
+            "issues": [{"code": "ONSCREEN_CONTENT_UNIT_GAP", "severity": "error"}],
+        }))
 
 
 def _payload(project: Path, *, created_at: str) -> dict[str, object]:

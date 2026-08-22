@@ -508,6 +508,7 @@ def parse_script_markdown(
                     .strip()
                 ),
                 speaker_notes=extract_speaker_notes(body),
+                anchor_coverage_notes=fields.get("锚点覆盖说明", "").strip(),
                 contract_receipt=(page_contracts or {}).get(f"p{sequence:02d}")
                 or extract_page_contract_receipt(body),
             )

@@ -717,7 +717,6 @@ def run_final_script_pages(
     from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
     from cyberppt.commands.script_audit import run_script_audit
     from cyberppt.stage02_handoff import (
-        STAGE02_WAIVABLE_ERROR_CODES,
         audit_authorizes_stage02,
         load_stage02_handoff,
     )
@@ -725,9 +724,7 @@ def run_final_script_pages(
     _, audit = run_script_audit(project, script)
     if not audit_authorizes_stage02(audit):
         raise ValueError(
-            "final-script-pages requires a currently passed full-script audit "
-            "(or one whose only remaining errors are documented-disposition "
-            f"{sorted(STAGE02_WAIVABLE_ERROR_CODES)})"
+            "final-script-pages requires a currently passed full-script audit."
         )
     load_stage02_handoff(project, required=True)
     assert_visual_structure_ready(project, script)

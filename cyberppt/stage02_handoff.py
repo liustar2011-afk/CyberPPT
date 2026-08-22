@@ -33,35 +33,16 @@ OUTLINE_PATH = Path("workbench/stages/01-analysis/outline.json")
 SOURCE_TRUTH_PATH = Path("workbench/stages/01-analysis/source-truth.json")
 BODY_CANVAS = {"width": 2048, "height": 1024, "ratio": "2:1"}
 
-# ONSCREEN_CONTENT_UNIT_GAP and FULL_PROSE_CONTENT_UNIT_GAP are the only two
-# error codes whose own message documents a reviewed disposition path (a
-# 锚点覆盖说明 naming the specific module/subtitle the content actually landed
-# in) as an accepted way to carry a P0 gap. script-audit never parses that
-# note back into a lower severity, so these two codes permanently keep
-# `status` at "rewrite_required" even after a human has reviewed and accepted
-# the disposition. Stage 02 authorization treats a currently passed audit, or
-# one whose only remaining errors are these two documented-disposition codes,
-# as equivalent; any other error still hard-blocks Stage 02.
-STAGE02_WAIVABLE_ERROR_CODES = {"ONSCREEN_CONTENT_UNIT_GAP", "FULL_PROSE_CONTENT_UNIT_GAP"}
+# Long source anchors with a specific 锚点覆盖说明 are downgraded to warnings
+# by script-audit.  Any remaining error therefore represents an unresolved
+# content or evidence defect and must block Stage 02.
+STAGE02_WAIVABLE_ERROR_CODES: frozenset[str] = frozenset()
 
 
 def audit_authorizes_stage02(audit: dict[str, Any]) -> bool:
     """Return True when a full-script audit clears Stage 02 authorization."""
 
-    if audit.get("status") == "passed":
-        return True
-    issues = audit.get("issues")
-    if not isinstance(issues, list):
-        return False
-    for issue in issues:
-        if not isinstance(issue, dict):
-            return False
-        if (
-            issue.get("severity") == "error"
-            and issue.get("code") not in STAGE02_WAIVABLE_ERROR_CODES
-        ):
-            return False
-    return True
+    return audit.get("status") == "passed"
 
 
 def _utc_now() -> str:
@@ -358,9 +339,7 @@ def build_stage02_handoff(
     _, audit = run_script_audit(project, script)
     if not audit_authorizes_stage02(audit):
         raise ValueError(
-            "Stage 02 handoff requires a currently passed full-script audit "
-            "(or one whose only remaining errors are documented-disposition "
-            f"{sorted(STAGE02_WAIVABLE_ERROR_CODES)})"
+            "Stage 02 handoff requires a currently passed full-script audit."
         )
 
     document = parse_script_path(script)
