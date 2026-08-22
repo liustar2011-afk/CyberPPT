@@ -90,6 +90,8 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     # long-gone draft this test was originally written against.
     assert "reconstruction-friendly, editorial visual blueprint" in style_nine["prompt_contract"]
     assert "Do not distribute content according to item count" in style_nine["prompt_contract"]
+    assert "eight or more locked visible text items" in style_nine["dense_text_composition_rule"]
+    assert "continuous image-only rectangle" in style_nine["dense_text_composition_rule"]
     assert "executive briefing" in style_nine["prompt_contract"]
     assert "#FFFFFF" in style_nine["prompt_contract"]
     assert "#12355B" in style_nine["prompt_contract"]
@@ -126,6 +128,15 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert 10_000 < len(style_nine["prompt_contract"]) < 25_000
     assert style_nine["imagegen_signature"] == []
     assert "节奏与媒介" not in style_nine["prompt_contract"]
+
+
+def test_style_nine_dense_text_router_reaches_compiled_contract() -> None:
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        contract = style_contract(lock)
+
+    assert "eight or more locked visible text items" in contract
+    assert "continuous image-only rectangle" in contract
 
 
 def test_default_style_choices_still_show_only_original_eight() -> None:
