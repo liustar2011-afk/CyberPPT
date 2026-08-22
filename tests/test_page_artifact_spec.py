@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from cyberppt.page_artifact_spec import (
+    _visual_budget,
     build_page_artifact_spec,
     load_project_page_artifact_specs,
 )
@@ -250,6 +251,18 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_sha256="a" * 64,
                     visual_source_sha256="b" * 64,
                 )
+
+    def test_dense_non_scene_page_defaults_to_relationship_field_only(self) -> None:
+        budget = _visual_budget(
+            {},
+            topology="layered_architecture",
+            use_scene=False,
+            visible_text=tuple("dense evidence" for _ in range(14)),
+        )
+        self.assertEqual("relationship_field_only", budget.mode)
+        self.assertEqual(0, budget.max_auxiliary_fragments)
+        self.assertEqual("page", budget.scope)
+        self.assertFalse(budget.region_local_visuals)
 
     def test_rejects_missing_topology(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

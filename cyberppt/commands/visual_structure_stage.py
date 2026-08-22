@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
+from cyberppt.page_artifact_spec import is_text_dense
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.visual_structure_contract import (
@@ -411,10 +412,11 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     ]
     locked_items = [{"id": f"{page_id}-TITLE", "type": "title", "text": str(source.get("page_title") or page_id), "source_ref": source_ref}]
     locked_items.extend({"id": item_id, "type": "body", "text": text, "source_ref": source_ref} for item_id, text in zip(expected_ids, expected_text))
+    dense_text_page = is_text_dense(expected_text)
     visual_budget = (
         {
-            "mode": "shared_field",
-            "max_auxiliary_fragments": 1,
+            "mode": "relationship_field_only" if dense_text_page else "shared_field",
+            "max_auxiliary_fragments": 0 if dense_text_page else 1,
             "scope": "page",
             "region_local_visuals": False,
         }

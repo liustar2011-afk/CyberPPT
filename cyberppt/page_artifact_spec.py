@@ -9,6 +9,19 @@ from pathlib import Path
 from typing import Any, Mapping
 
 
+TEXT_DENSE_ITEM_THRESHOLD = 14
+TEXT_DENSE_CHAR_THRESHOLD = 240
+
+
+def is_text_dense(visible_text: tuple[str, ...] | list[str]) -> bool:
+    """Return whether a page needs a text-led relationship field."""
+
+    return (
+        len(visible_text) >= TEXT_DENSE_ITEM_THRESHOLD
+        or sum(len(str(item)) for item in visible_text) >= TEXT_DENSE_CHAR_THRESHOLD
+    )
+
+
 @dataclass(frozen=True)
 class DeliverableSpec:
     asset_type: str
@@ -80,8 +93,7 @@ class VisualBudgetSpec:
     def prompt_lines(self) -> tuple[str, ...]:
         if self.mode == "relationship_field_only":
             return (
-                "Visual budget: zero auxiliary images or scene fragments.",
-                "Use text hierarchy, spacing, alignment and one shared relationship field; do not create region-local visuals.",
+                "zero auxiliary images; use a text-led relationship field only; no scenes, fragments or icons.",
             )
         if self.mode == "shared_field":
             return (
@@ -259,6 +271,7 @@ def _visual_budget(
     *,
     topology: str,
     use_scene: bool,
+    visible_text: tuple[str, ...] = (),
 ) -> VisualBudgetSpec:
     raw = visual_page.get("visual_budget")
     raw = raw if isinstance(raw, dict) else {}
@@ -272,7 +285,14 @@ def _visual_budget(
         if topology == "parallel_set" and budget.mode == "integrated_scene":
             raise ValueError("parallel_set cannot use an integrated-scene visual budget")
         return budget
-    if topology == "parallel_set" or not use_scene:
+    if is_text_dense(visible_text) and (topology == "parallel_set" or not use_scene):
+        return VisualBudgetSpec(
+            mode="relationship_field_only",
+            max_auxiliary_fragments=0,
+            scope="page",
+            region_local_visuals=False,
+        )
+    if not use_scene:
         return VisualBudgetSpec(
             mode="shared_field",
             max_auxiliary_fragments=1,
@@ -576,6 +596,7 @@ def build_page_artifact_spec(
             visual_page,
             topology=str(semantic_graph.get("topology") or ""),
             use_scene=use_scene,
+            visible_text=visible_text,
         ),
     )
 
@@ -650,6 +671,7 @@ __all__ = [
     "TypographySpec",
     "VisualCarrierSpec",
     "VisualBudgetSpec",
+    "is_text_dense",
     "build_page_artifact_spec",
     "load_project_page_artifact_specs",
 ]
