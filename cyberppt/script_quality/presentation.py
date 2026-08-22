@@ -42,6 +42,7 @@ from .onscreen import (
     _onscreen_layout_meta_hits,
     _onscreen_markdown_hits,
     _onscreen_module_dimension_consistency_issues,
+    _onscreen_orphan_ordinal_hits,
     _onscreen_parallel_structure_issues,
     _onscreen_redundant_restatement_issues,
     _onscreen_parent_child_role_mismatches,
@@ -226,6 +227,18 @@ def _presentation_issues(
                     "On-screen text contains status/boundary asides that interrupt the page mission.",
                     "Keep theme facts/structure on screen; park hedges in 边界 or ImageGen 禁止项.",
                     evidence=onscreen_aside_hits,
+                )
+            )
+        orphan_ordinal_hits = _onscreen_orphan_ordinal_hits(page.onscreen_text)
+        if orphan_ordinal_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_ORPHAN_ORDINAL",
+                    page,
+                    "On-screen text contains a lone hierarchy ordinal without a visible peer sequence.",
+                    "Remove the inherited source-heading ordinal, or restore the complete same-level numbered sequence if the numbering is intentional.",
+                    evidence=orphan_ordinal_hits,
+                    severity="error",
                 )
             )
         relation_meta_hits = _onscreen_relation_meta_hits(page.onscreen_text)

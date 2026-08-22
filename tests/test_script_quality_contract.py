@@ -22,6 +22,7 @@ from cyberppt.script_quality_contract import (
     _onscreen_subordinate_fragments,
     _onscreen_false_parallel_semantics,
     _onscreen_parallel_structure_issues,
+    _onscreen_orphan_ordinal_hits,
     _onscreen_redundant_restatement_issues,
     _necessity_page_closure_issues,
     _onscreen_flow_language_issues,
@@ -58,6 +59,73 @@ from cyberppt.script_quality_contract import (
     strip_authoring_group_marker,
     resolve_judgment_mode,
 )
+
+
+class OnscreenOrdinalTests(unittest.TestCase):
+    def test_lone_parenthetical_source_ordinal_is_flagged(self) -> None:
+        hits = _onscreen_orphan_ordinal_hits(
+            "【首期目标】\n"
+            "    （五）首期采用小产出目标：不设置三年收入承诺\n\n"
+            "【四阶段验证】\n"
+            "    ①联合验证｜0—60天\n"
+        )
+        self.assertEqual(
+            ("（五）首期采用小产出目标：不设置三年收入承诺",),
+            hits,
+        )
+
+    def test_complete_parenthetical_sequence_is_allowed(self) -> None:
+        self.assertEqual(
+            (),
+            _onscreen_orphan_ordinal_hits(
+                "【执行安排】\n"
+                "    （一）先确认客户\n"
+                "    （二）再验证采购\n"
+            ),
+        )
+
+    def test_circled_flow_sequence_is_not_treated_as_source_heading_leak(self) -> None:
+        self.assertEqual(
+            (),
+            _onscreen_orphan_ordinal_hits(
+                "【四阶段验证】\n"
+                "    ①联合验证｜0—60天\n"
+                "    ②首期试点｜第2—4个月\n"
+                "    ③复制验证｜第4—6个月\n"
+                "    ④成熟放大｜验证通过后\n"
+            ),
+        )
+
+    def test_page_presentation_audit_emits_blocking_issue(self) -> None:
+        page = ScriptPage(
+            page_id="p12",
+            sequence=12,
+            heading="",
+            page_type="content",
+            title="用小产出跑通首期经营闭环",
+            main_message="首期采用小产出目标。",
+            full_prose="首期采用小产出目标。" * 30,
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=(),
+            source_refs=(),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure="四阶段验证",
+            onscreen_text=(
+                "【首期目标】\n"
+                "    （五）首期采用小产出目标：不设置三年收入承诺\n\n"
+                "【四阶段验证】\n"
+                "    ①联合验证｜0—60天\n"
+                "    ②首期试点｜第2—4个月\n"
+            ),
+            module_titles=("【首期目标】", "【四阶段验证】"),
+        )
+        issues = _presentation_issues(page)
+        self.assertIn(
+            "ONSCREEN_ORPHAN_ORDINAL",
+            {item.code for item in issues},
+        )
 
 
 class OnscreenParallelStructureTests(unittest.TestCase):

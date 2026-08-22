@@ -152,6 +152,13 @@ ORDER_SIGNALS = ("①", "②", "③", "④", "⑤", "→", "随后", "依次", "
 
 NUMBERED_ORDER_SIGNAL_RE = re.compile(r"(?m)^\s*(?:\*\*)?\d{2}｜")
 
+# Formal-document ordinals are valid only when their peer sequence is visible
+# in the same on-screen group. A lone ``（五）`` usually means a source heading
+# number leaked into a re-authored slide module.
+ONSCREEN_ORDINAL_RE = re.compile(
+    r"^\s*(?P<ordinal>（[一二三四五六七八九十百]+）|[一二三四五六七八九十百]+、|\d+[.)])\s*"
+)
+
 LOOP_SIGNALS = ("回流", "反馈", "复盘", "闭环", "持续校正")
 
 MATRIX_SIGNALS = ("|---", "×", "矩阵")
@@ -1017,6 +1024,22 @@ def _onscreen_detail_terminal_punctuation_hits(text: str) -> tuple[str, ...]:
         if stripped.endswith(tuple(DETAIL_TERMINAL_PUNCTUATION_CHARS)):
             hits.append(stripped)
     return tuple(hits)
+
+
+def _onscreen_orphan_ordinal_hits(text: str) -> tuple[str, ...]:
+    """Find lone hierarchy ordinals in one visible on-screen group."""
+
+    hits: list[str] = []
+    groups = (group for group in str(text).split("\n\n") if group.strip())
+    for group in groups:
+        ordinal_lines = [
+            line.strip()
+            for line in group.splitlines()
+            if ONSCREEN_ORDINAL_RE.match(line)
+        ]
+        if len(ordinal_lines) == 1:
+            hits.append(ordinal_lines[0])
+    return tuple(dict.fromkeys(hits))
 
 
 def _mechanical_evidence_bullets(text: str) -> tuple[str, ...]:
