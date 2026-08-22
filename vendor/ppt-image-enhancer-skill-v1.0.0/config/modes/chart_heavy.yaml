@@ -1,6 +1,16 @@
 mode: chart_heavy
 output:
   upscale_factor: 1.5
+super_resolution:
+  # Defaults (0.72/0.90) pull AI SR output back toward the plain Lanczos
+  # upscale hard enough that its sharpness gain barely shows (~5-6% on
+  # CyberPPT chart_heavy pages). Lowered after a 2-page A/B against the
+  # structural_fidelity gate: sharpness gain roughly tripled (~15-16%),
+  # correlation only dropped 0.997->0.996 (gate threshold is 0.92), and a
+  # visual check found no halos/artifacts on either page.
+  text_guard:
+    fine_structure_blend: 0.5
+    white_background_blend: 0.7
 processing:
   denoise:
     enabled: false
