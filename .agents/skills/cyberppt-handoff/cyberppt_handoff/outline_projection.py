@@ -192,6 +192,11 @@ def _content_units_from_source_truth(
     that the page script and coverage audit must actually preserve.
     """
 
+    # evidence_roles is the author-declared, authoritative vocabulary
+    # (claim/reason/instance/boundary/trace_only) that decides a unit's
+    # onscreen priority.  argument_chain roles use a separate structural
+    # vocabulary (premise/driver/condition/support/detail/...) and must only
+    # inform argument_duty below, never overwrite an author's role.
     role_by_ref: dict[str, str] = {}
     for item in evidence_roles:
         if not isinstance(item, dict):
@@ -199,7 +204,7 @@ def _content_units_from_source_truth(
         role = str(item.get("role") or "reason")
         for ref in item.get("source_refs") or []:
             role_by_ref.setdefault(str(ref), role)
-    role_by_ref.update(chain_roles or {})
+    chain_role_by_ref = dict(chain_roles or {})
     excluded = excluded_from_onscreen or set()
     unit_role = {
         "claim": "primary",
@@ -215,9 +220,13 @@ def _content_units_from_source_truth(
         if not statement:
             continue
         role = role_by_ref.get(ref, "reason")
+        chain_role = chain_role_by_ref.get(ref)
         priority = str(record.get("priority") or "P2")
         anchors = _anchors(statement, [])[:2]
-        argument_duty = str(record.get("argument_duty") or CHAIN_ROLE_TO_DUTY.get(role, "detail"))
+        argument_duty = str(
+            record.get("argument_duty")
+            or CHAIN_ROLE_TO_DUTY.get(chain_role or role, "detail")
+        )
         # The argument chain determines the structural duty.  Every selected
         # P0/P1 source record carrying a visible duty remains available to the
         # page writer; grouping them into a readable screen hierarchy belongs

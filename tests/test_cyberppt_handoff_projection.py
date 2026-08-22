@@ -50,6 +50,31 @@ class HandoffProjectionTests(unittest.TestCase):
         self.assertFalse(units[1]["onscreen_required"])
         self.assertFalse(units[1]["full_prose_required"])
 
+    def test_chain_role_does_not_downgrade_an_authored_claim_role(self) -> None:
+        # A source record can be declared a P0 "claim" in evidence_roles while
+        # also being cited by an argument_chain node using the chain's own
+        # structural vocabulary (e.g. "support"). The chain role must only
+        # inform argument_duty and must never overwrite the author-declared
+        # evidence role, priority, or onscreen requirement.
+        source_truth = {
+            "ST-001": {
+                "statement": "本期合作总价锁定为可执行区间。",
+                "priority": "P0",
+            },
+        }
+        units = _content_units_from_source_truth(
+            "p01",
+            ["ST-001"],
+            [{"role": "claim", "source_refs": ["ST-001"]}],
+            source_truth,
+            chain_roles={"ST-001": "support"},
+        )
+
+        self.assertEqual("primary", units[0]["role"])
+        self.assertEqual("primary", units[0]["importance"])
+        self.assertTrue(units[0]["onscreen_required"])
+        self.assertEqual(["support"], units[0]["argument_duties"])
+
     def test_source_arguments_keep_primary_consumer_requirement(self) -> None:
         payloads = {
             "argument": {

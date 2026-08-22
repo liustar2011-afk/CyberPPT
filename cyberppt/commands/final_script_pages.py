@@ -914,7 +914,12 @@ def run_final_script_pages(
     ai_native_text_policy: dict[str, Any] | None = None
     ai_authored_svg: dict[str, Any] | None = None
     clean_base_generation: dict[str, Any] | None = None
-    if production_build:
+    # Image assembly publishes the audited body artwork as-is.  It must not
+    # enter the editable reconstruction path: that path clears rendered body
+    # text and replaces it with SVG text layers, which is both unnecessary for
+    # image output and can reject otherwise valid artwork with textured or
+    # structural text backgrounds.
+    if production_build and assembly_mode in {"editable", "both"}:
         editable_compilation = compile_ai_editable_pages(
             manifest,
             output_dir=target_dir / "authoring",

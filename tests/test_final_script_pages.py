@@ -967,6 +967,46 @@ class FinalScriptPagesTests(unittest.TestCase):
 
         build.assert_not_called()
 
+    def test_image_production_build_skips_editable_text_reconstruction(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
+
+            expected = {
+                "status": "production_ready",
+                "artifacts": {
+                    "reconstruction_inventory": "inventory",
+                    "svg_output": "svg",
+                    "reconstruction_quality": "quality",
+                    "delivery_readiness": "readiness",
+                    "exported_pptx": "deck.pptx",
+                },
+                "delivery_readiness": {"tool_consumption": {}},
+            }
+            with (
+                patch("cyberppt.commands.final_script_pages.require_generated"),
+                patch("cyberppt.commands.final_script_pages.compile_ai_editable_pages") as compiler,
+                patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build", return_value=expected) as build,
+            ):
+                summary = run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="1",
+                    style_id=4,
+                    production_build=True,
+                    assembly_mode="image",
+                    lightweight_stage01_confirmed=True,
+                )
+
+        compiler.assert_not_called()
+        build.assert_called_once()
+        self.assertIsNone(summary["ai_native_text_policy"])
+        self.assertIsNone(summary["clean_base_generation"])
+
     def test_run_rebuild_requires_editable_overlay_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
