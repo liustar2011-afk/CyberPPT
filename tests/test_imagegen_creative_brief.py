@@ -473,10 +473,9 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_fon
     assert "如【锁定关键文字】含正文结论句" in prompt
     assert "不得通栏放大" in prompt
     assert "标题竖线、横线等装饰" in prompt
-    font_floor = "所有可读文字的视觉字号不得小于 14pt 等效尺寸"
-    assert font_floor in style_contract
-    assert font_floor in prompt
-    assert "中文字体统一使用微软雅黑（Microsoft YaHei）" in prompt
+    typography_lock = "中文小字采用 Microsoft YaHei UI / Source Han Sans SC 风格；常规正文至少 16pt 等效，14pt 仅限短标签；避免两行以上小字、避免紧字距、避免把小字叠在复杂图片上。"
+    assert style_contract.count(typography_lock) == 1
+    assert prompt.count(typography_lock) == 1
     assert "1.6—1.8倍" not in prompt
     assert "1.25—1.4倍" not in prompt
 

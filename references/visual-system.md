@@ -378,11 +378,7 @@ Allocate sufficient space for content before adding scenes, evidence, icons or d
 
 Use one clear readable text region for each primary semantic unit; regions do not need matching size or position — content weight decides how each is shaped, and a generic scene must not crowd text into a minor corner.
 
-Keep body text at normal senior-presentation reading scale. If space is limited, simplify the scene or reorganize the wording — never shrink text into microcopy.
-
-Use a clean, refined modern Chinese sans-serif visual language, with glyphs slightly wider and flatter than standard Microsoft YaHei, using a large character face, slightly reduced glyph height relative to width, crisp and optically balanced strokes, precise joins and terminals, restrained humanist details, and high legibility.
-
-Give every body-text container generous breathing room on all four sides. Keep clear separation between text, borders and adjacent semantic imagery; simplify or crop the scene before compressing a text region. Use moderately wide, slightly flat Chinese glyphs at a normal weight; never use narrow, tall, condensed or vertically stretched lettering.
+Apply the single Style 09 typography execution lock in the final authority section below.
 
 Render only source-supported Chinese content. Auxiliary imagery — illustrations, scenes, objects, screens, documents, interfaces and evidence fragments — must remain free of readable embedded text by default; it may contain text-free structures, highlighted regions, check states or simplified diagrams, but no embedded words, labels, numbers, captions, UI copy, signage or pseudo-text. If a locked label is essential to the page meaning, place it adjacent to the related visual as normal page text, never baked into the illustration, screen, document or perspective surface.
 
@@ -498,7 +494,7 @@ Preserve the approved source actors, relationships, conditions, status, and fact
 【风格09最终执行锁｜最高优先级】
 Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; keep auxiliary imagery text-free by default and place required labels adjacent to the related object rather than baking them into screens, devices, documents, illustrations, icons or perspective surfaces. Icon count is zero by default.
 
-Text containers must retain generous internal whitespace on all four sides. Keep text visibly separated from frames, dividers and adjacent imagery; reduce or crop scene material before tightening text. Render Chinese in a moderately wide, slightly flat, normal-weight sans-serif form with calm horizontal proportions. Do not use narrow, tall, condensed or vertically stretched glyphs.
+中文小字采用 Microsoft YaHei UI / Source Han Sans SC 风格；常规正文至少 16pt 等效，14pt 仅限短标签；避免两行以上小字、避免紧字距、避免把小字叠在复杂图片上。文字容器保留四周内边距，文字与边框、分隔线和相邻图像清晰分离；空间不足时减少或裁切场景材料。
 
 Do not use arrows or arrowheads anywhere on the page. Keep connection lines absent by default. Only one plain, solid, undirected connector is allowed when a relationship explicitly named in the reading path cannot be expressed through position, proximity, grouping, containment, alignment, numbering or color. Never use a pointed or directional connector.
 
