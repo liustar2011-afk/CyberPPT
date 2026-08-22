@@ -147,6 +147,23 @@ def test_build_handoff_uses_script_audit_without_interactive_confirmation() -> N
     assert "planning_policy" not in payload
 
 
+def test_build_handoff_allows_explicit_direct_script_edit_mode() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        with patch(
+            "cyberppt.commands.script_audit.run_script_audit",
+            side_effect=AssertionError("direct script-edit mode must skip editorial audit"),
+        ):
+            payload = build_stage02_handoff(
+                project,
+                script=project / "script.md",
+                allow_script_edit=True,
+            )
+
+    assert payload["source_bindings"]["script"]["path"] == str((project / "script.md").resolve())
+
+
 def test_build_handoff_preserves_outline_planning_policy() -> None:
     policy = {
         "writing_style_mode": "government_official",

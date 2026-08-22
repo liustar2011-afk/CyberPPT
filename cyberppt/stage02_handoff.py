@@ -319,9 +319,11 @@ def build_stage02_handoff(
     *,
     script: Path | None = None,
     lightweight_stage01_confirmed: bool = False,
+    allow_script_edit: bool = False,
 ) -> dict[str, Any]:
-    # Kept for direct-call compatibility. Authorization is exclusively the
-    # current full-script audit below.
+    # Kept for direct-call compatibility. Direct script-edit mode treats the
+    # final script as the authoritative Stage 02 input and skips the editorial
+    # audit gate; structural handoff validation still runs below.
     _ = lightweight_stage01_confirmed
     project = project.expanduser().resolve()
     script = script.expanduser().resolve() if script else (project / SCRIPT_PATH).resolve()
@@ -334,13 +336,14 @@ def build_stage02_handoff(
             project, SOURCE_TRUTH_PATH, source_truth_semantic_digest
         ),
     }
-    from cyberppt.commands.script_audit import run_script_audit
+    if not allow_script_edit:
+        from cyberppt.commands.script_audit import run_script_audit
 
-    _, audit = run_script_audit(project, script)
-    if not audit_authorizes_stage02(audit):
-        raise ValueError(
-            "Stage 02 handoff requires a currently passed full-script audit."
-        )
+        _, audit = run_script_audit(project, script)
+        if not audit_authorizes_stage02(audit):
+            raise ValueError(
+                "Stage 02 handoff requires a currently passed full-script audit."
+            )
 
     document = parse_script_path(script)
     outline_payload = _read_json(project / OUTLINE_PATH)
@@ -616,13 +619,16 @@ def prepare_stage02_handoff(
     script: Path | None = None,
     lightweight_stage01_confirmed: bool = False,
     reuse_current_handoff: bool = False,
+    allow_script_edit: bool = False,
 ) -> dict[str, Any]:
-    # Kept for direct-call compatibility; it cannot authorize Stage 02.
+    # Kept for direct-call compatibility. Direct script-edit mode explicitly
+    # authorizes refreshing the handoff from the edited final script.
     _ = lightweight_stage01_confirmed
     project = project.expanduser().resolve()
     payload = build_stage02_handoff(
         project,
         script=script,
+        allow_script_edit=allow_script_edit,
     )
     handoff_path = project / HANDOFF_JSON
     if reuse_current_handoff and handoff_path.is_file():

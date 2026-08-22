@@ -554,6 +554,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             require_send_approval=args.require_send_approval,
             build_id=args.build_id,
             external_script=args.external_script,
+            allow_script_edit=args.allow_script_edit,
             blueprint_only=args.blueprint_only,
             no_style_reference=args.no_style_reference,
             skip_image_text_audit=args.skip_image_text_audit,
@@ -1010,6 +1011,15 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Deprecated compatibility/metadata flag. External scripts must still pass the current "
             "script-audit, Stage 02 handoff, and visual-structure gates."
+        ),
+    )
+    final_script_pages_parser.add_argument(
+        "--allow-script-edit",
+        action="store_true",
+        help=(
+            "Use the edited final script as the authoritative visual input. "
+            "Skips editorial script-audit gates and refreshes the Stage 02 handoff; "
+            "image text, structural, and production QA remain enabled."
         ),
     )
     final_script_pages_parser.add_argument(

@@ -329,10 +329,12 @@ def _template_text_lock(
     output_dir: Path,
     build_id: str,
     assembly_mode: str = "editable",
+    allow_script_edit: bool = False,
 ) -> Path:
     blocks = parse_page_blocks(script)
     document = parse_script_path(script)
-    assert_imagegen_onscreen_readiness(document, set(pages))
+    if not allow_script_edit:
+        assert_imagegen_onscreen_readiness(document, set(pages))
     script_pages = {
         int(page.page_id[1:]): page
         for page in document.pages
@@ -653,6 +655,7 @@ def run_final_script_pages(
     build_id: str | None = None,
     external_script: bool = False,
     lightweight_stage01_confirmed: bool = False,
+    allow_script_edit: bool = False,
     autonomous_contract: Path | None = None,
     blueprint_only: bool = False,
     no_style_reference: bool = False,
@@ -719,13 +722,24 @@ def run_final_script_pages(
     from cyberppt.stage02_handoff import (
         audit_authorizes_stage02,
         load_stage02_handoff,
+        prepare_stage02_handoff,
     )
 
-    _, audit = run_script_audit(project, script)
-    if not audit_authorizes_stage02(audit):
-        raise ValueError(
-            "final-script-pages requires a currently passed full-script audit."
+    if allow_script_edit:
+        # The edited final script is authoritative for this visual
+        # regeneration. Refresh the binding so a previous handoff cannot be
+        # mistaken for the edited script. Handoff structural checks remain.
+        prepare_stage02_handoff(
+            project,
+            script=script,
+            allow_script_edit=True,
         )
+    else:
+        _, audit = run_script_audit(project, script)
+        if not audit_authorizes_stage02(audit):
+            raise ValueError(
+                "final-script-pages requires a currently passed full-script audit."
+            )
     load_stage02_handoff(project, required=True)
     assert_visual_structure_ready(project, script)
     if production_mode not in PRODUCTION_MODES:
@@ -857,6 +871,7 @@ def run_final_script_pages(
         output_dir=target_dir,
         build_id=build_id,
         assembly_mode=assembly_mode,
+        allow_script_edit=allow_script_edit,
     )
     build_context_path = target_dir / "build_context.json"
     _write_json(
@@ -944,6 +959,7 @@ def run_final_script_pages(
             f"--assembly-mode {assembly_mode} --output-dir {target_dir} --build-id {build_id}"
             + (" --generate-images" if generate_images else "")
             + (" --production-build" if production_build else "")
+            + (" --allow-script-edit" if allow_script_edit else "")
         )
     )
     production_readiness = None
@@ -986,6 +1002,7 @@ def run_final_script_pages(
         "pages": page_numbers,
         "stage": stage_name,
         "source_mode": source_mode,
+        "allow_script_edit": allow_script_edit,
         "autonomous_contract": str(autonomous_contract_path) if autonomous_contract_path else None,
         "project_created": project_created,
         "status": status,
