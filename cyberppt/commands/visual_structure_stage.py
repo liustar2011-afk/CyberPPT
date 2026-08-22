@@ -1147,7 +1147,7 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
     report = _read_json(report_path)
     from cyberppt.stage02_handoff import load_stage02_handoff
 
-    load_stage02_handoff(project, required=True)
+    handoff = load_stage02_handoff(project, required=True)
     for key in (
         "design_input",
         "skill_request",
@@ -1161,4 +1161,34 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
         path = project / VISUAL_FILES[key]
         if not path.is_file() or report.get("artifact_sha256", {}).get(key) != _sha256(path):
             raise ValueError(f"visual structure artifact is missing or changed: {path}")
+
+    handoff_path = project / Path("workbench/stages/02-handoff/stage02-handoff.json")
+    design_input = _read_json(project / VISUAL_FILES["design_input"])
+    if design_input.get("source_sha256") != _sha256(handoff_path):
+        raise ValueError(
+            "visual structure design input is stale: it was compiled from a different Stage 02 handoff"
+        )
+
+    handoff_pages = {
+        str(page.get("page_id")): page
+        for page in handoff.get("pages") or []
+        if isinstance(page, dict) and page.get("page_id")
+    }
+    spec = _read_json(project / VISUAL_FILES["spec_json"])
+    for page in spec.get("pages") or []:
+        if not isinstance(page, dict):
+            continue
+        page_id = str(page.get("page_id") or "")
+        source_page = handoff_pages.get(page_id.lower()) or handoff_pages.get(page_id.upper())
+        if source_page is None or source_page.get("render_role") != "content":
+            continue
+        generation_handoff = page.get("generation_handoff")
+        if not isinstance(generation_handoff, dict):
+            raise ValueError(f"visual structure page {page_id} is missing generation_handoff")
+        expected_text = [str(value) for value in source_page.get("onscreen_items") or []]
+        actual_text = [str(value) for value in generation_handoff.get("required_text") or []]
+        if actual_text != expected_text:
+            raise ValueError(
+                f"visual structure required_text drifted from final-script onscreen_text: {page_id}"
+            )
     return report_path

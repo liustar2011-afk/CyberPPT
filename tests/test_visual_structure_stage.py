@@ -960,7 +960,27 @@ class VisualStructureStageTests(unittest.TestCase):
             }
             for key, path in artifacts.items():
                 path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text(key + "\n", encoding="utf-8")
+                if key == "design_input":
+                    path.write_text(
+                        json.dumps({"source_sha256": _sha256(handoff)}),
+                        encoding="utf-8",
+                    )
+                elif key == "spec_json":
+                    path.write_text(
+                        json.dumps(
+                            {
+                                "pages": [
+                                    {
+                                        "page_id": "p01",
+                                        "generation_handoff": {"required_text": ["Text"]},
+                                    }
+                                ]
+                            }
+                        ),
+                        encoding="utf-8",
+                    )
+                else:
+                    path.write_text(key + "\n", encoding="utf-8")
             (visual / "validation-report.json").write_text(
                 json.dumps(
                     {
@@ -977,6 +997,26 @@ class VisualStructureStageTests(unittest.TestCase):
                 encoding="utf-8",
             )
             self.assertIsNotNone(assert_visual_structure_ready(project, script))
+            artifacts["spec_json"].write_text(
+                json.dumps(
+                    {
+                        "pages": [
+                            {
+                                "page_id": "p01",
+                                "generation_handoff": {"required_text": ["（五）Text"]},
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            report = json.loads((visual / "validation-report.json").read_text(encoding="utf-8"))
+            report["artifact_sha256"]["spec_json"] = _sha256(artifacts["spec_json"])
+            (visual / "validation-report.json").write_text(
+                json.dumps(report), encoding="utf-8"
+            )
+            with self.assertRaisesRegex(ValueError, "required_text drifted"):
+                assert_visual_structure_ready(project, script)
             script.write_text(
                 "## 第1页：Title\n"
                 "- 页面类型：内容页\n"

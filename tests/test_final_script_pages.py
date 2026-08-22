@@ -653,7 +653,13 @@ class FinalScriptPagesTests(unittest.TestCase):
             for key in ("design_input", "skill_request", "decisions", "execution_receipt")
         }
         for key, path in extra_visual_artifacts.items():
-            path.write_text(key + "\n", encoding="utf-8")
+            if key == "design_input":
+                path.write_text(
+                    json.dumps({"source_sha256": _sha256(handoff)}),
+                    encoding="utf-8",
+                )
+            else:
+                path.write_text(key + "\n", encoding="utf-8")
         visual_artifacts = {
             **extra_visual_artifacts,
             "spec_json": spec_json,
