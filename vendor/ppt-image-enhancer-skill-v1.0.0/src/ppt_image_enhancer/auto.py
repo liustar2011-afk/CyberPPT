@@ -104,7 +104,16 @@ def build_auto_config(image_path: str | Path, mode: str | None = None, backend: 
                     "requested_scale": float(scale),
                     "realesrgan_ncnn": {
                         "executable": str(exe),
-                        "model_name": "realesrgan-x4plus",
+                        # realesrgan-x4plus-anime is trained on flat-color
+                        # illustration/line-art content, which is closer to
+                        # CyberPPT chart_heavy pages (color blocks, Chinese
+                        # text, isolated icon renders) than the general photo
+                        # model. A/B against realesrgan-x4plus on 4 pages at
+                        # the same text_guard blend showed a consistent extra
+                        # ~5pp sharpness gain (avg +26.7% vs +21.9%) with no
+                        # change in structural_fidelity margin or visible
+                        # artifacts.
+                        "model_name": "realesrgan-x4plus-anime",
                         # realesrgan-x4plus is only trained/shipped at x4 in this
                         # portable package; requesting any other scale from the
                         # ncnn CLI produces corrupted/misaligned output (verified:

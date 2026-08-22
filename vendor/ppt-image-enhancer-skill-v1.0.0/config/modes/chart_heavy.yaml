@@ -23,8 +23,19 @@ processing:
     enabled: false
   local_contrast:
     enabled: false
+  # amount was 0.60 (set before AI SR was enabled). Swept 0.40/0.60/0.80/1.00
+  # at the current text_guard blend on the same 4-page set: gain rose from
+  # +6.7% to +49.8% avg, correlation stayed above 0.992 throughout (gate
+  # threshold 0.92), no warnings fired. A pixel-level crop check at 1.00
+  # found no visible halos on dense charts or small numbers over white --
+  # but the 0.40 vs 1.00 crops looked nearly identical to the eye despite
+  # the ~7x gap in the Laplacian-variance metric, meaning that metric likely
+  # over-credits high-frequency noise/texture amplification at high amounts
+  # rather than perceptible sharpness. Moved to 0.80 as the balance between
+  # the two: most of the measurable gain (+36.2% avg) with more margin left
+  # before whatever the metric is inflating on becomes visible.
   sharpen:
-    amount: 0.60
+    amount: 0.80
     radius: 0.85
 protection:
   fine_structure:
