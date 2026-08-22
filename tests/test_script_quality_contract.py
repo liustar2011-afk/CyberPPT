@@ -127,6 +127,37 @@ class OnscreenOrdinalTests(unittest.TestCase):
             {item.code for item in issues},
         )
 
+    def test_bracketed_ordinal_in_subtitle_is_flagged(self) -> None:
+        hits = _onscreen_orphan_ordinal_hits(
+            "【四阶段验证】\n"
+            "    ①联合验证｜0—60天\n"
+            "    ②首期试点｜第2—4个月\n",
+            "（三）停止或暂缓条件聚焦五类经营门槛",
+        )
+        self.assertEqual(
+            ("（三）停止或暂缓条件聚焦五类经营门槛",),
+            hits,
+        )
+
+    def test_bracketed_group_heading_ordinal_is_flagged(self) -> None:
+        self.assertEqual(
+            ("【（二）建议推进节奏｜前60天】",),
+            _onscreen_orphan_ordinal_hits(
+                "【（二）建议推进节奏｜前60天】\n"
+                "    ①0—30天｜找到真实需求\n"
+                "    ②31—60天｜形成可销售MVP\n"
+            ),
+        )
+
+    def test_decimal_metric_is_not_treated_as_ordinal(self) -> None:
+        self.assertEqual(
+            (),
+            _onscreen_orphan_ordinal_hits(
+                "【长期市场空间】\n"
+                "    0.5—1.7亿元/年：用于判断长期培育价值\n"
+            ),
+        )
+
 
 class OnscreenParallelStructureTests(unittest.TestCase):
     def test_default_judgment_mode_keeps_core_message_offscreen(self) -> None:

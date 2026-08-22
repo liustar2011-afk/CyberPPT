@@ -229,7 +229,10 @@ def _presentation_issues(
                     evidence=onscreen_aside_hits,
                 )
             )
-        orphan_ordinal_hits = _onscreen_orphan_ordinal_hits(page.onscreen_text)
+        orphan_ordinal_hits = _onscreen_orphan_ordinal_hits(
+            page.onscreen_text,
+            page.subtitle,
+        )
         if orphan_ordinal_hits:
             issues.append(
                 _issue(

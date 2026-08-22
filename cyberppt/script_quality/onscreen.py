@@ -156,7 +156,7 @@ NUMBERED_ORDER_SIGNAL_RE = re.compile(r"(?m)^\s*(?:\*\*)?\d{2}｜")
 # in the same on-screen group. A lone ``（五）`` usually means a source heading
 # number leaked into a re-authored slide module.
 ONSCREEN_ORDINAL_RE = re.compile(
-    r"^\s*(?P<ordinal>（[一二三四五六七八九十百]+）|[一二三四五六七八九十百]+、|\d+[.)])\s*"
+    r"^\s*(?:【\s*)?(?P<ordinal>（[一二三四五六七八九十百]+）|[一二三四五六七八九十百]+、|\d+[.)](?=\s))\s*"
 )
 
 LOOP_SIGNALS = ("回流", "反馈", "复盘", "闭环", "持续校正")
@@ -1026,11 +1026,17 @@ def _onscreen_detail_terminal_punctuation_hits(text: str) -> tuple[str, ...]:
     return tuple(hits)
 
 
-def _onscreen_orphan_ordinal_hits(text: str) -> tuple[str, ...]:
-    """Find lone hierarchy ordinals in one visible on-screen group."""
+def _onscreen_orphan_ordinal_hits(
+    text: str,
+    subtitle: str = "",
+) -> tuple[str, ...]:
+    """Find lone hierarchy ordinals in visible on-screen fields."""
 
     hits: list[str] = []
-    groups = (group for group in str(text).split("\n\n") if group.strip())
+    visible_text = "\n\n".join(
+        value for value in (str(text), str(subtitle)) if value.strip()
+    )
+    groups = (group for group in visible_text.split("\n\n") if group.strip())
     for group in groups:
         ordinal_lines = [
             line.strip()
