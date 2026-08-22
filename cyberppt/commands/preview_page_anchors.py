@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 from cyberppt.outline_contract import load_outline
 
@@ -15,6 +16,21 @@ _ORDERED_VISUAL_INTENTS = {"phase", "closed_loop", "decision_admission"}
 _NEGATIVE_FOREGROUND_ROLES = {
     "boundary", "security", "quality", "compliance", "risk", "assurance", "foundation",
 }
+_SECTION_METADATA_RE = re.compile(r"^(?:\*{1,2}\s*)?[一二三四五六七八九十百\d]+、")
+_SUBSECTION_METADATA_RE = re.compile(r"^(?:\*{1,2}\s*)?（[一二三四五六七八九十\d]+）")
+_CITATION_ONLY_RE = re.compile(r"^(?:\[\d+\])+(?:[-—]\[\d+\])?[。；;]?$")
+
+
+def _is_structural_metadata(unit: dict[str, object]) -> bool:
+    """Keep source headings and table headers out of audience-facing copy."""
+
+    statement = str(unit.get("statement") or "").strip()
+    if _SECTION_METADATA_RE.match(statement) or _SUBSECTION_METADATA_RE.match(statement):
+        return True
+    return (
+        (statement.startswith("|") and statement.count("**") >= 4)
+        or bool(_CITATION_ONLY_RE.match(statement))
+    )
 
 
 def _onscreen_policy(unit: dict[str, object]) -> str:
@@ -22,6 +38,8 @@ def _onscreen_policy(unit: dict[str, object]) -> str:
 
     if unit.get("onscreen_required") is not True:
         return "prose_only"
+    if _is_structural_metadata(unit):
+        return "metadata"
     anchors = [str(item).strip() for item in unit.get("onscreen_anchors") or [] if str(item).strip()]
     statement = str(unit.get("statement") or "").strip()
     if statement.startswith("|") and anchors and max(map(len, anchors)) <= 16:
@@ -36,6 +54,7 @@ def _policy_requirement(policy: str) -> str:
         "literal": "上屏保留业务对象、关键动作、状态或数字；允许自然短语改写。",
         "semantic": "完整文字稿保留完整语义；上屏使用短语化表达，并在锚点覆盖说明点名来源记录和承载模块。",
         "structural": "作为结构标签或分组关系处理，不要求逐字复现来源表头。",
+        "metadata": "来源章节标题或表头仅用于追溯，不进入内容页上屏。",
         "prose_only": "完整文字稿和演讲者备注保留，默认不占用上屏模块。",
     }[policy]
 

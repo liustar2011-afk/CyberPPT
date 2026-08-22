@@ -179,9 +179,19 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
     if spec.art_direction.style_id in (9, 10):
         if style_lock is None:
             raise ValueError("Style09/10 artifact prompt requires its style lock for terminal enforcement")
-        from scripts.imagegen_pipeline.deliverable_prompt import enforce_style09_terminal_lock
+        # Style 09/10 is authored in references/visual-system.md.  Keep the
+        # complete refreshed Markdown contract at the absolute end of the
+        # prompt so page-specific carrier/layout prose cannot override its
+        # hard visual rules.  The legacy terminal-lock helper only recognizes
+        # an older English marker and is insufficient for the current source.
+        from scripts.imagegen_pipeline.deliverable_prompt import style_contract
 
-        prompt = enforce_style09_terminal_lock(prompt, style_lock).rstrip()
+        source_contract = style_contract(style_lock)
+        prompt = (
+            f"{prompt}\n\n"
+            "【源头风格权威｜references/visual-system.md｜Style 09/10｜最高优先级】\n"
+            f"{source_contract}"
+        ).rstrip()
     assert_artifact_prompt_contract(
         prompt,
         expected_visible_text=typography.visible_text,
@@ -351,14 +361,51 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
 
     try:
         semantic_groups = _semantic_groups(spec.evidence)
-        composition = CompositionIR(
-            spatial_organization=spec.composition.spatial_organization,
-            primary_focus=spec.composition.primary_focus,
-            visual_responsibility=_visual_responsibility(
+        style09_surface = int(spec.art_direction.style_id or 0) in (9, 10)
+        if style09_surface:
+            # Style 09/10 owns the visual surface.  The audited page spec
+            # still supplies the business thesis, relationships and exact
+            # text, while its legacy carrier/layout recipe is deliberately
+            # excluded because it can reintroduce card grids, title bands,
+            # and "zero auxiliary image" instructions that contradict
+            # references/visual-system.md.
+            spatial_organization = (
+                "Follow the source Style 09 continuous, asymmetric, scene-led "
+                "editorial composition. Express the approved business relationship "
+                "through adjacency, grouping, containment, alignment, scale, crop "
+                "and shallow tonal depth; do not impose equal columns or card modules."
+            )
+            visual_responsibility = (
+                "Use the named business objects, actors, actions and outcomes from "
+                "the semantic sections as the page-specific visual anchor. When the "
+                "content is abstract, use a flat structured relationship field; when "
+                "a concrete referent exists, use one restrained integrated scene or "
+                "business object."
+            ,)
+        else:
+            spatial_organization = spec.composition.spatial_organization
+            visual_responsibility = _visual_responsibility(
                 spec.composition,
                 spec.visual_carrier,
                 spec.visual_budget,
-            ),
+            )
+        composition = CompositionIR(
+            spatial_organization=spatial_organization,
+            primary_focus=spec.composition.primary_focus,
+            visual_responsibility=visual_responsibility,
+        )
+        hard_constraints = (
+            tuple(spec.hard_constraints.global_constraints)
+            if style09_surface
+            else tuple(
+                dict.fromkeys(
+                    (
+                        *spec.hard_constraints.global_constraints,
+                        *spec.hard_constraints.page_constraints,
+                        *_bracketed_header_constraints(spec.typography.visible_text),
+                    )
+                )
+            )
         )
         return FinalPromptIR(
             deliverable=_deliverable_sentence(spec),
@@ -368,15 +415,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             semantic_groups=semantic_groups,
             composition=composition,
             visible_text=spec.typography.visible_text,
-            hard_constraints=tuple(
-                dict.fromkeys(
-                    (
-                        *spec.hard_constraints.global_constraints,
-                        *spec.hard_constraints.page_constraints,
-                        *_bracketed_header_constraints(spec.typography.visible_text),
-                    )
-                )
-            ),
+            hard_constraints=hard_constraints,
             runtime_lock=RuntimeLockIR(style_contract=spec.art_direction.contract),
         )
     except PromptContractError as exc:

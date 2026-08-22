@@ -66,6 +66,33 @@ def _build_project(root: Path) -> Path:
                             "coverage_anchors": ["补充参数"],
                             "onscreen_anchors": [],
                         },
+                        {
+                            "unit_id": "p04-U04",
+                            "role": "primary",
+                            "onscreen_required": True,
+                            "source_refs": ["ST0046"],
+                            "statement": "**一、建设背景**",
+                            "coverage_anchors": ["建设背景"],
+                            "onscreen_anchors": ["一、建设背景"],
+                        },
+                        {
+                            "unit_id": "p04-U05",
+                            "role": "supporting",
+                            "onscreen_required": True,
+                            "source_refs": ["ST0047"],
+                            "statement": "**（一）企业在职人员市场**",
+                            "coverage_anchors": ["企业在职人员市场"],
+                            "onscreen_anchors": ["企业在职人员市场"],
+                        },
+                        {
+                            "unit_id": "p04-U06",
+                            "role": "detail",
+                            "onscreen_required": True,
+                            "source_refs": ["ST0048"],
+                            "statement": "[6][9]-[11]",
+                            "coverage_anchors": ["[6][9]-[11]"],
+                            "onscreen_anchors": ["[6][9]-[11]"],
+                        },
                     ],
                 },
             ],
@@ -85,7 +112,7 @@ class PreviewPageAnchorsCommandTests(unittest.TestCase):
             self.assertEqual("p04", report["page_id"])
             self.assertEqual("foundation", report["argument_role"])
             units = report["content_units"]
-            self.assertEqual(3, len(units))
+            self.assertEqual(6, len(units))
             primary = next(unit for unit in units if unit["unit_id"] == "p04-U01")
             self.assertEqual(["ST0042", "ST0043"], primary["source_refs"])
             anchors = primary["onscreen_anchors"]
@@ -104,6 +131,9 @@ class PreviewPageAnchorsCommandTests(unittest.TestCase):
             self.assertEqual("semantic", policies["p04-U01"])
             self.assertEqual("structural", policies["p04-U02"])
             self.assertEqual("prose_only", policies["p04-U03"])
+            self.assertEqual("metadata", policies["p04-U04"])
+            self.assertEqual("metadata", policies["p04-U05"])
+            self.assertEqual("metadata", policies["p04-U06"])
 
     def test_unknown_page_id_reports_the_known_page_list(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

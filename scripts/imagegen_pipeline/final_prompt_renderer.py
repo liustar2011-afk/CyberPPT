@@ -39,7 +39,22 @@ def render_final_prompt(
 ) -> str:
     """Render the single production prompt in the required seven-part order."""
 
-    sections = (
+    runtime_style_contract = ir.runtime_lock.style_contract
+    if style_id in (9, 10) and style_lock is not None:
+        # Read the live human-authored source through the style-lock loader;
+        # this refreshes Style 09 from references/visual-system.md.
+        from scripts.imagegen_pipeline.deliverable_prompt import style_contract
+
+        runtime_style_contract = style_contract(style_lock)
+    runtime_section = "\n".join(
+        (
+            SECTION_HEADINGS[6],
+            runtime_style_contract,
+            *((ir.runtime_lock.terminal_lock,) if ir.runtime_lock.terminal_lock else ()),
+        )
+    )
+    hard_constraints_section = "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints))
+    sections_before_runtime = (
         "\n".join((SECTION_HEADINGS[0], ir.deliverable)),
         "\n".join((SECTION_HEADINGS[1], ir.page_judgment)),
         "\n".join(
@@ -65,24 +80,12 @@ def render_final_prompt(
                 *(f'- Exact visible text: "{text}"' for text in ir.visible_text),
             )
         ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[6],
-                ir.runtime_lock.style_contract,
-                *((ir.runtime_lock.terminal_lock,) if ir.runtime_lock.terminal_lock else ()),
-            )
-        ),
-        # A distinct, findable heading -- not just appended lines -- so
-        # Style09's terminal-lock reassembly (which slices the prompt at
-        # marker positions) can recognize this as content to preserve
-        # rather than trailing prose it should discard. Without this,
-        # every hard constraint (including the baseline "do not invent
-        # facts" ones, not just page-specific ones) was silently dropped
-        # for every Style09 page: enforce_style09_terminal_lock's
-        # continuation_markers only matched the old 9-section prompt
-        # format's headings, which this 7-section renderer never emits.
-        "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints)),
     )
+    # Put page hard constraints before the live source contract.  Style 09's
+    # source-authored terminal lock must be the final instruction in the
+    # actual prompt, while the page constraints remain available to the
+    # renderer earlier in the prompt.
+    sections = (*sections_before_runtime, hard_constraints_section, runtime_section)
     prompt = "\n\n".join(section for section in sections if section.strip()).rstrip()
 
     if style_id in (9, 10):

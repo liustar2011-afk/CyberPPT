@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from .ids import stable_id
@@ -21,17 +22,61 @@ def _flatten_sections(nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return result
 
 def _anchors(statement: str, heading_path: list[str]) -> list[str]:
-    statement = " ".join(str(statement).split()).strip()
+    """Extract readable anchors, including Markdown table cells.
+
+    Tables arrive from source conversion as Markdown.  Treating a row as one
+    pipe-delimited sentence creates punctuation artefacts and loses the cell
+    boundary that tells an author what must survive on screen.
+    """
+
+    raw = str(statement)
+    table_cells: list[str] = []
+    prose_lines: list[str] = []
+    for line in raw.splitlines() or [raw]:
+        stripped = line.strip()
+        if "|" in stripped:
+            cells = [re.sub(r"\*+", "", cell).strip() for cell in stripped.strip("|").split("|")]
+            # Markdown alignment rows have no audience-facing business text.
+            if cells and all(re.fullmatch(r":?-{3,}:?", cell.replace(" ", "")) for cell in cells if cell):
+                continue
+            table_cells.extend(cell for cell in cells if cell)
+        else:
+            prose_lines.append(stripped)
+    statement = " ".join(prose_lines).strip()
+    statement = re.sub(r"\*+", "", statement)
+    statement = re.sub(r"^[\s•·-]+", "", statement)
+    statement = " ".join(statement.split()).strip()
     anchors: list[str] = []
+    for cell in table_cells:
+        cell = re.sub(r"^[\s•·-]+", "", cell).strip(" ，。；;：:")
+        if cell and cell not in anchors:
+            anchors.append(cell)
+        if len(anchors) >= 2:
+            return anchors[:2]
     if statement:
         chunks = [part.strip(" ，。；;：:") for part in statement.replace("；", "，").replace("。", "，").split("，") if part.strip()]
-        anchors.extend(chunks[:2])
+        for chunk in chunks:
+            if chunk and chunk not in anchors:
+                anchors.append(chunk)
+            if len(anchors) >= 2:
+                break
     if len(anchors) < 2 and heading_path:
         heading = str(heading_path[-1]).strip()
         if heading and heading not in anchors:
             anchors.append(heading)
     if len(anchors) < 2 and statement and statement not in anchors:
         anchors.append(statement)
+    if len(anchors) < 2 and statement:
+        # Short source labels such as a table heading may have no punctuation.
+        # Keep two non-overlapping source-derived fragments so downstream
+        # coverage can verify the label without injecting a generic fallback.
+        compact = re.sub(r"[，。；;：:\s]", "", statement)
+        if len(compact) >= 6:
+            for fragment in (compact[:4], compact[-4:]):
+                if fragment and fragment not in anchors:
+                    anchors.append(fragment)
+                if len(anchors) >= 2:
+                    break
     return anchors[:2] or ["source-projection", "source-projection"]
 
 def _fact_refs_from_evidence(evidence: dict[str, Any], relation_by_id: dict[str, dict[str, Any]], arg_by_id: dict[str, dict[str, Any]]) -> set[str]:

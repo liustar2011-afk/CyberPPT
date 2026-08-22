@@ -818,6 +818,53 @@ class FullProseSourceCoverageTests(unittest.TestCase):
         )
         self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
+    def test_onscreen_content_unit_skips_source_heading_and_table_header(self) -> None:
+        page = self._page("来源结构已在完整文字稿中保留。")
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [
+                {
+                    "unit_id": "p03-u01",
+                    "statement": "**三、合作分工与投入安排**",
+                    "source_refs": ["ST001"],
+                    "onscreen_required": True,
+                    "onscreen_anchors": ["三、合作分工与投入安排"],
+                },
+                {
+                    "unit_id": "p03-u02",
+                    "statement": "| **主体** | **首期定位** | **职责** |",
+                    "source_refs": ["ST002"],
+                    "onscreen_required": True,
+                    "onscreen_anchors": ["主体", "首期定位"],
+                },
+                {
+                    "unit_id": "p03-u03",
+                    "statement": "**（一）企业在职人员市场**",
+                    "source_refs": ["ST003"],
+                    "onscreen_required": True,
+                    "onscreen_anchors": ["企业在职人员市场"],
+                },
+                {
+                    "unit_id": "p03-u04",
+                    "statement": "[6][9]-[11]",
+                    "source_refs": ["ST004"],
+                    "onscreen_required": True,
+                    "onscreen_anchors": ["[6][9]-[11]"],
+                },
+            ]},
+        )
+        self.assertNotIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
+
+    def test_ending_page_is_not_treated_as_a_sparse_content_page(self) -> None:
+        page = parse_script_markdown(
+            "## 第22页：建议提请研究确定\n"
+            "- 页面类型：结束页\n"
+            "- 页面标题：建议提请研究确定\n"
+            "- 上屏文字：\n"
+            "  建议提请研究确定首期产品边界、验证安排和分阶段投入依据\n"
+        ).pages[0]
+        self.assertEqual("closing", page.page_type)
+
     def test_onscreen_content_unit_accepts_a_short_anchor_with_a_minor_edit(self) -> None:
         # A short (<=30 char) anchor used to require an exact substring match
         # with zero tolerance, which is backwards: a short anchor is exactly

@@ -36,6 +36,7 @@ CONTENT_FIELDS = {
     "content_strategy",
     "suggested_visual_logic",
     "importance",
+    "title_intent",
     "topic_category",
     "attachment_disposition",
     "judgment_role",
@@ -47,7 +48,6 @@ SOURCE_BOUND_FIELDS = {
     "page_type",
     "template_role",
     "section_id",
-    "title_intent",
     "source_heading_ids",
     "primary_source_heading_id",
     "evidence",
@@ -459,6 +459,13 @@ def _apply_page_spec(page: dict[str, Any], spec: dict[str, Any], heading_id: str
         if field not in CONTENT_FIELDS:
             raise ValueError(f"unknown authoring page field: {field}")
     page.update(deepcopy(spec))
+    if "title_intent" in spec:
+        source_title = _text(page.get("source_heading_title"))
+        page["title_authoring_mode"] = (
+            "source_heading"
+            if _text(page.get("title_intent")) == source_title
+            else "editorial"
+        )
     page["primary_source_heading_id"] = heading_id
 
 
@@ -575,6 +582,7 @@ def _build_outline(
     relations = relations or {}
     argument_registry = _argument_node_registry(argument, headings, content_ids)
     planning = _spec_planning(authoring_spec)
+    section_titles = planning.get("section_titles") if isinstance(planning.get("section_titles"), dict) else {}
     merge_groups = planning.get("merge_groups") if isinstance(planning.get("merge_groups"), list) else []
     merge_by_heading: dict[str, dict[str, Any]] = {}
     for group in merge_groups:
@@ -609,7 +617,29 @@ def _build_outline(
                 break
             current = parent
         root_for_content.setdefault(content_id, content_id)
+
     first_content = content_ids[0]
+    # Count the pages that will actually be emitted, after attachment
+    # disposition, merges, and empty source sections have been resolved.  A
+    # heading without usable evidence does not justify an agenda or divider.
+    primary_content_ids: list[str] = []
+    for heading_id in content_ids:
+        group = merge_by_heading.get(heading_id)
+        primary_heading_id = _text(group.get("primary_source_heading_id")) if isinstance(group, dict) else heading_id
+        if primary_heading_id != heading_id:
+            continue
+        group_headings = [
+            str(value)
+            for value in (group.get("source_heading_ids") if isinstance(group, dict) else [heading_id])
+            if str(value) in content_set and root_for_content.get(str(value)) == root_for_content.get(heading_id)
+        ]
+        if heading_id not in group_headings:
+            group_headings.insert(0, heading_id)
+        if any(
+            _page_facts(facts, member_heading_id, by_id, parents, content_set, first_content)
+            for member_heading_id in group_headings
+        ):
+            primary_content_ids.append(heading_id)
     pages: list[dict[str, Any]] = []
     sections: list[dict[str, Any]] = []
     page_number = 1
@@ -622,7 +652,8 @@ def _build_outline(
         page_number += 1
         return str(page["page_id"])
 
-    add({"page_type": "template", "template_role": "cover", "title_intent": _default_title(normalized, workpack)})
+    cover_title = _text((authoring_spec or {}).get("deck", {}).get("working_title")) or _default_title(normalized, workpack)
+    add({"page_type": "template", "template_role": "cover", "title_intent": cover_title})
     add({"page_type": "template", "template_role": "agenda", "title_intent": (workpack.get("source_metadata") or {}).get("agenda_title") or "目录"})
     page_by_heading: dict[str, str] = {}
     section_page_ids: dict[str, list[str]] = {}
@@ -634,12 +665,15 @@ def _build_outline(
             continue
         section_order += 1
         section_id = _section_id(root_id, section_order)
+        section_title = _text(section_titles.get(root_id)) or _text(root.get("title"))
         section_pages: list[str] = []
         section_pages.append(add({
             "page_type": "template",
             "template_role": "section_divider",
             "section_id": section_id,
-            "title_intent": _text(root.get("title")),
+            "title_intent": section_title,
+            "source_heading_title": _text(root.get("title")),
+            "title_authoring_mode": "editorial" if section_title != _text(root.get("title")) else "source_heading",
             "source_heading_ids": [root_id],
             "primary_source_heading_id": root_id,
         }))
@@ -708,6 +742,8 @@ def _build_outline(
                 "page_type": "content",
                 "section_id": section_id,
                 "title_intent": _text(by_id[primary_heading_id].get("title")),
+                "source_heading_title": _text(by_id[primary_heading_id].get("title")),
+                "title_authoring_mode": "source_heading",
                 "source_heading_ids": source_heading_ids,
                 "primary_source_heading_id": primary_heading_id,
                 "audience_question": f"源材料如何说明{_title_without_number(by_id[primary_heading_id].get('title'))}？",
@@ -785,13 +821,19 @@ def _build_outline(
                 page_by_heading[member_heading_id] = page_id
             section_pages.append(page_id)
         section_page_ids[section_id] = section_pages
+        section_missions = planning.get("section_missions") if isinstance(planning.get("section_missions"), dict) else {}
+        section_theses = planning.get("section_theses") if isinstance(planning.get("section_theses"), dict) else {}
+        section_mission = _text(section_missions.get(root_id)) or f"围绕{section_title}组织相关页面判断。"
+        section_thesis = _text(section_theses.get(root_id)) or f"本部分围绕{section_title}展开。"
         sections.append({
             "section_id": section_id,
             "order": section_order,
-            "title_intent": _text(root.get("title")),
-            "section_mission": f"按源材料顺序说明{_text(root.get('title'))}的业务内容。",
-            "section_thesis": f"{_text(root.get('title'))}构成全篇方案的一个源材料业务段落。",
-            "argument_roles": ["source_locked"],
+            "title_intent": section_title,
+            "source_title": _text(root.get("title")),
+            "title_authoring_mode": "editorial" if section_title != _text(root.get("title")) else "source_heading",
+            "section_mission": section_mission,
+            "section_thesis": section_thesis,
+            "argument_roles": ["author_reframed"] if section_missions.get(root_id) or section_theses.get(root_id) else ["source_locked"],
             "page_ids": section_pages,
         })
     add({"page_type": "template", "template_role": "closing", "title_intent": "谢谢"})
@@ -919,6 +961,8 @@ def _build_outline(
             "decision_path": [_text(section.get("title_intent")) for section in sections],
             "deck_type": "正式方案交流",
             "narrative_mode": "source_logic_focused",
+            "presentation_mode": "standard",
+            "content_page_count": len(primary_content_ids),
         },
         "planning_policy": deepcopy(workpack.get("planning_policy") or {}),
         "title_style_mode": "formal_plain",
@@ -962,6 +1006,8 @@ def _build_outline(
             "relation_ids": [str(item.get("relation_id")) for item in relations.get("relations") or [] if isinstance(item, dict) and item.get("relation_id")],
         },
         "page_budget_policy": page_budget,
+        "presentation_mode": "standard",
+        "content_page_count": len(primary_content_ids),
         "merge_groups": deepcopy(merge_groups),
         "attachment_policy": {
             "default_disposition": "trace_only",

@@ -1117,6 +1117,8 @@ def _register_visual_artifacts(
     status = "passed" if _read_json(report_path).get("status") == "passed" else "failed"
     for relative in registered_paths:
         path = project / relative
+        if not path.is_file():
+            continue
         records.append(
             {
                 "stage": "02-visual-structure",

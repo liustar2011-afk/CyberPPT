@@ -938,23 +938,6 @@ def render_prompt(
                 "任何按业务语义选择的视觉载体，其内部不得承载白名单之外的可读文字；空间不足时减少视觉元素或扩大文字区，不得新增微型文字。",
             ]
         )
-    if include_style_contract:
-        parts.extend(
-            [
-                "",
-                (
-                    _creative_brief_style_contract(
-                        style_lock_path,
-                        semantic_tags=style09_semantic_tags,
-                    )
-                    if creative_brief
-                    else style_contract(
-                        style_lock_path,
-                        semantic_tags=style09_semantic_tags,
-                    )
-                ),
-            ]
-        )
     if visual_grammar:
         parts.extend(["", "【视觉组织原则】", visual_grammar])
     if layout_directives:
@@ -975,6 +958,29 @@ def render_prompt(
             ),
         ]
     )
+    if include_style_contract:
+        # The human-readable visual-system.md contract is the final visual
+        # authority.  Page-authored composition guidance may explain the
+        # business relationship, but it must not override Style 09's hard
+        # bans on card dashboards, equal-weight peer cards, icon walls, and
+        # other prohibited surface grammar.
+        parts.extend(
+            [
+                "",
+                "【源头风格权威｜visual-system.md Style 09｜最高优先级】",
+                (
+                    _creative_brief_style_contract(
+                        style_lock_path,
+                        semantic_tags=style09_semantic_tags,
+                    )
+                    if creative_brief
+                    else style_contract(
+                        style_lock_path,
+                        semantic_tags=style09_semantic_tags,
+                    )
+                ),
+            ]
+        )
     return "\n".join(parts).strip() + "\n"
 
 

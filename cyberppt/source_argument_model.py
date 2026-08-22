@@ -1203,6 +1203,7 @@ def audit_outline_consumption(
     )
     issues: list[dict[str, str]] = []
     primary_consumers: dict[str, list[str]] = {}
+    source_primary_consumers: dict[str, list[str]] = {}
     assigned_consumers: dict[str, list[str]] = {}
     for page in pages:
         page_id = _text(page.get("page_id"))
@@ -1235,6 +1236,26 @@ def audit_outline_consumption(
             # nodes may be cited by several pages without pretending that the
             # source thesis has multiple owners.
             primary_consumers.setdefault(primary, []).append(page_id)
+        source_primary_ids = [
+            _text(item)
+            for item in _list(page.get("source_argument_primary_node_ids"))
+            if _text(item)
+        ]
+        if len(source_primary_ids) != len(set(source_primary_ids)):
+            issues.append(_issue(
+                "OUTLINE_SOURCE_ARGUMENT_PRIMARY_DUPLICATED",
+                "页面 source_argument_primary_node_ids 不得重复声明同一源论点。",
+                node_id=page_id,
+            ))
+        for node_id in source_primary_ids:
+            if node_id not in assigned_ids:
+                issues.append(_issue(
+                    "OUTLINE_SOURCE_ARGUMENT_PRIMARY_NOT_ASSIGNED",
+                    "源论点责任页必须同时在 source_argument_node_ids 中声明该节点。",
+                    node_id=page_id,
+                ))
+                continue
+            source_primary_consumers.setdefault(node_id, []).append(page_id)
         page_source_refs = {_text(record_id) for record_id in _list(page.get("source_refs")) if _text(record_id)}
         page_records = [
             record for record in _list(source_truth.get("records"))
@@ -1329,6 +1350,10 @@ def audit_outline_consumption(
         for item in _list(model.get("section_nodes"))
         if isinstance(item, dict) and _text(item.get("id"))
     }
+    # Keep this flag defined for mechanical-draft outlines as well.  The
+    # single-chapter branch below is only populated for author-edited plans,
+    # but the required-node audit runs for both states.
+    single_editorial_chapter_without_page = False
     if author_edited:
         core_sections = [
             item for item in _list(model.get("section_nodes"))
@@ -1410,7 +1435,11 @@ def audit_outline_consumption(
             continue
         if not node_id or not _text(node.get("primary_consumer")):
             continue
-        consumers = primary_consumers.get(node_id, [])
+        consumers = (
+            source_primary_consumers.get(node_id, [])
+            if _text(node.get("node_kind")) == "source_argument"
+            else primary_consumers.get(node_id, [])
+        )
         if not consumers:
             issues.append(_issue("ARGUMENT_NODE_WITHOUT_PRIMARY_CONSUMER", "语义模型中的源论点没有页面 primary consumer；必须明确承载页或声明合并。", node_id=node_id))
         elif len(consumers) > 1:
@@ -1601,6 +1630,15 @@ def audit_outline_consumption(
         for left in assigned:
             for right in assigned:
                 if left >= right or left not in index or right not in index:
+                    continue
+                node_kinds = {
+                    _text(index[left].get("node_kind")),
+                    _text(index[right].get("node_kind")),
+                }
+                if node_kinds == {"page_projection", "source_argument"}:
+                    # A page projection is the narrowed, page-local view of a
+                    # source argument.  Keeping both references is provenance,
+                    # not a merge of two peer business arguments.
                     continue
                 if (left, right) not in relation_pairs and (right, left) not in relation_pairs and left != right:
                     issues.append(_issue("OUTLINE_ARGUMENT_NODES_MERGED_WITHOUT_RELATION", "页面合并了没有源材料关系说明的不同论点节点；请拆分或在语义阶段声明关系。", node_id=_text(page.get("page_id"))))

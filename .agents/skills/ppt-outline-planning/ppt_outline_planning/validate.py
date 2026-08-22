@@ -386,11 +386,22 @@ def _validate_workpack(
         primary = heading_by_id.get(primary_id)
         if primary is None:
             continue
-        if not _title_matches_source(page.get("title_intent"), primary.get("title")):
+        editorial_title = str(page.get("title_authoring_mode") or "") == "editorial"
+        source_heading_title = str(page.get("source_heading_title") or "")
+        if editorial_title and _normalized_title(source_heading_title) != _normalized_title(primary.get("title")):
+            _err(
+                errors,
+                "editorial_title_source_trace_missing",
+                "Editorial page titles must retain the mapped primary source heading in source_heading_title.",
+                page_id=page_id,
+                expected=primary.get("title"),
+                actual=source_heading_title,
+            )
+        if not editorial_title and not _title_matches_source(page.get("title_intent"), primary.get("title")):
             _err(
                 errors,
                 "source_heading_title_mismatch",
-                "Locked page title must preserve the primary source heading; only capacity split suffixes are allowed.",
+                "Source-heading titles must preserve the primary source heading; editorial titles require title_authoring_mode=editorial and source_heading_title.",
                 page_id=page_id,
                 expected=primary.get("title"),
                 actual=page.get("title_intent"),

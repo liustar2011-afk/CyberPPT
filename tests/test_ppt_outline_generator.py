@@ -247,6 +247,9 @@ class FormalOutlineGeneratorTests(unittest.TestCase):
                 ["方案", "目录", "第一章 总体概述", "一、建设背景", "二、商务报价与收益分配", "谢谢"],
                 [page["title_intent"] for page in plan["pages"]],
             )
+            self.assertEqual("standard", plan["presentation_mode"])
+            self.assertTrue(any(page.get("template_role") == "agenda" for page in plan["pages"]))
+            self.assertTrue(any(page.get("template_role") == "section_divider" for page in plan["pages"]))
             content = [page for page in plan["pages"] if page["page_type"] == "content"]
             self.assertTrue(all(page["evidence"]["normalized_fact_ids"] for page in content))
             self.assertTrue(all(page["argument_chain"] for page in content))
@@ -255,6 +258,49 @@ class FormalOutlineGeneratorTests(unittest.TestCase):
                 next(page for page in content if page["primary_source_heading_id"] == "sec-0002")["argument_chain"][0]["statement"],
             )
             self.assertEqual("方案", deck["deck_strategy"]["working_title"])
+
+    def test_page_plan_uses_emitted_content_page_count(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            semantic_dir, outline_dir = _write_foundation(Path(tmp))
+            facts_path = semantic_dir / "normalized-facts.json"
+            facts = json.loads(facts_path.read_text(encoding="utf-8"))
+            facts["facts"] = [
+                item for item in facts["facts"]
+                if item.get("normalized_fact_id") != "NF-0003"
+            ]
+            facts_path.write_text(json.dumps(facts, ensure_ascii=False), encoding="utf-8")
+
+            generate_outline(semantic_dir, outline_dir, force=True)
+            plan = json.loads((outline_dir / "page-plan.json").read_text(encoding="utf-8"))
+
+            self.assertEqual(1, plan["content_page_count"])
+            self.assertEqual(1, sum(page.get("page_type") == "content" for page in plan["pages"]))
+            self.assertEqual("standard", plan["presentation_mode"])
+            self.assertTrue(any(page.get("template_role") == "agenda" for page in plan["pages"]))
+            self.assertTrue(any(page.get("template_role") == "section_divider" for page in plan["pages"]))
+
+    def test_author_edited_title_keeps_source_trace_without_forcing_source_wording(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            semantic_dir, outline_dir = _write_foundation(Path(tmp))
+            first = _authored_page("建设背景正文形成源材料论证起点。")
+            first["title_intent"] = "协同建设需求正在形成"
+            spec = {
+                "deck": {"audience": "合作方", "purpose": "说明安排"},
+                "pages": {
+                    "sec-0002": first,
+                    "sec-0003": _authored_page("商务安排正文。"),
+                },
+            }
+
+            generate_outline(semantic_dir, outline_dir, authoring_spec=spec, force=True)
+            report = validate_outline_outputs(semantic_dir, outline_dir)
+            plan = json.loads((outline_dir / "page-plan.json").read_text(encoding="utf-8"))
+            page = next(item for item in plan["pages"] if item.get("primary_source_heading_id") == "sec-0002")
+
+            self.assertEqual("ok", report["status"])
+            self.assertEqual("协同建设需求正在形成", page["title_intent"])
+            self.assertEqual("一、建设背景", page["source_heading_title"])
+            self.assertEqual("editorial", page["title_authoring_mode"])
 
     def test_authoring_spec_compiles_to_author_edited_outline(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

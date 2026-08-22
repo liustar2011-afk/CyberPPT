@@ -120,7 +120,7 @@ def _normalize_page_type(value: str) -> str:
         return "cover"
     if "目录" in value:
         return "contents"
-    if "封底" in value:
+    if "封底" in value or "结束" in value or "结尾" in value:
         return "closing"
     return "content"
 

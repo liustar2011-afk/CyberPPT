@@ -12,6 +12,28 @@ from .parsing import _module_title
 from .text_rules import NEGATION_TERMS, normalized_tokens, text_similarity
 
 
+_SECTION_METADATA_RE = re.compile(r"^(?:\*{1,2}\s*)?[一二三四五六七八九十百\d]+、")
+_SUBSECTION_METADATA_RE = re.compile(r"^(?:\*{1,2}\s*)?（[一二三四五六七八九十\d]+）")
+_CITATION_ONLY_RE = re.compile(r"^(?:\[\d+\])+(?:[-—]\[\d+\])?[。；;]?$")
+
+
+def _is_onscreen_metadata_unit(statement: str) -> bool:
+    """Return whether a projected source unit is a heading or table header.
+
+    These units preserve source structure, but are not business assertions an
+    audience needs to read verbatim. Requiring them on-screen turns the deck
+    into a source outline and duplicates the page title or group labels.
+    """
+
+    value = statement.strip()
+    return (
+        bool(_SECTION_METADATA_RE.match(value))
+        or bool(_SUBSECTION_METADATA_RE.match(value))
+        or (value.startswith("|") and value.count("**") >= 4)
+        or bool(_CITATION_ONLY_RE.match(value))
+    )
+
+
 def _dict_items(
     payload: dict[str, object],
     key: str,
@@ -473,6 +495,7 @@ def _page_content_unit_coverage_issues(
                 ))
         if (
             unit.get("onscreen_required") is True
+            and not _is_onscreen_metadata_unit(statement)
             and contract.get("source_grounding_mode") != "required"
             and not set(source_refs).issubset(model_covered_refs)
         ):

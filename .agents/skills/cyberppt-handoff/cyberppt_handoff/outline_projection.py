@@ -175,6 +175,99 @@ def _normalize_evidence_roles(value: Any) -> dict[str, list[str]]:
             )
     return normalized
 
+
+def _content_units_from_source_truth(
+    page_id: str,
+    source_refs: list[str],
+    evidence_roles: list[dict[str, Any]],
+    source_truth_by_id: dict[str, dict[str, Any]],
+    *,
+    chain_roles: dict[str, str] | None = None,
+    excluded_from_onscreen: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Build auditable page units from Source Truth records.
+
+    Argument-chain text is a page-planning aid and can contain authoring
+    scaffolds.  Source Truth records are the atomic, source-grounded facts
+    that the page script and coverage audit must actually preserve.
+    """
+
+    role_by_ref: dict[str, str] = {}
+    for item in evidence_roles:
+        if not isinstance(item, dict):
+            continue
+        role = str(item.get("role") or "reason")
+        for ref in item.get("source_refs") or []:
+            role_by_ref.setdefault(str(ref), role)
+    role_by_ref.update(chain_roles or {})
+    excluded = excluded_from_onscreen or set()
+    unit_role = {
+        "claim": "primary",
+        "boundary": "boundary",
+        "reason": "supporting",
+        "instance": "supporting",
+        "trace_only": "supporting",
+    }
+    units: list[dict[str, Any]] = []
+    for index, ref in enumerate(dict.fromkeys(source_refs), start=1):
+        record = source_truth_by_id.get(ref, {})
+        statement = str(record.get("statement") or "").strip()
+        if not statement:
+            continue
+        role = role_by_ref.get(ref, "reason")
+        priority = str(record.get("priority") or "P2")
+        anchors = _anchors(statement, [])[:2]
+        argument_duty = str(record.get("argument_duty") or CHAIN_ROLE_TO_DUTY.get(role, "detail"))
+        # The argument chain determines the structural duty.  Every selected
+        # P0/P1 source record carrying a visible duty remains available to the
+        # page writer; grouping them into a readable screen hierarchy belongs
+        # to page-script authoring, not this compatibility projection.
+        structural_duty = argument_duty in {"premise", "driver", "consequence", "gap", "response"}
+        onscreen = structural_duty or (
+            ref not in excluded
+            and role in {"claim", "reason", "instance"}
+            and priority in {"P0", "P1"}
+        )
+        units.append({
+            "unit_id": f"{page_id}-U{index:02d}",
+            "statement": statement,
+            "source_refs": [ref],
+            "role": unit_role.get(role, "supporting"),
+            "importance": unit_role.get(role, "supporting"),
+            "priority": priority,
+            "full_prose_required": role != "trace_only",
+            "coverage_anchors": anchors,
+            "argument_duties": [argument_duty],
+            "onscreen_required": onscreen,
+            "onscreen_anchors": anchors if onscreen else [],
+            "authority_refs": [ref],
+        })
+    return units
+
+
+def _first_page_consuming_source_argument(
+    argument_id: str,
+    page_plan: dict[str, Any],
+    argument_by_id: dict[str, dict[str, Any]],
+) -> str:
+    """Return the first page that actually consumes part of a source argument."""
+
+    node_fact_ids = {
+        str(value)
+        for value in argument_by_id.get(argument_id, {}).get("normalized_fact_ids") or []
+    }
+    if not node_fact_ids:
+        return ""
+    for candidate in page_plan.get("pages") or []:
+        if not isinstance(candidate, dict) or candidate.get("page_type") != "content":
+            continue
+        evidence = candidate.get("evidence") if isinstance(candidate.get("evidence"), dict) else {}
+        declared_ids = {str(value) for value in evidence.get("argument_node_ids") or []}
+        fact_ids = {str(value) for value in evidence.get("normalized_fact_ids") or []}
+        if argument_id in declared_ids and node_fact_ids.intersection(fact_ids):
+            return str(candidate.get("page_id") or "")
+    return ""
+
 def _cyber_page_id(page: dict[str, Any]) -> str:
     return f"p{int(page.get('order') or 0):02d}"
 
@@ -225,7 +318,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             item["role"]: item["source_refs"] for item in evidence_roles_out
         }
         chain_out: list[dict[str, Any]] = []
-        content_units: list[dict[str, Any]] = []
+        chain_roles: dict[str, str] = {}
         for index, node in enumerate(page.get("argument_chain") or [], start=1):
             if not isinstance(node, dict):
                 continue
@@ -234,59 +327,45 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             node_refs = _expand_evidence_ids(node_ids, payloads, nf_to_st, allowed_fact_ids=allowed_fact_ids)
             role = str(node.get("role") or "support")
             chain_out.append({"role": role, "statement": str(node.get("statement") or ""), "source_refs": node_refs})
-            role_membership = [name for name in ("claim", "reason", "instance", "boundary", "trace_only") if set(node_ids).intersection(set(roles.get(name) or []))]
-            primary_role = next(iter(role_membership), "reason") if len(role_membership) == 1 else "reason"
-            unit_role = "primary" if primary_role == "claim" else "boundary" if primary_role == "boundary" else "supporting"
-            onscreen = primary_role in {"claim", "reason", "instance"}
-            # Split each cited statement into its natural clauses (on Chinese
-            # punctuation) instead of blindly slicing the first N characters.
-            # A raw character cut mid-clause forces a full-length source
-            # sentence onto the slide to satisfy anchor coverage; a PPT page
-            # is not a Word paragraph and must stay phrase/structured.
-            anchors = []
-            for st_id in node_refs:
-                statement = str(st_by_id.get(st_id, {}).get("statement") or "")
-                if not statement:
-                    continue
-                for chunk in _anchors(statement, []):
-                    # A clause without an early comma can still run long; cap it
-                    # so the anchor stays achievable inside a short on-screen
-                    # phrase instead of forcing a full source clause onto the
-                    # slide.
-                    chunk = chunk[:20]
-                    if chunk and chunk not in anchors:
-                        anchors.append(chunk)
-            if len(anchors) < 2:
-                anchors.extend(chunk[:20] for chunk in _anchors(str(node.get("statement") or ""), []))
-            anchors = list(dict.fromkeys(anchors))[:2]
-            # Source Truth already carries a P0/P1/P2 priority per fact
-            # (IMPORTANCE_TO_PRIORITY, derived from the citing page's
-            # declared importance). Reuse that authority instead of asking
-            # authors to hand-tag a second, unverifiable priority on each
-            # content unit: a unit's priority is the highest priority among
-            # the Source Truth records it cites.
-            priority_rank = {"P0": 0, "P1": 1, "P2": 2}
-            unit_priority = min(
-                (str(st_by_id.get(ref, {}).get("priority") or "P2") for ref in node_refs),
-                key=lambda value: priority_rank.get(value, 2),
-                default="P2",
-            )
-            content_units.append({
-                "unit_id": f"{cyber_id}-U{index:02d}", "statement": str(node.get("statement") or ""), "source_refs": node_refs,
-                "role": unit_role, "importance": unit_role, "priority": unit_priority, "full_prose_required": primary_role != "trace_only", "coverage_anchors": anchors,
-                "argument_duties": [CHAIN_ROLE_TO_DUTY.get(role, "detail")], "onscreen_required": onscreen, "onscreen_anchors": anchors if onscreen else [], "authority_refs": [str(x) for x in node_ids],
-            })
+            for ref in node_refs:
+                chain_roles.setdefault(ref, role)
         role_map = {item["role"]: item["source_refs"] for item in evidence_roles_out}
+        excluded_refs = {
+            nf_to_st[str(ref)]
+            for item in page.get("excluded_from_onscreen") or []
+            if isinstance(item, dict)
+            for ref in item.get("source_refs") or []
+            if str(ref) in nf_to_st
+        }
+        content_units = _content_units_from_source_truth(
+            cyber_id,
+            source_refs,
+            evidence_roles_out,
+            st_by_id,
+            chain_roles=chain_roles,
+            excluded_from_onscreen=excluded_refs,
+        )
         detail_refs = list(role_map.get("trace_only", []))
         boundary_refs = list(role_map.get("boundary", []))
         requested_arg_ids = [str(x) for x in page_evidence.get("argument_node_ids") or []]
         page_node_id = layer_four_page_node_id(page)
-        arg_ids = [page_node_id] if page_node_id in semantic_nodes else []
+        source_arg_ids = []
         for arg_id in requested_arg_ids:
             node_fact_ids = {str(value) for value in argument_by_id.get(arg_id, {}).get("normalized_fact_ids") or []}
-            if node_fact_ids and node_fact_ids.issubset(allowed_fact_ids):
-                arg_ids.append(arg_id)
-        primary_arg = page_node_id if page_node_id in arg_ids else (arg_ids[0] if arg_ids else "")
+            if node_fact_ids.intersection(allowed_fact_ids):
+                source_arg_ids.append(arg_id)
+        # A page projection is deliberately the narrowest primary argument:
+        # its evidence set is exactly the page's explicit fact set.  Source
+        # arguments remain formally consumed and one of their consuming pages
+        # is marked as the source-responsibility owner below.
+        arg_ids = ([page_node_id] if page_node_id in semantic_nodes else []) + source_arg_ids
+        primary_arg = page_node_id if page_node_id in semantic_nodes else (source_arg_ids[0] if source_arg_ids else "")
+        evidence_node_ids: list[str] = []
+        source_primary_ids = [
+            arg_id
+            for arg_id in source_arg_ids
+            if _first_page_consuming_source_argument(arg_id, page_plan, argument_by_id) == str(page.get("page_id") or "")
+        ]
         reserved_items = page.get("reserved_for_later") if isinstance(page.get("reserved_for_later"), list) else []
         reserved_text = "；".join(f"{item.get('topic')} → {page_map.get(str(item.get('target_page')), str(item.get('target_page')))}" for item in reserved_items if isinstance(item, dict)) or "无"
         allowed_claim_roles = sorted({str(st_by_id.get(ref, {}).get("claim_role") or "fact") for ref in source_refs})
@@ -322,7 +401,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             "argument_role": PAGE_ROLE.get(str(page.get("argument_role") or "other"), "solution"), "allowed_claim_roles": allowed_claim_roles, "forbidden_claim_roles": [],
             "prerequisite_pages": [page_map.get(str((page_plan.get("pages") or [])[int(page.get("order") or 1)-2].get("page_id")))] if int(page.get("order") or 1) > 1 and isinstance((page_plan.get("pages") or [])[int(page.get("order") or 1)-2], dict) else [],
             "main_claim_status": "proposed" if page.get("judgment_basis") == "planning_inference" else "confirmed", "confirmation_scope": "source_supported_only",
-            "primary_argument_node_id": primary_arg, "source_argument_node_ids": arg_ids, "context_argument_node_ids": [arg_id for arg_id in requested_arg_ids if arg_id not in arg_ids], "source_evidence_node_ids": [],
+            "primary_argument_node_id": primary_arg, "source_argument_node_ids": arg_ids, "source_argument_primary_node_ids": source_primary_ids, "context_argument_node_ids": [arg_id for arg_id in requested_arg_ids if arg_id not in source_arg_ids], "source_evidence_node_ids": evidence_node_ids,
             "source_argument_node_roles": {arg_id: str(semantic_nodes.get(arg_id, {}).get("argument_role") or "other") for arg_id in arg_ids},
             "source_argument_node_weights": {arg_id: str(semantic_nodes.get(arg_id, {}).get("argument_weight") or "detail") for arg_id in arg_ids},
             "source_argument_node_statuses": {arg_id: str(semantic_nodes.get(arg_id, {}).get("status") or "mixed") for arg_id in arg_ids},

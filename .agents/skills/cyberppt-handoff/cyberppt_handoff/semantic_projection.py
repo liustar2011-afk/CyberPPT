@@ -50,11 +50,15 @@ def _project_semantic_model(payloads: dict[str, dict[str, Any]], nf_to_st: dict[
         role = str(nodes[0].get("role") or "other")
         section_nodes.append({
             "id": sec_id, "source_heading_id": section_map.get(sec_id), "source_heading": section_titles.get(sec_id, sec_id),
+            "node_kind": "section_group",
             "section_thesis": "；".join(str(node.get("statement") or "") for node in nodes),
             "argument_role": role, "argument_weight": IMPORTANCE_TO_WEIGHT.get(max((_node_importance(str(node.get('node_id')), page_plan) for node in nodes), key=lambda x: {"low":0,"medium":1,"high":2}[x], default="low"), "detail"),
             "level": 1, "status": "mixed", "evidence_refs": source_refs, "actor_refs": [],
             "primary_consumer": _primary_page_for_arg(str(nodes[0].get("node_id")), page_plan), "subsection_ids": [str(node.get("node_id")) for node in nodes],
             "allowed_merges": [], "claim_origin": "source_implied", "source_gap_ids": [], "projection_only": True,
+            # Section nodes are projection-only grouping nodes.  Their
+            # subsection/source-chain nodes carry the page-consumption duty.
+            "required_for_primary_consumer": False,
         })
     subsection_nodes: list[dict[str, Any]] = []
     for node in argument.get("reconstructed_chain") or []:
@@ -68,10 +72,15 @@ def _project_semantic_model(payloads: dict[str, dict[str, Any]], nf_to_st: dict[
         claim_origin = "source_explicit" if source_node and str(source_node.get("statement") or "") == str(node.get("statement") or "") else "source_implied"
         subsection_nodes.append({
             "id": node_id, "parent_id": sec_id, "source_heading_id": section_map.get(sec_id), "source_heading": section_titles.get(sec_id, sec_id),
+            "node_kind": "source_argument",
             "section_thesis": str(node.get("statement") or ""), "thesis": str(node.get("statement") or ""),
             "argument_role": str(node.get("role") or "other"), "argument_weight": IMPORTANCE_TO_WEIGHT.get(_node_importance(node_id, page_plan), "detail"),
             "level": 2, "status": "mixed", "evidence_refs": source_units, "actor_refs": [], "primary_consumer": _primary_page_for_arg(node_id, page_plan),
             "subsection_ids": [], "allowed_merges": [], "claim_origin": claim_origin, "source_gap_ids": [], "projection_only": True,
+            # Reconstructed-chain nodes carry source argument ownership.  They
+            # must retain one primary page consumer even when a page consumes
+            # only part of the node's fact set.
+            "required_for_primary_consumer": True,
         })
     for page in page_plan.get("pages") or []:
         if not isinstance(page, dict) or page.get("page_type") != "content":
@@ -94,6 +103,7 @@ def _project_semantic_model(payloads: dict[str, dict[str, Any]], nf_to_st: dict[
                 "parent_id": str(page.get("section_id") or ""),
                 "source_heading_id": None,
                 "source_heading": str(page.get("title_intent") or ""),
+                "node_kind": "page_projection",
                 "section_thesis": str(page.get("key_judgment") or ""),
                 "thesis": str(page.get("key_judgment") or ""),
                 "argument_role": str(page.get("argument_role") or "source_exposition"),
@@ -109,7 +119,10 @@ def _project_semantic_model(payloads: dict[str, dict[str, Any]], nf_to_st: dict[
                 "evidence_refs": source_units,
                 "actor_refs": [],
                 "primary_consumer": f"p{int(page.get('order') or 0):02d}",
-                "required_for_primary_consumer": True,
+                # The L4 page node is a derived page projection.  It records
+                # the page judgment but does not compete with source arguments
+                # for primary-consumer ownership.
+                "required_for_primary_consumer": False,
                 "subsection_ids": [],
                 "allowed_merges": [],
                 "claim_origin": (

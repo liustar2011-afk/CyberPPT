@@ -16,6 +16,7 @@ from .generate import (
 
 
 AUTHORING_FIELDS = (
+    "title_intent",
     "audience_question",
     "page_mission",
     "key_judgment",

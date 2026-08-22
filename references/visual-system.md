@@ -350,8 +350,6 @@ Create hierarchy through crop, overlap, scale contrast, tonal separation, alignm
 
 Do not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages. The core judgment carries the greatest visual weight; supporting evidence remains quieter and subordinate.
 
-Semantic regions may contain text only, text plus one shared visual fragment, or a shared relationship field. The number of semantic regions must not determine the number of images, scene fragments or icons.
-
 Suitable anchors include: source materials parsed into one structured object; two fields compared around one visible gap; several inputs converging into one result; one interpretable operating scenario showing a named action such as monitoring, review, coordination, transformation, control or delivery.
 
 ### 3. Content fidelity and presentation expression — hard
@@ -428,7 +426,7 @@ Use one dominant scene or concrete business object, plus two to four quieter sup
 
 Create richness through semantic scene selection, cropping, scale and viewpoint changes — richness should come from meaningful business expression, not decorative objects.
 
-When the page names several distinct top-level items that genuinely require visual differentiation, use only a small number of shared, content-specific evidence fragments where they materially improve comprehension. Do not create one image, scene fragment or icon for every text item, and do not represent distinct named items with one shared undifferentiated panorama when a shared fragment would make their relationship unclear. Abstract items may remain text-led and rely on hierarchy, spacing and grouping alone; if the content is too abstract for any genuine evidence, use a flat, structured relationship field instead.
+When the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. If the items are abstract directions with no distinct concrete referent, drop the scene entirely and use a flat, structured relationship field instead.
 
 Suitable visual material includes: semantically constructed business scenarios; content-specific operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something named or directly implied by the page content, and its business action, state or relationship should remain recognizable without relying on embedded text. Never use generic office or corporate workplace imagery as a fallback — including meeting rooms, desks, laptops, office monitors, whiteboards, office buildings, corridors, anonymous businesspeople or staged workplace scenes — and never use a generic control room, dashboard wall, stock BI screen or undifferentiated technology panorama as decoration. When the content is abstract, construct an interpretable semantic scene from the named actors, actions, conditions and outcomes, or use a flat structured relationship field; do not substitute generic technology props or meaningless abstract 3D objects.
 
@@ -485,7 +483,6 @@ Do not reinterpret Style 09 into a card dashboard, icon infographic, SaaS market
 Render only the PowerPoint body visual on a 2048x1024 canvas.
 Do not render title, subtitle, logo, page number, footer, or template frame.
 Do not render instructions, field labels, source references, evidence ids, or text ids.
-Here, "field labels" means production or interface metadata such as field names, source markers and layout instructions; approved page labels and locked body text remain normal page text when they are required by the content.
 Do not invent visible business facts, numbers, organizations, actors, or conclusions.
 Do not change facts, numbers, dates or units.
 Do not change actors, responsibilities or status.
@@ -494,7 +491,6 @@ For a "label: sentence" locked text item, render it once as that unit; do not re
 Do not map each body item to an isolated icon or decorative image.
 Do not create an independent text wall or second result chain.
 Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image.
-This external placement applies even when the title or subtitle is marked as locked; locked body text remains in the generated image according to the content specification.
 Do not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.
 Do not invent a center hub or radial mechanism the declared relationship does not describe.
 Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.
@@ -623,7 +619,7 @@ Use one dominant scene or concrete business object, plus two to four quieter sup
 
 Create richness through semantic scene selection, cropping, scale and viewpoint changes — richness should come from meaningful business expression, not decorative objects.
 
-When the page names several distinct top-level items that genuinely require visual differentiation, use only a small number of shared, content-specific evidence fragments where they materially improve comprehension. Do not create one image, scene fragment or icon for every text item, and do not represent distinct named items with one shared undifferentiated panorama when a shared fragment would make their relationship unclear. Abstract items may remain text-led and rely on hierarchy, spacing and grouping alone; if the content is too abstract for any genuine evidence, use a flat, structured relationship field instead.
+When the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. If the items are abstract directions with no distinct concrete referent, drop the scene entirely and use a flat, structured relationship field instead.
 
 Suitable visual material includes: semantically constructed business scenarios; content-specific operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something named or directly implied by the page content, and its business action, state or relationship should remain recognizable without relying on embedded text. Never use generic office or corporate workplace imagery as a fallback — including meeting rooms, desks, laptops, office monitors, whiteboards, office buildings, corridors, anonymous businesspeople or staged workplace scenes — and never use a generic control room, dashboard wall, stock BI screen or undifferentiated technology panorama as decoration. When the content is abstract, construct an interpretable semantic scene from the named actors, actions, conditions and outcomes, or use a flat structured relationship field; do not substitute generic technology props or meaningless abstract 3D objects.
 
