@@ -34,8 +34,18 @@ processing:
   # rather than perceptible sharpness. Moved to 0.80 as the balance between
   # the two: most of the measurable gain (+36.2% avg) with more margin left
   # before whatever the metric is inflating on becomes visible.
+  #
+  # Later re-tested up to 1.60 with builtin backend against a wider page set
+  # (body/paragraph text on light cards, the dominant content type): 1.30
+  # still showed no visible halo/over-sharpening at 220% crop zoom, so 0.80
+  # was leaving real sharpness on the table for most pages. The one content
+  # pattern that does show a visible edge glow as amount rises is bold white
+  # text on a solid dark title-bar fill (high-contrast, thick strokes) --
+  # subtle at 0.80, more visible by 1.00, clearly a "glow ring" by 1.60.
+  # 1.30 was chosen as the tradeoff: a real gain on the majority of pages,
+  # with the title-bar glow still moderate rather than egregious.
   sharpen:
-    amount: 0.80
+    amount: 1.30
     radius: 0.85
 protection:
   fine_structure:
