@@ -393,7 +393,7 @@ Establish a calm balanced page frame before detailing regions. Distribute text, 
 
 Final check: a plain undirected connecting line is never used; arrows stay small, precise, local and single-source-to-single-target; icon count is zero by default, with no icon walls, grids or badge rows.
 
-Font: use MiSans or the closest available Chinese sans-serif; make glyphs visibly wider and flatter than a standard modern Chinese sans-serif, with a broad horizontal proportion and reduced vertical proportion. Preserve open counters, crisp strokes, restrained spacing and legibility at small sizes.
+Font: use PingFang SC (苹方) where available, otherwise the closest available Chinese sans-serif; make glyphs visibly wider and flatter than a standard modern Chinese sans-serif, with a broad horizontal proportion and reduced vertical proportion. Preserve open counters, crisp strokes, restrained spacing and legibility at small sizes.
 
 Typography: establish one clear hierarchy and repeat it consistently across the whole deck. Make the page title or main conclusion the largest text; use a clearly smaller subtitle. Make every module or chart heading noticeably larger and bolder than its supporting text. Keep body copy compact and consistently readable. Make a key metric the strongest focal text after the page title; keep chart labels smaller than body copy, and make sources, notes and evidence codes the smallest, quietest text. When the same role recurs on another page, reuse the same relative size and weight. If text feels crowded, shorten the copy or redesign the layout; never solve it by shrinking a role below its established level or introducing an extra in-between size.
 
