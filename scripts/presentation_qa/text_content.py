@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import zipfile
+import re
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -39,9 +40,13 @@ def pptx_texts(path: Path) -> list[str]:
 
 def _match_fragmented_texts(expected: list[str], actual: list[str]) -> list[dict]:
     """Match logical script strings against adjacent native visual-line objects."""
+    def key(value: str) -> str:
+        return re.sub(r"\s+", "", value)
+
     mismatches: list[dict] = []
     used: set[int] = set()
     for expected_text in expected:
+        expected_key = key(expected_text)
         found: tuple[int, ...] | None = None
         for start in range(len(actual)):
             if start in used:
@@ -51,12 +56,12 @@ def _match_fragmented_texts(expected: list[str], actual: list[str]) -> list[dict
             for index in range(start, len(actual)):
                 if index in used:
                     break
-                joined += actual[index]
+                joined += key(actual[index])
                 indices.append(index)
-                if joined == expected_text:
+                if joined == expected_key:
                     found = tuple(indices)
                     break
-                if len(joined) >= len(expected_text):
+                if len(joined) >= len(expected_key):
                     break
         if found is None:
             mismatches.append(

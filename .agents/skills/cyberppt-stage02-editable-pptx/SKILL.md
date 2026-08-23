@@ -11,8 +11,15 @@ The only production route is `python -m cyberppt final-script-pages` with
 `--production-build`; do not construct a final script or `page_image_pairs.json`
 by hand and do not call `run_stage02_reconstruction` directly.
 
-Default chain: audited full image → text-free base → native SVG text rebuild →
-editable PPTX assembly → render and text QA.
+Default chain: audited full image → text-free base → high-fidelity authored SVG →
+vendored Quick assembly → render and final-visible-text QA.
+
+For the high-fidelity Quick branch, use `final-script-pages --production-build
+--assembly-mode editable`. It consumes the text-audited full image, same-canvas
+clean base, and completed high-fidelity `authoring_svg`. The production command
+must not synthesize that SVG from OCR boxes. `image` is
+the separate picture-PPT branch; do not use it as evidence about the editable
+branch or substitute it for the Quick result.
 
 The default editable branch also runs read-only native-text geometry QA after
 the authored SVG is copied into the runtime project and before native styling.
@@ -33,6 +40,12 @@ Before export, every page needs a complete `clean_base` contract and
 Treat the locked script as text truth and OCR only as a coordinate anchor. Classify
 every visible body-graphic text item before removal:
 
+For high-fidelity Quick reconstruction, the authoring step must provide a real,
+completed SVG on the normalized slide canvas. OCR supplies text truth and
+location evidence only; it does not authorize a production-time OCR-box SVG
+generator. The vendored Quick runtime consumes the authored SVG and preserves
+its explicit coordinates, font size, weight, and color.
+
 - `native_text`: all readable information, labels, figures, captions and ordinary
   text. Remove it from the base and rebuild it in SVG.
 - `preserved_in_image`: only wording inseparable from an identity graphic, using a
@@ -47,8 +60,15 @@ its policy id. Repair only that region with `flat-surface-rebuild`,
 `local-background-reconstruction`, or `masked-inpainting`. OCR-region whiteout is
 not an acceptable final repair method.
 
-The clean-base review must pass four checks: the intended text is removed,
-background continuity is restored, pixels outside the declared clearance mask are
-preserved, and a post-clean OCR pass finds no removed native text. The runtime also
-measures pixel changes: every clearance region must change and changes outside the
-mask must remain within the declared tolerance. A failed check blocks export.
+The clean-base review must pass three image-integrity checks: the declared
+clearance regions change, background continuity is restored, and pixels outside
+the declared clearance mask stay within tolerance. Post-clean OCR is diagnostic
+evidence for the clearance operation. It must not independently require zero OCR
+residuals or trigger image regeneration after the source full image has passed
+its Chinese-character gate.
+
+The release decision belongs after SVG rewrite and PPTX render. Check the final
+visible result for wrong Chinese characters and pseudo-Chinese only. Ignore
+punctuation, isolated digits, and English tokens. A real residual Chinese string
+that remains visible alongside, or instead of, its SVG rewrite blocks release;
+an OCR-only residual in the intermediate clean base does not.

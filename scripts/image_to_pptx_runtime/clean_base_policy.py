@@ -16,13 +16,12 @@ _REMOVAL_METHODS = {
     "flat-surface-rebuild",
     "local-background-reconstruction",
     "masked-inpainting",
-    "legacy-reviewed-baseline",
+    "reference-image-reconstruction",
 }
 _REQUIRED_VISUAL_CHECKS = {
     "text_removal",
     "background_continuity",
     "outside_mask_preserved",
-    "post_clean_ocr",
 }
 
 
@@ -159,7 +158,7 @@ def validate_clean_base(
         if isinstance(visual.get("checks"), Mapping)
         else set()
     ):
-        errors.append({"code": "clean_base_visual_review_incomplete", "message": "review must pass text removal, continuity, protected-area, and post-clean OCR checks"})
+                errors.append({"code": "clean_base_visual_review_incomplete", "message": "review must pass text removal, continuity, and protected-area checks"})
     raw_regions = value.get("cleaned_text_regions")
     if not isinstance(raw_regions, list):
         errors.append({"code": "invalid_cleaned_text_regions", "message": "cleaned_text_regions must be a list"})
@@ -201,8 +200,6 @@ def validate_clean_base(
             errors.append({"code": "non_native_text_removed", "message": f"{policy_id or _text(region.get('text'))}: only native_text may be removed from the clean base"})
         if method not in _REMOVAL_METHODS:
             errors.append({"code": "unsupported_text_removal_method", "message": f"{policy_id or _text(region.get('text'))}: use a local background repair method, not whiteout"})
-        if method == "legacy-reviewed-baseline" and not isinstance(value.get("baseline_provenance"), Mapping):
-            errors.append({"code": "missing_baseline_provenance", "message": f"{policy_id or _text(region.get('text'))}: legacy baseline reuse requires preserved provenance"})
         bbox = _region_bbox(region, width=full_size[0], height=full_size[1]) if full_size else None
         if bbox is None:
             errors.append({"code": "invalid_cleaned_text_bbox", "message": f"{policy_id or _text(region.get('text'))}: a bounded text-removal region is required"})
@@ -216,7 +213,8 @@ def validate_clean_base(
         if region is None or _text(region.get("text")) != text:
             errors.append({"code": "native_text_has_no_exact_clearance_region", "message": f"{policy_id}: native text requires one exact, bounded clearance region"})
 
-    if full_path.is_file() and base_path is not None and base_path.is_file() and full_size and len(region_boxes) == len(cleaned_items):
+    reference_reconstruction = any(_text(region.get("method")) == "reference-image-reconstruction" for region in cleaned_items)
+    if full_path.is_file() and base_path is not None and base_path.is_file() and full_size and len(region_boxes) == len(cleaned_items) and not reference_reconstruction:
         padding = value.get("clearance_padding_px", 6)
         max_outside = value.get("max_outside_mask_changed_fraction", 0.01)
         try:

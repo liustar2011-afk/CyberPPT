@@ -137,6 +137,25 @@ class PresentationQaTests(unittest.TestCase):
         self.assertTrue(report["valid"])
         self.assertEqual(2, len(report["actual_texts"]))
 
+    def test_fragmented_native_text_ignores_space_lost_at_shape_boundary(self) -> None:
+        with TemporaryDirectory() as directory:
+            pptx_path = Path(directory) / "deck.pptx"
+            presentation = Presentation()
+            slide = presentation.slides.add_slide(presentation.slide_layouts[6])
+            for index, value in enumerate(("企业客户：", "单班，交易与", "AI 决策实训")):
+                shape = slide.shapes.add_textbox(Inches(0.5), Inches(0.3 + index * 0.4), Inches(3), Inches(0.4))
+                shape.text_frame.text = value
+            presentation.save(str(pptx_path))
+
+            report = build_text_content_qa(
+                pptx_path,
+                ["企业客户：单班，交易与 AI 决策实训"],
+                order_sensitive=False,
+                allow_fragmented_actual=True,
+            )
+
+        self.assertTrue(report["valid"])
+
 
 if __name__ == "__main__":
     unittest.main()

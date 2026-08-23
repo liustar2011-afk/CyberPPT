@@ -193,12 +193,20 @@ Stage 02 采用逐页检查点和同批次恢复：
 - 普通恢复不得使用 `--force-images`，该参数只用于用户明确要求的整批重绘；
 - 恢复命令必须保留 `--generate-images`、`--production-build` 和原 `--assembly-mode`，确保补齐页面后继续完成 PPTX 组装。
 
-`image-to-editable-svg` 是 Stage 02 唯一生产模式，`editable` 是默认 PPTX 组装分支。对每个内容页按以下固定顺序执行：
+`image-to-editable-svg` 是 Stage 02 唯一生产模式，`editable` 是默认 PPTX 组装分支。高保真 Quick 路线使用 `final-script-pages --production-build --assembly-mode editable`；它与图片型 PPT 的 `--assembly-mode image` 是两条独立组装分支。对每个内容页按以下固定顺序执行：
 
 1. 生成并审计 full 图，作为可见表面与文字对照证据；
 2. 从 full 图准备无文字底图，清除计划以 SVG 原生文字重建的区域；
 3. 按底图、已注册局部图层和原生 SVG 文字完成页面重建；
 4. 通过 SVG 质量、文字策略和 PPTX 回读后组装可编辑 PPTX。
+
+文字 QA 分为两个阶段，门禁对象必须区分：
+
+1. full 图进入 Quick 前，检查错中文字和伪中文；忽略标点、孤立数字和英文。未通过时只重绘该 full 图。
+2. 清图阶段的 OCR 仅记录文字清除诊断，不以“零残留”单独阻断。可编辑分支消费已经完成的高保真 authored SVG；生产编排不得根据 OCR 框自动合成文字 SVG。
+3. SVG 回写和 PPTX 渲染后，检查最终可见文字。残留的真实中文、错中文字或伪中文会阻断交付；仅存在于中间清图 OCR 结果中的残留不得触发重绘。
+
+因此，已有通过 full 图文字审计的页面在可编辑分支失败时，优先复用 full 图并继续“清图 + SVG 回写 + 最终可见结果 QA”。只有最终可见结果仍有错中文字、伪中文或未被 SVG 覆盖的真实中文，才重绘该页图像。
 
 进入图片转可编辑 PPTX 前，对配图内部的可读文字逐项分类：
 

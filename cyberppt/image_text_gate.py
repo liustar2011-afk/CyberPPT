@@ -99,6 +99,8 @@ def audit_generated_image_text(
 
         vision_runner = run_codex_vision_text
     ocr_runner = ocr_runner or _rapidocr
+    with Image.open(image_path) as audited_image:
+        audit_image_size = list(audited_image.size)
     prompt = f"""这些图片是同一张PPT正文图的3×2重叠高清局部块。只检查已经出现的文字是否有明确错字或乱码，只返回严格JSON。
 
 这是字形审计，不是语义转录。逐字观察实际笔画，不得依据上下文或脚本文字自动纠正损坏字形。能够猜出原字也不能放行：笔画残缺、粘连、部件错位、错误拼接或非有效汉字均报告 gibberish；明确写成另一个有效汉字报告 typo。
@@ -154,6 +156,7 @@ def audit_generated_image_text(
         "valid": valid,
         "scope": "typo_and_gibberish_only",
         "image": str(image_path),
+        "image_size": audit_image_size,
         "issues": unique,
         "observed_text": payload.get("observed_text", []),
         "ocr_items": ocr_items,

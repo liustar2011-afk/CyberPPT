@@ -126,27 +126,6 @@ def apply_default_native_text_style(
     return receipt
 
 
-def authored_native_text_style_receipt(
-    svg_path: Path | str,
-    *,
-    text_count: int,
-    profile: str = DEFAULT_PROFILE,
-) -> dict[str, Any]:
-    """Receipt for an AI-authored SVG that already carries the default style."""
-
-    return {
-        "schema": "cyberppt.native_text_style.v1",
-        "profile": profile,
-        "path": str(Path(svg_path).expanduser().resolve()),
-        "text_count": text_count,
-        "changed": False,
-        "split_label_count": 0,
-        "styled_heading_count": 0,
-        "preserved_locked": False,
-        "source": "ai_authoring",
-    }
-
-
 def write_native_text_style_receipt(
     reports: list[dict[str, Any]],
     output_path: Path | str,

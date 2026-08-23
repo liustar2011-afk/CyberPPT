@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import re
 import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -15,18 +16,15 @@ from cyberppt.script_quality.parsing import parse_script_path
 from scripts.presentation_qa.text_content import build_text_content_qa
 from scripts.imagegen_pipeline.production_readiness import build_production_readiness
 
+from . import assert_internal_runtime
 from .quick import create_quick_project
 from .editable_page_validation import validate_editable_page
 from .native_text_style import (
-    DEFAULT_PROFILE,
     apply_default_native_text_style,
-    authored_native_text_style_receipt,
     write_native_text_style_receipt,
 )
 from .native_text_geometry import (
     analyze_native_text_geometry,
-    geometry_qa_mode,
-    summarize_native_text_geometry,
     write_native_text_geometry_receipt,
 )
 from .review import write_review
@@ -122,7 +120,12 @@ def _copy_relative_svg_assets(source: Path, target: Path) -> None:
         shutil.copy2(asset, destination)
 
 
-def _validate_body_image(source: Path, page_number: int) -> tuple[int, int]:
+def _validate_body_image(
+    source: Path,
+    page_number: int,
+    *,
+    expected_size: tuple[int, int] | None = None,
+) -> tuple[int, int]:
     try:
         with Image.open(source) as image:
             size = image.size
@@ -130,7 +133,20 @@ def _validate_body_image(source: Path, page_number: int) -> tuple[int, int]:
         raise ValueError(f"page {page_number} body image cannot be opened: {source}") from exc
     if size[1] <= 0 or abs(size[0] / size[1] - 2.0) > 0.002:
         raise ValueError(f"page {page_number} body image must be 2:1; got {size[0]}x{size[1]}")
+    if expected_size is not None and size != expected_size:
+        raise ValueError(
+            f"page {page_number} body image must match the manifest canvas "
+            f"{expected_size[0]}x{expected_size[1]}; got {size[0]}x{size[1]}"
+        )
     return size
+
+
+def _manifest_canvas(pair: Mapping[str, Any]) -> tuple[int, int]:
+    full = pair.get("full") if isinstance(pair.get("full"), Mapping) else {}
+    match = re.fullmatch(r"\s*(\d+)x(\d+)\s*", str(full.get("canvas") or ""))
+    if match is None:
+        raise ValueError(f"page {pair.get('page_number')} full image has no valid manifest canvas")
+    return int(match.group(1)), int(match.group(2))
 
 
 def _page_title(script: Path, page_number: int) -> str:
@@ -187,6 +203,10 @@ def run_stage02_reconstruction(
     ``both`` publishes both artifacts from one audited input set.
     """
 
+    # The Quick runtime is vendored into CyberPPT.  Fail before consuming any
+    # project artifact if a copied module regresses to an external ppt-master
+    # checkout dependency.
+    assert_internal_runtime()
     if assembly_mode not in {"image", "editable", "both"}:
         raise ValueError("assembly_mode must be image, editable, or both")
     manifest_file = Path(manifest_path).expanduser().resolve()
@@ -204,8 +224,9 @@ def run_stage02_reconstruction(
         raise FileNotFoundError(f"approved source script is missing: {script}")
     output = Path(output_dir).expanduser().resolve()
     pages = [(int(pair["page_number"]), Path(str(pair["full"]["path"]))) for pair in pairs]
+    pair_by_page = {int(pair["page_number"]): pair for pair in pairs}
     for number, source in pages:
-        _validate_body_image(source, number)
+        _validate_body_image(source, number, expected_size=_manifest_canvas(pair_by_page[number]))
 
     needs_editable = assembly_mode in {"editable", "both"}
     needs_image = assembly_mode in {"image", "both"}
@@ -245,47 +266,14 @@ def run_stage02_reconstruction(
             target = quick.svg_path(int(pair["page_number"]))
             shutil.copy2(authored, target)
             _copy_relative_svg_assets(authored, target)
-            geometry_mode, geometry_reasons = geometry_qa_mode(
-                pair.get("graphic_text_policy"),
-                pair.get("clean_base"),
-                authored_by_ai=pair.get("authoring_svg_author") == "ai",
-            )
-            if geometry_mode == "summary":
-                native_text_geometry.append(
-                    summarize_native_text_geometry(
-                        pair.get("graphic_text_policy"),
-                        authored_svg=target,
-                        page_number=int(pair["page_number"]),
-                        reason=geometry_reasons[0],
-                    )
-                )
-            else:
-                geometry_report = analyze_native_text_geometry(
+            native_text_geometry.append(
+                analyze_native_text_geometry(
                     pair.get("graphic_text_policy"),
                     authored_svg=target,
                     page_number=int(pair["page_number"]),
                 )
-                geometry_report["execution_reason"] = geometry_reasons
-                native_text_geometry.append(geometry_report)
-            if (
-                pair.get("authoring_svg_author") == "ai"
-                and pair.get("native_text_style_profile") == DEFAULT_PROFILE
-            ):
-                policy_items = pair.get("graphic_text_policy")
-                native_text_style.append(
-                    authored_native_text_style_receipt(
-                        target,
-                        text_count=len(
-                            [
-                                item
-                                for item in (policy_items.get("items") if isinstance(policy_items, Mapping) else []) or []
-                                if isinstance(item, Mapping) and item.get("treatment") == "native_text"
-                            ]
-                        ),
-                    )
-                )
-            else:
-                native_text_style.append(apply_default_native_text_style(target))
+            )
+            native_text_style.append(apply_default_native_text_style(target))
             report = checker.check_file(str(target))
             quality.append(report)
             if not report.get("passed"):

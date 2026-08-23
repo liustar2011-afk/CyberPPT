@@ -560,7 +560,6 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             blueprint_only=args.blueprint_only,
             no_style_reference=args.no_style_reference,
             skip_image_text_audit=args.skip_image_text_audit,
-            seed_manifest=Path(args.seed_manifest) if args.seed_manifest else None,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -1066,10 +1065,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Required unless --style-lock or --style-id is provided; user-selected CyberPPT default style name or slug.",
     )
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
-    final_script_pages_parser.add_argument(
-        "--seed-manifest",
-        help="Optional audited Stage 02 page_image_pairs.json whose image and clean-base assets seed this fresh build.",
-    )
     final_script_pages_parser.add_argument(
         "--build-id",
         help="Stable build identifier used for resumable, versioned Stage 02 outputs.",

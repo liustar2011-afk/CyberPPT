@@ -353,10 +353,8 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                 "pairs": [
                     {
                         "page_number": 1,
-                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["登记编目"]}},
+                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["登记编目"]}},
                         "authoring_svg": str(authored),
-                        "authoring_svg_author": "ai",
-                        "native_text_style_profile": "editorial-source-text-v1",
                         "clean_base": _clean_base_contract(source, clean),
                         "graphic_text_policy": _graphic_text_policy(
                             items=[
@@ -390,8 +388,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     assert result["reports"]["graphic_text_policy"]["valid"] is True
     assert result["reports"]["editable_page"]["valid"] is True
     assert result["reports"]["native_text_style"]["valid"] is True
-    assert result["reports"]["native_text_geometry"]["pages"][0]["detail_level"] == "summary"
-    assert result["reports"]["native_text_style"]["pages"][0]["source"] == "ai_authoring"
+    assert result["reports"]["native_text_geometry"]["valid"] is True
     style_qa = Path(result["artifacts"]["native_text_style_qa"])
     assert style_qa.is_file()
     styled_svg = Path(result["artifacts"]["svg_output"]) / "01.svg"
