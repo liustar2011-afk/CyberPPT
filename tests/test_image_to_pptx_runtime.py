@@ -16,6 +16,7 @@ from scripts.image_to_pptx_runtime import editable_page_validation
 from scripts.image_to_pptx_runtime.editable_page_validation import validate_editable_page
 from scripts.image_to_pptx_runtime.quick import create_quick_project
 from scripts.image_to_pptx_runtime.review import ReviewIssue, write_review
+from scripts.image_to_pptx_runtime import stage02_adapter
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
 from scripts.presentation_qa.text_content import pptx_texts
 
@@ -320,7 +321,7 @@ def test_clean_base_policy_rejects_removing_a_decorative_glyph(tmp_path: Path) -
     assert "non_native_text_removed" in {error["code"] for error in report["errors"]}
 
 
-def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path) -> None:
+def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path, monkeypatch) -> None:
     source = tmp_path / "source.png"
     Image.new("RGB", (400, 200), "white").save(source)
     clean = tmp_path / "clean-base.png"
@@ -398,6 +399,106 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     assert result["artifacts"]["graphic_text_policy_qa"] == str(editable_qa)
     assert result["artifacts"]["clean_base_policy_qa"] == str(editable_qa)
     assert "登记编目" in pptx_texts(Path(result["artifacts"]["exported_pptx"]))
+    checkpoint = json.loads(manifest.read_text(encoding="utf-8"))["pairs"][0]["quick_page_checkpoint"]
+    assert checkpoint["status"] == "passed"
+    assert Path(checkpoint["preview_png"]).is_file()
+    assert Path(checkpoint["preview_pptx"]).is_file()
+
+    _official_context(manifest, script)
+
+    def fail_if_rendered(*args, **kwargs):
+        raise AssertionError("a current passed page checkpoint must reuse its preview")
+
+    monkeypatch.setattr(stage02_adapter, "render_to_png", fail_if_rendered)
+    resumed = run_stage02_reconstruction(
+        project=tmp_path,
+        manifest_path=manifest,
+        output_dir=tmp_path / "out",
+        requested_pages=[1],
+    )
+    assert resumed["status"] == "production_ready"
+    checkpoint = json.loads(manifest.read_text(encoding="utf-8"))["pairs"][0]["quick_page_checkpoint"]
+    assert checkpoint["resume"] == "reused"
+
+
+def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: Path) -> None:
+    source = tmp_path / "source.png"
+    Image.new("RGB", (400, 200), "white").save(source)
+    clean = tmp_path / "clean-base.png"
+    clean_image = Image.new("RGB", (400, 200), "white")
+    for x in range(30, 180):
+        for y in range(50, 100):
+            clean_image.putpixel((x, y), (250, 250, 250))
+    clean_image.save(clean)
+    authored = _policy_svg(tmp_path)
+    authored.write_text(
+        authored.read_text(encoding="utf-8").replace(
+            "</svg>",
+            '<image href="clean-base.png" x="0" y="0" width="400" height="200"/></svg>',
+        ),
+        encoding="utf-8",
+    )
+    script = tmp_path / "script.md"
+    script.write_text("## 第1页：失败页\n登记编目\n\n## 第2页：通过页\n登记编目\n", encoding="utf-8")
+    policy = _graphic_text_policy(
+        items=[
+            {
+                "id": "label-1",
+                "text": "登记编目",
+                "treatment": "native_text",
+                "bbox": [30, 50, 180, 100],
+                "layout_lines": [{"text": "登记编目", "bbox": [30, 50, 180, 100]}],
+                "locator": {"coverage": 1.0, "similarity": 1.0},
+            }
+        ]
+    )
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "production_mode": "image-to-editable-svg",
+                "output_variants": ["full"],
+                "source_script": str(script),
+                "content_page_numbers": [1, 2],
+                "pairs": [
+                    {
+                        "page_number": 1,
+                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}},
+                        "authoring_svg": str(tmp_path / "missing.svg"),
+                        "clean_base": _clean_base_contract(source, clean),
+                        "graphic_text_policy": policy,
+                    },
+                    {
+                        "page_number": 2,
+                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}},
+                        "authoring_svg": str(authored),
+                        "clean_base": _clean_base_contract(source, clean),
+                        "graphic_text_policy": policy,
+                    },
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    _official_context(manifest, script)
+
+    try:
+        run_stage02_reconstruction(
+            project=tmp_path,
+            manifest_path=manifest,
+            output_dir=tmp_path / "out",
+            requested_pages=[1, 2],
+        )
+    except ValueError as exc:
+        assert "p01" in str(exc)
+    else:
+        raise AssertionError("the missing page must keep the batch from final assembly")
+
+    pairs = json.loads(manifest.read_text(encoding="utf-8"))["pairs"]
+    assert pairs[0]["quick_page_checkpoint"]["status"] == "failed"
+    assert pairs[1]["quick_page_checkpoint"]["status"] == "passed"
+    assert Path(pairs[1]["quick_page_checkpoint"]["preview_png"]).is_file()
 
 
 def test_editable_page_validation_parses_svg_once_and_surfaces_policy_errors(tmp_path: Path, monkeypatch) -> None:

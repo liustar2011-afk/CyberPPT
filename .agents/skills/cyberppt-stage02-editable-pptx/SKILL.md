@@ -31,6 +31,22 @@ by hand and do not call `run_stage02_reconstruction` directly.
 Default chain: audited full image → text-free base → high-fidelity authored SVG →
 vendored Quick assembly → render and final-visible-text QA.
 
+## Per-page Quick checkpoint loop
+
+Process authored pages as individual quality transactions. For each content
+page: validate the clean-base and graphic-text policy, copy and style the
+authored SVG, run geometry and SVG quality QA, build one wrapped preview PPTX,
+render its OfficeCLI PNG, and write `quick_page_checkpoint` back to the active
+`page_image_pairs.json` immediately. Only then advance to the next page.
+
+A failed page records `status: failed` while later pages are still checked and
+checkpointed. On resume, reuse a passed page when its authored SVG, audited full
+image and clean base are unchanged and its target SVG, preview PPTX and preview
+PNG still exist. Changed inputs cause local revalidation, not a hash gate,
+full-image redraw, or whole-batch invalidation. Assemble the final deck once,
+after every requested page has a passed checkpoint; do not merge separately
+published one-page PPTX files.
+
 For the high-fidelity Quick branch, use `final-script-pages --production-build
 --assembly-mode editable`. It consumes the text-audited full image, same-canvas
 clean base, and completed high-fidelity `authoring_svg`. The production command

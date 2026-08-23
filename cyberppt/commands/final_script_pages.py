@@ -834,6 +834,12 @@ def run_final_script_pages(
                     and prior_graphic_text_policy.get("empty_container_check") == "passed"
                 ):
                     pair["graphic_text_policy"] = prior_graphic_text_policy
+                prior_quick_checkpoint = prior_pair.get("quick_page_checkpoint")
+                if isinstance(prior_quick_checkpoint, dict):
+                    # The adapter owns binding validation. Preserve the receipt
+                    # here so unchanged pages can be reused; changed inputs are
+                    # revalidated locally instead of invalidating the batch.
+                    pair["quick_page_checkpoint"] = prior_quick_checkpoint
                 for variant in output_variants_for_mode(production_mode):
                     current_item = pair.get(variant) or {}
                     prior_item = prior_pair.get(variant) or {}

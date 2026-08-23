@@ -13,6 +13,7 @@ from typing import Any, Mapping
 from PIL import Image
 
 from cyberppt.script_quality.parsing import parse_script_path
+from scripts.presentation_qa.render_page import check_pptx_geometry, render_to_png
 from scripts.presentation_qa.text_content import build_text_content_qa
 from scripts.imagegen_pipeline.production_readiness import build_production_readiness
 
@@ -49,12 +50,48 @@ def _read_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _write_json(path: Path, value: Mapping[str, Any]) -> None:
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _quick_page_binding(pair: Mapping[str, Any], authored: Path) -> dict[str, str]:
+    """Bind a reusable page checkpoint to its three visible inputs.
+
+    A changed input simply causes local revalidation; it never rejects the
+    build or forces regeneration of an already-audited full image.
+    """
+
+    full = Path(str((pair.get("full") or {}).get("path") or ""))
+    clean = Path(str((pair.get("clean_base") or {}).get("path") or ""))
+    return {
+        "authoring_svg_sha256": _sha256(authored),
+        "full_image_sha256": _sha256(full),
+        "clean_base_sha256": _sha256(clean) if clean.is_file() else "",
+    }
+
+
+def _reusable_quick_checkpoint(
+    checkpoint: object,
+    binding: Mapping[str, str],
+) -> bool:
+    if not isinstance(checkpoint, Mapping):
+        return False
+    if checkpoint.get("status") != "passed" or checkpoint.get("binding") != dict(binding):
+        return False
+    required = (
+        checkpoint.get("target_svg"),
+        checkpoint.get("preview_pptx"),
+        checkpoint.get("preview_png"),
+    )
+    return all(Path(str(value or "")).is_file() for value in required)
 
 
 def _require_official_orchestration(manifest_path: Path, manifest: Mapping[str, Any], *, assembly_mode: str) -> None:
@@ -245,42 +282,122 @@ def run_stage02_reconstruction(
     clean_base_policy: list[dict[str, Any]] = []
     editable_page_qa: list[dict[str, Any]] = []
     checker = SVGQualityChecker(quick_generate=True)
+    contract = load_template_contract()
+    title_by_page = {number: _page_title(script, number) for number in requested_pages}
+    manifest_pairs = {
+        int(pair["page_number"]): pair
+        for pair in manifest.get("pairs", [])
+        if isinstance(pair, dict) and str(pair.get("page_number") or "").isdigit()
+    }
     if needs_editable:
         assert quick is not None
+        page_failures: list[str] = []
         for pair in pairs:
+            page_number = int(pair["page_number"])
             authored = Path(str(pair.get("authoring_svg") or "")).expanduser()
-            if not authored.is_file():
-                raise ValueError(f"page {pair['page_number']} requires a hand-authored SVG from the image-to-PPTX runtime")
-            page_validation = validate_editable_page(
-                clean_base=pair.get("clean_base"),
-                full_image=Path(str(pair["full"]["path"])),
-                authored_svg=authored,
-                graphic_text_policy=pair.get("graphic_text_policy"),
-                page_number=int(pair["page_number"]),
-            )
-            editable_page_qa.append(page_validation)
-            clean_base_policy.append(page_validation["clean_base"])
-            graphic_text_policy.append(page_validation["graphic_text_policy"])
-            if not page_validation["valid"]:
-                raise ValueError(f"page {pair['page_number']} failed editable-page validation: {page_validation['errors']}")
-            target = quick.svg_path(int(pair["page_number"]))
-            shutil.copy2(authored, target)
-            _copy_relative_svg_assets(authored, target)
-            native_text_geometry.append(
-                analyze_native_text_geometry(
-                    pair.get("graphic_text_policy"),
-                    authored_svg=target,
-                    page_number=int(pair["page_number"]),
-                )
-            )
-            native_text_style.append(apply_default_native_text_style(target))
-            report = checker.check_file(str(target))
-            quality.append(report)
-            if not report.get("passed"):
-                raise ValueError(f"page {pair['page_number']} failed imported SVG quality: {report.get('errors')}")
-            svgs.append(target)
+            manifest_pair = manifest_pairs[page_number]
+            try:
+                if not authored.is_file():
+                    raise ValueError("requires a hand-authored SVG from the image-to-PPTX runtime")
+                binding = _quick_page_binding(pair, authored)
+                checkpoint = pair.get("quick_page_checkpoint")
+                if _reusable_quick_checkpoint(checkpoint, binding):
+                    assert isinstance(checkpoint, Mapping)
+                    target = Path(str(checkpoint["target_svg"]))
+                    page_validation = dict(checkpoint["editable_page_qa"])
+                    geometry_report = dict(checkpoint["native_text_geometry"])
+                    style_report = dict(checkpoint["native_text_style"])
+                    quality_report = dict(checkpoint["svg_quality"])
+                    checkpoint_payload = dict(checkpoint)
+                    checkpoint_payload["resume"] = "reused"
+                else:
+                    page_validation = validate_editable_page(
+                        clean_base=pair.get("clean_base"),
+                        full_image=Path(str(pair["full"]["path"])),
+                        authored_svg=authored,
+                        graphic_text_policy=pair.get("graphic_text_policy"),
+                        page_number=page_number,
+                    )
+                    if not page_validation["valid"]:
+                        raise ValueError(f"failed editable-page validation: {page_validation['errors']}")
+                    target = quick.svg_path(page_number)
+                    shutil.copy2(authored, target)
+                    _copy_relative_svg_assets(authored, target)
+                    geometry_report = analyze_native_text_geometry(
+                        pair.get("graphic_text_policy"),
+                        authored_svg=target,
+                        page_number=page_number,
+                    )
+                    style_report = apply_default_native_text_style(target)
+                    quality_report = checker.check_file(str(target))
+                    if not quality_report.get("passed"):
+                        raise ValueError(f"failed imported SVG quality: {quality_report.get('errors')}")
 
-    contract = load_template_contract()
+                    checkpoint_dir = output / "page_checkpoints" / f"p{page_number:02d}"
+                    wrapper = checkpoint_dir / "svg_output" / f"p{page_number:02d}.svg"
+                    assemble_template_svg(
+                        source=target,
+                        output=wrapper,
+                        title=title_by_page[page_number],
+                        page_number=page_number,
+                        mode="editable",
+                        contract=contract,
+                    )
+                    preview_pptx = checkpoint_dir / f"p{page_number:02d}.pptx"
+                    assemble_template_pptx([wrapper], preview_pptx)
+                    render_dir = checkpoint_dir / "render"
+                    rendered = render_to_png(
+                        preview_pptx,
+                        render_dir,
+                        dpi=150,
+                        renderer="officecli",
+                        strict_renderer=True,
+                    )
+                    preview_png = rendered[0] if rendered else None
+                    preview_geometry = check_pptx_geometry(preview_pptx, dpi=96)
+                    if preview_png is None or not preview_png.is_file():
+                        raise ValueError("single-page Quick preview was not rendered")
+                    if not preview_geometry["valid"]:
+                        raise ValueError("single-page Quick preview failed geometry QA")
+                    checkpoint_payload = {
+                        "schema": "cyberppt.stage02.quick_page_checkpoint.v1",
+                        "status": "passed",
+                        "binding": binding,
+                        "target_svg": str(target),
+                        "preview_svg": str(wrapper),
+                        "preview_pptx": str(preview_pptx),
+                        "preview_png": str(preview_png),
+                        "preview_geometry": preview_geometry,
+                        "editable_page_qa": page_validation,
+                        "native_text_geometry": geometry_report,
+                        "native_text_style": style_report,
+                        "svg_quality": quality_report,
+                        "resume": "validated",
+                    }
+
+                editable_page_qa.append(page_validation)
+                clean_base_policy.append(page_validation["clean_base"])
+                graphic_text_policy.append(page_validation["graphic_text_policy"])
+                native_text_geometry.append(geometry_report)
+                native_text_style.append(style_report)
+                quality.append(quality_report)
+                svgs.append(target)
+                manifest_pair["quick_page_checkpoint"] = checkpoint_payload
+                _write_json(manifest_file, manifest)
+            except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
+                manifest_pair["quick_page_checkpoint"] = {
+                    "schema": "cyberppt.stage02.quick_page_checkpoint.v1",
+                    "status": "failed",
+                    "error": str(exc),
+                }
+                _write_json(manifest_file, manifest)
+                page_failures.append(f"p{page_number:02d}: {exc}")
+        if page_failures:
+            raise ValueError(
+                "Stage 02 per-page Quick validation failed; passed pages were checkpointed: "
+                + "; ".join(page_failures)
+            )
+
     output_root = output / "template_assembly"
     if quick is not None:
         review = write_review(quick, [])
@@ -314,7 +431,6 @@ def run_stage02_reconstruction(
         review_path.parent.mkdir(parents=True, exist_ok=True)
         review = {"schema": "cyberppt.image_to_pptx.visual_review.v1", "mode": "image", "issues": [], "requires_rebuild": False, "valid": True, "path": str(review_path)}
         review_path.write_text(json.dumps(review, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    title_by_page = {number: _page_title(script, number) for number in requested_pages}
     speaker_notes = _speaker_notes_by_page(script, requested_pages)
     script_document = parse_script_path(script)
     script_pages = {page.sequence: page for page in script_document.pages}
