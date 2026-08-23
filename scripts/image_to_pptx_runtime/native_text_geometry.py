@@ -26,6 +26,9 @@ _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?")
 _COORDINATE_TOLERANCE = 12.0
 _FONT_RATIO_MIN = 0.45
 _FONT_RATIO_MAX = 1.50
+_MIN_INTRA_TEXT_X_SPAN = 120.0
+_MAX_INTRA_TEXT_X_SPAN_IN_FONTS = 6.0
+_MAX_BASELINE_STEP_IN_FONTS = 4.0
 
 
 def _local_name(element: ET.Element) -> str:
@@ -130,6 +133,33 @@ def _line_metrics(node: ET.Element) -> tuple[int, float | None]:
     if explicit_baselines:
         return 1, None
     return 1 + len(baseline_steps), (median(baseline_steps) if baseline_steps else None)
+
+
+def _intra_text_geometry(node: ET.Element, font_size: float | None) -> tuple[float, float, list[str]]:
+    """Detect tspans that accidentally jump into another visual region."""
+
+    xs: list[float] = []
+    ys: list[float] = []
+    for current in node.iter():
+        x = _number(current.get("x"))
+        y = _number(current.get("y"))
+        if x is not None:
+            xs.append(x)
+        if y is not None:
+            ys.append(y)
+    x_span = max(xs) - min(xs) if xs else 0.0
+    ordered_y = sorted(set(ys))
+    max_baseline_step = max(
+        (right - left for left, right in zip(ordered_y, ordered_y[1:])),
+        default=0.0,
+    )
+    issues: list[str] = []
+    if font_size is not None:
+        if x_span > max(_MIN_INTRA_TEXT_X_SPAN, font_size * _MAX_INTRA_TEXT_X_SPAN_IN_FONTS):
+            issues.append("tspan x positions jump across visual regions")
+        if max_baseline_step > font_size * _MAX_BASELINE_STEP_IN_FONTS:
+            issues.append("tspan baselines jump across visual regions")
+    return x_span, max_baseline_step, issues
 
 
 def _policy_items(policy: Mapping[str, Any] | None) -> list[dict[str, Any]]:
@@ -272,6 +302,9 @@ def analyze_native_text_geometry(
         svg_y = _node_y(node)
         font_size = _font_size(node)
         line_count, line_step = _line_metrics(node)
+        intra_text_x_span, max_baseline_step, structural_issues = _intra_text_geometry(
+            node, font_size
+        )
         mapped = _map_bbox(source_box, viewbox=(view_x, view_y, view_width, view_height), pixel_width=pixel_width, pixel_height=pixel_height)
         mapped_left, mapped_top, _, mapped_bottom = mapped
         expected_baseline = mapped_top + (font_size * 0.78 if font_size is not None else 0.0)
@@ -289,6 +322,7 @@ def analyze_native_text_geometry(
             issues.append("baseline deviation exceeds QA tolerance")
         if font_ratio is not None and not (_FONT_RATIO_MIN <= font_ratio <= _FONT_RATIO_MAX):
             issues.append("font-to-region ratio requires review")
+        issues.extend(structural_issues)
         base.update(
             {
                 "mapped_bbox": list(mapped),
@@ -302,6 +336,9 @@ def analyze_native_text_geometry(
                 "dx": delta_x,
                 "dy": delta_y,
                 "font_ratio": font_ratio,
+                "intra_text_x_span": intra_text_x_span,
+                "max_baseline_step": max_baseline_step,
+                "structural_issues": structural_issues,
                 "match_method": method,
                 "match_confidence": confidence,
                 "issues": issues,
@@ -316,7 +353,7 @@ def analyze_native_text_geometry(
         "page_number": page_number,
         "path": str(svg_path),
         "status": "complete",
-        "valid": True,
+        "valid": not any(item.get("structural_issues") for item in reports),
         "review_required": bool(warnings),
         "qa_only": True,
         "detail_level": "full",

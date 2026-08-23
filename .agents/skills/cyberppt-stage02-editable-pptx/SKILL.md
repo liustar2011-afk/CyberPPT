@@ -66,6 +66,10 @@ the Stage 02 result. The report compares policy OCR regions with SVG text
 baselines, line metrics and authored font sizes; it does not rewrite SVG
 coordinates or infer a PowerPoint font size from OCR bbox height. Ambiguous
 matches, missing bboxes and locked SVGs remain explicit review outcomes.
+The geometry gate must also inspect every explicit `<tspan>` coordinate inside
+each text node. A line that jumps into another column or visual region is a
+blocking authored-SVG defect even when the parent `<text>` x/y matches its OCR
+box; do not let a page-level visual-review receipt override that failure.
 
 Before export, every page needs a complete `clean_base` contract and
 `graphic_text_policy`. Ordinary readable text uses `native_text`. Use

@@ -121,6 +121,38 @@ def test_multiline_text_reports_absolute_tspan_baselines(tmp_path: Path) -> None
     assert item["line_step"] == 28.0
 
 
+def test_tspan_horizontal_region_jump_blocks_geometry(tmp_path: Path) -> None:
+    svg = _svg(
+        tmp_path,
+        '<text x="20" y="60" font-size="20"><tspan x="20" y="60">第一行</tspan>'
+        '<tspan x="300" y="88">错误跳列</tspan></text>',
+    )
+    report = analyze_native_text_geometry(
+        _policy([{"id": "body", "text": "第一行 错误跳列", "treatment": "native_text", "bbox": [20, 40, 380, 100]}]),
+        authored_svg=svg,
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert report["items"][0]["intra_text_x_span"] == 280.0
+    assert "tspan x positions jump across visual regions" in report["items"][0]["structural_issues"]
+
+
+def test_tspan_vertical_region_jump_blocks_geometry(tmp_path: Path) -> None:
+    svg = _svg(
+        tmp_path,
+        '<text x="20" y="60" font-size="20"><tspan x="20" y="60">正文</tspan>'
+        '<tspan x="20" y="180">错误跳区</tspan></text>',
+    )
+    report = analyze_native_text_geometry(
+        _policy([{"id": "body", "text": "正文 错误跳区", "treatment": "native_text", "bbox": [20, 40, 180, 195]}]),
+        authored_svg=svg,
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert report["items"][0]["max_baseline_step"] == 120.0
+    assert "tspan baselines jump across visual regions" in report["items"][0]["structural_issues"]
+
+
 def test_locked_svg_is_skipped(tmp_path: Path) -> None:
     svg = _svg(tmp_path, '<text x="10" y="30">锁定</text>', locked=True)
     report = analyze_native_text_geometry(

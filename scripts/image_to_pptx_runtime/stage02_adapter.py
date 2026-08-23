@@ -25,6 +25,7 @@ from .native_text_style import (
     write_native_text_style_receipt,
 )
 from .native_text_geometry import (
+    SCHEMA as NATIVE_TEXT_GEOMETRY_SCHEMA,
     analyze_native_text_geometry,
     write_native_text_geometry_receipt,
 )
@@ -76,6 +77,7 @@ def _quick_page_binding(pair: Mapping[str, Any], authored: Path) -> dict[str, st
         "authoring_svg_sha256": _sha256(authored),
         "full_image_sha256": _sha256(full),
         "clean_base_sha256": _sha256(clean) if clean.is_file() else "",
+        "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".intra-text-v1",
     }
 
 
@@ -347,6 +349,11 @@ def run_stage02_reconstruction(
                         authored_svg=target,
                         page_number=page_number,
                     )
+                    if geometry_report.get("valid") is not True:
+                        raise ValueError(
+                            "failed native-text geometry validation: "
+                            + "; ".join(geometry_report.get("warnings") or [])
+                        )
                     style_report = apply_default_native_text_style(target)
                     quality_report = checker.check_file(str(target))
                     if not quality_report.get("passed"):
