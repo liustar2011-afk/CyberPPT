@@ -731,28 +731,10 @@ def run_final_script_pages(
     )
     project_created = False
     from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
-    from cyberppt.commands.script_audit import run_script_audit
     from cyberppt.stage02_handoff import (
-        audit_authorizes_stage02,
         load_stage02_handoff,
-        prepare_stage02_handoff,
     )
 
-    if allow_script_edit:
-        # The edited final script is authoritative for this visual
-        # regeneration. Refresh the binding so a previous handoff cannot be
-        # mistaken for the edited script. Handoff structural checks remain.
-        prepare_stage02_handoff(
-            project,
-            script=script,
-            allow_script_edit=True,
-        )
-    else:
-        _, audit = run_script_audit(project, script)
-        if not audit_authorizes_stage02(audit):
-            raise ValueError(
-                "final-script-pages requires a currently passed full-script audit."
-            )
     load_stage02_handoff(project, required=True)
     assert_visual_structure_ready(project, script)
     if production_mode not in PRODUCTION_MODES:
@@ -814,19 +796,18 @@ def run_final_script_pages(
         output_dir=target_dir,
         project_path=project,
         style_lock=style_lock,
-        require_approved_prompts=(
-            not blueprint_only
-            and autonomous_authority is None
-            and not allow_script_edit
-            and not allow_prompt_edit
-        ),
+        # Stage 02 compiles the production prompt from its current script-bound
+        # handoff, audited visual structure, and style lock.  Historical
+        # imagegen-send drafts remain review artifacts and must never override
+        # the current Stage 02 visual contract.
+        require_approved_prompts=False,
         production_mode=production_mode,
         prompt_enrich=prompt_enrich,
         require_send_approval=require_send_approval,
         enforce_prompt_freshness=False,
         compact_blueprint=False,
         prompt_compiler="artifact-spec-v2",
-        allow_script_edit=allow_script_edit,
+        allow_script_edit=False,
         allow_prompt_edit=allow_prompt_edit,
         prompt_overrides_dir=prompt_overrides_dir,
     )
@@ -889,7 +870,7 @@ def run_final_script_pages(
         output_dir=target_dir,
         build_id=build_id,
         assembly_mode=assembly_mode,
-        allow_script_edit=allow_script_edit,
+        allow_script_edit=False,
     )
     build_context_path = target_dir / "build_context.json"
     _write_json(

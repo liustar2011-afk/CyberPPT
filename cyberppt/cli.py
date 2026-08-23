@@ -731,17 +731,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     prepare_handoff = subparsers.add_parser(
         "prepare-stage02-handoff",
-        help="Compile the validated Stage 01 to Stage 02 field contract.",
+        help="Compile a script-driven Stage 02 field contract.",
     )
     prepare_handoff.add_argument("project", help="CyberPPT project directory.")
     prepare_handoff.add_argument(
         "--script",
-        help="Approved final script; defaults to workbench/scripts/final/script-final.md.",
+        help="Stage 02 content script; accepts an absolute external path and defaults to workbench/scripts/final/script-final.md.",
     )
     prepare_handoff.add_argument(
         "--lightweight-stage01-confirmed",
         action="store_true",
-        help="Deprecated compatibility flag; Stage 02 authorization is determined by the current passed full-script audit.",
+        help="Deprecated compatibility flag; Stage 02 uses the script contract and its current handoff.",
     )
     prepare_handoff.set_defaults(func=_prepare_stage02_handoff_command)
 
@@ -1006,22 +1006,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Compile selected pages from a final script into traceable full-image PPT inputs.",
     )
     final_script_pages_parser.add_argument("project", help="CyberPPT project directory.")
-    final_script_pages_parser.add_argument("--script", required=True, help="Final markdown script containing page headings.")
+    final_script_pages_parser.add_argument("--script", required=True, help="Stage 02 content script; project-local or external path.")
     final_script_pages_parser.add_argument(
         "--external-script",
         action="store_true",
         help=(
-            "Deprecated compatibility/metadata flag. External scripts must still pass the current "
-            "script-audit, Stage 02 handoff, and visual-structure gates."
+            "Compatibility metadata flag. External scripts require a current Stage 02 handoff "
+            "and visual-structure audit."
         ),
     )
     final_script_pages_parser.add_argument(
         "--allow-script-edit",
         action="store_true",
         help=(
-            "Use the edited final script as the authoritative visual input. "
-            "Skips editorial script-audit gates and refreshes the Stage 02 handoff; "
-            "image text, structural, and production QA remain enabled."
+            "Deprecated compatibility flag. Refresh the Stage 02 handoff and visual structure "
+            "after changing a script; prompt and production gates remain required."
         ),
     )
     final_script_pages_parser.add_argument(

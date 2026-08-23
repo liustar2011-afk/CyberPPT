@@ -127,7 +127,7 @@ Outline 审阅通过后，执行 Source Foundation 到 CyberPPT 的兼容投影�
 
 将已完成页面汇总为最终脚本，执行全稿审计，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约。
 
-最终脚本通过当前 `script-audit` 后，才可进入 Stage 02。
+`script-audit` 是 Stage 01 的编辑质量门。Stage 02 以已确认脚本为唯一内容输入；项目内脚本和外部脚本均可通过 `prepare-stage02-handoff --script <path>` 进入独立的视觉生产链。
 
 ## 四、Stage 01 的四个人工停点
 
@@ -144,7 +144,7 @@ Outline 审阅通过后，执行 Source Foundation 到 CyberPPT 的兼容投影�
 
 ### 1. 最终脚本和页面生产入口
 
-使用已通过 `script-audit` 的最终脚本，进入 `final-script-pages`。页面生产前必须具备通过的 Stage 02 handoff 和视觉结构审计。
+使用已确认的项目内或外部脚本，先运行 `prepare-stage02-handoff --script <path>`，再进入视觉结构与 `final-script-pages`。页面生产前必须具备当前脚本绑定的 Stage 02 handoff 和视觉结构审计。
 
 ### 2. Stage 02 handoff
 
@@ -158,7 +158,7 @@ Outline 审阅通过后，执行 Source Foundation 到 CyberPPT 的兼容投影�
 
 ### 4. 选择并锁定视觉风格
 
-风格选择仍然存在，是 Stage 02 的正式前置步骤，发生在最终脚本审计通过后、`final-script-pages` 和 Prompt/Manifest 编译前。
+风格选择仍然存在，是 Stage 02 的正式前置步骤，发生在脚本合同建立后、`final-script-pages` 和 Prompt/Manifest 编译前。
 
 执行要求：
 
@@ -245,8 +245,8 @@ PPTX 组装支持三个正式分支：`editable` 为默认输出，`image` 输�
 1. Source Foundation 和语义验证通过。
 2. Outline 已完成作者化、审计和人工提纲停点。
 3. Handoff 投影验证通过。
-4. 页面脚本、最终全稿和 `script-audit` 通过。
+4. Stage 02 已建立当前脚本绑定的 handoff，脚本可以来自本项目或外部路径。
 5. 风格已由用户确认，并生成有效的 JSON 风格锁。
-6. Stage 02 handoff、视觉结构审计和实际提示词检查通过。
+6. 视觉结构审计和实际提示词检查通过。
 7. 图片、PPTX、渲染和交付 QA 通过。
 8. 最终回复提交实际产物的绝对路径链接，并明确未验证事项。

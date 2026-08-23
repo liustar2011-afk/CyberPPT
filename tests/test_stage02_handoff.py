@@ -10,7 +10,6 @@ from unittest.mock import patch
 
 from cyberppt.stage02_handoff import (
     HANDOFF_JSON,
-    audit_authorizes_stage02,
     audit_stage02_handoff,
     build_stage02_handoff,
     prepare_stage02_handoff,
@@ -25,15 +24,6 @@ def _binding(path: Path, semantic_digest: Callable[[Path], str]) -> dict[str, st
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "semantic_sha256": semantic_digest(path),
     }
-
-
-class Stage02AuditAuthorizationTests(unittest.TestCase):
-    def test_only_a_passed_audit_authorizes_stage02(self) -> None:
-        self.assertTrue(audit_authorizes_stage02({"status": "passed", "issues": []}))
-        self.assertFalse(audit_authorizes_stage02({
-            "status": "rewrite_required",
-            "issues": [{"code": "ONSCREEN_CONTENT_UNIT_GAP", "severity": "error"}],
-        }))
 
 
 def _payload(project: Path, *, created_at: str) -> dict[str, object]:
@@ -132,61 +122,56 @@ def test_prepare_reuses_current_handoff_when_stage01_authority_is_identical() ->
         assert json.loads(handoff_path.read_text(encoding="utf-8"))["created_at"] == old["created_at"]
 
 
-def test_build_handoff_uses_script_audit_without_interactive_confirmation() -> None:
+def test_build_handoff_uses_only_the_script_contract() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        payload = build_stage02_handoff(project, script=project / "script.md")
+
+    assert payload["source_bindings"]["script"]["path"] == str((project / "script.md").resolve())
+    assert set(payload["source_bindings"]) == {"script"}
+    assert payload["pages"][0]["page_mission"] == "先验证再扩展。"
+
+
+def test_build_handoff_does_not_call_stage01_audit() -> None:
     with TemporaryDirectory() as directory:
         project = Path(directory)
         _write_inputs(project)
         with patch(
             "cyberppt.commands.script_audit.run_script_audit",
-            return_value=(0, {"status": "passed"}),
+            side_effect=AssertionError("Stage 02 must not call the editorial audit"),
         ):
             payload = build_stage02_handoff(project, script=project / "script.md")
 
-    assert "stage01_confirmation_mode" not in payload
-    assert payload["source_bindings"]["script"]["path"] == str((project / "script.md").resolve())
-    assert "planning_policy" not in payload
-
-
-def test_build_handoff_allows_explicit_direct_script_edit_mode() -> None:
-    with TemporaryDirectory() as directory:
-        project = Path(directory)
-        _write_inputs(project)
-        with patch(
-            "cyberppt.commands.script_audit.run_script_audit",
-            side_effect=AssertionError("direct script-edit mode must skip editorial audit"),
-        ):
-            payload = build_stage02_handoff(
-                project,
-                script=project / "script.md",
-                allow_script_edit=True,
-            )
-
     assert payload["source_bindings"]["script"]["path"] == str((project / "script.md").resolve())
 
 
-def test_build_handoff_preserves_outline_planning_policy() -> None:
-    policy = {
-        "writing_style_mode": "government_official",
-        "source_structure_mode": "locked",
-    }
+def test_build_handoff_accepts_an_external_script_without_stage01_files() -> None:
     with TemporaryDirectory() as directory:
         project = Path(directory)
-        _write_inputs(project)
-        outline = project / "workbench/stages/01-analysis/outline.json"
-        outline.write_text(
-            json.dumps({"schema": "outline.v1", "planning_policy": policy, "pages": []}),
+        script = project.parent / "external-script.md"
+        script.write_text(
+            "## 第1页：外部脚本\n"
+            "- 页面类型：内容页\n"
+            "- 页面标题：外部脚本\n"
+            "- 核心结论：外部脚本可独立进入 Stage 02。\n"
+            "- 完整文字稿：外部脚本可独立进入 Stage 02。\n"
+            "- 上屏文字：\n"
+            "  - 外部脚本\n"
+            "  - 独立进入 Stage 02\n",
             encoding="utf-8",
         )
-        with patch(
-            "cyberppt.commands.script_audit.run_script_audit",
-            return_value=(0, {"status": "passed"}),
-        ):
-            payload = build_stage02_handoff(project, script=project / "script.md")
+        report = prepare_stage02_handoff(project, script=script)
+        payload = json.loads((project / HANDOFF_JSON).read_text(encoding="utf-8"))
 
-    assert payload["planning_policy"] == policy
+    assert report["status"] == "passed"
+    binding = payload["source_bindings"]["script"]
+    assert set(payload["source_bindings"]) == {"script"}
+    assert Path(binding["path"]).samefile(script)
+    assert binding["sha256"] == hashlib.sha256(script.read_bytes()).hexdigest()
 
 
-def test_prepare_rebuilds_when_a_bound_stage01_input_digest_changes() -> None:
+def test_prepare_reuses_handoff_when_stage01_inputs_change() -> None:
     with TemporaryDirectory() as directory:
         project = Path(directory)
         _write_inputs(project)
@@ -196,14 +181,9 @@ def test_prepare_rebuilds_when_a_bound_stage01_input_digest_changes() -> None:
         handoff_path.write_text(json.dumps(old, ensure_ascii=False), encoding="utf-8")
         outline = project / "workbench" / "stages" / "01-analysis" / "outline.json"
         outline.write_text('{"schema":"outline.v1","pages":[{"page_id":"p01"}]}', encoding="utf-8")
-        candidate = _payload(project, created_at="2026-08-13T01:00:00+00:00")
-
-        with patch("cyberppt.stage02_handoff.build_stage02_handoff", return_value=candidate):
-            report = prepare_stage02_handoff(project, reuse_current_handoff=True)
+        report = audit_stage02_handoff(project, old)
 
         assert report["status"] == "passed"
-        assert "reused" not in report
-        assert json.loads(handoff_path.read_text(encoding="utf-8"))["created_at"] == candidate["created_at"]
 
 
 def test_handoff_audit_requires_expression_decision() -> None:
@@ -217,19 +197,18 @@ def test_handoff_audit_requires_expression_decision() -> None:
     assert "ONSCREEN_EXPRESSION_MISSING" in codes
 
 
-def test_handoff_audit_reports_stale_for_each_bound_authority_digest() -> None:
+def test_handoff_audit_reports_stale_script_digest() -> None:
     with TemporaryDirectory() as directory:
         project = Path(directory)
         _write_inputs(project)
-        for name in ("script", "outline", "source_truth"):
-            payload = _payload(project, created_at="2026-08-13T00:00:00+00:00")
-            payload["source_bindings"][name]["semantic_sha256"] = "0" * 64
-            report = audit_stage02_handoff(project, payload)
+        payload = _payload(project, created_at="2026-08-13T00:00:00+00:00")
+        payload["source_bindings"]["script"]["semantic_sha256"] = "0" * 64
+        report = audit_stage02_handoff(project, payload)
 
-            assert report["status"] == "failed"
-            assert "HANDOFF_BINDING_STALE" in {
-                item["code"] for item in report["blocking_issues"]
-            }
+        assert report["status"] == "failed"
+        assert "HANDOFF_BINDING_STALE" in {
+            item["code"] for item in report["blocking_issues"]
+        }
 
 
 def test_handoff_audit_rejects_expression_constraints_drift() -> None:
@@ -244,7 +223,7 @@ def test_handoff_audit_rejects_expression_constraints_drift() -> None:
     assert "ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID" in codes
 
 
-def test_handoff_audit_rejects_policy_and_business_relationship_drift() -> None:
+def test_handoff_audit_ignores_stage01_policy_and_relationship_drift() -> None:
     policy = {
         "writing_style_mode": "government_official",
         "source_structure_mode": "locked",
@@ -290,14 +269,12 @@ def test_handoff_audit_rejects_policy_and_business_relationship_drift() -> None:
         payload["pages"][0]["stage02_visual_input"]["business_relationships"] = []
         report = audit_stage02_handoff(project, payload)
 
-    codes = {item["code"] for item in report["blocking_issues"]}
-    assert "HANDOFF_PLANNING_POLICY_DRIFT" in codes
-    assert "HANDOFF_BUSINESS_RELATIONSHIP_DRIFT" in codes
+    assert report["status"] == "passed"
 
 
 class Stage02PolicyAndRelationshipTests(unittest.TestCase):
-    def test_build_preserves_outline_planning_policy(self) -> None:
-        test_build_handoff_preserves_outline_planning_policy()
+    def test_build_uses_only_the_script_contract(self) -> None:
+        test_build_handoff_uses_only_the_script_contract()
 
-    def test_audit_rejects_policy_and_relationship_drift(self) -> None:
-        test_handoff_audit_rejects_policy_and_business_relationship_drift()
+    def test_audit_ignores_stage01_policy_and_relationship_drift(self) -> None:
+        test_handoff_audit_ignores_stage01_policy_and_relationship_drift()

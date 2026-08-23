@@ -225,6 +225,7 @@ _FORBIDDEN_STRUCTURE_PHRASES: dict[str, str] = {
     "missing_boundary_edge": "Do not omit the boundary or control gate the relationship depends on.",
     "missing_value_destination": "Do not leave any role or resource without a visible destination.",
     "multiple_equal_conclusions": "Do not render more than one equally weighted conclusion; there is exactly one anchor.",
+    "no_arrows": "Do not render arrows, arrowheads, chevrons, loop symbols, or directional connector marks; express the relationship through position, spacing, grouping, alignment, and tonal progression only.",
 }
 
 

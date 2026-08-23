@@ -817,13 +817,17 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             self._approve_inputs_and_prompts(project, script)
 
-            summary = run_final_script_pages(
-                project=project,
-                script=script,
-                pages_raw="1",
-                style_id=4,
-                external_script=True,
-            )
+            with patch(
+                "cyberppt.commands.script_audit.run_script_audit",
+                side_effect=AssertionError("Stage 02 must not call script-audit"),
+            ):
+                summary = run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="1",
+                    style_id=4,
+                    external_script=True,
+                )
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             context = json.loads(Path(summary["artifacts"]["build_context"]).read_text(encoding="utf-8"))
@@ -835,7 +839,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual("stage2-only", Path(summary["project"]).name)
         self.assertEqual("external_script", manifest["source_mode"])
         self.assertEqual(summary["source_script_sha256"], manifest["source_script_sha256"])
-        self.assertTrue(manifest["prompt_contract"]["approved_prompt_is_source"])
+        self.assertFalse(manifest["prompt_contract"]["approved_prompt_is_source"])
         self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
         self.assertNotIn("--external-script", summary["resume_command"])
 

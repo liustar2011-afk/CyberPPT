@@ -401,9 +401,15 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "reason": reason,
             "loss_risk": loss_risk,
         })
+    no_arrows = any(
+        "不绘制箭头" in str(design.get(field) or "")
+        or "不使用箭头" in str(design.get(field) or "")
+        for field in ("text_integration_method", "spatial_organization", "relationship_encoding")
+    )
     forbidden_structures = list(dict.fromkeys((
         *_UNIVERSAL_FORBIDDEN_STRUCTURES,
         *_FORBIDDEN_STRUCTURES_BY_TOPOLOGY.get(topology, []),
+        *(("no_arrows",) if no_arrows else ()),
     )))
     quality_contract = _quality_contract(decision, selected, focus_id)
     final_text = [
@@ -1148,6 +1154,17 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
     from cyberppt.stage02_handoff import load_stage02_handoff
 
     handoff = load_stage02_handoff(project, required=True)
+    script_binding = (handoff.get("source_bindings") or {}).get("script")
+    if not isinstance(script_binding, dict) or not script_binding.get("path"):
+        raise ValueError("Stage 02 handoff is missing its script binding")
+    bound_script = Path(str(script_binding["path"])).expanduser().resolve()
+    if (
+        bound_script != script
+        or script_binding.get("sha256") != _sha256(script)
+    ):
+        raise ValueError(
+            "Stage 02 handoff is bound to a different script; prepare the handoff and visual structure again."
+        )
     for key in (
         "design_input",
         "skill_request",

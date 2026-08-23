@@ -11,11 +11,7 @@ from typing import Any, Callable
 
 from cyberppt.artifact_ledger import write_json_atomic
 from cyberppt.script_quality_contract import ScriptPage, parse_script_path
-from cyberppt.semantic_digest import (
-    outline_semantic_digest,
-    script_semantic_digest,
-    source_truth_semantic_digest,
-)
+from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.onscreen_expression import (
     VALID_EXPRESSION_FORMS,
     expression_constraints,
@@ -29,20 +25,7 @@ HANDOFF_JSON = HANDOFF_DIR / "stage02-handoff.json"
 HANDOFF_MD = HANDOFF_DIR / "stage02-handoff-review.md"
 HANDOFF_AUDIT = HANDOFF_DIR / "stage02-handoff-audit.json"
 SCRIPT_PATH = Path("workbench/scripts/final/script-final.md")
-OUTLINE_PATH = Path("workbench/stages/01-analysis/outline.json")
-SOURCE_TRUTH_PATH = Path("workbench/stages/01-analysis/source-truth.json")
 BODY_CANVAS = {"width": 2048, "height": 1024, "ratio": "2:1"}
-
-# Long source anchors with a specific 锚点覆盖说明 are downgraded to warnings
-# by script-audit.  Any remaining error therefore represents an unresolved
-# content or evidence defect and must block Stage 02.
-STAGE02_WAIVABLE_ERROR_CODES: frozenset[str] = frozenset()
-
-
-def audit_authorizes_stage02(audit: dict[str, Any]) -> bool:
-    """Return True when a full-script audit clears Stage 02 authorization."""
-
-    return audit.get("status") == "passed"
 
 
 def _utc_now() -> str:
@@ -64,20 +47,13 @@ def _file_binding(path: Path, semantic_digest: Callable[[Path], str]) -> dict[st
     }
 
 
-def _source_binding(
-    project: Path, relative: Path, semantic_digest: Callable[[Path], str]
-) -> dict[str, str]:
-    path = (project / relative).resolve()
-    return _file_binding(path, semantic_digest)
-
-
 def _handoff_authority(payload: dict[str, Any]) -> dict[str, Any]:
     """Return the handoff fields that must remain identical for safe reuse.
 
     ``created_at`` deliberately stays outside this comparison: it is a receipt
-    timestamp, not an input to Stage 02.  Every bound Stage 01 source carries
-    a content digest, so a changed script, outline, Source Truth, or approval
-    cannot be silently reused just because its path is unchanged.
+    timestamp, not an input to Stage 02.  The script is the sole Stage 02
+    content authority, so its digest prevents stale visual artifacts from
+    being reused after the script changes.
     """
 
     return {
@@ -185,9 +161,14 @@ def _stage01_relationship_features(
                         action[field] = item[field]
                 actions.append(action)
 
+    # ``visual_structure`` can include the rendered script's speaker-notes
+    # section.  Those notes may describe a business "闭环" as a validation
+    # result without asserting a graphical feedback edge.  Extract only the
+    # declared visual note and require an explicit return signal for feedback.
+    visual_note = re.split(r"\n\s*-\s*【(?:视觉结构，不上屏|演讲者备注)】", str(visual_notes or ""), maxsplit=1)[0]
     clauses = [
         value.strip(" ；。\n")
-        for value in str(visual_notes or "").replace("\n", "；").split("；")
+        for value in visual_note.replace("\n", "；").split("；")
         if value.strip(" ；。\n")
     ]
     select = lambda tokens: [value for value in clauses if any(token in value for token in tokens)]
@@ -198,15 +179,17 @@ def _stage01_relationship_features(
         "directions": select(("进入", "形成", "转化", "承接", "汇聚", "贯通", "连接", "回到")),
         "conditions": select(("条件", "只有", "仅", "若", "如果", "通过后", "满足")),
         "branches": select(("分支", "互斥", "分别", "三类", "两类", "暂停", "终止", "再验证")),
-        "feedback": select(("反馈", "回流", "闭环", "复盘", "迭代", "持续更新")),
-        "source_visual_notes": str(visual_notes or "").strip(),
+        "feedback": select(("反馈", "回流", "复盘", "迭代", "持续更新", "回到")),
+        "source_visual_notes": visual_note.strip(),
     }
 
 
 def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, Any]:
     receipt = page.contract_receipt if isinstance(page.contract_receipt, dict) else {}
     outline = outline or {}
-    page_mission = str(receipt.get("page_mission") or outline.get("page_mission") or "")
+    page_mission = str(
+        receipt.get("page_mission") or outline.get("page_mission") or page.main_message
+    )
     must_not_include = list(receipt.get("must_not_include") or outline.get("must_not_include") or [])
     consumed_content_unit_ids = list(
         receipt.get("consumed_content_unit_ids")
@@ -321,42 +304,16 @@ def build_stage02_handoff(
     lightweight_stage01_confirmed: bool = False,
     allow_script_edit: bool = False,
 ) -> dict[str, Any]:
-    # Kept for direct-call compatibility. Direct script-edit mode treats the
-    # final script as the authoritative Stage 02 input and skips the editorial
-    # audit gate; structural handoff validation still runs below.
-    _ = lightweight_stage01_confirmed
+    # The script is Stage 02's sole content authority. Stage 01 may have
+    # authored it, but Stage 02 also accepts the same contract from any path.
+    _ = lightweight_stage01_confirmed, allow_script_edit
     project = project.expanduser().resolve()
     script = script.expanduser().resolve() if script else (project / SCRIPT_PATH).resolve()
     if not script.is_file():
         raise FileNotFoundError(f"approved final script is missing: {script}")
-    bindings = {
-        "script": _file_binding(script, script_semantic_digest),
-        "outline": _source_binding(project, OUTLINE_PATH, outline_semantic_digest),
-        "source_truth": _source_binding(
-            project, SOURCE_TRUTH_PATH, source_truth_semantic_digest
-        ),
-    }
-    if not allow_script_edit:
-        from cyberppt.commands.script_audit import run_script_audit
-
-        _, audit = run_script_audit(project, script)
-        if not audit_authorizes_stage02(audit):
-            raise ValueError(
-                "Stage 02 handoff requires a currently passed full-script audit."
-            )
-
+    bindings = {"script": _file_binding(script, script_semantic_digest)}
     document = parse_script_path(script)
-    outline_payload = _read_json(project / OUTLINE_PATH)
-    outline_pages = outline_payload.get("pages") if isinstance(outline_payload.get("pages"), list) else []
-    outline_map = {
-        normalize_page_id(item.get("page_id"), item.get("page_number")): item
-        for item in outline_pages
-        if isinstance(item, dict) and (item.get("page_id") or item.get("page_number"))
-    }
-    records = [
-        _page_record(page, outline_map.get(normalize_page_id(page.page_id, page.sequence)))
-        for page in document.pages
-    ]
+    records = [_page_record(page, None) for page in document.pages]
     payload = {
         "schema": "cyberppt.stage02_handoff.v1",
         "project": str(project),
@@ -365,9 +322,6 @@ def build_stage02_handoff(
         "page_order": [record["page_id"] for record in records],
         "pages": records,
     }
-    planning_policy = outline_payload.get("planning_policy")
-    if isinstance(planning_policy, dict):
-        payload["planning_policy"] = dict(planning_policy)
     return payload
 
 
@@ -421,40 +375,13 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
 
     if payload.get("schema") != "cyberppt.stage02_handoff.v1":
         issue("HANDOFF_SCHEMA_INVALID", "Stage 02 handoff schema is invalid.")
-    outline_path = (project / OUTLINE_PATH).resolve()
-    outline_payload = _read_json(outline_path) if outline_path.is_file() else {}
-    outline_pages = (
-        outline_payload.get("pages")
-        if isinstance(outline_payload.get("pages"), list)
-        else []
-    )
-    outline_map = {
-        normalize_page_id(item.get("page_id"), item.get("page_number")): item
-        for item in outline_pages
-        if isinstance(item, dict) and (item.get("page_id") or item.get("page_number"))
-    }
-    expected_policy = outline_payload.get("planning_policy")
-    actual_policy = payload.get("planning_policy")
-    if (
-        isinstance(expected_policy, dict) or isinstance(actual_policy, dict)
-    ) and actual_policy != expected_policy:
-        issue(
-            "HANDOFF_PLANNING_POLICY_DRIFT",
-            "Stage 02 handoff planning_policy must match the current Outline exactly.",
-        )
     bindings = payload.get("source_bindings")
     if not isinstance(bindings, dict):
         issue("HANDOFF_BINDINGS_MISSING", "Source bindings are missing.")
         bindings = {}
-    expected_bindings: dict[str, tuple[Path | None, Callable[[Path], str]]] = {
+    for name, (expected_path, semantic_digest) in {
         "script": (None, script_semantic_digest),
-        "outline": ((project / OUTLINE_PATH).resolve(), outline_semantic_digest),
-    }
-    source_truth = (project / SOURCE_TRUTH_PATH).resolve()
-    if source_truth.is_file():
-        expected_bindings["source_truth"] = (source_truth, source_truth_semantic_digest)
-
-    for name, (expected_path, semantic_digest) in expected_bindings.items():
+    }.items():
         binding = bindings.get(name)
         if not isinstance(binding, dict) or not binding.get("path"):
             issue(
@@ -491,16 +418,6 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
                 "HANDOFF_BINDING_STALE",
                 f"Binding {name} sha256 or semantic_sha256 differs from the current file: {path}",
             )
-
-    for name, binding in bindings.items():
-        if name in expected_bindings:
-            continue
-        if not isinstance(binding, dict) or not binding.get("path"):
-            issue("HANDOFF_BINDING_INVALID", f"Binding {name} is incomplete.")
-            continue
-        path = Path(str(binding["path"])).expanduser().resolve()
-        if not path.is_file():
-            issue("HANDOFF_BINDING_MISSING", f"Binding {name} is missing: {path}")
 
     pages = payload.get("pages")
     if not isinstance(pages, list) or not pages:
@@ -543,7 +460,6 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
             if not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
                 issue("ONSCREEN_EXPRESSION_CONFIDENCE_INVALID", f"{page_id} has invalid onscreen expression confidence.")
         visual_input = page.get("stage02_visual_input") or {}
-        outline_page = outline_map.get(page_id, {})
         expected_constraints: dict[str, object] | None = None
         if isinstance(expression, dict) and str(expression.get("form") or "") in VALID_EXPRESSION_FORMS:
             expected_constraints = expression_constraints(str(expression["form"]))
@@ -574,18 +490,6 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
         if not isinstance(relationships, list):
             issue("BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} business_relationships must be an array.")
             relationships = []
-        expected_relationships = outline_page.get("content_relations") or []
-        if (
-            relationships != expected_relationships
-            or (
-                "business_relationships" in page
-                and page.get("business_relationships") != expected_relationships
-            )
-        ):
-            issue(
-                "HANDOFF_BUSINESS_RELATIONSHIP_DRIFT",
-                f"{page_id} business relationships must match the current Outline exactly.",
-            )
         features = visual_input.get("stage01_relationship_features")
         if not isinstance(features, dict):
             issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", f"{page_id} has no structured Stage 01 relationship features.")
