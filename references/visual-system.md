@@ -391,7 +391,11 @@ Treat the generated image as a reconstruction-friendly, semantic-anchor-led blue
 
 Establish a calm balanced page frame before detailing regions. Distribute text, semantic imagery and structural fields across both axes; white space supports hierarchy, separation and reading path. Preserve one clear dominant focus with visibly subordinate supporting regions.
 
-Final check: a plain undirected connecting line is never used; arrows stay small, precise, local and single-source-to-single-target; icon count is zero by default, with no icon walls, grids or badge rows. Typography is MiSans-like Chinese sans-serif: crisp, geometric, slightly wide and low, with open restrained spacing and sharp high-resolution edges.
+Final check: a plain undirected connecting line is never used; arrows stay small, precise, local and single-source-to-single-target; icon count is zero by default, with no icon walls, grids or badge rows.
+
+Font: use MiSans or the closest available Chinese sans-serif; make glyphs visibly wider and flatter than a standard modern Chinese sans-serif, with a broad horizontal proportion and reduced vertical proportion. Preserve open counters, crisp strokes, restrained spacing and legibility at small sizes.
+
+Typography: keep one deck-wide scale—page title or conclusion 26pt/35px, subtitle 11pt/15px, module or chart title 13pt/17px, subsection or evidence title 12pt/16px, body and business implication 10.5pt/14px, conclusion strip or implication label 11pt/15px, key KPI 24pt/32px, chart data label 10pt/13px, chart micro-label or evidence code 8pt/11px, note or source 7.5pt/10px. Use the same size for the same role on every page; when text does not fit, simplify the scene or reorganize the copy and text region.
 
 ## 扩展风格10：纯白 + 深蓝领导汇报（与风格9相同，仅编号不同）
 

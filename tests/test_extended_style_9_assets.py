@@ -27,3 +27,9 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     assert "#12355B" in style09
     assert "semantic scene-led editorial business-report style" in style09
     assert "最终执行锁" in style09
+    terminal_lock = style09.split("【风格09最终执行锁｜最高优先级】", 1)[1]
+    assert "make glyphs visibly wider and flatter" in terminal_lock
+    assert "legibility at small sizes" in terminal_lock
+    assert "Typography: keep one deck-wide scale" in terminal_lock
+    assert "page title or conclusion 26pt/35px" in terminal_lock
+    assert "note or source 7.5pt/10px" in terminal_lock
