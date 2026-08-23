@@ -37,10 +37,15 @@ Process authored pages as individual quality transactions. For each content
 page: validate the clean-base and graphic-text policy, copy and style the
 authored SVG, run geometry and SVG quality QA, build one wrapped preview PPTX,
 render its OfficeCLI PNG, and write `quick_page_checkpoint` back to the active
-`page_image_pairs.json` immediately. Only then advance to the next page.
+`page_image_pairs.json` immediately with `status: rendered_pending_visual_review`.
+The main agent must inspect that exact PNG before the page can pass. Check layout
+fidelity, typography, color and weight, wrapping, residual Chinese text, and
+readability; syntax, geometry, and file existence never substitute for this look.
+Record the result with `python -m cyberppt review-quick-page ...`; the receipt is
+bound to the preview PNG hash, so a changed render automatically requires review.
 
 A failed page records `status: failed` while later pages are still checked and
-checkpointed. On resume, reuse a passed page when its authored SVG, audited full
+checkpointed. On resume, reuse a visually reviewed passed page when its authored SVG, audited full
 image and clean base are unchanged and its target SVG, preview PPTX and preview
 PNG still exist. Changed inputs cause local revalidation, not a hash gate,
 full-image redraw, or whole-batch invalidation. Assemble the final deck once,

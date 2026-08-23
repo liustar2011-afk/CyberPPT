@@ -29,6 +29,7 @@ from .native_text_geometry import (
     write_native_text_geometry_receipt,
 )
 from .review import write_review
+from .quick_page_review import quick_visual_review_passes
 from .svg_quality.checker import SVGQualityChecker
 from .template_assembly import (
     assemble_brand_page_svg,
@@ -78,13 +79,17 @@ def _quick_page_binding(pair: Mapping[str, Any], authored: Path) -> dict[str, st
     }
 
 
-def _reusable_quick_checkpoint(
+def _current_quick_checkpoint(
     checkpoint: object,
     binding: Mapping[str, str],
 ) -> bool:
     if not isinstance(checkpoint, Mapping):
         return False
-    if checkpoint.get("status") != "passed" or checkpoint.get("binding") != dict(binding):
+    if checkpoint.get("status") not in {
+        "rendered_pending_visual_review",
+        "visual_review_failed",
+        "passed",
+    } or checkpoint.get("binding") != dict(binding):
         return False
     required = (
         checkpoint.get("target_svg"),
@@ -301,8 +306,22 @@ def run_stage02_reconstruction(
                     raise ValueError("requires a hand-authored SVG from the image-to-PPTX runtime")
                 binding = _quick_page_binding(pair, authored)
                 checkpoint = pair.get("quick_page_checkpoint")
-                if _reusable_quick_checkpoint(checkpoint, binding):
+                if _current_quick_checkpoint(checkpoint, binding):
                     assert isinstance(checkpoint, Mapping)
+                    if not quick_visual_review_passes(checkpoint):
+                        pending_checkpoint = dict(checkpoint)
+                        pending_checkpoint["status"] = (
+                            "visual_review_failed"
+                            if isinstance(checkpoint.get("visual_review"), Mapping)
+                            else "rendered_pending_visual_review"
+                        )
+                        pending_checkpoint["resume"] = "awaiting_visual_review"
+                        manifest_pair["quick_page_checkpoint"] = pending_checkpoint
+                        _write_json(manifest_file, manifest)
+                        page_failures.append(
+                            f"p{page_number:02d}: rendered preview awaits a passed visual review"
+                        )
+                        continue
                     target = Path(str(checkpoint["target_svg"]))
                     page_validation = dict(checkpoint["editable_page_qa"])
                     geometry_report = dict(checkpoint["native_text_geometry"])
@@ -361,7 +380,7 @@ def run_stage02_reconstruction(
                         raise ValueError("single-page Quick preview failed geometry QA")
                     checkpoint_payload = {
                         "schema": "cyberppt.stage02.quick_page_checkpoint.v1",
-                        "status": "passed",
+                        "status": "rendered_pending_visual_review",
                         "binding": binding,
                         "target_svg": str(target),
                         "preview_svg": str(wrapper),
@@ -372,8 +391,14 @@ def run_stage02_reconstruction(
                         "native_text_geometry": geometry_report,
                         "native_text_style": style_report,
                         "svg_quality": quality_report,
-                        "resume": "validated",
+                        "resume": "rendered",
                     }
+                    manifest_pair["quick_page_checkpoint"] = checkpoint_payload
+                    _write_json(manifest_file, manifest)
+                    page_failures.append(
+                        f"p{page_number:02d}: rendered preview awaits visual review: {preview_png}"
+                    )
+                    continue
 
                 editable_page_qa.append(page_validation)
                 clean_base_policy.append(page_validation["clean_base"])

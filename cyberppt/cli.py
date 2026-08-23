@@ -14,6 +14,7 @@ from cyberppt.commands.compile_page_script_authoring import (
     compile_page_script_authoring,
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
+from scripts.image_to_pptx_runtime.quick_page_review import record_quick_page_review
 from cyberppt.commands.init_project import init_project
 from cyberppt.image_enhancer import enhance_image
 from cyberppt.officecli import install_officecli, officecli_status
@@ -582,6 +583,34 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _review_quick_page_command(args: argparse.Namespace) -> int:
+    checks = {
+        name: getattr(args, name)
+        for name in (
+            "layout_fidelity",
+            "typography_fidelity",
+            "color_weight_fidelity",
+            "text_wrapping",
+            "residual_chinese",
+            "readability",
+        )
+    }
+    try:
+        result = record_quick_page_review(
+            Path(args.manifest),
+            page_number=args.page,
+            status=args.status,
+            reviewer=args.reviewer,
+            checks=checks,
+            notes=args.notes,
+        )
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cyberppt", description="CyberPPT product tooling.")
     parser.add_argument("--version", action="version", version=f"cyberppt {__version__}")
@@ -1025,6 +1054,30 @@ def build_parser() -> argparse.ArgumentParser:
     )
     image_to_editable_svg_parser.add_argument("reconstruction_args", nargs=argparse.REMAINDER)
     image_to_editable_svg_parser.set_defaults(func=_image_to_editable_svg_command)
+
+    quick_review_parser = subparsers.add_parser(
+        "review-quick-page",
+        help="Record a human visual review bound to an exact Stage 02 Quick preview PNG.",
+    )
+    quick_review_parser.add_argument("manifest", help="Production page_image_pairs.json path.")
+    quick_review_parser.add_argument("--page", type=int, required=True, help="Page number to review.")
+    quick_review_parser.add_argument("--status", choices=("passed", "failed"), required=True)
+    quick_review_parser.add_argument("--reviewer", required=True)
+    quick_review_parser.add_argument("--notes", default="")
+    for check in (
+        "layout-fidelity",
+        "typography-fidelity",
+        "color-weight-fidelity",
+        "text-wrapping",
+        "residual-chinese",
+        "readability",
+    ):
+        quick_review_parser.add_argument(
+            f"--{check}",
+            choices=("passed", "failed"),
+            required=True,
+        )
+    quick_review_parser.set_defaults(func=_review_quick_page_command)
 
     final_script_pages_parser = subparsers.add_parser(
         "final-script-pages",

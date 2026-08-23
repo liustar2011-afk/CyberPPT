@@ -16,6 +16,11 @@ from scripts.image_to_pptx_runtime import editable_page_validation
 from scripts.image_to_pptx_runtime.editable_page_validation import validate_editable_page
 from scripts.image_to_pptx_runtime.quick import create_quick_project
 from scripts.image_to_pptx_runtime.review import ReviewIssue, write_review
+from scripts.image_to_pptx_runtime.quick_page_review import (
+    QUICK_VISUAL_REVIEW_CHECKS,
+    quick_visual_review_passes,
+    record_quick_page_review,
+)
 from scripts.image_to_pptx_runtime import stage02_adapter
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
 from scripts.presentation_qa.text_content import pptx_texts
@@ -378,6 +383,29 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     )
     _official_context(manifest, script)
 
+    try:
+        run_stage02_reconstruction(
+            project=tmp_path,
+            manifest_path=manifest,
+            output_dir=tmp_path / "out",
+            requested_pages=[1],
+        )
+    except ValueError as exc:
+        assert "awaits visual review" in str(exc)
+    else:
+        raise AssertionError("a rendered page must wait for human visual review")
+
+    checkpoint = json.loads(manifest.read_text(encoding="utf-8"))["pairs"][0]["quick_page_checkpoint"]
+    assert checkpoint["status"] == "rendered_pending_visual_review"
+    assert Path(checkpoint["preview_png"]).is_file()
+    record_quick_page_review(
+        manifest,
+        page_number=1,
+        status="passed",
+        reviewer="test-reviewer",
+        checks={name: "passed" for name in QUICK_VISUAL_REVIEW_CHECKS},
+    )
+    _official_context(manifest, script)
     result = run_stage02_reconstruction(
         project=tmp_path,
         manifest_path=manifest,
@@ -497,8 +525,41 @@ def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: P
 
     pairs = json.loads(manifest.read_text(encoding="utf-8"))["pairs"]
     assert pairs[0]["quick_page_checkpoint"]["status"] == "failed"
-    assert pairs[1]["quick_page_checkpoint"]["status"] == "passed"
+    assert pairs[1]["quick_page_checkpoint"]["status"] == "rendered_pending_visual_review"
     assert Path(pairs[1]["quick_page_checkpoint"]["preview_png"]).is_file()
+
+
+def test_quick_visual_review_is_invalidated_when_preview_changes(tmp_path: Path) -> None:
+    preview = tmp_path / "preview.png"
+    Image.new("RGB", (40, 20), "white").save(preview)
+    manifest = tmp_path / "page_image_pairs.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "pairs": [
+                    {
+                        "page_number": 1,
+                        "quick_page_checkpoint": {
+                            "status": "rendered_pending_visual_review",
+                            "preview_png": str(preview),
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    record_quick_page_review(
+        manifest,
+        page_number=1,
+        status="passed",
+        reviewer="test-reviewer",
+        checks={name: "passed" for name in QUICK_VISUAL_REVIEW_CHECKS},
+    )
+    checkpoint = json.loads(manifest.read_text(encoding="utf-8"))["pairs"][0]["quick_page_checkpoint"]
+    assert quick_visual_review_passes(checkpoint)
+    Image.new("RGB", (40, 20), "black").save(preview)
+    assert not quick_visual_review_passes(checkpoint)
 
 
 def test_editable_page_validation_parses_svg_once_and_surfaces_policy_errors(tmp_path: Path, monkeypatch) -> None:
