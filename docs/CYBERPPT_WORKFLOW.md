@@ -142,6 +142,16 @@ Outline 审阅通过后，执行 Source Foundation 到 CyberPPT 的兼容投影�
 
 ## 五、Stage 02 视觉生产步骤
 
+### Stage 02 正式路线注册表
+
+| 路线标识 | 常用检索词 | 正式入口 | 组装分支 | 权威细则 |
+|---|---|---|---|---|
+| `stage02.high_fidelity_quick_editable` | 高保真+Quick、高保真 Quick、无字底图+文字 SVG、图片转可编辑 PPT、authored SVG、Quick editable | `python -m cyberppt final-script-pages ... --production-build --production-mode image-to-editable-svg --assembly-mode editable` | `editable` | `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md` |
+| `stage02.picture_ppt` | 图片型 PPT、整页图片 PPT | `python -m cyberppt final-script-pages ... --production-build --production-mode image-to-editable-svg --assembly-mode image` | `image` | `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md` |
+| `stage02.dual_delivery` | 图片型+可编辑、双份交付 | 同一正式入口并使用 `--assembly-mode both` | `both` | `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md` |
+
+路由规则：出现“高保真+Quick”“无字底图+文字 SVG”或同义需求时，固定进入 `stage02.high_fidelity_quick_editable`，随后读取 `cyberppt-stage02-editable-pptx`。不要把它路由到图片型 PPT，也不要从 `scripts/image_to_editable_svg/` 的退役入口推断当前流程。正式代码编排位于 `cyberppt/commands/final_script_pages.py`，Quick 组装适配位于 `scripts/image_to_pptx_runtime/stage02_adapter.py`，内置运行时说明位于 `scripts/image_to_pptx_runtime/UPSTREAM.md`。
+
 ### 1. 最终脚本和页面生产入口
 
 使用已确认的项目内或外部脚本，先运行 `prepare-stage02-handoff --script <path>`，再进入视觉结构与 `final-script-pages`。页面生产前必须具备当前脚本绑定的 Stage 02 handoff 和视觉结构审计。

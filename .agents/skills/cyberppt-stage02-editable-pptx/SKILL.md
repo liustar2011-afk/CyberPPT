@@ -7,6 +7,23 @@ description: Route any request to convert a rendered image, screenshot, or refer
 
 Use this Skill for “图转可编辑 PPT”“按图复刻 PPT”“图片转 PPTX”“高保真可编辑 PPT” and equivalent requests.
 
+## Registered production routes
+
+This Skill is the authoritative owner of these Stage 02 route identifiers:
+
+- `stage02.high_fidelity_quick_editable`: 高保真+Quick、高保真 Quick、无字底图+文字 SVG、authored SVG、图片转可编辑 PPT。
+- `stage02.picture_ppt`: 图片型 PPT、整页图片 PPT。
+- `stage02.dual_delivery`: 图片型和可编辑 PPT 双份交付。
+
+When any high-fidelity Quick alias appears, select
+`stage02.high_fidelity_quick_editable` immediately. Do not search for a separate
+legacy pipeline under `scripts/image_to_editable_svg/`; that entry is retired.
+The executable orchestration is `cyberppt/commands/final_script_pages.py`, its
+CyberPPT-to-Quick boundary is
+`scripts/image_to_pptx_runtime/stage02_adapter.py`, and the vendored source
+runtime provenance is recorded in
+`scripts/image_to_pptx_runtime/UPSTREAM.md`.
+
 The only production route is `python -m cyberppt final-script-pages` with
 `--production-build`; do not construct a final script or `page_image_pairs.json`
 by hand and do not call `run_stage02_reconstruction` directly.

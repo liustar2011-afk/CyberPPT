@@ -13,11 +13,21 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 2. Read the repository root [AGENTS.md](../../../AGENTS.md) before acting.
 3. For any task involving source materials, Source Truth, semantic models, Outline, page plans or their audits, invoke `cyberppt-source-foundation` as the mandatory first Stage 01 Skill.
 4. For a request to convert an image, screenshot, or rendered visual into an editable PPTX, invoke `cyberppt-stage02-editable-pptx`. It owns the Stage 02 route and forbids direct adapter invocation. For other pure visual, image, SVG or PPTX QA tasks, route to the corresponding Stage 02 or page Skill identified by the overview.
+   The aliases “高保真+Quick”, “高保真 Quick”, “无字底图+文字 SVG”,
+   “authored SVG”, and “图片转可编辑 PPT” always resolve to
+   `stage02.high_fidelity_quick_editable`; load the Stage 02 Skill instead of
+   searching legacy `scripts/image_to_editable_svg/` code.
 5. Keep this Skill as a router. Do not create a second workflow, approval chain, status file or parallel authority.
 
 ## Route at a glance
 
 `source -> Source Foundation -> business semantics -> communication goal -> Outline/page plan -> handoff -> page script -> final script -> Stage 02 visual production -> PPTX QA`
+
+Registered Stage 02 assembly routes:
+
+- `stage02.high_fidelity_quick_editable` -> `--assembly-mode editable`
+- `stage02.picture_ppt` -> `--assembly-mode image`
+- `stage02.dual_delivery` -> `--assembly-mode both`
 
 Formal Stage 01 sequence:
 
