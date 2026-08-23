@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -61,9 +61,25 @@ export function launchDefaultBrowser(options = {}) {
   if (options.headless === false) {
     throw new Error(PLAYWRIGHT_HEADLESS_ONLY_MESSAGE);
   }
+  const browserCandidates = [
+    chromium.executablePath(),
+    // Playwright's downloaded browser is absent in some clean local
+    // workspaces. macOS Chrome remains compatible with the pinned Playwright
+    // protocol and lets the repository-font route keep SVG/HTML screenshots
+    // deterministic instead of falling back to a renderer with missing CJK
+    // glyphs.
+    ...(process.platform === "darwin"
+      ? ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
+      : []),
+  ];
+  const executablePath = browserCandidates.find((candidate) => existsSync(candidate));
   return chromium.launch({
     ...options,
     headless: DEFAULT_PLAYWRIGHT_HEADLESS,
+    // Playwright may have the full Chromium bundle while the optional
+    // headless-shell download is absent. Use the installed bundle explicitly
+    // so repository-font rendering remains available in fresh workspaces.
+    ...(executablePath ? { executablePath } : {}),
   });
 }
 

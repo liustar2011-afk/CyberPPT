@@ -38,7 +38,6 @@ from scripts.presentation_qa.layout_qa import (  # noqa: E402
 from scripts.presentation_qa.office_render import office_candidates as _office_candidates  # noqa: E402
 from scripts.presentation_qa.office_render import office_failure_evidence as _render_failure_evidence  # noqa: E402
 from scripts.presentation_qa.office_render import officecli_path as _officecli_path  # noqa: E402
-from scripts.presentation_qa.office_render import obscura_path as _obscura_path  # noqa: E402
 
 
 def _emu_to_px(value: int, *, dpi: int = 96) -> float:
@@ -136,35 +135,16 @@ def _officecli_screenshot_dimensions(pptx_path: Path, *, dpi: int) -> tuple[int,
     return width, height
 
 
-def _prepare_officecli_html_for_obscura(html_path: Path) -> None:
-    """Hide Office CLI's viewer chrome so Obscura captures only the slide."""
-    html = html_path.read_text(encoding="utf-8")
-    if "<html class=\"headless\"" not in html:
-        html = html.replace("<html", '<html class="headless"', 1)
-    html = html.replace(
-        "</head>",
-        "<style>html.headless .main{justify-content:center;background:#fff !important}</style></head>",
-        1,
-    )
-    html_path.write_text(html, encoding="utf-8")
+def _repository_font_screenshot_script() -> Path:
+    return SCRIPTS_DIR / "officecli_html_screenshot.mjs"
 
 
-def _normalize_obscura_screenshot(image_path: Path, *, width: int, height: int) -> None:
-    """Crop Obscura's fixed viewport to the slide aspect and restore requested pixels."""
+def _normalize_screenshot(image_path: Path, *, width: int, height: int) -> None:
+    """Normalize the repository-font browser capture to the requested slide pixels."""
     from PIL import Image
 
     with Image.open(image_path) as source:
         source = source.convert("RGB")
-        target_ratio = width / height
-        source_ratio = source.width / source.height
-        if source_ratio > target_ratio:
-            crop_width = round(source.height * target_ratio)
-            left = max(0, (source.width - crop_width) // 2)
-            source = source.crop((left, 0, left + crop_width, source.height))
-        elif source_ratio < target_ratio:
-            crop_height = round(source.width / target_ratio)
-            top = max(0, (source.height - crop_height) // 2)
-            source = source.crop((0, top, source.width, top + crop_height))
         if source.size != (width, height):
             source = source.resize((width, height), Image.Resampling.LANCZOS)
         source.save(image_path, format="PNG")
@@ -172,11 +152,8 @@ def _normalize_obscura_screenshot(image_path: Path, *, width: int, height: int) 
 
 def _render_with_officecli(pptx_path: Path, out_dir: Path, *, dpi: int) -> list[Path]:
     officecli = _officecli_path()
-    obscura = _obscura_path()
     if officecli is None:
-        raise RuntimeError("officecli executable was not found on PATH")
-    if obscura is None:
-        raise RuntimeError("/Applications/obscura was not found or is not executable")
+        raise RuntimeError("OfficeCLI executable was not found; run `python -m cyberppt officecli install`")
     out_dir.mkdir(parents=True, exist_ok=True)
     stats = subprocess.run(
         [str(officecli), "view", str(pptx_path), "stats", "--json"],
@@ -190,6 +167,12 @@ def _render_with_officecli(pptx_path: Path, out_dir: Path, *, dpi: int) -> list[
     except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
         raise RuntimeError(f"officecli stats returned invalid JSON: {stats.stdout!r}") from error
     width, height = _officecli_screenshot_dimensions(pptx_path, dpi=dpi)
+    node = shutil.which("node")
+    font_renderer = _repository_font_screenshot_script()
+    if node is None:
+        raise RuntimeError("node executable was not found; repository-font OfficeCLI rendering requires Node.js")
+    if not font_renderer.is_file():
+        raise RuntimeError(f"repository-font renderer is missing: {font_renderer}")
     rendered: list[Path] = []
     with tempfile.TemporaryDirectory(prefix="cyberppt-officecli-html-", dir=str(out_dir)) as html_dir:
         for slide_number in range(1, slide_count + 1):
@@ -213,28 +196,16 @@ def _render_with_officecli(pptx_path: Path, out_dir: Path, *, dpi: int) -> list[
                 text=True,
             )
             if not html_path.is_file() or html_path.stat().st_size == 0:
-                raise RuntimeError(f"officecli did not create slide HTML: {html_path}")
-            _prepare_officecli_html_for_obscura(html_path)
+                raise RuntimeError(f"OfficeCLI did not create slide HTML: {html_path}")
             subprocess.run(
-                [
-                    str(obscura),
-                    "fetch",
-                    html_path.as_uri(),
-                    "--screenshot",
-                    str(output),
-                    "--wait",
-                    "1",
-                    "--timeout",
-                    "60",
-                    "--quiet",
-                ],
+                [node, str(font_renderer), str(html_path), str(output)],
                 check=True,
                 capture_output=True,
                 text=True,
             )
             if not output.is_file() or output.stat().st_size == 0:
-                raise RuntimeError(f"obscura did not create screenshot: {output}")
-            _normalize_obscura_screenshot(output, width=width, height=height)
+                raise RuntimeError(f"repository-font renderer did not create screenshot: {output}")
+            _normalize_screenshot(output, width=width, height=height)
             rendered.append(output)
     return rendered
 
@@ -295,14 +266,17 @@ def render_to_png(
     *,
     dpi: int = 150,
     renderer: str = "officecli",
+    strict_renderer: bool = False,
 ) -> list[Path]:
-    """Render a PPTX, preferring Office CLI and preserving the SOFFICE fallback."""
+    """Render a PPTX, optionally requiring the selected renderer to succeed."""
     if renderer not in {"officecli", "soffice"}:
         raise ValueError(f"unsupported renderer {renderer!r}; expected officecli or soffice")
     if renderer == "officecli":
         try:
             return _render_with_officecli(pptx_path, out_dir, dpi=dpi)
         except (OSError, RuntimeError, subprocess.CalledProcessError) as error:
+            if strict_renderer:
+                raise RuntimeError(f"OfficeCLI render failed: {error}") from error
             print(f"Office CLI render failed; falling back to SOFFICE: {error}", file=sys.stderr)
     return _render_with_soffice(pptx_path, out_dir, dpi=dpi)
 

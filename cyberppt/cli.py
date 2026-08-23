@@ -16,6 +16,7 @@ from cyberppt.commands.compile_page_script_authoring import (
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.image_enhancer import enhance_image
+from cyberppt.officecli import install_officecli, officecli_status
 from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.outline_review import render_outline_review
 from cyberppt.commands.prepare_imagegen_send import prepare_imagegen_send
@@ -67,6 +68,19 @@ def _doctor() -> int:
     for name, passed in checks.items():
         print(f"{name}: {'ok' if passed else 'missing'}")
     return 0 if all(checks.values()) else 1
+
+
+def _officecli_command(args: argparse.Namespace) -> int:
+    try:
+        if args.officecli_action == "install":
+            path = install_officecli(force=args.force)
+            print(json.dumps({"installed": str(path), **officecli_status()}, ensure_ascii=False, indent=2))
+        else:
+            print(json.dumps(officecli_status(), ensure_ascii=False, indent=2))
+    except (OSError, RuntimeError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    return 0
 
 
 def _init_command(args: argparse.Namespace) -> int:
@@ -575,6 +589,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     doctor = subparsers.add_parser("doctor", help="Check repository assets and command availability.")
     doctor.set_defaults(func=lambda _args: _doctor())
+
+    officecli = subparsers.add_parser(
+        "officecli", help="Manage the pinned repository-local OfficeCLI renderer."
+    )
+    officecli_subparsers = officecli.add_subparsers(dest="officecli_action", required=True)
+    officecli_status_parser = officecli_subparsers.add_parser("status", help="Show OfficeCLI resolution and version.")
+    officecli_status_parser.set_defaults(func=_officecli_command)
+    officecli_install_parser = officecli_subparsers.add_parser(
+        "install", help="Install the pinned OfficeCLI binary under .tools/ after SHA-256 verification."
+    )
+    officecli_install_parser.add_argument("--force", action="store_true", help="Redownload the pinned binary.")
+    officecli_install_parser.set_defaults(func=_officecli_command)
 
     enhance = subparsers.add_parser(
         "enhance-image", help="Enhance one image through the registered ppt-image-enhancer skill."

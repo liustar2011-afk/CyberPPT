@@ -40,6 +40,7 @@ from scripts.imagegen_pipeline.providers.codex_oauth_image import (
 )
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
+from cyberppt.commands.production_qa import run_officecli_render_qa
 from cyberppt.script_quality_contract import (
     assert_imagegen_onscreen_readiness,
     parse_script_path,
@@ -954,6 +955,8 @@ def run_final_script_pages(
     else:
         status = "ready_for_image_generation" if not require_images else "image_assets_verified"
     image_to_editable_svg_build: dict[str, Any] | None = None
+    officecli_render_qa: dict[str, dict[str, Any]] = {}
+    officecli_export_paths: list[Path] = []
     rebuild_status: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "editable_svg"
     if production_build:
@@ -974,6 +977,32 @@ def run_final_script_pages(
         production_readiness = image_to_editable_svg_build["delivery_readiness"]
         tool_consumption = production_readiness["tool_consumption"]
         status = image_to_editable_svg_build["status"]
+        exports_by_mode = image_to_editable_svg_build.get("artifacts_by_mode") or {}
+        if not exports_by_mode:
+            primary_export = image_to_editable_svg_build["artifacts"].get("exported_pptx")
+            exports_by_mode = {assembly_mode: primary_export} if primary_export else {}
+        if not isinstance(exports_by_mode, dict):
+            raise RuntimeError("Stage 02 assembly returned invalid exported_pptx_by_mode artifacts")
+        if not exports_by_mode:
+            raise RuntimeError("Stage 02 assembly did not return an exported PPTX for OfficeCLI render QA")
+        for mode, exported_path in exports_by_mode.items():
+            if not isinstance(mode, str) or not isinstance(exported_path, str):
+                raise RuntimeError("Stage 02 assembly returned invalid exported PPTX mapping")
+            export_path = Path(exported_path)
+            officecli_export_paths.append(export_path)
+            officecli_render_qa[mode] = run_officecli_render_qa(
+                export_path,
+                target_dir / "qa-delivery" / mode,
+            )
+        failed_modes = [mode for mode, report in officecli_render_qa.items() if not report["passed"]]
+        if failed_modes:
+            reports = ", ".join(
+                str(officecli_render_qa[mode]["report_path"]) for mode in failed_modes
+            )
+            raise RuntimeError(
+                "OfficeCLI render QA failed for assembly mode(s) "
+                f"{', '.join(failed_modes)}; see {reports}"
+            )
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "build_id": build_id,
@@ -1006,6 +1035,9 @@ def run_final_script_pages(
             "delivery_readiness": image_to_editable_svg_build["artifacts"].get("delivery_readiness") if image_to_editable_svg_build else None,
             "exported_pptx": image_to_editable_svg_build["artifacts"].get("exported_pptx") if image_to_editable_svg_build else None,
             "exported_pptx_by_mode": image_to_editable_svg_build.get("artifacts_by_mode") if image_to_editable_svg_build else None,
+            "officecli_render_qa": {
+                mode: report["report_path"] for mode, report in officecli_render_qa.items()
+            } or None,
             "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
@@ -1078,6 +1110,14 @@ def run_final_script_pages(
                 else None
             ),
         }
+    if officecli_render_qa:
+        build_context["artifacts"]["officecli_render_qa"] = {
+            mode: {
+                "path": report["report_path"],
+                "sha256": _sha256(Path(report["report_path"])),
+            }
+            for mode, report in officecli_render_qa.items()
+        }
     _write_json(build_context_path, build_context)
     run_summary["artifacts"]["build_context"] = str(build_context_path)
     summary_path = target_dir / f"{slug}_final_script_pages_run.json"
@@ -1143,6 +1183,17 @@ def run_final_script_pages(
                 path=Path(exported_pptx),
                 status="assembled" if status == "production_ready" else status,
                 depends_on=[manifest_path, lock_path, style_lock],
+                resume_command=resume_command,
+            )
+        )
+    for mode, report in officecli_render_qa.items():
+        ledger_records.append(
+            _artifact_record(
+                stage="05-qa-delivery",
+                page=page_label,
+                path=Path(report["report_path"]),
+                status="passed",
+                depends_on=officecli_export_paths,
                 resume_command=resume_command,
             )
         )

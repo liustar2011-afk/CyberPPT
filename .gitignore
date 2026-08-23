@@ -11,6 +11,7 @@ env/
 node_modules/
 dist/
 build/
+.tools/
 
 # Project-specific working directories
 /projects/

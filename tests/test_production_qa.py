@@ -11,7 +11,7 @@ from PIL import Image
 from pptx import Presentation
 from pptx.util import Inches
 
-from cyberppt.commands.production_qa import render_and_compare, validate_assembly_bundle
+from cyberppt.commands.production_qa import render_and_compare, run_officecli_render_qa, validate_assembly_bundle
 from scripts.validate_pptx import validate_pptx
 
 
@@ -48,6 +48,39 @@ def _write_full_image_pptx(path: Path, image_path: Path, *, notes: bool = True, 
 
 
 class ProductionQaTests(unittest.TestCase):
+    def test_officecli_render_qa_requires_a_resolved_binary(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch(
+                "cyberppt.commands.production_qa.officecli_status",
+                return_value={"installed": False},
+            ):
+                report = run_officecli_render_qa(root / "deck.pptx", root / "qa")
+
+            saved = json.loads((root / "qa" / "officecli_render_qa.json").read_text(encoding="utf-8"))
+
+        self.assertFalse(report["passed"])
+        self.assertIn("officecli_not_installed", report["failures"])
+        self.assertEqual(report["failures"], saved["failures"])
+
+    def test_officecli_render_qa_requires_render_and_geometry_success(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pptx = root / "deck.pptx"
+            pptx.write_bytes(b"deck")
+            geometry = {"valid": True, "slide_count": 1}
+            image = root / "slide-1.png"
+            image.write_bytes(b"png")
+            with (
+                patch("cyberppt.commands.production_qa.officecli_status", return_value={"installed": True}),
+                patch("cyberppt.commands.production_qa.check_pptx_geometry", return_value=geometry),
+                patch("cyberppt.commands.production_qa.render_to_png", return_value=[image]) as render,
+            ):
+                report = run_officecli_render_qa(pptx, root / "qa")
+
+        self.assertTrue(report["passed"])
+        self.assertEqual([str(image)], report["rendered_pages"])
+        self.assertTrue(render.call_args.kwargs["strict_renderer"])
     def test_validates_complete_approved_assembly_bundle(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

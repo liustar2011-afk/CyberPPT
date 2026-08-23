@@ -11,6 +11,7 @@ from pptx.util import Inches
 
 from scripts.presentation_qa.render_page import _render_with_officecli, check_pptx_geometry, render_to_png
 from scripts.presentation_qa.text_content import build_text_content_qa
+from cyberppt.officecli import OFFICECLI_VERSION, repository_officecli_path, resolve_officecli
 
 
 class PresentationQaTests(unittest.TestCase):
@@ -72,6 +73,19 @@ class PresentationQaTests(unittest.TestCase):
         officecli.assert_called_once_with(pptx_path, out_dir, dpi=150)
         soffice.assert_not_called()
 
+    def test_repository_officecli_is_preferred_over_path(self) -> None:
+        with patch("cyberppt.officecli.repository_officecli_path", return_value=Path("/repo/.tools/officecli")):
+            with patch("cyberppt.officecli.Path.is_file", return_value=True):
+                with patch("cyberppt.officecli.shutil.which") as which:
+                    resolved = resolve_officecli()
+
+        self.assertEqual(Path("/repo/.tools/officecli"), resolved)
+        which.assert_not_called()
+
+    def test_officecli_version_is_pinned(self) -> None:
+        self.assertEqual("1.0.144", OFFICECLI_VERSION)
+        self.assertIn("v1.0.144", str(repository_officecli_path()))
+
     def test_explicit_soffice_renderer_skips_officecli(self) -> None:
         with TemporaryDirectory() as directory:
             pptx_path = Path(directory) / "deck.pptx"
@@ -96,7 +110,18 @@ class PresentationQaTests(unittest.TestCase):
         officecli.assert_called_once_with(pptx_path, out_dir, dpi=150)
         soffice.assert_called_once_with(pptx_path, out_dir, dpi=150)
 
-    def test_officecli_renderer_exports_html_then_uses_obscura(self) -> None:
+    def test_strict_officecli_renderer_does_not_fallback(self) -> None:
+        with TemporaryDirectory() as directory:
+            pptx_path = Path(directory) / "deck.pptx"
+            out_dir = Path(directory) / "renders"
+            with patch("scripts.presentation_qa.render_page._render_with_officecli", side_effect=RuntimeError("missing")):
+                with patch("scripts.presentation_qa.render_page._render_with_soffice") as soffice:
+                    with self.assertRaisesRegex(RuntimeError, "OfficeCLI render failed"):
+                        render_to_png(pptx_path, out_dir, strict_renderer=True)
+
+        soffice.assert_not_called()
+
+    def test_officecli_renderer_uses_repository_font_browser_capture(self) -> None:
         with TemporaryDirectory() as directory:
             pptx_path = Path(directory) / "deck.pptx"
             out_dir = Path(directory) / "renders"
@@ -107,21 +132,23 @@ class PresentationQaTests(unittest.TestCase):
                     return type("Completed", (), {"stdout": '{"data":{"slides":1}}'})()
                 if "html" in command:
                     html_path = Path(command[command.index("-o") + 1])
-                    html_path.write_text("<html><body>slide</body></html>", encoding="utf-8")
-                if command[0] == "/Applications/obscura":
-                    screenshot = Path(command[command.index("--screenshot") + 1])
-                    Image.new("RGB", (1280, 720), "white").save(screenshot, format="PNG")
+                    html_path.write_text('<div class="slide">中文</div>', encoding="utf-8")
+                if command[0] == "/usr/bin/node":
+                    screenshot = Path(command[-1])
+                    Image.new("RGB", (960, 720), "white").save(screenshot, format="PNG")
                 return type("Completed", (), {"stdout": ""})()
 
             with patch("scripts.presentation_qa.render_page._officecli_path", return_value=Path("/usr/bin/officecli")):
-                with patch("scripts.presentation_qa.render_page._obscura_path", return_value=Path("/Applications/obscura")):
+                with patch("scripts.presentation_qa.render_page.shutil.which", return_value="/usr/bin/node"):
                     with patch("scripts.presentation_qa.render_page.subprocess.run", side_effect=run) as calls:
                         result = _render_with_officecli(pptx_path, out_dir, dpi=150)
 
         self.assertEqual([out_dir / "slide-1.png"], result)
         commands = [call.args[0] for call in calls.call_args_list]
-        self.assertTrue(any("html" in command for command in commands))
-        self.assertTrue(any(command[0] == "/Applications/obscura" for command in commands))
+        html = next(command for command in commands if "html" in command)
+        font_capture = next(command for command in commands if command[0] == "/usr/bin/node")
+        self.assertEqual("/usr/bin/officecli", html[0])
+        self.assertTrue(font_capture[1].endswith("officecli_html_screenshot.mjs"))
 
     def test_fragmented_native_text_matches_one_script_string(self) -> None:
         with TemporaryDirectory() as directory:

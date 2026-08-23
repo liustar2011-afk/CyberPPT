@@ -10,10 +10,50 @@ from typing import Any
 
 from PIL import Image, ImageChops, ImageStat
 
-from scripts.presentation_qa.render_page import render_to_png
+from cyberppt.officecli import officecli_status
+from scripts.presentation_qa.render_page import check_pptx_geometry, render_to_png
 
 
 VISUAL_DIFF_THRESHOLD = 12.0
+
+
+def run_officecli_render_qa(pptx: Path, output_dir: Path) -> dict[str, Any]:
+    """Render an exported deck with OfficeCLI and write a delivery-blocking QA report."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    report_path = output_dir / "officecli_render_qa.json"
+    status = officecli_status()
+    report: dict[str, Any] = {
+        "schema": "cyberppt.officecli_render_qa.v1",
+        "pptx": str(pptx),
+        "officecli": status,
+        "geometry": None,
+        "rendered_pages": [],
+        "passed": False,
+        "failures": [],
+    }
+    if not status["installed"]:
+        report["failures"].append("officecli_not_installed")
+    else:
+        try:
+            geometry = check_pptx_geometry(pptx)
+            report["geometry"] = geometry
+            if not geometry["valid"]:
+                report["failures"].append("pptx_geometry_invalid")
+            rendered = render_to_png(
+                pptx,
+                output_dir / "renders",
+                renderer="officecli",
+                strict_renderer=True,
+            )
+            report["rendered_pages"] = [str(path) for path in rendered]
+            if len(rendered) != geometry["slide_count"]:
+                report["failures"].append("rendered_page_count_mismatch")
+        except (OSError, RuntimeError, ValueError) as exc:
+            report["failures"].append(f"officecli_render_failed:{exc}")
+    report["passed"] = not report["failures"]
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    report["report_path"] = str(report_path)
+    return report
 
 
 def _inside(path: Path, root: Path) -> bool:
