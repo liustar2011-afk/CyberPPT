@@ -7,7 +7,11 @@ from unittest.mock import patch
 from PIL import Image, ImageDraw
 import pytest
 
-from scripts.image_to_pptx_runtime.clean_base_generator import _post_clean_ocr, prepare_clean_bases
+from scripts.image_to_pptx_runtime.clean_base_generator import (
+    _post_clean_ocr,
+    _reference_edit_clean_base as original_reference_edit_clean_base,
+    prepare_clean_bases,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -60,6 +64,7 @@ def test_generator_creates_flat_surface_clean_base_and_manifest_contract(tmp_pat
     assert clean["status"] == "complete"
     assert Path(clean["path"]).is_file()
     assert clean["cleaned_text_regions"][0]["method"] == "reference-image-reconstruction"
+    assert clean["visual_diff_report"]["method"] == "masked-reference-reconstruction-v2"
 
 
 def test_generator_auto_fails_non_uniform_background(tmp_path: Path) -> None:
@@ -190,3 +195,31 @@ def test_post_clean_ocr_checks_a_real_blank_asset(tmp_path: Path) -> None:
 
     assert passed is True
     assert residual == []
+
+
+def test_reference_edit_writes_model_pixels_only_inside_declared_mask(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.png"
+    destination = tmp_path / "clean.png"
+    Image.new("RGB", (100, 60), "white").save(source)
+
+    def fake_image(*, output_path: Path, **_kwargs: object) -> None:
+        Image.new("RGB", (100, 60), "black").save(output_path)
+
+    monkeypatch.setattr(
+        "scripts.image_to_pptx_runtime.clean_base_generator._assess_text_clearability",
+        lambda *_args, **_kwargs: {"status": "rejected"},
+    )
+    monkeypatch.setattr(
+        "scripts.image_to_pptx_runtime.clean_base_generator.run_codex_image",
+        fake_image,
+    )
+    original_reference_edit_clean_base(
+        source,
+        destination,
+        [{"policy_id": "text-1", "text": "标题", "bbox": (20, 15, 60, 40)}],
+    )
+    with Image.open(destination) as result:
+        assert result.getpixel((10, 10)) == (255, 255, 255)
+        assert result.getpixel((30, 20)) == (0, 0, 0)

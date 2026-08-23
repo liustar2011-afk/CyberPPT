@@ -213,8 +213,7 @@ def validate_clean_base(
         if region is None or _text(region.get("text")) != text:
             errors.append({"code": "native_text_has_no_exact_clearance_region", "message": f"{policy_id}: native text requires one exact, bounded clearance region"})
 
-    reference_reconstruction = any(_text(region.get("method")) == "reference-image-reconstruction" for region in cleaned_items)
-    if full_path.is_file() and base_path is not None and base_path.is_file() and full_size and len(region_boxes) == len(cleaned_items) and not reference_reconstruction:
+    if full_path.is_file() and base_path is not None and base_path.is_file() and full_size and len(region_boxes) == len(cleaned_items):
         padding = value.get("clearance_padding_px", 6)
         max_outside = value.get("max_outside_mask_changed_fraction", 0.01)
         try:

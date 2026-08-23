@@ -113,7 +113,10 @@ not an acceptable final repair method.
 
 The clean-base review must pass three image-integrity checks: the declared
 clearance regions change, background continuity is restored, and pixels outside
-the declared clearance mask stay within tolerance. Post-clean OCR is diagnostic
+the declared clearance mask stay within tolerance. Reference-image reconstruction
+is not exempt: generated pixels may be written back only inside declared masks,
+while every outside pixel must come from the audited full image; validation must
+recompute the pixel difference instead of trusting the manifest receipt. Post-clean OCR is diagnostic
 evidence for the clearance operation. It must not independently require zero OCR
 residuals or trigger image regeneration after the source full image has passed
 its Chinese-character gate.

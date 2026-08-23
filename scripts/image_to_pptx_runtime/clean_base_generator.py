@@ -320,12 +320,34 @@ def _native_regions(policy: Mapping[str, Any], *, width: int, height: int) -> tu
 
 
 def _reference_edit_clean_base(source: Path, destination: Path, regions: list[dict[str, Any]]) -> None:
-    """Use the canonical full image to reconstruct its exposed background."""
+    """Rebuild text locally while preserving every pixel outside its masks."""
     with Image.open(source) as image:
-        source_size = image.size
+        original = image.convert("RGB")
+    source_size = original.size
+    rebuilt = original.copy()
+    fallback: list[dict[str, Any]] = []
+    for region in regions:
+        assessment = _assess_text_clearability(
+            original,
+            text=region["text"],
+            box=region["bbox"],
+        )
+        surface = assessment.get("surface_color")
+        if assessment.get("status") == "clearable" and isinstance(surface, list):
+            _erase_glyph_pixels(
+                source=original,
+                destination=rebuilt,
+                box=region["bbox"],
+                surface=tuple(int(value) for value in surface),
+            )
+        else:
+            fallback.append(region)
+    if not fallback:
+        rebuilt.save(destination)
+        return
     requested = "\n".join(
         f"- region {item['policy_id']} at {list(item['bbox'])}: remove the editable text {item['text']!r}"
-        for item in regions
+        for item in fallback
     )
     raw_destination = destination.with_name(destination.stem + ".reference-edit.png")
     run_codex_image(
@@ -344,7 +366,14 @@ def _reference_edit_clean_base(source: Path, destination: Path, regions: list[di
         postprocess=False,
     )
     with Image.open(raw_destination) as edited:
-        edited.convert("RGB").resize(source_size, Image.Resampling.LANCZOS).save(destination)
+        edited_rgb = edited.convert("RGB").resize(source_size, Image.Resampling.LANCZOS)
+    # The image model is only a local fill provider. Never accept its pixels
+    # outside a declared text mask: doing so previously moved bullets, icons,
+    # borders, and other protected geometry across the page.
+    for region in fallback:
+        left, top, right, bottom = region["bbox"]
+        rebuilt.paste(edited_rgb.crop((left, top, right, bottom)), (left, top))
+    rebuilt.save(destination)
     raw_destination.unlink(missing_ok=True)
     raw_output_path(raw_destination).unlink(missing_ok=True)
 
@@ -395,6 +424,8 @@ def prepare_clean_bases(
             and existing.get("status") == "complete"
             and existing.get("coordinate_space") == "full-image-pixels.v3"
             and existing.get("coordinate_binding") == policy.get("coordinate_binding")
+            and (existing.get("visual_diff_report") or {}).get("method")
+            == "masked-reference-reconstruction-v2"
         ):
             results.append({"page_number": page_number, "status": "reused", "path": existing.get("path")})
             continue
@@ -423,7 +454,7 @@ def prepare_clean_bases(
             "cleaned_text_regions": clean_regions,
             "visual_diff_report": {
                 "status": "passed",
-                "method": "reference-image-reconstruction",
+                "method": "masked-reference-reconstruction-v2",
                 "checks": {
                     "text_removal": "passed",
                     "background_continuity": "passed",

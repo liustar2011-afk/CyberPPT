@@ -326,6 +326,37 @@ def test_clean_base_policy_rejects_removing_a_decorative_glyph(tmp_path: Path) -
     assert "non_native_text_removed" in {error["code"] for error in report["errors"]}
 
 
+def test_clean_base_policy_recomputes_outside_mask_diff_for_reference_edit(tmp_path: Path) -> None:
+    full = tmp_path / "full.png"
+    clean = tmp_path / "clean.png"
+    Image.new("RGB", (400, 200), "white").save(full)
+    changed = Image.new("RGB", (400, 200), "white")
+    for x in range(300, 340):
+        for y in range(120, 160):
+            changed.putpixel((x, y), (0, 0, 80))
+    changed.save(clean)
+    authored = _policy_svg(tmp_path)
+    authored.write_text(
+        authored.read_text(encoding="utf-8").replace(
+            "</svg>",
+            '<image href="clean.png" x="0" y="0" width="400" height="200"/></svg>',
+        ),
+        encoding="utf-8",
+    )
+    contract = _clean_base_contract(full, clean)
+    contract["cleaned_text_regions"][0]["method"] = "reference-image-reconstruction"
+    report = validate_clean_base(
+        contract,
+        full_image=full,
+        authored_svg=authored,
+        graphic_text_policy=_graphic_text_policy(),
+        page_number=1,
+    )
+    assert "clean_base_changes_outside_clearance_mask" in {
+        error["code"] for error in report["errors"]
+    }
+
+
 def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path, monkeypatch) -> None:
     source = tmp_path / "source.png"
     Image.new("RGB", (400, 200), "white").save(source)

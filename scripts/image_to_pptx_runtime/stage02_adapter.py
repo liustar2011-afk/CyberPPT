@@ -31,6 +31,7 @@ from .native_text_geometry import (
 )
 from .review import write_review
 from .quick_page_review import quick_visual_review_passes
+from .clean_base_policy import SCHEMA as CLEAN_BASE_SCHEMA
 from .svg_quality.checker import SVGQualityChecker
 from .template_assembly import (
     assemble_brand_page_svg,
@@ -78,6 +79,7 @@ def _quick_page_binding(pair: Mapping[str, Any], authored: Path) -> dict[str, st
         "full_image_sha256": _sha256(full),
         "clean_base_sha256": _sha256(clean) if clean.is_file() else "",
         "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".intra-text-v1",
+        "clean_base_policy_schema": CLEAN_BASE_SCHEMA + ".verified-pixel-mask-v1",
     }
 
 
