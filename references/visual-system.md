@@ -395,7 +395,7 @@ Final check: a plain undirected connecting line is never used; arrows stay small
 
 Font: use MiSans or the closest available Chinese sans-serif; make glyphs visibly wider and flatter than a standard modern Chinese sans-serif, with a broad horizontal proportion and reduced vertical proportion. Preserve open counters, crisp strokes, restrained spacing and legibility at small sizes.
 
-Typography: keep one deck-wide scale—page title or conclusion 26pt/35px, subtitle 11pt/15px, module or chart title 13pt/17px, subsection or evidence title 12pt/16px, body and business implication 10.5pt/14px, conclusion strip or implication label 11pt/15px, key KPI 24pt/32px, chart data label 10pt/13px, chart micro-label or evidence code 8pt/11px, note or source 7.5pt/10px. Use the same size for the same role on every page; when text does not fit, simplify the scene or reorganize the copy and text region.
+Typography: establish one clear hierarchy and repeat it consistently across the whole deck. Make the page title or main conclusion the largest text; use a clearly smaller subtitle. Make every module or chart heading noticeably larger and bolder than its supporting text. Keep body copy compact and consistently readable. Make a key metric the strongest focal text after the page title; keep chart labels smaller than body copy, and make sources, notes and evidence codes the smallest, quietest text. When the same role recurs on another page, reuse the same relative size and weight. If text feels crowded, shorten the copy or redesign the layout; never solve it by shrinking a role below its established level or introducing an extra in-between size.
 
 ## 扩展风格10：纯白 + 深蓝领导汇报（与风格9相同，仅编号不同）
 

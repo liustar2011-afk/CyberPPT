@@ -98,9 +98,9 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     terminal_lock = style_nine["prompt_contract"].split("【风格09最终执行锁｜最高优先级】", 1)[1]
     assert "make glyphs visibly wider and flatter" in terminal_lock
     assert "legibility at small sizes" in terminal_lock
-    assert "Typography: keep one deck-wide scale" in terminal_lock
-    assert "page title or conclusion 26pt/35px" in terminal_lock
-    assert "note or source 7.5pt/10px" in terminal_lock
+    assert "Typography: establish one clear hierarchy" in terminal_lock
+    assert "page title or main conclusion the largest text" in terminal_lock
+    assert "sources, notes and evidence codes the smallest" in terminal_lock
     assert "Style 09 scale" not in style_nine["prompt_contract"]
     assert "Industry scene anchor" not in style_nine["prompt_contract"]
     assert "逐项配图" not in style_nine["prompt_contract"]

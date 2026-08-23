@@ -30,6 +30,6 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     terminal_lock = style09.split("【风格09最终执行锁｜最高优先级】", 1)[1]
     assert "make glyphs visibly wider and flatter" in terminal_lock
     assert "legibility at small sizes" in terminal_lock
-    assert "Typography: keep one deck-wide scale" in terminal_lock
-    assert "page title or conclusion 26pt/35px" in terminal_lock
-    assert "note or source 7.5pt/10px" in terminal_lock
+    assert "Typography: establish one clear hierarchy" in terminal_lock
+    assert "page title or main conclusion the largest text" in terminal_lock
+    assert "sources, notes and evidence codes the smallest" in terminal_lock
