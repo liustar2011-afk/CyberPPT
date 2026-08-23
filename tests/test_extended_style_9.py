@@ -88,8 +88,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     # Assertions below check real behavioral properties of that contract by
     # their actual current wording, not brittle exact headings from the
     # long-gone draft this test was originally written against.
-    assert "reconstruction-friendly, editorial visual blueprint" in style_nine["prompt_contract"]
-    assert "Do not distribute content according to item count" in style_nine["prompt_contract"]
+    assert "semantic-anchor-led blueprint" in style_nine["prompt_contract"]
+    assert "use that anchor actively" in style_nine["prompt_contract"]
+    assert "recognizable scene, object, action or evidence fragment" in style_nine["prompt_contract"]
+    assert "Item count does not dictate layout" in style_nine["prompt_contract"]
     assert "executive briefing" in style_nine["prompt_contract"]
     assert "#FFFFFF" in style_nine["prompt_contract"]
     assert "#12355B" in style_nine["prompt_contract"]
@@ -105,25 +107,26 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "factuality_rule" not in style_nine
     assert "semantic_image_text_rule" not in style_nine
     assert "component_rule" not in style_nine
-    assert "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。" in style_nine["prompt_contract"]
-    assert "Do not depict organization names, logos, seals, signage" in style_nine["prompt_contract"]
-    assert "locked on-screen text faithfully in the main composition" in style_nine["prompt_contract"]
-    assert "Auxiliary semantic imagery is text-free by default" in style_nine["prompt_contract"]
+    assert "People are absent by default" in style_nine["prompt_contract"]
+    assert "no visible faces, round-table meetings, group discussions or staged office scenes" in style_nine["prompt_contract"]
+    assert "Never depict organization names, logos, seals, signage" in style_nine["prompt_contract"]
+    assert "Preserve the full factual meaning, core judgments, named entities" in style_nine["prompt_contract"]
+    assert "stays text-free by default" in style_nine["prompt_contract"]
     assert "pseudo-Chinese" in style_nine["prompt_contract"]
     # The overlapping "invented names, logos, seals, signage" clause was
     # trimmed from the migrated semantic_image_text_rule text because
     # factuality_rule (now a few paragraphs earlier in the same contract)
     # already forbids organization names/logos/seals/signage.
     assert "invented names, logos, seals, signage" not in style_nine["prompt_contract"]
-    assert "Keep connection lines absent by default" in style_nine["prompt_contract"]
-    assert "连线：默认不使用连接线" in style_nine["prompt_contract"]
+    assert "Keep connectors absent by default" in style_nine["prompt_contract"]
+    assert "never a page-level organizing role" in style_nine["prompt_contract"]
     assert "purposeful connectors" not in style_nine["prompt_contract"]
-    assert "禁止任何立体图标、微缩模型、立方体" in style_nine["prompt_contract"]
-    assert "箭头：禁止使用" in style_nine["prompt_contract"]
+    assert "No 3D icons, miniature models, cubes" in style_nine["prompt_contract"]
+    assert "Connectors stay rare; a plain undirected line is never used" in style_nine["prompt_contract"]
     assert "icon_rule" not in style_nine
     assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]
-    assert 10_000 < len(style_nine["prompt_contract"]) < 25_000
+    assert 10_000 < len(style_nine["prompt_contract"]) < 30_000  # stays under MAX_PROMPT_CHARACTERS with page content added
     assert style_nine["imagegen_signature"] == []
     assert "节奏与媒介" not in style_nine["prompt_contract"]
 
@@ -145,9 +148,9 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["style"]["name"] == "纯白 + 深蓝领导汇报"
     assert payload["policy"]["selected_from_default_8"] is False
     assert payload["policy"]["selected_from_extension"] is True
-    assert "scene-led editorial business-infographic style" in payload["style"]["prompt_contract"]
+    assert "semantic scene-led editorial business-report style" in payload["style"]["prompt_contract"]
     assert "Icon count is zero by default" in payload["style"]["prompt_contract"]
-    assert "reconstruction-friendly, editorial visual blueprint" in payload["style"]["prompt_contract"]
+    assert "reconstruction-friendly, semantic-anchor-led blueprint" in payload["style"]["prompt_contract"]
     assert "最终执行锁" in payload["style"]["prompt_contract"]
     assert payload["reference_image"]["required_for_every_page"] is True
     assert payload["reference_image"]["path"].endswith("palette-09.png")
@@ -180,7 +183,7 @@ def test_style_nine_ignores_lock_snapshot_and_caller_controlled_source_path() ->
     contract = payload["style"]["prompt_contract"]
     assert "Style 09 only." not in contract
     assert "Style 10 must not leak." not in contract
-    assert "scene-led editorial business-infographic style" in contract
+    assert "semantic scene-led editorial business-report style" in contract
     assert payload["style"]["prompt_contract_source"].endswith("references/visual-system.md")
 
 
@@ -189,10 +192,10 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         contract = render_content_first_style_contract(lock)
 
-    assert "scene-led editorial business-infographic style" in contract
-    assert "reconstruction-friendly, editorial visual blueprint" in contract
-    assert "### 6. Depth, material and icon discipline — hard" in contract
-    assert "Icons are not a default visual language for Style 09" in contract
+    assert "semantic scene-led editorial business-report style" in contract
+    assert "reconstruction-friendly, semantic-anchor-led blueprint" in contract
+    assert "### 6. Depth, material, icon and line discipline — hard" in contract
+    assert "Icon count is zero by default" in contract
     assert "Icon count is zero by default" in contract
     assert "semantic_tags:" not in contract
     assert "style09:scope" not in contract
@@ -207,8 +210,8 @@ def test_style_nine_is_a_full_universal_contract_not_a_page_clause_selector() ->
             semantic_tags=frozenset({"flow", "feedback"}),
         )
 
-    assert "### 2. Semantic anchor and composition — hard" in contract
-    assert "### 7. Semantic economy and final priority — hard" in contract
+    assert "### 2. Anchor selection and composition — hard" in contract
+    assert "### 7. Semantic economy, priority and authority — hard" in contract
     assert "Identify the page’s core judgment and primary business relationship" in contract
     assert "semantic_tags:" not in contract
 
@@ -252,7 +255,7 @@ def test_style_nine_terminal_lock_helper_is_not_the_formal_style_consumer() -> N
     assert prompt.count("### Final ImageGen execution lock — hard") == 0
     assert prompt.count("【风格09最终执行锁｜最高优先级】") == 1
     terminal_lock = prompt.split("【风格09最终执行锁｜最高优先级】", 1)[1]
-    assert terminal_lock.count("Keep connection lines absent by default") == 1
+    assert terminal_lock.count("a plain undirected connecting line is never used") == 1
     assert "purposeful connectors" not in prompt
 
 
@@ -304,11 +307,11 @@ def test_style_nine_contract_suppresses_duplicate_response_structures() -> None:
         payload = json.loads(lock.read_text(encoding="utf-8"))
 
     contract = payload["style"]["prompt_contract"]
-    assert "### 7. Semantic economy and final priority — hard" in contract
-    assert "must not restate the same label, sequence or conclusion" in contract
+    assert "### 7. Semantic economy, priority and authority — hard" in contract
+    assert "without restating the same label, sequence or conclusion" in contract
     assert "extra summary band" in contract
     assert "建设响应" not in contract
-    assert "input, processing, review, control or output" in contract
+    assert "not step cards or icon rows" in contract
 
 
 def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document_carriers() -> None:
@@ -318,7 +321,7 @@ def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document
 
     contract = payload["style"]["prompt_contract"]
     assert "Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes" in contract
-    assert "richness should come from meaningful business expression, not decorative objects" in contract
-    assert "If the items are abstract directions with no distinct concrete referent, drop the scene entirely" in contract
-    assert "supporting scene or evidence fragments" in contract
-    assert "Icons are not a default visual language for Style 09. Start from zero icons; icon count is zero by default." in contract
+    assert "Richness comes from meaningful scene selection and cropping together with structural composition" in contract
+    assert "use that anchor actively" in contract
+    assert "quieter supporting fragments" in contract
+    assert "Icon count is zero by default." in contract

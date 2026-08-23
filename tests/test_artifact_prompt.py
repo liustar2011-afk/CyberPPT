@@ -146,6 +146,7 @@ class ArtifactPromptTests(unittest.TestCase):
     def test_style09_terminal_lock_is_unique_and_at_absolute_end(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"
         terminal = "保持纯白底，并保持唯一视觉中心。"
+        source_terminal = "formal enterprise-report typography."
         style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
@@ -170,7 +171,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertEqual(1, prompt.count(terminal))
         self.assertIn(SECTION_HEADINGS[7], prompt)
         self.assertIn(SECTION_HEADINGS[8], prompt)
-        self.assertTrue(prompt.rstrip().endswith(terminal))
+        self.assertTrue(prompt.rstrip().endswith(source_terminal))
         assert_artifact_prompt_contract(
             prompt,
             expected_visible_text=("Governed input", "Traceable result"),

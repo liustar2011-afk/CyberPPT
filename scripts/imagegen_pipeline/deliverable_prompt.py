@@ -752,15 +752,20 @@ def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
     if int(style.get("id") or 0) not in (9, 10):
         return ""
     contract = str(style.get("prompt_contract") or "")
-    marker = "### Final ImageGen execution lock — hard"
-    if marker not in contract:
+    markers = (
+        "### Final ImageGen execution lock — hard",
+        "【风格09最终执行锁｜最高优先级】",
+    )
+    marker_positions = [(contract.find(marker), marker) for marker in markers if marker in contract]
+    if not marker_positions:
         return ""
+    _, marker = min(marker_positions)
     tail = contract.split(marker, 1)[1]
     lines = [line.strip() for line in tail.splitlines() if line.strip()]
-    # The line immediately after the marker is the "repeated verbatim..."
-    # meta-instruction (see references/visual-system.md's "Final ImageGen
-    # execution lock" sections), not part of the rule content itself; skip it
-    # and keep everything from the first substantive rule line onward.
+    # Older contracts place a "repeated verbatim..." meta-instruction after
+    # the English marker. Current source-authored Style09 contracts use their
+    # Chinese terminal-lock heading directly, so retain the first substantive
+    # rule in either format.
     start = next(
         (
             index
@@ -824,7 +829,10 @@ def enforce_style09_terminal_lock(
     # the true end.  Preserve a Stage 02 module appended after that contract;
     # otherwise a raw terminal tail makes the send prompt verbose and gives
     # the same Style 09 rule two competing positions.
-    source_marker = "### Final ImageGen execution lock — hard"
+    source_markers = (
+        "### Final ImageGen execution lock — hard",
+        STYLE09_TERMINAL_LOCK_HEADER,
+    )
     continuation_markers = (
         "【视觉结构设计模块｜不上屏】",
         "[8. Typography & exact text / 文字资产合同]",
@@ -835,7 +843,8 @@ def enforce_style09_terminal_lock(
         # was silently discarded by the body[:marker_index] fallback below.
         "[Hard constraints]",
     )
-    marker_index = body.find(source_marker)
+    marker_positions = [(body.find(marker), marker) for marker in source_markers if marker in body]
+    marker_index = min(marker_positions)[0] if marker_positions else -1
     if marker_index >= 0:
         continuation_indices = [
             body.find(marker, marker_index)

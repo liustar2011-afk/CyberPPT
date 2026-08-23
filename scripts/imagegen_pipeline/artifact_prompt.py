@@ -310,6 +310,47 @@ def _visual_responsibility(
     return tuple(dict.fromkeys(lines))
 
 
+def _style09_visual_responsibility(
+    composition: CompositionSpec,
+    carrier: VisualCarrierSpec,
+) -> tuple[str, ...]:
+    """Style 09/10 variant of ``_visual_responsibility``.
+
+    Carries Stage 02's named anchor and relationship topology, but never
+    forwards its scene/no-scene call or auxiliary-image budget: those were
+    decided by an earlier, more conservative design stage that predates
+    Style 09's current stance that a photograph and a structural device are
+    equally legitimate, chosen by content. Forwarding "zero auxiliary
+    images" or "use the non-scene field" verbatim systematically suppressed
+    decoration across a whole deck instead of letting Style 09 judge each
+    page on its own content, so whether a photo, icon or decorative touch
+    appears is left entirely to visual-system.md's own rules.
+    """
+
+    lines: list[str] = [
+        f"Visual carrier: {carrier.business_object} ({carrier.semantic_role})",
+        f"Dominant relationship shape: {composition.topology}.",
+        f"Primary focus carries: {composition.primary_focus}",
+    ]
+    if composition.secondary_focus:
+        lines.append(f"Secondary focus supports: {'; '.join(composition.secondary_focus)}")
+    if composition.text_integration_method:
+        lines.append(composition.text_integration_method)
+    if composition.spatial_grammar:
+        lines.append(f"Spatial grammar: {', '.join(composition.spatial_grammar)}")
+    for connector in composition.connectors:
+        if connector.label:
+            lines.append(connector.label)
+    lines.append(
+        "Whatever this page's content calls for — a photograph, or a pure "
+        "structural field — avoid ending up with nothing but plain colored "
+        "text panels; a small icon, a light background tint field, or a "
+        "restrained decorative touch is normal for this style, governed "
+        "entirely by the Style 09 rules above."
+    )
+    return tuple(dict.fromkeys(lines))
+
+
 def _deliverable_sentence(spec: PageArtifactSpec) -> str:
     deliverable = spec.deliverable
     return " ".join(
@@ -362,48 +403,41 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
     try:
         semantic_groups = _semantic_groups(spec.evidence)
         style09_surface = int(spec.art_direction.style_id or 0) in (9, 10)
-        if style09_surface:
-            # Style 09/10 owns the visual surface.  The audited page spec
-            # still supplies the business thesis, relationships and exact
-            # text, while its legacy carrier/layout recipe is deliberately
-            # excluded because it can reintroduce card grids, title bands,
-            # and "zero auxiliary image" instructions that contradict
-            # references/visual-system.md.
-            spatial_organization = (
-                "Follow the source Style 09 continuous, asymmetric, scene-led "
-                "editorial composition. Express the approved business relationship "
-                "through adjacency, grouping, containment, alignment, scale, crop "
-                "and shallow tonal depth; do not impose equal columns or card modules."
-            )
-            visual_responsibility = (
-                "Use the named business objects, actors, actions and outcomes from "
-                "the semantic sections as the page-specific visual anchor. When the "
-                "content is abstract, use a flat structured relationship field; when "
-                "a concrete referent exists, use one restrained integrated scene or "
-                "business object."
-            ,)
-        else:
-            spatial_organization = spec.composition.spatial_organization
-            visual_responsibility = _visual_responsibility(
+        # Style 09/10 owns the visual surface, but still benefits from Stage 02's
+        # page-specific composition decisions (reading focus, named business
+        # anchor, scene/no-scene call, connector topology) instead of one
+        # identical sentence on every page. references/visual-system.md's own
+        # rules — rendered in full via the runtime lock below — remain the
+        # controlling authority; page-specific data here is advisory context,
+        # not a competing layout recipe.
+        spatial_organization = spec.composition.spatial_organization
+        page_visual_responsibility = (
+            _style09_visual_responsibility(spec.composition, spec.visual_carrier)
+            if style09_surface
+            else _visual_responsibility(
                 spec.composition,
                 spec.visual_carrier,
                 spec.visual_budget,
             )
+        )
+        visual_responsibility = (
+            "Use the named business objects, actors, actions and outcomes from "
+            "the semantic sections as the page-specific visual anchor. When the "
+            "content is abstract, use a flat structured relationship field; when "
+            "a concrete referent exists, use one restrained integrated scene or "
+            "business object.",
+        ) + page_visual_responsibility
         composition = CompositionIR(
             spatial_organization=spatial_organization,
             primary_focus=spec.composition.primary_focus,
             visual_responsibility=visual_responsibility,
         )
-        hard_constraints = (
-            tuple(spec.hard_constraints.global_constraints)
-            if style09_surface
-            else tuple(
-                dict.fromkeys(
-                    (
-                        *spec.hard_constraints.global_constraints,
-                        *spec.hard_constraints.page_constraints,
-                        *_bracketed_header_constraints(spec.typography.visible_text),
-                    )
+        hard_constraints = tuple(
+            dict.fromkeys(
+                (
+                    *spec.hard_constraints.global_constraints,
+                    *spec.hard_constraints.page_constraints,
+                    *(() if style09_surface else _bracketed_header_constraints(spec.typography.visible_text)),
                 )
             )
         )

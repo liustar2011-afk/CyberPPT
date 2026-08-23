@@ -167,7 +167,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "每个锁定模块及其名称只出现一次" not in implicit
     assert "Do not show frontal faces" not in implicit
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
-    assert "领导汇报" in implicit or "leadership briefing" in implicit
+    assert "领导汇报" in implicit or "executive briefing" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
     )
@@ -473,9 +473,12 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_typ
     assert "如【锁定关键文字】含正文结论句" in prompt
     assert "不得通栏放大" in prompt
     assert "标题竖线、横线等装饰" in prompt
-    typography_lock = "**Typography:** MiSans-like Chinese sans-serif; crisp, geometric and restrained; clean squared stroke endings; compact glyph structure; slightly vertically compressed Chinese characters; minimal softness or rounding; sharp high-resolution text edges; formal enterprise-report typography."
+    typography_lock = "**Typography:** MiSans-like Chinese sans-serif; crisp, geometric and restrained; clean squared stroke endings; evenly flattened glyphs — each character's width is fixed at roughly 1.35 times its height (equivalently, height about 74% of width), a balanced low, wide letterform that preserves reliable Chinese text rendering; avoid tall, narrow, condensed or vertically stretched glyphs and the square or near-square proportions a default Chinese sans-serif uses; keep character spacing open but restrained, never so wide that neighboring words crowd their text region; minimal softness or rounding; sharp high-resolution text edges; formal enterprise-report typography."
+    composition_lock = "Composition balance — hard: establish a calm, stable page-level frame before detailing individual regions. Distribute text, semantic imagery and structural fields so the left-right and top-bottom visual weight reads balanced at a glance."
     assert style_contract.count(typography_lock) == 1
     assert prompt.count(typography_lock) == 1
+    assert style_contract.count(composition_lock) == 1
+    assert prompt.count(composition_lock) == 1
     assert "1.6—1.8倍" not in prompt
     assert "1.25—1.4倍" not in prompt
 

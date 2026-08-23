@@ -326,190 +326,121 @@
 
 Palette: pure white background #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create an executive briefing page in a semantic scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation. Use scenes, objects and evidence to visualize the page's actual business meaning; never use generic office imagery as a fallback.
+Create an executive briefing page in a semantic scene-led editorial business-report style: authoritative, calm, refined and ready for formal presentation. Use recognizable scenes, objects and evidence to make the page's actual business meaning visible whenever the content names or directly implies a concrete business asset, environment, action, state or outcome. Shapes, containers and text hierarchy organize that meaning; comparison, hierarchy, process and abstract enumerations may use a flat structured relationship field when no concrete semantic anchor would improve recognition. Never fall back to generic office imagery. Canvas 2048x1024; render only the PowerPoint body visual — no title, subtitle, logo, page number, footer, template frame, instructions, field labels, source references, evidence ids or text ids.
 
-### 1. Style identity and semantic principle — hard
+### 1. Style identity — hard
 
-Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes; it should first communicate one clear business judgment, then reveal its supporting structure. Every scene or object must map to a named concept, actor, action, condition or outcome in the page content and should make the relevant business relationship recognizable. Use abstract geometry, boundaries, color fields and connectors only to organize concrete meaning — do not let generic scenes, icons, decorative symbols or 3D objects replace the semantic scene or become the page-level visual language.
+Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes, with shapes, containers, color fields and text hierarchy organizing their relationship. A named facility, equipment asset, real site, content object, operating action or visible result should retain one recognizable scene, object or evidence fragment when it improves a viewer's understanding of what the page is about. Communicate one clear business judgment first. The selected anchor stays subordinate to readable text and follows what it needs to be understood clearly, not empty canvas space. Never let generic scenes, icons, decorative symbols or 3D objects become the page-level visual language.
 
-Keep the visual character editorial and matte — a refined executive-report spread, not a technology advertisement or icon-driven infographic.
-Use pure white `#FFFFFF` as the page-level background. Do not shift the overall canvas toward ivory, cream, beige or warm paper tones. Pale blue-grey may be used only for local separation, evidence fields or subtle structural grouping.
+Keep the character editorial and matte — a refined executive-report spread, not a technology advertisement or icon-driven infographic. Background is pure white `#FFFFFF`; never shift toward ivory, cream, beige or warm paper tones. Pale blue-grey is for local separation, evidence fields or structural grouping only.
 
-### 2. Semantic anchor and composition — hard
+### 2. Anchor selection and composition — hard
 
 1. Identify the page’s core judgment and primary business relationship.
-2. Select one recognizable, page-specific business anchor: an operating scene, business object, content or data asset, visible action, evidence fragment or visible outcome.
-3. Give the dominant anchor approximately 35%–50% of the visual field when content permits.
-4. Build one continuous, asymmetric and unequally weighted composition around it.
-5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.
+2. Select one recognizable business anchor that materially distinguishes the page’s core judgment: an operating scene, business object, content or data asset, visible action, evidence fragment or visible outcome. When the content names or directly implies a concrete referent, use that anchor actively and preserve enough recognizable detail for the viewer to identify its business role. A comparison, hierarchy, containment or abstract enumeration with no concrete referent may use a flat structured relationship field. Never fill space freed by a simpler anchor with an icon set, icon wall, floating platform or badge cluster; whitespace, a quiet color field or a larger text region are all fine.
+3. Text sizing is decided first and is never negotiable: every locked text region reaches a comfortable reading scale before the anchor claims any space. The anchor's footprint is bounded by whichever is smaller: what text leaves available, or what the anchor needs to read clearly — never inflate it to fill free canvas; modest and subordinate usually serves better than maximal. Its dominance comes from scale contrast, crop, isolation, tonal weight and reading-path position, not area. When text already fills the space, crop or simplify the anchor first; a compact, interpretable scene or evidence fragment remains preferable for an eligible concrete referent. Drop the anchor only when its removal is necessary to keep the locked text readable; never shrink type to preserve it.
+4. Build one continuous composition around the anchor with a stable overall center of gravity. Prefer a centered or evenly balanced distribution of visual mass across the full canvas. Use asymmetry only when it makes the declared relationship materially clearer, then counterbalance the dominant region with supporting text, evidence, a quiet field or a secondary semantic region. Keep the core judgment visually strongest without concentrating all weight at one edge, corner or horizontal band.
+5. Organize two to five open semantic regions around, within or along it. A region may sit in open space or inside a flat panel, color field, border or divider — panels and borders are a legitimate structuring tool, on equal footing with text and scene. A tidy grid of matching regions is as legitimate as varying by content weight — pick whichever reads best. Judge multiple scene/evidence fragments by their combined footprint against step 3, not separately — several moderate photographs side by side can still starve text space even if none looks oversized alone.
 6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
-8. Keep connection lines absent by default. Express relationships through position, proximity, grouping, containment, alignment or numbering; use one plain undirected line only when an explicit cross-object relationship cannot be expressed otherwise.
+8. Keep connectors absent by default; express relationships through position, proximity, grouping, containment, alignment or numbering. A plain undirected line is not part of this style's vocabulary — a visible line needs a reason, and a reason is a direction. Use an arrow only when the content names a genuinely directional or cyclical relationship (a result feeding back into an earlier stage, a process or cycle diagram) that position and grouping cannot show alone. Each arrow joins exactly one source to one target as a single unbroken stroke — never forking, branching or gathering multiple points into one; a fork fanning into several arrowheads is several arrows wearing one excuse and remains forbidden regardless of count. Execute every arrow with real precision: small, refined, muted deep blue, one clean minimal arrowhead, vector-crisp — never thick, rough, glowing, gradient or decorative. A connector's role is always local, marking a relationship between the two specific objects it touches — never a page-level organizing role (a banner, spine, border or header), whatever shape that overreach takes. How many appear follows this same discipline, not a fixed count: one relationship needs one arrow; a genuine multi-step process or cycle may need one segment per step. Always forbidden: a decorative arrow chain, an arrow crossing text, or duplicating a relationship a loop icon already shows elsewhere. Each segment joins two objects' outer edges and never floats; a dot marks only a genuine interface, convergence or branch point.
 
-Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.
+Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships — never by reserving a fixed canvas share for one element. Item count does not dictate layout: three, four or five text items do not require equal columns or equally detailed treatment — the core judgment carries the greatest visual weight, supporting evidence stays quieter and subordinate.
 
-Do not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages. The core judgment carries the greatest visual weight; supporting evidence remains quieter and subordinate.
+Suitable anchors: source materials parsed into one structured object; two fields compared around one visible gap; several inputs converging into one result; one interpretable operating scenario showing a named action such as monitoring, review, coordination, transformation, control or delivery.
 
-Suitable anchors include: source materials parsed into one structured object; two fields compared around one visible gap; several inputs converging into one result; one interpretable operating scenario showing a named action such as monitoring, review, coordination, transformation, control or delivery.
+### 3. Content fidelity — hard
 
-### 3. Content fidelity and presentation expression — hard
+Preserve the full factual meaning, core judgments, named entities, numbers, dates, units, causal/conditional/comparison relationships, scope boundaries and business logic of the source Chinese content. Do not add facts, invent numbers, strengthen or weaken conclusions, change responsibility boundaries, alter policy meaning, omit required content or add unsupported labels — and do not shift modal strength while treating the wording as equivalent (a possibility must not become a certainty, a suggestion a requirement, a pilot description an achievement, a conditional statement unconditional).
 
-Preserve the full factual meaning, core judgments, named entities, numbers, dates, units, causal relationships, conditional relationships, comparison relationships, scope boundaries and business logic of the provided Chinese content.
+Content not explicitly marked verbatim, locked, quoted, a formal name, number, unit, date or policy clause may be restructured for presentation: split a long sentence into shorter statements, draw a lead-in or micro-heading from wording already present, reorganize parallel phrases into clearer levels, move a qualifier closer to what it qualifies, emphasize key terms by weight, scale or deep-blue color, and trim redundant function words — all without changing factual meaning. Content marked verbatim, locked, quoted, or a formal name/number/unit/date/policy clause must render complete and unchanged; do not rewrite, shorten, relabel, reorder or paraphrase it.
 
-Do not add new facts, invent numbers, strengthen or weaken conclusions, change responsibility boundaries, alter policy meaning, omit required content or introduce unsupported labels. Do not shift modal strength while treating the wording as equivalent: do not turn a possibility into a certainty, a suggestion into a requirement, an exploratory or pilot description into a completed achievement, or a conditional statement into an unconditional conclusion.
+Every key metric number (a count, percentage or threshold) is emphasized through larger scale and deep-blue color directly inside its own sentence — plain body weight is not sufficient, and it must never be duplicated as a separate large-number tile, badge or callout. For a "label: sentence" locked item, render it once as that unit; never repeat the label alone as a separate heading, and never invent a heading for text that has none.
 
-Unless a passage is explicitly marked as verbatim text, locked text, quoted source text, formal name, number, metric, policy wording or other exact wording, the visible Chinese wording may be restructured for presentation readability.
+Visual splitting, line breaks and grouping must not alter a sentence's logical relationship — a causal or conditional link must not become a flat parallel list — and font size, weight, color or position must never give a minor qualifier more visual force than the primary judgment it qualifies. Factual fidelity is fixed; presentation wording and hierarchy may adapt to improve executive readability.
 
-Allowed presentation restructuring includes: splitting a long sentence into shorter presentation-scale statements; creating a short lead-in or micro-heading from wording already present in the source meaning; reorganizing parallel phrases into clearer visual levels; moving a qualifying phrase closer to the statement it qualifies; emphasizing key terms through weight, scale or deep-blue treatment; and reducing redundant function words when the factual meaning remains fully intact.
+#### Text layout and internal typography — hard
 
-Every key metric number in the locked text (a count, percentage or threshold) must be visually emphasized through larger scale and deep-blue color directly inside its original sentence — plain body-text weight is not sufficient; never duplicate it as a separate large-number tile, badge or callout outside that sentence.
+Size text before adding scenes, evidence or decoration; text space is fixed first, decoration fills only what remains. Follow the page blueprint's locked typography tiers: if a text region does not fit at its assigned level, restructure, regroup, refine the wording, resize its container or move content to another page — never drop to a smaller unregistered font size, and never shrink a text region to preserve a scene's intended size. Give one clear readable region per primary semantic unit; regions need not match size or position — content weight decides how each is shaped, and a scene must never crowd text into a minor corner.
 
-Presentation restructuring must improve hierarchy, rhythm and readability without changing semantic force. No factual meaning may be added, removed, narrowed, broadened, weakened or strengthened.
+Treat every text region as a designed paragraph, not a stacked list of "label: sentence" lines — this is where the page earns its editorial, magazine-quality feel, and it is never optional:
 
-#### Verbatim text — hard when marked
+1. Use at least two size or weight steps per region — the lead judgment or label visibly larger or heavier than supporting detail; never one uniform scale. Draw steps from the locked typography tiers, not an invented one.
+2. Use two spacing widths — a clearly larger gap between semantic groups than between a label and its own sentence or between lines in one group — so grouping is visible without reading every word.
+3. Pick one alignment pattern per region and hold it for every item: a fixed hanging-label column, or an inline lead-in folded into the sentence — never mix both in one region.
+4. Use a standard bullet convention when needed — a small round dot or short vertical bar, identical before each item. Never a horizontal dash or tick: beside Chinese text it reads as the character "一" and gets misread as content. This is ordinary formatting, not the icon language in Section 6, and does not count against the icon budget.
+5. Mark a sub-group boundary with a hairline rule, an accent rule beneath its heading, or a narrow pale-blue-grey quiet field — never whitespace alone.
+6. Compose every "【label】"-style section header identically on one page: same treatment, same weight relative to its body. Never give one region a header bar while an equal-standing region gets bare text.
+7. Never repeat a "label: sentence" pattern past four or five items without a pause — a larger gap, a sub-heading or a rule — that clusters them. An unbroken uniform run is the flat, undesigned look this rule prevents.
+8. Give every text block generous, consistent margins; text must never touch a region's edge or sit flush against a neighboring block.
 
-Content explicitly marked as verbatim text, locked text, quoted source wording, official titles, formal product or institution names, numbers, units, dates, policy clauses or other exact wording must remain complete and unchanged.
+Auxiliary imagery — illustrations, scenes, objects, screens, documents, interfaces, evidence fragments — stays text-free by default: no embedded words, labels, numbers, captions, UI copy, signage, pseudo-Chinese or other pseudo-text, though text-free structures, highlighted regions, check states or simplified diagrams are fine. If a locked label is essential, place it adjacent to the visual as normal page text, never baked into the illustration, screen, document or perspective surface.
 
-Do not rewrite, shorten, relabel, reorder or paraphrase explicitly verbatim content.
-
-#### Presentation-scale text layout
-
-Allocate sufficient space for content before adding scenes, evidence, icons or decoration.
-
-Use one clear readable text region for each primary semantic unit; regions do not need matching size or position — content weight decides how each is shaped, and a generic scene must not crowd text into a minor corner.
-
-Apply the single Style 09 typography execution lock in the final authority section below.
-
-Render only source-supported Chinese content. Auxiliary imagery — illustrations, scenes, objects, screens, documents, interfaces and evidence fragments — must remain free of readable embedded text by default; it may contain text-free structures, highlighted regions, check states or simplified diagrams, but no embedded words, labels, numbers, captions, UI copy, signage or pseudo-text. If a locked label is essential to the page meaning, place it adjacent to the related visual as normal page text, never baked into the illustration, screen, document or perspective surface.
-
-Each primary semantic region should read as one integrated unit of text and visual material. When a small supporting fragment genuinely clarifies one region, draw it from real business material relevant to that specific region — expressed in whatever concrete, recognizable form actually suits the content — rather than a symbolic icon or pictogram, and never repeat the same kind of fragment as a matching pair across every parallel region (see the icon discipline rules below). Regions do not have to be forced into perfectly equal treatment: some may carry a fuller scene-plus-text-plus-action unit, others may lean more on text with a lighter visual touch, depending on what each region's content actually needs.
-
-Place text inside a quiet field within the scene, attach it to an object edge, align it with the corresponding action, or embed it in the outcome region. Visual splitting, line breaks and grouping must not alter the original sentence's logical relationship (for example turning a causal or conditional link into a flat parallel list). Font size, weight, color and position must not create a visual conclusion strength that misrepresents the source: a minor qualifier must not be made visually more prominent than the primary judgment it qualifies.
-
-The governing principle is: factual fidelity is fixed; presentation wording and hierarchy may adapt to improve executive readability.
+Each primary semantic region reads as one integrated unit of text and visual material. A small supporting fragment that genuinely clarifies one region should be drawn from real business material relevant to that region, in whatever concrete form suits the content, rather than a symbolic icon — and never repeated as a matching pair across every parallel region. Regions need not receive equal treatment: some may carry a fuller scene-plus-text-plus-action unit, others may lean on text with a lighter visual touch.
 
 ### 4. Reusable composition grammars
 
-Select one primary grammar from the page semantics. Use a second only when the locked content clearly contains a second essential relationship.
+Select one primary grammar from the page semantics; use a second only when the locked content clearly contains a second essential relationship. These grammars describe a relationship, not a medium — build each from shapes, containers, text, or a photograph, whichever reads best for this page's content, per the judgment in Section 2 step 2.
 
-#### A. Continuous object transformation
+- **A. Continuous object transformation** — one object or container at three to five sequential positions along a straight path, or a closed loop (a flywheel) when the process returns to its start; connect stages by position or the Section 2 step 8 discipline — not step cards or icon rows.
+- **B. Core object with attached actions** — one central object or environment (shape or photo, per Section 2 step 2) occupies one region, with two to four flat panels attached to its side, each one supporting capability, condition or outcome — not separate icon modules.
+- **C. Dual-field comparison** — two side-by-side panels or fields of matching height, separated by a visible gap or a thin center divider, with the decisive judgment stated in one region between or below them.
+- **D. Multi-source convergence** — several independent, separately labeled blocks positioned to visibly lead toward one shared outcome region, via proximity, alignment or one Section 2 step 8 arrow — never merged into one block or a row of pictograms.
+- **E. Concrete controlled containment** — one protected object or environment (shape or photo, per Section 2 step 2) sits inside a visibly bounded field; checkpoints or access states appear as small marks at the boundary, not a separate icon row — object visible, boundary subordinate.
+- **F. Parallel-direction shared evidence field** — one shared evidence field (a photograph, panel or diagram) sits adjacent to the list of parallel directions, rather than one fragment per direction; separate directions with the typography rhythm rules above, not individual illustrations (a page too abstract for genuine evidence may use none).
 
-Show one recognizable business object changing through input, processing, review, control or output, expressed through object state and spatial progression — not step cards or icon rows.
+Apply these element defaults across the whole deck, not just within one page: a section header ("【label】" tag) is a filled deep-blue rectangle with white text — Section 6's one differently-shaped title bar per page is an occasional variant, not a second header style competing with it; a panel is a flat rectangle with a thin border or pale-blue-grey fill and right-angle corners; numbering uses one convention per page (a plain digit tag or a circled numeral, never both, and never double-badging text that already has its own prefix).
 
-#### B. Core scene with attached actions
+### 5. Optional photographic and evidence material
 
-Place one business object or operating environment in the main visual region. Attach supporting capabilities, conditions or outcomes directly to the scene through spatial relationship and unequal scale — not as separate icon modules.
+Photographic material follows the judgment in Section 2 step 2. For an eligible concrete referent, use photography, an illustration or an evidence fragment as an active semantic anchor, while keeping it subordinate to locked text and the page's relationship structure. Use one dominant element plus up to two to four quieter supporting fragments when they clarify distinct named items; vary scale, crop and viewpoint so the page reads as one composed field. Richness comes from meaningful scene selection and cropping together with structural composition — never decorative objects.
 
-#### C. Dual-field comparison
+When the page names several distinct top-level items, each item's visual material must be specific enough that a viewer can tell which item it belongs to at a glance, not just that the page is generally about data or technology — never represent distinct items with one shared undifferentiated panorama. The flat-field judgment from Section 2 step 2 applies identically here and is not avoided by splitting one large scene into several small fragments: fragments that collectively recreate a full-page photo composition still compete with text the same way one large scene would.
 
-Use two concrete business fields or states in a controlled comparison; show the difference or transition through scale, alignment and one decisive judgment region — prefer concrete fields over symbolic icon comparisons.
+Suitable material: named or directly implied business scenarios, objects, actions, data assets, documents or evidence fragments, recognizable without embedded text. Never use generic office or workplace imagery as a fallback — meeting rooms, desks, laptops, monitors, whiteboards, corridors, anonymous businesspeople or staged scenes — or a generic control room, dashboard wall or stock BI screen as decoration. When content is abstract, use a flat structured field rather than generic technology props or meaningless 3D objects. Realistic material stays restrained, interpretive and page-specific — never an isolated product photo.
 
-#### D. Multi-source convergence
+People are absent by default: no visible faces, round-table meetings, group discussions or staged office scenes. Never depict organization names, logos, seals, signage, recognizable headquarters or landmarks — keep real organization and person names in the editable text layer only.
 
-Show several distinct sources or actors entering one shared service, capability or result, through visible convergence into one dominant outcome field — concrete inputs, not a row of pictograms.
+### 6. Depth, material, icon and line discipline — hard
 
-#### E. Concrete controlled containment
+Maintain a restrained flat editorial foundation with shallow natural depth, built from overlap, cropping, scale contrast, tonal separation and subtle variation of pure white, pale blue-grey and deep blue. Use matte surfaces, crisp edges, gentle tonal transitions and quiet natural perspective.
 
-Place one recognizable protected object or operating scene inside a controlled field. Express access, isolation and approved output through checkpoints and state changes; keep the object visible, boundaries subordinate.
+Avoid glossy or decorative 3D rendering, exaggerated isometric perspective, cinematic depth, dramatic spotlighting, floating hero objects, glassmorphism, polished metal, reflective floors, neon glow, luminous edges, holographic treatment, product-showcase presentation and futuristic 3D concept-art. Drop shadows are generally discouraged; if needed, keep them extremely soft and diffuse. Business objects may keep natural physical form but must not become exhibition objects, toy-like miniatures or futuristic product concepts.
 
-#### F. Parallel-direction shared evidence field
+Icon count is zero by default. Use one only when the page would lose immediate semantic clarity without it — at most one very small, flat, deep-blue icon embedded inside an existing scene or text grouping, never gradient, glossy, 3D or holographic. Never assign one icon to each bullet, module, stage, actor, capability or message, and never build icon rows, grids, walls, badges, cards, pictogram sequences or symbol clusters — a row of icon-plus-label pairs is an icon wall even without visible borders. If a meaning can be expressed through a scene, object or outcome region, remove the icon and use that instead.
 
-When the page names several parallel abstract directions or principles that share one evaluation or classification framework, do not give each direction its own icon or scene fragment. Instead let a small number of genuine evidence fragments serve the framework as a whole, choosing how many and where to place them based on what this page's specific content actually supports — some directions may carry a concrete fragment and others may rely on text hierarchy and spatial grouping alone; a page whose directions are too abstract for any genuine evidence may use none at all rather than inventing one.
+Borders, panels and dividers are a legitimate way to group and separate content, on equal footing with text and scene — use thin right-angle rectangles, flat color fields, or a short divider line freely wherever they clarify grouping, at up to two levels of visible boundary per page; panels may match in size for a clean, tidy grid, or vary by content weight — both are valid. Avoid decoration, not structure: no pill shapes, thick frames, trapezoids, cut corners, glass capsules or 3D door-frames, and at most one differently-shaped title bar per page. Connectors stay rare; a plain undirected line is never used — a visible line needs a direction. Arrows follow the Section 2 step 8 discipline: precise, small, restrained, as many as a genuine process or cycle needs — never a decorative chain, a fork, or a rough, thick or glowing stroke. No 3D icons, miniature models, cubes, small server or building models, floating objects, thick pedestals, multi-step platforms, exaggerated extrusion or complex lighting. Do not generate checkmarks, warning triangles, loop icons, location pins, shields or decorative arrow chains unless the locked content explicitly requires them. If on-screen text already carries a numbering prefix (①②③ or digits), do not add a separate decorative number badge or disc repeating the same sequence.
 
-### 5. Scene and evidence expression
+Color: deep blue carries the primary relationship and conclusion, pale blue-grey carries supporting information, warm color marks only risk, exception, restriction, prohibition or pending status — never assign rainbow or multi-color coding purely to distinguish categories.
 
-Use one dominant scene or concrete business object, plus two to four quieter supporting scene or evidence fragments when needed. Vary scale, crop and viewpoint so the page reads as one composed visual field rather than assembled modules.
+Borders, dividers, permitted connectors and any geometric shape read as precision vector work: consistent stroke weight throughout, true right angles, smooth continuous curves with no jitter, clean edges with no aliasing, and one consistent corner radius within a shape family. Stacked flat color blocks align to one grid with even spacing — no 3D stacking, staggered offset shadows, or jagged/uneven shadow edges. A tidy, evenly-aligned grid of matching cards, icons or panels is a legitimate and often preferable look for this style, not a fault to avoid; size and spacing may follow content weight when that serves the page, or stay uniform when that reads cleaner — both are valid, and neither is owed to every page by default.
 
-Create richness through semantic scene selection, cropping, scale and viewpoint changes — richness should come from meaningful business expression, not decorative objects.
+### 7. Semantic economy, priority and authority — hard
 
-When the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. If the items are abstract directions with no distinct concrete referent, drop the scene entirely and use a flat, structured relationship field instead.
+Represent each source-supported concept once; supporting elements add evidence or outcome without restating the same label, sequence or conclusion. Do not add a second icon chain, footer process or extra summary band once the composition already expresses a process, hierarchy or layered relationship, unless the source explicitly requires it. Use one primary visual metaphor per page.
 
-Suitable visual material includes: semantically constructed business scenarios; content-specific operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something named or directly implied by the page content, and its business action, state or relationship should remain recognizable without relying on embedded text. Never use generic office or corporate workplace imagery as a fallback — including meeting rooms, desks, laptops, office monitors, whiteboards, office buildings, corridors, anonymous businesspeople or staged workplace scenes — and never use a generic control room, dashboard wall, stock BI screen or undifferentiated technology panorama as decoration. When the content is abstract, construct an interpretable semantic scene from the named actors, actions, conditions and outcomes, or use a flat structured relationship field; do not substitute generic technology props or meaningless abstract 3D objects.
+Priority order when rules compete — remove the lower-priority decorative element and keep the higher-priority rule: content fidelity, verbatim requirements and core judgment → recognizable business anchor → primary business relationship → large-scale semantic actions → evidence and outcomes → crop, overlap and shallow tonal depth → auxiliary symbols only when indispensable.
 
-Any realistic material must stay restrained, interpretive and page-specific — supporting evidence inside a broader scene, never an isolated product photo.
+This Style 09 definition is the controlling visual authority for every page that selects it. Reference images may influence palette, crop and polish only, never semantic structure, content fidelity, composition grammar or icon discipline. Do not reinterpret Style 09 into a glossy SaaS-marketing card grid, icon infographic or 3D composition — rounded, shadowed cards with one icon and one headline each — even when such forms look attractive in reference material. Flat, thin-bordered panels remain a normal part of this style, whether sized to content weight or matched into a tidy grid; what is banned is the glossy, icon-badge treatment, not grouping content behind a border or aligning panels evenly. Concrete business meaning first, editorial hierarchy second, decoration last.
 
-### 6. Depth, material and icon discipline — hard
+### 8. Hard constraints
 
-Maintain a restrained flat editorial foundation with shallow natural depth, created through overlap, cropping, scale contrast, tonal separation and subtle variations of pure white, pale blue-grey and deep blue.
-
-Use matte surfaces, crisp edges and gentle tonal transitions; keep perspective natural and quiet.
-
-Avoid glossy or decorative 3D rendering, exaggerated isometric perspective, cinematic depth, dramatic spotlighting, floating hero objects, glassmorphism, polished metal, reflective floors, neon glow, luminous edges, holographic treatment, product-showcase presentation, showy 3D rendering and futuristic 3D concept-art.
-
-Visible drop shadows are generally discouraged; if needed, use an extremely soft, diffuse shadow. Business objects may retain natural physical form but must not be stylized into exhibition objects, toy-like miniatures or futuristic product concepts.
-
-Icons are not a default visual language for Style 09. Start from zero icons; icon count is zero by default.
-
-Use an icon only when the page would lose immediate semantic clarity without it. A typical page should contain no icons; when genuinely necessary, use at most one very small, flat, deep-blue icon embedded inside an existing scene or text grouping.
-
-Never assign one icon to each bullet, module, stage, actor, capability or message. Do not create icon rows, icon grids, icon walls, icon badges, icon cards, pictogram sequences or decorative symbol clusters. When a page presents several parallel metric lines or several parallel named directions or principles (for example four evaluation dimensions), do not place any icon, pictogram or colored glyph immediately beside each individual line; a row of icon-plus-label pairs is itself an icon wall even without visible borders, and remains forbidden.
-
-Icons must never become the main visual carrier or repeated page structure. If a business meaning can be expressed through a scene, object or outcome region, remove the icon and use the concrete expression instead.
-
-If one icon is indispensable, keep it simple, flat, deep blue, small and visually subordinate. Avoid 3D, gradient, glossy or holographic icon treatments.
-
-### 7. Semantic economy and final priority — hard
-
-Represent each source-supported concept once; supporting elements may add evidence or outcome, but must not restate the same label, sequence or conclusion.
-
-When the composition already expresses a process, hierarchy or layered relationship, do not add a second icon chain, footer process or extra summary band unless explicitly required by the source content.
-
-Use one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop and color fields. Keep connectors absent by default; one plain undirected line is allowed only for an explicit cross-object relationship that spatial composition cannot otherwise express.
-
-Keep the result free from icon-led modular layouts, repeated device mockups, dense microtext and duplicated semantic summaries, and from any SaaS-marketing, app-store-style or futuristic 3D concept-art visual language (see the material and icon discipline rules above for the full decoration exclusion list). These exclusions are secondary: always prioritize content fidelity, recognizable business anchoring, open scene-led composition, semantic clarity, restrained editorial flatness and executive-level visual hierarchy.
-
-Priority:
-content fidelity, verbatim requirements and core judgment
-→ recognizable business anchor
-→ primary business relationship
-→ large-scale semantic actions
-→ evidence and outcomes
-→ crop, overlap and shallow tonal depth
-→ auxiliary symbols only when indispensable.
-
-Final result: one calm, highly readable and visually refined executive-report composition with complete factual meaning and all required verbatim text, a recognizable business scene or object, open semantic grouping, clear page-specific meaning, strong hierarchy, restrained natural depth, minimal or zero icon use, no showy 3D rendering and no unnecessary semantic repetition.
-
-### 8. Authority lock — hard
-
-This Style 09 definition is the controlling visual authority for every page that selects it. Reference images may influence palette, crop and polish only, never the semantic structure, content fidelity, composition grammar or icon discipline defined above. When a conflict arises, remove the lower-priority decorative element and keep the higher-priority rule, in the order already stated in Section 7's priority list.
-
-Do not reinterpret Style 09 into a card dashboard, icon infographic, SaaS marketing page or glossy 3D composition, even when such forms appear attractive in reference material. The final page must remain recognizably Style 09: concrete business meaning first, editorial hierarchy second, decoration last.
-
-[Hard constraints]
-Render only the PowerPoint body visual on a 2048x1024 canvas.
-Do not render title, subtitle, logo, page number, footer, or template frame.
-Do not render instructions, field labels, source references, evidence ids, or text ids.
-Do not invent visible business facts, numbers, organizations, actors, or conclusions.
-Do not change facts, numbers, dates or units.
-Do not change actors, responsibilities or status.
-Do not add unsupported presentation copy. For content not explicitly marked as verbatim or locked, the source-supported lead-ins, micro-headings, hierarchy restructuring and key-term emphasis permitted in Section 3 remain allowed; they must add no new factual meaning.
-For a "label: sentence" locked text item, render it once as that unit; do not repeat the label alone as a separate heading or tag, and do not invent a heading or label for text that has none.
-Do not map each body item to an isolated icon or decorative image.
-Do not create an independent text wall or second result chain.
-Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image.
-Do not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.
-Do not invent a center hub or radial mechanism the declared relationship does not describe.
-Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.
+Do not invent visible business facts, numbers, organizations, actors or conclusions; do not change facts, numbers, dates, units, actors, responsibilities or status.
+Do not add unsupported presentation copy — the lead-ins, micro-headings, hierarchy restructuring and key-term emphasis permitted in Section 3 remain allowed and must add no new factual meaning.
+Do not map each body item to an isolated icon or decorative image; do not create an independent text wall or second result chain.
+Reserve the page title and subtitle for the external PowerPoint text layer; do not render them in the body image.
+Do not render nodes as equal-weight peer cards when the declared relationship is not a flat list, and do not invent a center hub or radial mechanism the content does not describe.
+Preserve the approved source actors, relationships, conditions, status and factual strength without reinterpretation.
 
 【风格09最终执行锁｜最高优先级】
-Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; keep auxiliary imagery text-free by default and place required labels adjacent to the related object rather than baking them into screens, devices, documents, illustrations, icons or perspective surfaces. Icon count is zero by default.
 
-**Typography:** MiSans-like Chinese sans-serif; crisp, geometric and restrained; clean squared stroke endings; compact glyph structure; slightly vertically compressed Chinese characters; minimal softness or rounding; sharp high-resolution text edges; formal enterprise-report typography.
+Treat the generated image as a reconstruction-friendly, semantic-anchor-led blueprint for editable PowerPoint conversion. Preserve a judgment-distinguishing anchor: use a recognizable scene, object, action or evidence fragment for an eligible concrete referent, and use a flat structured relationship field for an abstract page with no meaningful concrete referent. Shapes and containers organize the anchor and locked text into a disciplined, report-orderly composition. Locked Chinese text stays complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry.
 
-Do not use arrows or arrowheads anywhere on the page. Keep connection lines absent by default. Only one plain, solid, undirected connector is allowed when a relationship explicitly named in the reading path cannot be expressed through position, proximity, grouping, containment, alignment, numbering or color. Never use a pointed or directional connector.
+Composition balance — hard: establish a calm, stable page-level frame before detailing individual regions. Distribute text, semantic imagery and structural fields so the left-right and top-bottom visual weight reads balanced at a glance. Use white space as an intentional buffer around groups, anchors and reading paths; every large quiet field must support hierarchy, separation or the reading path. Rebalance any otherwise unassigned empty expanse with an enlarged meaningful text region, a restrained evidence or scene fragment, a quiet structural field, or a supporting semantic region. Preserve a clear dominant focus and keep supporting regions visibly subordinate.
 
-Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience. Never substitute generic office or corporate workplace imagery — meeting rooms, desks, laptops, office monitors, whiteboards, office buildings, corridors, anonymous businesspeople or staged workplace scenes — for content-specific imagery.
+Final check, restated here because these are the easiest rules to drift on by the end of a long generation: a plain undirected connecting line is never used; at most one small, refined, precisely drawn arrow joining exactly two specific objects is permitted as defined in Section 2 step 8, never forking or branching toward multiple targets, never taking on a page-level organizing role such as a banner, spine, border or header, and never a decorative chain, a rough or heavy stroke, or the page's dominant visual element; icon count is zero by default, with no icon walls, grids or badge rows regardless of how the rest of the layout fills out.
 
-Prefer scene-based semantic visuals over literal real-world photos. The illustration should convey the page's meaning through interpretable business scenarios, key objects, visible actions or states, and clear relationship-driven composition, increasing semantic density and communication efficiency. A semantic scene may be constructed from the page's business logic even when the source does not name a literal physical environment, provided every visible element maps to the page content.
-
-默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。
-
-Do not depict organization names, logos, seals, signage, recognizable headquarters or landmarks. Keep real organization and person names in the editable text layer only. Generic workplace environments are not allowed as fallback visuals; non-location-specific facilities, control consoles, equipment rooms and industrial scenes may be used when they support a specific page semantic. Schematic screens, documents and interfaces may appear only when they represent a named content/data asset or business action; keep them text-free and never use them as decorative UI props. Factual numbers, labels and names remain in editable page text rather than embedded inside auxiliary imagery.
-
-Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery is text-free by default: no embedded words, labels, numbers, captions, UI copy, signage, pseudo-Chinese or decorative text inside illustrations, scenes, objects, screens, documents or interfaces. Text-free does not mean abstract or generic: preserve semantic specificity through recognizable objects, visible actions or states, spatial relationships and outcomes. If a locked label is essential, place it adjacent to the related visual as normal page text; keep supporting text subordinate to the page's locked on-screen text.
-
-连线：默认不使用连接线。仅当锁定内容明确声明跨对象关系，且邻接、对齐、包含、分区、留白、编号和颜色无法表达时，可使用一条细、实、无方向的深蓝连接线；不得形成流程串联、节点链、回路或装饰，不得跨越文字。获准连线必须连接两个对象外边界，不得悬空，圆点只用于真实接口、汇聚或分支。边框：整页可见边界最多两级，只用细线直角矩形或开放平面色场表达业务范围与必要子组；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框；禁止胶囊、厚框、梯形、切角、异形、玻璃舱和立体门框。箭头：禁止使用。形状：默认使用平面直角矩形、开放色场和轻微平面层次；同页异形标题条最多一个。禁止任何立体图标、微缩模型、立方体、服务器小模型、建筑小模型、悬浮物件、厚底座、多层台阶、夸张挤出和复杂光效。锁定内容未明确要求时，不生成对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。颜色：深蓝表达主关系和结论，浅蓝灰承载辅助信息，暖色只标记风险、异常、限制、禁止或待处理状态；不得仅为区分类目自动分配多色或彩虹色。
-边框、分隔线、获准的单条连接线、箭头和几何形状须体现精密矢量级工艺——线条粗细全程一致、直角平直、曲线圆滑连续无棱角抖动、边缘干净无锯齿，同一图形家族的圆角半径保持统一；多层平面色块须对齐同一网格、间距均匀，禁止任何立体层叠、交错错位投影、锯齿状或不均匀阴影边缘；边框与获准连接线应呈现如专业矢量工具绘制的精度，禁止手绘感抖动线、粗细不均、转角处衔接错位或断裂。如锁定内容确有必要并已按本风格图标规则获准使用单个具象图标，仅要求其保持小型、克制、深蓝、扁平并与整体精致线条工艺一致。若上屏文字本身已带有序号前缀（如①②③或数字编号），不得再额外绘制独立的装饰性数字徽章、圆盘或序号标记来重复表达同一序号；每个步骤/阶段的序号只呈现一次。线条与边框的"精密"只针对笔画本身的干净度（不歪、不抖、边缘清晰），不等于全页处处等大、等距、等圆角；禁止为了显得规整就把所有卡片、图标或获准连接线做成完全相同的尺寸和间距、套成一个僵硬的网格；应保留非对称留白、按内容重要性调整大小和视觉权重，让版式呈现高级编辑排版的手工节奏感，而不是模板化图表网格。
+**Typography:** MiSans-like Chinese sans-serif; crisp, geometric and restrained; clean squared stroke endings; evenly flattened glyphs — each character's width is fixed at roughly 1.35 times its height (equivalently, height about 74% of width), a balanced low, wide letterform that preserves reliable Chinese text rendering; avoid tall, narrow, condensed or vertically stretched glyphs and the square or near-square proportions a default Chinese sans-serif uses; keep character spacing open but restrained, never so wide that neighboring words crowd their text region; minimal softness or rounding; sharp high-resolution text edges; formal enterprise-report typography.
 
 ## 扩展风格10：纯白 + 深蓝领导汇报（与风格9相同，仅编号不同）
 
@@ -529,15 +460,15 @@ Use pure white `#FFFFFF` as the page-level background. Do not shift the overall 
 ### 2. Semantic anchor and composition — hard
 
 1. Identify the page’s core judgment and primary business relationship.
-2. Select one recognizable, page-specific business anchor: an operating scene, business object, content or data asset, visible action, evidence fragment or visible outcome.
-3. Give the dominant anchor approximately 35%–50% of the visual field when content permits.
+2. Select one recognizable, page-specific business anchor: an operating scene, business object, content or data asset, visible action, evidence fragment or visible outcome — or decide the page needs none and use a flat structured relationship field instead. Judge this from the content case by case; a structured enumeration (a price list, a course/module list, a channel or criteria table, or many distinct labeled items) usually has no single representative scene, so a flat field is often the simpler default there, but this is judgment, not a mechanical trigger. Either way, satisfy step 3 and Section 6's icon/material discipline: never fill space freed by dropping a scene with an icon set, icon wall, floating platform or badge cluster — plain whitespace, a quiet color field or a larger text region are fine uses of that space.
+3. Text sizing is decided first and is never negotiable: every locked text region must reach a comfortable executive-report reading scale before the anchor claims any space. The anchor's footprint is whatever the canvas has left afterward — never a fixed target such as a canvas-area percentage — and its dominance must come from scale contrast, crop, isolation, tonal weight and reading-path position, not from area. When a page's text volume already fills the available space at reading size, shrink, crop, simplify or drop the anchor; never shrink type or line spacing to preserve the anchor's size.
 4. Build one continuous, asymmetric and unequally weighted composition around it.
-5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.
+5. Organize two to five open semantic regions around, within or along the dominant anchor; they share one visual field and need no independent cards or icon containers. Judge multiple scene/evidence fragments by their combined footprint against step 3, not each one separately — several moderate photographs side by side can still starve text space even if none looks oversized alone.
 6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
 8. Keep connection lines absent by default. Express relationships through position, proximity, grouping, containment, alignment or numbering; use one plain undirected line only when an explicit cross-object relationship cannot be expressed otherwise.
 
-Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.
+Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships — never through reserving a fixed share of the canvas for any single element.
 
 Do not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages. The core judgment carries the greatest visual weight; supporting evidence remains quieter and subordinate.
 
@@ -563,9 +494,9 @@ Content explicitly marked as verbatim text, locked text, quoted source wording, 
 
 Do not rewrite, shorten, relabel, reorder or paraphrase explicitly verbatim content.
 
-#### Presentation-scale text layout
+#### Presentation-scale text layout — hard
 
-Allocate sufficient space for content before adding scenes, evidence, icons or decoration.
+Allocate sufficient space for content before adding scenes, evidence, icons or decoration; text space is fixed first, decoration fills only what remains. Follow the same discipline as the page blueprint's locked typography tiers: if a text region does not fit at its assigned level, restructure, regroup, refine the wording, resize its container, or move content to another page — never solve the conflict by dropping to a smaller, unregistered font size, and never solve it by shrinking a text region to keep a scene, illustration or photo at its intended size.
 
 Use one clear readable text region for each primary semantic unit; regions do not need matching size or position — content weight decides how each is shaped, and a generic scene must not crowd text into a minor corner.
 
@@ -580,6 +511,18 @@ Each primary semantic region should read as one integrated unit of text and visu
 Place text inside a quiet field within the scene, attach it to an object edge, align it with the corresponding action, or embed it in the outcome region. Visual splitting, line breaks and grouping must not alter the original sentence's logical relationship (for example turning a causal or conditional link into a flat parallel list). Font size, weight, color and position must not create a visual conclusion strength that misrepresents the source: a minor qualifier must not be made visually more prominent than the primary judgment it qualifies.
 
 The governing principle is: factual fidelity is fixed; presentation wording and hierarchy may adapt to improve executive readability.
+
+#### Text-region typographic composition — hard
+
+A text region is a designed paragraph, not a stacked list of "label: sentence" lines. Give every region a visible internal rhythm and hierarchy, not just a relationship to other regions:
+
+1. Use at least two size/weight steps inside each region — the lead judgment or item label visibly larger or heavier than its supporting detail; never one uniform scale for a whole region. Draw the steps from the page's locked typography tiers rather than inventing one.
+2. Use two spacing widths: a clearly larger gap between semantic groups than between a label and its own sentence or between lines inside one group. Uniform spacing throughout hides where ideas separate.
+3. Pick one alignment pattern per region and hold it for every item — either a fixed hanging-label column or an inline lead-in folded into the sentence — never mix both in one region.
+4. Use a standard presentation bullet convention to break up a bullet run when needed — a small solid round dot or a short vertical bar, repeated identically before each item. Never use a short horizontal dash or tick as a bullet mark: set beside Chinese text it reads as the character "一" and gets misread as content. This is ordinary bullet formatting, not the icon language banned elsewhere, so it does not count against the icon budget.
+5. Mark a sub-group boundary with a hairline rule or a narrow pale-blue-grey quiet field, not whitespace alone, so groups read apart without reading every word.
+6. Compose every "【label】"-style section header the same way across one page — same treatment, same weight relative to its body; do not give one region a header bar while an equal-standing region gets bare text.
+7. Never repeat a "label: sentence" pattern past four or five consecutive items without a pause — a larger gap, a sub-heading or a rule — that clusters them; an unbroken uniform run is exactly the flat, undesigned look this rule prevents.
 
 ### 4. Reusable composition grammars
 
@@ -615,7 +558,7 @@ Use one dominant scene or concrete business object, plus two to four quieter sup
 
 Create richness through semantic scene selection, cropping, scale and viewpoint changes — richness should come from meaningful business expression, not decorative objects.
 
-When the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. If the items are abstract directions with no distinct concrete referent, drop the scene entirely and use a flat, structured relationship field instead.
+When the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. Apply the same judgment as Section 2 step 2 — structured lists usually have no single scene worth representing. Splitting content into several small fragments instead of one large scene does not exempt it from that judgment or from step 3's text-sizing rule; fragments that collectively recreate a full-page photo composition still compete with text the same way one large scene would.
 
 Suitable visual material includes: semantically constructed business scenarios; content-specific operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something named or directly implied by the page content, and its business action, state or relationship should remain recognizable without relying on embedded text. Never use generic office or corporate workplace imagery as a fallback — including meeting rooms, desks, laptops, office monitors, whiteboards, office buildings, corridors, anonymous businesspeople or staged workplace scenes — and never use a generic control room, dashboard wall, stock BI screen or undifferentiated technology panorama as decoration. When the content is abstract, construct an interpretable semantic scene from the named actors, actions, conditions and outcomes, or use a flat structured relationship field; do not substitute generic technology props or meaningless abstract 3D objects.
 
@@ -666,7 +609,7 @@ Final result: one calm, highly readable and visually refined executive-report co
 
 This Style 10 definition is the controlling visual authority for every page that selects it. Reference images may influence palette, crop and polish only, never the semantic structure, content fidelity, composition grammar or icon discipline defined above. When a conflict arises, remove the lower-priority decorative element and keep the higher-priority rule, in the order already stated in Section 7's priority list.
 
-Do not reinterpret Style 10 into a card dashboard, icon infographic, SaaS marketing page or glossy 3D composition, even when such forms appear attractive in reference material. The final page must remain recognizably Style 10: concrete business meaning first, editorial hierarchy second, decoration last.
+Do not reinterpret Style 10 into a glossy SaaS-marketing card grid, icon infographic or 3D composition — rounded, shadowed cards with one icon and one headline each, repeated in a uniform grid — even when such forms appear attractive in reference material. Flat, thin-bordered panels sized to content weight remain a normal part of this style; what is banned is the glossy, icon-badge, uniform-grid treatment, not grouping content behind a border. The final page must remain recognizably Style 10: concrete business meaning first, editorial hierarchy second, decoration last.
 
 [Hard constraints]
 Render only the PowerPoint body visual on a 2048x1024 canvas.

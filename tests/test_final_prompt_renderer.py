@@ -65,7 +65,7 @@ class RenderFinalPromptTests(unittest.TestCase):
 
     def test_style09_terminal_lock_ends_up_at_absolute_end(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"
-        terminal = "保持纯白底，并保持唯一视觉中心。"
+        terminal = "formal enterprise-report typography."
         style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
@@ -91,7 +91,7 @@ class RenderFinalPromptTests(unittest.TestCase):
 
     def test_style09_terminal_lock_preserves_hard_constraints(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"
-        terminal = "保持纯白底，并保持唯一视觉中心。"
+        terminal = "formal enterprise-report typography."
         style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
@@ -122,6 +122,23 @@ class RenderFinalPromptTests(unittest.TestCase):
         # after the preserved hard constraints -- not the other way round.
         self.assertTrue(prompt.rstrip().endswith(terminal))
         self.assertLess(prompt.index("Do not invent a center hub"), prompt.rindex(terminal))
+
+    def test_style09_current_chinese_terminal_lock_is_reasserted(self) -> None:
+        terminal = "formal enterprise-report typography."
+        style_contract = f"STYLE09 body rules.\n\n【风格09最终执行锁｜最高优先级】\n\n{terminal}"
+        with tempfile.TemporaryDirectory() as directory:
+            lock = Path(directory) / "style09.json"
+            lock.write_text(
+                json.dumps(
+                    {"style": {"id": 9, "name": "Style09", "slug": "style09", "prompt_contract": style_contract}}
+                ),
+                encoding="utf-8",
+            )
+            prompt = render_final_prompt(_sample_ir(runtime_lock=RuntimeLockIR(style_contract=style_contract)), style_id=9, style_lock=lock)
+
+        self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
+        self.assertEqual(1, prompt.count(terminal))
+        self.assertTrue(prompt.rstrip().endswith(terminal))
 
     def test_style09_requires_style_lock(self) -> None:
         with self.assertRaisesRegex(ValueError, "style lock"):
