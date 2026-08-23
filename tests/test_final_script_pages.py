@@ -925,7 +925,10 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual("production_ready", summary["image_to_editable_svg_build"]["status"])
         build.assert_called_once()
         render_qa.assert_called_once()
-        self.assertIsNone(summary["clean_base_generation"])
+        self.assertEqual(
+            "cyberppt.stage02.clean_base_generation.v1",
+            summary["clean_base_generation"]["schema"],
+        )
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
         self.assertEqual(expected["delivery_readiness"], summary["production_readiness"])

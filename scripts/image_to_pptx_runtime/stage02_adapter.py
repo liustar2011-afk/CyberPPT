@@ -79,7 +79,7 @@ def _quick_page_binding(pair: Mapping[str, Any], authored: Path) -> dict[str, st
         "full_image_sha256": _sha256(full),
         "clean_base_sha256": _sha256(clean) if clean.is_file() else "",
         "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".intra-text-v1",
-        "clean_base_policy_schema": CLEAN_BASE_SCHEMA + ".verified-pixel-mask-v1",
+        "clean_base_policy_schema": CLEAN_BASE_SCHEMA + ".verified-pixel-mask-v13",
     }
 
 

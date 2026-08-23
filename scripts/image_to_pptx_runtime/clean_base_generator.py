@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import statistics
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -12,9 +13,8 @@ from PIL import Image
 
 from .clean_base_policy import SCHEMA
 from scripts.imagegen_pipeline.providers.codex_oauth_image import raw_output_path, run_codex_image
-
-
 _GLYPH_DISTANCE_THRESHOLD = 20
+_CLEARANCE_PADDING_PX = 6
 
 
 def _sha256(path: Path) -> str:
@@ -41,6 +41,22 @@ def _bbox(value: object, *, width: int, height: int) -> tuple[int, int, int, int
     return left, top, right, bottom
 
 
+def _padded_bbox(
+    box: tuple[int, int, int, int],
+    *,
+    width: int,
+    height: int,
+    padding: int = _CLEARANCE_PADDING_PX,
+) -> tuple[int, int, int, int]:
+    left, top, right, bottom = box
+    return (
+        max(0, left - padding),
+        max(0, top - padding),
+        min(width, right + padding),
+        min(height, bottom + padding),
+    )
+
+
 def _ring_pixels(image: Image.Image, box: tuple[int, int, int, int], *, padding: int = 4) -> list[tuple[int, int, int]]:
     left, top, right, bottom = box
     outer = (
@@ -65,6 +81,23 @@ def _flat_surface_color(image: Image.Image, box: tuple[int, int, int, int]) -> t
     channels = list(zip(*pixels))
     if max(statistics.pstdev(channel) for channel in channels) > 18:
         return None
+    return tuple(int(statistics.median(channel)) for channel in channels)
+
+
+def _dominant_surface_color(image: Image.Image, box: tuple[int, int, int, int]) -> tuple[int, int, int] | None:
+    """Accept a dark or light planar field whose text makes ring variance noisy."""
+
+    pixels = _ring_pixels(image, box, padding=8)
+    if len(pixels) < 12:
+        return None
+    buckets: dict[tuple[int, int, int], list[tuple[int, int, int]]] = {}
+    for pixel in pixels:
+        key = tuple(channel // 24 for channel in pixel)
+        buckets.setdefault(key, []).append(pixel)
+    dominant = max(buckets.values(), key=len)
+    if len(dominant) / len(pixels) < 0.48:
+        return None
+    channels = list(zip(*dominant))
     return tuple(int(statistics.median(channel)) for channel in channels)
 
 
@@ -296,12 +329,75 @@ def _post_clean_ocr(image_path: Path, regions: list[dict[str, Any]]) -> tuple[bo
     return not residual, residual
 
 
-def _native_regions(policy: Mapping[str, Any], *, width: int, height: int) -> tuple[list[dict[str, Any]], list[str]]:
+def _svg_text_boxes(authored_svg: Path, *, width: int, height: int) -> dict[str, tuple[int, int, int, int]]:
+    """Recover tight text bounds when an upstream OCR bbox is clearly corrupt."""
+    if not authored_svg.is_file():
+        return {}
+    try:
+        root = ET.parse(authored_svg).getroot()
+    except (OSError, ET.ParseError):
+        return {}
+    boxes: dict[str, tuple[int, int, int, int]] = {}
+    for node in root.iter():
+        if node.tag.rsplit("}", 1)[-1] != "text":
+            continue
+        item_id = _text(node.get("data-cyberppt-text-id"))
+        if not item_id:
+            continue
+        try:
+            font_size = float(node.get("font-size") or 24)
+            inherited_x = float(node.get("x") or 0)
+            inherited_y = float(node.get("y") or 0)
+        except ValueError:
+            continue
+        line_boxes: list[tuple[float, float, float, float]] = []
+        tspans = [child for child in node if child.tag.rsplit("}", 1)[-1] == "tspan"] or [node]
+        cursor_x = inherited_x
+        cursor_y = inherited_y
+        for span in tspans:
+            content = "".join(span.itertext()).strip()
+            if not content:
+                continue
+            try:
+                x = float(span.get("x")) if span.get("x") is not None else cursor_x
+                y = float(span.get("y")) if span.get("y") is not None else cursor_y
+                size = float(span.get("font-size") or font_size)
+            except ValueError:
+                continue
+            estimated_width = sum(size if ord(char) > 127 else size * 0.58 for char in content)
+            line_boxes.append((x, y - size * 1.15, x + estimated_width, y + size * 0.25))
+            cursor_x = x + estimated_width
+            cursor_y = y
+        if not line_boxes:
+            continue
+        candidate = _bbox(
+            [
+                min(box[0] for box in line_boxes),
+                min(box[1] for box in line_boxes),
+                max(box[2] for box in line_boxes) + font_size * 5,
+                max(box[3] for box in line_boxes),
+            ],
+            width=width,
+            height=height,
+        )
+        if candidate is not None:
+            boxes[item_id] = candidate
+    return boxes
+
+
+def _native_regions(
+    policy: Mapping[str, Any],
+    *,
+    width: int,
+    height: int,
+    authored_svg: Path | None = None,
+) -> tuple[list[dict[str, Any]], list[str]]:
     regions: list[dict[str, Any]] = []
     errors: list[str] = []
     raw_items = policy.get("items") if isinstance(policy, Mapping) else None
     if not isinstance(raw_items, list):
         return [], ["graphic_text_policy.items must be a list"]
+    svg_boxes = _svg_text_boxes(authored_svg, width=width, height=height) if authored_svg else {}
     for item in raw_items:
         if not isinstance(item, Mapping) or _text(item.get("treatment")) != "native_text":
             continue
@@ -315,8 +411,41 @@ def _native_regions(policy: Mapping[str, Any], *, width: int, height: int) -> tu
         if not item_id or not text or box is None:
             errors.append(f"native_text {item_id or text or '<unnamed>'} requires id, text, and bbox before clean-base generation")
             continue
+        box_area = (box[2] - box[0]) * (box[3] - box[1])
+        if box_area > 120_000 and item_id in svg_boxes:
+            svg_box = svg_boxes[item_id]
+            box = (svg_box[0], svg_box[1], min(box[2], svg_box[2]), svg_box[3])
         regions.append({"policy_id": item_id, "text": text, "bbox": box})
     return regions, errors
+
+
+def _declared_clearance_bbox(
+    image: Image.Image,
+    region: Mapping[str, Any],
+) -> tuple[int, int, int, int]:
+    box = region["bbox"]
+    padded = _padded_bbox(box, width=image.width, height=image.height)
+    area = (padded[2] - padded[0]) * (padded[3] - padded[1])
+    surface = (
+        _flat_surface_color(image, padded) or _dominant_surface_color(image, padded)
+        if area <= 120_000
+        else None
+    )
+    circled_prefixes = "①②③④⑤⑥⑦⑧⑨⑩"
+    if (
+        surface is not None
+        and sum(surface) / 3 < 90
+        and _text(region.get("text"))[:1] in circled_prefixes
+    ):
+        left, top, right, bottom = padded
+        extra_left = max(_CLEARANCE_PADDING_PX, box[3] - box[1] + 8)
+        expanded_left = max(0, left - extra_left)
+        scan_y = min(image.height - 1, max(0, top))
+        scan_x = min(image.width - 1, max(0, left))
+        while scan_x > expanded_left and sum(image.getpixel((scan_x, scan_y))) / 3 < 130:
+            scan_x -= 1
+        return max(expanded_left, scan_x + 1), top, right, bottom
+    return padded
 
 
 def _reference_edit_clean_base(source: Path, destination: Path, regions: list[dict[str, Any]]) -> None:
@@ -327,6 +456,17 @@ def _reference_edit_clean_base(source: Path, destination: Path, regions: list[di
     rebuilt = original.copy()
     fallback: list[dict[str, Any]] = []
     for region in regions:
+        padded = _declared_clearance_bbox(original, region)
+        region["clearance_bbox"] = padded
+        padded_area = (padded[2] - padded[0]) * (padded[3] - padded[1])
+        padded_surface = (
+            _flat_surface_color(original, padded) or _dominant_surface_color(original, padded)
+            if padded_area <= 120_000
+            else None
+        )
+        if padded_surface is not None:
+            rebuilt.paste(padded_surface, padded)
+            continue
         assessment = _assess_text_clearability(
             original,
             text=region["text"],
@@ -341,41 +481,36 @@ def _reference_edit_clean_base(source: Path, destination: Path, regions: list[di
                 surface=tuple(int(value) for value in surface),
             )
         else:
-            fallback.append(region)
-    if not fallback:
-        rebuilt.save(destination)
-        return
-    requested = "\n".join(
-        f"- region {item['policy_id']} at {list(item['bbox'])}: remove the editable text {item['text']!r}"
-        for item in fallback
-    )
-    raw_destination = destination.with_name(destination.stem + ".reference-edit.png")
-    run_codex_image(
-        prompt=(
-            "Using the supplied PPT body visual as the sole reference, create a same-canvas clean base. "
-            "Remove every listed editable text region and reconstruct only the newly exposed local background. "
-            "Preserve all remaining objects, borders, geometry, colors, positions, and composition exactly. "
-            "Render no text, labels, numbers, logos, or pseudo-Chinese anywhere.\n"
-            + requested
-        ),
-        output_path=raw_destination,
-        image_paths=[source],
-        size=f"{source_size[0]}x{source_size[1]}",
-        quality="high",
-        force=True,
-        postprocess=False,
-    )
-    with Image.open(raw_destination) as edited:
-        edited_rgb = edited.convert("RGB").resize(source_size, Image.Resampling.LANCZOS)
-    # The image model is only a local fill provider. Never accept its pixels
-    # outside a declared text mask: doing so previously moved bullets, icons,
-    # borders, and other protected geometry across the page.
-    for region in fallback:
-        left, top, right, bottom = region["bbox"]
-        rebuilt.paste(edited_rgb.crop((left, top, right, bottom)), (left, top))
+            fallback.append({**region, "paste_bbox": padded})
+    if fallback:
+        requested = "\n".join(
+            f"- region {item['policy_id']} at {list(item['paste_bbox'])}: remove the editable text {item['text']!r}"
+            for item in fallback
+        )
+        raw_destination = destination.with_name(destination.stem + ".reference-edit.png")
+        run_codex_image(
+            prompt=(
+                "Using the supplied PPT body visual as the sole reference, create a same-canvas clean base. "
+                "Remove every listed editable text region and reconstruct only the newly exposed local background. "
+                "Preserve all remaining objects, borders, geometry, colors, positions, and composition exactly. "
+                "Render no text, labels, numbers, logos, or pseudo-Chinese anywhere.\n"
+                + requested
+            ),
+            output_path=raw_destination,
+            image_paths=[source],
+            size=f"{source_size[0]}x{source_size[1]}",
+            quality="high",
+            force=True,
+            postprocess=False,
+        )
+        with Image.open(raw_destination) as edited:
+            edited_rgb = edited.convert("RGB").resize(source_size, Image.Resampling.LANCZOS)
+        for region in fallback:
+            left, top, right, bottom = region["paste_bbox"]
+            rebuilt.paste(edited_rgb.crop((left, top, right, bottom)), (left, top))
+        raw_destination.unlink(missing_ok=True)
+        raw_output_path(raw_destination).unlink(missing_ok=True)
     rebuilt.save(destination)
-    raw_destination.unlink(missing_ok=True)
-    raw_output_path(raw_destination).unlink(missing_ok=True)
 
 
 def prepare_clean_bases(
@@ -414,7 +549,13 @@ def prepare_clean_bases(
             continue
         with Image.open(full_path) as source:
             image = source.convert("RGB")
-        regions, errors = _native_regions(policy, width=image.width, height=image.height)
+        authored_svg = Path(str(pair.get("authoring_svg") or "")).expanduser()
+        regions, errors = _native_regions(
+            policy,
+            width=image.width,
+            height=image.height,
+            authored_svg=authored_svg,
+        )
         if errors or not regions:
             results.append({"page_number": page_number, "status": "auto_failed", "errors": errors or ["no native_text regions were declared"]})
             continue
@@ -425,8 +566,17 @@ def prepare_clean_bases(
             and existing.get("coordinate_space") == "full-image-pixels.v3"
             and existing.get("coordinate_binding") == policy.get("coordinate_binding")
             and (existing.get("visual_diff_report") or {}).get("method")
-            == "masked-reference-reconstruction-v2"
+            == "masked-hybrid-reconstruction-v13"
         ):
+            existing["cleaned_text_regions"] = [
+                {
+                    "policy_id": region["policy_id"],
+                    "text": region["text"],
+                    "bbox": list(_declared_clearance_bbox(image, region)),
+                    "method": "reference-image-reconstruction",
+                }
+                for region in regions
+            ]
             results.append({"page_number": page_number, "status": "reused", "path": existing.get("path")})
             continue
         destination = assets / f"page_{page_number:03d}_clean_base.png"
@@ -435,7 +585,7 @@ def prepare_clean_bases(
             {
                 "policy_id": region["policy_id"],
                 "text": region["text"],
-                "bbox": list(region["bbox"]),
+                "bbox": list(region.get("clearance_bbox") or region["bbox"]),
                 "method": "reference-image-reconstruction",
             }
             for region in regions
@@ -449,12 +599,12 @@ def prepare_clean_bases(
             "removal_scope": "native_text_only",
             "coordinate_space": "full-image-pixels.v3",
             "coordinate_binding": dict(policy.get("coordinate_binding") or {}),
-            "clearance_padding_px": 6,
+            "clearance_padding_px": _CLEARANCE_PADDING_PX,
             "max_outside_mask_changed_fraction": 0.01,
             "cleaned_text_regions": clean_regions,
             "visual_diff_report": {
                 "status": "passed",
-                "method": "masked-reference-reconstruction-v2",
+                "method": "masked-hybrid-reconstruction-v13",
                 "checks": {
                     "text_removal": "passed",
                     "background_continuity": "passed",

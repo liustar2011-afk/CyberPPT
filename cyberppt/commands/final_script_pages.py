@@ -34,6 +34,7 @@ from scripts.image_to_pptx_runtime.stage02_adapter import (
     CANONICAL_EDITABLE_PPTX_ROUTE,
     run_stage02_reconstruction,
 )
+from scripts.image_to_pptx_runtime.clean_base_generator import prepare_clean_bases
 from scripts.imagegen_pipeline.providers.codex_oauth_image import (
     ensure_output_size,
     run_codex_image,
@@ -966,6 +967,12 @@ def run_final_script_pages(
     rebuild_status: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "editable_svg"
     if production_build:
+        if assembly_mode in {"editable", "both"}:
+            clean_base_generation = prepare_clean_bases(
+                manifest,
+                output_dir=target_dir / "authoring" / "assets",
+            )
+            _write_json(manifest_path, manifest)
         # Policy, clean-base and authored-SVG preparation update the manifest.
         # Refresh the orchestration binding immediately before the adapter
         # consumes it; otherwise the adapter correctly rejects its own parent
