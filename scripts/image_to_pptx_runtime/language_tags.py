@@ -9,7 +9,7 @@ Usage:
     Import ``normalize_language_tag`` from another script.
 
 Examples:
-    from scripts.image_to_pptx_runtime.language_tags import normalize_language_tag
+    from language_tags import normalize_language_tag
     normalize_language_tag("Chinese")
 
 Dependencies:

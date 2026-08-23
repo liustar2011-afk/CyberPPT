@@ -8,7 +8,7 @@ Usage:
     Import from ``svg_quality.checker`` or another ``svg_quality`` module.
 
 Examples:
-    from scripts.image_to_pptx_runtime.svg_quality.xml_support import local_name
+    from svg_quality.xml_support import local_name
 
 Dependencies:
     Standard library only.

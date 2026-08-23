@@ -10,7 +10,7 @@ Usage:
     Imported by mirror materialization, SVG validation, and SVG-to-PPTX export.
 
 Examples:
-    from scripts.image_to_pptx_runtime.native_payloads import hydrate_native_payload_refs
+    from native_payloads import hydrate_native_payload_refs
 
 Dependencies:
     None (standard library only).

@@ -5,10 +5,10 @@ PPT Master - PPTX Shape Errors
 Shared exception types for the DrawingML preset-geometry package.
 
 Usage:
-    Import exception classes from scripts.image_to_pptx_runtime.pptx_shapes.errors.
+    Import exception classes from pptx_shapes.errors.
 
 Examples:
-    from scripts.image_to_pptx_runtime.pptx_shapes.errors import FormulaEvaluationError
+    from pptx_shapes.errors import FormulaEvaluationError
 
 Dependencies:
     None (only uses standard library)

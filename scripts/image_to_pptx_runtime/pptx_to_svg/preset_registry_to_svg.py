@@ -5,7 +5,7 @@ PPT Master - Preset Geometry SVG Adapter
 Render evaluated DrawingML preset geometry as absolute SVG path layers.
 
 Usage:
-    Import render_preset_geometry from scripts.image_to_pptx_runtime.pptx_to_svg.preset_registry_to_svg.
+    Import render_preset_geometry from pptx_to_svg.preset_registry_to_svg.
 
 Examples:
     geometry = render_preset_geometry("rightArrow", xfrm)
@@ -20,7 +20,7 @@ import math
 from dataclasses import dataclass
 from typing import Mapping
 
-from scripts.image_to_pptx_runtime.pptx_shapes import get_preset_registry
+from pptx_shapes import get_preset_registry
 
 from .emu_units import Xfrm, fmt_num
 

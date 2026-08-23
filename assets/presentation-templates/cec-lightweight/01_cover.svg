@@ -10,7 +10,7 @@
   </g>
 
   <!-- 上半浅色区域：标题 -->
-  <text x="640" y="250" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="54" font-weight="700" fill="#1F2933">{{TITLE}}</text>
+  <text x="640" y="250" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="50" font-weight="700" fill="#1F2933">{{TITLE}}</text>
 
   <!-- 下半深蓝区域：作者、机构名称、日期 -->
   <text x="640" y="500" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#EAF3FF" fill-opacity="0.85">{{AUTHOR}}</text>

@@ -10,7 +10,7 @@
     </linearGradient>
   </defs>
   <!-- Light atmosphere band between chrome; edge softness should live in the PNG itself. -->
-  <image x="0" y="87" width="1280" height="611" href="section_bg.png" xlink:href="section_bg.png" preserveAspectRatio="xMidYMid slice"/>
+  <image x="0" y="87" width="1280" height="611" href="section_bg.png" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="87" width="1280" height="611" fill="url(#sectionLeftWash)"/>
   <text x="96" y="268" font-family="Microsoft YaHei, Arial, sans-serif" font-size="26" font-weight="700" fill="#8B0000">{{SECTION_NO}}</text>
   <text x="96" y="348" font-family="Microsoft YaHei, Arial, sans-serif" font-size="52" font-weight="700" fill="#123B66">{{SECTION_TITLE}}</text>

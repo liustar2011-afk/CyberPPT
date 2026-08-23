@@ -9,7 +9,7 @@ cross-platform process-liveness check and the claim/read/release lock logic so
 the two servers cannot drift apart.
 
 Usage:
-    from scripts.image_to_pptx_runtime.server_common import find_free_port, validate_port
+    from server_common import find_free_port, validate_port
 
 Dependencies:
     None (only uses standard library)
@@ -23,7 +23,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-from scripts.image_to_pptx_runtime.workflow_transcript import DISABLE_TRANSCRIPT_ENV
+from workflow_transcript import DISABLE_TRANSCRIPT_ENV
 
 
 MIN_PORT = 1

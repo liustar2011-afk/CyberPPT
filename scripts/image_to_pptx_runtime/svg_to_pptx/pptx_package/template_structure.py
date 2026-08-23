@@ -26,8 +26,8 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.native_payloads import NativePayloadError, hydrate_native_payload_refs
-from scripts.image_to_pptx_runtime.pptx_to_svg.preset_authoring import (
+from native_payloads import NativePayloadError, hydrate_native_payload_refs
+from pptx_to_svg.preset_authoring import (
     authored_preset_encoding,
     validate_authored_preset_group,
 )
@@ -123,6 +123,7 @@ TEMPLATE_ADHERENCE_MODES = frozenset({"strict", "adaptive"})
 TEMPLATE_REUSE_SCOPES = frozenset({"mirror", "layout", "style"})
 PLACEHOLDER_BINDING_MODES = frozenset({"carrier", "proxy"})
 _TEMPLATE_SKIN_ATTRS = frozenset({
+    "baseline-shift",
     "color",
     "fill",
     "fill-opacity",

@@ -59,10 +59,10 @@ _ROOT_SCRIPTS_DIR = _SCRIPTS_DIR.parent
 if str(_ROOT_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_ROOT_SCRIPTS_DIR))
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio  # noqa: E402
-from scripts.image_to_pptx_runtime.resource_paths import icon_search_dirs_for_project  # noqa: E402
-from scripts.image_to_pptx_runtime.slide_roster import discover_slide_svgs  # noqa: E402
-from scripts.image_to_pptx_runtime.server_common import (  # noqa: E402
+from console_encoding import configure_utf8_stdio  # noqa: E402
+from resource_paths import icon_search_dirs_for_project  # noqa: E402
+from slide_roster import discover_slide_svgs  # noqa: E402
+from server_common import (  # noqa: E402
     claim_lock as _claim_lock,
     clear_lock as _clear_lock,
     find_free_port as _find_free_port,
@@ -92,7 +92,7 @@ from embed_icons import (  # noqa: E402
     extract_paths_from_icon,
     generate_icon_group,
 )
-from scripts.image_to_pptx_runtime.svg_to_pptx.geometry_properties import (  # noqa: E402
+from svg_to_pptx.geometry_properties import (  # noqa: E402
     GeometryStyleError,
     INLINE_GEOMETRY_PROPERTIES,
     materialize_inline_geometry_properties,

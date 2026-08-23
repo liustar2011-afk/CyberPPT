@@ -16,7 +16,8 @@ Dependencies:
 import sys
 from pathlib import Path
 
-from scripts.image_to_pptx_runtime.slide_roster import discover_slide_svgs
+from attribution_guard import require_skill_integrity
+from slide_roster import discover_slide_svgs
 
 from .checker import SVGQualityChecker
 
@@ -74,6 +75,8 @@ def print_usage() -> None:
     print("                                  requires the complete declared page roster.")
     print("  --json                         Write a machine-readable quality report")
     print("  --json-output <path>           Override the JSON report path")
+    print("  --export                       Write a plain-text quality report")
+    print("  --output <path>                Override the plain-text report path")
     print("  --quick-generate               Validate lockless flat Quick Generate SVGs;")
     print("                                  ignore design_spec.md and spec_lock.md.")
     print("  --template-mode               Validate a template workspace's templates/ directory:")
@@ -90,6 +93,7 @@ def print_usage() -> None:
 
 def main() -> None:
     """Run the CLI entry point."""
+    require_skill_integrity()
     if len(sys.argv) < 2:
         print_usage()
         sys.exit(0)
@@ -139,7 +143,7 @@ def main() -> None:
             print("[ERROR] --stage first-page does not support --all")
             sys.exit(1)
         base_dir = sys.argv[2] if len(sys.argv) > 2 else "examples"
-        from scripts.image_to_pptx_runtime.project_utils import find_all_projects
+        from project_utils import find_all_projects
 
         projects = find_all_projects(base_dir)
 

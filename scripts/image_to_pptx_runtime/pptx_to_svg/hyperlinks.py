@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from scripts.image_to_pptx_runtime.hyperlink_contract import (
+from hyperlink_contract import (
     HYPERLINK_REL_TYPE,
     HyperlinkContractError,
     SLIDE_JUMP_ACTION,

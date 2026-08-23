@@ -12,8 +12,8 @@ import re
 from dataclasses import dataclass
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_effects import unsupported_effect_metadata
-from scripts.image_to_pptx_runtime.pptx_shapes.formula import OOXML_COORDINATE_MAX
+from pptx_effects import unsupported_effect_metadata
+from pptx_shapes.formula import OOXML_COORDINATE_MAX
 
 from .color_resolver import COLOR_TAGS, ColorPalette, resolve_color
 from .emu_units import NS, emu_to_px, fmt_num, format_ooxml_alpha

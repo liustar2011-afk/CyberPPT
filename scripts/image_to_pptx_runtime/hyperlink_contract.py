@@ -6,7 +6,7 @@ Parse and validate the shared SVG hyperlink surface used by quality checks,
 SVG-to-PPTX export, and PPTX-to-SVG round-trip conversion.
 
 Usage:
-    from scripts.image_to_pptx_runtime.hyperlink_contract import parse_hyperlink_target
+    from hyperlink_contract import parse_hyperlink_target
 
 Examples:
     parse_hyperlink_target("https://example.com")

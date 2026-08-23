@@ -5,7 +5,7 @@ PPT Master - Preset Shape Registry
 Expose the complete preset catalog and evaluate shape geometry instances.
 
 Usage:
-    Import get_preset_registry from scripts.image_to_pptx_runtime.pptx_shapes.registry.
+    Import get_preset_registry from pptx_shapes.registry.
 
 Examples:
     geometry = get_preset_registry().evaluate("rightArrow", 320, 160)

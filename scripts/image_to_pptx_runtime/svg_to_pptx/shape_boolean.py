@@ -8,7 +8,7 @@ Callers insert returned paths at the original z-order under the final semantic
 or structured parent, never under the old transformed ancestor.
 
 Usage:
-    Import render_boolean_svg_fragments from scripts.image_to_pptx_runtime.svg_to_pptx.shape_boolean.
+    Import render_boolean_svg_fragments from svg_to_pptx.shape_boolean.
 
 Examples:
     fragment = render_boolean_svg_fragments(
@@ -31,13 +31,13 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_to_svg.emu_units import Xfrm
-from scripts.image_to_pptx_runtime.pptx_to_svg.preset_authoring import (
+from pptx_to_svg.emu_units import Xfrm
+from pptx_to_svg.preset_authoring import (
     authored_preset_encoding,
     validate_authored_preset_group,
 )
-from scripts.image_to_pptx_runtime.pptx_to_svg.preset_registry_to_svg import render_preset_geometry
-from scripts.image_to_pptx_runtime.pptx_to_svg.preset_svg_markup import attrs_to_xml
+from pptx_to_svg.preset_registry_to_svg import render_preset_geometry
+from pptx_to_svg.preset_svg_markup import attrs_to_xml
 
 from .drawingml.context import AffineMatrix, IDENTITY_MATRIX
 from .drawingml.paths import (

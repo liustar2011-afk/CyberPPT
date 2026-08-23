@@ -477,7 +477,7 @@ def _import_embed_icons():
     scripts_dir = Path(__file__).resolve().parent.parent
     if str(scripts_dir) not in sys.path:
         sys.path.insert(0, str(scripts_dir))
-    from scripts.image_to_pptx_runtime.svg_finalize import embed_icons  # type: ignore
+    from svg_finalize import embed_icons  # type: ignore
     return embed_icons
 
 

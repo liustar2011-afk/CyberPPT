@@ -23,7 +23,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio
+from console_encoding import configure_utf8_stdio
 
 configure_utf8_stdio()
 

@@ -6,11 +6,22 @@ It deliberately has no runtime dependency on an external PPT-Master checkout.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 
+# The vendored files below this package are kept byte-identical to ppt-master.
+# Upstream executes them with its scripts directory on sys.path and therefore
+# uses top-level imports such as ``pptx_shapes`` and ``svg_to_pptx``.  Expose
+# this internal directory in the same way, while keeping the external checkout
+# completely out of the runtime dependency graph.
+_RUNTIME_ROOT = Path(__file__).resolve().parent
+if str(_RUNTIME_ROOT) not in sys.path:
+    sys.path.insert(0, str(_RUNTIME_ROOT))
+
+
 def runtime_root() -> Path:
-    return Path(__file__).resolve().parent
+    return _RUNTIME_ROOT
 
 
 def assert_internal_runtime() -> None:

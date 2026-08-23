@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Optional
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio
+from console_encoding import configure_utf8_stdio
 
 configure_utf8_stdio()
 

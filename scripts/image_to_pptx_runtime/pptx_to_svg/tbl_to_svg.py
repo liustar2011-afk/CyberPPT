@@ -42,7 +42,7 @@ from dataclasses import dataclass
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_effects import txbody_has_run_effects
+from pptx_effects import txbody_has_run_effects
 
 from .color_resolver import ColorPalette, find_color_elem, resolve_color
 from .emu_units import (

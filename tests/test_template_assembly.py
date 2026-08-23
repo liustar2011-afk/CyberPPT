@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
 
+import pytest
 from PIL import Image
 
 from scripts.image_to_pptx_runtime.template_assembly import (
@@ -15,29 +16,18 @@ from scripts.image_to_pptx_runtime.template_assembly import (
 from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.elements import _project_image_href
 
 
-def test_project_image_accepts_equivalent_href_and_xlink_href() -> None:
+@pytest.mark.parametrize("xlink_href", ["template.png", "other.png"])
+def test_project_image_rejects_dual_href_attributes(xlink_href: str) -> None:
     image = ET.fromstring(
         '<image xmlns="http://www.w3.org/2000/svg" '
         'xmlns:xlink="http://www.w3.org/1999/xlink" '
-        'href="template.png" xlink:href="template.png"/>'
+        f'href="template.png" xlink:href="{xlink_href}"/>'
     )
 
-    assert _project_image_href(image) == "template.png"
-
-
-def test_project_image_rejects_conflicting_href_and_xlink_href() -> None:
-    image = ET.fromstring(
-        '<image xmlns="http://www.w3.org/2000/svg" '
-        'xmlns:xlink="http://www.w3.org/1999/xlink" '
-        'href="template.png" xlink:href="other.png"/>'
-    )
-
-    try:
+    with pytest.raises(ValueError) as exc_info:
         _project_image_href(image)
-    except ValueError as exc:
-        assert str(exc) == "conflicting href and xlink:href values"
-    else:
-        raise AssertionError("conflicting image references must fail")
+
+    assert str(exc_info.value) == "requires exactly one href or xlink:href"
 
 
 def test_structural_page_roles_render_native_copy_without_ending_page_overflow(tmp_path: Path) -> None:

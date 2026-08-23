@@ -10,9 +10,9 @@ from pathlib import Path, PureWindowsPath
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.hyperlink_contract import SHAPE_HYPERLINK_ATTR
+from hyperlink_contract import SHAPE_HYPERLINK_ATTR
 
-from scripts.image_to_pptx_runtime.pptx_animations import (
+from pptx_animations import (
     ANIMATIONS,
     ANIMATION_AFTER_EFFECTS,
     ANIMATION_MODES,
@@ -26,12 +26,12 @@ from scripts.image_to_pptx_runtime.pptx_animations import (
     normalize_animation_effect_request,
     normalize_animation_trigger,
 )
-from scripts.image_to_pptx_runtime.pptx_transitions import (
+from pptx_transitions import (
     normalize_transition_effect,
     normalize_transition_effect_request,
     validate_seconds,
 )
-from scripts.image_to_pptx_runtime.slide_roster import discover_slide_svgs
+from slide_roster import discover_slide_svgs
 
 from .drawingml.utils import SVG_NS
 from .pptx_package.narration import AUDIO_CONTENT_TYPES

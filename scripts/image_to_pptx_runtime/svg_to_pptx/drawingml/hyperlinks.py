@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import re
 
-from scripts.image_to_pptx_runtime.hyperlink_contract import (
+from hyperlink_contract import (
     HYPERLINK_REL_TYPE,
     SLIDE_JUMP_ACTION,
     SLIDE_REL_TYPE,

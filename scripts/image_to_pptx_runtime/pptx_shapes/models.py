@@ -5,10 +5,10 @@ PPT Master - PPTX Shape Models
 Immutable value objects shared by the preset catalog loader and evaluator.
 
 Usage:
-    Import model classes from scripts.image_to_pptx_runtime.pptx_shapes.models.
+    Import model classes from pptx_shapes.models.
 
 Examples:
-    from scripts.image_to_pptx_runtime.pptx_shapes.models import GuideDefinition
+    from pptx_shapes.models import GuideDefinition
 
 Dependencies:
     None (only uses standard library)

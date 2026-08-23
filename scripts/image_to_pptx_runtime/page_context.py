@@ -9,7 +9,7 @@ Usage:
     Import the public projection helpers from this module.
 
 Examples:
-    from scripts.image_to_pptx_runtime.page_context import build_page_context
+    from page_context import build_page_context
 
 Dependencies:
     Same as project_management.page_context.

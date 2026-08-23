@@ -27,7 +27,7 @@ from xml.sax.saxutils import escape, quoteattr
 from pptx import Presentation
 from pptx.util import Emu
 
-from scripts.image_to_pptx_runtime.pptx_transitions import (
+from pptx_transitions import (
     MorphPairExpectation,
     NATIVE_TRANSITIONS,
     create_transition_xml,
@@ -38,7 +38,7 @@ from scripts.image_to_pptx_runtime.pptx_transitions import (
     validate_pptx_transition_package,
     validate_seconds,
 )
-from scripts.image_to_pptx_runtime.pptx_animations import (
+from pptx_animations import (
     ANIMATION_TIMING_OPTION_FIELDS,
     animation_seconds_to_milliseconds,
     create_sequence_timing_xml,
@@ -49,13 +49,13 @@ from scripts.image_to_pptx_runtime.pptx_animations import (
     validate_generated_animation_xml,
     validate_pptx_animation_package,
 )
-from scripts.image_to_pptx_runtime.pptx_opc_validation import (
+from pptx_opc_validation import (
     canonical_opc_part_path as _canonical_opc_part_path,
     resolve_internal_opc_target as _resolve_internal_opc_target,
     verify_internal_relationships,
 )
-from scripts.image_to_pptx_runtime.language_tags import normalize_language_tag
-from scripts.image_to_pptx_runtime.hyperlink_contract import (
+from language_tags import normalize_language_tag
+from hyperlink_contract import (
     HYPERLINK_REL_TYPE,
     trigger_shape_hyperlink_errors,
 )

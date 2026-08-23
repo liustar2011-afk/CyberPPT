@@ -12,9 +12,9 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio
-from scripts.image_to_pptx_runtime.slide_roster import discover_slide_svgs
-from scripts.image_to_pptx_runtime.svg_to_pptx.canvas_contract import (
+from console_encoding import configure_utf8_stdio
+from slide_roster import discover_slide_svgs
+from svg_to_pptx.canvas_contract import (
     CanvasContractError,
     parse_project_viewbox,
     read_project_viewbox,

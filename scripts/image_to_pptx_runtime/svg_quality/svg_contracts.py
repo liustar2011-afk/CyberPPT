@@ -9,7 +9,7 @@ Usage:
     Import checks from ``svg_quality.svg_contracts``.
 
 Examples:
-    from scripts.image_to_pptx_runtime.svg_quality.svg_contracts import check_paint_compatibility
+    from svg_quality.svg_contracts import check_paint_compatibility
 
 Dependencies:
     Standard library plus local PPT Master SVG-to-PPTX modules.
@@ -29,7 +29,7 @@ from .xml_support import (
 )
 
 try:
-    from scripts.image_to_pptx_runtime.pptx_effects import (
+    from pptx_effects import (
         EFFECT_REASON_ATTR as _EFFECT_REASON_ATTR,
         EFFECT_STATUS_ATTR as _EFFECT_STATUS_ATTR,
         project_effect_status_errors as _project_effect_status_errors,
@@ -40,7 +40,7 @@ except ImportError:
     _project_effect_status_errors = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.utils import (
+    from svg_to_pptx.drawingml.utils import (
         DRAWINGML_TEXT_FONT_SIZE_MAX as _DRAWINGML_TEXT_FONT_SIZE_MAX,
         DRAWINGML_TEXT_FONT_SIZE_MIN as _DRAWINGML_TEXT_FONT_SIZE_MIN,
         PROJECT_OPACITY_PROPERTIES as _OPACITY_PROPERTIES,
@@ -123,7 +123,7 @@ except ImportError:
     _project_transform_errors = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.paths import (
+    from svg_to_pptx.drawingml.paths import (
         iter_project_freeform_geometry as _iter_project_freeform_geometry,
         noncanonical_path_numbers as _noncanonical_path_numbers,
         noncanonical_points_numbers as _noncanonical_points_numbers,
@@ -136,7 +136,7 @@ except ImportError:
     _project_gradient_geometry_errors = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.elements import (
+    from svg_to_pptx.drawingml.elements import (
         project_clip_path_errors as _project_clip_path_errors,
         project_nested_svg_crop_errors as _project_nested_svg_crop_errors,
     )
@@ -145,14 +145,14 @@ except ImportError:
     _project_nested_svg_crop_errors = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.text_properties import (
+    from svg_to_pptx.drawingml.text_properties import (
         project_text_property_diagnostics as _project_text_property_diagnostics,
     )
 except ImportError:
     _project_text_property_diagnostics = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.geometry_properties import (
+    from svg_to_pptx.geometry_properties import (
         materialize_inline_geometry_properties as _materialize_inline_geometry_properties,
         validate_inline_geometry_properties as _validate_inline_geometry_properties,
     )
@@ -161,7 +161,7 @@ except ImportError:
     _validate_inline_geometry_properties = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.use_expander import (
+    from svg_to_pptx.use_expander import (
         UseExpansionError as _UseExpansionError,
         expand_local_use_references as _expand_local_use_references,
         validate_local_use_references as _validate_local_use_references,

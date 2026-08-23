@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_shapes import get_preset_registry
+from pptx_shapes import get_preset_registry
 
 from .emu_units import NS, Xfrm, fmt_num
 from .preset_registry_to_svg import SvgPresetPath, render_preset_geometry

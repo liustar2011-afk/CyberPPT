@@ -33,30 +33,30 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio  # noqa: E402
+from console_encoding import configure_utf8_stdio  # noqa: E402
 
 configure_utf8_stdio()
 
-from scripts.image_to_pptx_runtime.beautify_identity import extract_identity  # noqa: E402
-from scripts.image_to_pptx_runtime.pptx_opc_validation import (  # noqa: E402
+from beautify_identity import extract_identity  # noqa: E402
+from pptx_opc_validation import (  # noqa: E402
     canonical_opc_part_path,
     resolve_internal_opc_target,
     verify_internal_relationships,
 )
-from scripts.image_to_pptx_runtime.pptx_animations import (  # noqa: E402
+from pptx_animations import (  # noqa: E402
     object_animation_fingerprint,
     read_slide_animation_sequence,
     validate_pptx_animation_package,
 )
-from scripts.image_to_pptx_runtime.pptx_to_svg.ooxml_loader import (  # noqa: E402
+from pptx_to_svg.ooxml_loader import (  # noqa: E402
     OoxmlPackage,
     parse_ooxml_boolean,
 )
-from scripts.image_to_pptx_runtime.pptx_transitions import (  # noqa: E402
+from pptx_transitions import (  # noqa: E402
     read_slide_transition_xml,
     validate_slide_transition_xml,
 )
-from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.utils import PPT_SAFE_FONTS  # noqa: E402
+from svg_to_pptx.drawingml.utils import PPT_SAFE_FONTS  # noqa: E402
 
 
 REPORT_SCHEMA = "ppt-master.pptx-delivery-check.v1"

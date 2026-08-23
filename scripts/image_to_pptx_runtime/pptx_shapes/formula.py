@@ -5,7 +5,7 @@ PPT Master - DrawingML Formula Evaluator
 Evaluate DrawingML geometry guide formulas and standard built-in guides.
 
 Usage:
-    Import FormulaEvaluator or evaluate_formula from scripts.image_to_pptx_runtime.pptx_shapes.formula.
+    Import FormulaEvaluator or evaluate_formula from pptx_shapes.formula.
 
 Examples:
     evaluator = FormulaEvaluator(width=200, height=100)

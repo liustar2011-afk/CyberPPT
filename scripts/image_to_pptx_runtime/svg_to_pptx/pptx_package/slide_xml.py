@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from scripts.image_to_pptx_runtime.pptx_transitions import create_transition_xml
+from pptx_transitions import create_transition_xml
 
 
 def create_slide_xml_with_svg(

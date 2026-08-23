@@ -10,7 +10,7 @@
     </linearGradient>
   </defs>
   <!-- Light atmosphere band between chrome; edge softness should live in the PNG itself. -->
-  <image x="0" y="87" width="1280" height="611" href="agenda_bg.png" xlink:href="agenda_bg.png" preserveAspectRatio="xMidYMid slice"/>
+  <image x="0" y="87" width="1280" height="611" href="agenda_bg.png" preserveAspectRatio="xMidYMid slice"/>
   <rect x="0" y="87" width="1280" height="611" fill="url(#agendaLeftWash)"/>
   <text x="74" y="148" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="700" fill="#123B66">目录</text>
   <rect x="74" y="168" width="72" height="4" fill="#8B0000"/>

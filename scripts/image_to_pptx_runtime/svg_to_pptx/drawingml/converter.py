@@ -11,25 +11,25 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.native_payloads import NativePayloadError, hydrate_native_payload_refs
-from scripts.image_to_pptx_runtime.hyperlink_contract import (
+from native_payloads import NativePayloadError, hydrate_native_payload_refs
+from hyperlink_contract import (
     SHAPE_HYPERLINK_ATTR,
     project_hyperlink_errors,
     svg_hyperlink_href,
 )
-from scripts.image_to_pptx_runtime.pptx_shapes import (
+from pptx_shapes import (
     has_relationship_attributes,
     resolve_preset_preview_hash,
     svg_preset_preview_fingerprint,
     svg_text_fingerprint,
     validate_ooxml_xfrm,
 )
-from scripts.image_to_pptx_runtime.pptx_effects import project_effect_status_errors, txbody_has_run_effects
-from scripts.image_to_pptx_runtime.pptx_to_svg.preset_authoring import (
+from pptx_effects import project_effect_status_errors, txbody_has_run_effects
+from pptx_to_svg.preset_authoring import (
     materialize_compact_authored_preset_tree,
     validate_authored_preset_tree,
 )
-from scripts.image_to_pptx_runtime.resource_paths import icon_search_dirs_for_svg
+from resource_paths import icon_search_dirs_for_svg
 
 from .context import (
     TEXT_FLOW_PRESERVE,

@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from scripts.image_to_pptx_runtime.slide_roster import discover_slide_svgs
+from slide_roster import discover_slide_svgs
 
 
 class NotesFileReadError(RuntimeError):

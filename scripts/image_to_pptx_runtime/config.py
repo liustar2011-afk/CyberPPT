@@ -20,7 +20,7 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio
+from console_encoding import configure_utf8_stdio
 
 configure_utf8_stdio()
 
@@ -494,14 +494,14 @@ LAYOUT_MARGINS = {
 # Keep the exported authority key as the compatibility router for existing
 # config consumers.
 SVG_CONSTRAINTS = {
-    'authority': 'SKILL.md',
-    'core_authority': 'docs/CYBERPPT_WORKFLOW.md',
+    'authority': 'skills/ppt-master/references/shared-standards.md',
+    'core_authority': 'skills/ppt-master/references/shared-standards-core.md',
     'conditional_authorities': {
-        'effects': 'scripts/image_to_pptx_runtime/svg_quality/checker.py',
-        'native_data': 'scripts/image_to_pptx_runtime/svg_to_pptx/pptx_package/builder.py',
-        'pptx_structure': 'scripts/image_to_pptx_runtime/svg_to_pptx/pptx_package/builder.py',
+        'effects': 'skills/ppt-master/references/svg-effects.md',
+        'native_data': 'skills/ppt-master/references/native-data-interface.md',
+        'pptx_structure': 'skills/ppt-master/references/pptx-structure-interface.md',
     },
-    'validator': 'scripts/image_to_pptx_runtime/svg_quality_checker.py',
+    'validator': 'skills/ppt-master/scripts/svg_quality_checker.py',
 }
 
 

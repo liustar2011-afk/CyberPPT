@@ -21,7 +21,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_shapes import FormulaEvaluationError, FormulaEvaluator
+from pptx_shapes import FormulaEvaluationError, FormulaEvaluator
 
 from .emu_units import NS, Xfrm
 from .preset_registry_to_svg import render_evaluated_path

@@ -12,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_shapes.formula import validate_ooxml_line_width
+from pptx_shapes.formula import validate_ooxml_line_width
 
 from .color_resolver import (
     ColorPalette,

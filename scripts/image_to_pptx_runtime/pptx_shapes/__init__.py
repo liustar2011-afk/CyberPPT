@@ -5,10 +5,10 @@ PPT Master - DrawingML Preset Shapes
 Shared full-catalog loader, registry, and formula evaluator for PPTX shapes.
 
 Usage:
-    Import get_preset_registry from scripts.image_to_pptx_runtime.pptx_shapes.
+    Import get_preset_registry from pptx_shapes.
 
 Examples:
-    from scripts.image_to_pptx_runtime.pptx_shapes import get_preset_registry
+    from pptx_shapes import get_preset_registry
     arrow = get_preset_registry().evaluate("rightArrow", 320, 160)
 
 Dependencies:

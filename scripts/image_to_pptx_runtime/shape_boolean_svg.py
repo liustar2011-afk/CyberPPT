@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio
+from console_encoding import configure_utf8_stdio
 
 
 configure_utf8_stdio()

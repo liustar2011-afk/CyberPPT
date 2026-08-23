@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_shapes import validate_ooxml_line_width
+from pptx_shapes import validate_ooxml_line_width
 
 from .context import ConvertContext
 from .theme_colors import ThemeColorSpec, color_node_xml

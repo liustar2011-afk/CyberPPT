@@ -42,10 +42,10 @@ from decimal import Decimal
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio
-from scripts.image_to_pptx_runtime.server_common import lock_pid, process_alive, read_lock
-from scripts.image_to_pptx_runtime.slide_roster import discover_slide_svgs
-from scripts.image_to_pptx_runtime.svg_to_pptx.canvas_contract import parse_project_svg_root
+from console_encoding import configure_utf8_stdio
+from server_common import lock_pid, process_alive, read_lock
+from slide_roster import discover_slide_svgs
+from svg_to_pptx.canvas_contract import parse_project_svg_root
 
 configure_utf8_stdio()
 
@@ -334,7 +334,7 @@ def main() -> int:
             'playwright not installed. Install with:\n'
             '    pip install playwright\n'
             '    python3 -m playwright install chromium\n'
-            'Install Playwright and its Chromium browser before retrying.'
+            '(see skills/ppt-master/requirements.txt)'
         )
         return 3
 
@@ -345,7 +345,7 @@ def main() -> int:
         _safe_print(str(e))
         _safe_print(
             'start it with:\n'
-            f'    python scripts/image_to_pptx_runtime/svg_editor/server.py {project_path}'
+            f'    python3 skills/ppt-master/scripts/svg_editor/server.py {project_path}'
         )
         return 2
 

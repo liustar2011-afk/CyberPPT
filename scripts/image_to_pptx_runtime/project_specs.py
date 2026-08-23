@@ -9,7 +9,7 @@ Usage:
     Import validation or scaffold helpers from this module.
 
 Examples:
-    from scripts.image_to_pptx_runtime.project_specs import validate_markdown_schema
+    from project_specs import validate_markdown_schema
 
 Dependencies:
     Same as project_management.project_specs.

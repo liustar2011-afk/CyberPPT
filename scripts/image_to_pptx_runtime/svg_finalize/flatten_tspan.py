@@ -579,7 +579,7 @@ def flatten_text_with_tspans(
             if is_new_line_tspan(child):
                 needs_flatten = True
                 break
-
+        
         # If no tspan needs a line break, skip the entire text element
         if not needs_flatten:
             continue
@@ -612,17 +612,17 @@ def flatten_text_with_tspans(
         cur_x, cur_y = base_x, base_y
 
         new_texts = []
-
+        
         # Collect tspan elements belonging to the same line
         current_line_tspans = []
         current_line_lead_text = text_el.text or None
-
+        
         for idx, child in enumerate(list(text_el)):
             if not is_svg_tag(child, "tspan"):
                 continue
 
             content = collect_text_content(child)
-
+            
             # Check whether this tspan starts a new line
             if is_new_line_tspan(child):
                 # Save previously accumulated same-line tspans first
@@ -635,17 +635,17 @@ def flatten_text_with_tspans(
                     new_texts.append(ne)
                     current_line_tspans = []
                     current_line_lead_text = None
-
+                
                 # Update position
                 nx, ny = compute_line_positions(text_el, child, cur_x, cur_y)
                 cur_x, cur_y = nx, ny
-
+            
             # Keep raw XML whitespace and tails until the shared downstream
             # text normalizer sees the whole line. A whitespace-only run can
             # still be the visible boundary between two formatted runs.
             if content or child.tail:
                 current_line_tspans.append(child)
-
+        
         # Process the last line
         if current_line_tspans or _has_non_xml_whitespace(
             current_line_lead_text
@@ -684,6 +684,14 @@ def _has_tspan_children(elem: ET.Element) -> bool:
             f"{{{SVG_NS}}}tspan",
         }
         for c in list(elem)
+    )
+
+
+def _declares_baseline_shift(elem: ET.Element) -> bool:
+    """Keep tspan ownership for the project-only baseline-shift contract."""
+    return (
+        elem.get("baseline-shift") is not None
+        or "baseline-shift" in parse_style(elem.get("style"))
     )
 
 
@@ -761,6 +769,7 @@ def _create_text_element_from_line(
         and not _has_tspan_children(tspans[0])
         and not tspans[0].tail
         and tspans[0].get(INLINE_FORMULA_ATTR) is None
+        and not _declares_baseline_shift(tspans[0])
     ):
         tspan = tspans[0]
         content = collect_text_content(tspan)

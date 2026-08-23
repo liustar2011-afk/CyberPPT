@@ -19,19 +19,20 @@ _SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio  # noqa: E402
-from scripts.image_to_pptx_runtime.language_tags import (  # noqa: E402
+from attribution_guard import require_skill_integrity  # noqa: E402
+from console_encoding import configure_utf8_stdio  # noqa: E402
+from language_tags import (  # noqa: E402
     LanguageTagError,
     normalize_language_tag,
 )
-from scripts.image_to_pptx_runtime.native_payloads import PAYLOAD_STORE_RELATIVE_PATH  # noqa: E402
-from scripts.image_to_pptx_runtime.pptx_animations import (  # noqa: E402
+from native_payloads import PAYLOAD_STORE_RELATIVE_PATH  # noqa: E402
+from pptx_animations import (  # noqa: E402
     ANIMATIONS,
     animation_seconds_to_milliseconds,
     normalize_animation_effect,
     normalize_animation_trigger,
 )
-from scripts.image_to_pptx_runtime.pptx_transitions import (  # noqa: E402
+from pptx_transitions import (  # noqa: E402
     LEGACY_TRANSITION_KEYS,
     NATIVE_TRANSITION_KEYS,
     normalize_transition_effect_request,
@@ -633,7 +634,7 @@ def _print_structure_contract_error(
         print(
             "  A legacy lock without pptx_structure.mode defaults only to flat. "
             "Mirror/layout reuse must first create a current template workspace "
-            "through the repository Create Template workflow, then generate "
+            "through skills/ppt-master/workflows/create-template.md, then generate "
             "new structured SVG pages.",
             file=sys.stderr,
         )
@@ -648,7 +649,7 @@ def _print_structure_contract_error(
         "  A legacy lock with no pptx_structure.mode defaults to flat. "
         "Explicit legacy or unknown values are not inferred. Mirror/layout reuse "
         "must first create a current template workspace "
-        "through the repository Create Template workflow, then generate "
+        "through skills/ppt-master/workflows/create-template.md, then generate "
         "new structured SVG pages.",
         file=sys.stderr,
     )
@@ -802,6 +803,7 @@ def _resolve_animation_config_source(
 
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point for the SVG to PPTX conversion tool."""
+    require_skill_integrity()
     transition_choices = [
         'none',
         *NATIVE_TRANSITION_KEYS,
@@ -1346,7 +1348,7 @@ Recorded narration:
             )
             quick_flag = ' --quick-generate' if args.quick_generate else ''
             print(
-                "Run: python scripts/image_to_pptx_runtime/svg_quality_checker.py "
+                "Run: python3 skills/ppt-master/scripts/svg_quality_checker.py "
                 f'"{project_path}"{quick_flag} --stage final --json',
                 file=sys.stderr,
             )

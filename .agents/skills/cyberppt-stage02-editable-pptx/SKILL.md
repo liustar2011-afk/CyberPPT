@@ -46,6 +46,15 @@ location evidence only; it does not authorize a production-time OCR-box SVG
 generator. The vendored Quick runtime consumes the authored SVG and preserves
 its explicit coordinates, font size, weight, and color.
 
+The current Codex main agent owns this authoring step, matching the source Quick
+workflow: inspect the normalized full image, clean base, locked onscreen text and
+registered local assets, then write the complete page SVG directly on that same
+canvas. `final-script-pages` prepares and validates the workspace; if an
+`authoring_svg` is absent it must stop for authoring, then resume the same build.
+Do not replace this step with an OCR-to-SVG generator or redraw an already-audited
+full image merely because its recognized wording differs from the locked text
+truth; write the locked truth into the authored SVG.
+
 - `native_text`: all readable information, labels, figures, captions and ordinary
   text. Remove it from the base and rebuild it in SVG.
 - `preserved_in_image`: only wording inseparable from an identity graphic, using a

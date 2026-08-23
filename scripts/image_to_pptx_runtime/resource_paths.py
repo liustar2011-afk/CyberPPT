@@ -9,8 +9,8 @@ Usage:
     Imported by scripts; not intended as a standalone CLI.
 
 Examples:
-    from scripts.image_to_pptx_runtime.resource_paths import resolve_external_image_reference
-    from scripts.image_to_pptx_runtime.resource_paths import svg_image_payload_error
+    from resource_paths import resolve_external_image_reference
+    from resource_paths import svg_image_payload_error
 
 Dependencies:
     None

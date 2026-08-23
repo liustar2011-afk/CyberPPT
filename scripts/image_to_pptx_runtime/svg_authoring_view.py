@@ -44,8 +44,8 @@ from typing import Optional
 from urllib.parse import urlsplit, urlunsplit
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.compact_svg_coordinates import compact_svg_tree
-from scripts.image_to_pptx_runtime.console_encoding import configure_utf8_stdio
+from compact_svg_coordinates import compact_svg_tree
+from console_encoding import configure_utf8_stdio
 
 configure_utf8_stdio()
 

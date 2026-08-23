@@ -6,7 +6,7 @@ Serialize evaluated DrawingML preset layers for lossless transport or compact
 project authoring.
 
 Usage:
-    Import serialize_preset_layers from scripts.image_to_pptx_runtime.pptx_to_svg.preset_svg_markup.
+    Import serialize_preset_layers from pptx_to_svg.preset_svg_markup.
 
 Examples:
     markup = serialize_preset_layers(layers, semantic_attrs, style_attrs)
@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from typing import Mapping, Sequence
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.pptx_shapes import svg_preset_preview_fingerprint
+from pptx_shapes import svg_preset_preview_fingerprint
 
 from .preset_registry_to_svg import SvgPresetPath
 

@@ -5,7 +5,7 @@ PPT Master - Preset Shape Data Loader
 Load and validate the bundled DrawingML preset geometry catalog.
 
 Usage:
-    Import load_preset_shape_definitions from scripts.image_to_pptx_runtime.pptx_shapes.loader.
+    Import load_preset_shape_definitions from pptx_shapes.loader.
 
 Examples:
     definitions = load_preset_shape_definitions()

@@ -8,7 +8,7 @@ Usage:
     Import through ``svg_quality_checker`` or invoke the stable script.
 
 Examples:
-    from scripts.image_to_pptx_runtime.svg_quality_checker import SVGQualityChecker
+    from svg_quality_checker import SVGQualityChecker
 
 Dependencies:
     Standard library plus local PPT Master validation modules.
@@ -26,8 +26,8 @@ from typing import Dict, List, Tuple
 from urllib.parse import unquote, urlsplit
 from xml.etree import ElementTree as ET
 
-from scripts.image_to_pptx_runtime.native_payloads import NativePayloadError, hydrate_native_payload_refs
-from scripts.image_to_pptx_runtime.slide_roster import discover_slide_svgs
+from native_payloads import NativePayloadError, hydrate_native_payload_refs
+from slide_roster import discover_slide_svgs
 
 from . import svg_contracts
 from .xml_support import (
@@ -38,7 +38,7 @@ from .xml_support import (
 )
 
 try:
-    from scripts.image_to_pptx_runtime.project_utils import (
+    from project_utils import (
         CANVAS_FORMATS,
         validate_communication_trace,
     )
@@ -47,7 +47,7 @@ except ImportError:
     CANVAS_FORMATS = {}
     validate_communication_trace = None
 
-from scripts.image_to_pptx_runtime.svg_to_pptx.canvas_contract import (
+from svg_to_pptx.canvas_contract import (
     CanvasContractError,
     parse_project_svg_root,
     parse_project_viewbox,
@@ -63,7 +63,7 @@ except ImportError:
     _parse_spec_lock_image_value = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.animation_config import (
+    from svg_to_pptx.animation_config import (
         load_animation_config as _load_animation_config,
         usable_animation_group_id as _usable_animation_group_id,
         validate_animation_config as _validate_animation_config,
@@ -83,7 +83,7 @@ else:
     _animation_config_import_error = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.utils import (
+    from svg_to_pptx.drawingml.utils import (
         IDENTITY_MATRIX as _IDENTITY_MATRIX,
         PROJECT_PAINT_PROPERTIES as _PAINT_PROPERTIES,
         PROJECT_TEXT_IMAGE_FILL_ATTR as _TEXT_IMAGE_FILL_ATTR,
@@ -120,7 +120,7 @@ except ImportError:
     _validate_dml_shape_matrix = None
 
 try:
-    from scripts.image_to_pptx_runtime.hyperlink_contract import (
+    from hyperlink_contract import (
         SHAPE_HYPERLINK_ATTR as _SHAPE_HYPERLINK_ATTR,
         project_hyperlink_errors as _project_hyperlink_errors,
     )
@@ -129,7 +129,7 @@ except ImportError:
     _project_hyperlink_errors = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.converter import (
+    from svg_to_pptx.drawingml.converter import (
         SvgNativeConversionError as _SvgNativeConversionError,
         collect_unsupported_visuals as _collect_unsupported_visuals,
         preserved_native_text_body as _preserved_native_text_body,
@@ -140,7 +140,7 @@ except ImportError:
     _preserved_native_text_body = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.elements import (
+    from svg_to_pptx.drawingml.elements import (
         drawingml_text_frame_width_emu as _drawingml_text_frame_width_emu,
         estimate_single_line_text_frame_width as _estimate_single_line_text_frame_width,
         project_image_errors as _project_image_errors,
@@ -155,7 +155,7 @@ except ImportError:
     _validate_preset_geometry_metadata = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.text_properties import (
+    from svg_to_pptx.drawingml.text_properties import (
         normalize_project_text_segments as _normalize_project_text_segments,
         parse_project_font_weight as _parse_project_font_weight,
         parse_project_text_anchor as _parse_project_text_anchor,
@@ -172,7 +172,7 @@ except ImportError:
     _resolve_project_letter_spacings = None
 
 try:
-    from scripts.image_to_pptx_runtime.pptx_to_svg.preset_authoring import (
+    from pptx_to_svg.preset_authoring import (
         AUTHORING_ATTR as _AUTHORING_ATTR,
         authored_preset_encoding as _authored_preset_encoding,
         validate_authored_preset_group as _validate_authored_preset_group,
@@ -185,7 +185,7 @@ except ImportError:
     _validate_authored_preset_tree = None
 
 try:
-    from scripts.image_to_pptx_runtime.pptx_shapes import (
+    from pptx_shapes import (
         CONNECTOR_PRESET_TYPES as _CONNECTOR_PRESET_TYPES,
         resolve_preset_preview_hash as _resolve_preset_preview_hash,
         svg_preset_preview_fingerprint as _svg_preset_preview_fingerprint,
@@ -196,28 +196,28 @@ except ImportError:
     _svg_preset_preview_fingerprint = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.native_objects import (
+    from svg_to_pptx.native_objects import (
         validate_native_object_marker as _validate_native_object_marker,
     )
 except ImportError:
     _validate_native_object_marker = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.native_objects import (
+    from svg_to_pptx.native_objects import (
         validate_native_object_marker_with_warnings as _validate_native_object_marker_with_warnings,
     )
 except ImportError:
     _validate_native_object_marker_with_warnings = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.native_objects import (
+    from svg_to_pptx.native_objects import (
         native_object_marker_warnings as _native_object_marker_warnings,
     )
 except ImportError:
     _native_object_marker_warnings = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.native_objects import (
+    from svg_to_pptx.native_objects import (
         INLINE_FORMULA_ATTR as _INLINE_FORMULA_ATTR,
         native_fallback_kind as _native_fallback_kind,
         inline_formula_marker_errors as _inline_formula_marker_errors,
@@ -234,7 +234,7 @@ except ImportError:
     _native_replacement_status = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.native_objects.marker_status import (
+    from svg_to_pptx.native_objects.marker_status import (
         native_marker_release_block_reason as _native_marker_release_block_reason,
         native_marker_status_errors as _native_marker_status_errors,
     )
@@ -243,7 +243,7 @@ except ImportError:
     _native_marker_status_errors = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.semantic_markers import (
+    from svg_to_pptx.semantic_markers import (
         SEMANTIC_ATTRS as _SEMANTIC_ATTRS,
         is_static_page_frame as _is_static_page_frame,
         validate_semantic_markers as _validate_semantic_markers,
@@ -257,7 +257,7 @@ except ImportError:
     _validate_semantic_markers = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.use_expander import (
+    from svg_to_pptx.use_expander import (
         UseExpansionError as _UseExpansionError,
         expand_local_use_references as _expand_local_use_references,
     )
@@ -266,7 +266,7 @@ except ImportError:
     _expand_local_use_references = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.tspan_flattener import (
+    from svg_to_pptx.tspan_flattener import (
         flatten_positional_tspans as _flatten_positional_tspans,
         nested_positional_tspan_errors as _nested_positional_tspan_errors,
     )
@@ -275,7 +275,7 @@ except ImportError:
     _nested_positional_tspan_errors = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.pptx_package.template_structure import (
+    from svg_to_pptx.pptx_package.template_structure import (
         TemplateStructureError as _TemplateStructureError,
         _is_authored_preset_atom as _is_authored_preset_atom,
         load_pptx_structure_lock as _load_pptx_structure_lock,
@@ -298,11 +298,11 @@ except ImportError:
     _validate_template_structure_svg = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.theme_colors import (
+    from svg_to_pptx.drawingml.theme_colors import (
         ThemeColorError as _ThemeColorError,
         load_theme_color_spec as _load_theme_color_spec,
     )
-    from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.theme_fonts import (
+    from svg_to_pptx.drawingml.theme_fonts import (
         ThemeFontError as _ThemeFontError,
         load_master_text_style_spec as _load_master_text_style_spec,
         load_theme_font_spec as _load_theme_font_spec,
@@ -315,7 +315,7 @@ except ImportError:
     _load_theme_font_spec = None
 
 try:
-    from scripts.image_to_pptx_runtime.svg_finalize.embed_icons import (
+    from svg_finalize.embed_icons import (
         resolve_icon_path as _resolve_icon_path,
         suggest_icon_name as _suggest_icon_name,
     )
@@ -324,7 +324,7 @@ except ImportError:
     _suggest_icon_name = None
 
 try:
-    from scripts.image_to_pptx_runtime.resource_paths import (
+    from resource_paths import (
         SVG_WORK_DIR_NAMES as _SVG_WORK_DIR_NAMES,
         icon_search_dirs_for_svg as _icon_search_dirs_for_svg,
         project_root_for_svg_path as _project_root_for_svg_path,
@@ -5283,7 +5283,7 @@ class SVGQualityChecker:
                 'pptx_structure.mode: flat (free design / brand-only) or '
                 f'structured (deck/layout template); found {label}. New '
                 'free-design projects use mode: flat; create a new template '
-                'workspace through the repository Create Template workflow, '
+                'workspace through skills/ppt-master/workflows/create-template.md, '
                 'then generate new structured SVG pages before export. Existing '
                 'PPTX/SVG files are not upgraded in place.',
             ))
@@ -6640,7 +6640,7 @@ class SVGQualityChecker:
                     'legacy_native_structure_pair',
                     "legacy native_structure.json/source_template.pptx template "
                     "contracts must be replaced through "
-                    "the repository Create Template workflow",
+                    "skills/ppt-master/workflows/create-template.md",
                 ))
 
             if declared_structure_mode != 'structured':
@@ -6657,7 +6657,8 @@ class SVGQualityChecker:
                     'error',
                     'legacy_structure_contract',
                     "legacy template structure detected; create a new current "
-                    "workspace through the repository Create Template workflow before Step 3 consumption",
+                    "workspace through skills/ppt-master/workflows/"
+                    "create-template.md before Step 3 consumption",
                 ))
         spec_pages = self._extract_spec_roster(spec_text) if spec_text else []
         custom_contract = self._extract_frontmatter_placeholders(spec_text) if spec_text else {}
