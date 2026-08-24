@@ -1,0 +1,14 @@
+[project]
+name = "cyberppt-script-engine"
+version = "0.1.0"
+description = "Standalone PPT script generation subsystem for CyberPPT"
+requires-python = ">=3.11"
+dependencies = [
+  "jsonschema>=4.22",
+]
+
+[project.scripts]
+cyberppt-script = "script_engine.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
