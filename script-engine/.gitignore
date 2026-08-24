@@ -1,0 +1,6 @@
+workbench/
+dist/*.json
+dist/*.md
+!dist/.gitkeep
+__pycache__/
+.pytest_cache/
