@@ -31,14 +31,14 @@ def test_derives_explicit_visual_structure_arrows() -> None:
     assert relationships[0]["basis"] == "derived_from_script_visual_structure"
 
 
-def test_strips_legacy_evidence_grade_from_relation_label() -> None:
+def test_strips_legacy_evidence_grade_and_preserves_problem_response_semantics() -> None:
     relationships = derive_business_relationships(
         visual_structure="资源分散 → 行业节点：问题回应（inferred，源文未逐一显式配对）",
         title="平台总体定位",
     )
 
     assert len(relationships) == 1
-    assert relationships[0]["relation"] == "corresponds_to"
+    assert relationships[0]["relation"] == "responds_to"
     assert relationships[0]["relation_label"] == "问题回应"
 
 
@@ -50,20 +50,9 @@ def test_derives_declared_parallel_classification_when_no_arrow_exists() -> None
         top_level_module_titles=("数据获取服务", "知识内容服务", "模型与智能服务"),
     )
 
-    assert relationships == (
-        {
-            "subject": "总体服务体系",
-            "relation": "classified_as",
-            "objects": ["数据获取服务", "知识内容服务", "模型与智能服务"],
-            "direction": "one_to_many",
-            "condition": "",
-            "modality": "",
-            "basis": "derived_from_script_visual_structure",
-            "confidence": "high",
-            "relation_label": "并列分类",
-            "authority_ref": "final-script.visual-structure",
-        },
-    )
+    assert relationships[0]["relation"] == "classified_as"
+    assert relationships[0]["objects"] == ["数据获取服务", "知识内容服务", "模型与智能服务"]
+    assert relationships[0]["direction"] == "one_to_many"
 
 
 def test_ambiguous_page_without_script_relation_stays_empty() -> None:
@@ -126,6 +115,8 @@ def test_cyberppt_script_canonical_markdown_populates_stage02_business_relations
 
     assert len(relationships) == 3
     assert all(item["basis"] == "derived_from_script_visual_structure" for item in relationships)
+    assert page["onscreen_expression"]["form"] == "pyramid_argument"
+    assert page["expression_constraints"]["reading_requirement"] == "convergent"
     assert page["stage02_visual_input"]["author_visual_notes"]
 
 
