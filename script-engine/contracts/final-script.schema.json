@@ -11,8 +11,8 @@
       "type": "object",
       "required": ["title", "communication_goal"],
       "properties": {
-        "title": {"type": "string"},
-        "communication_goal": {"type": "string"},
+        "title": {"type": "string", "minLength": 1},
+        "communication_goal": {"type": "string", "minLength": 1},
         "audience": {"type": "string"},
         "narrative": {"type": "string"}
       },
@@ -23,11 +23,14 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "page_type", "title", "mission", "core_message", "onscreen"],
+        "required": ["id", "page_type", "title"],
         "properties": {
-          "id": {"type": "string"},
-          "page_type": {"type": "string"},
-          "title": {"type": "string"},
+          "id": {"type": "string", "pattern": "^[Pp]?\\d+$"},
+          "page_type": {
+            "type": "string",
+            "enum": ["cover", "contents", "chapter", "content", "closing"]
+          },
+          "title": {"type": "string", "minLength": 1},
           "mission": {"type": "string"},
           "core_message": {"type": "string"},
           "argument": {
@@ -45,7 +48,7 @@
               "type": "object",
               "required": ["heading"],
               "properties": {
-                "heading": {"type": "string"},
+                "heading": {"type": "string", "minLength": 1},
                 "text": {"type": "string"},
                 "items": {"type": "array", "items": {"type": "string"}}
               },
@@ -59,9 +62,9 @@
               "type": "object",
               "required": ["from", "to", "relation"],
               "properties": {
-                "from": {"type": "string"},
-                "to": {"type": "string"},
-                "relation": {"type": "string"}
+                "from": {"type": "string", "minLength": 1},
+                "to": {"type": "string", "minLength": 1},
+                "relation": {"type": "string", "minLength": 1}
               },
               "additionalProperties": true
             }
@@ -69,6 +72,22 @@
           "speaker_notes": {"type": "string"},
           "source_refs": {"type": "array", "items": {"type": "string"}}
         },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"page_type": {"const": "content"}},
+              "required": ["page_type"]
+            },
+            "then": {
+              "required": ["mission", "core_message", "onscreen"],
+              "properties": {
+                "mission": {"minLength": 1},
+                "core_message": {"minLength": 1},
+                "onscreen": {"minItems": 1}
+              }
+            }
+          }
+        ],
         "additionalProperties": true
       }
     }
