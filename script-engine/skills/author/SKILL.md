@@ -104,42 +104,42 @@ Validate that the final delivery:
 
 Produce:
 
-- `dist/final-script.md` — canonical human-readable script;
+- `dist/final-script.md` — canonical human-readable script and the stable Stage 02 boundary;
 - `dist/final-script.json` — optional machine-readable mirror using contract `cyberppt.final-script` version `1.0`.
 
-The Markdown script is the authoritative final content artifact unless the project explicitly chooses JSON as canonical.
+The Markdown format deliberately stays compatible with the existing CyberPPT Stage 02 parser so the renderer can consume the script directly by path. The Script Engine's internal Foundation and Plan schemas are not part of this boundary.
 
 ## Required page structure in final-script.md
 
-Each content page should contain:
+Use the parser-compatible field names below for content pages:
 
 ```markdown
-## P08｜页面标题
+## P08 页面标题
 
-- 页面类型：...
-- 页面使命：...
-- 核心判断：...
-- 主论证链：...
+- 页面类型：内容页
+- 页面标题：页面标题
+- 页面使命：本页在整套叙事中完成什么
+- 核心结论：受众看完本页应形成的一个判断
+- 主论证链：机制｜A → B → C
 
 ### 完整文字稿
-...
+完整、可讲述的页面论证。
 
 ### 上屏文字
-- 模块标题：...
-  - ...
+- 模块标题：核心内容
+  - 差异化细项
 
-### 视觉命题
-...
+- 证据：ST001、ST004
 
-### 关系
-- A → B：...
+### 视觉结构
+本页最需要被视觉化证明的语义关系。
+A → B：关系说明
 
-### 演讲备注
-...
-
-### 来源追溯
-- ...
+### 演讲者备注
+需要口头补充、但不应全部上屏的内容。
 ```
+
+`## P08 页面标题`、`核心结论`、`完整文字稿`、`上屏文字`、`视觉结构`、`演讲者备注` 等字段与现有 Stage 02 解析器保持兼容。`页面使命` 与 `主论证链` 同时服务于作者和人工审阅；Stage 02 无需理解所有作者内部字段。
 
 Fields may be omitted only when genuinely inapplicable; do not add empty placeholders.
 
