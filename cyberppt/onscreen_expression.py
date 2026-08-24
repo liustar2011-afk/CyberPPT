@@ -8,6 +8,8 @@ import json
 import re
 from typing import Any, Mapping, Sequence
 
+from cyberppt.semantic_relation_contract import expression_form_hint, relation_names
+
 
 @dataclass(frozen=True)
 class ExpressionSpec:
@@ -16,7 +18,7 @@ class ExpressionSpec:
     module_range: tuple[int, int]
     heading_grammar: str
     # This is a page-structure rule, not a wording rule for a particular
-    # source section.  It tells script audit which grammatical family the
+    # source section. It tells script audit which grammatical family the
     # visible peer headings must use.
     heading_policy: str = "parallel_proposition"
     require_return_relation: bool = False
@@ -147,24 +149,12 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
 VALID_EXPRESSION_FORMS = frozenset(EXPRESSION_SPECS)
 ACTION_HEADING_POLICY = "action"
 
-_RELATION_FORMS = {
-    "composed_of": "framework_4",
-    "contains": "framework_4",
-    "supports": "framework_4",
-    "sequence_before": "flow_3_5",
-    "sequence_after": "flow_3_5",
-    "layered_as": "architecture_layers",
-    "part_of": "architecture_layers",
-    "causes": "causal_chain",
-    "corresponds_to": "comparison_2col",
-}
-_RETURN_RELATIONS = {"feedback", "feeds_back", "returns_to", "iterates", "loops_to"}
 _ACTION_RE = re.compile(
     r"推进|建设|完善|强化|提升|形成|构建|汇聚|组织|治理|授权|流通|运营|反馈|迭代|驱动|支撑|带动|促进|实现"
     r"|执行|下发|记录|计量|确认|对账|结算|汇总|开展"
 )
 _LAYER_RE = re.compile(r"层|底座|体系架构")
-_COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较")
+_COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较|差异")
 _MATRIX_RE = re.compile(r"象限|维度|优先级|分群|高低|二维")
 _CAUSAL_RE = re.compile(r"驱动|制约|影响|导致|结果|原因")
 _LOOP_RE = re.compile(r"闭环|反馈|回流|迭代|循环")
@@ -198,12 +188,7 @@ def expression_constraints(form: str) -> dict[str, object]:
 
 
 def expression_requires_action_headings(form: str) -> bool:
-    """Whether this expression form requires action-bearing peer headings.
-
-    The answer comes only from the selected expression form.  A source
-    heading, a page title, or words such as ``必要性`` must never turn an
-    evidence or argument page into an action page.
-    """
+    """Whether this expression form requires action-bearing peer headings."""
 
     key = validate_expression_form(form)
     return bool(key and EXPRESSION_SPECS[key].heading_policy == ACTION_HEADING_POLICY)
@@ -224,23 +209,37 @@ def resolve_onscreen_expression(
     actions: Sequence[str] = (),
     topic_category: str = "",
 ) -> ExpressionDecision:
-    """Return a reviewable semantic expression decision for a content page."""
+    """Return a reviewable semantic expression decision for a content page.
+
+    Business relations constrain the reading relation but never select a visual
+    layout directly. A relation-informed form must also fit the authored module
+    count and, for comparison, the page must actually request a comparison.
+    """
 
     explicit = validate_expression_form(str(getattr(page, "onscreen_expression_form", "") or ""))
     candidates = _score_candidates(page, page_mission, actions, topic_category)
     if explicit:
         return ExpressionDecision(explicit, "explicit", 1.0, ("author_override",), candidates)
 
-    relation_names = {
-        str(item.get("relation") or "").strip()
-        for item in business_relationships
-        if isinstance(item, Mapping)
-    }
-    if relation_names & _RETURN_RELATIONS:
-        return _relation_decision("operation_loop", relation_names, candidates)
-    for relation, form in _RELATION_FORMS.items():
-        if relation in relation_names:
-            return _relation_decision(form, relation_names, candidates)
+    modules = tuple(
+        str(item).strip()
+        for item in getattr(page, "top_level_module_titles", ())
+        if str(item).strip()
+    )
+    relation_context = "\n".join((
+        page_mission,
+        topic_category,
+        "\n".join(modules),
+        str(getattr(page, "onscreen_text", "") or ""),
+    ))
+    hint = expression_form_hint(
+        business_relationships,
+        module_count=len(modules),
+        comparison_requested=bool(_COMPARISON_RE.search(relation_context)),
+    )
+    names = set(relation_names(business_relationships))
+    if hint:
+        return _relation_decision(hint, names, candidates)
 
     form, score = candidates[0]
     if score < 0.60:
@@ -248,7 +247,7 @@ def resolve_onscreen_expression(
             "key_points_3",
             "fallback",
             round(score, 2),
-            ("no_authoritative_relation", "insufficient_surface_signals"),
+            ("no_expression_form_implied_by_semantic_relation", "insufficient_surface_signals"),
             candidates,
         )
     return ExpressionDecision(form, "scored", round(score, 2), ("surface_signals",), candidates)
@@ -304,10 +303,6 @@ def _score_candidates(
     if module_count == 3 and re.search(r"原则|价值|重点", text):
         scores["key_points_3"] += 0.48
     if module_count:
-        # A keyword hit (e.g. "对照" inside prose that just happens to
-        # describe two sides of an argument) must not outrank a form the
-        # page's actual module count cannot satisfy -- structure is a hard
-        # constraint, wording is only a hint among forms structure allows.
         for form, spec in EXPRESSION_SPECS.items():
             if not spec.module_range[0] <= module_count <= spec.module_range[1]:
                 scores[form] = 0.0
