@@ -9,7 +9,7 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 
 ## Required action
 
-1. Read [docs/CYBERPPT_WORKFLOW.md](../../../docs/CYBERPPT_WORKFLOW.md) enough to identify the task boundary and Stage 02 route.
+1. For new work, read [docs/CYBERPPT_WORKFLOW_V2.md](../../../docs/CYBERPPT_WORKFLOW_V2.md) as the routing authority. Read [docs/CYBERPPT_WORKFLOW.md](../../../docs/CYBERPPT_WORKFLOW.md) only when legacy Stage 01 details or deeper Stage 02 implementation details are required.
 2. Read the repository root [AGENTS.md](../../../AGENTS.md) before acting.
 3. For **new work whose goal is to understand source material and produce a PPT script**, enter the standalone [script-engine](../../../script-engine/README.md). Read `script-engine/AGENTS.md` and route through its `.agents/skills/` sequence.
 4. For **existing projects that explicitly depend on legacy Stage 01 Source Truth / Outline / page-contract artifacts**, the former Stage 01 skills remain available as a compatibility and diagnostic route. Do not introduce those internal artifacts into a new Script Engine project.
