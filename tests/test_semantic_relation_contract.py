@@ -15,7 +15,6 @@ def test_p04_many_supports_to_one_judgment_is_convergence_not_layers() -> None:
         {"subject": "服务机制待完善", "relation": "supports", "objects": ["统一基础设施必要性"]},
     ]
     profile = build_semantic_relation_profile(relationships)
-
     assert profile.cardinality == "many_to_one"
     assert profile.shared_target is True
     assert profile.topology_candidates == ("conclusion_anchor",)
@@ -31,7 +30,6 @@ def test_p05_problem_response_mapping_is_not_comparison_or_causality() -> None:
         {"subject": "协同机制待完善", "relation": "responds_to", "objects": ["协同载体"]},
     ]
     profile = build_semantic_relation_profile(relationships)
-
     assert profile.cardinality == "paired"
     assert profile.relation_families == ("response",)
     assert profile.topology_candidates == ("ecosystem_map",)
@@ -47,7 +45,6 @@ def test_p16_taxonomy_is_parallel_and_forbids_layers_and_flow() -> None:
         "objects": ["数据获取", "知识内容", "模型智能", "分析监测", "数据治理核验"],
     }]
     profile = build_semantic_relation_profile(relationships)
-
     assert profile.cardinality == "one_to_many"
     assert profile.relation_families == ("taxonomy",)
     assert profile.topology_candidates == ("parallel_set",)
@@ -68,7 +65,6 @@ def test_p25_independent_selection_and_optional_progression_survive_together() -
         top_level_module_titles=("标准接入", "联合产品", "场景联合运营", "战略生态"),
     )
     profile = build_semantic_relation_profile(relationships)
-
     assert profile.independent_selection is True
     assert profile.optional_progression is True
     assert "independent_selection" in profile.semantic_qualifiers
@@ -78,20 +74,19 @@ def test_p25_independent_selection_and_optional_progression_survive_together() -
     assert expression_form_hint(relationships, module_count=4) == "parallel_classification"
 
 
-def test_p31_real_sequence_remains_directed_flow_candidate() -> None:
+def test_p31_six_step_real_sequence_remains_directed_flow_candidate() -> None:
     relationships = [
         {"subject": "合作意向登记", "relation": "sequence_before", "objects": ["资源与需求对接"]},
         {"subject": "资源与需求对接", "relation": "sequence_before", "objects": ["成熟度评估"]},
         {"subject": "成熟度评估", "relation": "sequence_before", "objects": ["方案深化"]},
         {"subject": "方案深化", "relation": "sequence_before", "objects": ["试点验证"]},
-        {"subject": "试点验证", "relation": "sequence_before", "objects": ["正式运营"]},
+        {"subject": "试点验证", "relation": "sequence_before", "objects": ["正式运营与复制推广"]},
     ]
     profile = build_semantic_relation_profile(relationships)
-
     assert profile.chain_like is True
     assert profile.relation_families == ("sequence",)
     assert profile.topology_candidates == ("directed_flow",)
-    assert expression_form_hint(relationships, module_count=5) == "flow_3_5"
+    assert expression_form_hint(relationships, module_count=6) == "flow_3_5"
     assert legacy_visual_intent_hint(relationships) == "phase"
 
 
