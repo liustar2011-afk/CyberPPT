@@ -2,11 +2,11 @@
 
 CyberPPT-Script keeps the audience-facing Markdown clean: it exposes semantic
 relationships through ``### 视觉结构`` instead of the legacy hidden
-``content_relations`` receipt.  Stage 02 owns the adapter from that script
-semantics into its internal ``business_relationships`` model.  This module is
-therefore deliberately deterministic and conservative: explicit visual
-relationship lines win; structural fallbacks are used only when the script
-itself declares a classification, sequence, loop, or layered structure.
+``content_relations`` receipt. Stage 02 owns the adapter from that script
+semantics into its internal ``business_relationships`` model. This module is
+deliberately deterministic and conservative: explicit visual relationship
+lines win; structural fallbacks are used only when the script itself declares
+a classification, sequence, loop, or layered structure.
 """
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ def _clean_relation_label(value: object) -> str:
 
 
 def _canonical_relation(label: str) -> str:
-    """Map script wording onto the small relation vocabulary Stage 02 already understands."""
+    """Map script wording onto the small relation vocabulary Stage 02 understands."""
 
     text = label.lower()
     if any(token in text for token in ("因果", "导致", "引发", "驱动")):
@@ -43,8 +43,6 @@ def _canonical_relation(label: str) -> str:
         return "sequence_before"
     if any(token in text for token in ("反馈", "回流", "回到", "回返")):
         return "sequence_after"
-    if any(token in text for token in ("边界", "约束", "控制", "护栏")):
-        return "bounded_by"
     if any(token in text for token in ("覆盖", "贯穿")):
         return "covers"
     if any(token in text for token in ("支撑", "承托", "托底")):
@@ -55,6 +53,8 @@ def _canonical_relation(label: str) -> str:
         return "classified_as"
     if any(token in text for token in ("分层", "层级")):
         return "layered_as"
+    if any(token in text for token in ("边界", "约束", "护栏")):
+        return "bounded_by"
     if any(token in text for token in ("形成", "转化", "生成", "产出", "构成", "汇聚")):
         return "provides_to"
     return "corresponds_to"
@@ -108,9 +108,7 @@ def _explicit_arrow_relations(visual_structure: str) -> list[dict[str, object]]:
 def _module_values(
     module_titles: Iterable[str], top_level_module_titles: Iterable[str]
 ) -> list[str]:
-    preferred = [
-        _clean(value) for value in top_level_module_titles if _clean(value)
-    ]
+    preferred = [_clean(value) for value in top_level_module_titles if _clean(value)]
     values = preferred or [_clean(value) for value in module_titles if _clean(value)]
     return list(dict.fromkeys(values))
 
@@ -122,7 +120,7 @@ def _structural_fallback(
     module_titles: Iterable[str],
     top_level_module_titles: Iterable[str],
 ) -> list[dict[str, object]]:
-    """Derive only relationships explicitly declared by the visual-structure prose."""
+    """Derive only relationships explicitly declared by visual-structure prose."""
 
     text = _clean(visual_structure)
     modules = _module_values(module_titles, top_level_module_titles)
@@ -184,8 +182,8 @@ def derive_business_relationships(
     """Return Stage 02 internal relations without changing the source script.
 
     Explicit ``A → B：relation`` lines are the strongest canonical Markdown
-    signal and are consumed first.  If there are none, a small set of explicit
-    structural statements can be projected from the page's module set.  When
+    signal and are consumed first. If there are none, a small set of explicit
+    structural statements can be projected from the page's module set. When
     neither signal exists the result stays empty so genuinely ambiguous pages
     can still be reviewed instead of receiving invented business logic.
     """
