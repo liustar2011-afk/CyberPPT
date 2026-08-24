@@ -1,5 +1,4 @@
 """Resolve canonical semantic intents into auditable spatial grammar."""
-
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -31,15 +30,9 @@ _COMMON_AVOID = (
 )
 
 
-# Each grammar describes business-bearing space, not a fixed graphic template.
-# `ratio` is how much of the body area the dominant carrier should occupy, and
-# `units` is how many independent visual units the layout tolerates before it
-# turns into a card wall. Both vary by intent: a single-anchor page reads best
-# when one object owns most of the frame, while a two-state comparison or a
-# many-actor network needs the frame shared or the unit ceiling raised, or the
-# generated image will default to a generic 65%/7-unit template regardless of
-# what the page is actually arguing.
 COMPOSITION_GRAMMARS: dict[str, dict[str, object]] = {
+    "coordinate_peer_set": dict(axis="shared_field", organization="peer business objects share one field without implying order, hierarchy, or a privileged result node", path=("peer set", "shared judgment or category context"), encoding=("grouping", "alignment", "shared field"), required=("peer objects", "shared context"), ratio=0.60, units=7),
+    "correspondence_mapping": dict(axis="paired_mapping", organization="source objects remain visibly bound to their corresponding response, capability, or counterpart", path=("source object", "correspondence", "matched object"), encoding=("mapping", "pair binding"), required=("source objects", "matched objects", "mapping relation"), ratio=0.60, units=8),
     "single_judgment_anchor": dict(axis="center", organization="single result object anchors a small evidence field", path=("evidence", "judgment"), encoding=("attachment", "scale hierarchy"), required=("judgment anchor", "supporting evidence"), ratio=0.72, units=4),
     "multi_semantic_foundation": dict(axis="bottom_to_top", organization="different foundations enter one shared base and support a common capability", path=("foundations", "shared base", "capability"), encoding=("support", "convergence"), required=("distinct foundations", "shared base", "supported capability"), ratio=0.65, units=7),
     "evidence_to_judgment": dict(axis="convergent", organization="evidence paths converge on one judgment zone", path=("evidence", "judgment", "implication"), encoding=("evidence edge", "convergence"), required=("evidence units", "judgment zone"), ratio=0.65, units=6),
@@ -60,9 +53,6 @@ COMPOSITION_GRAMMARS: dict[str, dict[str, object]] = {
     "problem_cause_resolution": dict(axis="left_to_right", organization="a tension center connects an upstream cause chain to a downstream resolution chain", path=("problem", "cause", "resolution", "controlled result"), encoding=("cause", "mitigation"), required=("problem", "causes", "resolution path"), ratio=0.65, units=6),
 }
 
-# Intents whose grammar requires two co-equal centers (a shared axis, a shared
-# interface). Flagging every page for "multiple_visual_centers" would tell the
-# image model to contradict the very structure the page is arguing for.
 _DUAL_CENTER_INTENTS = frozenset({"comparison_tension", "dual_engine_synergy"})
 
 
@@ -71,7 +61,11 @@ def resolve_composition(decision: SemanticIntentDecision) -> CompositionDecision
     avoid = [item for item in _COMMON_AVOID if not (
         item == "multiple_visual_centers" and decision.primary_intent in _DUAL_CENTER_INTENTS
     )]
-    if decision.primary_intent == "closed_loop_operation":
+    if decision.primary_intent == "coordinate_peer_set":
+        avoid.extend(("forced_sequence", "invented_hierarchy", "privileged_peer_as_result"))
+    elif decision.primary_intent == "correspondence_mapping":
+        avoid.extend(("forced_comparison", "unbound_mapping_pairs", "invented_causality"))
+    elif decision.primary_intent == "closed_loop_operation":
         avoid.extend(("decorative_ring", "unnamed_feedback_arrow"))
     elif decision.primary_intent == "network_ecosystem":
         avoid.extend(("generic_center_circle", "icon_cloud"))
