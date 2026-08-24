@@ -131,3 +131,7 @@ Stage 02 当前 canonical vocabulary：
 - P16：五类服务并列 taxonomy；
 - P25：四类合作模式可独立采用、也可逐步深化；
 - P31：六步真实顺序流程。
+
+## 8. 持续验证
+
+仓库通过 `.github/workflows/tests.yml` 在 Python 3.10 与 3.12 上执行完整 `pytest -q`。关系词汇、canonical intent、composition 和 visual carrier 注册表应由回归测试保持同步；新增关系或语义意图时不得只修改单一层级。
