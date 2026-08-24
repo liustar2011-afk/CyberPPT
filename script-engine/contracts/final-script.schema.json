@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cyberppt.local/contracts/final-script.schema.json",
+  "title": "CyberPPT Final Script Contract",
+  "type": "object",
+  "required": ["contract", "version", "deck", "slides"],
+  "properties": {
+    "contract": {"const": "cyberppt.final-script"},
+    "version": {"const": "1.0"},
+    "deck": {
+      "type": "object",
+      "required": ["title", "communication_goal"],
+      "properties": {
+        "title": {"type": "string"},
+        "communication_goal": {"type": "string"},
+        "audience": {"type": "string"},
+        "narrative": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "page_type", "title", "mission", "core_message", "onscreen"],
+        "properties": {
+          "id": {"type": "string"},
+          "page_type": {"type": "string"},
+          "title": {"type": "string"},
+          "mission": {"type": "string"},
+          "core_message": {"type": "string"},
+          "argument": {
+            "type": "object",
+            "properties": {
+              "pattern": {"type": "string"},
+              "chain": {"type": "array", "items": {"type": "string"}}
+            },
+            "additionalProperties": true
+          },
+          "full_copy": {"type": "string"},
+          "onscreen": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["heading"],
+              "properties": {
+                "heading": {"type": "string"},
+                "text": {"type": "string"},
+                "items": {"type": "array", "items": {"type": "string"}}
+              },
+              "additionalProperties": true
+            }
+          },
+          "visual_thesis": {"type": "string"},
+          "relationships": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["from", "to", "relation"],
+              "properties": {
+                "from": {"type": "string"},
+                "to": {"type": "string"},
+                "relation": {"type": "string"}
+              },
+              "additionalProperties": true
+            }
+          },
+          "speaker_notes": {"type": "string"},
+          "source_refs": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
