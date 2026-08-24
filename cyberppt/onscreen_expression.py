@@ -82,8 +82,10 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
         required_features=("mapped_pairs",),
         anti_patterns=("forced_comparison", "forced_sequence", "invented_causality"),
     ),
+    # Keep the historical key for compatibility; the production contract now
+    # supports the real six-step Stage 02 flow used by current decks.
     "flow_3_5": ExpressionSpec(
-        "flow_3_5", "三至五步链路", (3, 5), "verb_object", heading_policy="action",
+        "flow_3_5", "三至六步链路", (3, 6), "verb_object", heading_policy="action",
         relation_pattern="directed_sequence", reading_requirement="directed",
         balance_requirement="each action has a legible place in the progression",
         required_features=("ordered_progression",), anti_patterns=("unordered_peer_groups",),
@@ -266,7 +268,7 @@ def _score_candidates(
         scores["parallel_classification"] += 0.78
     if 2 <= module_count <= 6 and _MAPPING_RE.search(text):
         scores["mapping_2_6"] += 0.68
-    if 3 <= module_count <= 5 and action_count >= 2:
+    if 3 <= module_count <= 6 and action_count >= 2:
         scores["flow_3_5"] += 0.75
     if 3 <= module_count <= 4 and action_count >= 2:
         scores["causal_chain"] += 0.30
