@@ -1,14 +1,13 @@
 """Resolve business-semantic relations into layout-neutral reading contracts.
 
 This module sits between Script business semantics and Stage 02 visual topology.
-A relation name never selects a visual topology directly.  The resolver only
+A relation name never selects a visual topology directly. The resolver only
 chooses an on-screen reading contract from relation type, cardinality, labels,
-and the authored module structure.  The visual-structure designer retains
+and the authored module structure. The visual-structure designer retains
 responsibility for the actual topology and composition.
 """
 from __future__ import annotations
 
-from collections import Counter
 from typing import Mapping, Sequence
 
 
@@ -65,9 +64,9 @@ def resolve_relation_expression(
 ) -> tuple[str, tuple[str, ...]] | None:
     """Return ``(expression_form, evidence)`` without selecting visual topology.
 
-    The decision is intentionally conditional.  Ambiguous support or
-    correspondence relations remain neutral rather than being forced into a
-    four-card framework or two-column comparison.
+    The decision is intentionally conditional. Ambiguous support or mapping
+    relations remain neutral rather than being forced into a four-card
+    framework, hierarchy, or two-column comparison.
     """
 
     if not relationships:
@@ -78,10 +77,8 @@ def resolve_relation_expression(
     subject_count, object_count = _cardinality(relationships)
     evidence = tuple(sorted(names))
 
-    # A return edge changes a sequence into a loop.  The adapter may encode
-    # the edge as sequence_after while preserving a human relation_label.
     if any(token in labels for token in _FEEDBACK_LABELS) or names & {
-        "feedback", "feeds_back", "returns_to", "iterates", "loops_to"
+        "feedback", "feeds_back", "feeds_back_to", "returns_to", "iterates", "loops_to"
     }:
         return "operation_loop", ("semantic:feedback", *evidence)
 
@@ -91,35 +88,36 @@ def resolve_relation_expression(
     if names & {"sequence_before", "sequence_after"}:
         return "flow_3_5", ("semantic:sequence", *evidence)
 
-    if names & {"layered_as", "part_of"} or any(token in labels for token in _LAYER_LABELS):
+    if names & {"layered_as", "part_of", "layer_supports"} or any(token in labels for token in _LAYER_LABELS):
         return "architecture_layers", ("semantic:layered", *evidence)
 
-    if "classified_as" in names or any(token in labels for token in _CLASSIFICATION_LABELS):
+    if names & {"peer_classification", "classified_as"} or any(token in labels for token in _CLASSIFICATION_LABELS):
         return "parallel_classification_3_6", ("semantic:classification", *evidence)
 
-    if "supports" in names:
-        # Many independent supports converging on one judgment is different
-        # from a foundation layer supporting upper layers.  Cardinality and
-        # labels disambiguate the two without fixing the final composition.
+    if names & {"evidence_supports", "supports"}:
         if subject_count >= 2 and object_count == 1:
             return "support_convergence_3_6", ("semantic:many_to_one_support", *evidence)
         if any(token in labels for token in _LAYER_LABELS):
             return "architecture_layers", ("semantic:layer_support", *evidence)
         return "parallel_classification_3_6", ("semantic:peer_support", *evidence)
 
-    if "corresponds_to" in names:
-        # Problem-to-response mappings are not automatically comparisons.
-        # Use a neutral mapped-pairs reading contract unless the source label
-        # explicitly says it is a comparison.
-        if any(token in labels for token in _COMPARISON_LABELS) and module_count == 2:
+    if names & {"problem_response", "semantic_mapping", "corresponds_to"}:
+        if "corresponds_to" in names and any(token in labels for token in _COMPARISON_LABELS) and module_count == 2:
             return "comparison_2col", ("semantic:comparison", *evidence)
-        if any(token in labels for token in _MAPPING_LABELS) or subject_count >= 2:
-            return "mapping_2_6", ("semantic:mapping", *evidence)
-        return "mapping_2_6", ("semantic:correspondence", *evidence)
+        return "mapping_2_6", ("semantic:mapping", *evidence)
 
-    # Composition/containment is taxonomy unless an explicit layered relation
-    # is present.  This avoids turning peer categories into a hierarchy.
+    if "comparison" in names:
+        if module_count == 2:
+            return "comparison_2col", ("semantic:comparison", *evidence)
+        return "mapping_2_6", ("semantic:multi_item_comparison", *evidence)
+
     if names & {"composed_of", "contains"}:
         return "parallel_classification_3_6", ("semantic:composition", *evidence)
+
+    # A generic transform is directional but not necessarily a multi-step
+    # flow; let surface structure decide unless there are enough modules to
+    # make a directed reading contract meaningful.
+    if "transforms_to" in names and 3 <= module_count <= 6:
+        return "flow_3_5", ("semantic:transformation", *evidence)
 
     return None
