@@ -6,9 +6,9 @@ relationships through ``### 视觉结构`` instead of the legacy hidden
 semantics into its internal ``business_relationships`` model.
 
 The adapter preserves *business-semantic families* rather than choosing visual
-topology.  A peer classification, evidence support, problem-response mapping,
-and layered support remain distinct even when older CyberPPT code historically
-collapsed them into the same expression form.
+topology. A peer classification, evidence support, problem-response mapping,
+optional progression, and layered support remain distinct even when older
+CyberPPT code historically collapsed them into the same expression form.
 """
 from __future__ import annotations
 
@@ -39,6 +39,8 @@ def _semantic_relation(label: str) -> str:
     """Map wording to a business-semantic family, never to visual topology."""
 
     text = label.lower()
+    if "可独立" in text and any(token in text for token in ("逐步深化", "逐步", "深化")):
+        return "optional_progression"
     if any(token in text for token in ("因果", "导致", "引发", "驱动")):
         return "causes"
     if any(token in text for token in ("反馈", "回流", "回到", "回返")):
@@ -70,13 +72,7 @@ def _semantic_relation(label: str) -> str:
     return "semantic_association"
 
 
-def _relation_record(
-    subject: str,
-    object_: str,
-    label: str,
-    *,
-    confidence: str = "high",
-) -> dict[str, object]:
+def _relation_record(subject: str, object_: str, label: str, *, confidence: str = "high") -> dict[str, object]:
     normalized_label = _clean_relation_label(label) or "语义关联"
     return {
         "subject": subject,
@@ -115,23 +111,13 @@ def _explicit_arrow_relations(visual_structure: str) -> list[dict[str, object]]:
     return relationships
 
 
-def _module_values(
-    module_titles: Iterable[str], top_level_module_titles: Iterable[str]
-) -> list[str]:
+def _module_values(module_titles: Iterable[str], top_level_module_titles: Iterable[str]) -> list[str]:
     preferred = [_clean(value) for value in top_level_module_titles if _clean(value)]
     values = preferred or [_clean(value) for value in module_titles if _clean(value)]
     return list(dict.fromkeys(values))
 
 
-def _structural_fallback(
-    *,
-    visual_structure: str,
-    title: str,
-    module_titles: Iterable[str],
-    top_level_module_titles: Iterable[str],
-) -> list[dict[str, object]]:
-    """Derive only relationships explicitly declared by visual-structure prose."""
-
+def _structural_fallback(*, visual_structure: str, title: str, module_titles: Iterable[str], top_level_module_titles: Iterable[str]) -> list[dict[str, object]]:
     text = _clean(visual_structure)
     modules = _module_values(module_titles, top_level_module_titles)
     if len(modules) < 2:
@@ -153,16 +139,10 @@ def _structural_fallback(
         }]
 
     if any(token in text for token in ("顺序流程", "推进路径", "演进路径", "依次推进", "先后顺序")):
-        return [
-            _relation_record(left, right, "顺序衔接")
-            for left, right in zip(modules, modules[1:])
-        ]
+        return [_relation_record(left, right, "顺序衔接") for left, right in zip(modules, modules[1:])]
 
     if "闭环" in text:
-        relations = [
-            _relation_record(left, right, "顺序衔接")
-            for left, right in zip(modules, modules[1:])
-        ]
+        relations = [_relation_record(left, right, "顺序衔接") for left, right in zip(modules, modules[1:])]
         relations.append(_relation_record(modules[-1], modules[0], "反馈回流"))
         return relations
 
@@ -182,30 +162,15 @@ def _structural_fallback(
     return []
 
 
-def derive_business_relationships(
-    *,
-    visual_structure: str,
-    title: str = "",
-    module_titles: Iterable[str] = (),
-    top_level_module_titles: Iterable[str] = (),
-) -> tuple[dict[str, object], ...]:
-    """Return Stage 02 internal relations without changing the source script.
-
-    Explicit ``A → B：relation`` lines are consumed first. If there are none,
-    a small set of explicit structural statements can be projected from the
-    page's module set. When neither signal exists the result stays empty so
-    genuinely ambiguous pages can still be reviewed rather than receiving an
-    invented relationship.
-    """
+def derive_business_relationships(*, visual_structure: str, title: str = "", module_titles: Iterable[str] = (), top_level_module_titles: Iterable[str] = ()) -> tuple[dict[str, object], ...]:
+    """Return Stage 02 internal relations without changing the source script."""
 
     explicit = _explicit_arrow_relations(visual_structure)
     if explicit:
         return tuple(explicit)
-    return tuple(
-        _structural_fallback(
-            visual_structure=visual_structure,
-            title=title,
-            module_titles=module_titles,
-            top_level_module_titles=top_level_module_titles,
-        )
-    )
+    return tuple(_structural_fallback(
+        visual_structure=visual_structure,
+        title=title,
+        module_titles=module_titles,
+        top_level_module_titles=top_level_module_titles,
+    ))
