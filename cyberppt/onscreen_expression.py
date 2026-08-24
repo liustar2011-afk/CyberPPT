@@ -8,6 +8,8 @@ import json
 import re
 from typing import Any, Mapping, Sequence
 
+from cyberppt.relation_semantics import resolve_relation_expression
+
 
 @dataclass(frozen=True)
 class ExpressionSpec:
@@ -71,8 +73,32 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
         required_features=("three_peer_points", "shared_judgment"),
         anti_patterns=("invented_causality", "invented_time_order"),
     ),
+    "parallel_classification_3_6": ExpressionSpec(
+        "parallel_classification_3_6", "三至六项并列分类", (3, 6), "parallel_noun",
+        "classification_segment",
+        relation_pattern="peer_taxonomy", reading_requirement="parallel",
+        balance_requirement="peer categories remain peers; no sequence or hierarchy is implied",
+        required_features=("peer_categories", "taxonomy_preserved"),
+        anti_patterns=("forced_sequence", "invented_hierarchy", "dominant_center"),
+    ),
+    "support_convergence_3_6": ExpressionSpec(
+        "support_convergence_3_6", "多项支撑汇聚", (3, 6), "supporting_proposition",
+        "supporting_proposition",
+        relation_pattern="supporting_convergence", reading_requirement="convergent",
+        balance_requirement="multiple supports remain distinct and converge on one bounded judgment",
+        required_features=("multiple_supports", "single_conclusion"),
+        anti_patterns=("parallel_conclusions", "forced_sequence", "invented_causality"),
+    ),
+    "mapping_2_6": ExpressionSpec(
+        "mapping_2_6", "二至六组对应关系", (2, 6), "paired_dimension",
+        "parallel_proposition",
+        relation_pattern="mapped_pairs", reading_requirement="mapped",
+        balance_requirement="preserve each source-supported pair without turning mapping into comparison",
+        required_features=("source_target_pairs", "pair_integrity"),
+        anti_patterns=("forced_comparison", "invented_ranking", "forced_sequence"),
+    ),
     "flow_3_5": ExpressionSpec(
-        "flow_3_5", "三至五步链路", (3, 5), "verb_object",
+        "flow_3_5", "三至六步链路", (3, 6), "verb_object",
         heading_policy="action",
         relation_pattern="directed_sequence", reading_requirement="directed",
         balance_requirement="each action has a legible place in the progression",
@@ -80,7 +106,7 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
         anti_patterns=("unordered_peer_groups",),
     ),
     "operation_loop": ExpressionSpec(
-        "operation_loop", "运营闭环", (3, 5), "verb_object",
+        "operation_loop", "运营闭环", (3, 6), "verb_object",
         heading_policy="action",
         require_return_relation=True, relation_pattern="directed_cycle", reading_requirement="cyclic",
         balance_requirement="each action participates in a closed operating relation",
@@ -88,7 +114,7 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
         anti_patterns=("linear_only_flow", "missing_feedback_edge"),
     ),
     "architecture_layers": ExpressionSpec(
-        "architecture_layers", "分层架构", (3, 4), "parallel_noun",
+        "architecture_layers", "分层架构", (3, 6), "parallel_noun",
         "layer_component",
         relation_pattern="layered_dependency", reading_requirement="layered",
         balance_requirement="layers state their carrying, interface, or dependency relation",
@@ -106,7 +132,7 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     "comparison_2col": ExpressionSpec(
         "comparison_2col", "双列对照", (2, 2), "paired_dimension",
         "paired_dimension",
-        relation_pattern="paired_correspondence", reading_requirement="paired",
+        relation_pattern="paired_comparison", reading_requirement="paired",
         balance_requirement="both objects use matched comparison dimensions",
         required_features=("two_objects", "matched_dimensions"),
         anti_patterns=("unmatched_columns",),
@@ -146,19 +172,6 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
 }
 VALID_EXPRESSION_FORMS = frozenset(EXPRESSION_SPECS)
 ACTION_HEADING_POLICY = "action"
-
-_RELATION_FORMS = {
-    "composed_of": "framework_4",
-    "contains": "framework_4",
-    "supports": "framework_4",
-    "sequence_before": "flow_3_5",
-    "sequence_after": "flow_3_5",
-    "layered_as": "architecture_layers",
-    "part_of": "architecture_layers",
-    "causes": "causal_chain",
-    "corresponds_to": "comparison_2col",
-}
-_RETURN_RELATIONS = {"feedback", "feeds_back", "returns_to", "iterates", "loops_to"}
 _ACTION_RE = re.compile(
     r"推进|建设|完善|强化|提升|形成|构建|汇聚|组织|治理|授权|流通|运营|反馈|迭代|驱动|支撑|带动|促进|实现"
     r"|执行|下发|记录|计量|确认|对账|结算|汇总|开展"
@@ -224,46 +237,44 @@ def resolve_onscreen_expression(
     actions: Sequence[str] = (),
     topic_category: str = "",
 ) -> ExpressionDecision:
-    """Return a reviewable semantic expression decision for a content page."""
+    """Return a reviewable semantic expression decision for a content page.
+
+    Business relations constrain how the page should be read, but do not pick
+    a Stage 02 visual topology.  Relation semantics are resolved jointly with
+    cardinality and the page's actual module structure.
+    """
 
     explicit = validate_expression_form(str(getattr(page, "onscreen_expression_form", "") or ""))
     candidates = _score_candidates(page, page_mission, actions, topic_category)
     if explicit:
         return ExpressionDecision(explicit, "explicit", 1.0, ("author_override",), candidates)
 
-    relation_names = {
-        str(item.get("relation") or "").strip()
-        for item in business_relationships
-        if isinstance(item, Mapping)
-    }
-    if relation_names & _RETURN_RELATIONS:
-        return _relation_decision("operation_loop", relation_names, candidates)
-    for relation, form in _RELATION_FORMS.items():
-        if relation in relation_names:
-            return _relation_decision(form, relation_names, candidates)
+    modules = tuple(
+        str(item).strip()
+        for item in getattr(page, "top_level_module_titles", ())
+        if str(item).strip()
+    )
+    semantic = resolve_relation_expression(
+        relationships=business_relationships,
+        module_count=len(modules),
+    )
+    if semantic is not None:
+        form, evidence = semantic
+        spec = EXPRESSION_SPECS.get(form)
+        if spec is not None and spec.module_range[0] <= len(modules) <= spec.module_range[1]:
+            return ExpressionDecision(form, "relation_semantics", 0.94, evidence, candidates)
 
     form, score = candidates[0]
     if score < 0.60:
+        fallback = "parallel_classification_3_6" if 3 <= len(modules) <= 6 else "key_points_3"
         return ExpressionDecision(
-            "key_points_3",
+            fallback,
             "fallback",
             round(score, 2),
             ("no_authoritative_relation", "insufficient_surface_signals"),
             candidates,
         )
     return ExpressionDecision(form, "scored", round(score, 2), ("surface_signals",), candidates)
-
-
-def _relation_decision(
-    form: str, relations: set[str], candidates: tuple[tuple[str, float], ...]
-) -> ExpressionDecision:
-    return ExpressionDecision(
-        form,
-        "relation",
-        0.92,
-        tuple(f"relation:{value}" for value in sorted(relations)),
-        candidates,
-    )
 
 
 def _score_candidates(
@@ -274,6 +285,8 @@ def _score_candidates(
     module_count = len(modules)
     action_count = sum(bool(_ACTION_RE.search(value)) for value in (*modules, *actions))
     scores = {form: 0.0 for form in VALID_EXPRESSION_FORMS}
+    if 3 <= module_count <= 6:
+        scores["parallel_classification_3_6"] += 0.40
     if module_count == 4:
         scores["framework_4"] += 0.82
         scores["matrix_2x2"] += 0.35
@@ -281,7 +294,7 @@ def _score_candidates(
         scores["key_points_3"] += 0.58
         scores["pyramid_argument"] += 0.34
         scores["actions_3"] += 0.26
-    if 3 <= module_count <= 5 and action_count >= 2:
+    if 3 <= module_count <= 6 and action_count >= 2:
         scores["flow_3_5"] += 0.75
     if 3 <= module_count <= 4 and action_count >= 2:
         scores["causal_chain"] += 0.30
@@ -304,10 +317,8 @@ def _score_candidates(
     if module_count == 3 and re.search(r"原则|价值|重点", text):
         scores["key_points_3"] += 0.48
     if module_count:
-        # A keyword hit (e.g. "对照" inside prose that just happens to
-        # describe two sides of an argument) must not outrank a form the
-        # page's actual module count cannot satisfy -- structure is a hard
-        # constraint, wording is only a hint among forms structure allows.
+        # A keyword hit must not outrank a form the page's actual module count
+        # cannot satisfy.  Structure is a hard constraint; wording is a hint.
         for form, spec in EXPRESSION_SPECS.items():
             if not spec.module_range[0] <= module_count <= spec.module_range[1]:
                 scores[form] = 0.0
