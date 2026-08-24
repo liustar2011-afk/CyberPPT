@@ -1,5 +1,4 @@
 """Select and score business-bearing visual carriers."""
-
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -36,6 +35,8 @@ class VisualCarrierDecision:
 
 
 _CARRIERS: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "coordinate_peer_set": (("shared_peer_field", "peer categories remain equal without forced flow", "may drift toward card grid"), ("classified_object_landscape", "classification is carried by one coherent field", "category boundaries may blur"), ("peer_evidence_atlas", "multiple peers remain independently legible", "can become list-like")),
+    "correspondence_mapping": (("mapped_relation_field", "source and response remain visibly bound", "pair lines may become mechanical"), ("problem_response_landscape", "mapping stays tied to business objects", "may overemphasize one side"), ("paired_interface_map", "correspondence is explicit without implying comparison", "interface metaphor may become abstract")),
     "single_judgment_anchor": (("single_result_object", "single memorable center", "poster-like oversimplification"), ("decision_landscape", "evidence remains subordinate", "weak anchor object"), ("industry_scene_anchor", "concrete business meaning", "scene may compete with judgment")),
     "multi_semantic_foundation": (("shared_capability_base", "different foundations share one carrier", "foundation labels may become cards"), ("integrated_workbench", "objects participate in one scene", "scene complexity"), ("foundation_pillars", "support relation is explicit", "generic architecture metaphor")),
     "evidence_to_judgment": (("evidence_convergence_field", "evidence visibly leads to judgment", "list-like evidence"), ("decision_landscape", "strong hierarchy", "abstract canvas"), ("proof_path", "clear reading order", "over-linearization")),
@@ -55,7 +56,6 @@ _CARRIERS: dict[str, tuple[tuple[str, str, str], ...]] = {
     "role_responsibility_map": (("actor_task_handoff_map", "responsibility and delivery interface align", "organization chart"), ("responsibility_swimlane", "handoffs are explicit", "equal lane rigidity"), ("collaborative_delivery_workspace", "roles act on shared objects", "scene clutter")),
     "problem_cause_resolution": (("cause_tension_resolution_path", "cause and solution remain connected", "three text boxes"), ("diagnostic_field", "multiple causes converge on the real problem", "fishbone cliché"), ("problem_to_controlled_outcome", "resolution direction is strong", "solution may dominate evidence")),
 }
-
 
 _WEIGHTS = {
     "mission_fit": 25,
@@ -88,9 +88,7 @@ def select_visual_carrier(
     recent = set(prior_carriers[-2:])
     for rank, (carrier, strength, risk) in enumerate(_CARRIERS[intent.primary_intent]):
         breakdown = _score_candidate(rank, carrier in recent)
-        candidates.append(
-            CarrierCandidate(carrier, sum(breakdown.values()), breakdown, strength, risk)
-        )
+        candidates.append(CarrierCandidate(carrier, sum(breakdown.values()), breakdown, strength, risk))
     candidates.sort(key=lambda item: (-item.score, item.carrier))
     return VisualCarrierDecision(candidates[0].carrier, tuple(candidates))
 
