@@ -108,11 +108,31 @@ class ScriptPage:
 
     @property
     def content_relations(self) -> tuple[dict[str, object], ...]:
+        """Return explicit script-contract relations or a Stage 02 projection.
+
+        Legacy CyberPPT scripts can carry a hidden page-contract receipt with
+        ``content_relations``.  CyberPPT-Script v0.4+ instead keeps the final
+        Markdown audience-clean and expresses drawable semantic relationships
+        in ``### 视觉结构``.  Stage 02 owns the deterministic adapter between
+        those two contracts; the source Markdown itself is never modified.
+        """
+
         receipt = self.contract_receipt or {}
         relations = receipt.get("content_relations")
-        if not isinstance(relations, list):
-            return ()
-        return tuple(item for item in relations if isinstance(item, dict))
+        explicit = tuple(
+            item for item in relations or [] if isinstance(item, dict)
+        ) if isinstance(relations, list) else ()
+        if explicit:
+            return explicit
+
+        from cyberppt.stage02_relationship_adapter import derive_business_relationships
+
+        return derive_business_relationships(
+            visual_structure=self.visual_structure,
+            title=self.title,
+            module_titles=self.module_titles,
+            top_level_module_titles=self.top_level_module_titles,
+        )
 
 
 @dataclass(frozen=True)
