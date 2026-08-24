@@ -1,17 +1,17 @@
 """Derive Stage 02 business relationships from canonical final-script Markdown semantics.
 
-CyberPPT-Script keeps the audience-facing Markdown clean: it exposes semantic
-relationships through ``### 视觉结构`` instead of the legacy hidden
-``content_relations`` receipt. Stage 02 owns the adapter from that script
-semantics into its internal ``business_relationships`` model. This module is
-deliberately deterministic and conservative: explicit visual relationship
-lines win; structural fallbacks are used only when the script itself declares
-a classification, sequence, loop, or layered structure.
+CyberPPT-Script keeps audience-facing Markdown clean and exposes drawable
+semantic relationships through ``### 视觉结构``. Stage 02 owns the deterministic
+adapter from that script semantics into internal business relationships. The
+output remains a business-semantic layer; visual topology is selected later.
 """
 from __future__ import annotations
 
 import re
 from typing import Iterable
+
+from cyberppt.semantic_relation_contract import CANONICAL_RELATIONS
+
 
 _ARROW_RE = re.compile(
     r"^\s*(?P<subject>.+?)\s*(?:→|->|⇒)\s*(?P<object>.+?)"
@@ -29,33 +29,43 @@ def _clean(value: object) -> str:
 
 def _clean_relation_label(value: object) -> str:
     label = _clean(value)
-    label = _EVIDENCE_NOTE_RE.sub("", label).strip()
-    return label
+    return _EVIDENCE_NOTE_RE.sub("", label).strip()
 
 
 def _canonical_relation(label: str) -> str:
-    """Map script wording onto the small relation vocabulary Stage 02 understands."""
+    """Map Chinese script wording to the Stage 02 business-semantic vocabulary."""
 
     text = label.lower()
+    # Ordered from stronger/specific semantics to broader correspondence.
+    if any(token in text for token in ("反馈", "回流", "回到", "回返", "回送")):
+        return "feedback_to"
     if any(token in text for token in ("因果", "导致", "引发", "驱动")):
         return "causes"
-    if any(token in text for token in ("顺序", "衔接", "进入下一", "推进至", "转入", "先后")):
+    if any(token in text for token in ("顺序", "衔接", "推进至", "转入", "先后")):
         return "sequence_before"
-    if any(token in text for token in ("反馈", "回流", "回到", "回返")):
-        return "sequence_after"
+    if any(token in text for token in ("问题回应", "回应", "响应")):
+        return "responds_to"
     if any(token in text for token in ("覆盖", "贯穿")):
         return "covers"
-    if any(token in text for token in ("支撑", "承托", "托底")):
+    if any(token in text for token in ("支撑", "承托", "托底", "保障")):
         return "supports"
-    if any(token in text for token in ("映射", "对应", "回应", "匹配", "适配")):
-        return "corresponds_to"
     if any(token in text for token in ("并列", "分类", "同类")):
         return "classified_as"
     if any(token in text for token in ("分层", "层级")):
         return "layered_as"
     if any(token in text for token in ("边界", "约束", "护栏")):
         return "bounded_by"
-    if any(token in text for token in ("形成", "转化", "生成", "产出", "构成", "汇聚")):
+    if any(token in text for token in ("协同", "协作", "联动")):
+        return "collaborates_with"
+    if any(token in text for token in ("适用于", "应用于", "面向")):
+        return "applies_to"
+    if any(token in text for token in ("映射", "对应", "匹配", "适配")):
+        return "corresponds_to"
+    if any(token in text for token in ("组成", "构成", "属于")):
+        return "part_of"
+    if any(token in text for token in ("转化", "转换")):
+        return "transforms_to"
+    if any(token in text for token in ("形成", "生成", "产出", "汇聚", "提供")):
         return "provides_to"
     return "corresponds_to"
 
@@ -68,9 +78,12 @@ def _relation_record(
     confidence: str = "high",
 ) -> dict[str, object]:
     normalized_label = _clean_relation_label(label) or "语义关联"
+    relation = _canonical_relation(normalized_label)
+    if relation not in CANONICAL_RELATIONS:
+        relation = "corresponds_to"
     return {
         "subject": subject,
-        "relation": _canonical_relation(normalized_label),
+        "relation": relation,
         "objects": [object_],
         "direction": "subject_to_objects",
         "condition": "",
@@ -120,7 +133,7 @@ def _structural_fallback(
     module_titles: Iterable[str],
     top_level_module_titles: Iterable[str],
 ) -> list[dict[str, object]]:
-    """Derive only relationships explicitly declared by visual-structure prose."""
+    """Derive only relationship classes explicitly declared by visual-structure prose."""
 
     text = _clean(visual_structure)
     modules = _module_values(module_titles, top_level_module_titles)
@@ -179,13 +192,12 @@ def derive_business_relationships(
     module_titles: Iterable[str] = (),
     top_level_module_titles: Iterable[str] = (),
 ) -> tuple[dict[str, object], ...]:
-    """Return Stage 02 internal relations without changing the source script.
+    """Return business-semantic relations without choosing a visual topology.
 
-    Explicit ``A → B：relation`` lines are the strongest canonical Markdown
-    signal and are consumed first. If there are none, a small set of explicit
-    structural statements can be projected from the page's module set. When
-    neither signal exists the result stays empty so genuinely ambiguous pages
-    can still be reviewed instead of receiving invented business logic.
+    Explicit ``A → B：relation`` lines are consumed first. If none exist, a
+    small set of explicit structural statements can be projected from the page
+    modules. Ambiguous pages remain empty so the visual designer can request
+    review instead of receiving invented business logic.
     """
 
     explicit = _explicit_arrow_relations(visual_structure)
