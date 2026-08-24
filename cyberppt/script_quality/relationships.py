@@ -1,16 +1,9 @@
 """Cross-page relationship continuity checks."""
-
 from __future__ import annotations
 
 import re
 
-from .models import (
-    PageRelationshipSummary,
-    ScriptDocument,
-    ScriptPage,
-    ScriptQualityIssue,
-    _issue,
-)
+from .models import PageRelationshipSummary, ScriptDocument, ScriptPage, ScriptQualityIssue, _issue
 from .source_coverage import text_similarity
 
 
@@ -18,20 +11,23 @@ _RELATION_VISIBILITY_SIGNALS = {
     "causes": ("导致", "推动", "促成", "形成", "因此", "→", "->"),
     "flows_to": ("流向", "进入", "经过", "形成", "输出", "→", "->", "第一", "第二", "第三"),
     "supports": ("支撑", "保障", "赋能", "服务于", "→", "->"),
+    "enables": ("支撑", "使能", "促进", "→", "->"),
+    "responds_to": ("回应", "响应", "对应", "→", "->"),
+    "corresponds_to": ("对应", "映射", "匹配", "适配", "→", "->"),
     "depends_on": ("依赖", "以", "为基础", "前提", "→", "->"),
-    "sequence_before": ("先", "再", "随后", "阶段", "→", "->"),
+    "sequence_before": ("先", "再", "随后", "阶段", "顺序", "→", "->"),
     "bounded_by": ("受", "约束", "边界", "条件", "→", "->"),
-    "composed_of": ("构成", "由", "分层", "层级", "包括", "→", "->"),
-    # The Outline projection emits "contains" (not "composed_of") for every
-    # heading-containment relation -- onscreen_expression.py's _RELATION_FORMS
-    # already treats the two as synonyms for form selection, but this table
-    # never gained a "contains" entry, so DECLARED_RELATION_NOT_VISIBLE fired
-    # on essentially every content page that has real sub-headings, no matter
-    # how the module structure was written.
-    "contains": ("构成", "由", "分层", "层级", "包括", "→", "->"),
-    "applies_to": ("面向", "适用于", "服务", "覆盖", "→", "->"),
+    "composed_of": ("构成", "由", "组成", "包括", "→", "->"),
+    "contains": ("构成", "由", "组成", "包括", "→", "->"),
+    "classified_as": ("分类", "分为", "并列", "类型", "→", "->"),
+    "layered_as": ("分层", "层级", "上下", "→", "->"),
+    "part_of": ("属于", "组成", "构成", "→", "->"),
+    "transforms_to": ("转化", "转换", "形成", "→", "->"),
+    "provides_to": ("提供", "形成", "输出", "→", "->"),
+    "covers": ("覆盖", "贯穿", "→", "->"),
+    "applies_to": ("面向", "适用于", "应用于", "覆盖", "→", "->"),
     "collaborates_with": ("协同", "配合", "共同", "联动", "→", "->"),
-    "feedback_to": ("反馈", "回流", "闭环", "迭代", "循环", "→", "->"),
+    "feedback_to": ("反馈", "回流", "闭环", "迭代", "循环", "回到", "→", "->"),
 }
 _RELATION_ACTION_SIGNALS = tuple(
     dict.fromkeys(
@@ -44,17 +40,11 @@ _RELATION_ACTION_SIGNALS = tuple(
 
 
 def _relationship_strings(value: object) -> tuple[str, ...]:
-    """Return nonempty string values without making legacy contracts strict."""
-
     if isinstance(value, str):
         return (value.strip(),) if value.strip() else ()
     if not isinstance(value, (list, tuple)):
         return ()
-    return tuple(
-        item.strip()
-        for item in value
-        if isinstance(item, str) and item.strip()
-    )
+    return tuple(item.strip() for item in value if isinstance(item, str) and item.strip())
 
 
 def _contract_relations(contract: dict[str, object]) -> tuple[dict[str, object], ...]:
@@ -64,9 +54,7 @@ def _contract_relations(contract: dict[str, object]) -> tuple[dict[str, object],
     return tuple(item for item in relations if isinstance(item, dict))
 
 
-def _relation_values(
-    relations: tuple[dict[str, object], ...], field: str
-) -> tuple[str, ...]:
+def _relation_values(relations: tuple[dict[str, object], ...], field: str) -> tuple[str, ...]:
     values: list[str] = []
     for relation in relations:
         values.extend(_relationship_strings(relation.get(field)))
@@ -94,35 +82,25 @@ def _relation_visibility_signal(text: str, relations: tuple[dict[str, object], .
     return False
 
 
-def _has_visible_declared_relation(
-    page: ScriptPage, relations: tuple[dict[str, object], ...]
-) -> bool:
+def _has_visible_declared_relation(page: ScriptPage, relations: tuple[dict[str, object], ...]) -> bool:
     if not relations:
         return True
     visible = "\n".join((page.onscreen_text, " ".join(page.top_level_module_titles)))
-    return _relation_visibility_signal(visible, relations) or _relation_visibility_signal(
-        page.visual_structure, relations
-    )
+    return _relation_visibility_signal(visible, relations) or _relation_visibility_signal(page.visual_structure, relations)
 
 
-def _page_relationship_summary(
-    page: ScriptPage, contract: dict[str, object]
-) -> PageRelationshipSummary:
+def _page_relationship_summary(page: ScriptPage, contract: dict[str, object]) -> PageRelationshipSummary:
     relations = _contract_relations(contract) or page.content_relations
-    exit_handoffs = _relation_values(relations, "outputs") or _relation_values(
-        relations, "objects"
-    )
+    exit_handoffs = _relation_values(relations, "outputs") or _relation_values(relations, "objects")
     return PageRelationshipSummary(
         page_id=page.page_id,
         entry_conditions=_relation_values(relations, "inputs"),
         page_transformation="\n".join(
-            part
-            for part in (
+            part for part in (
                 str(contract.get("page_mission") or "").strip(),
                 str(contract.get("core_message") or page.core_message).strip(),
                 _relation_corpus(relations),
-            )
-            if part
+            ) if part
         ),
         exit_handoffs=exit_handoffs,
         excluded_scope=_relationship_strings(contract.get("must_not_include")),
@@ -130,9 +108,7 @@ def _page_relationship_summary(
     )
 
 
-def _same_page_responsibility(
-    left: PageRelationshipSummary, right: PageRelationshipSummary
-) -> bool:
+def _same_page_responsibility(left: PageRelationshipSummary, right: PageRelationshipSummary) -> bool:
     if not left.page_transformation or not right.page_transformation:
         return False
     return text_similarity(left.page_transformation, right.page_transformation) >= 0.82
@@ -140,11 +116,7 @@ def _same_page_responsibility(
 
 def _preempted_scope_terms(page: ScriptPage, excluded_scope: tuple[str, ...]) -> tuple[str, ...]:
     authored = "\n".join((page.onscreen_text, page.full_prose)).replace(" ", "")
-    return tuple(
-        scope
-        for scope in excluded_scope
-        if len(scope.replace(" ", "")) >= 3 and scope.replace(" ", "") in authored
-    )
+    return tuple(scope for scope in excluded_scope if len(scope.replace(" ", "")) >= 3 and scope.replace(" ", "") in authored)
 
 
 def _relation_parallel_labels(page: ScriptPage) -> tuple[str, ...]:
@@ -185,18 +157,9 @@ def _relationship_prerequisite_issue(
 def _page_relationship_continuity_issues(
     script: ScriptDocument, pages_by_id: dict[str, dict[str, object]]
 ) -> list[ScriptQualityIssue]:
-    """Audit cross-page handoffs and visible expression of declared relations."""
-
     issues: list[ScriptQualityIssue] = []
-    content_pages = [
-        page
-        for page in script.pages
-        if page.page_type == "content" and page.page_id in pages_by_id
-    ]
-    summaries = {
-        page.page_id: _page_relationship_summary(page, pages_by_id[page.page_id])
-        for page in content_pages
-    }
+    content_pages = [page for page in script.pages if page.page_type == "content" and page.page_id in pages_by_id]
+    summaries = {page.page_id: _page_relationship_summary(page, pages_by_id[page.page_id]) for page in content_pages}
     previous_handoffs: tuple[str, ...] = ()
     for page in content_pages:
         contract = pages_by_id[page.page_id]
@@ -208,7 +171,7 @@ def _page_relationship_continuity_issues(
                     "DECLARED_RELATION_NOT_VISIBLE",
                     page,
                     "Declared content relation is not readable in the visible modules or visual structure.",
-                    "Express the approved subject-action-object relation with a directional chain, hierarchy, collaboration, or loop signal.",
+                    "Express the approved business relation in visible modules or the visual-structure semantics without changing its relation type.",
                     evidence=tuple(str(item.get("relation") or "") for item in relations),
                 )
             )
@@ -221,18 +184,12 @@ def _page_relationship_continuity_issues(
                         "ONSCREEN_FALSE_RELATION_PARALLEL",
                         page,
                         "On-screen modules are parallel labels and do not carry the declared relation.",
-                        "Rewrite top-level modules as subject-action-object steps or show their ordered, hierarchical, collaborative, or closed-loop relation.",
+                        "Keep a true taxonomy parallel; for non-taxonomy relations, make the approved mapping, direction, hierarchy, collaboration, or feedback readable.",
                         evidence=labels[:6],
                     )
                 )
-        issues.extend(
-            _relationship_prerequisite_issue(
-                page, contract, summary, previous_handoffs
-            )
-        )
-        previous_handoffs = tuple(
-            dict.fromkeys((*previous_handoffs, *summary.exit_handoffs))
-        )
+        issues.extend(_relationship_prerequisite_issue(page, contract, summary, previous_handoffs))
+        previous_handoffs = tuple(dict.fromkeys((*previous_handoffs, *summary.exit_handoffs)))
     for left, right in zip(content_pages, content_pages[1:]):
         left_summary = summaries[left.page_id]
         right_summary = summaries[right.page_id]
