@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cyberppt.local/contracts/deck-plan.schema.json",
+  "title": "CyberPPT Deck Plan",
+  "type": "object",
+  "required": ["communication_goal", "chapters", "pages"],
+  "properties": {
+    "communication_goal": {"type": "string"},
+    "audience": {"type": "string"},
+    "narrative_arc": {"type": "string"},
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "purpose"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "purpose": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "question", "message", "logic", "content"],
+        "properties": {
+          "id": {"type": "string"},
+          "chapter_id": {"type": "string"},
+          "title": {"type": "string"},
+          "question": {"type": "string"},
+          "message": {"type": "string"},
+          "logic": {"type": "string"},
+          "content": {"type": "array", "items": {"type": "string"}},
+          "next": {"type": "string"},
+          "source_refs": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
