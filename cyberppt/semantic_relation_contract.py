@@ -11,23 +11,10 @@ from typing import Mapping, Sequence
 
 
 CANONICAL_RELATIONS = frozenset({
-    "supports",
-    "responds_to",
-    "corresponds_to",
-    "causes",
-    "enables",
-    "transforms_to",
-    "sequence_before",
-    "feedback_to",
-    "classified_as",
-    "composed_of",
-    "part_of",
-    "layered_as",
-    "bounded_by",
-    "covers",
-    "collaborates_with",
-    "provides_to",
-    "applies_to",
+    "supports", "responds_to", "corresponds_to", "causes", "enables",
+    "transforms_to", "sequence_before", "feedback_to", "classified_as",
+    "composed_of", "part_of", "layered_as", "bounded_by", "covers",
+    "collaborates_with", "provides_to", "applies_to",
 })
 
 LEGACY_RELATION_ALIASES = {
@@ -42,22 +29,13 @@ LEGACY_RELATION_ALIASES = {
 }
 
 RELATION_FAMILY = {
-    "supports": "support",
-    "enables": "support",
-    "responds_to": "response",
-    "corresponds_to": "correspondence",
-    "causes": "causal",
-    "transforms_to": "transformation",
-    "sequence_before": "sequence",
-    "feedback_to": "feedback",
-    "classified_as": "taxonomy",
-    "composed_of": "composition",
-    "part_of": "hierarchy",
-    "layered_as": "hierarchy",
-    "bounded_by": "boundary",
-    "covers": "coverage",
-    "collaborates_with": "collaboration",
-    "provides_to": "provision",
+    "supports": "support", "enables": "support", "responds_to": "response",
+    "corresponds_to": "correspondence", "causes": "causal",
+    "transforms_to": "transformation", "sequence_before": "sequence",
+    "feedback_to": "feedback", "classified_as": "taxonomy",
+    "composed_of": "composition", "part_of": "hierarchy",
+    "layered_as": "hierarchy", "bounded_by": "boundary", "covers": "coverage",
+    "collaborates_with": "collaboration", "provides_to": "provision",
     "applies_to": "correspondence",
 }
 
@@ -108,11 +86,7 @@ def normalize_relation_name(value: object) -> str:
 
 
 def relation_names(relationships: Sequence[Mapping[str, object]]) -> tuple[str, ...]:
-    values = [
-        normalize_relation_name(item.get("relation"))
-        for item in relationships
-        if isinstance(item, Mapping)
-    ]
+    values = [normalize_relation_name(item.get("relation")) for item in relationships if isinstance(item, Mapping)]
     return tuple(dict.fromkeys(value for value in values if value))
 
 
@@ -170,9 +144,7 @@ def _cardinality(edges: tuple[tuple[str, str], ...]) -> tuple[str, bool, bool]:
     return value, shared_target, chain_like
 
 
-def build_semantic_relation_profile(
-    relationships: Sequence[Mapping[str, object]],
-) -> SemanticRelationProfile:
+def build_semantic_relation_profile(relationships: Sequence[Mapping[str, object]]) -> SemanticRelationProfile:
     names = relation_names(relationships)
     families = relation_families(relationships)
     qualifiers = semantic_qualifiers(relationships)
@@ -188,9 +160,6 @@ def build_semantic_relation_profile(
     family_set = set(families)
 
     if independent_selection and optional_progression:
-        # Dual semantics: modes remain independently selectable while a
-        # maturity/deepening path may coexist. A single mandatory flow would
-        # erase the independent-selection condition.
         candidates.extend(("parallel_set", "ecosystem_map"))
         forbidden.append("directed_flow")
     elif "feedback" in family_set:
@@ -242,13 +211,9 @@ def build_semantic_relation_profile(
 
 
 def expression_form_hint(
-    relationships: Sequence[Mapping[str, object]],
-    *,
-    module_count: int,
-    comparison_requested: bool = False,
+    relationships: Sequence[Mapping[str, object]], *, module_count: int, comparison_requested: bool = False
 ) -> str:
     """Return a relation-informed reading form without treating relation as layout."""
-
     profile = build_semantic_relation_profile(relationships)
     families = set(profile.relation_families)
     if profile.independent_selection and profile.optional_progression and 2 <= module_count <= 6:
@@ -257,7 +222,7 @@ def expression_form_hint(
         return "operation_loop"
     if "hierarchy" in families and 3 <= module_count <= 4:
         return "architecture_layers"
-    if "sequence" in families and 3 <= module_count <= 5:
+    if "sequence" in families and 3 <= module_count <= 6:
         return "flow_3_5"
     if "causal" in families and 3 <= module_count <= 4:
         return "causal_chain"
@@ -278,11 +243,8 @@ def expression_form_hint(
     return ""
 
 
-def legacy_visual_intent_hint(
-    relationships: Sequence[Mapping[str, object]],
-) -> str:
+def legacy_visual_intent_hint(relationships: Sequence[Mapping[str, object]]) -> str:
     """Return a safe legacy ImageGen intent hint; final Stage 02 topology stays separate."""
-
     profile = build_semantic_relation_profile(relationships)
     families = set(profile.relation_families)
     if profile.independent_selection and profile.optional_progression:
@@ -307,15 +269,8 @@ def legacy_visual_intent_hint(
 
 
 __all__ = [
-    "CANONICAL_RELATIONS",
-    "LEGACY_RELATION_ALIASES",
-    "RELATION_FAMILY",
-    "SemanticRelationProfile",
-    "build_semantic_relation_profile",
-    "expression_form_hint",
-    "legacy_visual_intent_hint",
-    "normalize_relation_name",
-    "relation_families",
-    "relation_names",
-    "semantic_qualifiers",
+    "CANONICAL_RELATIONS", "LEGACY_RELATION_ALIASES", "RELATION_FAMILY",
+    "SemanticRelationProfile", "build_semantic_relation_profile", "expression_form_hint",
+    "legacy_visual_intent_hint", "normalize_relation_name", "relation_families",
+    "relation_names", "semantic_qualifiers",
 ]
