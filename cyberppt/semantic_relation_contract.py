@@ -66,12 +66,15 @@ RELATION_FAMILY = {
 class SemanticRelationProfile:
     relation_names: tuple[str, ...]
     relation_families: tuple[str, ...]
+    semantic_qualifiers: tuple[str, ...]
     edge_count: int
     subject_count: int
     object_count: int
     cardinality: str
     shared_target: bool
     chain_like: bool
+    independent_selection: bool
+    optional_progression: bool
     topology_candidates: tuple[str, ...]
     forbidden_topologies: tuple[str, ...]
     authority: str = "business_semantics_only"
@@ -82,12 +85,15 @@ class SemanticRelationProfile:
             "authority": self.authority,
             "relation_names": list(self.relation_names),
             "relation_families": list(self.relation_families),
+            "semantic_qualifiers": list(self.semantic_qualifiers),
             "edge_count": self.edge_count,
             "subject_count": self.subject_count,
             "object_count": self.object_count,
             "cardinality": self.cardinality,
             "shared_target": self.shared_target,
             "chain_like": self.chain_like,
+            "independent_selection": self.independent_selection,
+            "optional_progression": self.optional_progression,
             "topology_candidates": list(self.topology_candidates),
             "forbidden_topologies": list(self.forbidden_topologies),
             "topology_authority": "visual_structure_designer",
@@ -113,6 +119,17 @@ def relation_names(relationships: Sequence[Mapping[str, object]]) -> tuple[str, 
 def relation_families(relationships: Sequence[Mapping[str, object]]) -> tuple[str, ...]:
     families = [RELATION_FAMILY.get(name, "other") for name in relation_names(relationships)]
     return tuple(dict.fromkeys(families))
+
+
+def semantic_qualifiers(relationships: Sequence[Mapping[str, object]]) -> tuple[str, ...]:
+    values: list[str] = []
+    for item in relationships:
+        if not isinstance(item, Mapping):
+            continue
+        raw = item.get("semantic_qualifiers")
+        if isinstance(raw, (list, tuple)):
+            values.extend(str(value).strip() for value in raw if str(value).strip())
+    return tuple(dict.fromkeys(values))
 
 
 def _edges(relationships: Sequence[Mapping[str, object]]) -> tuple[tuple[str, str], ...]:
@@ -158,16 +175,25 @@ def build_semantic_relation_profile(
 ) -> SemanticRelationProfile:
     names = relation_names(relationships)
     families = relation_families(relationships)
+    qualifiers = semantic_qualifiers(relationships)
     edges = _edges(relationships)
     subjects = tuple(dict.fromkeys(left for left, _ in edges))
     objects = tuple(dict.fromkeys(right for _, right in edges))
     cardinality, shared_target, chain_like = _cardinality(edges)
+    independent_selection = "independent_selection" in qualifiers
+    optional_progression = "optional_progression" in qualifiers
 
     candidates: list[str] = []
     forbidden: list[str] = []
     family_set = set(families)
 
-    if "feedback" in family_set:
+    if independent_selection and optional_progression:
+        # Dual semantics: modes remain independently selectable while a
+        # maturity/deepening path may coexist. A single mandatory flow would
+        # erase the independent-selection condition.
+        candidates.extend(("parallel_set", "ecosystem_map"))
+        forbidden.append("directed_flow")
+    elif "feedback" in family_set:
         candidates.append("lifecycle_loop")
     elif "hierarchy" in family_set:
         candidates.append("layered_architecture")
@@ -201,12 +227,15 @@ def build_semantic_relation_profile(
     return SemanticRelationProfile(
         relation_names=names,
         relation_families=families,
+        semantic_qualifiers=qualifiers,
         edge_count=len(edges),
         subject_count=len(subjects),
         object_count=len(objects),
         cardinality=cardinality,
         shared_target=shared_target,
         chain_like=chain_like,
+        independent_selection=independent_selection,
+        optional_progression=optional_progression,
         topology_candidates=tuple(dict.fromkeys(candidates)),
         forbidden_topologies=tuple(dict.fromkeys(forbidden)),
     )
@@ -222,6 +251,8 @@ def expression_form_hint(
 
     profile = build_semantic_relation_profile(relationships)
     families = set(profile.relation_families)
+    if profile.independent_selection and profile.optional_progression and 2 <= module_count <= 6:
+        return "parallel_classification"
     if "feedback" in families and 3 <= module_count <= 5:
         return "operation_loop"
     if "hierarchy" in families and 3 <= module_count <= 4:
@@ -254,6 +285,8 @@ def legacy_visual_intent_hint(
 
     profile = build_semantic_relation_profile(relationships)
     families = set(profile.relation_families)
+    if profile.independent_selection and profile.optional_progression:
+        return "judgment_evidence"
     if "feedback" in families:
         return "closed_loop"
     if "hierarchy" in families:
@@ -284,4 +317,5 @@ __all__ = [
     "normalize_relation_name",
     "relation_families",
     "relation_names",
+    "semantic_qualifiers",
 ]
