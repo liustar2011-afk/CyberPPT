@@ -17,9 +17,6 @@ class ExpressionSpec:
     label: str
     module_range: tuple[int, int]
     heading_grammar: str
-    # This is a page-structure rule, not a wording rule for a particular
-    # source section. It tells script audit which grammatical family the
-    # visible peer headings must use.
     heading_policy: str = "parallel_proposition"
     require_return_relation: bool = False
     relation_pattern: str = ""
@@ -58,92 +55,90 @@ class ExpressionAuditFinding:
 
 EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     "framework_4": ExpressionSpec(
-        "framework_4", "四模块框架", (4, 4), "parallel_noun",
-        "parallel_fact",
+        "framework_4", "四模块框架", (4, 4), "parallel_noun", "parallel_fact",
         relation_pattern="peer_modules", reading_requirement="parallel",
         balance_requirement="four peers have comparable reading weight",
         required_features=("four_peer_nodes", "peer_balance"),
         anti_patterns=("forced_sequence", "dominant_center"),
     ),
     "key_points_3": ExpressionSpec(
-        "key_points_3", "三要素结构", (3, 3), "parallel_phrase",
-        "parallel_proposition",
+        "key_points_3", "三要素结构", (3, 3), "parallel_phrase", "parallel_proposition",
         relation_pattern="peer_key_points", reading_requirement="parallel",
         balance_requirement="three points jointly support one page judgment",
         required_features=("three_peer_points", "shared_judgment"),
         anti_patterns=("invented_causality", "invented_time_order"),
     ),
+    "parallel_classification": ExpressionSpec(
+        "parallel_classification", "并列分类", (2, 6), "parallel_noun", "classification_segment",
+        relation_pattern="peer_classification", reading_requirement="parallel",
+        balance_requirement="peer categories remain comparable and no order or hierarchy is implied",
+        required_features=("peer_categories",),
+        anti_patterns=("forced_sequence", "invented_hierarchy", "dominant_center"),
+    ),
+    "mapping_2_6": ExpressionSpec(
+        "mapping_2_6", "对应映射", (2, 6), "mapped_proposition", "parallel_proposition",
+        relation_pattern="paired_mapping", reading_requirement="mapped",
+        balance_requirement="each response remains attached to its source problem or counterpart",
+        required_features=("mapped_pairs",),
+        anti_patterns=("forced_comparison", "forced_sequence", "invented_causality"),
+    ),
     "flow_3_5": ExpressionSpec(
-        "flow_3_5", "三至五步链路", (3, 5), "verb_object",
-        heading_policy="action",
+        "flow_3_5", "三至五步链路", (3, 5), "verb_object", heading_policy="action",
         relation_pattern="directed_sequence", reading_requirement="directed",
         balance_requirement="each action has a legible place in the progression",
-        required_features=("ordered_progression",),
-        anti_patterns=("unordered_peer_groups",),
+        required_features=("ordered_progression",), anti_patterns=("unordered_peer_groups",),
     ),
     "operation_loop": ExpressionSpec(
-        "operation_loop", "运营闭环", (3, 5), "verb_object",
-        heading_policy="action",
+        "operation_loop", "运营闭环", (3, 5), "verb_object", heading_policy="action",
         require_return_relation=True, relation_pattern="directed_cycle", reading_requirement="cyclic",
         balance_requirement="each action participates in a closed operating relation",
         required_features=("ordered_progression", "feedback_edge_required"),
         anti_patterns=("linear_only_flow", "missing_feedback_edge"),
     ),
     "architecture_layers": ExpressionSpec(
-        "architecture_layers", "分层架构", (3, 4), "parallel_noun",
-        "layer_component",
+        "architecture_layers", "分层架构", (3, 4), "parallel_noun", "layer_component",
         relation_pattern="layered_dependency", reading_requirement="layered",
         balance_requirement="layers state their carrying, interface, or dependency relation",
-        required_features=("layer_dependency",),
-        anti_patterns=("stacked_text_only",),
+        required_features=("layer_dependency",), anti_patterns=("stacked_text_only",),
     ),
     "pyramid_argument": ExpressionSpec(
-        "pyramid_argument", "金字塔归纳", (3, 3), "supporting_proposition",
-        "supporting_proposition",
+        "pyramid_argument", "金字塔归纳", (3, 3), "supporting_proposition", "supporting_proposition",
         relation_pattern="supporting_convergence", reading_requirement="convergent",
         balance_requirement="three supports converge on one judgment",
         required_features=("three_supports", "convergence_required"),
         anti_patterns=("parallel_conclusions", "missing_convergence"),
     ),
     "comparison_2col": ExpressionSpec(
-        "comparison_2col", "双列对照", (2, 2), "paired_dimension",
-        "paired_dimension",
+        "comparison_2col", "双列对照", (2, 2), "paired_dimension", "paired_dimension",
         relation_pattern="paired_correspondence", reading_requirement="paired",
         balance_requirement="both objects use matched comparison dimensions",
-        required_features=("two_objects", "matched_dimensions"),
-        anti_patterns=("unmatched_columns",),
+        required_features=("two_objects", "matched_dimensions"), anti_patterns=("unmatched_columns",),
     ),
     "grouped_2": ExpressionSpec(
-        "grouped_2", "双组信息结构", (2, 2), "grouped_proposition",
-        "grouped_proposition",
+        "grouped_2", "双组信息结构", (2, 2), "grouped_proposition", "grouped_proposition",
         relation_pattern="grouped_elaboration", reading_requirement="grouped",
         balance_requirement="one group establishes the subject and the other advances its directly supported mechanism or boundary",
         required_features=("two_distinct_groups", "explicit_group_relation"),
         anti_patterns=("forced_comparison", "invented_sequence"),
     ),
     "matrix_2x2": ExpressionSpec(
-        "matrix_2x2", "四象限分群", (4, 4), "parallel_segment",
-        "classification_segment",
+        "matrix_2x2", "四象限分群", (4, 4), "parallel_segment", "classification_segment",
         relation_pattern="two_axis_classification", reading_requirement="two_axis",
         balance_requirement="each group states why it belongs under both dimensions",
         required_features=("two_classification_dimensions", "four_classified_positions"),
         anti_patterns=("unclassified_four_cards",),
     ),
     "causal_chain": ExpressionSpec(
-        "causal_chain", "因果链", (3, 4), "causal_predicate",
-        "causal_predicate",
+        "causal_chain", "因果链", (3, 4), "causal_predicate", "causal_predicate",
         relation_pattern="directed_cause_to_effect", reading_requirement="directed",
         balance_requirement="each cause is attached to its consequence",
-        required_features=("directed_causal_chain",),
-        anti_patterns=("unordered_peer_groups", "self_loop"),
+        required_features=("directed_causal_chain",), anti_patterns=("unordered_peer_groups", "self_loop"),
     ),
     "actions_3": ExpressionSpec(
-        "actions_3", "三项举措", (3, 3), "verb_object",
-        heading_policy="action",
+        "actions_3", "三项举措", (3, 3), "verb_object", heading_policy="action",
         relation_pattern="coordinated_actions", reading_requirement="action_oriented",
         balance_requirement="three actions jointly point to one outcome",
-        required_features=("three_verb_object_actions", "shared_outcome"),
-        anti_patterns=("noun_only_list",),
+        required_features=("three_verb_object_actions", "shared_outcome"), anti_patterns=("noun_only_list",),
     ),
 }
 VALID_EXPRESSION_FORMS = frozenset(EXPRESSION_SPECS)
@@ -155,6 +150,8 @@ _ACTION_RE = re.compile(
 )
 _LAYER_RE = re.compile(r"层|底座|体系架构")
 _COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较|差异")
+_CLASSIFICATION_RE = re.compile(r"分类|并列|类型|类别|分为|分成")
+_MAPPING_RE = re.compile(r"对应|回应|响应|映射|匹配|适配")
 _MATRIX_RE = re.compile(r"象限|维度|优先级|分群|高低|二维")
 _CAUSAL_RE = re.compile(r"驱动|制约|影响|导致|结果|原因")
 _LOOP_RE = re.compile(r"闭环|反馈|回流|迭代|循环")
@@ -169,8 +166,6 @@ def validate_expression_form(value: str) -> str:
 
 
 def expression_constraints(form: str) -> dict[str, object]:
-    """Return a fresh, layout-neutral default profile for an expression form."""
-
     key = validate_expression_form(form)
     if not key:
         raise ValueError("expression form is required")
@@ -188,15 +183,11 @@ def expression_constraints(form: str) -> dict[str, object]:
 
 
 def expression_requires_action_headings(form: str) -> bool:
-    """Whether this expression form requires action-bearing peer headings."""
-
     key = validate_expression_form(form)
     return bool(key and EXPRESSION_SPECS[key].heading_policy == ACTION_HEADING_POLICY)
 
 
 def expression_constraints_sha256(constraints: Mapping[str, object]) -> str:
-    """Hash a normalized expression profile for cross-artifact traceability."""
-
     stable = json.dumps(constraints, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(stable.encode("utf-8")).hexdigest()
 
@@ -209,23 +200,14 @@ def resolve_onscreen_expression(
     actions: Sequence[str] = (),
     topic_category: str = "",
 ) -> ExpressionDecision:
-    """Return a reviewable semantic expression decision for a content page.
-
-    Business relations constrain the reading relation but never select a visual
-    layout directly. A relation-informed form must also fit the authored module
-    count and, for comparison, the page must actually request a comparison.
-    """
+    """Return a reading-structure decision while keeping visual topology separate."""
 
     explicit = validate_expression_form(str(getattr(page, "onscreen_expression_form", "") or ""))
     candidates = _score_candidates(page, page_mission, actions, topic_category)
     if explicit:
         return ExpressionDecision(explicit, "explicit", 1.0, ("author_override",), candidates)
 
-    modules = tuple(
-        str(item).strip()
-        for item in getattr(page, "top_level_module_titles", ())
-        if str(item).strip()
-    )
+    modules = tuple(str(item).strip() for item in getattr(page, "top_level_module_titles", ()) if str(item).strip())
     relation_context = "\n".join((
         page_mission,
         topic_category,
@@ -280,6 +262,10 @@ def _score_candidates(
         scores["key_points_3"] += 0.58
         scores["pyramid_argument"] += 0.34
         scores["actions_3"] += 0.26
+    if 2 <= module_count <= 6 and _CLASSIFICATION_RE.search(text):
+        scores["parallel_classification"] += 0.78
+    if 2 <= module_count <= 6 and _MAPPING_RE.search(text):
+        scores["mapping_2_6"] += 0.68
     if 3 <= module_count <= 5 and action_count >= 2:
         scores["flow_3_5"] += 0.75
     if 3 <= module_count <= 4 and action_count >= 2:
@@ -310,8 +296,6 @@ def _score_candidates(
 
 
 def audit_expression_balance(page: Any, decision: ExpressionDecision) -> list[ExpressionAuditFinding]:
-    """Return form-specific text-balance diagnostics without choosing a layout."""
-
     modules = tuple(str(item).strip() for item in getattr(page, "top_level_module_titles", ()) if str(item).strip())
     spec = EXPRESSION_SPECS[decision.form]
     findings: list[ExpressionAuditFinding] = []
