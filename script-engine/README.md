@@ -1,33 +1,22 @@
 # CyberPPT Script Engine
 
-> Independent Stage 01 script-generation subsystem for CyberPPT.
+> Standalone PPT script-generation subsystem for CyberPPT.
 
-This directory is intentionally self-contained and is designed to be split into a standalone repository later.
+This directory is intentionally self-contained. It can live inside the current monorepo during migration and later be split into an independent Git repository without changing its internal layout.
 
-## Responsibility
+## What it owns
 
 The Script Engine owns only:
 
-1. source understanding;
-2. deck planning;
-3. script authoring and rewrite;
-4. validation of the final script contract.
+1. **UNDERSTAND** — source understanding and unified semantic foundation;
+2. **PLAN** — communication goal, narrative, chapters, and page plan;
+3. **AUTHOR** — whole-deck writing, critique, rewrite, and final script;
+4. **EDIT PAGE** — targeted page revision after whole-deck authoring;
+5. validation of its own delivery contracts.
 
-It does not own image generation, visual rendering, SVG reconstruction, editable PPTX assembly, or Stage 02 QA.
+It does not own visual style selection, ImageGen, SVG reconstruction, editable PPTX assembly, or Stage 02 QA.
 
-## Stable output boundary
-
-The only required downstream artifact is:
-
-- `dist/final-script.md`
-
-Optional machine-readable companion:
-
-- `dist/final-script.json`
-
-Stage 02 must consume the final-script contract and must not depend on Script Engine internal workbench files.
-
-## Internal pipeline
+## Workflow
 
 ```text
 SOURCE
@@ -40,25 +29,117 @@ PLAN
   ↓
 deck-plan.json
   ↓
+Gate A — Deck Plan
+  ↓
 AUTHOR
+  ├─ whole-deck narrative
+  ├─ section writing
+  ├─ page writing
+  ├─ critic
+  └─ rewrite
   ↓
-critique + rewrite
+final-script.md
   ↓
-final-script.md / final-script.json
+Gate B — Final Script
 ```
+
+The default authoring unit is the whole deck. Single-page writing is an editing capability, not the primary production path.
 
 ## Authority model
 
-Only three content artifacts are authoritative inside this subsystem:
+Only three content artifacts are authoritative:
 
 - `foundation.json`
 - `deck-plan.json`
 - `final-script.md`
 
-All other files are cache, reports, diagnostics, or derived projections.
+`final-script.json` is an optional machine-readable mirror. Other files are cache, reports, diagnostics, or adapter outputs.
+
+## Skills
+
+Standalone agent skills live under:
+
+```text
+.agents/skills/
+├─ cyberppt-script-understand/
+├─ cyberppt-script-plan/
+├─ cyberppt-script-author/
+└─ cyberppt-script-edit-page/
+```
+
+## Contracts
+
+- `contracts/foundation.schema.json`
+- `contracts/deck-plan.schema.json`
+- `contracts/final-script.schema.json`
+
+The downstream contract is versioned as:
+
+```json
+{
+  "contract": "cyberppt.final-script",
+  "version": "1.0"
+}
+```
+
+Internal Foundation and Plan schemas are private to the Script Engine and are not Stage 02 dependencies.
+
+## CLI
+
+Install in editable mode from this directory:
+
+```bash
+python -m pip install -e .
+```
+
+Validate artifacts:
+
+```bash
+cyberppt-script validate foundation foundation.json
+cyberppt-script validate plan deck-plan.json
+cyberppt-script validate final dist/final-script.json
+```
+
+Render a JSON final script into the Markdown contract accepted by the current CyberPPT Stage 02 parser:
+
+```bash
+cyberppt-script render-stage02 dist/final-script.json --output dist/final-script.md
+```
 
 ## Loose coupling with CyberPPT Stage 02
 
-Stage 02 receives a final script by file path. It must not require Script Engine-specific schemas, approval states, source-truth projections, or intermediate semantic artifacts.
+The existing CyberPPT Stage 02 already accepts an external final-script path. The integration boundary is therefore only the final script file:
 
-A compatibility adapter may translate `final-script.json` or `final-script.md` into the current CyberPPT Stage 02 handoff format. The adapter belongs at the boundary and must not become part of the authoring workflow.
+```bash
+python -m cyberppt prepare-stage02-handoff <project> \
+  --script <script-engine>/dist/final-script.md
+```
+
+After that, the host repository owns visual structure, style selection, image production, editable reconstruction, and PPTX QA.
+
+Stage 02 must not read:
+
+- `foundation.json`
+- `deck-plan.json`
+- Script Engine critique drafts
+- semantic caches
+- authoring state
+- Script Engine Skill names
+
+See `docs/BOUNDARY_CONTRACT.md` and `docs/MIGRATION_FROM_LEGACY_STAGE01.md`.
+
+## Repository layout
+
+```text
+script-engine/
+├─ .agents/skills/
+├─ contracts/
+├─ references/
+├─ script_engine/
+├─ adapters/cyberppt-stage02/
+├─ docs/
+├─ examples/
+├─ tests/
+├─ workbench/
+└─ dist/
+```
