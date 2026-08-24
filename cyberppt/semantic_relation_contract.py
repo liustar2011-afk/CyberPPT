@@ -1,8 +1,8 @@
 """Shared semantic-relation contract between script semantics and Stage 02 visual design.
 
-A business semantic relation is not a visual topology.  This module keeps those
-layers separate and provides only deterministic relation-shape evidence for the
-visual-structure designer.  The designer still owns the final topology choice.
+A business semantic relation is not a visual topology. This module keeps those
+layers separate and provides deterministic relation-shape evidence for Stage 02.
+The visual-structure designer still owns the final topology choice.
 """
 from __future__ import annotations
 
@@ -218,7 +218,7 @@ def expression_form_hint(
     module_count: int,
     comparison_requested: bool = False,
 ) -> str:
-    """Return a relation-informed expression form without treating relation as layout."""
+    """Return a relation-informed reading form without treating relation as layout."""
 
     profile = build_semantic_relation_profile(relationships)
     families = set(profile.relation_families)
@@ -235,15 +235,15 @@ def expression_form_hint(
             return "pyramid_argument"
         if module_count == 4:
             return "framework_4"
+    if "response" in families and 2 <= module_count <= 6:
+        return "mapping_2_6"
+    if "correspondence" in families and profile.cardinality == "paired" and 2 <= module_count <= 6:
+        if comparison_requested and module_count == 2:
+            return "comparison_2col"
+        return "mapping_2_6"
     if "taxonomy" in families or "composition" in families:
-        if module_count == 2:
-            return "grouped_2"
-        if module_count == 3:
-            return "key_points_3"
-        if module_count == 4:
-            return "framework_4"
-    if comparison_requested and "correspondence" in families and module_count == 2:
-        return "comparison_2col"
+        if 2 <= module_count <= 6:
+            return "parallel_classification"
     return ""
 
 
