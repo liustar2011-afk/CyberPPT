@@ -57,7 +57,13 @@ Only three content artifacts are authoritative:
 
 ## Skills
 
-Standalone agent skills live under:
+The single routing entry is:
+
+```text
+.agents/skills/cyberppt-script-workflow/
+```
+
+It routes to:
 
 ```text
 .agents/skills/
@@ -126,13 +132,14 @@ Stage 02 must not read:
 - authoring state
 - Script Engine Skill names
 
-See `docs/BOUNDARY_CONTRACT.md` and `docs/MIGRATION_FROM_LEGACY_STAGE01.md`.
+See `docs/BOUNDARY_CONTRACT.md`, `docs/MIGRATION_FROM_LEGACY_STAGE01.md`, and `docs/SPLIT_TO_STANDALONE.md`.
 
 ## Repository layout
 
 ```text
 script-engine/
 ├─ .agents/skills/
+├─ .github/workflows/
 ├─ contracts/
 ├─ references/
 ├─ script_engine/
