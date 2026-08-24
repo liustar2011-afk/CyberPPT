@@ -32,11 +32,22 @@ def _clean_relation_label(value: object) -> str:
     return _EVIDENCE_NOTE_RE.sub("", label).strip()
 
 
+def _semantic_qualifiers(label: str) -> list[str]:
+    text = _clean_relation_label(label)
+    qualifiers: list[str] = []
+    if any(token in text for token in ("可独立", "独立采用", "独立选用", "按需组合", "可分别")):
+        qualifiers.append("independent_selection")
+    if any(token in text for token in ("逐步深化", "可深化", "逐步演进", "随合作成熟度")):
+        qualifiers.append("optional_progression")
+    if any(token in text for token in ("非强制", "不强制", "并非强制", "可选择")):
+        qualifiers.append("non_mandatory_progression")
+    return list(dict.fromkeys(qualifiers))
+
+
 def _canonical_relation(label: str) -> str:
     """Map Chinese script wording to the Stage 02 business-semantic vocabulary."""
 
     text = label.lower()
-    # Ordered from stronger/specific semantics to broader correspondence.
     if any(token in text for token in ("反馈", "回流", "回到", "回返", "回送")):
         return "feedback_to"
     if any(token in text for token in ("因果", "导致", "引发", "驱动")):
@@ -91,6 +102,7 @@ def _relation_record(
         "basis": "derived_from_script_visual_structure",
         "confidence": confidence,
         "relation_label": normalized_label,
+        "semantic_qualifiers": _semantic_qualifiers(normalized_label),
         "authority_ref": "final-script.visual-structure",
     }
 
@@ -142,6 +154,7 @@ def _structural_fallback(
 
     subject = _clean(title) or "本页业务对象"
     if any(token in text for token in ("并列分类", "并列结构", "并列存在", "相互独立", "分类结构")):
+        qualifiers = _semantic_qualifiers(text)
         return [{
             "subject": subject,
             "relation": "classified_as",
@@ -152,6 +165,7 @@ def _structural_fallback(
             "basis": "derived_from_script_visual_structure",
             "confidence": "high",
             "relation_label": "并列分类",
+            "semantic_qualifiers": qualifiers,
             "authority_ref": "final-script.visual-structure",
         }]
 
@@ -180,6 +194,7 @@ def _structural_fallback(
             "basis": "derived_from_script_visual_structure",
             "confidence": "high",
             "relation_label": "分层结构",
+            "semantic_qualifiers": [],
             "authority_ref": "final-script.visual-structure",
         }]
     return []
@@ -192,13 +207,7 @@ def derive_business_relationships(
     module_titles: Iterable[str] = (),
     top_level_module_titles: Iterable[str] = (),
 ) -> tuple[dict[str, object], ...]:
-    """Return business-semantic relations without choosing a visual topology.
-
-    Explicit ``A → B：relation`` lines are consumed first. If none exist, a
-    small set of explicit structural statements can be projected from the page
-    modules. Ambiguous pages remain empty so the visual designer can request
-    review instead of receiving invented business logic.
-    """
+    """Return business-semantic relations without choosing a visual topology."""
 
     explicit = _explicit_arrow_relations(visual_structure)
     if explicit:
