@@ -1,4 +1,9 @@
-"""Classify professional on-screen expression forms without choosing a layout."""
+"""Classify professional on-screen expression forms without choosing a layout.
+
+Stage 02 now prefers a verified semantic topology.  Raw relationship names are
+retained only as a compatibility fallback for legacy callers; they are no
+longer the primary authority in the official handoff path.
+"""
 
 from __future__ import annotations
 
@@ -171,11 +176,13 @@ _ACTION_RE = re.compile(
 _LAYER_RE = re.compile(r"层|底座|体系架构")
 _FRAMEWORK_RE = re.compile(r"框架|四模块|四方面|四项|构成|组成")
 _PARALLEL_RE = re.compile(r"并列|分类|同类|类别|类型|三类|四类|五类|六类")
-_COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较")
+_COMPARISON_RE = re.compile(r"现状|目标|当前|未来|方案|对照|比较")
 _MATRIX_RE = re.compile(r"象限|维度|优先级|分群|高低|二维")
-_CAUSAL_RE = re.compile(r"驱动|制约|影响|导致|结果|原因")
+_CAUSAL_RE = re.compile(r"驱动|制约|影响|导致|结果|原因|因果")
 _LOOP_RE = re.compile(r"闭环|反馈|回流|迭代|循环")
 _ACTION_TOPIC_RE = re.compile(r"举措|任务|行动|重点|安排|保障")
+_FLOW_RE = re.compile(r"流程|链路|路径|阶段|环节|依次|先后|逐步|进入|转入|输出|流转")
+_DEPENDENCY_RE = re.compile(r"依托|承接|提供基础|形成基础|作为基础|支撑后续|前提")
 
 
 def validate_expression_form(value: str) -> str:
@@ -237,6 +244,54 @@ def _relationship_confidence(
     return round(confidence, 2)
 
 
+def _topology_expression(
+    topology: Mapping[str, object],
+    *,
+    module_count: int,
+    surface_text: str,
+) -> tuple[str, tuple[str, ...]] | None:
+    primary = str(topology.get("primary_topology") or "unknown")
+    evidence = (f"semantic_topology:{primary}",)
+    if primary == "feedback_loop" and 3 <= module_count <= 6:
+        return "operation_loop", evidence
+    if primary == "causal_chain" and 3 <= module_count <= 4:
+        return "causal_chain", evidence
+    if primary == "sequence" and 3 <= module_count <= 6:
+        return "flow_3_5", evidence
+    if primary == "layered_structure" and 3 <= module_count <= 6:
+        return "architecture_layers", evidence
+    if primary == "support_convergence" and 3 <= module_count <= 6:
+        return "support_convergence_3_6", evidence
+    if primary == "dependency_chain" and 2 <= module_count <= 6:
+        return "directed_dependency_2_6", evidence
+    if primary == "mapping" and 2 <= module_count <= 6:
+        return "mapping_2_6", evidence
+    if primary == "comparison":
+        if module_count == 2:
+            return "comparison_2col", evidence
+        if 2 <= module_count <= 6:
+            return "mapping_2_6", evidence
+    if primary == "matrix" and module_count == 4:
+        return "matrix_2x2", evidence
+    if primary == "containment":
+        if module_count == 4:
+            return "framework_4", evidence
+        if module_count == 2:
+            return "grouped_2", evidence
+        if 1 <= module_count <= 7:
+            return "neutral_structure_1_7", evidence
+    if primary == "peer_set":
+        if module_count == 4 and _FRAMEWORK_RE.search(surface_text):
+            return "framework_4", evidence
+        if module_count == 3 and re.search(r"三要素|三项重点|原则|价值", surface_text):
+            return "key_points_3", evidence
+        if 3 <= module_count <= 6:
+            return "parallel_classification_3_6", evidence
+    if primary == "unknown" and 1 <= module_count <= 7:
+        return "neutral_structure_1_7", evidence
+    return None
+
+
 def resolve_onscreen_expression(
     page: Any,
     *,
@@ -244,8 +299,9 @@ def resolve_onscreen_expression(
     business_relationships: Sequence[Mapping[str, object]] = (),
     actions: Sequence[str] = (),
     topic_category: str = "",
+    semantic_topology: Mapping[str, object] | None = None,
 ) -> ExpressionDecision:
-    """Resolve a layout-neutral reading contract from page semantics."""
+    """Resolve a layout-neutral reading contract from verified page semantics."""
 
     explicit = validate_expression_form(str(getattr(page, "onscreen_expression_form", "") or ""))
     candidates = _score_candidates(page, page_mission, actions, topic_category)
@@ -253,6 +309,26 @@ def resolve_onscreen_expression(
         return ExpressionDecision(explicit, "explicit", 1.0, ("author_override",), candidates)
 
     modules = tuple(str(item).strip() for item in getattr(page, "top_level_module_titles", ()) if str(item).strip())
+    surface_text = "\n".join((page_mission, topic_category, "\n".join(modules), "\n".join(actions)))
+
+    if isinstance(semantic_topology, Mapping):
+        resolved = _topology_expression(
+            semantic_topology,
+            module_count=len(modules),
+            surface_text=surface_text,
+        )
+        if resolved is not None:
+            form, evidence = resolved
+            return ExpressionDecision(
+                form,
+                "verified_topology",
+                round(float(semantic_topology.get("confidence") or 0.0), 2),
+                evidence,
+                candidates,
+            )
+
+    # Compatibility path for legacy direct callers that do not yet supply a
+    # verified topology.  The official Stage 02 handoff uses the branch above.
     semantic = resolve_relation_expression(relationships=business_relationships, module_count=len(modules))
     if semantic is not None:
         form, evidence = semantic
@@ -295,42 +371,44 @@ def _score_candidates(
     action_count = sum(bool(_ACTION_RE.search(value)) for value in (*modules, *actions))
     scores = {form: 0.0 for form in VALID_EXPRESSION_FORMS}
 
-    # Cardinality only establishes eligibility. It may add a small prior, but
-    # must never by itself push a peer form over the decision threshold.
+    # Cardinality establishes eligibility only; it cannot prove peer semantics.
     if module_count == 4:
-        scores["framework_4"] += 0.18
-        scores["matrix_2x2"] += 0.10
+        scores["framework_4"] += 0.12
+        scores["matrix_2x2"] += 0.08
     if module_count == 3:
-        scores["key_points_3"] += 0.18
-        scores["pyramid_argument"] += 0.10
-        scores["actions_3"] += 0.10
+        scores["key_points_3"] += 0.12
+        scores["pyramid_argument"] += 0.08
+        scores["actions_3"] += 0.08
 
     if module_count == 4 and _FRAMEWORK_RE.search(text):
-        scores["framework_4"] += 0.65
+        scores["framework_4"] += 0.68
     if 3 <= module_count <= 6 and _PARALLEL_RE.search(text):
-        scores["parallel_classification_3_6"] += 0.75
-    if 3 <= module_count <= 6 and action_count >= 2:
-        scores["flow_3_5"] += 0.75
-    if 3 <= module_count <= 4 and action_count >= 2:
-        scores["causal_chain"] += 0.20
-    if _LOOP_RE.search(text):
-        scores["operation_loop"] += 0.70
-    if _LAYER_RE.search(text):
-        scores["architecture_layers"] += 0.70
-    if _COMPARISON_RE.search(text):
-        scores["comparison_2col"] += 0.70
-    if _MATRIX_RE.search(text):
-        scores["matrix_2x2"] += 0.70
-    if _CAUSAL_RE.search(text):
-        scores["causal_chain"] += 0.70
+        scores["parallel_classification_3_6"] += 0.78
+    # Action-bearing labels alone do not prove a process.  A flow also needs a
+    # progression/path signal; this prevents words such as "形成" in a four-
+    # module framework from stealing the page into flow_3_5.
+    if 3 <= module_count <= 6 and action_count >= 2 and _FLOW_RE.search(text):
+        scores["flow_3_5"] += 0.78
+    if 2 <= module_count <= 6 and _DEPENDENCY_RE.search(text):
+        scores["directed_dependency_2_6"] += 0.64
+    if _LOOP_RE.search(text) and 3 <= module_count <= 6:
+        scores["operation_loop"] += 0.76
+    if _LAYER_RE.search(text) and 3 <= module_count <= 6:
+        scores["architecture_layers"] += 0.74
+    if _COMPARISON_RE.search(text) and module_count == 2:
+        scores["comparison_2col"] += 0.74
+    if _MATRIX_RE.search(text) and module_count == 4:
+        scores["matrix_2x2"] += 0.76
+    if _CAUSAL_RE.search(text) and 3 <= module_count <= 4:
+        scores["causal_chain"] += 0.76
     if _ACTION_TOPIC_RE.search(text) and module_count == 3 and action_count >= 2:
-        scores["actions_3"] += 0.70
+        scores["actions_3"] += 0.72
     if getattr(page, "onscreen_judgment", "") and module_count == 3:
-        scores["pyramid_argument"] += 0.25
+        scores["pyramid_argument"] += 0.22
     if module_count == 3 and re.search(r"总分|论证|归纳", text):
-        scores["pyramid_argument"] += 0.55
+        scores["pyramid_argument"] += 0.58
     if module_count == 3 and re.search(r"原则|价值|重点", text):
-        scores["key_points_3"] += 0.48
+        scores["key_points_3"] += 0.52
     if module_count:
         for form, spec in EXPRESSION_SPECS.items():
             if not spec.module_range[0] <= module_count <= spec.module_range[1]:
