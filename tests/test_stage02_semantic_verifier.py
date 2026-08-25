@@ -181,6 +181,40 @@ def test_deck_validator_blocks_directed_semantics_flattened_to_parallel() -> Non
     assert report["blocking_issues"][0]["code"] == "DIRECTED_SEMANTICS_FLATTENED_TO_PARALLEL"
 
 
+def test_deck_validator_can_recover_semantic_topology_from_compiled_graph() -> None:
+    pages = [
+        {
+            "page_id": "P05",
+            "page_role": "content",
+            "semantic_graph": {
+                "topology": "parallel_set",
+                "business_relationships": [
+                    {
+                        "subject": "行业节点",
+                        "relation": "directed_dependency",
+                        "objects": ["运营平台"],
+                        "direction": "subject_to_objects",
+                        "confidence": 0.82,
+                        "constraint_authority": "soft",
+                    },
+                    {
+                        "subject": "运营平台",
+                        "relation": "evidence_supports",
+                        "objects": ["协同载体"],
+                        "direction": "subject_to_objects",
+                        "confidence": 0.82,
+                        "constraint_authority": "soft",
+                    },
+                ],
+            },
+            "expression_contract": {"form": "parallel_classification_3_6"},
+        }
+    ]
+    report = audit_deck_structure_collapse(pages)
+    assert report["status"] == "failed"
+    assert report["blocking_issues"][0]["code"] == "DIRECTED_SEMANTICS_FLATTENED_TO_PARALLEL"
+
+
 def test_deck_validator_warns_on_peer_like_concentration_without_forcing_diversity() -> None:
     pages = [
         {
