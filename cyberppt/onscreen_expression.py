@@ -89,6 +89,20 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
         required_features=("source_target_pairs", "pair_integrity"),
         anti_patterns=("forced_comparison", "invented_ranking", "forced_sequence"),
     ),
+    "directed_dependency_2_6": ExpressionSpec(
+        "directed_dependency_2_6", "二至六节点有向承接", (2, 6), "relation_node", "relation_node",
+        relation_pattern="directed_dependency", reading_requirement="directed_dependency",
+        balance_requirement="preserve explicit direction and dependency without inventing chronology, hierarchy, or peer equivalence",
+        required_features=("directed_dependency_edge",),
+        anti_patterns=("unordered_peer_groups", "invented_time_order", "invented_hierarchy"),
+    ),
+    "neutral_structure_1_7": ExpressionSpec(
+        "neutral_structure_1_7", "一至七节点中性结构", (1, 7), "mixed", "neutral",
+        relation_pattern="unresolved_relation", reading_requirement="neutral",
+        balance_requirement="preserve authored grouping and explicit edges while leaving unresolved relation type open for visual review",
+        required_features=("relation_review_required",),
+        anti_patterns=("invented_peer_equivalence", "invented_sequence", "invented_hierarchy"),
+    ),
     "flow_3_5": ExpressionSpec(
         "flow_3_5", "三至六步链路", (3, 6), "verb_object", heading_policy="action",
         relation_pattern="directed_sequence", reading_requirement="directed",
@@ -155,6 +169,8 @@ _ACTION_RE = re.compile(
     r"|执行|下发|记录|计量|确认|对账|结算|汇总|开展"
 )
 _LAYER_RE = re.compile(r"层|底座|体系架构")
+_FRAMEWORK_RE = re.compile(r"框架|模块|体系|构成|组成|方面")
+_PARALLEL_RE = re.compile(r"并列|分类|同类|类别|类型|三类|四类|五类|六类")
 _COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较")
 _MATRIX_RE = re.compile(r"象限|维度|优先级|分群|高低|二维")
 _CAUSAL_RE = re.compile(r"驱动|制约|影响|导致|结果|原因")
@@ -196,6 +212,31 @@ def expression_constraints_sha256(constraints: Mapping[str, object]) -> str:
     return hashlib.sha256(stable.encode("utf-8")).hexdigest()
 
 
+def _relationship_confidence(
+    relationships: Sequence[Mapping[str, object]],
+) -> float:
+    values: list[float] = []
+    names: set[str] = set()
+    for item in relationships:
+        if not isinstance(item, Mapping):
+            continue
+        relation = str(item.get("relation") or "").strip()
+        if relation:
+            names.add(relation)
+        raw = item.get("confidence")
+        if isinstance(raw, (int, float)):
+            values.append(max(0.0, min(float(raw), 1.0)))
+            continue
+        label = str(raw or "").strip().lower()
+        values.append({"high": 0.90, "medium": 0.75, "low": 0.60}.get(label, 0.84))
+    confidence = min(values) if values else 0.84
+    if "directed_dependency" in names:
+        confidence = min(confidence, 0.82)
+    if names & {"directed_relation", "semantic_association"}:
+        confidence = min(confidence, 0.68)
+    return round(confidence, 2)
+
+
 def resolve_onscreen_expression(
     page: Any,
     *,
@@ -217,14 +258,30 @@ def resolve_onscreen_expression(
         form, evidence = semantic
         spec = EXPRESSION_SPECS.get(form)
         if spec is not None and spec.module_range[0] <= len(modules) <= spec.module_range[1]:
-            return ExpressionDecision(form, "relation", 0.94, evidence, candidates)
+            return ExpressionDecision(
+                form,
+                "relation",
+                _relationship_confidence(business_relationships),
+                evidence,
+                candidates,
+            )
 
     form, score = candidates[0]
     if score < 0.60:
-        fallback = "parallel_classification_3_6" if 3 <= len(modules) <= 6 else "key_points_3"
+        if getattr(page, "page_type", "content") == "content" and 1 <= len(modules) <= 7:
+            return ExpressionDecision(
+                "neutral_structure_1_7",
+                "fallback",
+                round(score, 2),
+                ("relation_unresolved", "insufficient_surface_signals"),
+                candidates,
+            )
         return ExpressionDecision(
-            fallback, "fallback", round(score, 2),
-            ("no_authoritative_relation", "insufficient_surface_signals"), candidates,
+            "key_points_3",
+            "fallback",
+            round(score, 2),
+            ("no_authoritative_relation", "insufficient_surface_signals"),
+            candidates,
         )
     return ExpressionDecision(form, "scored", round(score, 2), ("surface_signals",), candidates)
 
@@ -237,19 +294,25 @@ def _score_candidates(
     module_count = len(modules)
     action_count = sum(bool(_ACTION_RE.search(value)) for value in (*modules, *actions))
     scores = {form: 0.0 for form in VALID_EXPRESSION_FORMS}
-    if 3 <= module_count <= 6:
-        scores["parallel_classification_3_6"] += 0.40
+
+    # Cardinality only establishes eligibility. It may add a small prior, but
+    # must never by itself push a peer form over the decision threshold.
     if module_count == 4:
-        scores["framework_4"] += 0.82
-        scores["matrix_2x2"] += 0.35
+        scores["framework_4"] += 0.18
+        scores["matrix_2x2"] += 0.10
     if module_count == 3:
-        scores["key_points_3"] += 0.58
-        scores["pyramid_argument"] += 0.34
-        scores["actions_3"] += 0.26
+        scores["key_points_3"] += 0.18
+        scores["pyramid_argument"] += 0.10
+        scores["actions_3"] += 0.10
+
+    if module_count == 4 and _FRAMEWORK_RE.search(text):
+        scores["framework_4"] += 0.55
+    if 3 <= module_count <= 6 and _PARALLEL_RE.search(text):
+        scores["parallel_classification_3_6"] += 0.75
     if 3 <= module_count <= 6 and action_count >= 2:
         scores["flow_3_5"] += 0.75
     if 3 <= module_count <= 4 and action_count >= 2:
-        scores["causal_chain"] += 0.30
+        scores["causal_chain"] += 0.20
     if _LOOP_RE.search(text):
         scores["operation_loop"] += 0.70
     if _LAYER_RE.search(text):
@@ -263,7 +326,7 @@ def _score_candidates(
     if _ACTION_TOPIC_RE.search(text) and module_count == 3 and action_count >= 2:
         scores["actions_3"] += 0.70
     if getattr(page, "onscreen_judgment", "") and module_count == 3:
-        scores["pyramid_argument"] += 0.35
+        scores["pyramid_argument"] += 0.25
     if module_count == 3 and re.search(r"总分|论证|归纳", text):
         scores["pyramid_argument"] += 0.55
     if module_count == 3 and re.search(r"原则|价值|重点", text):
