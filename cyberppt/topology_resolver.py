@@ -1,9 +1,8 @@
 """Resolve verified business relations into layout-neutral semantic topology.
 
-This module answers only "what relationship graph does the page express?".
-It never selects a PowerPoint layout, card pattern or image carrier.  Visual
-expression selection happens later in :mod:`cyberppt.onscreen_expression` and
-the registered visual-structure Skill.
+The resolver answers only what relationship graph a page expresses. It does
+not select a PowerPoint layout, card pattern, scene, or carrier. Expression
+selection happens later in :mod:`cyberppt.onscreen_expression`.
 """
 from __future__ import annotations
 
@@ -15,25 +14,18 @@ from typing import Mapping, Sequence
 _PEER_RELATIONS = {"peer_classification", "classified_as", "optional_progression"}
 _SUPPORT_RELATIONS = {"evidence_supports", "supports"}
 _SEQUENCE_RELATIONS = {"sequence_before", "sequence_after"}
-_FEEDBACK_RELATIONS = {"feedback", "feeds_back", "feeds_back_to", "returns_to", "iterates", "loops_to"}
+_FEEDBACK_RELATIONS = {
+    "feedback", "feeds_back", "feeds_back_to", "returns_to", "iterates", "loops_to"
+}
 _LAYER_RELATIONS = {"layered_as", "layer_supports"}
 _MAPPING_RELATIONS = {"problem_response", "semantic_mapping", "corresponds_to"}
 _CONTAINMENT_RELATIONS = {"composed_of", "contains", "part_of"}
 _DIRECTED_RELATIONS = {
-    "directed_dependency",
-    "directed_relation",
-    "causes",
-    "transforms_to",
-    *_SUPPORT_RELATIONS,
-    *_SEQUENCE_RELATIONS,
-    *_FEEDBACK_RELATIONS,
+    "directed_dependency", "directed_relation", "causes", "transforms_to",
+    *_SUPPORT_RELATIONS, *_SEQUENCE_RELATIONS, *_FEEDBACK_RELATIONS,
 }
 _DIRECTIONAL_VALUES = {
-    "subject_to_objects",
-    "left_to_right",
-    "right_to_left",
-    "top_to_bottom",
-    "bottom_to_top",
+    "subject_to_objects", "left_to_right", "right_to_left", "top_to_bottom", "bottom_to_top"
 }
 _MATRIX_RE = re.compile(r"象限|二维|双维|两维|高低|分群")
 
@@ -47,7 +39,7 @@ def _names(records: Sequence[Mapping[str, object]]) -> set[str]:
 
 
 def _edges(records: Sequence[Mapping[str, object]]) -> tuple[tuple[str, str, str], ...]:
-    edges: list[tuple[str, str, str]] = []
+    result: list[tuple[str, str, str]] = []
     for item in records:
         subject = _text(item.get("subject"))
         relation = _text(item.get("relation"))
@@ -57,8 +49,8 @@ def _edges(records: Sequence[Mapping[str, object]]) -> tuple[tuple[str, str, str
         for raw in objects:
             object_ = _text(raw)
             if object_ and object_ != subject:
-                edges.append((subject, object_, relation))
-    return tuple(edges)
+                result.append((subject, object_, relation))
+    return tuple(result)
 
 
 def _has_dependency_chain(edges: Sequence[tuple[str, str, str]]) -> bool:
@@ -78,12 +70,12 @@ def _authority_rank(value: str) -> int:
 
 
 def _relevant_authority(records: Sequence[Mapping[str, object]], relation_names: set[str]) -> str:
-    levels = [
+    values = [
         _text(item.get("constraint_authority")) or "soft"
         for item in records
         if _text(item.get("relation")) in relation_names
     ]
-    return max(levels, key=_authority_rank) if levels else "soft"
+    return max(values, key=_authority_rank) if values else "soft"
 
 
 def _relevant_confidence(records: Sequence[Mapping[str, object]], relation_names: set[str]) -> float:
@@ -110,8 +102,7 @@ def _candidate(
 
 
 def _peer_eligibility(
-    records: Sequence[Mapping[str, object]],
-    names: set[str],
+    records: Sequence[Mapping[str, object]], names: set[str]
 ) -> tuple[bool, list[str]]:
     reasons: list[str] = []
     if not names:
@@ -121,7 +112,15 @@ def _peer_eligibility(
         reasons.append("non_peer_relations:" + ",".join(sorted(non_peer)))
     if any(_text(item.get("direction")) in _DIRECTIONAL_VALUES for item in records):
         reasons.append("explicit_direction_present")
-    if names & ({"causes"} | _SEQUENCE_RELATIONS | _FEEDBACK_RELATIONS | _LAYER_RELATIONS | _MAPPING_RELATIONS | _CONTAINMENT_RELATIONS | _SUPPORT_RELATIONS):
+    if names & (
+        {"causes"}
+        | _SEQUENCE_RELATIONS
+        | _FEEDBACK_RELATIONS
+        | _LAYER_RELATIONS
+        | _MAPPING_RELATIONS
+        | _CONTAINMENT_RELATIONS
+        | _SUPPORT_RELATIONS
+    ):
         reasons.append("non_peer_semantics_present")
     return not reasons, reasons
 
@@ -132,7 +131,7 @@ def resolve_semantic_topology(
     module_count: int = 0,
     page_text: str = "",
 ) -> dict[str, object]:
-    """Return ranked semantic topology candidates from verified relations."""
+    """Return ranked topology candidates from verified relations."""
 
     records = [item for item in verified_relationships if isinstance(item, Mapping)]
     names = _names(records)
@@ -140,116 +139,75 @@ def resolve_semantic_topology(
     candidates: list[dict[str, object]] = []
     peer_allowed, peer_reasons = _peer_eligibility(records, names)
 
-    if names & _FEEDBACK_RELATIONS:
-        relation_names = names & _FEEDBACK_RELATIONS
+    def add(topology: str, relation_names: set[str], base: float, bonus: float, evidence: list[str]) -> None:
         confidence = _relevant_confidence(records, relation_names)
         candidates.append(_candidate(
-            "feedback_loop",
-            0.82 + 0.16 * confidence,
-            ["feedback_relation", *sorted(relation_names)],
+            topology,
+            base + bonus * confidence,
+            evidence,
             _relevant_authority(records, relation_names),
         ))
+
+    feedback = names & _FEEDBACK_RELATIONS
+    if feedback:
+        add("feedback_loop", feedback, 0.82, 0.16, ["feedback_relation", *sorted(feedback)])
 
     if "causes" in names:
-        confidence = _relevant_confidence(records, {"causes"})
-        candidates.append(_candidate(
-            "causal_chain",
-            0.80 + 0.16 * confidence,
-            ["causal_relation", "causes"],
-            _relevant_authority(records, {"causes"}),
-        ))
+        add("causal_chain", {"causes"}, 0.80, 0.16, ["causal_relation", "causes"])
 
-    if names & _SEQUENCE_RELATIONS:
-        relation_names = names & _SEQUENCE_RELATIONS
-        confidence = _relevant_confidence(records, relation_names)
-        candidates.append(_candidate(
-            "sequence",
-            0.78 + 0.16 * confidence,
-            ["sequence_relation", *sorted(relation_names)],
-            _relevant_authority(records, relation_names),
-        ))
+    sequence = names & _SEQUENCE_RELATIONS
+    if sequence:
+        add("sequence", sequence, 0.78, 0.16, ["sequence_relation", *sorted(sequence)])
 
-    if names & _LAYER_RELATIONS:
-        relation_names = names & _LAYER_RELATIONS
-        confidence = _relevant_confidence(records, relation_names)
-        candidates.append(_candidate(
-            "layered_structure",
-            0.76 + 0.16 * confidence,
-            ["layer_relation", *sorted(relation_names)],
-            _relevant_authority(records, relation_names),
-        ))
+    layered = names & _LAYER_RELATIONS
+    if layered:
+        add("layered_structure", layered, 0.76, 0.16, ["layer_relation", *sorted(layered)])
 
     if "comparison" in names:
-        confidence = _relevant_confidence(records, {"comparison"})
-        candidates.append(_candidate(
-            "comparison",
-            0.78 + 0.14 * confidence,
-            ["comparison_relation"],
-            _relevant_authority(records, {"comparison"}),
-        ))
+        add("comparison", {"comparison"}, 0.78, 0.14, ["comparison_relation"])
 
-    if names & _MAPPING_RELATIONS:
-        relation_names = names & _MAPPING_RELATIONS
-        confidence = _relevant_confidence(records, relation_names)
-        candidates.append(_candidate(
-            "mapping",
-            0.76 + 0.14 * confidence,
-            ["mapping_relation", *sorted(relation_names)],
-            _relevant_authority(records, relation_names),
-        ))
+    mapping = names & _MAPPING_RELATIONS
+    if mapping:
+        add("mapping", mapping, 0.76, 0.14, ["mapping_relation", *sorted(mapping)])
 
-    if names & _CONTAINMENT_RELATIONS:
-        relation_names = names & _CONTAINMENT_RELATIONS
-        confidence = _relevant_confidence(records, relation_names)
-        candidates.append(_candidate(
-            "containment",
-            0.72 + 0.14 * confidence,
-            ["containment_relation", *sorted(relation_names)],
-            _relevant_authority(records, relation_names),
-        ))
+    containment = names & _CONTAINMENT_RELATIONS
+    if containment:
+        add("containment", containment, 0.72, 0.14, ["containment_relation", *sorted(containment)])
 
     support_edges = [edge for edge in edges if edge[2] in _SUPPORT_RELATIONS]
     convergence_targets = _multi_source_targets(support_edges)
-    if convergence_targets:
-        confidence = _relevant_confidence(records, names & _SUPPORT_RELATIONS)
-        candidates.append(_candidate(
+    support = names & _SUPPORT_RELATIONS
+    if convergence_targets and support:
+        add(
             "support_convergence",
-            0.80 + 0.16 * confidence,
+            support,
+            0.80,
+            0.16,
             ["multi_source_same_target", *sorted(convergence_targets)],
-            _relevant_authority(records, names & _SUPPORT_RELATIONS),
-        ))
+        )
 
     directed_names = names & _DIRECTED_RELATIONS
-    directed_declared = any(_text(item.get("direction")) in _DIRECTIONAL_VALUES for item in records)
-    if (
-        _has_dependency_chain(edges)
-        or names & {"directed_dependency", "directed_relation"}
-        or (directed_declared and directed_names)
-    ):
-        confidence = _relevant_confidence(records, directed_names or names)
+    declared_direction = any(_text(item.get("direction")) in _DIRECTIONAL_VALUES for item in records)
+    chain = _has_dependency_chain(edges)
+    if chain or names & {"directed_dependency", "directed_relation"} or (declared_direction and directed_names):
+        relation_names = directed_names or names
+        confidence = _relevant_confidence(records, relation_names)
+        evidence = ["directed_dependency"]
+        if chain:
+            evidence.append("graph_chain")
         candidates.append(_candidate(
             "dependency_chain",
-            0.72 + 0.16 * confidence + (0.06 if _has_dependency_chain(edges) else 0.0),
-            ["directed_dependency", *("graph_chain",) if _has_dependency_chain(edges) else ()],
-            _relevant_authority(records, directed_names or names),
+            0.72 + 0.16 * confidence + (0.06 if chain else 0.0),
+            evidence,
+            _relevant_authority(records, relation_names),
         ))
 
     if peer_allowed:
-        confidence = _relevant_confidence(records, names & _PEER_RELATIONS)
-        candidates.append(_candidate(
-            "peer_set",
-            0.76 + 0.16 * confidence,
-            ["verified_peer_relations", *sorted(names & _PEER_RELATIONS)],
-            _relevant_authority(records, names & _PEER_RELATIONS),
-        ))
+        peer_names = names & _PEER_RELATIONS
+        add("peer_set", peer_names, 0.76, 0.16, ["verified_peer_relations", *sorted(peer_names)])
 
     if module_count == 4 and _MATRIX_RE.search(page_text):
-        candidates.append(_candidate(
-            "matrix",
-            0.68,
-            ["two_axis_surface_signal"],
-            "soft",
-        ))
+        candidates.append(_candidate("matrix", 0.68, ["two_axis_surface_signal"], "soft"))
 
     candidates.sort(key=lambda item: (-float(item["score"]), str(item["topology"])))
     if not candidates or float(candidates[0]["score"]) < 0.60:
@@ -268,10 +226,7 @@ def resolve_semantic_topology(
         "constraint_authority": authority,
         "candidates": candidates,
         "eligibility": {
-            "peer_set": {
-                "allowed": peer_allowed,
-                "reasons": peer_reasons,
-            }
+            "peer_set": {"allowed": peer_allowed, "reasons": peer_reasons},
         },
     }
 
