@@ -48,8 +48,8 @@ jobs:
           tests/test_image_text_gate.py
           tests/test_codex_oauth_image_size.py
           tests/test_artifact_ledger.py
+          tests/test_artifact_prompt.py
           tests/test_composition_and_carrier_resolver.py
-          tests/test_cyberppt_handoff_projection.py
           tests/test_visual_grammar.py
           tests/test_visual_prompt_consumer.py
           tests/test_visual_proof_preflight_diagnostics.py
