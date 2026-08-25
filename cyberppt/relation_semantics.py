@@ -162,6 +162,12 @@ def resolve_relation_expression(
             )
         return None
 
+    if "directed_dependency" in names:
+        return "directed_dependency_2_6", (
+            "semantic:directed_dependency",
+            *evidence,
+        )
+
     if names & {"peer_classification", "classified_as"} or any(
         token in labels for token in _CLASSIFICATION_LABELS
     ):
