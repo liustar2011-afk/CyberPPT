@@ -5,10 +5,9 @@ relationships through ``### 视觉结构`` instead of the legacy hidden
 ``content_relations`` receipt. Stage 02 owns the adapter from that script
 semantics into its internal ``business_relationships`` model.
 
-The adapter preserves *business-semantic families* rather than choosing visual
-topology. A peer classification, evidence support, problem-response mapping,
-optional progression, and layered support remain distinct even when older
-CyberPPT code historically collapsed them into the same expression form.
+The adapter preserves business-semantic families rather than choosing visual
+topology. Explicit arrows are always kept directional, including when their
+Chinese relation label does not match a narrower known family.
 """
 from __future__ import annotations
 
@@ -23,6 +22,18 @@ _EVIDENCE_NOTE_RE = re.compile(
     r"\s*[（(]\s*(?:explicit|inferred|speculative)\b[^）)]*[）)]\s*$",
     re.I,
 )
+_DEPENDENCY_LABELS = (
+    "提供接入基础",
+    "提供基础",
+    "形成基础",
+    "作为基础",
+    "建立在",
+    "依托",
+    "基于",
+    "承接",
+    "前提",
+    "输入",
+)
 
 
 def _clean(value: object) -> str:
@@ -35,7 +46,7 @@ def _clean_relation_label(value: object) -> str:
     return label
 
 
-def _semantic_relation(label: str) -> str:
+def _semantic_relation(label: str, *, directional: bool = False) -> str:
     """Map wording to a business-semantic family, never to visual topology."""
 
     text = label.lower()
@@ -49,6 +60,8 @@ def _semantic_relation(label: str) -> str:
         return "sequence_before"
     if any(token in text for token in ("分层支撑", "层级支撑", "承托", "托底")):
         return "layer_supports"
+    if any(token in text for token in _DEPENDENCY_LABELS):
+        return "directed_dependency"
     if any(token in text for token in ("并列支撑", "共同支撑", "证据支撑", "支撑")):
         return "evidence_supports"
     if any(token in text for token in ("问题回应", "问题到响应", "问题—响应", "回应", "映射")):
@@ -69,16 +82,26 @@ def _semantic_relation(label: str) -> str:
         return "transforms_to"
     if "构成" in text:
         return "composed_of"
-    return "semantic_association"
+    # The arrow itself is authoritative evidence of direction. An unknown
+    # label must therefore remain an unresolved directed relation rather than
+    # being flattened into an undirected semantic association.
+    return "directed_relation" if directional else "semantic_association"
 
 
-def _relation_record(subject: str, object_: str, label: str, *, confidence: str = "high") -> dict[str, object]:
+def _relation_record(
+    subject: str,
+    object_: str,
+    label: str,
+    *,
+    confidence: str = "high",
+    directional: bool = True,
+) -> dict[str, object]:
     normalized_label = _clean_relation_label(label) or "语义关联"
     return {
         "subject": subject,
-        "relation": _semantic_relation(normalized_label),
+        "relation": _semantic_relation(normalized_label, directional=directional),
         "objects": [object_],
-        "direction": "subject_to_objects",
+        "direction": "subject_to_objects" if directional else "unspecified",
         "condition": "",
         "modality": "",
         "basis": "derived_from_script_visual_structure",
@@ -107,7 +130,9 @@ def _explicit_arrow_relations(visual_structure: str) -> list[dict[str, object]]:
         if key in seen:
             continue
         seen.add(key)
-        relationships.append(_relation_record(subject, object_, label))
+        relationships.append(
+            _relation_record(subject, object_, label, directional=True)
+        )
     return relationships
 
 
@@ -117,7 +142,13 @@ def _module_values(module_titles: Iterable[str], top_level_module_titles: Iterab
     return list(dict.fromkeys(values))
 
 
-def _structural_fallback(*, visual_structure: str, title: str, module_titles: Iterable[str], top_level_module_titles: Iterable[str]) -> list[dict[str, object]]:
+def _structural_fallback(
+    *,
+    visual_structure: str,
+    title: str,
+    module_titles: Iterable[str],
+    top_level_module_titles: Iterable[str],
+) -> list[dict[str, object]]:
     text = _clean(visual_structure)
     modules = _module_values(module_titles, top_level_module_titles)
     if len(modules) < 2:
@@ -139,10 +170,16 @@ def _structural_fallback(*, visual_structure: str, title: str, module_titles: It
         }]
 
     if any(token in text for token in ("顺序流程", "推进路径", "演进路径", "依次推进", "先后顺序")):
-        return [_relation_record(left, right, "顺序衔接") for left, right in zip(modules, modules[1:])]
+        return [
+            _relation_record(left, right, "顺序衔接")
+            for left, right in zip(modules, modules[1:])
+        ]
 
     if "闭环" in text:
-        relations = [_relation_record(left, right, "顺序衔接") for left, right in zip(modules, modules[1:])]
+        relations = [
+            _relation_record(left, right, "顺序衔接")
+            for left, right in zip(modules, modules[1:])
+        ]
         relations.append(_relation_record(modules[-1], modules[0], "反馈回流"))
         return relations
 
@@ -162,7 +199,13 @@ def _structural_fallback(*, visual_structure: str, title: str, module_titles: It
     return []
 
 
-def derive_business_relationships(*, visual_structure: str, title: str = "", module_titles: Iterable[str] = (), top_level_module_titles: Iterable[str] = ()) -> tuple[dict[str, object], ...]:
+def derive_business_relationships(
+    *,
+    visual_structure: str,
+    title: str = "",
+    module_titles: Iterable[str] = (),
+    top_level_module_titles: Iterable[str] = (),
+) -> tuple[dict[str, object], ...]:
     """Return Stage 02 internal relations without changing the source script."""
 
     explicit = _explicit_arrow_relations(visual_structure)
