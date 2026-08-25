@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+runtime/downloads/
+runtime/realesrgan-ncnn-vulkan/
+third_party/Real-ESRGAN/
+third_party/SwinIR/
+*.report.json
+*_enhanced.png
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+graft/

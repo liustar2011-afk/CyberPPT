@@ -1,0 +1,3 @@
+# Install PyTorch appropriate to your hardware first.
+timm>=0.9
+requests>=2.31

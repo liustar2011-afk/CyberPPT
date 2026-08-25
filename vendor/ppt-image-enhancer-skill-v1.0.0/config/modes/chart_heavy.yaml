@@ -1,0 +1,55 @@
+mode: chart_heavy
+output:
+  upscale_factor: 1.5
+super_resolution:
+  # Defaults (0.72/0.90) pull AI SR output back toward the plain Lanczos
+  # upscale hard enough that its sharpness gain barely shows (avg +3.75%
+  # across a 4-page sweep spanning the edge-density/white-ratio extremes).
+  # Swept 0.72/0.90 -> 0.50/0.70 -> 0.40/0.60 -> 0.30/0.50 against the
+  # structural_fidelity gate on those same 4 pages (16 runs total): gain
+  # rose roughly linearly to +21.9% avg at 0.30/0.50, correlation never
+  # dropped below 0.994 (gate threshold 0.92), and a visual check at the
+  # most aggressive setting on the densest-text and most-whitespace pages
+  # found no halos/artifacts. The boundary was not reached at 0.30/0.50;
+  # going lower still is untested and was deliberately not pursued further
+  # in this pass -- aggregate correlation/mean_abs_delta can miss a small
+  # localized defect, and a general-purpose photo SR model is more likely
+  # to invent texture on flat color fields as the guard weakens.
+  text_guard:
+    fine_structure_blend: 0.3
+    white_background_blend: 0.5
+processing:
+  denoise:
+    enabled: false
+  local_contrast:
+    enabled: false
+  # amount was 0.60 (set before AI SR was enabled). Swept 0.40/0.60/0.80/1.00
+  # at the current text_guard blend on the same 4-page set: gain rose from
+  # +6.7% to +49.8% avg, correlation stayed above 0.992 throughout (gate
+  # threshold 0.92), no warnings fired. A pixel-level crop check at 1.00
+  # found no visible halos on dense charts or small numbers over white --
+  # but the 0.40 vs 1.00 crops looked nearly identical to the eye despite
+  # the ~7x gap in the Laplacian-variance metric, meaning that metric likely
+  # over-credits high-frequency noise/texture amplification at high amounts
+  # rather than perceptible sharpness. Moved to 0.80 as the balance between
+  # the two: most of the measurable gain (+36.2% avg) with more margin left
+  # before whatever the metric is inflating on becomes visible.
+  #
+  # Later re-tested up to 1.60 with builtin backend against a wider page set
+  # (body/paragraph text on light cards, the dominant content type): 1.30
+  # still showed no visible halo/over-sharpening at 220% crop zoom, so 0.80
+  # was leaving real sharpness on the table for most pages. The one content
+  # pattern that does show a visible edge glow as amount rises is bold white
+  # text on a solid dark title-bar fill (high-contrast, thick strokes) --
+  # subtle at 0.80, more visible by 1.00, clearly a "glow ring" by 1.60.
+  # 1.30 was chosen as the tradeoff: a real gain on the majority of pages,
+  # with the title-bar glow still moderate rather than egregious.
+  sharpen:
+    amount: 1.30
+    radius: 0.85
+protection:
+  fine_structure:
+    original_blend: 0.24
+    dilation: 1
+  white_background:
+    original_blend: 0.85
