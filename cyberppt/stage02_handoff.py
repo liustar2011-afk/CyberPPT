@@ -75,7 +75,7 @@ def _render_role(page_type: str) -> str:
     return aliases.get(page_type, "content")
 
 
-_ONSCREEN_TRAILING_PUNCTUATION = "。；，、：？！.!?;,:'"
+_ONSCREEN_TRAILING_PUNCTUATION = "。；，、：？！.!?;,:"
 
 
 def _onscreen_items(page: ScriptPage) -> list[str]:
@@ -179,6 +179,38 @@ def _verified_relationship_features(
     )
 
 
+def _visual_relationship_contract(
+    raw_relationships: list[dict[str, Any]],
+    proposals: list[dict[str, Any]],
+    verification: dict[str, Any],
+    verified_relationships: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], str]:
+    """Choose the relationship collection exposed to the legacy visual interface.
+
+    Source/author/structured relations that the verifier accepts unchanged stay
+    byte-compatible with the existing workbench contract.  Model/script/adapter
+    inference, or anything refined/rejected/unresolved, is replaced by the
+    verifier-canonical relationship set so the visual stage cannot re-promote a
+    bad upstream proposal simply because an older consumer reads the legacy
+    ``business_relationships`` field.
+    """
+
+    verdicts = [
+        item for item in verification.get("verdicts") or [] if isinstance(item, dict)
+    ]
+    changed = any(
+        str(item.get("verdict") or "") in {"refined", "rejected", "unresolved"}
+        for item in verdicts
+    )
+    soft = any(
+        str(item.get("constraint_authority") or "soft") == "soft"
+        for item in proposals
+    )
+    if changed or soft:
+        return [dict(item) for item in verified_relationships], "stage02_semantic_verifier"
+    return [dict(item) for item in raw_relationships], "stage01_authoritative"
+
+
 def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, Any]:
     receipt = page.contract_receipt if isinstance(page.contract_receipt, dict) else {}
     outline = outline or {}
@@ -199,7 +231,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         if isinstance(item, dict)
     ]
     locked_text_items = _locked_text_items(page)
-    stage01_features = _stage01_relationship_features(business_relationships, page.visual_structure)
+    upstream_features = _stage01_relationship_features(business_relationships, page.visual_structure)
 
     proposals = list(normalize_semantic_proposals(
         business_relationships,
@@ -222,6 +254,20 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         module_count=len(page.top_level_module_titles),
         page_text="\n".join((page_mission, page.main_message, page.full_prose, page.onscreen_text)),
     )
+    visual_relationships, visual_relationship_source = _visual_relationship_contract(
+        business_relationships,
+        proposals,
+        verification,
+        verified_relationships,
+    )
+    visual_features = _stage01_relationship_features(visual_relationships, page.visual_structure)
+    visual_features.update({
+        "semantic_verification_status": verification.get("status"),
+        "semantic_topology": semantic_topology,
+        "constraint_authority": semantic_topology.get("constraint_authority") or "soft",
+        "relationship_source": visual_relationship_source,
+    })
+
     action_text = tuple(
         " ".join(str(item.get(field) or "") for field in ("subject", "relation", "object")).strip()
         for item in verified_features["actions"]
@@ -257,7 +303,6 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "source_refs": list(page.source_refs),
         "consumed_content_unit_ids": consumed_content_unit_ids,
         "must_not_include": must_not_include,
-        # Raw upstream relations remain for audit and traceability only.
         "business_relationships": business_relationships,
         "semantic_proposals": proposals,
         "semantic_verification": verification,
@@ -292,13 +337,19 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "locked_text_items": locked_text_items,
         "module_titles": list(page.module_titles),
         "top_level_module_titles": list(page.top_level_module_titles),
-        "business_relationships": business_relationships,
+        # Compatibility-facing fields contain verified semantics whenever the
+        # upstream relation was inferred or the verifier changed it.
+        "business_relationships": visual_relationships,
+        "stage01_relationship_features": visual_features,
+        # Raw upstream material remains separately auditable.
+        "upstream_business_relationships": business_relationships,
+        "upstream_relationship_features": upstream_features,
         "semantic_proposals": proposals,
         "semantic_verification": verification,
         "verified_business_relationships": verified_relationships,
-        "semantic_topology": semantic_topology,
-        "stage01_relationship_features": stage01_features,
         "verified_relationship_features": verified_features,
+        "semantic_topology": semantic_topology,
+        "relationship_authority": visual_relationship_source,
         "onscreen_expression": expression,
         "expression_constraints": constraints,
         "constraint_authority": expression["constraint_authority"],
@@ -357,7 +408,7 @@ def render_handoff_markdown(payload: dict[str, Any], report: dict[str, Any] | No
         topology = visual.get("semantic_topology") or {}
         lines.append(
             f"| {page['page_id']} | {page['render_role']} | {str(page.get('title') or '').replace('|', '｜')} | "
-            f"{len(visual.get('business_relationships') or []) if visual else '—'} | "
+            f"{len(visual.get('upstream_business_relationships') or visual.get('business_relationships') or []) if visual else '—'} | "
             f"{len(visual.get('verified_business_relationships') or []) if visual else '—'} | "
             f"{topology.get('primary_topology') or '—'} | "
             f"{visual.get('constraint_authority') or '—'} | "
@@ -366,8 +417,34 @@ def render_handoff_markdown(payload: dict[str, Any], report: dict[str, Any] | No
     if report:
         lines.extend(["", "## 审计问题", ""])
         issues = list(report.get("blocking_issues") or []) + list(report.get("warnings") or [])
-        lines.extend(f"- `{item['code']}` {item['message']}" for item in issues) if issues else lines.append("- 无。")
+        if issues:
+            lines.extend(f"- `{item['code']}` {item['message']}" for item in issues)
+        else:
+            lines.append("- 无。")
     return "\n".join(lines) + "\n"
+
+
+def _has_verifier_contract(page: dict[str, Any], visual: dict[str, Any], expression: object) -> bool:
+    """Return True only for handoffs authored by the verifier-aware pipeline.
+
+    Existing v1 handoff fixtures and already-approved projects remain readable.
+    Once any verifier field is present, however, the complete verifier contract
+    becomes mandatory so partially migrated handoffs cannot silently bypass the
+    new semantic safeguards.
+    """
+
+    verifier_fields = {
+        "semantic_proposals",
+        "semantic_verification",
+        "verified_business_relationships",
+        "verified_relationship_features",
+        "semantic_topology",
+    }
+    if any(field in visual for field in verifier_fields):
+        return True
+    if any(field in page for field in ("semantic_proposals", "semantic_verification", "semantic_topology")):
+        return True
+    return isinstance(expression, dict) and str(expression.get("source") or "") == "verified_topology"
 
 
 def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -439,6 +516,8 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
                 issue("HANDOFF_REQUIRED_FIELD_MISSING", f"{page_id} is missing {field}.")
 
         expression = page.get("onscreen_expression")
+        visual = page.get("stage02_visual_input") or {}
+        verifier_contract = _has_verifier_contract(page, visual, expression)
         if not isinstance(expression, dict):
             warning("ONSCREEN_EXPRESSION_MISSING", f"{page_id} has no onscreen expression decision.")
         else:
@@ -449,10 +528,9 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
             confidence = expression.get("confidence")
             if not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
                 issue("ONSCREEN_EXPRESSION_CONFIDENCE_INVALID", f"{page_id} has invalid onscreen expression confidence.")
-            if str(expression.get("constraint_authority") or "") not in {"hard", "strong", "soft"}:
+            if verifier_contract and str(expression.get("constraint_authority") or "") not in {"hard", "strong", "soft"}:
                 issue("ONSCREEN_EXPRESSION_AUTHORITY_INVALID", f"{page_id} has invalid expression constraint authority.")
 
-        visual = page.get("stage02_visual_input") or {}
         expected_constraints: dict[str, object] | None = None
         if isinstance(expression, dict) and str(expression.get("form") or "") in VALID_EXPRESSION_FORMS:
             expected_constraints = expression_constraints(str(expression["form"]))
@@ -476,24 +554,31 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
         if not isinstance(relationships, list):
             issue("BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} business_relationships must be an array.")
             relationships = []
-        proposals = visual.get("semantic_proposals")
-        verification = visual.get("semantic_verification")
-        verified = visual.get("verified_business_relationships")
-        topology = visual.get("semantic_topology")
-        if not isinstance(proposals, list):
-            issue("SEMANTIC_PROPOSALS_INVALID", f"{page_id} semantic_proposals must be an array.")
-        if not isinstance(verification, dict) or verification.get("schema") != "cyberppt.semantic_verification.v1":
-            issue("SEMANTIC_VERIFICATION_INVALID", f"{page_id} has no valid semantic verification receipt.")
-        if not isinstance(verified, list):
-            issue("VERIFIED_BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} verified_business_relationships must be an array.")
-            verified = []
-        if not isinstance(topology, dict) or topology.get("schema") != "cyberppt.semantic_topology.v1":
-            issue("SEMANTIC_TOPOLOGY_INVALID", f"{page_id} has no valid semantic topology receipt.")
-            topology = {}
-        elif str(topology.get("constraint_authority") or "") not in {"hard", "strong", "soft"}:
-            issue("SEMANTIC_TOPOLOGY_AUTHORITY_INVALID", f"{page_id} topology has invalid constraint authority.")
-        if str(topology.get("primary_topology") or "") != "peer_set" and isinstance(expression, dict) and expression.get("form") == "parallel_classification_3_6":
-            issue("PARALLEL_EXPRESSION_WITHOUT_VERIFIED_PEER_TOPOLOGY", f"{page_id} cannot use parallel_classification without a verified peer_set topology.")
+
+        if verifier_contract:
+            proposals = visual.get("semantic_proposals")
+            verification = visual.get("semantic_verification")
+            verified = visual.get("verified_business_relationships")
+            topology = visual.get("semantic_topology")
+            if not isinstance(proposals, list):
+                issue("SEMANTIC_PROPOSALS_INVALID", f"{page_id} semantic_proposals must be an array.")
+            if not isinstance(verification, dict) or verification.get("schema") != "cyberppt.semantic_verification.v1":
+                issue("SEMANTIC_VERIFICATION_INVALID", f"{page_id} has no valid semantic verification receipt.")
+            if not isinstance(verified, list):
+                issue("VERIFIED_BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} verified_business_relationships must be an array.")
+                verified = []
+            if not isinstance(topology, dict) or topology.get("schema") != "cyberppt.semantic_topology.v1":
+                issue("SEMANTIC_TOPOLOGY_INVALID", f"{page_id} has no valid semantic topology receipt.")
+                topology = {}
+            elif str(topology.get("constraint_authority") or "") not in {"hard", "strong", "soft"}:
+                issue("SEMANTIC_TOPOLOGY_AUTHORITY_INVALID", f"{page_id} topology has invalid constraint authority.")
+            if str(topology.get("primary_topology") or "") != "peer_set" and isinstance(expression, dict) and expression.get("form") == "parallel_classification_3_6":
+                issue("PARALLEL_EXPRESSION_WITHOUT_VERIFIED_PEER_TOPOLOGY", f"{page_id} cannot use parallel_classification without a verified peer_set topology.")
+            verified_features = visual.get("verified_relationship_features")
+            if not isinstance(verified_features, dict) or verified_features.get("authority") != "stage02_semantic_verifier":
+                issue("VERIFIED_RELATIONSHIP_FEATURES_MISSING", f"{page_id} has no verifier-derived relationship features.")
+            elif not isinstance(verified_features.get("actions"), list) or (verified and not verified_features.get("actions")):
+                issue("VERIFIED_RELATIONSHIP_ACTIONS_MISSING", f"{page_id} verified relations have no structured subject-action-object features.")
 
         features = visual.get("stage01_relationship_features")
         if not isinstance(features, dict):
@@ -503,11 +588,6 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
                 issue("STAGE01_RELATIONSHIP_FEATURES_AUTHORITY_INVALID", f"{page_id} relationship features have invalid authority.")
             if not isinstance(features.get("actions"), list) or (relationships and not features.get("actions")):
                 issue("STAGE01_RELATIONSHIP_ACTIONS_MISSING", f"{page_id} has no structured subject-action-object features.")
-        verified_features = visual.get("verified_relationship_features")
-        if not isinstance(verified_features, dict) or verified_features.get("authority") != "stage02_semantic_verifier":
-            issue("VERIFIED_RELATIONSHIP_FEATURES_MISSING", f"{page_id} has no verifier-derived relationship features.")
-        elif not isinstance(verified_features.get("actions"), list) or (verified and not verified_features.get("actions")):
-            issue("VERIFIED_RELATIONSHIP_ACTIONS_MISSING", f"{page_id} verified relations have no structured subject-action-object features.")
         if visual.get("author_visual_notes_authority") != "advisory_only":
             issue("AUTHOR_VISUAL_NOTES_AUTHORITY_INVALID", f"{page_id} author visual notes must be advisory only.")
 
