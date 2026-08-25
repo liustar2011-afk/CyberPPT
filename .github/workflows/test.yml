@@ -1,5 +1,6 @@
 name: Stage 02 tests
 
+# This workflow also publishes a standalone source ZIP from the Python 3.12 job.
 on:
   push:
     branches: [main]
