@@ -8,6 +8,7 @@ responsibility for the actual topology and composition.
 """
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Mapping, Sequence
 
 
@@ -15,6 +16,12 @@ _FEEDBACK_LABELS = ("反馈", "回流", "回到", "回返", "循环", "迭代")
 _COMPARISON_LABELS = ("对照", "比较", "差异", "优劣", "高于", "低于")
 _LAYER_LABELS = ("分层", "层级", "底座", "承托", "上下")
 _CLASSIFICATION_LABELS = ("并列", "分类", "同类", "相互独立")
+_SUPPORT_RELATIONS = {"evidence_supports", "supports"}
+_GENERIC_DIRECTED_RELATIONS = {
+    "directed_dependency",
+    "directed_relation",
+    "semantic_association",
+}
 
 
 def _text(value: object) -> str:
@@ -37,23 +44,50 @@ def _relation_names(relationships: Sequence[Mapping[str, object]]) -> set[str]:
     }
 
 
-def _cardinality(relationships: Sequence[Mapping[str, object]]) -> tuple[int, int]:
-    subjects: set[str] = set()
-    objects: set[str] = set()
+def _edges(
+    relationships: Sequence[Mapping[str, object]],
+) -> tuple[tuple[str, str], ...]:
+    edges: list[tuple[str, str]] = []
     for item in relationships:
         if not isinstance(item, Mapping):
             continue
         subject = _text(item.get("subject"))
-        if subject:
-            subjects.add(subject)
+        if not subject:
+            continue
         raw_objects = item.get("objects")
         if isinstance(raw_objects, (list, tuple)):
-            objects.update(_text(value) for value in raw_objects if _text(value))
+            objects = [_text(value) for value in raw_objects if _text(value)]
         else:
             object_ = _text(item.get("object"))
-            if object_:
-                objects.add(object_)
-    return len(subjects), len(objects)
+            objects = [object_] if object_ else []
+        edges.extend((subject, object_) for object_ in objects if subject != object_)
+    return tuple(edges)
+
+
+def _cardinality(relationships: Sequence[Mapping[str, object]]) -> tuple[int, int]:
+    edges = _edges(relationships)
+    return len({subject for subject, _ in edges}), len({object_ for _, object_ in edges})
+
+
+def _has_multi_source_convergence(edges: Sequence[tuple[str, str]]) -> bool:
+    incoming: dict[str, set[str]] = defaultdict(set)
+    for subject, object_ in edges:
+        incoming[object_].add(subject)
+    return any(len(subjects) >= 2 for subjects in incoming.values())
+
+
+def _has_dependency_chain(edges: Sequence[tuple[str, str]]) -> bool:
+    subjects = {subject for subject, _ in edges}
+    return any(object_ in subjects for _, object_ in edges)
+
+
+def _has_declared_direction(relationships: Sequence[Mapping[str, object]]) -> bool:
+    return any(
+        _text(item.get("direction"))
+        in {"subject_to_objects", "left_to_right", "right_to_left", "top_to_bottom", "bottom_to_top"}
+        for item in relationships
+        if isinstance(item, Mapping)
+    )
 
 
 def resolve_relation_expression(
@@ -69,6 +103,7 @@ def resolve_relation_expression(
     names = _relation_names(relationships)
     labels = _labels(relationships)
     subject_count, object_count = _cardinality(relationships)
+    edges = _edges(relationships)
     evidence = tuple(sorted(names))
 
     # Optional progression is semantically peer-selectable first. A later
@@ -101,19 +136,35 @@ def resolve_relation_expression(
     ):
         return "architecture_layers", ("semantic:layered", *evidence)
 
-    # Support must be resolved before generic classification-label matching:
-    # labels such as “并列支撑” contain the word “并列” but describe a
-    # many-to-one support relation, not a taxonomy.
-    if names & {"evidence_supports", "supports"}:
-        if subject_count >= 2 and object_count == 1:
+    # Support is directional unless the source explicitly declares peer
+    # classification. Preserve its graph shape: many-to-one support converges;
+    # chained or one-to-one support remains a directed dependency. It must not
+    # silently become a peer taxonomy.
+    if names & _SUPPORT_RELATIONS:
+        if _has_multi_source_convergence(edges) or (
+            subject_count >= 2 and object_count == 1
+        ):
             return "support_convergence_3_6", (
                 "semantic:many_to_one_support",
                 *evidence,
             )
+        if _has_dependency_chain(edges) or "directed_dependency" in names:
+            return "directed_dependency_2_6", (
+                "semantic:directed_dependency",
+                *evidence,
+            )
         if any(token in labels for token in _LAYER_LABELS):
             return "architecture_layers", ("semantic:layer_support", *evidence)
-        return "parallel_classification_3_6", (
-            "semantic:peer_support",
+        if _has_declared_direction(relationships):
+            return "directed_dependency_2_6", (
+                "semantic:directed_support",
+                *evidence,
+            )
+        return None
+
+    if "directed_dependency" in names:
+        return "directed_dependency_2_6", (
+            "semantic:directed_dependency",
             *evidence,
         )
 
@@ -147,5 +198,19 @@ def resolve_relation_expression(
 
     if "transforms_to" in names and 3 <= module_count <= 6:
         return "flow_3_5", ("semantic:transformation", *evidence)
+
+    # Explicit arrows that could not be typed more narrowly still carry real
+    # direction. Use graph shape to retain that information without inventing
+    # chronology, hierarchy, or peer equivalence.
+    if names & _GENERIC_DIRECTED_RELATIONS and _has_declared_direction(relationships):
+        if _has_multi_source_convergence(edges):
+            return "support_convergence_3_6", (
+                "semantic:directed_convergence",
+                *evidence,
+            )
+        return "directed_dependency_2_6", (
+            "semantic:directed_relation",
+            *evidence,
+        )
 
     return None
