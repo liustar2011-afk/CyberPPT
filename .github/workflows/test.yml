@@ -57,3 +57,19 @@ jobs:
         run: |
           echo "OfficeCLI-render integration tests are intentionally outside the Linux unit gate."
           echo "Legacy exact-prompt and pre-decoupling relation tests are retained for migration review, not as v0.1 standalone acceptance criteria."
+
+      - name: Package standalone source
+        if: matrix.python-version == '3.12'
+        run: |
+          mkdir -p dist
+          zip -qr dist/CyberPPT-Stage02-v0.1.0.zip . \
+            -x '.git/*' 'dist/*' '*.pyc' '*/__pycache__/*' '.pytest_cache/*'
+
+      - name: Upload standalone source
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CyberPPT-Stage02-v0.1.0
+          path: dist/CyberPPT-Stage02-v0.1.0.zip
+          if-no-files-found: error
+          retention-days: 7
