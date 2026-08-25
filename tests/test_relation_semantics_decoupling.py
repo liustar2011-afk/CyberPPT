@@ -15,20 +15,26 @@ def _page(*modules: str):
     )
 
 
-def test_support_is_conditioned_by_cardinality() -> None:
+def test_support_is_conditioned_by_graph_shape_and_direction() -> None:
     many_to_one = [
         {"subject": name, "relation": "evidence_supports", "objects": ["结论"], "relation_label": "并列支撑"}
         for name in ("证据一", "证据二", "证据三")
     ]
     assert resolve_relation_expression(relationships=many_to_one, module_count=3)[0] == "support_convergence_3_6"
 
-    peer_support = [{
+    unresolved_support = [{
         "subject": "五方面基础",
         "relation": "evidence_supports",
         "objects": ["建设目标可执行性", "首期实施"],
         "relation_label": "共同支撑",
     }]
-    assert resolve_relation_expression(relationships=peer_support, module_count=5)[0] == "parallel_classification_3_6"
+    assert resolve_relation_expression(relationships=unresolved_support, module_count=5) is None
+
+    directed_support = [{
+        **unresolved_support[0],
+        "direction": "subject_to_objects",
+    }]
+    assert resolve_relation_expression(relationships=directed_support, module_count=5)[0] == "directed_dependency_2_6"
 
 
 def test_problem_response_is_mapping_not_comparison() -> None:
