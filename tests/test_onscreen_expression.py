@@ -29,11 +29,24 @@ def _page(*, modules=("汇聚治理", "授权流通", "运营服务"), form="", 
     )
 
 
-def test_registry_includes_grouped_two_part_structure():
+def test_registry_covers_current_layout_neutral_expression_contracts():
     assert VALID_EXPRESSION_FORMS == {
-        "framework_4", "key_points_3", "flow_3_5", "operation_loop",
-        "architecture_layers", "pyramid_argument", "comparison_2col",
-        "grouped_2", "matrix_2x2", "causal_chain", "actions_3",
+        "framework_4",
+        "key_points_3",
+        "parallel_classification_3_6",
+        "support_convergence_3_6",
+        "mapping_2_6",
+        "directed_dependency_2_6",
+        "neutral_structure_1_7",
+        "flow_3_5",
+        "operation_loop",
+        "architecture_layers",
+        "pyramid_argument",
+        "comparison_2col",
+        "grouped_2",
+        "matrix_2x2",
+        "causal_chain",
+        "actions_3",
     }
 
 
@@ -50,6 +63,21 @@ def test_expression_constraints_cover_all_registered_forms() -> None:
         assert contract["anti_patterns"]
 
 
+def test_directed_dependency_contract_preserves_direction_without_forcing_flow() -> None:
+    contract = expression_constraints("directed_dependency_2_6")
+    assert contract["relation_pattern"] == "directed_dependency"
+    assert contract["reading_requirement"] == "directed_dependency"
+    assert "directed_dependency_edge" in contract["required_features"]
+    assert "invented_time_order" in contract["anti_patterns"]
+
+
+def test_neutral_contract_keeps_unresolved_relation_open_for_visual_review() -> None:
+    contract = expression_constraints("neutral_structure_1_7")
+    assert contract["reading_requirement"] == "neutral"
+    assert "relation_review_required" in contract["required_features"]
+    assert "invented_peer_equivalence" in contract["anti_patterns"]
+
+
 def test_operation_loop_contract_requires_feedback_without_layout_recipe() -> None:
     contract = expression_constraints("operation_loop")
     assert contract["relation_pattern"] == "directed_cycle"
@@ -62,6 +90,8 @@ def test_action_heading_requirement_belongs_to_expression_form() -> None:
     assert expression_requires_action_headings("flow_3_5")
     assert expression_requires_action_headings("operation_loop")
     assert expression_requires_action_headings("actions_3")
+    assert not expression_requires_action_headings("directed_dependency_2_6")
+    assert not expression_requires_action_headings("neutral_structure_1_7")
     assert not expression_requires_action_headings("causal_chain")
     assert not expression_requires_action_headings("pyramid_argument")
 
@@ -111,25 +141,47 @@ def test_expression_constraints_are_fresh_and_hash_stable() -> None:
 @pytest.mark.parametrize(
     ("relation", "expected"),
     [
-        ("composed_of", "framework_4"),
+        ("composed_of", "parallel_classification_3_6"),
         ("sequence_before", "flow_3_5"),
         ("layered_as", "architecture_layers"),
         ("causes", "causal_chain"),
-        ("corresponds_to", "comparison_2col"),
+        ("corresponds_to", "mapping_2_6"),
         ("feedback", "operation_loop"),
+        ("directed_dependency", "directed_dependency_2_6"),
     ],
 )
 def test_authoritative_relation_routes_to_expected_form(relation, expected):
     decision = resolve_onscreen_expression(
         _page(),
         page_mission="形成数据运营主链",
-        business_relationships=[{"relation": relation}],
+        business_relationships=[{
+            "subject": "A",
+            "relation": relation,
+            "objects": ["B"],
+            "direction": "subject_to_objects",
+            "confidence": "high",
+        }],
         actions=("汇聚数据", "授权使用", "运营服务"),
         topic_category="运营链路",
     )
     assert decision.form == expected
     assert decision.source == "relation"
     assert decision.confidence >= 0.80
+
+
+def test_relation_confidence_is_not_hard_coded_to_point_nine_four():
+    decision = resolve_onscreen_expression(
+        _page(),
+        business_relationships=[{
+            "subject": "A",
+            "relation": "sequence_before",
+            "objects": ["B"],
+            "direction": "subject_to_objects",
+            "confidence": "low",
+        }],
+    )
+    assert decision.form == "flow_3_5"
+    assert decision.confidence == 0.60
 
 
 def test_explicit_override_has_priority():
@@ -145,7 +197,7 @@ def test_explicit_override_has_priority():
 @pytest.mark.parametrize(
     ("modules", "mission", "topic", "expected"),
     [
-        (("权属确认", "授权管理", "流转审计", "责任闭环"), "完善可信流通能力体系", "能力体系", "framework_4"),
+        (("权属确认", "授权管理", "流转审计", "责任闭环"), "形成四模块能力框架", "能力体系", "framework_4"),
         (("汇聚治理", "授权流通", "运营服务"), "推动全流程运营", "运营链路", "flow_3_5"),
         (("制度层", "平台层", "应用层"), "形成分层架构", "体系架构", "architecture_layers"),
         (("完善规则", "建设平台", "培育场景"), "明确重点行动", "重点任务", "actions_3"),
@@ -155,14 +207,39 @@ def test_explicit_override_has_priority():
         (("监测反馈", "问题处置", "持续优化"), "形成运营闭环", "反馈迭代", "operation_loop"),
         (("核心判断", "支撑论点一", "支撑论点二"), "形成总分论证", "论证归纳", "pyramid_argument"),
         (("制度规则", "平台能力", "应用成效"), "聚焦三项重点", "重点价值", "key_points_3"),
+        (("数据服务", "模型服务", "场景服务"), "形成三类并列服务", "服务分类", "parallel_classification_3_6"),
     ],
 )
-def test_surface_signals_cover_all_forms(modules, mission, topic, expected):
-    decision = resolve_onscreen_expression(_page(modules=modules, judgment="核心判断"), page_mission=mission, topic_category=topic)
+def test_surface_signals_cover_registered_business_forms(modules, mission, topic, expected):
+    decision = resolve_onscreen_expression(
+        _page(modules=modules, judgment="核心判断"),
+        page_mission=mission,
+        topic_category=topic,
+    )
     assert decision.form == expected
 
 
-def test_ambiguous_page_falls_back_for_author_review():
+def test_ambiguous_three_module_content_does_not_default_to_parallel():
+    decision = resolve_onscreen_expression(
+        _page(modules=("对象甲", "对象乙", "对象丙")),
+        page_mission="说明相关内容",
+    )
+    assert decision.form == "neutral_structure_1_7"
+    assert decision.source == "fallback"
+    assert decision.confidence < 0.60
+
+
+def test_ambiguous_four_module_content_does_not_default_to_framework():
+    decision = resolve_onscreen_expression(
+        _page(modules=("对象甲", "对象乙", "对象丙", "对象丁")),
+        page_mission="说明相关内容",
+    )
+    assert decision.form == "neutral_structure_1_7"
+    assert decision.source == "fallback"
+    assert decision.confidence < 0.60
+
+
+def test_empty_module_page_keeps_legacy_non_drawable_fallback():
     decision = resolve_onscreen_expression(_page(modules=()), page_mission="测试")
     assert decision.form == "key_points_3"
     assert decision.source == "fallback"
