@@ -1,0 +1,22 @@
+name: Package Stage 02 standalone
+
+on:
+  pull_request:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package standalone source
+        run: |
+          mkdir -p dist
+          zip -qr dist/CyberPPT-Stage02-v0.1.0.zip . \
+            -x '.git/*' 'dist/*' '*.pyc' '*/__pycache__/*' '.pytest_cache/*'
+      - name: Upload standalone source
+        uses: actions/upload-artifact@v4
+        with:
+          name: CyberPPT-Stage02-v0.1.0
+          path: dist/CyberPPT-Stage02-v0.1.0.zip
+          if-no-files-found: error
+          retention-days: 7
