@@ -1,5 +1,6 @@
 name: Stage 02 tests
 
+# Extraction validation is intentionally single-version in this commit.
 on:
   push:
     branches: [main]
