@@ -169,7 +169,7 @@ _ACTION_RE = re.compile(
     r"|执行|下发|记录|计量|确认|对账|结算|汇总|开展"
 )
 _LAYER_RE = re.compile(r"层|底座|体系架构")
-_FRAMEWORK_RE = re.compile(r"框架|模块|体系|构成|组成|方面")
+_FRAMEWORK_RE = re.compile(r"框架|四模块|四方面|四项|构成|组成")
 _PARALLEL_RE = re.compile(r"并列|分类|同类|类别|类型|三类|四类|五类|六类")
 _COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较")
 _MATRIX_RE = re.compile(r"象限|维度|优先级|分群|高低|二维")
@@ -306,7 +306,7 @@ def _score_candidates(
         scores["actions_3"] += 0.10
 
     if module_count == 4 and _FRAMEWORK_RE.search(text):
-        scores["framework_4"] += 0.55
+        scores["framework_4"] += 0.65
     if 3 <= module_count <= 6 and _PARALLEL_RE.search(text):
         scores["parallel_classification_3_6"] += 0.75
     if 3 <= module_count <= 6 and action_count >= 2:
