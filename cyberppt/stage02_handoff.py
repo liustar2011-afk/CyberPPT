@@ -1,4 +1,4 @@
-"""Compile and audit the flexible Stage 01 -> Stage 02 field contract."""
+"""Compile and audit the governed Stage 01 -> Stage 02 semantic handoff."""
 
 from __future__ import annotations
 
@@ -12,6 +12,9 @@ from typing import Any, Callable
 from cyberppt.artifact_ledger import write_json_atomic
 from cyberppt.script_quality_contract import ScriptPage, parse_script_path
 from cyberppt.semantic_digest import script_semantic_digest
+from cyberppt.stage02_semantic_intake import normalize_semantic_proposals
+from cyberppt.semantic_verifier import verify_semantic_proposals
+from cyberppt.topology_resolver import resolve_semantic_topology
 from cyberppt.onscreen_expression import (
     VALID_EXPRESSION_FORMS,
     expression_constraints,
@@ -48,14 +51,6 @@ def _file_binding(path: Path, semantic_digest: Callable[[Path], str]) -> dict[st
 
 
 def _handoff_authority(payload: dict[str, Any]) -> dict[str, Any]:
-    """Return the handoff fields that must remain identical for safe reuse.
-
-    ``created_at`` deliberately stays outside this comparison: it is a receipt
-    timestamp, not an input to Stage 02.  The script is the sole Stage 02
-    content authority, so its digest prevents stale visual artifacts from
-    being reused after the script changes.
-    """
-
     return {
         "schema": payload.get("schema"),
         "project": payload.get("project"),
@@ -80,7 +75,7 @@ def _render_role(page_type: str) -> str:
     return aliases.get(page_type, "content")
 
 
-_ONSCREEN_TRAILING_PUNCTUATION = "。；，、：？！.!?;,:"
+_ONSCREEN_TRAILING_PUNCTUATION = "。；，、：？！.!?;,:'"
 
 
 def _onscreen_items(page: ScriptPage) -> list[str]:
@@ -95,13 +90,6 @@ def _onscreen_items(page: ScriptPage) -> list[str]:
         line = line.replace("**", "").strip()
         if not line:
             continue
-        # Trailing sentence punctuation (including the 句号 that a bare
-        # 独立边界句 needs in the *authored* markdown so parsing.py's
-        # _module_title does not mistake it for a module label) has already
-        # done its structural job by this point — page.onscreen_text and the
-        # ScriptPage's module classification were derived upstream from the
-        # original, untouched string. Strip it here so the locked text that
-        # actually reaches the slide never carries a visible trailing mark.
         line = line.rstrip(_ONSCREEN_TRAILING_PUNCTUATION)
         if not line:
             continue
@@ -113,24 +101,16 @@ def _onscreen_items(page: ScriptPage) -> list[str]:
 
 
 def _locked_text_items(page: ScriptPage) -> list[dict[str, Any]]:
-    """Give every locked body string a stable, page-scoped identity."""
-
     page_id = normalize_page_id(page.page_id, page.sequence).upper()
     return [
-        {
-            "text_id": f"{page_id}-T{index:02d}",
-            "text": text,
-            "ordinal": index,
-        }
+        {"text_id": f"{page_id}-T{index:02d}", "text": text, "ordinal": index}
         for index, text in enumerate(_onscreen_items(page), start=1)
     ]
 
 
-def _stage01_relationship_features(
-    relationships: list[dict[str, Any]], visual_notes: str
+def _relationship_features(
+    relationships: list[dict[str, Any]], visual_notes: str, *, authority: str
 ) -> dict[str, Any]:
-    """Preserve relationship-bearing Stage 01 language without promoting layout advice."""
-
     actors = list(dict.fromkeys(
         str(item.get("subject") or "").strip()
         for item in relationships
@@ -144,28 +124,23 @@ def _stage01_relationship_features(
         relation = str(item.get("relation") or "").strip()
         for obj in item.get("objects") or []:
             text = str(obj or "").strip()
-            if text:
-                action: dict[str, Any] = {
-                    "subject": subject,
-                    "relation": relation,
-                    "object": text,
-                }
-                for field in (
-                    "direction",
-                    "condition",
-                    "modality",
-                    "basis",
-                    "confidence",
-                ):
-                    if field in item:
-                        action[field] = item[field]
-                actions.append(action)
+            if not text:
+                continue
+            action: dict[str, Any] = {"subject": subject, "relation": relation, "object": text}
+            for field in (
+                "direction", "condition", "modality", "basis", "confidence",
+                "origin", "authority", "constraint_authority", "proposal_id",
+                "proposal_verdict", "proposed_relation",
+            ):
+                if field in item:
+                    action[field] = item[field]
+            actions.append(action)
 
-    # ``visual_structure`` can include the rendered script's speaker-notes
-    # section.  Those notes may describe a business "闭环" as a validation
-    # result without asserting a graphical feedback edge.  Extract only the
-    # declared visual note and require an explicit return signal for feedback.
-    visual_note = re.split(r"\n\s*-\s*【(?:视觉结构，不上屏|演讲者备注)】", str(visual_notes or ""), maxsplit=1)[0]
+    visual_note = re.split(
+        r"\n\s*-\s*【(?:视觉结构，不上屏|演讲者备注)】",
+        str(visual_notes or ""),
+        maxsplit=1,
+    )[0]
     clauses = [
         value.strip(" ；。\n")
         for value in visual_note.replace("\n", "；").split("；")
@@ -173,7 +148,7 @@ def _stage01_relationship_features(
     ]
     select = lambda tokens: [value for value in clauses if any(token in value for token in tokens)]
     return {
-        "authority": "stage01_semantic_handoff",
+        "authority": authority,
         "actors": actors,
         "actions": actions,
         "directions": select(("进入", "形成", "转化", "承接", "汇聚", "贯通", "连接", "回到")),
@@ -184,12 +159,30 @@ def _stage01_relationship_features(
     }
 
 
+def _stage01_relationship_features(
+    relationships: list[dict[str, Any]], visual_notes: str
+) -> dict[str, Any]:
+    return _relationship_features(
+        relationships,
+        visual_notes,
+        authority="stage01_semantic_handoff",
+    )
+
+
+def _verified_relationship_features(
+    relationships: list[dict[str, Any]], visual_notes: str
+) -> dict[str, Any]:
+    return _relationship_features(
+        relationships,
+        visual_notes,
+        authority="stage02_semantic_verifier",
+    )
+
+
 def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, Any]:
     receipt = page.contract_receipt if isinstance(page.contract_receipt, dict) else {}
     outline = outline or {}
-    page_mission = str(
-        receipt.get("page_mission") or outline.get("page_mission") or page.main_message
-    )
+    page_mission = str(receipt.get("page_mission") or outline.get("page_mission") or page.main_message)
     must_not_include = list(receipt.get("must_not_include") or outline.get("must_not_include") or [])
     consumed_content_unit_ids = list(
         receipt.get("consumed_content_unit_ids")
@@ -206,25 +199,45 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         if isinstance(item, dict)
     ]
     locked_text_items = _locked_text_items(page)
-    relationship_features = _stage01_relationship_features(
-        business_relationships, page.visual_structure
+    stage01_features = _stage01_relationship_features(business_relationships, page.visual_structure)
+
+    proposals = list(normalize_semantic_proposals(
+        business_relationships,
+        default_source_refs=page.source_refs,
+        origin="stage01",
+    ))
+    verification = verify_semantic_proposals(
+        proposals,
+        page_text="\n".join((page_mission, page.main_message, page.full_prose, page.onscreen_text)),
+        visual_notes=page.visual_structure,
+    )
+    verified_relationships = [
+        dict(item)
+        for item in verification.get("verified_relationships") or []
+        if isinstance(item, dict)
+    ]
+    verified_features = _verified_relationship_features(verified_relationships, page.visual_structure)
+    semantic_topology = resolve_semantic_topology(
+        verified_relationships,
+        module_count=len(page.top_level_module_titles),
+        page_text="\n".join((page_mission, page.main_message, page.full_prose, page.onscreen_text)),
     )
     action_text = tuple(
-        " ".join(
-            str(item.get(field) or "")
-            for field in ("subject", "relation", "object")
-        ).strip()
-        for item in relationship_features["actions"]
+        " ".join(str(item.get(field) or "") for field in ("subject", "relation", "object")).strip()
+        for item in verified_features["actions"]
         if isinstance(item, dict)
     )
     expression = resolve_onscreen_expression(
         page,
         page_mission=page_mission,
-        business_relationships=business_relationships,
+        business_relationships=verified_relationships,
         actions=action_text,
         topic_category=str(outline.get("topic_category") or ""),
+        semantic_topology=semantic_topology,
     ).to_dict()
+    expression["constraint_authority"] = str(semantic_topology.get("constraint_authority") or "soft")
     constraints = expression_constraints(str(expression["form"]))
+
     record: dict[str, Any] = {
         "page_id": normalize_page_id(page.page_id, page.sequence),
         "page_number": page.sequence,
@@ -244,37 +257,33 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "source_refs": list(page.source_refs),
         "consumed_content_unit_ids": consumed_content_unit_ids,
         "must_not_include": must_not_include,
+        # Raw upstream relations remain for audit and traceability only.
         "business_relationships": business_relationships,
+        "semantic_proposals": proposals,
+        "semantic_verification": verification,
+        "verified_business_relationships": verified_relationships,
+        "semantic_topology": semantic_topology,
         "onscreen_expression": expression,
         "expression_constraints": constraints,
         "field_provenance": {
             "content": "script-final.md",
             "page_mission": "script-page-contract-or-outline",
+            "business_relationships": "stage01-proposal",
+            "verified_business_relationships": "stage02-semantic-verifier",
+            "semantic_topology": "stage02-topology-resolver",
             "visual_structure": "stage02-generated",
             "style": "stage02-style-lock",
         },
     }
-    for field in (
-        "source_heading_ids",
-        "primary_source_heading_id",
-        "subtitle_policy",
-    ):
+    for field in ("source_heading_ids", "primary_source_heading_id", "subtitle_policy"):
         if field in outline:
             value = outline[field]
-            record[field] = (
-                list(value)
-                if isinstance(value, list)
-                else dict(value)
-                if isinstance(value, dict)
-                else value
-            )
+            record[field] = list(value) if isinstance(value, list) else dict(value) if isinstance(value, dict) else value
+
     if render_role != "content":
         record["stage02_visual_input"] = None
         return record
 
-    # This is the complete Stage 01 semantic input for Stage 02 visual design.
-    # It deliberately contains no visual decision, style, geometry, or prompt
-    # copied from a previous Stage 02 run.
     record["stage02_visual_input"] = {
         "page_mission": page_mission,
         "core_message": page.main_message,
@@ -284,9 +293,15 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "module_titles": list(page.module_titles),
         "top_level_module_titles": list(page.top_level_module_titles),
         "business_relationships": business_relationships,
-        "stage01_relationship_features": relationship_features,
+        "semantic_proposals": proposals,
+        "semantic_verification": verification,
+        "verified_business_relationships": verified_relationships,
+        "semantic_topology": semantic_topology,
+        "stage01_relationship_features": stage01_features,
+        "verified_relationship_features": verified_features,
         "onscreen_expression": expression,
         "expression_constraints": constraints,
+        "constraint_authority": expression["constraint_authority"],
         "author_visual_notes": page.visual_structure,
         "author_visual_notes_authority": "advisory_only",
         "must_not_include": must_not_include,
@@ -304,8 +319,6 @@ def build_stage02_handoff(
     lightweight_stage01_confirmed: bool = False,
     allow_script_edit: bool = False,
 ) -> dict[str, Any]:
-    # The script is Stage 02's sole content authority. Stage 01 may have
-    # authored it, but Stage 02 also accepts the same contract from any path.
     _ = lightweight_stage01_confirmed, allow_script_edit
     project = project.expanduser().resolve()
     script = script.expanduser().resolve() if script else (project / SCRIPT_PATH).resolve()
@@ -314,7 +327,7 @@ def build_stage02_handoff(
     bindings = {"script": _file_binding(script, script_semantic_digest)}
     document = parse_script_path(script)
     records = [_page_record(page, None) for page in document.pages]
-    payload = {
+    return {
         "schema": "cyberppt.stage02_handoff.v1",
         "project": str(project),
         "created_at": _utc_now(),
@@ -322,7 +335,6 @@ def build_stage02_handoff(
         "page_order": [record["page_id"] for record in records],
         "pages": records,
     }
-    return payload
 
 
 def render_handoff_markdown(payload: dict[str, Any], report: dict[str, Any] | None = None) -> str:
@@ -337,26 +349,24 @@ def render_handoff_markdown(payload: dict[str, Any], report: dict[str, Any] | No
         f"- 模板页：{len(templates)}",
         f"- 审计状态：{(report or {}).get('status', 'pending')}",
         "",
-        "| 页面 | 渲染角色 | 论证角色 | 标题 | 页面使命 | 业务关系 | 作者视觉备注 | Stage 02 视觉输入 |",
-        "|---|---|---|---|---|---|---|---|",
+        "| 页面 | 渲染角色 | 标题 | 上游关系 | 校验关系 | 语义拓扑 | 约束权威 | Stage 02 视觉输入 |",
+        "|---|---|---|---:|---:|---|---|---|",
     ]
     for page in pages:
-        visual_input = page.get("stage02_visual_input") or {}
-        mission = str(page.get("page_mission") or "—").replace("|", "｜")
+        visual = page.get("stage02_visual_input") or {}
+        topology = visual.get("semantic_topology") or {}
         lines.append(
-            f"| {page['page_id']} | {page['render_role']} | {page.get('argument_role') or '—'} | "
-            f"{str(page.get('title') or '').replace('|', '｜')} | {mission} | "
-            f"{len(visual_input.get('business_relationships') or []) if visual_input else '—'} | "
-            f"{visual_input.get('author_visual_notes_authority') or '—'} | "
-            f"{'已具备' if visual_input else '—'} |"
+            f"| {page['page_id']} | {page['render_role']} | {str(page.get('title') or '').replace('|', '｜')} | "
+            f"{len(visual.get('business_relationships') or []) if visual else '—'} | "
+            f"{len(visual.get('verified_business_relationships') or []) if visual else '—'} | "
+            f"{topology.get('primary_topology') or '—'} | "
+            f"{visual.get('constraint_authority') or '—'} | "
+            f"{'已具备' if visual else '—'} |"
         )
     if report:
         lines.extend(["", "## 审计问题", ""])
         issues = list(report.get("blocking_issues") or []) + list(report.get("warnings") or [])
-        if issues:
-            lines.extend(f"- `{item['code']}` {item['message']}" for item in issues)
-        else:
-            lines.append("- 无。")
+        lines.extend(f"- `{item['code']}` {item['message']}" for item in issues) if issues else lines.append("- 无。")
     return "\n".join(lines) + "\n"
 
 
@@ -379,45 +389,23 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
     if not isinstance(bindings, dict):
         issue("HANDOFF_BINDINGS_MISSING", "Source bindings are missing.")
         bindings = {}
-    for name, (expected_path, semantic_digest) in {
-        "script": (None, script_semantic_digest),
-    }.items():
+    for name, semantic_digest in {"script": script_semantic_digest}.items():
         binding = bindings.get(name)
         if not isinstance(binding, dict) or not binding.get("path"):
-            issue(
-                "HANDOFF_BINDING_STALE",
-                f"Binding {name} is absent or incomplete for the current Stage 01 authority.",
-            )
+            issue("HANDOFF_BINDING_STALE", f"Binding {name} is absent or incomplete for the current Stage 01 authority.")
             continue
         path = Path(str(binding["path"])).expanduser().resolve()
-        if name == "script":
-            expected_path = path
         if not path.is_file():
             issue("HANDOFF_BINDING_MISSING", f"Binding {name} is missing: {path}")
-            continue
-        if expected_path is not None and path != expected_path:
-            issue(
-                "HANDOFF_BINDING_STALE",
-                f"Binding {name} path changed: recorded {path}, current {expected_path}.",
-            )
             continue
         current_sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
         try:
             current_semantic_sha256 = semantic_digest(path)
         except (OSError, ValueError, json.JSONDecodeError) as exc:
-            issue(
-                "HANDOFF_BINDING_STALE",
-                f"Binding {name} semantic digest cannot be read from {path}: {exc}",
-            )
+            issue("HANDOFF_BINDING_STALE", f"Binding {name} semantic digest cannot be read from {path}: {exc}")
             continue
-        if (
-            binding.get("sha256") != current_sha256
-            or binding.get("semantic_sha256") != current_semantic_sha256
-        ):
-            issue(
-                "HANDOFF_BINDING_STALE",
-                f"Binding {name} sha256 or semantic_sha256 differs from the current file: {path}",
-            )
+        if binding.get("sha256") != current_sha256 or binding.get("semantic_sha256") != current_semantic_sha256:
+            issue("HANDOFF_BINDING_STALE", f"Binding {name} sha256 or semantic_sha256 differs from the current file: {path}")
 
     pages = payload.get("pages")
     if not isinstance(pages, list) or not pages:
@@ -444,39 +432,36 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
             if page.get("stage02_visual_input") is not None:
                 issue("TEMPLATE_PAGE_HAS_VISUAL_PRODUCTION", f"{page_id} template page has visual production fields.")
             continue
+
         content_count += 1
         for field in ("title", "page_mission", "core_message", "onscreen_text"):
             if not str(page.get(field) or "").strip():
                 issue("HANDOFF_REQUIRED_FIELD_MISSING", f"{page_id} is missing {field}.")
+
         expression = page.get("onscreen_expression")
         if not isinstance(expression, dict):
             warning("ONSCREEN_EXPRESSION_MISSING", f"{page_id} has no onscreen expression decision.")
         else:
             if str(expression.get("form") or "") not in VALID_EXPRESSION_FORMS:
                 issue("ONSCREEN_EXPRESSION_FORM_INVALID", f"{page_id} has an invalid onscreen expression form.")
-            if str(expression.get("source") or "") not in {"explicit", "relation", "scored", "fallback"}:
+            if str(expression.get("source") or "") not in {"explicit", "verified_topology", "relation", "scored", "fallback"}:
                 issue("ONSCREEN_EXPRESSION_SOURCE_INVALID", f"{page_id} has an invalid onscreen expression source.")
             confidence = expression.get("confidence")
             if not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
                 issue("ONSCREEN_EXPRESSION_CONFIDENCE_INVALID", f"{page_id} has invalid onscreen expression confidence.")
-        visual_input = page.get("stage02_visual_input") or {}
+            if str(expression.get("constraint_authority") or "") not in {"hard", "strong", "soft"}:
+                issue("ONSCREEN_EXPRESSION_AUTHORITY_INVALID", f"{page_id} has invalid expression constraint authority.")
+
+        visual = page.get("stage02_visual_input") or {}
         expected_constraints: dict[str, object] | None = None
         if isinstance(expression, dict) and str(expression.get("form") or "") in VALID_EXPRESSION_FORMS:
             expected_constraints = expression_constraints(str(expression["form"]))
-        page_constraints = page.get("expression_constraints")
-        visual_constraints = visual_input.get("expression_constraints")
-        if (
-            expected_constraints is None
-            or page_constraints != expected_constraints
-            or visual_constraints != expected_constraints
-        ):
-            issue(
-                "ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID",
-                f"{page_id} expression constraints must match the registered profile for its form.",
-            )
-        if visual_input.get("body_image_canvas") != BODY_CANVAS:
+        if expected_constraints is None or page.get("expression_constraints") != expected_constraints or visual.get("expression_constraints") != expected_constraints:
+            issue("ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID", f"{page_id} expression constraints must match the registered profile for its form.")
+
+        if visual.get("body_image_canvas") != BODY_CANVAS:
             issue("BODY_IMAGE_CANVAS_INVALID", f"{page_id} body image canvas must be 2048x1024 (2:1).")
-        locked_items = visual_input.get("locked_text_items")
+        locked_items = visual.get("locked_text_items")
         if not isinstance(locked_items, list) or not locked_items:
             issue("LOCKED_TEXT_ITEMS_MISSING", f"{page_id} has no stable locked body-text items.")
         else:
@@ -486,27 +471,49 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
                 issue("LOCKED_TEXT_IDS_INVALID", f"{page_id} locked body-text ids must be non-empty and unique.")
             if texts != list(page.get("onscreen_items") or []):
                 issue("LOCKED_TEXT_ORDER_DRIFTED", f"{page_id} locked body text must match onscreen_items exactly and in order.")
-        relationships = visual_input.get("business_relationships")
+
+        relationships = visual.get("business_relationships")
         if not isinstance(relationships, list):
             issue("BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} business_relationships must be an array.")
             relationships = []
-        features = visual_input.get("stage01_relationship_features")
+        proposals = visual.get("semantic_proposals")
+        verification = visual.get("semantic_verification")
+        verified = visual.get("verified_business_relationships")
+        topology = visual.get("semantic_topology")
+        if not isinstance(proposals, list):
+            issue("SEMANTIC_PROPOSALS_INVALID", f"{page_id} semantic_proposals must be an array.")
+        if not isinstance(verification, dict) or verification.get("schema") != "cyberppt.semantic_verification.v1":
+            issue("SEMANTIC_VERIFICATION_INVALID", f"{page_id} has no valid semantic verification receipt.")
+        if not isinstance(verified, list):
+            issue("VERIFIED_BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} verified_business_relationships must be an array.")
+            verified = []
+        if not isinstance(topology, dict) or topology.get("schema") != "cyberppt.semantic_topology.v1":
+            issue("SEMANTIC_TOPOLOGY_INVALID", f"{page_id} has no valid semantic topology receipt.")
+            topology = {}
+        elif str(topology.get("constraint_authority") or "") not in {"hard", "strong", "soft"}:
+            issue("SEMANTIC_TOPOLOGY_AUTHORITY_INVALID", f"{page_id} topology has invalid constraint authority.")
+        if str(topology.get("primary_topology") or "") != "peer_set" and isinstance(expression, dict) and expression.get("form") == "parallel_classification_3_6":
+            issue("PARALLEL_EXPRESSION_WITHOUT_VERIFIED_PEER_TOPOLOGY", f"{page_id} cannot use parallel_classification without a verified peer_set topology.")
+
+        features = visual.get("stage01_relationship_features")
         if not isinstance(features, dict):
             issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", f"{page_id} has no structured Stage 01 relationship features.")
         else:
             if features.get("authority") != "stage01_semantic_handoff":
                 issue("STAGE01_RELATIONSHIP_FEATURES_AUTHORITY_INVALID", f"{page_id} relationship features have invalid authority.")
-            if not isinstance(features.get("actions"), list) or (
-                relationships and not features.get("actions")
-            ):
+            if not isinstance(features.get("actions"), list) or (relationships and not features.get("actions")):
                 issue("STAGE01_RELATIONSHIP_ACTIONS_MISSING", f"{page_id} has no structured subject-action-object features.")
-        if visual_input.get("author_visual_notes_authority") != "advisory_only":
+        verified_features = visual.get("verified_relationship_features")
+        if not isinstance(verified_features, dict) or verified_features.get("authority") != "stage02_semantic_verifier":
+            issue("VERIFIED_RELATIONSHIP_FEATURES_MISSING", f"{page_id} has no verifier-derived relationship features.")
+        elif not isinstance(verified_features.get("actions"), list) or (verified and not verified_features.get("actions")):
+            issue("VERIFIED_RELATIONSHIP_ACTIONS_MISSING", f"{page_id} verified relations have no structured subject-action-object features.")
+        if visual.get("author_visual_notes_authority") != "advisory_only":
             issue("AUTHOR_VISUAL_NOTES_AUTHORITY_INVALID", f"{page_id} author visual notes must be advisory only.")
 
-    status = "passed" if not blocking else "failed"
     return {
         "schema": "cyberppt.stage02_handoff_audit.v1",
-        "status": status,
+        "status": "passed" if not blocking else "failed",
         "handoff": str(handoff_path.resolve()),
         "page_count": len(pages),
         "content_page_count": content_count,
@@ -525,15 +532,9 @@ def prepare_stage02_handoff(
     reuse_current_handoff: bool = False,
     allow_script_edit: bool = False,
 ) -> dict[str, Any]:
-    # Kept for direct-call compatibility. Direct script-edit mode explicitly
-    # authorizes refreshing the handoff from the edited final script.
     _ = lightweight_stage01_confirmed
     project = project.expanduser().resolve()
-    payload = build_stage02_handoff(
-        project,
-        script=script,
-        allow_script_edit=allow_script_edit,
-    )
+    payload = build_stage02_handoff(project, script=script, allow_script_edit=allow_script_edit)
     handoff_path = project / HANDOFF_JSON
     if reuse_current_handoff and handoff_path.is_file():
         try:
