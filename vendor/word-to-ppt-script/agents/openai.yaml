@@ -1,4 +1,0 @@
-interface:
-  display_name: "Word to PPT Script Compiler"
-  short_description: "Compile formal Word documents into complete audited PPT scripts compatible with template-SVG generation, single-page ImageGen contracts, and automated PPT assembly."
-  default_prompt: "Read the supplied Word document and run the full compilation workflow. Produce the outline, page-boundary matrix, final locked on-screen text, speaker notes, visual design specification, complete SCRIPT-FINAL, and quality report. Keep template pages distinguishable from content pages and ensure content pages can compile into the standard single-page ImageGen contract."

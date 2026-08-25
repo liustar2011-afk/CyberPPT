@@ -1,8 +1,0 @@
-{
-  "schema_version":"1.0","artifact_type":"normalized_facts","source":{"source_file":"方案.docx"},
-  "facts":[
-    {"normalized_fact_id":"nf-0001","statement":"项目已进入实施准备阶段。","fact_type":"event","normalization":"verbatim","verification_status":"unverified","source_assertion_ids":["fact-0001"],"evidence":[{"fact_id":"fact-0001","block_id":"blk-0001","line_start":10,"line_end":10}],"confidence":"high"},
-    {"normalized_fact_id":"nf-0002","statement":"建设目标是建立统一服务入口。","fact_type":"goal","normalization":"verbatim","verification_status":"unverified","source_assertion_ids":["fact-0002"],"evidence":[{"fact_id":"fact-0002","block_id":"blk-0002","line_start":12,"line_end":12}],"confidence":"high"},
-    {"normalized_fact_id":"nf-0003","statement":"首期完成基础能力部署。","fact_type":"deliverable","normalization":"verbatim","verification_status":"unverified","source_assertion_ids":["fact-0003"],"evidence":[{"fact_id":"fact-0003","block_id":"blk-0003","line_start":22,"line_end":22}],"confidence":"high"}
-  ],"conflicts":[],"ambiguities":[]
-}

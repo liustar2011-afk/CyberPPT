@@ -1,21 +1,17 @@
 {
-  "name": "cyberppt",
+  "name": "cyberppt-stage02",
   "private": true,
   "type": "module",
   "scripts": {
     "doctor": "python3 -m cyberppt doctor",
-    "test": "python3 -m unittest discover -s tests",
-    "test:validate-pptx": "python3 scripts/test_validate_pptx.py",
+    "test": "python3 -m pytest -q",
     "validate": "python3 scripts/validate_pptx.py",
-    "body-blueprint-prompts": "python3 scripts/body_blueprint_prompt.py",
     "playwright:smoke": "node scripts/playwright_default.mjs"
   },
   "dependencies": {
     "pptxgenjs": "4.0.1"
   },
   "devDependencies": {
-    "@colbymchenry/codegraph": "^1.5.0",
-    "@nanonets/graft": "^0.10.1",
     "playwright": "^1.62.1"
   }
 }

@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.stage02_extraction_provenance.v1",
+  "product": "CyberPPT-Stage02",
+  "version": "0.1.0",
+  "source_repository": "liustar2011-afk/CyberPPT",
+  "source_commit": "8c7559ad1631dcb9cecf4fca42277d185f73cf3b",
+  "source_branch": "main",
+  "extraction_branch": "export/cyberppt-stage02-v0.1.0",
+  "boundary": "final-script -> visual structure -> ImageGen -> editable PPTX -> QA",
+  "stage01_public_api_included": false,
+  "internal_namespace_compatibility": "cyberppt",
+  "notes": "v0.1 prioritizes production-chain continuity; unused legacy internal modules may be pruned after standalone dependency tests."
+}

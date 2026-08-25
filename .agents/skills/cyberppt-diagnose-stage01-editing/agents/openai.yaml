@@ -1,4 +1,0 @@
-interface:
-  display_name: "CyberPPT Stage 01 编辑诊断"
-  short_description: "按需诊断并局部修复语义理解与 Outline 编辑质量"
-  default_prompt: "使用 $cyberppt-diagnose-stage01-editing 诊断当前 CyberPPT 项目的语义理解或 Outline 编辑问题，并只修复受影响范围。"

@@ -1,0 +1,62 @@
+name: Stage 02 tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[test]"
+      - name: Stage 02 contract and production regressions
+        run: >-
+          pytest -q
+          tests/test_stage02_public_cli.py
+          tests/test_stage02_cyberppt_script_adapter.py
+          tests/test_stage02_handoff.py
+          tests/test_relation_semantics_decoupling.py
+          tests/test_onscreen_expression.py
+          tests/test_page_artifact_spec.py
+          tests/test_visual_structure_contract.py
+          tests/test_visual_structure_stage.py
+          tests/test_final_script_pages.py
+          tests/test_clean_base_generator.py
+          tests/test_image_to_pptx_runtime.py
+          tests/test_production_qa.py
+          tests/test_production_readiness.py
+          tests/test_extended_style_9.py
+          tests/test_extended_style_9_assets.py
+          tests/test_extended_style_10.py
+          tests/test_style09_adapter.py
+          tests/test_final_prompt_contract.py
+          tests/test_final_prompt_ir.py
+          tests/test_final_prompt_renderer.py
+          tests/test_native_text_geometry.py
+          tests/test_native_text_style.py
+          tests/test_template_assembly.py
+          tests/test_text_content_qa_order_insensitive.py
+          tests/test_image_text_gate.py
+          tests/test_codex_oauth_image_size.py
+          tests/test_artifact_ledger.py
+          tests/test_composition_and_carrier_resolver.py
+          tests/test_cyberppt_handoff_projection.py
+          tests/test_visual_grammar.py
+          tests/test_visual_prompt_consumer.py
+          tests/test_visual_proof_preflight_diagnostics.py
+          tests/test_imagegen_deliverable_prompt.py
+          tests/test_imagegen_handoff_modularization.py
+          tests/test_imagegen_page_manifest.py
+          tests/test_imagegen_prompt_diagnostics.py
+          tests/test_prompt_compiler_production_entrypoints.py
+          tests/test_presentation_qa.py
+          tests/test_image_enhancer.py
