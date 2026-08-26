@@ -1,0 +1,1168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/ppt-visual-structure-designer/page-visual-spec.schema.json",
+  "title": "PPT Page Visual Structure Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "page_id",
+    "page_number",
+    "page_title",
+    "page_role",
+    "page_mission",
+    "core_judgment",
+    "content_lock",
+    "evidence_units",
+    "semantic_graph",
+    "visual_decision",
+    "text_integration",
+    "geometry",
+    "image_plan",
+    "connectors",
+    "final_text",
+    "generation_handoff",
+    "avoid",
+    "qa",
+    "quality_contract"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "visual_decision": {
+            "required": [
+              "dominant_visual_carrier"
+            ]
+          },
+          "text_integration": {
+            "required": [
+              "font_family",
+              "minimum_font_pt"
+            ]
+          },
+          "generation_handoff": {
+            "required": [
+              "composition_guidance",
+              "style_guidance",
+              "negative_constraints"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "1.1"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "structural_decision"
+        ],
+        "properties": {
+          "text_integration": {
+            "properties": {
+              "font_family": false,
+              "minimum_font_pt": false
+            }
+          },
+          "generation_handoff": {
+            "required": [
+              "structural_guidance",
+              "style_source_ref"
+            ],
+            "properties": {
+              "composition_guidance": false,
+              "style_guidance": false,
+              "negative_constraints": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
+    },
+    "page_id": {
+      "type": "string",
+      "pattern": "^P[0-9]{2,3}$"
+    },
+    "page_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "page_title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "page_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "page_mission": {
+      "type": "string",
+      "minLength": 8
+    },
+    "core_judgment": {
+      "type": "string",
+      "minLength": 6
+    },
+    "content_integrity": {
+      "type": "object",
+      "description": "Passthrough of Stage 02's authoritative content-structure contract (root modules, parent-child tree, source order). Not authored by this skill; optional for schema-version 1.0/1.1 compatibility."
+    },
+    "content_lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "locked_items",
+        "allowed_transformations",
+        "forbidden_transformations"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "strict",
+            "semantic",
+            "open"
+          ]
+        },
+        "locked_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "type",
+              "text",
+              "source_ref"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_ref": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "allowed_transformations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden_transformations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence_units": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "text",
+          "kind",
+          "priority",
+          "source_ref",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^E[0-9]+$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "fact",
+              "judgment",
+              "actor",
+              "capability",
+              "process",
+              "result",
+              "constraint",
+              "metric"
+            ]
+          },
+          "priority": {
+            "enum": [
+              "P0",
+              "P1",
+              "P2"
+            ]
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "semantic_graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_relation",
+        "direction",
+        "topology",
+        "focus_node",
+        "nodes",
+      "edges",
+      "decision_relationship",
+      "business_relationships",
+      "grouping_decisions",
+      "forbidden_structures"
+      ],
+      "properties": {
+        "topology": {
+          "enum": [
+            "parallel_set",
+            "causal_convergence",
+            "layered_architecture",
+            "directed_flow",
+            "lifecycle_loop",
+            "governance_boundary",
+            "ecosystem_map",
+            "allocation_flow",
+            "conclusion_anchor"
+          ]
+        },
+        "focus_node": {
+          "type": "string",
+          "minLength": 1
+        },
+        "primary_relation": {
+          "enum": [
+            "support",
+            "flow",
+            "transform",
+            "converge",
+            "diverge",
+            "layer",
+            "cause",
+            "compare",
+            "loop",
+            "control",
+            "exchange",
+            "boundary",
+            "evidence",
+            "responsibility",
+            "peer",
+            "none"
+          ]
+        },
+        "direction": {
+          "enum": [
+            "left_to_right",
+            "right_to_left",
+            "top_to_bottom",
+            "bottom_to_top",
+            "outside_to_center",
+            "center_to_outside",
+            "closed_loop",
+            "spatial",
+            "none"
+          ]
+        },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "role",
+              "source_refs"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "role": {
+                "enum": [
+                  "judgment",
+                  "evidence"
+                ]
+              },
+              "source_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "from",
+              "to",
+              "relation",
+              "label",
+              "direction"
+            ],
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "relation": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "direction": {
+                "enum": [
+                  "forward",
+                  "backward",
+                  "bidirectional",
+                  "none"
+                ]
+              }
+            }
+          }
+        },
+      "decision_relationship": {
+        "type": "string",
+        "minLength": 4
+      },
+      "business_relationships": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "subject",
+            "relation",
+            "objects"
+          ],
+          "properties": {
+            "subject": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "objects": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "direction": {
+              "type": "string"
+            },
+            "condition": {
+              "type": "string"
+            },
+            "modality": {
+              "type": "string"
+            },
+            "basis": {
+              "type": "string"
+            },
+            "confidence": {
+              "type": "string"
+            },
+            "source_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "authority_ref": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "grouping_decisions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_nodes",
+            "target_node",
+            "reason",
+            "loss_risk"
+          ],
+          "properties": {
+            "source_nodes": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "target_node": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "loss_risk": {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          }
+        }
+      },
+      "forbidden_structures": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+      }
+    },
+    "structural_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_focus",
+        "spatial_grammar",
+        "semantic_tags",
+        "primary_refs",
+        "secondary_refs",
+        "reading_sequence",
+        "text_bindings",
+        "representation_freedom"
+      ],
+      "properties": {
+        "semantic_focus": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "ref"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "entity",
+                "action",
+                "state",
+                "relationship",
+                "outcome"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "spatial_grammar": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "anchor",
+              "path",
+              "convergence",
+              "divergence",
+              "layer",
+              "boundary",
+              "interface",
+              "network",
+              "tension",
+              "feedback",
+              "control",
+              "peer"
+            ]
+          }
+        },
+        "semantic_tags": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "primary_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "secondary_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "reading_sequence": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "text_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidence_id",
+              "target_ref",
+              "binding"
+            ],
+            "properties": {
+              "evidence_id": {
+                "type": "string",
+                "pattern": "^E[0-9]+$"
+              },
+              "target_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "binding": {
+                "enum": [
+                  "label",
+                  "annotation",
+                  "embedded",
+                  "result"
+                ]
+              },
+              "text_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        "representation_freedom": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "carrier",
+            "medium",
+            "reason"
+          ],
+          "properties": {
+            "carrier": {
+              "enum": [
+                "free",
+                "constrained"
+              ]
+            },
+            "medium": {
+              "enum": [
+                "free",
+                "scene_required",
+                "diagram_required"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "visual_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visual_intent_type",
+        "visual_thesis",
+        "spatial_organization",
+        "reading_path",
+        "text_integration_method",
+        "relationship_encoding",
+        "visual_center_count",
+        "visual_hierarchy"
+      ],
+      "properties": {
+        "visual_intent_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visual_thesis": {
+          "type": "string",
+          "minLength": 8
+        },
+        "dominant_visual_carrier": {
+          "type": "string",
+          "minLength": 6,
+          "deprecated": true
+        },
+        "spatial_organization": {
+          "type": "string",
+          "minLength": 8
+        },
+        "reading_path": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string"
+          }
+        },
+        "text_integration_method": {
+          "type": "string",
+          "minLength": 5
+        },
+        "relationship_encoding": {
+          "type": "string",
+          "minLength": 5
+        },
+        "visual_center_count": {
+          "const": 1
+        },
+        "visual_hierarchy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "primary",
+            "secondary",
+            "tertiary"
+          ],
+          "properties": {
+            "primary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "secondary": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tertiary": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "text_integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title_render_mode",
+        "subtitle_render_mode",
+        "body_render_mode",
+        "placement_strategy"
+      ],
+      "properties": {
+        "title_render_mode": {
+          "enum": [
+            "external_text_layer",
+            "in_image"
+          ]
+        },
+        "subtitle_render_mode": {
+          "enum": [
+            "external_text_layer",
+            "in_image",
+            "none"
+          ]
+        },
+        "body_render_mode": {
+          "enum": [
+            "in_image",
+            "external_text_layer",
+            "mixed"
+          ]
+        },
+        "font_family": {
+          "type": "string",
+          "minLength": 1,
+          "deprecated": true
+        },
+        "minimum_font_pt": {
+          "type": "number",
+          "minimum": 14,
+          "deprecated": true
+        },
+        "placement_strategy": {
+          "type": "string",
+          "minLength": 5
+        }
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canvas",
+        "title_exclusion_zone",
+        "regions"
+      ],
+      "properties": {
+        "canvas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "width",
+            "height",
+            "ratio"
+          ],
+          "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "ratio": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "title_exclusion_zone": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "x",
+            "y",
+            "w",
+            "h"
+          ],
+          "properties": {
+            "x": {
+              "type": "number",
+              "minimum": 0
+            },
+            "y": {
+              "type": "number",
+              "minimum": 0
+            },
+            "w": {
+              "type": "number",
+              "minimum": 0
+            },
+            "h": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "regions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "role",
+              "x",
+              "y",
+              "w",
+              "h",
+              "priority"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "x": {
+                "type": "number",
+                "minimum": 0
+              },
+              "y": {
+                "type": "number",
+                "minimum": 0
+              },
+              "w": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "h": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "priority": {
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "tertiary"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "image_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "use_scene",
+        "scene_type",
+        "business_object",
+        "semantic_role",
+        "placement",
+        "front_facing_people",
+        "identifiable_location",
+        "factual_event_implication"
+      ],
+      "properties": {
+        "use_scene": {
+          "type": "boolean"
+        },
+        "scene_type": {
+          "type": "string"
+        },
+        "business_object": {
+          "type": "string"
+        },
+        "semantic_role": {
+          "type": "string"
+        },
+        "placement": {
+          "type": "string"
+        },
+        "front_facing_people": {
+          "type": "boolean"
+        },
+        "identifiable_location": {
+          "const": false
+        },
+        "factual_event_implication": {
+          "const": false
+        }
+      }
+    },
+    "visual_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "max_auxiliary_fragments",
+        "scope",
+        "region_local_visuals"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "relationship_field_only",
+            "shared_field",
+            "integrated_scene"
+          ]
+        },
+        "max_auxiliary_fragments": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scope": {
+          "enum": ["page", "region"]
+        },
+        "region_local_visuals": {
+          "type": "boolean"
+        }
+      }
+    },
+    "expression_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "constraints_sha256",
+        "selected_candidate_id",
+        "fit_status",
+        "reading_relation",
+        "balance_strategy",
+        "deviation_reason"
+      ],
+      "properties": {
+        "form": {"type": "string", "minLength": 1},
+        "constraints_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "selected_candidate_id": {"type": "string", "minLength": 1},
+        "fit_status": {"enum": ["default_profile", "adapted"]},
+        "reading_relation": {"type": "string", "minLength": 1},
+        "balance_strategy": {"type": "string", "minLength": 1},
+        "deviation_reason": {"type": "string"}
+      }
+    },
+    "quality_contract": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "status",
+        "generation_feasibility",
+        "relationship_coverage",
+        "text_capacity",
+        "focus_competition"
+      ]
+    },
+    "connectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to",
+          "type",
+          "direction",
+          "label",
+          "main_chain"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "main_chain": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "final_text": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "role",
+          "text",
+          "region_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "region_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "generation_handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_text",
+        "title_exclusion_instruction"
+      ],
+      "properties": {
+        "structural_guidance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "additional_constraints"
+          ],
+          "properties": {
+            "source": {
+              "const": "structural_decision"
+            },
+            "additional_constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "style_source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "composition_guidance": {
+          "type": "string",
+          "minLength": 20,
+          "deprecated": true
+        },
+        "required_text": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_text_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "style_guidance": {
+          "type": "string",
+          "minLength": 10,
+          "deprecated": true
+        },
+        "negative_constraints": {
+          "type": "array",
+          "minItems": 1,
+          "deprecated": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "title_exclusion_instruction": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "avoid": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "score",
+        "blocking_issues",
+        "warnings"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+          "reviewed",
+            "pending_audit",
+            "passed",
+            "failed"
+          ]
+        },
+        "score": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "blocking_issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

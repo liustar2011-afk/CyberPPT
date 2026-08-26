@@ -1,0 +1,53 @@
+"""Run supported repository-local scripts from the product CLI."""
+
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+from cyberppt.paths import REPO_ROOT, SCRIPTS_DIR
+
+
+SCRIPT_ALIASES: dict[str, str] = {
+    "build-visual-qa": "build_visual_qa_gate.py",
+    "body-blueprint-prompts": "body_blueprint_prompt.py",
+    "compare-merged-render": "compare_merged_render.py",
+    "compare-render": "compare_render.py",
+    "component-signature": "build_component_signature.py",
+    "inspect": "inspect_pptx_objects.py",
+    "lock-content": "build_content_lock.py",
+    "measure-blueprint": "measure_blueprint.py",
+    "merge-pages": "merge_verified_pages.py",
+    "pair-manifest": "imagegen_pipeline/page_manifest.py",
+    "rework-report": "build_rework_report.py",
+    "validate": "validate_pptx.py",
+}
+
+
+def script_path(script_name: str) -> Path:
+    if script_name not in SCRIPT_ALIASES:
+        raise KeyError(f"unknown CyberPPT script alias: {script_name}")
+    path = SCRIPTS_DIR / SCRIPT_ALIASES[script_name]
+    if not path.exists():
+        raise FileNotFoundError(f"script not found: {path}")
+    return path
+
+
+def run_script(script_name: str, args: list[str]) -> int:
+    path = script_path(script_name)
+    env = os.environ.copy()
+    current_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        f"{REPO_ROOT}{os.pathsep}{current_pythonpath}"
+        if current_pythonpath
+        else str(REPO_ROOT)
+    )
+    completed = subprocess.run(
+        [sys.executable, str(path), *args],
+        check=False,
+        cwd=REPO_ROOT,
+        env=env,
+    )
+    return int(completed.returncode)

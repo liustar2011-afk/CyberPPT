@@ -1,0 +1,26 @@
+schema_version: cyberppt.semantic-intent-registry.v1
+principle: business_relations_before_visual_carriers
+canonical_intents:
+  - single_judgment_anchor
+  - multi_semantic_foundation
+  - evidence_to_judgment
+  - scene_embedded_flow
+  - transformation_pipeline
+  - convergence_to_capability
+  - capability_to_outcomes
+  - layered_architecture
+  - dual_engine_synergy
+  - closed_loop_operation
+  - comparison_tension
+  - phased_roadmap
+  - network_ecosystem
+  - policy_to_action
+  - risk_control_boundary
+  - data_flow_value_chain
+  - role_responsibility_map
+  - problem_cause_resolution
+quality_rules:
+  closed_loop_operation: [explicit_start, key_nodes, feedback_target, return_direction]
+  layered_architecture: [layer_dependency, foundation, upper_service]
+  risk_control_boundary: [inside, outside, controlled_entry, allowed_output]
+  transformation_pipeline: [input, processing, output, direction]

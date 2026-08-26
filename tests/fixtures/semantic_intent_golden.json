@@ -1,0 +1,58 @@
+[
+  {
+    "id": "loop_feedback",
+    "relations": [{"relation": "feedback_to"}],
+    "corpus": "验证结果反馈到模型，进入下一轮持续校正。",
+    "expected_intent": "closed_loop_operation",
+    "required_path_item": "feedback"
+  },
+  {
+    "id": "layer_dependency",
+    "relations": [{"relation": "layered_as"}],
+    "corpus": "底层数据支撑中层能力，中层能力服务上层应用。",
+    "expected_intent": "layered_architecture",
+    "required_path_item": "foundation"
+  },
+  {
+    "id": "controlled_boundary",
+    "relations": [{"relation": "bounded_by"}],
+    "corpus": "外部数据经授权入口进入受控区，仅允许合规结果输出。",
+    "expected_intent": "risk_control_boundary",
+    "required_path_item": "gate"
+  },
+  {
+    "id": "role_handoff",
+    "relations": [{"relation": "responsible_for"}, {"relation": "hands_off_to"}],
+    "corpus": "各主体明确职责、任务区与交付接口。",
+    "expected_intent": "role_responsibility_map",
+    "required_path_item": "handoff"
+  },
+  {
+    "id": "capability_convergence",
+    "relations": [{"relation": "converges_into"}],
+    "corpus": "数据、模型和规则汇聚形成统一服务能力。",
+    "expected_intent": "convergence_to_capability",
+    "required_path_item": "convergence"
+  },
+  {
+    "id": "capability_outcomes",
+    "relations": [{"relation": "produces"}],
+    "corpus": "核心能力产生预测、预警和分析三类结果。",
+    "expected_intent": "capability_to_outcomes",
+    "required_path_item": "outcome branches"
+  },
+  {
+    "id": "policy_action",
+    "relations": [{"relation": "implemented_as"}],
+    "corpus": "政策要求落实为建设任务、运行机制和验收安排。",
+    "expected_intent": "policy_to_action",
+    "required_path_item": "policy"
+  },
+  {
+    "id": "transformation",
+    "relations": [{"relation": "transforms_into"}],
+    "corpus": "原始输入经过治理和计算转化为服务输出。",
+    "expected_intent": "transformation_pipeline",
+    "required_path_item": "processing"
+  }
+]

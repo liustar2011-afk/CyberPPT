@@ -1,0 +1,37 @@
+mode: chart_heavy
+output:
+  upscale_factor: 1.5
+super_resolution:
+  # Pulled back from the 0.30/0.50 extreme that was in production: that
+  # setting bought +21.9% avg sharpness gain per the structural_fidelity
+  # gate sweep, but it also cut protection on fine structure (text strokes,
+  # chart geometry) and white backgrounds to roughly 40-55% of the
+  # conservative default (0.72/0.90), which is where a general-purpose
+  # photo SR model is most likely to invent texture on flat color fields.
+  # 0.55/0.60 keeps most of the measurable gain while restoring most of
+  # that guard margin.
+  text_guard:
+    fine_structure_blend: 0.55
+    white_background_blend: 0.60
+processing:
+  denoise:
+    enabled: false
+  local_contrast:
+    enabled: false
+  # 1.30 was previously chosen from a sweep up to 1.60, based on a visible
+  # "glow ring" halo that only appears on bold white text over a solid dark
+  # title-bar fill -- subtle at 0.80, clearly visible by 1.60. 1.30 was
+  # judged "moderate but not egregious" rather than actually safe, and this
+  # mode is applied uniformly to every generated page regardless of content
+  # (text-dense or mostly-white pages included), not just chart-heavy ones.
+  # Pulled back to 0.90, in the middle of the 0.80-1.00 range the same sweep
+  # found to have no visible halo/over-sharpening at 220% crop zoom.
+  sharpen:
+    amount: 0.90
+    radius: 0.85
+protection:
+  fine_structure:
+    original_blend: 0.24
+    dilation: 1
+  white_background:
+    original_blend: 0.85

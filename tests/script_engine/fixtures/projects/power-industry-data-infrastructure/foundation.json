@@ -1,0 +1,2122 @@
+{
+  "sources": [
+    {
+      "id": "SRC1",
+      "title": "依托电力领域数据基础设施开展行业数据服务与场景服务合作交流材料",
+      "type": "docx",
+      "path": "sources/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "visibility": "external_ok"
+    }
+  ],
+  "source_structure": [
+    {
+      "id": "DOC",
+      "title": "依托电力领域数据基础设施开展行业数据服务与场景服务合作交流材料",
+      "order": 1,
+      "level": "document",
+      "source_refs": [
+        "S1.0"
+      ]
+    },
+    {
+      "id": "CH1",
+      "title": "第一章 建设背景与合作基础",
+      "order": 2,
+      "level": "chapter",
+      "parent_id": "DOC",
+      "source_refs": [
+        "S1.0"
+      ]
+    },
+    {
+      "id": "CH1-S1",
+      "title": "一、建设背景",
+      "order": 3,
+      "level": "section",
+      "parent_id": "CH1",
+      "source_refs": [
+        "S1.1"
+      ]
+    },
+    {
+      "id": "CH1-S2",
+      "title": "二、总体定位",
+      "order": 4,
+      "level": "section",
+      "parent_id": "CH1",
+      "source_refs": [
+        "S1.2"
+      ]
+    },
+    {
+      "id": "CH1-S3",
+      "title": "三、建设基础",
+      "order": 5,
+      "level": "section",
+      "parent_id": "CH1",
+      "source_refs": [
+        "S1.3"
+      ]
+    },
+    {
+      "id": "CH1-S4",
+      "title": "四、建设目标与合作空间",
+      "order": 6,
+      "level": "section",
+      "parent_id": "CH1",
+      "source_refs": [
+        "S1.4"
+      ]
+    },
+    {
+      "id": "CH1-S5",
+      "title": "五、合作价值与开放原则",
+      "order": 7,
+      "level": "section",
+      "parent_id": "CH1",
+      "source_refs": [
+        "S1.5"
+      ]
+    },
+    {
+      "id": "CH2",
+      "title": "第二章 平台建设与运营体系",
+      "order": 8,
+      "level": "chapter",
+      "parent_id": "DOC",
+      "source_refs": [
+        "S2.0"
+      ]
+    },
+    {
+      "id": "CH2-S1",
+      "title": "一、总体业务模式",
+      "order": 9,
+      "level": "section",
+      "parent_id": "CH2",
+      "source_refs": [
+        "S2.1"
+      ]
+    },
+    {
+      "id": "CH2-S2",
+      "title": "二、参与主体与业务关系",
+      "order": 10,
+      "level": "section",
+      "parent_id": "CH2",
+      "source_refs": [
+        "S2.2"
+      ]
+    },
+    {
+      "id": "CH2-S3",
+      "title": "三、总体架构",
+      "order": 11,
+      "level": "section",
+      "parent_id": "CH2",
+      "source_refs": [
+        "S2.3"
+      ]
+    },
+    {
+      "id": "CH2-S4",
+      "title": "四、资源与产品形成机制",
+      "order": 12,
+      "level": "section",
+      "parent_id": "CH2",
+      "source_refs": [
+        "S2.4"
+      ]
+    },
+    {
+      "id": "CH2-S5",
+      "title": "五、服务运营闭环",
+      "order": 13,
+      "level": "section",
+      "parent_id": "CH2",
+      "source_refs": [
+        "S2.5"
+      ]
+    },
+    {
+      "id": "CH3",
+      "title": "第三章 重点服务与合作机会",
+      "order": 14,
+      "level": "chapter",
+      "parent_id": "DOC",
+      "source_refs": [
+        "S3.0"
+      ]
+    },
+    {
+      "id": "CH3-S1",
+      "title": "一、总体服务体系",
+      "order": 15,
+      "level": "section",
+      "parent_id": "CH3",
+      "source_refs": [
+        "S3.1"
+      ]
+    },
+    {
+      "id": "CH3-S2",
+      "title": "二、场景服务体系",
+      "order": 16,
+      "level": "section",
+      "parent_id": "CH3",
+      "source_refs": [
+        "S3.2"
+      ]
+    },
+    {
+      "id": "CH3-S3",
+      "title": "三、重点合作方向",
+      "order": 17,
+      "level": "section",
+      "parent_id": "CH3",
+      "source_refs": [
+        "S3.3"
+      ]
+    },
+    {
+      "id": "CH3-S3-1",
+      "title": "（一）设备可靠性与生产运行服务",
+      "order": 18,
+      "level": "subsection",
+      "parent_id": "CH3-S3",
+      "source_refs": [
+        "S3.3.1"
+      ]
+    },
+    {
+      "id": "CH3-S3-2",
+      "title": "（二）绿色低碳与电碳因子服务",
+      "order": 19,
+      "level": "subsection",
+      "parent_id": "CH3-S3",
+      "source_refs": [
+        "S3.3.2"
+      ]
+    },
+    {
+      "id": "CH3-S3-3",
+      "title": "（三）电力供需与市场经营服务",
+      "order": 20,
+      "level": "subsection",
+      "parent_id": "CH3-S3",
+      "source_refs": [
+        "S3.3.3"
+      ]
+    },
+    {
+      "id": "CH3-S3-4",
+      "title": "（四）燃料价格预测与供应链服务",
+      "order": 21,
+      "level": "subsection",
+      "parent_id": "CH3-S3",
+      "source_refs": [
+        "S3.3.4"
+      ]
+    },
+    {
+      "id": "CH3-S3-5",
+      "title": "（五）科研教育与高质量数据集服务",
+      "order": 22,
+      "level": "subsection",
+      "parent_id": "CH3-S3",
+      "source_refs": [
+        "S3.3.5"
+      ]
+    },
+    {
+      "id": "CH3-S3-6",
+      "title": "（六）科技成果可信转化服务",
+      "order": 23,
+      "level": "subsection",
+      "parent_id": "CH3-S3",
+      "source_refs": [
+        "S3.3.6"
+      ]
+    },
+    {
+      "id": "CH3-S4",
+      "title": "四、储备与拓展方向",
+      "order": 24,
+      "level": "section",
+      "parent_id": "CH3",
+      "source_refs": [
+        "S3.4"
+      ]
+    },
+    {
+      "id": "CH3-S5",
+      "title": "五、服务交付与应用方式",
+      "order": 25,
+      "level": "section",
+      "parent_id": "CH3",
+      "source_refs": [
+        "S3.5"
+      ]
+    },
+    {
+      "id": "CH4",
+      "title": "第四章 合作模式与保障机制",
+      "order": 26,
+      "level": "chapter",
+      "parent_id": "DOC",
+      "source_refs": [
+        "S4.0"
+      ]
+    },
+    {
+      "id": "CH4-S1",
+      "title": "一、合作伙伴类型",
+      "order": 27,
+      "level": "section",
+      "parent_id": "CH4",
+      "source_refs": [
+        "S4.1"
+      ]
+    },
+    {
+      "id": "CH4-S2",
+      "title": "二、合作模式",
+      "order": 28,
+      "level": "section",
+      "parent_id": "CH4",
+      "source_refs": [
+        "S4.2"
+      ]
+    },
+    {
+      "id": "CH4-S3",
+      "title": "三、平台支持内容",
+      "order": 29,
+      "level": "section",
+      "parent_id": "CH4",
+      "source_refs": [
+        "S4.3"
+      ]
+    },
+    {
+      "id": "CH4-S4",
+      "title": "四、基本商务机制",
+      "order": 30,
+      "level": "section",
+      "parent_id": "CH4",
+      "source_refs": [
+        "S4.4"
+      ]
+    },
+    {
+      "id": "CH4-S5",
+      "title": "五、数据安全、权利与衍生成果保障",
+      "order": 31,
+      "level": "section",
+      "parent_id": "CH4",
+      "source_refs": [
+        "S4.5"
+      ]
+    },
+    {
+      "id": "CH4-S6",
+      "title": "六、服务质量与风险保障",
+      "order": 32,
+      "level": "section",
+      "parent_id": "CH4",
+      "source_refs": [
+        "S4.6"
+      ]
+    },
+    {
+      "id": "CH5",
+      "title": "第五章 合作对接与推进安排",
+      "order": 33,
+      "level": "chapter",
+      "parent_id": "DOC",
+      "source_refs": [
+        "S5.0"
+      ]
+    },
+    {
+      "id": "CH5-S1",
+      "title": "一、合作意向登记",
+      "order": 34,
+      "level": "section",
+      "parent_id": "CH5",
+      "source_refs": [
+        "S5.1"
+      ]
+    },
+    {
+      "id": "CH5-S2",
+      "title": "二、资源与需求对接",
+      "order": 35,
+      "level": "section",
+      "parent_id": "CH5",
+      "source_refs": [
+        "S5.2"
+      ]
+    },
+    {
+      "id": "CH5-S3",
+      "title": "三、合作事项成熟度评估",
+      "order": 36,
+      "level": "section",
+      "parent_id": "CH5",
+      "source_refs": [
+        "S5.3"
+      ]
+    },
+    {
+      "id": "CH5-S4",
+      "title": "四、合作方案深化",
+      "order": 37,
+      "level": "section",
+      "parent_id": "CH5",
+      "source_refs": [
+        "S5.4"
+      ]
+    },
+    {
+      "id": "CH5-S5",
+      "title": "五、试点验证",
+      "order": 38,
+      "level": "section",
+      "parent_id": "CH5",
+      "source_refs": [
+        "S5.5"
+      ]
+    },
+    {
+      "id": "CH5-S6",
+      "title": "六、正式运营与复制推广",
+      "order": 39,
+      "level": "section",
+      "parent_id": "CH5",
+      "source_refs": [
+        "S5.6"
+      ]
+    },
+    {
+      "id": "CLOSING",
+      "title": "结束语",
+      "order": 40,
+      "level": "closing",
+      "parent_id": "DOC",
+      "source_refs": [
+        "结束语"
+      ]
+    },
+    {
+      "id": "APP1",
+      "title": "附件一 合作伙伴资源与能力登记要点",
+      "order": 41,
+      "level": "appendix",
+      "parent_id": "DOC",
+      "source_refs": [
+        "附件一"
+      ]
+    },
+    {
+      "id": "APP2",
+      "title": "附件二 产品及场景服务说明要点",
+      "order": 42,
+      "level": "appendix",
+      "parent_id": "DOC",
+      "source_refs": [
+        "附件二"
+      ]
+    },
+    {
+      "id": "APP3",
+      "title": "附件三 合作事项成熟度评估要点",
+      "order": 43,
+      "level": "appendix",
+      "parent_id": "DOC",
+      "source_refs": [
+        "附件三"
+      ]
+    },
+    {
+      "id": "APP4",
+      "title": "附件四 试点实施与验收要点",
+      "order": 44,
+      "level": "appendix",
+      "parent_id": "DOC",
+      "source_refs": [
+        "附件四"
+      ]
+    },
+    {
+      "id": "APP5",
+      "title": "附件五 服务计量、账单与结算要点",
+      "order": 45,
+      "level": "appendix",
+      "parent_id": "DOC",
+      "source_refs": [
+        "附件五"
+      ]
+    },
+    {
+      "id": "APP6",
+      "title": "附件六 数据分类分级与交付方式适配要点",
+      "order": 46,
+      "level": "appendix",
+      "parent_id": "DOC",
+      "source_refs": [
+        "附件六"
+      ]
+    },
+    {
+      "id": "APP7",
+      "title": "附件七 商务报价与收益分配参考模型",
+      "order": 47,
+      "level": "appendix",
+      "parent_id": "DOC",
+      "source_refs": [
+        "附件七"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "F1",
+      "statement": "电力行业是国民经济基础性、战略性行业，覆盖电力生产、传输、消费以及装备制造、工程建设、科研教育和专业服务等完整产业链。",
+      "source_refs": [
+        "S1.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BG"
+    },
+    {
+      "id": "F2",
+      "statement": "新型能源体系和新型电力系统加快建设，电力业务数字化、市场化和智能化程度持续提升，跨主体、跨系统、跨领域的数据协同和专业能力协同需求不断增长。",
+      "source_refs": [
+        "S1.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BG"
+    },
+    {
+      "id": "F3",
+      "statement": "业务需求持续增长：新能源大规模接入、电力市场化改革深化以及人工智能与能源电力业务加快融合，对多源数据、专业知识、预测模型、持续监测和智能服务提出更高要求。",
+      "source_refs": [
+        "S1.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BG"
+    },
+    {
+      "id": "F4",
+      "statement": "行业资源较为分散：数据、知识、模型、算法和专业能力分布在不同法人主体、业务系统和安全域内，目录标识、数据口径、接口方式、质量标准、授权条件和版本管理尚未完全统一，资源发现、技术适配、合规沟通和持续维护成本较高。",
+      "source_refs": [
+        "S1.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BG"
+    },
+    {
+      "id": "F5",
+      "statement": "规模化服务机制仍需完善：资源提供方关注控制权、使用用途、成果边界和合理收益，需求方关注质量、交付稳定性、安全责任和服务保障，行业需要完善资源登记、产品封装、授权执行、可信交付、服务计量、客户评价和价值结算机制。",
+      "source_refs": [
+        "S1.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BG"
+    },
+    {
+      "id": "F6",
+      "statement": "电力领域数据基础设施定位为电力数据要素流通共享的行业中枢和价值释放引擎。",
+      "source_refs": [
+        "S1.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-DW"
+    },
+    {
+      "id": "F7",
+      "statement": "平台建设包含三项内容：国家数据基础设施电力行业节点、行业数据与专业能力运营平台、多主体协同和价值共创载体。",
+      "source_refs": [
+        "S1.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-DW"
+    },
+    {
+      "id": "F8",
+      "statement": "国家数据基础设施电力行业节点承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，促进不同主体、不同区域和不同系统之间的资源发现、供需衔接和业务协同。",
+      "source_refs": [
+        "S1.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-DW"
+    },
+    {
+      "id": "F9",
+      "statement": "行业数据与专业能力运营平台统一组织数据资源、知识资源、模型算法、专业能力和技术能力，推动分散资源形成来源明确、权利清晰、质量可控、可订购、可交付、可评价的数据产品、数据服务和场景服务。",
+      "source_refs": [
+        "S1.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-DW"
+    },
+    {
+      "id": "F10",
+      "statement": "多主体协同和价值共创载体组织需求单位、资源方、模型算法方、专业服务方、技术实施方和市场生态方，形成资源共享、能力互补、责任清晰、收益合理的协同机制。",
+      "source_refs": [
+        "S1.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-DW"
+    },
+    {
+      "id": "F11",
+      "statement": "平台立足中电联行业引领和服务职能，构建服务国家、赋能行业、支撑中电联内部发展的多层次服务体系。",
+      "source_refs": [
+        "S1.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok"
+    },
+    {
+      "id": "F12",
+      "statement": "中电联长期承担行业联系、统计分析、标准协调、专业研究、会员服务和政策沟通等职责，已形成组织制度、行业资源、既有平台、场景储备和实施推进等方面基础。",
+      "source_refs": [
+        "S1.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JC"
+    },
+    {
+      "id": "F13",
+      "statement": "组织制度基础：项目经国家能源主管部门研究并履行相关程序推荐，纳入国家数据基础设施建设先行先试范围；2025年9月中电联启动先行先试项目并发布行业共建倡议；2025年11月中电联党委专题审议建设方案，成立项目领导小组、工作小组和工作专班。",
+      "source_refs": [
+        "S1.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JC"
+    },
+    {
+      "id": "F14",
+      "statement": "行业资源基础：中电联拥有覆盖电力产业链主要环节的会员生态、专业分支机构和行业服务渠道，在政策标准、行业统计、设备可靠性、绿色低碳、科技成果、信用评价、人才教育和专业研究等方面形成长期积累。",
+      "source_refs": [
+        "S1.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JC"
+    },
+    {
+      "id": "F15",
+      "statement": "既有平台基础：电力公共信息平台及相关业务平台为资源接入、服务发布、用户服务和运营管理提供既有系统、数据接口和运行经验。",
+      "source_refs": [
+        "S1.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JC"
+    },
+    {
+      "id": "F16",
+      "statement": "场景储备基础：中电联已围绕生产运行、绿色低碳、供需市场、科研教育、成果转化等领域形成一批可进一步论证的场景储备。",
+      "source_refs": [
+        "S1.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JC"
+    },
+    {
+      "id": "F17",
+      "statement": "实施推进基础：项目已完成可行性研究和建设方案论证，进入建设实施准备阶段，平台建设、资源接入、产品开发、场景推进和运营制度建设正在统筹推进。",
+      "source_refs": [
+        "S1.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JC"
+    },
+    {
+      "id": "F18",
+      "statement": "项目围绕数据“供得出、流得动、用得好、保安全”的总体要求，重点建设可信连接、统一目录、数据流通利用、产品运营、场景协同、人工智能服务、安全管控和计量结算等能力。",
+      "source_refs": [
+        "S1.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-MB"
+    },
+    {
+      "id": "F19",
+      "statement": "按照国家数据基础设施建设第二批先行先试任务安排，项目计划于2026年12月完成初验、2027年6月完成终验。",
+      "source_refs": [
+        "S1.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-MB"
+    },
+    {
+      "id": "F20",
+      "statement": "总体建设任务完成时，实现600家以上数据流通利用主体接入，支持5个以上重点行业的跨区域、跨行业数据流通利用，发布不少于1200个数据产品，打造20个以上示范性强、带动性广的典型应用场景。",
+      "source_refs": [
+        "S1.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-MB"
+    },
+    {
+      "id": "F21",
+      "statement": "建设目标既反映平台建设规模，也对应广泛的行业合作空间：主体接入需要持续扩大资源与能力供给，产品发布需要标准化封装，典型场景建设需要真实客户、真实资源、实际权限和多方专业能力共同参与。",
+      "source_refs": [
+        "S1.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-MB"
+    },
+    {
+      "id": "F22",
+      "statement": "建设评价与持续运营评价实行分层管理：建设阶段重点关注主体接入、资源登记、产品发布、平台能力和示范场景进度；运营阶段重点关注真实使用、服务质量、经营效果和安全合规。",
+      "source_refs": [
+        "S1.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-MB"
+    },
+    {
+      "id": "F23",
+      "statement": "平台面向不同合作主体形成差异化合作价值：对需求单位提供统一的资源发现、服务组织、可信交付和持续运营入口；对资源与能力提供方提供产品化设计、场景化应用、客户对接、计量结算和联合推广渠道；对技术与生态伙伴提供行业真实场景、资源协同和联合产品机会；对行业整体促进数据资源与专业能力高效流通利用。",
+      "source_refs": [
+        "S1.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JZ"
+    },
+    {
+      "id": "F24",
+      "statement": "合作坚持平等自愿、需求牵引、权利清晰、安全可控和持续运营，合作伙伴既有资源控制关系保持不变，具体事项按单项合作协商确定。",
+      "source_refs": [
+        "S1.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JZ"
+    },
+    {
+      "id": "F25",
+      "statement": "平台连接需求侧与供给侧，以客户业务问题和资源能力为两端输入，以数据产品、数据服务和场景服务为运营对象，以订单、合同、授权、服务权益、计量和结算为业务纽带。",
+      "source_refs": [
+        "S2.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YWMS"
+    },
+    {
+      "id": "F26",
+      "statement": "总体业务形成“需求识别—资源组织—产品形成—客户订购—授权交付—计量结算—运营评价—持续优化”的闭环。",
+      "source_refs": [
+        "S2.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YWMS"
+    },
+    {
+      "id": "F27",
+      "statement": "平台重点解决三类问题：把分散资源转化为标准化服务供给；把商务合同和数据授权转化为可执行的技术规则；把实际调用、成果交付、客户反馈和经营结果转化为持续优化依据。",
+      "source_refs": [
+        "S2.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YWMS"
+    },
+    {
+      "id": "F28",
+      "statement": "平台按照中电联统筹、中电联数智公司运营、合作伙伴供给、需求单位使用反馈的机制协同运行，并根据具体合作事项吸纳技术实施、市场渠道和生态组织参与。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZT"
+    },
+    {
+      "id": "F29",
+      "statement": "中电联负责重大事项统筹、规则审定、行业资源协调、专业力量组织和成果推广。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZT"
+    },
+    {
+      "id": "F30",
+      "statement": "中电联数智公司代表中电联承担平台运营、产品组织、客户服务、技术协同、可信交付、运营评价和计量结算。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZT"
+    },
+    {
+      "id": "F31",
+      "statement": "需求与场景单位包括政府部门、电力企业、能源企业、科研院所、高等院校及跨行业主体，提出业务问题、使用目的、交付成果和安全要求，参与试用、验收和应用反馈。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZT"
+    },
+    {
+      "id": "F32",
+      "statement": "资源与能力合作伙伴根据合作事项提供数据、知识、模型、算法、专业服务、技术能力和持续更新保障，承担相应的资源权利、质量、版本、安全和服务责任。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZT"
+    },
+    {
+      "id": "F33",
+      "statement": "市场与生态合作伙伴参与客户渠道、场景组织、联合推广、实施服务和生态协同。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZT"
+    },
+    {
+      "id": "F34",
+      "statement": "同一单位可以根据实际条件承担一种或者多种角色，平台通过统一标识、合作事项、产品、订单、授权、交付和计量记录建立业务关联。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZT"
+    },
+    {
+      "id": "F35",
+      "statement": "平台按照“五层两贯穿”总体架构建设，遵循统一控制、分布执行、按需汇聚、数据留域的原则。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JG"
+    },
+    {
+      "id": "F36",
+      "statement": "第一层可信连接与主体接入层，面向机构、人员、应用、连接器、数据源、模型节点和服务节点建立可信身份，提供身份认证、连接器注册、接口适配、证书密钥、运行监测和日志采集等能力。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JG"
+    },
+    {
+      "id": "F37",
+      "statement": "第二层资源与产品管理层，对数据、知识、文档、模型、算法和专业能力进行登记、编目、质量管理、血缘管理、版本管理和产品封装。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JG"
+    },
+    {
+      "id": "F38",
+      "statement": "第三层服务交付与场景编排层，支撑接口调用、成果交付、模型任务、数据沙箱、隐私保护计算、场景流程和多方协同交付。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JG"
+    },
+    {
+      "id": "F39",
+      "statement": "第四层运营与交易管理层，对客户、产品规格、订单、合同、授权、服务权益、计量、账单、对账、结算、客户服务和运营分析实行统一管理。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JG"
+    },
+    {
+      "id": "F40",
+      "statement": "第五层数据与人工智能基础层，承载经合法授权进入平台环境的数据和模型，提供数据治理、存储计算、知识库、向量检索、模型服务、任务编排、模型评测和算力资源管理等公共能力。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JG"
+    },
+    {
+      "id": "F41",
+      "statement": "两项贯穿：安全与合规贯穿主体接入、资源登记、产品开发、服务调用、成果交付、计量结算和退出管理全过程；标准与运维贯穿目录标识、接口、质量、服务等级、计量、审计、配置、版本、监控、容灾和故障处置全过程。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JG"
+    },
+    {
+      "id": "F42",
+      "statement": "平台业务对象分为资源能力、产品服务、应用场景和交付运行四个维度：资源能力构成供给基础，产品服务构成运营载体，应用场景对应业务领域，交付运行明确服务实现方式。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-XCJZ"
+    },
+    {
+      "id": "F43",
+      "statement": "资源能力包括数据资源、知识资源、模型算法、专业能力和技术能力五类。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-XCJZ"
+    },
+    {
+      "id": "F44",
+      "statement": "数据产品是经过权利确认、治理加工、质量检验、标准封装和版本管理，可以独立登记和管理的数据成果。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-XCJZ"
+    },
+    {
+      "id": "F45",
+      "statement": "数据服务是基于数据产品、知识资源、模型能力或者专业能力形成的可订购、可调用、可计量的标准化专业服务。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-XCJZ"
+    },
+    {
+      "id": "F46",
+      "statement": "场景服务是面向客户具体业务问题，对数据产品、模型算法、专家能力、技术实施和安全措施进行组合形成的综合服务。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-XCJZ"
+    },
+    {
+      "id": "F47",
+      "statement": "产品和场景主要通过两条路径形成：标准产品路径从资源与能力出发，经过治理封装、产品规格设计和客户验证形成数据产品及数据服务；场景组织路径从客户业务问题出发，先明确业务目标和交付成果，再反向组织所需数据、模型、专家和技术能力，形成场景服务；两条路径进入正式运营前统一完成权利、质量、安全、技术和商务审核。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-XCJZ"
+    },
+    {
+      "id": "F48",
+      "statement": "平台以产品形成、订单履行和运营反馈三条业务链构成持续运营闭环。",
+      "source_refs": [
+        "S2.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BH"
+    },
+    {
+      "id": "F49",
+      "statement": "产品和场景实行阶段化管理：产品原则上按照需求立项、样例验证、开发准入、客户试用、正式运营、优化或退出推进；场景原则上按照业务问题确认、方案设计、联合实施准备、真实客户试点、业务和技术验收、持续运营和标准化复制推进。",
+      "source_refs": [
+        "S2.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BH"
+    },
+    {
+      "id": "F50",
+      "statement": "平台对核心业务对象实行统一标识和关联管理，使业务运行、技术调用、财务结算和安全审计相互衔接、全程追溯。",
+      "source_refs": [
+        "S2.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-BH"
+    },
+    {
+      "id": "F51",
+      "statement": "平台将数据、知识、模型和专业能力组织为可订购、可调用、可计量的标准化专业服务，根据服务内容重点形成五类基础服务能力：数据获取服务、知识内容服务、模型与智能服务、分析监测服务、数据治理与核验服务。",
+      "source_refs": [
+        "S3.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FWTX"
+    },
+    {
+      "id": "F52",
+      "statement": "数据获取服务包括基础查询、专业指标、数据接口和数据集，满足信息核验、研究分析、业务系统调用、模型训练和专题应用等需求。",
+      "source_refs": [
+        "S3.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FWTX"
+    },
+    {
+      "id": "F53",
+      "statement": "知识内容服务包括政策标准、技术资料、专业文档、行业知识库和结构化知识成果，为政策研究、业务查询、专业培训和智能问答提供内容支撑。",
+      "source_refs": [
+        "S3.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FWTX"
+    },
+    {
+      "id": "F54",
+      "statement": "模型与智能服务包括预测、诊断、评价、优化、分类识别、智能检索、智能问答和报告生成等能力，可通过在线调用、批量任务、专属实例或客户环境部署等方式提供。",
+      "source_refs": [
+        "S3.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FWTX"
+    },
+    {
+      "id": "F55",
+      "statement": "分析监测服务包括动态分析、专题研判、周期报告、趋势监测、异常预警、经营对标和辅助决策，按照约定对象、指标、频次和服务周期持续提供成果。",
+      "source_refs": [
+        "S3.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FWTX"
+    },
+    {
+      "id": "F56",
+      "statement": "数据治理与核验服务包括数据清洗、标准映射、标签标注、质量评价、数据核验、可信证明、数据集加工和样本构建，帮助客户提升数据可用性和服务可信度。",
+      "source_refs": [
+        "S3.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FWTX"
+    },
+    {
+      "id": "F57",
+      "statement": "场景服务以客户业务问题为起点，形成覆盖需求分析、方案设计、系统接入、试点运行、持续服务和成效评价的综合交付，根据成熟度和复制程度形成标准型、配置型和定制型三种形态。",
+      "source_refs": [
+        "S3.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CJTX"
+    },
+    {
+      "id": "F58",
+      "statement": "标准型场景服务业务对象、服务流程、数据要求、交付成果、服务等级和价格规则基本固定，可按统一服务说明快速复制，适用于行业知识检索、企业信息核验、设备可靠性分析、电碳因子查询和周期性行业监测等成熟服务。",
+      "source_refs": [
+        "S3.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CJTX"
+    },
+    {
+      "id": "F59",
+      "statement": "配置型场景服务核心能力和业务流程已经标准化，可根据客户区域、组织、设备、指标、频率和权限等参数灵活配置，兼顾共性能力复用和客户实际条件。",
+      "source_refs": [
+        "S3.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CJTX"
+    },
+    {
+      "id": "F60",
+      "statement": "定制型场景服务面向重大客户和复杂业务问题进行专项设计，根据需要开展数据治理、模型开发、业务设计和系统集成，并在实施过程中同步沉淀可复用的数据产品、模型组件、接口、业务规则和实施清单。",
+      "source_refs": [
+        "S3.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CJTX"
+    },
+    {
+      "id": "F61",
+      "statement": "场景服务按照“定制验证—配置沉淀—标准复制”的方向逐步提升复用程度：定制型场景形成稳定逻辑和统一验收规则后可转化为配置型场景，配置型场景经过多个客户验证并形成统一产品规格后可进一步沉淀为标准场景服务包。",
+      "source_refs": [
+        "S3.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CJTX"
+    },
+    {
+      "id": "F62",
+      "statement": "平台首期重点围绕六个方向组织合作，优先选择真实需求明确、资源权利清晰、交付成果可验证、商务价格可执行、持续服务具备条件的方向，先形成样例、试点和首批客户，再逐步纳入正式运营。",
+      "source_refs": [
+        "S3.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FX"
+    },
+    {
+      "id": "F63",
+      "statement": "设备可靠性与生产运行服务面向设备选型、运行评价、故障预警、检修辅助和质量改进等业务，需要设备运行数据、可靠性规则、诊断模型和专家能力协同支撑；中电联在设备可靠性、行业统计等方面形成长期积累，重点面向发电企业、电网企业、设备制造企业、科研院所和专业技术机构组织合作。",
+      "source_refs": [
+        "S3.3.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FX1"
+    },
+    {
+      "id": "F64",
+      "statement": "绿色低碳与电碳因子服务面向企业碳核算、产品碳足迹、绿色电力评价、供应链碳管理和国际规则应用，重点吸纳具备碳数据、核算方法、专业模型和企业应用场景的电力企业、能源企业、科研机构及专业服务机构合作。",
+      "source_refs": [
+        "S3.3.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FX2"
+    },
+    {
+      "id": "F65",
+      "statement": "电力供需与市场经营服务面向新能源占比提升和电力市场化改革深化带来的供需研判、市场运行分析、交易辅助、经营指标监测和风险控制需求，重点面向电力企业、能源企业、科研院所、数据服务机构和模型算法机构合作。",
+      "source_refs": [
+        "S3.3.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FX3"
+    },
+    {
+      "id": "F66",
+      "statement": "燃料价格预测与供应链服务面向燃料采购、库存判断、成本测算和供应链管理，平台已将其纳入首期重点服务方向，重点面向发电企业、能源企业、供应链数据与分析机构、模型算法机构和专业服务机构合作。",
+      "source_refs": [
+        "S3.3.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FX4"
+    },
+    {
+      "id": "F67",
+      "statement": "科研教育与高质量数据集服务面向行业科研、专业教育和人工智能应用对高质量数据集、行业知识库、模型训练与微调数据的需求，重点面向科研院所、高等院校、人才培养机构、行业专家机构和模型技术机构合作。",
+      "source_refs": [
+        "S3.3.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FX5"
+    },
+    {
+      "id": "F68",
+      "statement": "科技成果可信转化服务面向科技成果从登记、评价到供需对接、实施验收和持续推广，围绕成果鉴定、可信存证、知识产权保护、供需匹配、履约验收、融资风控和成果推广形成场景服务，重点面向电力企业、科研院所、高等院校、专业评价机构和技术服务机构合作。",
+      "source_refs": [
+        "S3.3.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-FX6"
+    },
+    {
+      "id": "F69",
+      "statement": "新能源与综合能源、信用评价、产业链分析和企业经营管理等方向作为储备培育领域，先开展需求论证、资源盘点和样例设计。",
+      "source_refs": [
+        "S3.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CB"
+    },
+    {
+      "id": "F70",
+      "statement": "电力与气象、交通、工业、建筑、金融等跨行业协同方向作为探索拓展领域，先明确合作主体、数据边界、业务目标和安全条件；各方向按照成熟一项、推进一项的原则动态调整。",
+      "source_refs": [
+        "S3.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CB"
+    },
+    {
+      "id": "F71",
+      "statement": "平台从访问与成果交付、部署运行环境、数据处理方式、服务周期和服务等级五个维度组合形成具体服务方案，各维度相互独立、按需组合，为不同安全等级和业务条件提供适配路径。",
+      "source_refs": [
+        "S3.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JF"
+    },
+    {
+      "id": "F72",
+      "statement": "访问与成果交付：客户可通过API、服务网关或者业务系统调用取得约定结果，也可按授权获得数据集、指标结果、知识内容、模型结果或分析成果。",
+      "source_refs": [
+        "S3.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JF"
+    },
+    {
+      "id": "F73",
+      "statement": "部署运行环境：根据隔离性、性能和连续性要求，可采用平台共享环境、专属实例环境或者客户私有环境。",
+      "source_refs": [
+        "S3.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JF"
+    },
+    {
+      "id": "F74",
+      "statement": "数据处理方式：根据资源控制和安全要求，可采用平台受控处理、源端单方处理或者多方留域联合计算；对不宜集中汇聚的资源通过可信连接器、隐私保护计算、数据沙箱、可信执行环境等方式实现结果输出和协同应用。",
+      "source_refs": [
+        "S3.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JF"
+    },
+    {
+      "id": "F75",
+      "statement": "服务周期分单次交付、周期更新和持续运营三类安排；服务等级结合服务时间、可用性、响应时效、并发能力、更新频率、故障处理、备份恢复、客户支持、版本兼容和服务补偿等指标约定。",
+      "source_refs": [
+        "S3.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JF"
+    },
+    {
+      "id": "F76",
+      "statement": "平台面向各类电力企业、能源企业、科研院所、高等院校、数字科技企业、数据服务机构、技术服务机构、专业咨询机构和生态组织开放合作，合作伙伴按照参与角色分为六类：需求与场景、数据资源、模型算法、专业服务、技术实施、市场与生态合作伙伴。",
+      "source_refs": [
+        "S4.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-HZLX"
+    },
+    {
+      "id": "F77",
+      "statement": "同一单位可以根据实际条件承担一种或者多种角色。",
+      "source_refs": [
+        "S4.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-HZLX"
+    },
+    {
+      "id": "F78",
+      "statement": "平台根据合作伙伴资源成熟度、参与深度和业务目标，形成从资源接入、产品共建、场景共营到战略协同的四类合作模式：标准接入合作、联合产品合作、场景联合运营合作、战略生态合作；不同模式可以独立采用，也可以随着合作成熟度逐步深化。",
+      "source_refs": [
+        "S4.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-HZMS"
+    },
+    {
+      "id": "F79",
+      "statement": "标准接入合作适用于已经形成明确产品、接口或者服务能力、权利边界清晰、质量稳定的合作伙伴，重点完成产品说明、权利和技术测试、服务上架及客户试用。",
+      "source_refs": [
+        "S4.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-HZMS"
+    },
+    {
+      "id": "F80",
+      "statement": "联合产品合作适用于拥有优质资源或者专业能力、仍需开展产品化封装和市场定位的合作伙伴，各方共同开展需求分析、产品策划、治理加工、计量定价、样例验证和市场推广。",
+      "source_refs": [
+        "S4.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-HZMS"
+    },
+    {
+      "id": "F81",
+      "statement": "场景联合运营合作适用于客户业务问题复杂、需要多方能力组合和持续服务的场景，平台组织需求方、资源方、模型方、技术方和专业服务方共同形成服务方案、实施分工和持续运营安排。",
+      "source_refs": [
+        "S4.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-HZMS"
+    },
+    {
+      "id": "F82",
+      "statement": "战略生态合作适用于具有行业影响力、资源组织能力、技术平台基础和长期合作意愿的骨干企业、科研机构、区域平台及生态组织，围绕行业节点互联、重点资源、专业模型、示范场景、标准规则和联合推广建立持续合作机制。",
+      "source_refs": [
+        "S4.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-HZMS"
+    },
+    {
+      "id": "F83",
+      "statement": "中电联及中电联数智公司为合作伙伴提供从合作对接到持续运营的协同支持，重点包括需求与客户对接、资源产品化支持、技术接入与可信交付、运营与计量结算、联合推广与生态协同五方面。",
+      "source_refs": [
+        "S4.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZCNR"
+    },
+    {
+      "id": "F84",
+      "statement": "商务合作明确服务属性、客户价值、基本计价逻辑和各方贡献；具体价格、结算单价、分配比例、付款条件和税务安排由相关各方在单项合作方案、合作协议或者项目合同中协商确定。",
+      "source_refs": [
+        "S4.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SWJZ"
+    },
+    {
+      "id": "F85",
+      "statement": "服务属性分类：公益性和任务性服务通过专项任务、研究项目、行业共建投入或其他合规方式保障；行业基础服务可通过年度服务、基础订阅或统一服务包提供；市场化增值服务根据订阅、调用、项目建设、持续运营或专项服务等方式收费。",
+      "source_refs": [
+        "S4.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SWJZ"
+    },
+    {
+      "id": "F86",
+      "statement": "结算方式根据合作形态选择：成熟数据接口、标准数据集、已有模型和可独立计量的专业服务可采用固定价格或供给方结算单价；联合开发和持续运营产品可采用可分配收入比例；场景建设、私有化部署、系统集成和定制开发可按工作包、里程碑、实际工作量和验收成果结算。",
+      "source_refs": [
+        "S4.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SWJZ"
+    },
+    {
+      "id": "F87",
+      "statement": "平台不设置统一对外价格或者固定分成比例，具体商务报价、成本扣除、贡献评分和收益分配根据单项合作的客户采购条件、资源投入、服务责任和风险承担协商确定。",
+      "source_refs": [
+        "S4.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SWJZ"
+    },
+    {
+      "id": "F88",
+      "statement": "平台按照国家数据安全、网络安全、个人信息保护和能源行业有关制度要求，建立覆盖资源登记、产品设计、合同授权、运行审计和退出清理的全过程控制链，并根据不同权利对象明确使用范围、成果边界和退出条件。",
+      "source_refs": [
+        "S4.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-QLBZ"
+    },
+    {
+      "id": "F89",
+      "statement": "合作伙伴既有资源（原始数据、核心模型、模型权重、关键算法、软件、专业知识和既有知识产权）继续保持原有归属，平台和客户仅在合同授权用途、范围和期限内使用。",
+      "source_refs": [
+        "S4.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-QLBZ"
+    },
+    {
+      "id": "F90",
+      "statement": "客户专属资源（客户业务数据、提示词、上下文、专属知识库、配置参数和专属服务结果）按照客户合同管理，未经授权不得用于其他客户或者超出约定范围的产品开发。",
+      "source_refs": [
+        "S4.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-QLBZ"
+    },
+    {
+      "id": "F91",
+      "statement": "单方加工成果根据基础权利、加工投入和可分离程度明确归属、使用许可、收益安排和后续改进权益；多方联合成果根据各方资源、资金、人员和持续运营投入明确权利归属、使用范围、对外许可、收益分配和退出后的继续使用条件。",
+      "source_refs": [
+        "S4.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-QLBZ"
+    },
+    {
+      "id": "F92",
+      "statement": "涉及模型训练、模型微调、知识库扩展、数据产品扩展或者其他二次使用的，另行取得明确授权；合作终止时各方按照约定完成存量订单履行、客户通知、授权撤销、数据返还或删除、模型和接口停用、账单结算和资料归档。",
+      "source_refs": [
+        "S4.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-QLBZ"
+    },
+    {
+      "id": "F93",
+      "statement": "平台和合作伙伴建立常态质量保障、运行监测、分级响应和变更控制机制，覆盖数据质量、服务可用性、模型效果、场景成效、商务履约和安全合规，确保客户服务统一受理、内部责任落实到方。",
+      "source_refs": [
+        "S4.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZLBZ"
+    },
+    {
+      "id": "F94",
+      "statement": "质量标准分工：数据服务重点关注准确性、完整性、一致性、及时性和可追溯性；模型服务重点关注适用性、稳定性、可解释性、安全性和结果边界；场景服务重点关注业务目标、交付成果、持续运行、客户应用成效和复制条件。",
+      "source_refs": [
+        "S4.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZLBZ"
+    },
+    {
+      "id": "F95",
+      "statement": "涉及人工智能的服务实行模型登记、版本管理、构建数据来源说明、模型评测、输入输出检查、调用日志、版本回退和停用管理；对高风险预测、诊断和决策辅助结果，明确适用条件、人工复核要求和责任边界。",
+      "source_refs": [
+        "S4.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZLBZ"
+    },
+    {
+      "id": "F96",
+      "statement": "持续监测数据质量、接口运行、模型输出、服务可用性、客户反馈、安全事件和商务履约，根据影响程度开展客户沟通、恢复处理、专项复核、服务暂停、安全处置和整改闭环。",
+      "source_refs": [
+        "S4.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZLBZ"
+    },
+    {
+      "id": "F97",
+      "statement": "产品内容、数据来源、模型版本、授权范围、交付方式、价格规则和服务等级发生重大变化时，履行变更确认、版本更新和客户通知；对持续质量不达标、权利条件不清、存在重大安全合规风险或严重违反合作约定的事项，采取整改、限制调用、暂停服务、产品下架或终止合作等措施。",
+      "source_refs": [
+        "S4.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-ZLBZ"
+    },
+    {
+      "id": "F98",
+      "statement": "具体合作事项根据需求真实性、资源成熟度、权利条件、技术可行性、商务可行性和持续运营能力分阶段推进，原则上形成“合作意向—资源与需求对接—成熟度评估—方案深化—试点验证—正式运营与复制推广”的推进路径。",
+      "source_refs": [
+        "S5.0"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-TJ"
+    },
+    {
+      "id": "F99",
+      "statement": "中电联数智公司作为平台运营单位，建立合作伙伴常态化对接机制和统一窗口，围绕数据资源、专业知识、模型算法、技术能力、业务场景和市场需求开展合作交流、需求征集、资源对接和事项跟踪。",
+      "source_refs": [
+        "S5.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YX"
+    },
+    {
+      "id": "F100",
+      "statement": "合作意向登记阶段成果：形成合作意向登记、联系人及工作机制、初步资源与需求清单和后续工作计划；对尚未形成明确业务问题或者可对接资源的事项，作为储备线索持续跟踪。",
+      "source_refs": [
+        "S5.1"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YX"
+    },
+    {
+      "id": "F101",
+      "statement": "平台同步梳理合作伙伴资源能力和客户需求，重点明确“有什么资源和能力、解决什么问题、面向哪些客户、形成什么产品或者场景、需要哪些配套条件”，必要时形成样例数据、样例接口、样例报告或初步场景方案。",
+      "source_refs": [
+        "S5.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-DJ"
+    },
+    {
+      "id": "F102",
+      "statement": "资源与需求对接阶段成果：形成合作伙伴资源与能力清单、客户需求与场景清单、初步权利和合规判断，以及可优先论证的合作事项。",
+      "source_refs": [
+        "S5.2"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-DJ"
+    },
+    {
+      "id": "F103",
+      "statement": "成熟度评估重点判断需求真实性、资源可用性、权利清晰度、质量成熟度、技术可行性、安全合规性、商业可行性、持续运营能力和复制推广价值，识别实施条件和主要风险。",
+      "source_refs": [
+        "S5.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CSD"
+    },
+    {
+      "id": "F104",
+      "statement": "评估阶段成果：形成成熟度评估结论和缺口清单，明确优先推进、补充条件后推进、继续储备或者暂不推进，并确定后续责任人和工作安排。",
+      "source_refs": [
+        "S5.3"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-CSD"
+    },
+    {
+      "id": "F105",
+      "statement": "对具备条件的合作事项，各方根据资源条件、专业优势和实施需要协商确定牵头单位，共同编制数据产品说明、数据服务方案或者场景服务方案，将合作意向转化为可执行安排。",
+      "source_refs": [
+        "S5.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SH"
+    },
+    {
+      "id": "F106",
+      "statement": "方案深化阶段成果：形成产品说明或者场景服务方案、技术接入与交付方案、数据安全和权利说明、客户报价与收益分配测算、责任矩阵、试点验收指标和正式运营条件，并按照各方内部程序完成必要协议和合同确认。",
+      "source_refs": [
+        "S5.4"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SH"
+    },
+    {
+      "id": "F107",
+      "statement": "首期试点在真实条件下同步验证客户价值、产品质量、技术路径、安全边界、商务价格、计量结算和持续责任，采用可追溯、可授权、可更新的真实资源，由明确需求单位和业务人员实际使用。",
+      "source_refs": [
+        "S5.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SD"
+    },
+    {
+      "id": "F108",
+      "statement": "试点阶段成果：形成客户使用与验收记录、服务调用和计量记录、质量与服务等级记录、成本和价格验证结果、安全合规验证结果及试点评估报告，据此作出转入正式运营、优化后再次验证、暂停投入或者终止的决策。",
+      "source_refs": [
+        "S5.5"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-SD"
+    },
+    {
+      "id": "F109",
+      "statement": "试点通过后，先完成产品和场景标准化定型，再纳入统一运营体系，并通过经营复盘和复制推广形成规模化能力；正式运营前原则上完成一次完整的订单、合同授权、服务权益配置、技术交付、客户验收、计量账单和合作伙伴结算验证。",
+      "source_refs": [
+        "S5.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YY"
+    },
+    {
+      "id": "F110",
+      "statement": "标准化定型：数据产品和服务明确版本、服务范围、数据口径、更新频率、服务等级、价格方式和客户使用规则；场景服务形成业务目标、资源清单、模型组件、实施流程、验收指标和运营安排。",
+      "source_refs": [
+        "S5.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YY"
+    },
+    {
+      "id": "F111",
+      "statement": "持续运营纳入统一目录、产品发布、版本管理、客户需求对接、产品推介、订单管理、续约增购、客户服务、计量结算和质量评价体系。",
+      "source_refs": [
+        "S5.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YY"
+    },
+    {
+      "id": "F112",
+      "statement": "复制推广由中电联根据需要组织行业成果发布、示范推广和生态合作，中电联数智公司会同合作伙伴开展客户拓展、续约增购和复制实施；各项合作按照成熟一项、推进一项的原则组织实施。",
+      "source_refs": [
+        "S5.6"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-YY"
+    },
+    {
+      "id": "F113",
+      "statement": "电力领域数据基础设施是连接行业数据资源、专业能力和应用需求的重要行业平台，中电联将发挥行业组织、专业资源、会员生态和平台运营优势，推动数据资源和专业能力更好服务国家战略、行业发展和企业需求。",
+      "source_refs": [
+        "结束语"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JSY"
+    },
+    {
+      "id": "F114",
+      "statement": "诚邀电力企业、能源企业、科研院所、高等院校、数字科技企业、数据服务机构、技术服务机构及相关生态伙伴参与平台合作，共同开发可持续运营的数据服务产品，共同建设可复制推广的高价值应用场景，共同培育开放协同、安全可信、互利共赢的行业服务生态。",
+      "source_refs": [
+        "结束语"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-JSY"
+    },
+    {
+      "id": "F115",
+      "statement": "附件一合作伙伴资源与能力登记要点涵盖主体基本信息、资源和权利信息、质量和版本信息、技术和安全信息、服务保障信息、合作意向信息、市场与案例信息和首期合作计划八方面内容。",
+      "source_refs": [
+        "附件一"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-APP1"
+    },
+    {
+      "id": "F116",
+      "statement": "附件二产品及场景服务说明要点涵盖基本信息、资源和权利信息、服务规格信息、访问与成果交付信息、部署与处理信息、服务周期和服务等级信息、授权和服务权益信息、计量和商务信息、安全和退出信息、场景专项信息、客户与市场信息、试用与异常处置信息十二方面内容。",
+      "source_refs": [
+        "附件二"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-APP2"
+    },
+    {
+      "id": "F117",
+      "statement": "附件三合作事项成熟度评估要点涵盖需求真实性、资源可用性、权利清晰度、质量成熟度、技术可行性、安全合规性、商业可行性、持续运营能力、复制推广价值和综合评估结论十方面内容，与第五章成熟度评估维度一致。",
+      "source_refs": [
+        "附件三"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-APP3"
+    },
+    {
+      "id": "F118",
+      "statement": "附件四试点实施与验收要点涵盖试点基本信息、试点资源范围、技术实施内容、安全和权利条件、客户使用安排、业务验收指标、技术和服务指标、计量和成本验证、试点评估材料和转运营决策十方面内容。",
+      "source_refs": [
+        "附件四"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-APP4"
+    },
+    {
+      "id": "F119",
+      "statement": "附件五服务计量、账单与结算要点涵盖计量对象、有效计量事件、异常计量处理、试用和套餐规则、账单生成与客户确认、收入和成本口径、结算基础、比例确定方法、结算阶段、坏账和退款处理、计量证据和审计、价格和规则变更十二方面内容。",
+      "source_refs": [
+        "附件五"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-APP5"
+    },
+    {
+      "id": "F120",
+      "statement": "附件六数据分类分级与交付方式适配要点根据数据重要性、个人权益影响、商业敏感程度、处理规模和使用场景，分别确定访问与成果交付方式、部署运行环境、数据处理方式和服务周期，并配置相应安全措施。",
+      "source_refs": [
+        "附件六"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-APP6"
+    },
+    {
+      "id": "F121",
+      "statement": "附件七商务报价与收益分配参考模型明确客户报价基本公式为“服务产品价格＋实施部署费用＋专属资源保障费用＋安全合规保障费用＋持续运营保障费用＋税费”，并给出数据接口、数据集知识、模型智能、监测报告和场景综合等细分参考模型，以及固定价格、可分配收入比例、里程碑结算和贡献评分四类结算基础。",
+      "source_refs": [
+        "附件七"
+      ],
+      "strength": "stated",
+      "visibility": "external_ok",
+      "group_id": "G-APP7"
+    },
+    {
+      "id": "F122",
+      "statement": "附件七内部测算口径：可将客户净收入的15%至25%作为平台运营收入参考区间，将可分配收入的5%至15%作为客户和渠道贡献参考区间；具体安排应当对应实际服务事项，不得脱离服务内容简单抽取固定比例。",
+      "source_refs": [
+        "附件七"
+      ],
+      "strength": "stated",
+      "visibility": "internal_only",
+      "group_id": "G-APP7"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "C1",
+      "term": "电力领域数据基础设施",
+      "definition": "定位为电力数据要素流通共享的行业中枢和价值释放引擎的行业平台，由国家数据基础设施电力行业节点、行业数据与专业能力运营平台、多主体协同和价值共创载体三部分构成。",
+      "source_refs": [
+        "S1.2"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C2",
+      "term": "数据产品",
+      "definition": "经过权利确认、治理加工、质量检验、标准封装和版本管理，可以独立登记和管理的数据成果。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C3",
+      "term": "数据服务",
+      "definition": "基于数据产品、知识资源、模型能力或者专业能力形成的可订购、可调用、可计量的标准化专业服务。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C4",
+      "term": "场景服务",
+      "definition": "面向客户具体业务问题，对数据产品、模型算法、专家能力、技术实施和安全措施进行组合形成的综合服务。",
+      "source_refs": [
+        "S2.4"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C5",
+      "term": "五层两贯穿架构",
+      "definition": "平台总体架构：可信连接与主体接入层、资源与产品管理层、服务交付与场景编排层、运营与交易管理层、数据与人工智能基础层五层，安全与合规、标准与运维两项能力贯穿全过程。",
+      "source_refs": [
+        "S2.3"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C6",
+      "term": "中电联数智公司",
+      "definition": "代表中电联承担平台运营、产品组织、客户服务、技术协同、可信交付、运营评价和计量结算的运营单位。",
+      "source_refs": [
+        "S2.2"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C7",
+      "term": "场景服务三种形态",
+      "definition": "按成熟度和复制程度划分的标准型、配置型和定制型三种场景服务形态，按照“定制验证—配置沉淀—标准复制”方向逐步提升复用程度。",
+      "source_refs": [
+        "S3.2"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C8",
+      "term": "四类合作模式",
+      "definition": "按合作伙伴资源成熟度、参与深度和业务目标划分的标准接入合作、联合产品合作、场景联合运营合作、战略生态合作四类模式。",
+      "source_refs": [
+        "S4.2"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C9",
+      "term": "六类合作伙伴角色",
+      "definition": "需求与场景合作伙伴、数据资源合作伙伴、模型算法合作伙伴、专业服务合作伙伴、技术实施合作伙伴、市场与生态合作伙伴，同一单位可承担多种角色。",
+      "source_refs": [
+        "S4.1"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "C10",
+      "term": "合作推进路径",
+      "definition": "合作意向登记—资源与需求对接—成熟度评估—方案深化—试点验证—正式运营与复制推广的六步推进路径。",
+      "source_refs": [
+        "S5.0"
+      ],
+      "visibility": "external_ok"
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "from": "资源登记与产品化机制",
+      "to": "数据产品、数据服务、场景服务",
+      "relation": "资源经过登记、治理、封装和审核后形成可订购、可交付、可计量的数据产品、数据服务和场景服务",
+      "basis": "explicit",
+      "confidence": "high",
+      "support": [
+        "F42",
+        "F43",
+        "F44",
+        "F45",
+        "F46",
+        "F47"
+      ],
+      "source_refs": [
+        "S2.4"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "R2",
+      "from": "五层两贯穿架构",
+      "to": "服务运营闭环",
+      "relation": "五层架构提供接入、管理、交付、运营和数据智能能力，为产品形成、订单履行和运营反馈的持续闭环提供技术支撑",
+      "basis": "inferred",
+      "confidence": "high",
+      "support": [
+        "F35",
+        "F36",
+        "F37",
+        "F38",
+        "F39",
+        "F40",
+        "F41",
+        "F48"
+      ],
+      "source_refs": [
+        "S2.3",
+        "S2.5"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "R3",
+      "from": "合作事项成熟度评估",
+      "to": "试点验证与正式运营",
+      "relation": "成熟度评估形成的优先推进结论决定合作事项能否进入方案深化、试点验证并最终转入正式运营",
+      "basis": "explicit",
+      "confidence": "high",
+      "support": [
+        "F103",
+        "F104",
+        "F107",
+        "F108",
+        "F109"
+      ],
+      "source_refs": [
+        "S5.3",
+        "S5.5",
+        "S5.6"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "R4",
+      "from": "合作伙伴资源成熟度",
+      "to": "四类合作模式选择",
+      "relation": "合作伙伴资源成熟度和参与深度决定其适用标准接入、联合产品、场景联合运营或战略生态合作模式；四类模式可以独立选择采用，也可以随着合作成熟度逐步深化",
+      "basis": "explicit",
+      "confidence": "high",
+      "support": [
+        "F78",
+        "F79",
+        "F80",
+        "F81",
+        "F82"
+      ],
+      "source_refs": [
+        "S4.2"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "R5",
+      "from": "定制型场景服务",
+      "to": "配置型与标准型场景服务",
+      "relation": "定制型场景在实施中沉淀可复用组件后转化为配置型场景，配置型场景经多客户验证后可进一步沉淀为标准型场景服务包",
+      "basis": "explicit",
+      "confidence": "high",
+      "support": [
+        "F60",
+        "F61"
+      ],
+      "source_refs": [
+        "S3.2"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "R6",
+      "from": "五方面建设基础",
+      "to": "建设目标可行性",
+      "relation": "组织制度、行业资源、既有平台、场景储备和实施推进五方面基础共同支撑建设目标和先行先试任务的可行性",
+      "basis": "inferred",
+      "confidence": "medium",
+      "support": [
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "F16",
+        "F17",
+        "F18",
+        "F19"
+      ],
+      "source_refs": [
+        "S1.3",
+        "S1.4"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "R7",
+      "from": "商务计价机制",
+      "to": "权利与安全保障机制",
+      "relation": "协商定价、分类计价的商务机制与覆盖既有资源、专属资源、加工成果的权利保障机制共同构成合作可持续运行的基础",
+      "basis": "inferred",
+      "confidence": "medium",
+      "support": [
+        "F84",
+        "F85",
+        "F86",
+        "F87",
+        "F88",
+        "F89",
+        "F90",
+        "F91",
+        "F92"
+      ],
+      "source_refs": [
+        "S4.4",
+        "S4.5"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "R8",
+      "from": "服务质量与风险保障机制",
+      "to": "规模化服务机制完善",
+      "relation": "常态质量保障、模型版本治理、运行监测和变更退出管理为第一章提出的“规模化服务机制仍需完善”问题提供制度性回应",
+      "basis": "inferred",
+      "confidence": "medium",
+      "support": [
+        "F5",
+        "F93",
+        "F94",
+        "F95",
+        "F96",
+        "F97"
+      ],
+      "source_refs": [
+        "S1.1",
+        "S4.6"
+      ],
+      "visibility": "external_ok"
+    }
+  ],
+  "arguments": [
+    {
+      "id": "A1",
+      "claim": "电力领域数据基础设施通过统一架构、标准化产品机制和全流程保障，把分散的电力行业数据、知识、模型和专业能力转化为可持续运营的数据服务和场景服务，形成行业多方协同的价值共创机制。",
+      "support": [
+        "F6",
+        "F7",
+        "F35",
+        "F42",
+        "F78",
+        "F88"
+      ],
+      "basis": "inferred",
+      "confidence": "high",
+      "source_refs": [
+        "S1.2",
+        "S2.3",
+        "S2.4",
+        "S4.2",
+        "S4.5"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "A2",
+      "claim": "电力行业数据协同需求持续增长而资源分散、规模化服务机制尚不完善，中电联具备组织制度、行业资源、既有平台、场景储备和实施推进五方面基础，据此建设电力领域数据基础设施承接国家先行先试任务。",
+      "support": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "F16",
+        "F17"
+      ],
+      "basis": "explicit",
+      "confidence": "high",
+      "source_refs": [
+        "S1.1",
+        "S1.3"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "A3",
+      "claim": "平台通过“五层两贯穿”架构和资源产品形成机制，把数据资源、知识资源、模型算法和专业能力转化为标准化数据产品、数据服务和场景服务，并通过产品形成、订单履行、运营反馈三条业务链形成持续运营闭环。",
+      "support": [
+        "F35",
+        "F42",
+        "F43",
+        "F44",
+        "F45",
+        "F46",
+        "F47",
+        "F48",
+        "F49",
+        "F50"
+      ],
+      "basis": "explicit",
+      "confidence": "high",
+      "source_refs": [
+        "S2.3",
+        "S2.4",
+        "S2.5"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "A4",
+      "claim": "平台首期围绕设备可靠性、绿色低碳、电力供需、燃料价格、科研教育和科技成果转化六个方向组织合作，并以标准型、配置型、定制型三种场景形态和五维度组合的交付方式适配不同客户和资源条件。",
+      "support": [
+        "F62",
+        "F63",
+        "F64",
+        "F65",
+        "F66",
+        "F67",
+        "F68",
+        "F57",
+        "F58",
+        "F59",
+        "F60",
+        "F71",
+        "F72",
+        "F73",
+        "F74",
+        "F75"
+      ],
+      "basis": "explicit",
+      "confidence": "high",
+      "source_refs": [
+        "S3.3",
+        "S3.2",
+        "S3.5"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "A5",
+      "claim": "平台建立六类合作伙伴角色、四类合作模式、协商定价的商务机制以及覆盖权利、安全和质量的保障体系，在推动合作规模化的同时保持合作伙伴既有资源权益不变。",
+      "support": [
+        "F76",
+        "F77",
+        "F78",
+        "F84",
+        "F87",
+        "F89",
+        "F93"
+      ],
+      "basis": "explicit",
+      "confidence": "high",
+      "source_refs": [
+        "S4.1",
+        "S4.2",
+        "S4.4",
+        "S4.5",
+        "S4.6"
+      ],
+      "visibility": "external_ok"
+    },
+    {
+      "id": "A6",
+      "claim": "具体合作事项按照合作意向登记、资源与需求对接、成熟度评估、方案深化、试点验证到正式运营与复制推广的六步路径分阶段推进，逐步把合作意向转化为规模化、可复制的服务能力。",
+      "support": [
+        "F98",
+        "F99",
+        "F100",
+        "F101",
+        "F102",
+        "F103",
+        "F104",
+        "F105",
+        "F106",
+        "F107",
+        "F108",
+        "F109",
+        "F110",
+        "F111",
+        "F112"
+      ],
+      "basis": "explicit",
+      "confidence": "high",
+      "source_refs": [
+        "S5.0",
+        "S5.1",
+        "S5.2",
+        "S5.3",
+        "S5.4",
+        "S5.5",
+        "S5.6"
+      ],
+      "visibility": "external_ok"
+    }
+  ]
+}

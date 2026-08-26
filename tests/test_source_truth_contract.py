@@ -1,0 +1,412 @@
+from __future__ import annotations
+
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+from cyberppt.source_truth_contract import (
+    audit_source_receipts,
+    audit_source_truth,
+    source_truth_atomicity_warnings,
+    source_truth_diagnostic_warnings,
+    collect_source_receipts,
+    load_source_truth,
+    source_truth_retry_directive,
+)
+
+
+def valid_payload() -> dict[str, object]:
+    return {
+        "schema": "cyberppt.source_truth.v1",
+        "argument_contract_mode": "strict",
+        "project": {"title": "测试项目", "material_type": "前期研究方案", "audience": "内部讨论"},
+        "sources": [
+            {
+                "id": "DOC01",
+                "file": "source.docx",
+                "role": "primary",
+                "non_empty_paragraphs": 10,
+                "headings": 2,
+                "tables": 0,
+            }
+        ],
+        "coverage_targets": [
+            {
+                "id": "T001",
+                "kind": "section",
+                "label": "第一章",
+                "priority": "P0",
+                "required": True,
+                "record_refs": ["S001"],
+            }
+        ],
+        "records": [
+            {
+                "id": "S001",
+                "type": "F",
+                "priority": "P0",
+                "statement": "现有系统已形成月度统计基础。",
+                "source_locator": {
+                    "source_id": "DOC01",
+                    "file": "source.docx",
+                    "section": "第一章",
+                    "paragraph": 3,
+                },
+                "status": "现状",
+                "claim_role": "fact",
+                "semantic_units": [
+                    {"text": "已形成月度统计基础。", "claim_role": "fact"}
+                ],
+                "allowed_page_roles": ["foundation", "necessity"],
+                "forbidden_page_roles": ["solution"],
+                "depends_on": [],
+                "conditions": ["仅说明统计基础"],
+                "supports": ["C001"],
+                "page_refs": ["p04"],
+                "quote": "已形成月度统计基础",
+                "fingerprint": "sha256:test",
+            }
+        ],
+        "conclusions": [
+            {
+                "id": "C001",
+                "statement": "具备开展首期研究的基础。",
+                "source_refs": ["S001"],
+            }
+        ],
+        "pages": [{"id": "p04", "source_refs": ["S001"]}],
+        "retry": {"attempt": 1, "max_attempts": 3, "strategy": "section_sweep"},
+    }
+
+
+class SourceTruthContractTests(unittest.TestCase):
+    def test_fact_type_accepts_change_semantic_role(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["type"] = "F"
+        record["claim_role"] = "change"
+        record["semantic_units"] = [
+            {"text": "市场化程度持续提升", "claim_role": "change"}
+        ]
+
+        codes = {issue.code for issue in audit_source_truth(payload)}
+
+        self.assertNotIn("SOURCE_FACT_CONTAINS_RECOMMENDATION", codes)
+
+    def test_strict_compound_record_requires_atomic_semantic_units(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["source_unit_refs"] = ["SU-A", "SU-B", "SU-C"]
+        record["semantic_units"] = [{"text": "概括性摘要。", "claim_role": "fact"}]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertIn("SOURCE_RECORD_ATOMICITY_REQUIRED", codes)
+    def _write(self, payload: dict[str, object]) -> Path:
+        root = Path(tempfile.mkdtemp())
+        path = root / "source-truth.json"
+        path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        return path
+
+    def test_loads_valid_contract(self) -> None:
+        payload = load_source_truth(self._write(valid_payload()))
+        self.assertEqual("cyberppt.source_truth.v1", payload["schema"])
+
+    def test_required_document_semantics_cannot_be_empty(self) -> None:
+        payload = valid_payload()
+        payload["document_semantics_mode"] = "required"
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("DOCUMENT_SEMANTICS_MISSING", codes)
+
+        payload["document_semantics"] = {
+            "document_role": "前期研究成果汇报",
+            "subject_of_report": "能力建设",
+            "primary_thesis": "需要推进能力建设",
+            "decision_boundary": "范围与投资仍需论证",
+            "source_refs": ["S001"],
+        }
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertNotIn("DOCUMENT_SEMANTICS_MISSING", codes)
+        self.assertNotIn("DOCUMENT_SEMANTICS_INVALID", codes)
+
+    def test_source_receipt_records_sha256_and_required_missing_file(self) -> None:
+        payload = valid_payload()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source_file = root / "source.docx"
+            source_file.write_bytes(b"source material")
+            receipts = collect_source_receipts(payload, (root,))
+            self.assertTrue(receipts[0]["present"])
+            self.assertEqual(64, len(str(receipts[0]["sha256"])))
+            self.assertEqual([], audit_source_receipts(receipts, required=True))
+
+            missing = collect_source_receipts(payload, (root / "missing",))
+            codes = {issue.code for issue in audit_source_receipts(missing, required=True)}
+            self.assertIn("SOURCE_MATERIAL_RECEIPT_MISSING", codes)
+
+            changed = {"source_id": "DOC01", "sha256": "0" * 64}
+            codes = {issue.code for issue in audit_source_receipts(receipts, expected=[changed])}
+            self.assertIn("SOURCE_MATERIAL_RECEIPT_CHANGED", codes)
+
+    def test_rejects_unknown_schema(self) -> None:
+        payload = valid_payload()
+        payload["schema"] = "wrong"
+        with self.assertRaisesRegex(ValueError, "cyberppt.source_truth.v1"):
+            load_source_truth(self._write(payload))
+
+    def test_flags_composite_record_and_imprecise_locator(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["type"] = ["F", "R"]
+        record["source_locator"] = {"source_id": "DOC01", "file": "source.docx", "section": "第一章"}
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_RECORD_COMPOSITE", codes)
+        self.assertIn("SOURCE_LOCATOR_IMPRECISE", codes)
+
+    def test_flags_missing_quote(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["quote"] = ""
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_QUOTE_MISSING", codes)
+
+    def test_flags_numeric_table_boundary_priority_and_traceability_gaps(self) -> None:
+        payload = valid_payload()
+        payload["coverage_targets"] = [
+            {
+                "id": "T1",
+                "kind": "table",
+                "label": "附件表1",
+                "priority": "P0",
+                "required": True,
+                "record_refs": [],
+            },
+            {
+                "id": "T2",
+                "kind": "boundary",
+                "label": "待确认事项",
+                "priority": "P1",
+                "required": True,
+                "record_refs": [],
+            },
+        ]
+        record = payload["records"][0]
+        record["numeric"] = {"raw_value": "100"}
+        payload["pages"][0]["source_refs"] = ["S404"]
+        codes = {item.code for item in audit_source_truth(payload)}
+        expected = {
+            "SOURCE_NUMERIC_FIELDS_MISSING",
+            "SOURCE_TABLE_COVERAGE_MISSING",
+            "SOURCE_BOUNDARY_COVERAGE_MISSING",
+            "SOURCE_PRIORITY_COVERAGE_MISSING",
+            "SOURCE_TRACEABILITY_BROKEN",
+        }
+        self.assertTrue(expected.issubset(codes), expected - codes)
+
+    def test_traceability_uses_forward_references_only(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["supports"] = ["C404"]
+        record["page_refs"] = ["p404"]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertNotIn("SOURCE_TRACEABILITY_BROKEN", codes)
+
+    def test_traceability_rejects_unknown_forward_reference(self) -> None:
+        payload = valid_payload()
+        payload["pages"][0]["source_refs"] = ["S404"]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertIn("SOURCE_TRACEABILITY_BROKEN", codes)
+
+    def test_traceability_rejects_unknown_forward_conclusion_reference(self) -> None:
+        payload = valid_payload()
+        payload["conclusions"][0]["source_refs"] = ["S404"]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertIn("SOURCE_TRACEABILITY_BROKEN", codes)
+
+    def test_flags_type_status_conflict(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["type"] = "F"
+        payload["records"][0]["status"] = "待核"
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_TYPE_STATUS_CONFLICT", codes)
+
+    def test_unknown_record_accepts_pending_inventory_status(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["type"] = "U"
+        payload["records"][0]["status"] = "待摸底"
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertNotIn("SOURCE_TYPE_STATUS_CONFLICT", codes)
+
+    def test_flags_mixed_semantic_claims(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["semantic_units"] = [
+            {"text": "已经形成统计基础。", "claim_role": "fact"},
+            {"text": "首期建议从全国总盘入手。", "claim_role": "recommendation"},
+        ]
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_RECORD_MIXED_CLAIMS", codes)
+
+    def test_fact_record_cannot_carry_recommendation_unit(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["semantic_units"] = [
+            {"text": "首期建议从全国总盘入手。", "claim_role": "recommendation"}
+        ]
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_FACT_CONTAINS_RECOMMENDATION", codes)
+
+    def test_recommendation_requires_resolvable_dependency(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["type"] = "R"
+        record["claim_role"] = "recommendation"
+        record["semantic_units"] = [
+            {"text": "建议从全国总盘入手。", "claim_role": "recommendation"}
+        ]
+        record["depends_on"] = ["S404"]
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_DEPENDENCY_MISSING", codes)
+
+    def test_valid_contract_has_no_issues(self) -> None:
+        self.assertEqual([], audit_source_truth(valid_payload()))
+
+    def test_long_strict_inventory_requires_p2_detail_layer(self) -> None:
+        payload = valid_payload()
+        template = payload["records"][0]
+        payload["records"] = []
+        for index in range(80):
+            item = dict(template)
+            item["id"] = f"S{index + 1:03d}"
+            item["priority"] = "P0" if index < 8 else "P1"
+            item["source_locator"] = dict(template["source_locator"], paragraph=index + 1)
+            item["supports"] = []
+            item["page_refs"] = []
+            payload["records"].append(item)
+        payload["coverage_targets"] = []
+        payload["conclusions"] = []
+        payload["pages"] = []
+
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_PRIORITY_HIERARCHY_FLAT", codes)
+
+        for item in payload["records"][-8:]:
+            item["priority"] = "P2"
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertNotIn("SOURCE_PRIORITY_HIERARCHY_FLAT", codes)
+
+    def test_compound_record_is_blocked_and_also_reported_as_warning(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["statement"] = (
+            "现有材料已经形成全国电力供需统计基础；同时具备分区域观察条件；"
+            "后续还需要结合气象、产业和重大项目数据形成综合研判能力，"
+            "并根据实际数据授权情况分阶段推进相关能力建设；"
+            "各类结论还需经过业务人员、数据人员和专家共同复核后发布，"
+            "同时保留版本记录和证据来源以供后续追溯。"
+        )
+        payload["records"][0]["semantic_units"] = [
+            {
+                "text": payload["records"][0]["statement"],
+                "claim_role": payload["records"][0]["claim_role"],
+            }
+        ]
+
+        self.assertIn(
+            "SOURCE_RECORD_ATOMICITY_REQUIRED",
+            {item.code for item in audit_source_truth(payload)},
+        )
+        self.assertEqual(
+            ["SOURCE_RECORD_ATOMICITY_WARNING"],
+            [item.code for item in source_truth_atomicity_warnings(payload)],
+        )
+
+    def test_diagnostics_flag_related_priority_inversion_without_blocking_audit(self) -> None:
+        payload = valid_payload()
+        driver = payload["records"][0]
+        driver.update({
+            "priority": "P2",
+            "argument_duty": "driver",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-001"],
+        })
+        boundary = dict(driver)
+        boundary.update({
+            "id": "S002",
+            "priority": "P0",
+            "argument_duty": "boundary",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-002"],
+        })
+        payload["records"].append(boundary)
+
+        warnings = source_truth_diagnostic_warnings(payload)
+
+        self.assertIn("SOURCE_PRIORITY_NARRATIVE_WARNING", {item.code for item in warnings})
+        self.assertIn(("S001", "S002"), {item.source_ids for item in warnings})
+        self.assertNotIn("SOURCE_PRIORITY_NARRATIVE_WARNING", {item.code for item in audit_source_truth(payload)})
+
+    def test_diagnostics_skip_priority_inversion_without_shared_references(self) -> None:
+        payload = valid_payload()
+        driver = payload["records"][0]
+        driver.update({
+            "priority": "P2",
+            "argument_duty": "driver",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-001"],
+        })
+        boundary = dict(driver)
+        boundary.update({
+            "id": "S002",
+            "priority": "P0",
+            "argument_duty": "boundary",
+            "semantic_node_ids": ["N002"],
+            "source_unit_refs": ["SU-002"],
+        })
+        payload["records"].append(boundary)
+
+        warnings = source_truth_diagnostic_warnings(payload)
+
+        self.assertNotIn(
+            "SOURCE_PRIORITY_NARRATIVE_WARNING",
+            {item.code for item in warnings},
+        )
+
+    def test_diagnostics_skip_when_structural_priority_is_not_lower(self) -> None:
+        payload = valid_payload()
+        driver = payload["records"][0]
+        driver.update({
+            "priority": "P0",
+            "argument_duty": "driver",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-001"],
+        })
+        boundary = dict(driver)
+        boundary.update({
+            "id": "S002",
+            "priority": "P2",
+            "argument_duty": "boundary",
+        })
+        payload["records"].append(boundary)
+
+        warnings = source_truth_diagnostic_warnings(payload)
+
+        self.assertNotIn(
+            "SOURCE_PRIORITY_NARRATIVE_WARNING",
+            {item.code for item in warnings},
+        )
+
+    def test_retry_changes_direction_for_repeated_strategy(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["quote"] = ""
+        issues = audit_source_truth(payload)
+        directive = source_truth_retry_directive(issues, "section_sweep")
+        self.assertTrue(directive["required"])
+        self.assertEqual("structured_fact_sweep", directive["strategy"])
+
+
+if __name__ == "__main__":
+    unittest.main()

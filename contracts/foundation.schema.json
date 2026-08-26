@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cyberppt.local/contracts/foundation.schema.json",
+  "title": "CyberPPT Script Foundation",
+  "type": "object",
+  "required": ["sources", "facts", "concepts", "relations", "arguments"],
+  "$defs": {
+    "visibility": {"type": "string", "enum": ["external_ok", "internal_only", "restricted", "unspecified"]},
+    "relation_basis": {"type": "string", "enum": ["explicit", "inferred"]},
+    "confidence": {"type": "string", "enum": ["high", "medium", "low"]}
+  },
+  "properties": {
+    "sources": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "type": {"type": "string"}, "path": {"type": "string"}, "sha256": {"type": "string"}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "source_structure": {"type": "array", "items": {"type": "object", "required": ["id", "title", "order", "level"], "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "order": {"type": "integer", "minimum": 0}, "level": {"type": "string", "enum": ["document", "frontmatter", "chapter", "section", "subsection", "appendix", "closing"]}, "parent_id": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}}, "additionalProperties": true}},
+    "facts": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "statement": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "strength": {"type": "string"}, "group_id": {"type": "string"}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "concepts": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "term": {"type": "string"}, "definition": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "entities": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "name": {"type": "string"}, "role": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "relations": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "from": {"type": "string"}, "to": {"type": "string"}, "relation": {"type": "string"}, "basis": {"$ref": "#/$defs/relation_basis"}, "confidence": {"$ref": "#/$defs/confidence"}, "support": {"type": "array", "items": {"type": "string"}}, "source_refs": {"type": "array", "items": {"type": "string"}}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "arguments": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "claim": {"type": "string"}, "support": {"type": "array", "items": {"type": "string"}}, "basis": {"$ref": "#/$defs/relation_basis"}, "confidence": {"$ref": "#/$defs/confidence"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "constraints": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "statement": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "numbers": {"type": "array", "items": {"type": "object", "properties": {"id": {"type": "string"}, "value": {}, "unit": {"type": "string"}, "context": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "strength": {"type": "string"}, "visibility": {"$ref": "#/$defs/visibility"}}, "additionalProperties": true}},
+    "open_questions": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

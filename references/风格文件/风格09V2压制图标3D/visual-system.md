@@ -1,0 +1,566 @@
+﻿# 视觉系统与 ImageGen 探索
+
+## 默认视觉风格探索
+
+当用户没有提供品牌或参考风格时，先展示 8 个固定 CyberPPT 视觉风格选项。可以根据源材料推荐一个，但不要替用户决定。这些是视觉系统，不只是配色。
+
+| 选项 | 名称 | 颜色 | 适合场景 |
+|---|---|---|---|
+| 1 | 经典深红咨询风 | 背景 `#F3F4EF`; 标题/正文 `#111111`; 次级 `#555555`; 线条 `#D6D6D2`; 强调 `#8B1E1E` | 战略、竞品分析、行业研究、商业计划 |
+| 2 | 冷灰 + 勃艮第红 | 背景 `#F5F5F2`; 标题 `#000000`; 正文 `#151515`; 次级 `#6B6B6B`; 线条 `#D9D9D6`; 强调 `#7A1F2B` | 财务、投研、咨询、风险分析 |
+| 3 | 暖象牙白 + 暗酒红 | 背景 `#F4F1EA`; 标题 `#121212`; 正文 `#2B2B2B`; 次级 `#77736C`; 线条 `#D8D3CA`; 强调 `#8A1538` | 品牌战略、消费品、电商、用户研究 |
+| 4 | 象牙白 + 深蓝强调 | 背景 `#F7F6F0`; 标题 `#101820`; 正文 `#303030`; 次级 `#6F7275`; 线条 `#C9CDD1`; 强调 `#12355B` | 科技、SaaS、B2B、企业数字化、AI Agent 报告 |
+| 5 | 浅灰白 + 墨绿 | 背景 `#F2F3EF`; 标题 `#111111`; 正文 `#333333`; 次级 `#666666`; 线条 `#D7D9D3`; 强调 `#1F5B4D` | 可持续、海外市场、增长战略、长期趋势 |
+| 6 | 纸张米色 + 铜棕 | 背景 `#F4F0E8`; 标题 `#161616`; 正文 `#2F2F2F`; 次级 `#76716A`; 线条 `#B8B6B1` / `#D8D5CE`; 强调 `#9A5A2E` | 消费、零售、奢侈品、商业模式分析 |
+| 7 | 纯净浅灰 + 黑金 | 背景 `#F6F6F4`; 标题 `#000000`; 正文 `#252525`; 次级 `#707070`; 线条 `#DADADA`; 强调 `#A87932` | 高管汇报、融资材料、年度战略、董事会材料 |
+| 8 | 冷白灰 + 深紫 | 背景 `#F4F5F6`; 标题 `#111111`; 正文 `#303030`; 次级 `#6D7175`; 线条 `#C8CCD0`; 强调 `#4B2E83` | AI、技术趋势、产品战略、创新研究 |
+
+每个风格样张应使用可比的信息密度和页面结构，让用户可以判断语气、层级、图表语言和可读性。选定后，整份 PPT 锁定同一视觉系统。
+
+## 第二步的两个子阶段
+
+第二步不是一次性动作，必须分成“风格样张子阶段”和“逐页蓝图子阶段”。两个子阶段都要对照本文件执行。
+
+### 风格样张子阶段
+
+- 如果用户没有明确提供品牌、模板或替代风格，必须逐项生成上表固定 8 种 CyberPPT 视觉风格。
+- 必须直接通过当前对话发送 8 张独立完整的 16:9 内置样张图片供用户选择，路径为：
+  - `assets/palette-samples/palette-01.png`
+  - `assets/palette-samples/palette-02.png`
+  - `assets/palette-samples/palette-03.png`
+  - `assets/palette-samples/palette-04.png`
+  - `assets/palette-samples/palette-05.png`
+  - `assets/palette-samples/palette-06.png`
+  - `assets/palette-samples/palette-07.png`
+  - `assets/palette-samples/palette-08.png`
+- 如果决定重新生成样张，也必须交付 8 张真实图片；新图可以替代内置图，但不能只给文字说明。
+- 网页、HTML、URL、文件夹路径、文件列表、Markdown 表格、文字说明、拼图或缩略图墙只能作为补充，不能替代当前对话中的 8 张独立样张图片。
+- 如果使用网页辅助，网页只能作为附加浏览方式，不得作为风格确认的唯一依据。
+- 不得用扩展风格替代默认 8 种；“8 个视觉方向”“8 个审美路线”或“8 个行业风格”不等于固定 8 种。
+- 如果用户明确要求引入某个具体风格，只能替换最接近的默认项，并说明替换了哪个编号和原因。
+- 每个选项必须是一张独立完整的 16:9 页面。拼图、缩略图墙、contact sheet 只能作为辅助总览，不能替代 8 张独立样张。
+- 风格样张输出时，必须在图片外列出编号、名称、色板、语气、优势和风险。
+- 不得把 `stage2_style_options.md`、Markdown 表格、文字列表或推荐理由当作风格确认物。它们只能作为图片后的辅助说明。
+- 在用户能够在当前对话中直接看到 8 张样张之前，不得请求用户选择风格，不得进入逐页蓝图阶段。
+- 如果当前界面无法显示图片，应停止并说明“风格样张展示门未通过”，不要让用户基于纯文本、网页、HTML、URL、文件夹路径或文件列表选择视觉风格。
+- 如果网页中图片未加载、路径失效或用户无法看到样张，视为风格样张子阶段失败，不得继续。
+- “只用源文件”表示最终事实、数字和文案只能来自源材料，不表示跳过本阶段的图片样张展示。
+
+### 逐页蓝图子阶段
+
+- 用户选定风格后，不再重新发散风格；先声明锁定风格编号、名称、色板、网格、标题层级、图表语言和信息密度规则。
+- **送图脚本门禁**：调用 ImageGen 前，必须把将送入生图工具的明文 prompt 落盘到 `workbench/prompts/imagegen/`，在对话中展示，并等待用户修改或批准。送图内容只含主判断、上屏文字、视觉结构与清洗后的边界；禁止夹带完整文字稿、取舍说明、证据映射、证据编号、讲解提示。
+- 每一页蓝图都必须沿用同一视觉系统，允许因页面角色调整密度，但不能改变配色、网格、标题层级、图表语言或页脚体系。
+- 每一页蓝图提示词都必须包含锁定风格编号和名称，避免 ImageGen 默认漂移到其他审美方向。
+- 蓝图生成后逐页检查风格漂移：如果出现深色驾驶舱、瑞士网格、杂志海报、科技蓝图等未被选定的扩展风格，必须重做该页。
+
+## 可选的扩展风格探索
+
+如果用户要求比配色更广的视觉探索，可以生成不同方向，例如：
+
+1. MBB 高密度咨询风
+2. 高级品牌战略风
+3. 高管编辑杂志风
+4. 瑞士国际主义网格
+5. 现代数据叙事风
+
+当某个方向不适合主题或受众时，可以替换，但要保持选项之间足够可区分。
+
+如果用户提出具体风格，把它纳入 8 个选项，或替换最接近的选项。除非用户明确跳过，否则仍展示 8 个选择。扩展风格只能在用户明确要求时使用；默认流程不得用扩展风格替代默认 8 种。
+
+## 图像生成规则
+
+- 每个方向生成一张独立完整的 16:9 页面。
+- 跨选项使用同一类代表性内容，确保可以公平比较风格。
+- 不得创建拼图、缩略图墙或一张图里塞多页。
+- 样张必须足以判断标题层级、网格、图表样式、注释、间距和密度。
+- 避免细小伪文字。可以使用真实感文字块，但所有生成文字和数值都视为一次性占位。
+- 选项标签放在图片外或文件名中，不依赖生成图里的文字。
+
+用户可以明确跳过 ImageGen。跳过时，确认用户提供的模板、截图、品牌指南或文字规范是否足够具体。
+
+## 将选定方向转成系统
+
+记录：
+
+- 页面尺寸和安全边距；
+- 列网格和行网格；
+- 固定 Typography Scale：`C0` 封面/章节幕标题，`T1-T14` 内容页文字层级，包括页码徽章、页面标题、副标题、模块/图表标题、证据标签、证据块标题、正文、结论条、SO WHAT、图表标签、KPI、注释和来源；
+- 字体族和备选字体；
+- 背景、文字、线条、中性色和强调色；
+- 图表配色和强调规则；
+- 表格边框、填充和层级；
+- 圆角、阴影、分隔线、图标和图片处理；
+- 页眉、页脚、来源和页码处理（默认策略见 `SKILL.md`"默认页面结构策略"：默认不设左上角页码徽章、不设独立页脚区、不含保密声明文字；来源/证据ID/口径改为内容区内联小字。仅当用户明确要求启用时才记录页码徽章/页脚样式）；
+- 间距节奏和目标信息密度。
+- 通用图标库选择：从 `chunk-filled`、`tabler-filled`、`tabler-outline` 或 `phosphor-duotone` 中锁定一个 stylistic library；`simple-icons` 仅作为真实品牌 logo 例外。
+
+不要只因为颜色好看就批准风格。网格、密度、层级、图表语言和留白行为共同定义视觉系统。
+
+图标风格也属于视觉系统。第二阶段锁定视觉方向后，应同时锁定通用图标库；第三阶段不得跨库混用普通概念图标。蓝图中的随机概念图标不要求逐像素复刻，但最终 PPT 图标必须语义近似、同库同风格，并通过空间注册反测。
+
+必须额外记录统一页面表面系统：
+
+- 页面如何使用已选风格的背景底色、面板色阶、细边框、栏头、分隔线、留白或轻微明暗差分区；
+- 内容面板、图表区、侧栏、结论条、页脚分别使用什么底色；
+- 白色是否为局部强调，还是全局内容底；
+- 分区依赖细边框、栏头、分隔线、阴影还是留白；
+- 后续 PPTX 还原是否允许大面积 `#FFFFFF` 卡片。
+
+蓝图默认采用统一页面表面系统。除非蓝图明确把白色卡片作为主要分区语言，否则第三阶段不得把模块底色擅自改为大面积纯白卡片。该规则适用于全部 8 种固定视觉风格，不代表把其他风格改成象牙白或米黄色。
+
+## 逐页正文内容区 ImageGen 蓝图
+
+用户确认视觉方向后，必须为请求的全部页数，或已确认大纲所需的全部页数，生成逐页正文内容区 ImageGen 蓝图。这个步骤必须发生在混合还原 PPTX 之前。正文区蓝图是主线；页面标题、副标题、Logo、页脚、页码、蓝线、母版红线和公共模板元素不进入 ImageGen 蓝图画面，由模板/母版/可编辑文字层生成。
+
+### 逐页正文区 ImageGen 蓝图真实性门
+
+除非用户明确要求跳过 ImageGen，第二阶段逐页正文区蓝图必须由 ImageGen 生成 bitmap 图片。蓝图不是 PPT 草稿、HTML 页面、SVG 线框、canvas 截图、Markdown 图示或本地脚本绘图。主线 prompt 编译入口是 `scripts/body_blueprint_prompt.py`；该脚本只能组织正文区 ImageGen prompt、manifest 和策略记录，不能替代 ImageGen 生图。
+
+本规则只约束第二阶段逐页蓝图交付，不限制第三阶段允许的 PPTX 还原辅助工具。PptxGenJS、SVG、custom geometry、Pillow、matplotlib、HTML 或 canvas 可以用于第三阶段 QA、裁图、overlay、metadata 或 prompt 管理，但不得作为第二阶段逐页蓝图的最终图像生成器。`python-pptx` 不得用于第三阶段正式 PPTX 生成。
+
+允许脚本做以下辅助工作：
+
+- 组织和批量生成 ImageGen prompt；
+- 保存、复制、重命名 ImageGen 输出图片；
+- 生成 metadata、manifest、QA 报告；
+- 生成对照图、contact sheet 或检查用 overlay。
+
+禁止脚本做以下替代：
+
+- 用 HTML/CSS/SVG/canvas/Pillow/matplotlib/PptxGenJS/python-pptx 直接绘制逐页蓝图；
+- 用 PowerPoint、网页截图、线框稿、结构草图或默认卡片页冒充 ImageGen 蓝图；
+- 为了后续测量方便，把蓝图降级成规整占位图或低保真 mockup。
+
+每页蓝图必须记录：
+
+- `imagegen_prompt`；
+- `imagegen_output_path`；
+- `imagegen_generation_id` 或等价生成记录；
+- `selected_style_id` 和 `selected_style_name`；
+- `effective_language`；
+- `density_target`；
+- `visual_quality_check`。
+
+如果用户明确跳过 ImageGen，必须记录：
+
+- `imagegen_skipped_by_user=true`；
+- 用户提供的模板、截图、品牌指南或视觉规范路径；
+- 替代依据为什么足以作为蓝图；
+- 不得声称该页是 ImageGen 蓝图。
+
+### 逐页正文区蓝图质量门
+
+逐页正文区蓝图必须延续已确认风格样张的正文区视觉系统，并达到第一阶段确认的信息密度和组件计划。ImageGen 文字和数字仍视为不可靠占位；本门只检查正文区视觉系统、密度和构图，不要求生成文字事实准确。页面标题、副标题、页脚、页码、Logo、蓝线和公共模板元素不属于正文区蓝图质量门的图内元素。
+
+以下情况视为逐页蓝图失败，必须重做：
+
+- 看起来像普通 PPT 原生卡片拼版、HTML dashboard、线框稿、低保真 mockup 或脚本绘图；
+- 大面积默认白卡片、默认圆角矩形、默认阴影或默认 KPI 卡片替代已选视觉系统；
+- 只增加卡片数量或文字数量，但缺少页面计划要求的主图、侧栏、注释、证据区、caveat、微图表、小表格、SO WHAT 或证据 ID；
+- 信息密度低于第一阶段确认的页面计划；
+- 风格样张中的色彩、材质、正文区网格、图表语言、正文区层级或注释系统没有延续到逐页蓝图；
+- 为方便第三阶段还原、测量或可编辑性，主动降低蓝图视觉复杂度、信息密度或审美完成度。
+
+### slide_content_lock 门
+
+逐页正文区 ImageGen 蓝图生成前，必须先建立 `slide_content_lock`。该锁定文件必须来自第一阶段证据表、逐页大纲和用户确认内容，不得由 ImageGen 或第三阶段重新解释生成。
+
+`slide_content_lock` 至少包含：
+
+- 页面标题、副标题和语境说明；
+- 每个图表的真实指标名、期间、单位和数值；
+- 表格行列结构、真实行列标签和核心单元格内容；
+- KPI、同比、CAGR、占比、差值等关键数值；
+- 注释、caveat、来源口径和证据 ID；
+- 右侧解读栏、管理启示或结论短句；
+- SO WHAT 的真实分区、标题和要点；
+- 不允许缺失的组件清单。
+
+可以使用 `scripts/build_content_lock.py` 从已确认的逐页大纲/证据 JSON 生成锁定文件。蓝图画面可以出现文字渲染误差，但内容结构必须以 `slide_content_lock` 为准。第三阶段不得因为蓝图文字不清、数字变形或局部模糊而删减区域、降低信息密度或重组内容。
+
+### blueprint_component_signature 冻结门
+
+每页蓝图确认后，必须生成并冻结 `blueprint_component_signature`。该签名记录已批准蓝图的组件类型、组件结构、子组件、优先级、蓝图 hash 和对应 `slide_content_lock` hash。第三阶段只能读取，不得新建、重写或放宽组件签名。
+
+组件签名必须记录：
+
+- `slide_number`；
+- `blueprint_path` 和 `blueprint_sha256`；
+- `content_lock_path` 和 `content_lock_sha256`；
+- `components[]`，每个组件包含 `id`、`type`、`priority`、`required_subcomponents`、`content_lock_refs` 和 `must_preserve_type=true`。
+
+可以使用 `scripts/build_component_signature.py` 生成签名。如果第三阶段发现签名缺失或不完整，必须回到第二阶段补签名并重新确认，不得在第三阶段临时补写。
+
+### visual_element_registry 门
+
+每页蓝图确认后，必须建立 `visual_element_registry`，登记蓝图中的全部可见元素。所有文本、数字、图标、线条、箭头、面板、表格线、图表元素、SO WHAT 元素、装饰线、点阵和纹理都必须登记。
+
+每个元素至少包含 `element_id`、`priority`、`element_type`、`source_component_id`、`blueprint_bbox_px` 和 `tolerance_px`。可以使用 `scripts/measure_blueprint.py` 结合人工/AI 标注生成 registry。完全自动识别任意 ImageGen 蓝图的所有元素并不可靠；因此缺少人工/AI 标注时，脚本必须显式失败，而不是自动声称覆盖完整。
+
+### 测量元数据边界门
+
+`visual_element_inventory_targets` 和 `blueprint_measurement_targets` 只是第二阶段蓝图记录的 metadata，用于第三阶段还原准备。它们不得改变第二阶段蓝图的交付物性质。
+
+测量准备必须服务于 ImageGen 蓝图，而不是支配蓝图。不得因为需要后续测量，把蓝图做成结构草图、线框图、规整占位图、默认卡片页或脚本绘制图。
+
+正文区蓝图规则：
+
+- 每一页使用一张正文内容区图片；不得画入完整 PPT 外框。
+- 保持选定配色、正文区网格、密度、图表语言和正文区间距一致。
+- 不得画入页面标题、副标题、Logo、页脚、页码、蓝线、母版红线、保密声明或任何企业公共模板元素。
+- 必须使用第一阶段确认的页面信息密度和组件清单，包括信息区数量、主图/侧栏比例、表格、注释、图例、微图表、证据 ID 和 SO WHAT。不得把高密度计划降级成宽松卡片。
+- 使用已确认大纲作为内容结构，但生成文字、数字、引用、图表值、Logo 和标签都视为不可靠占位。
+- 蓝图定义构图、层级、密度和视觉元素语言。最终 PPT 的文本、数据、表格值、图表值和来源说明必须从证据表重建。
+- 蓝图不是最终 PPT 图片资产。除非用户明确要求静态图交付，第三阶段不得把正文区蓝图或大面积蓝图截图作为页面背景。
+- 蓝图中的折线图、柱状图、坐标轴、标签、表格、对比条、流程箭头和 SO WHAT 只定义正文区视觉关系，第三阶段默认必须原生重建；真实文本和数据必须来自 `slide_content_lock`。页眉页脚、标题、副标题、页码、Logo 和蓝线由模板/母版/可编辑文字层生成，不从 ImageGen 蓝图复制。
+- 除非用户明确要求，否则咨询报告封面蓝图保持低密度。
+- 生成逐页蓝图前，必须自动判定默认 `target_language`，不得为语言选择单独增加确认步骤。
+- 默认 `target_language` 判定优先级：用户明确指定的全局交付语言 > 源材料主要语言 > 当前对话语言。
+- 只有源材料多语言且无明显主语言，或用户指令与源材料语言冲突时，才询问用户确认。
+- 每页蓝图提示词必须显式包含 `target_language`、`language_source` 和本页生效的 `effective_language`。
+- 如果用户明确要求某一页、某一节或某个组件使用不同语言，必须登记 `language_overrides`。
+- `language_overrides` 至少记录：`scope`、`target`、`language`、`reason`。
+- QA 时以 `effective_language` 为准，不得用全局 `target_language` 判定已登记覆盖范围失败。
+- 蓝图正文区中的所有可见文字占位，包括模块标题、图表标签、图例、轴标签、注释、来源、SO WHAT 和按钮/标签，都必须使用对应范围的 `effective_language`。页面标题、副标题、页脚、页码、Logo、蓝线和公共模板元素不得作为蓝图画面中的可见文字。
+- 不得因为 ImageGen、MBB、consulting slide、executive deck 或英文 prompt 模板更常见，就默认生成英文蓝图。
+- 英文或其他外语只允许用于品牌名、产品名、专有名词、代码名、原文引用、指标缩写、用户明确要求保留原文的内容，或已登记的 `language_overrides` 范围，并应记录为 `allowed_foreign_terms` 或 `language_overrides`。
+- `target_language`、`language_source`、`effective_language`、`language_overrides` 和 `allowed_foreign_terms` 是执行元数据，只能写入蓝图记录、prompt 说明、manifest 或 QA 记录，不得写入页面内容区，不得作为蓝图画面中的可见文字。
+
+每张蓝图还要记录：
+
+- `imagegen_prompt`；
+- `imagegen_output_path`；
+- `imagegen_generation_id` 或等价生成记录；
+- `selected_style_id` 和 `selected_style_name`；
+- 页码和页面角色；
+- 计划保留为复杂视觉资产的区域或元素；
+- 预留给可编辑文本的区域；
+- 需要用 PowerPoint 原生形状、表格或图表重建的组件；
+- 是否允许最终 `pictures > 0`，以及每个允许图片资产的必要性；如果复杂视觉扫描确认没有复杂照片、Logo、产品 UI、复杂插画、复杂纹理、复杂 3D、复杂图标、流线、异形边界、复杂弧线、非标准图表形态或其他非文字视觉资产，则记录为“无复杂视觉资产，通常可原生重建，pictures=0 仅为预期结果而非目标”；
+- 支撑最终文本和数据的证据 ID；
+- `target_language`：整套 PPT 的默认目标交付语言；
+- `language_source`：`user_specified`、`source_material` 或 `conversation`；
+- `effective_language`：本页实际使用语言，等于默认语言或页级覆盖语言；
+- `language_overrides`：页级、章节级或组件级语言覆盖；
+- `allowed_foreign_terms`：允许保留外语的品牌名、产品名、专有名词、指标缩写或原文引用；
+- 预期信息密度和页面组件清单。
+
+这些记录必须能直接转成第三阶段 `slide_manifest.json`。第二阶段蓝图记录中必须明确给出：
+
+- `expected_pictures`：必须来自复杂视觉扫描和资产准入判断；无复杂视觉资产且蓝图允许完全原生重建时通常为 `0`，但不得作为第三阶段目标；
+- `image_assets`：允许保留为图片的区域；每项必须写明区域、来源类型、必要性和可编辑性牺牲；
+- `native_components`：折线图、柱状图、坐标轴、标签、关键数字、表格、对比条、流程箭头和 SO WHAT 默认都必须列入；标题、副标题、页眉页脚、页码、Logo 和蓝线另由模板/母版/可编辑文字层列入最终 PPT manifest。
+- `text_objects`：正文区主要文字区域对应的 Typography Scale 层级，至少覆盖模块标题、正文、图表标签、关键数字、注释、来源和 SO WHAT；标题、副标题、页脚和页码作为模板/母版文字层记录，不得要求 ImageGen 画入正文区蓝图。
+- `target_language`、`language_source`、`effective_language`、`language_overrides` 和 `allowed_foreign_terms`：语言规则执行记录；这些字段是元数据，不得进入页面可见内容。
+- `complex_visual_scan`：记录扫描完成状态、复杂视觉候选、触发门、native-only 理由和 `pictures_zero_is_not_goal=true`；不得主动避免触发图片、曲线、异形或复杂视觉门。
+
+以下情况视为逐页蓝图子阶段失败，不得进入 PPTX：
+
+- 除非用户明确跳过 ImageGen，否则不能证明图片来自 ImageGen；
+- 用 PptxGenJS、python-pptx、HTML、CSS、SVG、canvas、Pillow、matplotlib、PowerPoint 或任何本地绘图脚本直接绘制逐页蓝图；
+- 用 PowerPoint 页面、网页截图、线框稿、结构草图、默认卡片页、低保真 mockup 或便于测量的规整占位图冒充 ImageGen 蓝图；
+- 逐页蓝图看起来像普通 PPT 原生卡片拼版、HTML dashboard、线框稿、低保真 mockup 或脚本绘图；
+- 为方便第三阶段还原、测量或可编辑性，主动降低蓝图视觉复杂度、信息密度或审美完成度；
+- 未自动判定并记录 `target_language`；
+- 每页未记录本页 `effective_language`；
+- 用户未要求英文，且英文不是该页有效目标语言，却默认生成英文蓝图；
+- 蓝图正文区模块标题、图表标签、SO WHAT、注释或来源等主要可见文字语言与 `effective_language` 不一致；
+- 存在页级、章节级或组件级外语内容，但未记录在 `language_overrides` 或 `allowed_foreign_terms`；
+- 用户只要求局部范围使用另一语言，却把未覆盖范围也改成该语言；
+- 页面画面中出现语言元数据字段或类似“目标语言=中文”“language=Chinese”的执行指令文字。
+
+每张蓝图还必须做图表语义和追踪触发记录：
+
+| 项目 | 要求 |
+|---|---|
+| `chart_semantics` | 标明主图是普通柱线图、结构图、矩阵、迁移图、流线图、桑基图、弧线图、波形图、异形区域图等 |
+| `visual_surface` | 标明连续纸面、白卡片、有色面板、透明面板或复杂背景 |
+| `trace_required` | 出现曲线、流带、异形边界、非标准弧线或用户要求 1:1 时必须为 `true` |
+| `trace_targets` | 需要追踪的区域或元素，如主流带、弯曲箭头、波形分割线、地图边界 |
+| `native_labels_required` | 确认标签、数值、来源、页脚和 SO WHAT 后续必须原生重建 |
+| `label_collision_risk` | 标明是否存在图标、节点、曲线、圆环、箭头密集区，第三阶段必须做标签避让检查 |
+| `curve_fidelity_targets` | 标明核心曲线、弧线、流带或异形边界，后续需用 path/freeform/custom geometry 或密集采样 |
+| `spatial_registration_targets` | 标明图标、节点、标签、箭头、连接线、组间距和阅读顺序等需要 1:1 锚点还原的区域 |
+| `visual_element_inventory_targets` | 标明全部可见视觉元素或元素组，并预分配 P0/P1/P2 优先级 |
+| `blueprint_measurement_targets` | 标明第三阶段必须逐项测量或装饰组测量的区域，并记录画布 px 到 PPT inch 的换算需求 |
+| `container_overflow_targets` | 标明卡片、面板、表格单元格、SO WHAT、结论条、图表区等固定文字归属容器 |
+| `continuous_text_flow_targets` | 标明含高亮、拆分片段、跨区域连续句或 SO WHAT 主句的文本流 |
+| `table_semantic_typography_targets` | 标明表格正文、行动项、风险项、解释句、建议句、微标签分别对应的 Typography Scale |
+| `table_density_targets` | 标明表格行高、列宽、单元格内容密度和允许留白节奏 |
+
+触发 `trace_required=true` 的蓝图，在第三阶段不得被普通矩形、平行四边形、默认流程图、普通堆叠条或 ImageGen 重绘替代。必须走裁切、采样、trace debug、SVG path 或 PPT custom geometry 的精确追踪流程。
+
+如果蓝图包含中心图、流程图、架构图、生态图、矩阵图、时间线、路径图或图标密集图，必须在蓝图记录中标出 `label_collision_risk=true`。第三阶段不得只按大致坐标摆放文字；必须做标签避让检查，确认文字不压住图标、节点、箭头、曲线、圆环或边框。
+
+如果蓝图包含图标、节点、标签、箭头或连接线密集区域，必须在蓝图记录中标出 `spatial_registration_targets`。第三阶段不得只做“不重叠”的避让判断；必须检查图标是否在节点锚点、标签是否在图标/节点的正确相对位置、箭头端点是否接到正确边界、组间距和阅读顺序是否匹配蓝图。
+
+蓝图记录必须为第三阶段准备 `visual_element_inventory_targets` 和 `blueprint_measurement_targets`。第三阶段必须登记正文区全部可见视觉元素：P0 覆盖主图、SO WHAT、关键数字、核心面板和用户指出区域；P1 覆盖普通卡片、图标、标签、箭头、表格和分隔线；P2 覆盖装饰线、点阵、纹理、重复刻度和背景纹样。页面标题、副标题、页脚、页码、Logo、蓝线和公共模板元素不由正文区蓝图测量，但仍必须在最终 PPT 的模板/可编辑文字层 QA 中检查。P0 必须逐项数值测量，P1 必须逐项或组内子锚点测量，P2 可以装饰组测量但不得跳过登记。
+
+如果蓝图包含核心曲线或弧线，不得在第三阶段用少量折线点近似。蓝图记录应说明曲线是视觉语义核心还是装饰辅助；核心曲线必须进入曲线高保真检查。
+
+如果蓝图包含卡片、面板、表格、结论条、SO WHAT、图表标注或固定区域文本，必须在蓝图记录中标出 `container_overflow_targets`。第三阶段不得只检查是否超出页面画布；必须检查文字是否留在归属容器内。
+
+如果蓝图包含拆分文本、富文本高亮、跨区域连续句、SO WHAT 主句或结论句，必须在蓝图记录中标出 `continuous_text_flow_targets`。第三阶段必须检查基线、字距、空格、断句和阅读顺序。
+
+如果蓝图包含表格、矩阵、行动清单、风险清单或网格化管理表，必须在蓝图记录中标出 `table_semantic_typography_targets` 和 `table_density_targets`。第三阶段必须按语义角色设置字号；表格正文、行动项、风险项、解释句和建议句不得登记为 `T11`。
+
+如果蓝图记录无法判断某区域是否允许图片，默认不允许图片，第三阶段必须原生重建。不得把“蓝图复杂”作为图片准入理由。
+
+## 可读性护栏
+
+- 全篇锁定 15 个文字层级：`C0` 为封面/章节幕专用，`T1-T14` 为内容页层级。蓝图和 PPTX 还原都不得临时发明未记录的字号层级。
+- 字号不足或容器溢出时，必须重组、分组、精炼文本、调整容器或拆页；不得用低于语义层级的字号解决。
+- 关键数字和结论要能在正常演示缩放下快速扫读。
+- 强调色只用于表达含义：优先级、例外、结论或行动。
+- 保持有意图的留白，但拒绝由画布不匹配造成的大块右侧或底部空白。
+- 图表标签必须横向直接标注；空间不足时必须调整图表布局，不得依赖图例替代关键标注。
+
+## 确认输出
+
+直接通过当前对话发送 8 张独立图片，并简要比较语气、密度、优势和风险。需要时给出推荐风格。网页、拼图或总览图只能作为辅助浏览，不能作为确认依据。停止并请求第二次确认，然后再进入混合还原 PPTX。
+
+## 扩展风格9：象牙白 + 深蓝领导汇报
+
+默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
+
+Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+
+Create a high-end senior leadership briefing page in a scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation.
+
+High-priority visual discipline: prefer recognizable business scenes, concrete objects, visible actions and outcomes over icons or symbolic shorthand. Prefer restrained editorial flatness and natural scene depth over decorative 3D rendering. The page should feel like a refined executive-report spread, not a technology product advertisement, glossy concept poster or icon-driven infographic.
+
+The default visual medium is one open, coherent business scene or concrete business-object field. The page should first read as a clear business judgment expressed through recognizable objects, actions and outcomes, and then as an information structure. Use abstract geometry, boundaries and connectors to organize concrete meaning, not to replace it. Do not use an icon, badge or decorative 3D object as the page-level anchor when a concrete scene, business object, action or outcome can carry the meaning.
+
+### Positive construction grammar — hard
+
+1. Identify the page’s core judgment and primary business relationship.
+2. Select one recognizable, page-specific business anchor: an operating scene, business object, controlled service field, content or data asset, professional work environment, industry facility, evidence structure or visible outcome. Prefer a concrete scene or object with visible business meaning; do not select a standalone icon, emblem, abstract 3D symbol or floating decorative object as the main anchor.
+3. Give the main anchor approximately 35%–50% of the visual field when content permits. Build one integrated, asymmetric and unequally weighted composition around it.
+4. Organize two to five open content groupings around, within or along the main anchor. These groupings share one visual field and do not require independent cards, icon containers or raised panels.
+5. Embed all locked Chinese text into the corresponding scene, object, business field, boundary or outcome region.
+6. Use one or two large semantic actions to show how business objects compare, converge, transform, separate, support, pass through control or produce results. Express these actions through spatial relationship, object state, crop, overlap, direction and controlled connectors rather than through repeated symbolic icons.
+7. Create hierarchy through crop, overlap, scale contrast, tonal separation, foreground–background relationships, precise alignment and a few short connectors. Keep depth shallow, calm and editorial; hierarchy must not depend on glossy 3D volume, dramatic perspective or floating-object effects.
+8. Use one clearly emphasized judgment or outcome region to complete the reading path.
+
+Suitable anchors include:
+- multiple source materials being parsed into one structured knowledge object;
+- two business or evidence fields compared around one visible gap;
+- one controlled content object moving through review, approval and output;
+- several foundations visibly supporting one shared capability or judgment;
+- several inputs converging into one service, model, decision or result;
+- one protected asset operating inside a controlled service field;
+- one operational environment showing monitoring, analysis, isolation, review or coordinated action.
+
+Use one dominant anchor and two to four secondary scene or evidence fragments. Vary their scale, crop and viewpoint. Let some fragments extend beyond local boundaries or overlap quiet color fields so the page feels composed as one visual field rather than assembled from modules. Secondary fragments should remain scene-, object- or evidence-based rather than becoming a collection of icons or floating 3D symbols.
+
+### Locked Chinese text and scene integration — hard
+
+Keep all locked Chinese text complete, unchanged and in its original order. Do not summarize, rewrite, shorten, relabel or convert paragraphs into compressed tags.
+
+Allocate space for locked text before adding scenes, evidence, icons or decoration. Use one complete and clearly readable text region for each primary content grouping. Do not split one paragraph across several small boxes.
+
+Keep body text at normal senior-presentation reading scale, visually equivalent to approximately 24–30 px at 1280 × 720. If space is limited, simplify scenes, reduce evidence, remove decorative detail or enlarge the text field. Never shrink locked text to fit.
+
+Render only the locked Chinese text provided in the page script. Screens, documents and interfaces may contain large text-free structures, highlighted regions, check states, contrast areas, approval marks or simplified diagrams, but should not contain invented readable microtext.
+
+Treat each primary content grouping as one editorial scene unit containing:
+- one recognizable scene, object or evidence structure;
+- one complete locked-text region;
+- one visible action, condition, state or outcome.
+
+Place text inside a quiet field within the scene, attach it to the object edge, align it with the corresponding action, or embed it in the outcome region. Text and visual material should read as one semantic unit. The scene carries the business meaning; the locked text completes the judgment.
+
+### Reusable composition grammars
+
+Select one primary grammar from the page semantics.
+
+#### A. Continuous object transformation
+
+Use one recognizable business object across the page and show it changing through input, processing, review, control or output. Keep it visually continuous rather than splitting it into separate step cards. Show transformation through object state and spatial progression, not through a row of icons.
+
+#### B. Core scene with attached actions
+
+Place one business object, service field or operating environment in the main visual region. Attach supporting capabilities, conditions, controls or outcomes through direct spatial relationships, unequal scale and selective emphasis. Supporting actions should attach to the scene itself rather than becoming separate icon modules.
+
+#### C. Dual-field comparison
+
+Use two concrete business fields or states in a controlled comparison. Show the main difference, mismatch or transition through scale, alignment, crop, selective highlighting and one decisive judgment region. Avoid symbolic left-versus-right icon comparisons when concrete fields or objects can communicate the contrast.
+
+#### D. Multi-source convergence
+
+Show several distinct sources, foundations or actors entering one shared service, capability, result or judgment. Use visible convergence and one dominant outcome field rather than equal parallel modules. Sources should read as concrete inputs, evidence or actors, not as a row of pictograms.
+
+#### E. Concrete controlled containment
+
+Place one recognizable protected object, data asset, content object or operating scene inside a controlled field. Express access, isolation, protection and approved output through checkpoints, partial boundaries, state changes and shallow spatial depth. Keep the concrete object visible; the boundaries organize the relationship rather than becoming the page’s main subject. Do not turn the containment field into a glowing 3D shell, glass enclosure or futuristic holographic container.
+
+Use one grammar per page unless the locked content clearly requires a second relationship.
+
+### Open grouping and executive hierarchy
+
+Use open content groupings within one shared visual field. Group content through common alignment, proximity, shared background tone, partial boundaries and direct attachment to the main scene or object.
+
+Create refinement through:
+- one strong visual judgment;
+- one dominant business anchor;
+- unequal scale, density and detail;
+- controlled asymmetric whitespace;
+- large calm scene regions;
+- precise alignment;
+- selective deep-blue emphasis;
+- one subordinate supporting area;
+- clear but shallow foreground, middle-ground and background relationships;
+- open edges and partial contours;
+- short, purposeful connectors.
+
+The core judgment or principal business relationship carries the greatest visual weight. Supporting evidence and explanations remain quieter and subordinate.
+
+Do not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages.
+
+Use two to five open groupings, one key outcome region, one large semantic action per primary grouping, at most one supporting evidence object per grouping, and four to six essential connectors across the page. Do not create a corresponding icon for each grouping.
+
+### Scene richness and visual expression
+
+Create visual richness through meaningful scene selection, varied cropping, unequal scale, selective overlap and viewpoint changes. Richness should come from semantic scene composition, not from adding icons, decorative objects or rendered 3D effects.
+
+Prefer:
+- one dominant scene or concrete business object;
+- one partially cropped supporting scene;
+- one or two close-up evidence fragments;
+- one clearly emphasized outcome or judgment region.
+
+Use realistic, photographic, flat-illustrative or restrained semi-realistic industry and business materials where they strengthen meaning: professional operating environments, controlled content objects, data assets, documents in transformation, review activity, analytical workspaces, industry facilities, service interaction or visible results.
+
+When using illustration, keep it editorial, matte and restrained. Avoid turning ordinary business objects, documents, devices, data assets or facilities into polished 3D renders, toy-like isometric objects, glossy miniature models or futuristic product concepts.
+
+A workspace, device or document should visibly demonstrate the relevant action or state. Screens and interfaces are supporting evidence inside a broader scene, not isolated products or the default visual language.
+
+### Depth and material finish — hard
+
+Maintain a restrained flat editorial foundation. Create depth primarily through overlap, cropping, scale contrast, tonal separation and foreground–background relationships. Depth is supportive, not a visual spectacle.
+
+Use subtle variations of ivory, white, pale blue-grey and deep blue to distinguish levels. Allow scene fragments, business objects and quiet text fields to overlap slightly where this clarifies hierarchy.
+
+Keep perspective natural and quiet. Avoid exaggerated isometric perspective, cinematic depth, strong foreshortening, dramatic spotlighting or staged pedestal-like presentation.
+
+Visible drop shadows are generally discouraged. If a shadow is necessary to clarify one meaningful overlap, use an extremely soft, diffuse and low-contrast shadow that is almost imperceptible. Do not use repeated card shadows, floating-object shadows or strong ambient occlusion.
+
+Use matte surfaces, precise edges, restrained translucency and gentle tonal transitions. Prefer flat color fields, paper-like surfaces and natural scene depth. Do not use glossy plastic, polished metal, glass-like volumes, luminous edges, reflective floors, neon highlights or high-contrast material rendering.
+
+Do not create decorative 3D volume for information that can be communicated in 2D. Business objects may retain natural physical form when required by the scene, but they should not be stylized into exhibition objects, product-demo renders, floating 3D assets or cinematic hero objects.
+
+The page should feel like a calm high-end editorial briefing, not a SaaS product advertisement, app-store showcase, futuristic concept poster, glossy technology campaign or 3D product launch visual.
+
+### Icons and symbolic marks — hard
+
+Icons are not a default visual language for Style 09. Start from zero icons.
+
+Use an icon only when the page would lose immediate semantic clarity without it and when the same meaning cannot be carried cleanly by a recognizable scene, concrete object, visible action, boundary, evidence structure or outcome region.
+
+A typical page should contain no icons. When genuinely necessary, use at most one very small icon as an embedded recognition cue inside an existing scene, object or text grouping.
+
+Never assign one icon to each bullet, module, stage, actor, capability or message. Do not create icon rows, icon grids, icon walls, icon badges, icon circles, icon cards, pictogram sequences or decorative symbol clusters.
+
+Icons must never become the main visual carrier, dominant object, repeated page structure or substitute for business scenes, actions and outcomes. They should not determine layout or create additional modules.
+
+If a business meaning can be expressed through a scene, object, action, state, comparison, boundary, spatial relationship or outcome region, remove the icon and use the concrete expression instead.
+
+If one icon is indispensable, keep it simple, flat, deep blue, small and visually subordinate. Avoid 3D icons, gradient icons, glossy icons, outlined icon collections, colorful app-style symbols and decorative icon containers.
+
+### Semantic economy
+
+Represent each locked concept once as the primary textual and visual expression.
+
+A supporting element may add an outcome, condition, boundary or evidence, but should not repeat the same label, rebuild the same sequence or add a paraphrased conclusion.
+
+When the main composition already expresses a process, hierarchy, dimensions or layered relationship, do not add a second icon chain, footer process, repeated layer list or extra summary band unless explicitly required by locked text.
+
+Use one primary visual metaphor across the page. Express remaining relationships through the business scene, object state, position, scale, crop, color fields, partial boundaries and connectors.
+
+Do not automatically convert the page into a left structure + right explanation column + bottom summary chain. Supporting text belongs inside the same integrated composition.
+
+### Essential guardrails
+
+Keep the result free from icon walls, icon-led modular layouts, repeated device mockups, dense microtext, generic office decoration, product-showcase rendering, duplicated semantic summaries, glossy 3D objects, toy-like isometric scenes, floating 3D assets, glassmorphism, metallic shine, reflective surfaces, neon glow, luminous edges, dramatic spotlighting and floating display objects.
+
+Avoid any overall visual language that feels like SaaS product marketing, app-store promotion, futuristic 3D concept art, glossy UI advertising, technology launch imagery or decorative icon-driven infographic design.
+
+These exclusions are secondary. Always prioritize the positive construction grammar, recognizable business anchoring, open scene-led composition, complete locked text, semantic clarity, restrained editorial flatness and executive-level visual hierarchy.
+
+Priority: locked Chinese text and core judgment → recognizable business anchor → business relationships → large-scale semantic actions → evidence and outcomes → crop, overlap and subtle tonal depth → auxiliary symbols only when indispensable.
+
+Final result: one calm, highly readable and visually refined executive-report composition with complete locked text, a recognizable business scene or object, open content grouping, clear page-specific meaning, strong hierarchy, restrained natural spatial depth, minimal or zero icon use, no showy 3D rendering and no unnecessary semantic repetition.
+
+
+## 扩展风格10：象牙白 + 深蓝双层语义汇报2
+
+默认8种风格仍保持1—8不变。风格10是仅供显式选择的扩展风格，可通过 ID `10` 调用，不进入默认候选。
+
+Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished, content-led and presentation-ready.
+
+Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main page-level structure, two to five primary content regions, one outcome or conclusion region, and only a few essential connectors. Derive the composition from the actual page semantics rather than from the number of text items.
+
+Locked Chinese text — hard:
+
+Keep all locked Chinese text complete, unchanged and in its original order. Do not summarize, rewrite, shorten, relabel or convert paragraphs into compressed tags. Allocate space for the locked text before adding scenes, evidence, icons or decoration.
+
+Use one complete and clearly readable text region for each primary content region. Do not split one paragraph across several small boxes. Keep body text at normal senior-presentation reading scale, visually equivalent to approximately 24–30 px at 1280 × 720. Do not create miniature captions, secondary microcopy or dense annotation layers.
+
+Place the locked text directly beside, above, below or partially within the related business object or scene, so text and visual material form one semantic unit. Make their relationship visible through shared geometry, alignment, proximity, grouping or short connectors.
+
+Scene-supported semantic expression:
+
+Prefer realistic or semi-realistic scenes with page-specific business meaning. Each scene must visibly communicate the corresponding business action, transformation, judgment or outcome, rather than merely showing a related office, device, document pile or workplace.
+
+Express each primary business action through one dominant large-scale semantic structure and, only when necessary, one supporting evidence object. Use no more than two semantic visual elements within one primary content region.
+
+Translate business meaning into presentation-scale forms, such as:
+
+- heterogeneous source materials converging into one structured outline;
+- two knowledge or evidence fields compared with one clearly highlighted gap;
+- several conditions feeding one content blueprint that produces distinct outputs;
+- one content object moving through review, approval, use and feedback;
+- multiple foundations jointly supporting one shared judgment;
+- a controlled boundary separating inputs, processing and approved outputs.
+
+Use large shapes, clear grouping, selective highlights, controlled overlap, restrained directional extension and short thin connectors. The semantic meaning must remain legible from normal presentation viewing distance.
+
+Do not express meaning mainly through miniature document pages, file-browser lists, dense tables, multi-row matrices, full software interfaces, repeated dashboard panels or collections of small screenshots. Screens, documents and charts should function as simplified semantic objects, not as containers for detailed information.
+
+Text and semantic evidence discipline — hard:
+
+Render only the locked Chinese text explicitly provided in the page script. Do not invent additional titles, labels, captions, numbers, footnotes, interface copy, document paragraphs, signage or decorative microtext.
+
+Screens, documents, charts and interfaces may contain clear text-free visual structures, including large blocks, major sections, highlighted differences, check states, approval marks, contrast regions, output groups and simplified diagrams. Do not use blank or generic screens when a screen is expected to explain a business action, but do not fill it with readable microtext.
+
+When space is insufficient, simplify the composition, reduce scene detail, remove supporting evidence, enlarge the text region or reduce the number of visual fragments. Never solve space pressure by shrinking the locked text, splitting it into tiny fragments or adding smaller explanatory text.
+
+Component and hierarchy discipline:
+
+Use:
+
+- one dominant page-level structure;
+- two to five primary content regions;
+- one large semantic object per region;
+- at most one supporting evidence object per region;
+- no more than four to six essential connectors across the page;
+- no more than one or two small auxiliary icons on a typical page.
+
+Do not automatically translate four text items into four equal columns, four equal rows or four equally detailed stages. Use unequal width, scale, density and visual weight according to the page judgment. The core judgment or principal business relationship must dominate; supporting regions remain quieter and subordinate.
+
+Icons are optional and strictly secondary. Keep them small, simple, deep blue and embedded within an existing text, scene or business region. Do not give icons independent cards, circular badges, decorative containers or dedicated display areas. Icons must not determine the composition, create extra modules, form icon rows or replace semantic scenes.
+
+Screens and devices may appear only as supporting evidence inside a broader working or operational scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
+
+Use broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
+
+Avoid equal card walls, equal modular grids, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, generic timelines, step-card sequences, software-architecture diagrams, icon grids, glossy 3D objects, glassmorphism, neon glow and floating icons.
+
+People should be absent or minimal. Reference images may inform palette, spacing, scene mood, material restraint and overall polish only; do not copy their fixed layout scaffold.
+
+Priority: locked Chinese text and core judgment → business relationships → large-scale semantic scenes and objects → evidence and outcomes → boundaries and connectors → auxiliary symbols.
+
+Final result: a calm, highly readable executive-report page with complete locked text, strong hierarchy, few components, page-specific semantic scenes, large-scale visual meaning and no invented or unreadable microtext.

@@ -1,0 +1,63 @@
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local virtual environments
+.venv/
+venv/
+env/
+
+# Node dependencies and build output
+node_modules/
+dist/
+build/
+.tools/
+
+# Project-specific working directories
+/projects/
+/out/
+/deck/
+/*-deck/
+/image2pptx_runs/
+/images/
+/output/
+/outputs/
+/preview/
+/previews/
+/reports/
+/validation/
+/tmp/
+/prompts/attempts/
+/qa_render/
+/rendered/
+/**/*_rendered/
+/**/*_ocr/
+/**/*_diff/
+
+# Vendored PPT image enhancer: keep source, exclude bootstrapped/generated runtime state
+vendor/ppt-image-enhancer-skill-v1.0.0/.venv/
+vendor/ppt-image-enhancer-skill-v1.0.0/graft/
+vendor/ppt-image-enhancer-skill-v1.0.0/runtime/downloads/
+vendor/ppt-image-enhancer-skill-v1.0.0/runtime/outputs/
+vendor/ppt-image-enhancer-skill-v1.0.0/runtime/realesrgan-ncnn-vulkan/
+vendor/ppt-image-enhancer-skill-v1.0.0/runtime/verification/
+vendor/ppt-image-enhancer-skill-v1.0.0/third_party/BasicSR/
+vendor/ppt-image-enhancer-skill-v1.0.0/third_party/Real-ESRGAN/
+vendor/ppt-image-enhancer-skill-v1.0.0/third_party/SwinIR/
+vendor/ppt-image-enhancer-skill-v1.0.0/src/*.egg-info/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.worktrees/
+
+# Local session files
+:memory:.ses
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+graft/
+
+# CodeGraph's local index — regenerable, not committed.
+.codegraph/

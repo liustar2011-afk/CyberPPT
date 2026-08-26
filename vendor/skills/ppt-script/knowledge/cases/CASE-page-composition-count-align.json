@@ -1,0 +1,36 @@
+{
+  "schema": "ppt-script.experience-case.v1",
+  "case_id": "CASE-page-composition-count-align",
+  "title": "页面项数声明与上屏模块对齐",
+  "task_type": "script-from-source",
+  "report_subtype": "project-proposal",
+  "audience_level": "executive-leadership",
+  "issue_type": "page-composition-isomorphism",
+  "tags": ["page_composition", "count-alignment", "quality-check"],
+  "original_output": "副标题写若干项，模块却是另一套并列短句，计数对齐靠散文含混过关。",
+  "revised_output": "副标题点名与模块标题一一对应，删除空壳同构句，并控制模块上限。",
+  "reasons": [
+    "听众需要看见声明的结构被真正落地",
+    "quality-check 的组成规则依赖可核验同构"
+  ],
+  "applicable_conditions": [
+    "content pages with N-item claims",
+    "page_composition enabled",
+    "high-density or standard content pages"
+  ],
+  "do_not_apply_when": [
+    "simple template pages without module bands",
+    "single-block narrative pages that do not claim item counts"
+  ],
+  "positive_patterns": [
+    "声明N项则模块或副标题点名同构",
+    "信息增量为零的重复判断删除或下沉"
+  ],
+  "anti_patterns": [
+    "仅在副标题写若干项却无点名",
+    "主判断与多模块重复同一句"
+  ],
+  "source_project": "method-bank",
+  "created_at": "2026-07-21",
+  "status": "approved"
+}

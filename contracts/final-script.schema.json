@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cyberppt.local/contracts/final-script.schema.json",
+  "title": "CyberPPT Final Script Contract",
+  "type": "object",
+  "required": [
+    "contract",
+    "version",
+    "deck",
+    "slides"
+  ],
+  "properties": {
+    "contract": {
+      "const": "cyberppt.final-script"
+    },
+    "version": {
+      "const": "1.0"
+    },
+    "deck": {
+      "type": "object",
+      "required": [
+        "title",
+        "communication_goal"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "communication_goal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "audience": {
+          "type": "string"
+        },
+        "narrative": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "page_type",
+          "title"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[Pp]?\\d+$"
+          },
+          "page_type": {
+            "type": "string",
+            "enum": [
+              "cover",
+              "contents",
+              "chapter",
+              "content",
+              "closing"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "subtitle": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mission": {
+            "type": "string"
+          },
+          "core_message": {
+            "type": "string"
+          },
+          "argument": {
+            "type": "object",
+            "properties": {
+              "pattern": {
+                "type": "string"
+              },
+              "chain": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "full_copy": {
+            "type": "string"
+          },
+          "onscreen": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "heading"
+              ],
+              "properties": {
+                "heading": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "visual_thesis": {
+            "type": "string"
+          },
+          "relationships": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "from",
+                "to",
+                "relation"
+              ],
+              "properties": {
+                "from": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "to": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "relation": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "speaker_notes": {
+            "type": "string"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "page_type": {
+                  "const": "content"
+                }
+              },
+              "required": [
+                "page_type"
+              ]
+            },
+            "then": {
+              "required": [
+                "mission",
+                "core_message",
+                "onscreen"
+              ],
+              "properties": {
+                "mission": {
+                  "minLength": 1
+                },
+                "core_message": {
+                  "minLength": 1
+                },
+                "onscreen": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        ],
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

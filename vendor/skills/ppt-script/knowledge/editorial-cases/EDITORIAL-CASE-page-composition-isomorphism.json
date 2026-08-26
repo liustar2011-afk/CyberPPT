@@ -1,0 +1,29 @@
+{
+  "schema": "ppt-script.editorial-case.v1",
+  "case_id": "EDITORIAL-CASE-page-composition-isomorphism",
+  "status": "approved",
+  "issue_type": "page-composition-isomorphism",
+  "original_result": "后台写明若干并列项，上屏却用同构短句堆叠，或仅在副标题写“若干项”却未与模块点名同构，造成计数对齐假通过。",
+  "user_feedback": "页面组成要可核验：声明的项数必须与上屏模块或副标题点名一致，禁止空壳同构。",
+  "accepted_revision": "先定本页唯一使命与模块上限，再让副标题点名与模块标题同构；删去重复主判断与空壳并列句。",
+  "root_cause": "用并列排版冒充论证完成，忽略 page_composition 的计数对齐与反重复约束。",
+  "reusable_principle": {
+    "principle": "正文页先锁定内容分区与模块数量，再写上屏；N项声明必须能在模块标题或副标题点名中逐一对应。",
+    "allowed_transformations": [
+      "压缩超限模块并合并信息增量为零的条目",
+      "把计数从散文表述改为可点名的模块标题",
+      "把重复判断从主判断移出或删除"
+    ]
+  },
+  "applicable_conditions": [
+    "page-script",
+    "page_composition",
+    "count-alignment",
+    "high-density",
+    "page-composition-isomorphism"
+  ],
+  "do_not_copy_conditions": [
+    "不得照搬历史页面的模块标题与业务对象",
+    "不得为凑齐项数而新增材料没有的环节"
+  ]
+}

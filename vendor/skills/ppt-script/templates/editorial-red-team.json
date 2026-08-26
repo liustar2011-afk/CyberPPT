@@ -1,0 +1,9 @@
+{
+  "schema": "ppt-script.editorial-red-team.v2",
+  "verdict": "CHALLENGE",
+  "challenges": [],
+  "provenance": {
+    "inputs": {},
+    "targets": {}
+  }
+}

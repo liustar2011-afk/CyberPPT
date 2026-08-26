@@ -1,0 +1,37 @@
+from __future__ import annotations
+
+import unittest
+from unittest.mock import Mock, patch
+
+from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script, script_path
+from cyberppt.paths import REPO_ROOT
+
+
+class ScriptRunnerTests(unittest.TestCase):
+    def test_known_aliases_resolve_to_existing_files(self) -> None:
+        for alias in SCRIPT_ALIASES:
+            self.assertTrue(script_path(alias).exists(), alias)
+
+    def test_body_blueprint_prompt_alias_is_registered(self) -> None:
+        self.assertEqual("body_blueprint_prompt.py", script_path("body-blueprint-prompts").name)
+
+    def test_pair_manifest_alias_is_registered(self) -> None:
+        self.assertEqual("page_manifest.py", script_path("pair-manifest").name)
+
+    def test_removed_template_rebuild_alias_is_not_registered(self) -> None:
+        with self.assertRaises(KeyError):
+            script_path("template-rebuild")
+
+    def test_unknown_alias_raises_key_error(self) -> None:
+        with self.assertRaises(KeyError):
+            script_path("missing-command")
+
+    def test_run_script_anchors_child_at_repository_root(self) -> None:
+        with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+            run.return_value = Mock(returncode=0)
+
+            self.assertEqual(0, run_script("validate", ["--help"]))
+
+        self.assertEqual(REPO_ROOT, run.call_args.kwargs["cwd"])
+        pythonpath = run.call_args.kwargs["env"]["PYTHONPATH"].split(";")
+        self.assertEqual(str(REPO_ROOT), pythonpath[0])

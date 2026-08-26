@@ -1,0 +1,1347 @@
+{
+  "communication_goal": "向电力行业及相关机构说明电力领域数据基础设施的建设背景、运营体系、重点服务和合作机会，推动各方理解合作模式、保障机制和推进路径，促成合作意向落地。",
+  "audience": "电力企业、能源企业、科研院所、高等院校、数字科技企业、数据服务机构、技术服务机构及专业咨询机构等潜在合作伙伴的业务与技术负责人",
+  "audience_scope": "external",
+  "source_structure_mode": "preserve",
+  "audience_start": "了解电力行业存在数据协同需求，但对电力领域数据基础设施的定位、运营体系、具体合作方向和推进步骤缺少完整认识。",
+  "audience_end": "理解平台为什么建设、如何运行、能提供哪些合作机会、以什么模式和保障参与、以及具体如何一步步推进合作。",
+  "thesis": "电力领域数据基础设施通过统一架构、标准化产品机制和全流程保障，把分散的电力行业数据、知识、模型和专业能力转化为可持续运营的数据服务和场景服务，形成行业多方协同的价值共创机制。",
+  "narrative_arc": "沿源材料五章顺序展开：建设背景与合作基础 → 平台建设与运营体系 → 重点服务与合作机会 → 合作模式与保障机制 → 合作对接与推进安排",
+  "chapters": [
+    {
+      "id": "C1",
+      "title": "建设背景与合作基础",
+      "purpose": "说明电力行业数据协同需求增长、行业资源分散和中电联建设基础，交代平台建设的必要性和目标空间。",
+      "question": "为什么要建设电力领域数据基础设施，建设到什么程度？",
+      "message": "行业需求增长与资源分散并存，中电联具备五方面建设基础，平台设定了明确的建设目标、合作空间和开放原则。",
+      "relationship_to_previous": "首章",
+      "source_chapter_ids": [
+        "CH1"
+      ],
+      "source_scope": [
+        "S1.0",
+        "S1.1",
+        "S1.2",
+        "S1.3",
+        "S1.4",
+        "S1.5"
+      ],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "C2",
+      "title": "平台建设与运营体系",
+      "purpose": "说明平台业务模式、参与主体、总体架构和资源产品形成机制，交代平台如何运行。",
+      "question": "平台由谁参与、按什么架构运行、如何把资源转化为产品和服务？",
+      "message": "平台以五类主体协同、五层两贯穿架构和资源产品形成机制为基础，通过产品形成、订单履行、运营反馈三条业务链构成持续运营闭环。",
+      "relationship_to_previous": "承接第一章建设目标，说明平台的运行体系",
+      "source_chapter_ids": [
+        "CH2"
+      ],
+      "source_scope": [
+        "S2.0",
+        "S2.1",
+        "S2.2",
+        "S2.3",
+        "S2.4",
+        "S2.5"
+      ],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "C3",
+      "title": "重点服务与合作机会",
+      "purpose": "说明平台的服务体系、场景服务形态和首期六个重点合作方向，交代具体合作机会在哪里。",
+      "question": "平台提供哪些服务，首期重点合作方向和交付方式是什么？",
+      "message": "平台形成五类基础服务能力和三种场景服务形态，首期围绕六个方向组织合作，并以五维度组合的交付方式适配不同客户条件。",
+      "relationship_to_previous": "承接第二章运营体系，展开具体服务和合作机会",
+      "source_chapter_ids": [
+        "CH3"
+      ],
+      "source_scope": [
+        "S3.0",
+        "S3.1",
+        "S3.2",
+        "S3.3",
+        "S3.3.1",
+        "S3.3.2",
+        "S3.3.3",
+        "S3.3.4",
+        "S3.3.5",
+        "S3.3.6",
+        "S3.4",
+        "S3.5"
+      ],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "C4",
+      "title": "合作模式与保障机制",
+      "purpose": "说明合作伙伴类型、合作模式、平台支持、商务机制和权利安全保障，交代合作伙伴如何加入及权益如何保障。",
+      "question": "合作伙伴如何参与合作，权益和风险如何保障？",
+      "message": "平台面向六类合作伙伴提供四类合作模式和全流程支持，商务机制协商定价，权利、安全和质量保障体系确保合作伙伴既有资源权益不变。",
+      "relationship_to_previous": "承接第三章合作机会，说明合作的模式与保障",
+      "source_chapter_ids": [
+        "CH4"
+      ],
+      "source_scope": [
+        "S4.0",
+        "S4.1",
+        "S4.2",
+        "S4.3",
+        "S4.4",
+        "S4.5",
+        "S4.6"
+      ],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "C5",
+      "title": "合作对接与推进安排",
+      "purpose": "说明具体合作事项从意向登记到正式运营与复制推广的六步推进路径，交代合作如何落地。",
+      "question": "具体合作事项按什么步骤推进落地？",
+      "message": "合作事项按照合作意向登记—资源与需求对接—成熟度评估—方案深化—试点验证—正式运营与复制推广的路径分阶段推进。",
+      "relationship_to_previous": "承接第四章保障机制，说明合作的具体推进步骤",
+      "source_chapter_ids": [
+        "CH5"
+      ],
+      "source_scope": [
+        "S5.0",
+        "S5.1",
+        "S5.2",
+        "S5.3",
+        "S5.4",
+        "S5.5",
+        "S5.6"
+      ],
+      "structural_operation": "preserve"
+    }
+  ],
+  "pages": [
+    {
+      "id": "P01",
+      "title": "依托电力领域数据基础设施开展行业数据服务与场景服务合作交流材料",
+      "question": "本次交流材料要说明什么？",
+      "message": "中电联依托电力领域数据基础设施，与行业各方交流数据服务与场景服务合作机会。",
+      "logic": "封面页标示主办方、材料性质和时间",
+      "content": [
+        "中国电力企业联合会",
+        "行业数据服务与场景服务合作交流材料",
+        "2026年8月"
+      ],
+      "source_refs": [
+        "S1.0"
+      ],
+      "source_scope": [
+        "S1.0"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "cover",
+      "content_load": "light",
+      "next": "进入内容导览，说明材料的五章结构。",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P02",
+      "title": "内容导览",
+      "question": "材料按什么结构展开？",
+      "message": "材料按建设背景、平台体系、重点服务、合作模式、推进安排五章展开，从必要性到落地路径逐层说明。",
+      "logic": "五章顺序对应从建设背景到落地推进的完整逻辑链条",
+      "content": [
+        "第一章 建设背景与合作基础",
+        "第二章 平台建设与运营体系",
+        "第三章 重点服务与合作机会",
+        "第四章 合作模式与保障机制",
+        "第五章 合作对接与推进安排"
+      ],
+      "source_refs": [
+        "S1.0"
+      ],
+      "source_scope": [
+        "S1.0"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "contents",
+      "content_load": "light",
+      "next": "进入第一章，说明建设背景与合作基础。",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P03",
+      "title": "第一章 建设背景与合作基础",
+      "question": "本章要交代哪些内容？",
+      "message": "本章说明行业需求增长、总体定位、建设基础、建设目标与合作空间、合作价值与开放原则。",
+      "logic": "章节分隔页承接导览，进入第一章五节内容",
+      "content": [
+        "建设背景",
+        "总体定位",
+        "建设基础",
+        "建设目标与合作空间",
+        "合作价值与开放原则"
+      ],
+      "source_refs": [
+        "S1.0"
+      ],
+      "source_scope": [
+        "S1.0"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "chapter_divider",
+      "content_load": "light",
+      "next": "下一页说明具体的建设背景。",
+      "chapter_id": "C1",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P04",
+      "title": "行业数据协同需求持续增长，规模化服务机制仍需完善",
+      "question": "电力行业为什么需要统一的数据基础设施？",
+      "message": "新型电力系统建设带来跨主体数据协同需求持续增长，但行业资源分散、规模化服务机制尚不完善，需要统一的资源连接、可信使用和产品服务基础。",
+      "logic": "问题-张力结构：需求增长 vs 资源分散和机制不完善，二者共同指向建设统一基础设施的必要性",
+      "content": [
+        "业务需求持续增长：新能源接入、市场化改革、AI融合",
+        "行业资源较为分散：分布在不同主体和系统、口径不统一",
+        "规模化服务机制仍需完善：资源登记、产品封装、计量结算待健全"
+      ],
+      "source_refs": [
+        "S1.1"
+      ],
+      "source_scope": [
+        "S1.1"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "problem",
+      "content_load": "standard",
+      "next": "下一页说明平台的总体定位如何回应这一需求。",
+      "chapter_id": "C1",
+      "must_include": [
+        "资源分散与服务机制不完善是当前的核心矛盾",
+        "行业需要稳定的资源连接、可信使用和产品组织基础"
+      ],
+      "proof": {
+        "method": "problem-tension",
+        "claims": [
+          "业务需求增长对数据协同提出更高要求",
+          "资源分散和机制不完善制约协同效率"
+        ],
+        "evidence_refs": [
+          "F2",
+          "F3",
+          "F4",
+          "F5"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P05",
+      "title": "平台定位为电力数据要素流通共享的行业中枢和价值释放引擎",
+      "question": "平台的总体定位是什么？",
+      "message": "电力领域数据基础设施建设国家数据基础设施电力行业节点、行业数据与专业能力运营平台、多主体协同和价值共创载体三部分，定位为行业中枢和价值释放引擎。",
+      "logic": "定位由三个功能载体共同构成，分别对应连接、运营和协同三种角色",
+      "content": [
+        "国家数据基础设施电力行业节点：主体连接、目录衔接、可信流通",
+        "行业数据与专业能力运营平台：资源登记到产品交付的统一组织",
+        "多主体协同和价值共创载体：需求方、资源方、技术方协同机制"
+      ],
+      "source_refs": [
+        "S1.2"
+      ],
+      "source_scope": [
+        "S1.2"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "mechanism",
+      "content_load": "standard",
+      "next": "下一页说明支撑这一定位的既有建设基础。",
+      "chapter_id": "C1",
+      "must_include": [
+        "三个功能载体分别对应连接、运营和协同",
+        "平台服务国家、行业和中电联内部发展"
+      ],
+      "proof": {
+        "method": "mechanism",
+        "claims": [
+          "定位由三部分构成",
+          "三部分共同支撑行业中枢作用"
+        ],
+        "evidence_refs": [
+          "F6",
+          "F7",
+          "F8",
+          "F9",
+          "F10"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P06",
+      "title": "中电联在组织制度、行业资源、既有平台、场景储备和实施推进五方面形成建设基础",
+      "question": "中电联具备哪些建设基础？",
+      "message": "中电联在组织制度、行业资源、既有平台、场景储备和实施推进五方面已形成基础，具备开展首期产品开发、场景试点和生态合作的条件。",
+      "logic": "五方面基础并列支撑首期建设的可行性",
+      "content": [
+        "组织制度基础：纳入国家先行先试范围，成立项目领导小组",
+        "行业资源基础：覆盖产业链的会员生态和专业积累",
+        "既有平台基础：电力公共信息平台的系统和接口经验",
+        "场景储备基础：生产运行、绿色低碳等领域的场景储备",
+        "实施推进基础：完成可行性研究，进入建设实施准备阶段"
+      ],
+      "source_refs": [
+        "S1.3"
+      ],
+      "source_scope": [
+        "S1.3"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "evidence",
+      "content_load": "dense",
+      "next": "下一页说明基于这些基础设定的建设目标。",
+      "chapter_id": "C1",
+      "must_include": [
+        "五方面基础是并列关系，共同支撑首期建设条件"
+      ],
+      "proof": {
+        "method": "evidence-synthesis",
+        "claims": [
+          "五方面基础共同构成建设条件"
+        ],
+        "evidence_refs": [
+          "F12",
+          "F13",
+          "F14",
+          "F15",
+          "F16",
+          "F17"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P07",
+      "title": "建设目标对应主体接入、产品发布和场景建设的行业合作空间",
+      "question": "平台的建设目标是什么，对应哪些合作空间？",
+      "message": "项目围绕“供得出、流得动、用得好、保安全”总体要求，计划2026年12月完成初验、2027年6月完成终验，目标实现600家以上主体接入、发布不少于1200个数据产品、打造20个以上典型场景，对应广泛的行业合作空间。",
+      "logic": "建设目标（规模指标）与合作空间（谁能参与、以什么方式参与）互为表里",
+      "content": [
+        "总体要求：供得出、流得动、用得好、保安全",
+        "建设节点：2026年12月初验、2027年6月终验",
+        "规模目标：600家以上主体接入、1200个以上数据产品、20个以上示范场景",
+        "合作空间：主体接入需要资源供给，产品发布需要标准化封装，场景建设需要真实客户参与"
+      ],
+      "source_refs": [
+        "S1.4"
+      ],
+      "source_scope": [
+        "S1.4"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "mechanism",
+      "content_load": "dense",
+      "next": "下一页说明平台面向不同合作主体的合作价值和开放原则。",
+      "chapter_id": "C1",
+      "must_include": [
+        "建设目标既是规模指标，也是合作空间的来源"
+      ],
+      "proof": {
+        "method": "goal-to-space",
+        "claims": [
+          "建设目标对应行业合作空间"
+        ],
+        "evidence_refs": [
+          "F18",
+          "F19",
+          "F20",
+          "F21"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P08",
+      "title": "平台面向不同主体形成差异化合作价值，坚持五项开放原则",
+      "question": "平台能为不同合作主体带来什么价值，遵循什么原则？",
+      "message": "平台对需求单位、资源提供方、技术生态伙伴和行业整体分别形成差异化价值，合作坚持平等自愿、需求牵引、权利清晰、安全可控和持续运营五项原则。",
+      "logic": "价值主张按主体类型分类并列，原则作为合作的共同底线",
+      "content": [
+        "对需求单位：统一资源发现、服务组织和可信交付入口",
+        "对资源提供方：产品化设计、客户对接和计量结算渠道",
+        "对技术生态伙伴：真实场景和联合产品机会",
+        "开放原则：平等自愿、需求牵引、权利清晰、安全可控、持续运营"
+      ],
+      "source_refs": [
+        "S1.5"
+      ],
+      "source_scope": [
+        "S1.5"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "value-proposition",
+      "content_load": "standard",
+      "next": "下一页进入第二章，说明平台建设与运营体系。",
+      "chapter_id": "C1",
+      "must_include": [
+        "合作伙伴既有资源控制关系保持不变"
+      ],
+      "proof": {
+        "method": "value-differentiation",
+        "claims": [
+          "差异化价值面向不同主体",
+          "开放原则是合作的共同底线"
+        ],
+        "evidence_refs": [
+          "F23",
+          "F24"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P09",
+      "title": "第二章 平台建设与运营体系",
+      "question": "本章要交代哪些内容？",
+      "message": "本章说明平台的总体业务模式、参与主体与业务关系、总体架构、资源与产品形成机制、服务运营闭环。",
+      "logic": "章节分隔页承接第一章目标，进入平台运行体系的具体说明",
+      "content": [
+        "总体业务模式",
+        "参与主体与业务关系",
+        "总体架构",
+        "资源与产品形成机制",
+        "服务运营闭环"
+      ],
+      "source_refs": [
+        "S2.0"
+      ],
+      "source_scope": [
+        "S2.0"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "chapter_divider",
+      "content_load": "light",
+      "next": "下一页说明平台的总体业务模式。",
+      "chapter_id": "C2",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P10",
+      "title": "平台以需求识别到持续优化的闭环转化分散资源为可订购服务",
+      "question": "平台的总体业务模式是什么？",
+      "message": "平台连接需求侧与供给侧，以数据产品、数据服务和场景服务为运营对象，以订单、合同、授权、计量结算为业务纽带，形成“需求识别—资源组织—产品形成—客户订购—授权交付—计量结算—运营评价—持续优化”的闭环。",
+      "logic": "两端输入（需求侧+供给侧）经过八步闭环转化为可订购、可计量的服务",
+      "content": [
+        "两端输入：客户业务问题与资源能力",
+        "运营对象：数据产品、数据服务、场景服务",
+        "业务闭环：需求识别到持续优化的八个环节",
+        "平台解决的三类问题：资源标准化、合同授权技术化、反馈持续优化"
+      ],
+      "source_refs": [
+        "S2.1"
+      ],
+      "source_scope": [
+        "S2.1"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "mechanism",
+      "content_load": "dense",
+      "next": "下一页说明闭环中各参与主体的分工。",
+      "chapter_id": "C2",
+      "must_include": [
+        "业务闭环是本页的核心结构，八个环节按顺序展开"
+      ],
+      "proof": {
+        "method": "mechanism",
+        "claims": [
+          "平台通过闭环把分散资源转化为标准化服务"
+        ],
+        "evidence_refs": [
+          "F25",
+          "F26",
+          "F27"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P11",
+      "title": "五类主体在统一标识和关联管理下协同运行",
+      "question": "平台运行涉及哪些参与主体，各自承担什么职责？",
+      "message": "平台按照中电联统筹、中电联数智公司运营、合作伙伴供给、需求单位使用反馈的机制协同运行，五类主体各自承担相应职责。",
+      "logic": "五类主体角色并列，通过统一标识和记录建立业务关联",
+      "content": [
+        "中电联：重大事项统筹、规则审定、资源协调",
+        "中电联数智公司：平台运营、产品组织、计量结算",
+        "需求与场景单位：提出业务问题、参与验收反馈",
+        "资源与能力合作伙伴：提供资源、承担质量安全责任",
+        "市场与生态合作伙伴：客户渠道、联合推广"
+      ],
+      "source_refs": [
+        "S2.2"
+      ],
+      "source_scope": [
+        "S2.2"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "actor-collaboration",
+      "content_load": "dense",
+      "next": "下一页说明支撑这些主体协同运行的总体架构。",
+      "chapter_id": "C2",
+      "must_include": [
+        "同一单位可以承担一种或多种角色"
+      ],
+      "proof": {
+        "method": "actor-collaboration",
+        "claims": [
+          "五类主体职责互补、共同构成业务关系"
+        ],
+        "evidence_refs": [
+          "F28",
+          "F29",
+          "F30",
+          "F31",
+          "F32",
+          "F33",
+          "F34"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P12",
+      "title": "平台按“五层两贯穿”架构建设，统一控制、分布执行、数据留域",
+      "question": "平台的总体技术架构是什么？",
+      "message": "平台按照“五层两贯穿”架构建设：可信连接与主体接入层、资源与产品管理层、服务交付与场景编排层、运营与交易管理层、数据与人工智能基础层五层能力，安全与合规、标准与运维两项能力贯穿全过程。",
+      "logic": "五层能力自下而上支撑核心业务，两项贯穿覆盖全过程",
+      "content": [
+        "可信连接与主体接入层：身份认证、连接器注册",
+        "资源与产品管理层：登记编目、质量血缘管理",
+        "服务交付与场景编排层：接口调用、多方协同交付",
+        "运营与交易管理层：订单合同、计量结算",
+        "数据与人工智能基础层：数据治理、模型服务、算力管理",
+        "两项贯穿：安全合规、标准运维"
+      ],
+      "source_refs": [
+        "S2.3"
+      ],
+      "source_scope": [
+        "S2.3"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "mechanism",
+      "content_load": "dense",
+      "next": "下一页说明架构支撑下的资源与产品形成机制。",
+      "chapter_id": "C2",
+      "must_include": [
+        "五层为核心业务技术支撑，两项贯穿覆盖全过程，二者关系需在图示上区分清楚"
+      ],
+      "proof": {
+        "method": "layered-architecture",
+        "claims": [
+          "五层架构支撑平台运行",
+          "两项贯穿保障全过程"
+        ],
+        "evidence_refs": [
+          "F35",
+          "F36",
+          "F37",
+          "F38",
+          "F39",
+          "F40",
+          "F41"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P13",
+      "title": "资源能力经两条路径转化为数据产品、数据服务和场景服务",
+      "question": "分散的资源能力如何转化为可交付的产品和服务？",
+      "message": "平台业务对象分为资源能力、产品服务、应用场景和交付运行四个维度；资源能力经标准产品路径或场景组织路径，转化为数据产品、数据服务和场景服务。",
+      "logic": "转化路径：标准产品路径（资源出发）与场景组织路径（客户问题出发）并行，统一完成审核后进入运营",
+      "content": [
+        "资源能力：数据、知识、模型算法、专业能力、技术能力五类",
+        "标准产品路径：治理封装—规格设计—客户验证",
+        "场景组织路径：业务目标出发—反向组织资源—形成场景服务",
+        "两条路径统一完成权利、质量、安全、技术和商务审核"
+      ],
+      "source_refs": [
+        "S2.4"
+      ],
+      "source_scope": [
+        "S2.4"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "resource-transformation",
+      "content_load": "dense",
+      "next": "下一页说明产品和场景形成后的持续运营闭环。",
+      "chapter_id": "C2",
+      "must_include": [
+        "两条路径的出发点不同，需要在图示上区分"
+      ],
+      "proof": {
+        "method": "resource-transformation",
+        "claims": [
+          "资源能力经两条路径转化为产品和场景"
+        ],
+        "evidence_refs": [
+          "F42",
+          "F43",
+          "F44",
+          "F45",
+          "F46",
+          "F47"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P14",
+      "title": "产品形成、订单履行、运营反馈三条业务链构成持续运营闭环",
+      "question": "产品和场景形成后如何持续运营？",
+      "message": "平台以产品形成、订单履行和运营反馈三条业务链构成持续运营闭环；产品和场景实行阶段化管理，核心业务对象统一标识、全程追溯。",
+      "logic": "三条业务链首尾相接构成闭环，阶段化管理明确每个阶段的进入条件",
+      "content": [
+        "产品形成阶段：需求征集、资源登记、样例验证、审核准入",
+        "订单履行阶段：合同授权与服务权益的技术执行",
+        "运营反馈阶段：依据调用、反馈、履约情况优化调整",
+        "阶段化管理：产品六阶段、场景七阶段"
+      ],
+      "source_refs": [
+        "S2.5"
+      ],
+      "source_scope": [
+        "S2.5"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "cycle",
+      "content_load": "standard",
+      "next": "下一页进入第三章，说明重点服务与合作机会。",
+      "chapter_id": "C2",
+      "must_include": [
+        "三条业务链构成闭环而非线性流程"
+      ],
+      "proof": {
+        "method": "operating-loop",
+        "claims": [
+          "三条业务链构成持续运营闭环"
+        ],
+        "evidence_refs": [
+          "F48",
+          "F49",
+          "F50"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P15",
+      "title": "第三章 重点服务与合作机会",
+      "question": "本章要交代哪些内容？",
+      "message": "本章说明平台的总体服务体系、场景服务体系、首期六个重点合作方向、储备拓展方向和服务交付方式。",
+      "logic": "章节分隔页承接第二章运营体系，进入具体服务和合作机会",
+      "content": [
+        "总体服务体系",
+        "场景服务体系",
+        "重点合作方向（六个）",
+        "储备与拓展方向",
+        "服务交付与应用方式"
+      ],
+      "source_refs": [
+        "S3.0"
+      ],
+      "source_scope": [
+        "S3.0"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "chapter_divider",
+      "content_load": "light",
+      "next": "下一页说明平台的总体服务体系。",
+      "chapter_id": "C3",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P16",
+      "title": "平台形成数据获取、知识内容、模型智能、分析监测、治理核验五类基础服务",
+      "question": "平台提供哪五类基础服务能力？",
+      "message": "平台根据服务内容重点形成五类基础服务能力：数据获取服务、知识内容服务、模型与智能服务、分析监测服务、数据治理与核验服务，合作伙伴可结合自身资源共同形成标准产品规格。",
+      "logic": "五类服务能力并列，覆盖数据全生命周期的不同环节",
+      "content": [
+        "数据获取服务：基础查询、专业指标、数据接口",
+        "知识内容服务：政策标准、行业知识库",
+        "模型与智能服务：预测诊断、智能问答、报告生成",
+        "分析监测服务：动态分析、趋势监测、辅助决策",
+        "数据治理与核验服务：数据清洗、质量评价、可信证明"
+      ],
+      "source_refs": [
+        "S3.1"
+      ],
+      "source_scope": [
+        "S3.1"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "taxonomy",
+      "content_load": "dense",
+      "next": "下一页说明由这些能力组合形成的场景服务体系。",
+      "chapter_id": "C3",
+      "must_include": [
+        "五类服务是并列分类而非递进关系"
+      ],
+      "proof": {
+        "method": "taxonomy",
+        "claims": [
+          "五类基础服务能力覆盖不同服务内容"
+        ],
+        "evidence_refs": [
+          "F51",
+          "F52",
+          "F53",
+          "F54",
+          "F55",
+          "F56"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P17",
+      "title": "场景服务按“定制验证—配置沉淀—标准复制”提升复用程度",
+      "question": "场景服务如何组织，有哪些形态？",
+      "message": "场景服务以客户业务问题为起点，形成标准型、配置型、定制型三种形态，并按照“定制验证—配置沉淀—标准复制”方向逐步提升复用程度。",
+      "logic": "三种形态构成成熟度阶梯，定制型经验证和沉淀后可转化为配置型乃至标准型",
+      "content": [
+        "标准型：流程固定，快速复制，适用于成熟服务",
+        "配置型：核心标准化，按参数灵活配置",
+        "定制型：专项设计，同步沉淀可复用组件",
+        "演进方向：定制验证→配置沉淀→标准复制"
+      ],
+      "source_refs": [
+        "S3.2"
+      ],
+      "source_scope": [
+        "S3.2"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "maturity-progression",
+      "content_load": "dense",
+      "next": "下一页说明首期重点组织合作的六个方向。",
+      "chapter_id": "C3",
+      "must_include": [
+        "三种形态之间是可转化的成熟度关系，不是并列的固定分类"
+      ],
+      "proof": {
+        "method": "maturity-progression",
+        "claims": [
+          "场景服务按成熟度沿三种形态演进"
+        ],
+        "evidence_refs": [
+          "F57",
+          "F58",
+          "F59",
+          "F60",
+          "F61"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P18",
+      "title": "重点合作方向（一）（二）：设备可靠性与绿色低碳电碳因子",
+      "question": "设备可靠性和绿色低碳方向的合作机会是什么？",
+      "message": "设备可靠性与生产运行服务面向设备选型、故障预警等业务，依托中电联长期积累面向发电、电网和设备制造企业组织合作；绿色低碳与电碳因子服务面向碳核算、绿色电力评价，吸纳具备碳数据和核算方法的机构合作。",
+      "logic": "两个方向并列展示，each按行业需求-现有基础-合作机会展开",
+      "content": [
+        "设备可靠性：需求为选型评价故障预警，面向发电电网设备制造企业",
+        "绿色低碳：需求为碳核算碳足迹绿色电力评价，面向具备碳数据核算方法的机构"
+      ],
+      "source_refs": [
+        "S3.3.1",
+        "S3.3.2"
+      ],
+      "source_scope": [
+        "S3.3.1",
+        "S3.3.2"
+      ],
+      "structural_operation": "merge_within_chapter",
+      "page_role": "opportunity",
+      "content_load": "dense",
+      "next": "下一页说明电力供需与燃料价格两个方向的合作机会。",
+      "chapter_id": "C3",
+      "must_include": [
+        "每个方向需体现需求、基础与合作对象三要素"
+      ],
+      "proof": {
+        "method": "opportunity-mapping",
+        "claims": [
+          "两个方向各自有明确需求、基础和合作对象"
+        ],
+        "evidence_refs": [
+          "F63",
+          "F64"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P19",
+      "title": "重点合作方向（三）（四）：电力供需市场经营与燃料价格预测供应链",
+      "question": "电力供需与燃料价格方向的合作机会是什么？",
+      "message": "电力供需与市场经营服务面向供需研判、市场运行分析、风险监测，面向电力企业和数据模型机构合作；燃料价格预测与供应链服务面向采购价格预测、库存判断，面向发电企业和供应链数据机构合作。",
+      "logic": "两个方向并列展示，each按行业需求-现有基础-合作机会展开",
+      "content": [
+        "电力供需市场经营：需求为供需研判交易辅助风险监测，面向电力能源企业和模型算法机构",
+        "燃料价格预测供应链：需求为价格预测库存判断成本测算，面向发电企业和供应链数据机构"
+      ],
+      "source_refs": [
+        "S3.3.3",
+        "S3.3.4"
+      ],
+      "source_scope": [
+        "S3.3.3",
+        "S3.3.4"
+      ],
+      "structural_operation": "merge_within_chapter",
+      "page_role": "opportunity",
+      "content_load": "dense",
+      "next": "下一页说明科研教育与科技成果转化两个方向的合作机会。",
+      "chapter_id": "C3",
+      "must_include": [
+        "每个方向需体现需求、基础与合作对象三要素"
+      ],
+      "proof": {
+        "method": "opportunity-mapping",
+        "claims": [
+          "两个方向各自有明确需求、基础和合作对象"
+        ],
+        "evidence_refs": [
+          "F65",
+          "F66"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P20",
+      "title": "重点合作方向（五）（六）：科研教育高质量数据集与科技成果可信转化",
+      "question": "科研教育与科技成果转化方向的合作机会是什么？",
+      "message": "科研教育与高质量数据集服务面向高质量数据集、知识库和模型训练数据需求，面向科研院所和高等院校合作；科技成果可信转化服务面向成果鉴定、供需匹配、履约验收，面向电力企业和专业评价机构合作。",
+      "logic": "两个方向并列展示，each按行业需求-现有基础-合作机会展开",
+      "content": [
+        "科研教育与数据集：需求为高质量数据集知识库模型训练数据，面向科研院所高等院校",
+        "科技成果可信转化：需求为成果鉴定存证供需匹配融资风控，面向电力企业专业评价机构"
+      ],
+      "source_refs": [
+        "S3.3.5",
+        "S3.3.6"
+      ],
+      "source_scope": [
+        "S3.3.5",
+        "S3.3.6"
+      ],
+      "structural_operation": "merge_within_chapter",
+      "page_role": "opportunity",
+      "content_load": "dense",
+      "next": "下一页说明储备与拓展方向。",
+      "chapter_id": "C3",
+      "must_include": [
+        "每个方向需体现需求、基础与合作对象三要素"
+      ],
+      "proof": {
+        "method": "opportunity-mapping",
+        "claims": [
+          "两个方向各自有明确需求、基础和合作对象"
+        ],
+        "evidence_refs": [
+          "F67",
+          "F68"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P21",
+      "title": "储备培育与跨行业协同方向按成熟一项、推进一项动态调整",
+      "question": "首期六个方向之外还有哪些储备和拓展方向？",
+      "message": "新能源与综合能源、信用评价、产业链分析和企业经营管理等作为储备培育领域；电力与气象、交通、工业、建筑、金融等跨行业协同方向作为探索拓展领域，按成熟一项、推进一项原则动态调整。",
+      "logic": "储备领域（论证阶段）与拓展领域（探索阶段）分两类展开，均遵循动态调整原则",
+      "content": [
+        "储备培育领域：新能源综合能源、信用评价、产业链分析、企业经营管理",
+        "探索拓展领域：气象、交通、工业、建筑、金融等跨行业协同",
+        "推进原则：成熟一项、推进一项动态调整"
+      ],
+      "source_refs": [
+        "S3.4"
+      ],
+      "source_scope": [
+        "S3.4"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "roadmap",
+      "content_load": "standard",
+      "next": "下一页说明服务交付与应用方式的五个维度。",
+      "chapter_id": "C3",
+      "must_include": [
+        "储备与拓展是两类不同成熟阶段，不应混为一类"
+      ],
+      "proof": {
+        "method": "roadmap",
+        "claims": [
+          "储备和拓展方向按成熟度分类并动态推进"
+        ],
+        "evidence_refs": [
+          "F69",
+          "F70"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P22",
+      "title": "服务交付按访问方式、部署环境、处理方式、周期和等级五维度组合",
+      "question": "服务如何交付，如何适配不同安全等级和业务条件？",
+      "message": "平台从访问与成果交付、部署运行环境、数据处理方式、服务周期和服务等级五个维度组合形成具体服务方案，各维度相互独立、按需组合。",
+      "logic": "五个维度相互独立并可自由组合，构成适配不同条件的交付矩阵",
+      "content": [
+        "访问与成果交付：API调用或按授权交付成果",
+        "部署运行环境：平台共享、专属实例、客户私有",
+        "数据处理方式：平台受控、源端处理、多方留域联合计算",
+        "服务周期：单次交付、周期更新、持续运营",
+        "服务等级：可用性、响应时效、故障处理等指标"
+      ],
+      "source_refs": [
+        "S3.5"
+      ],
+      "source_scope": [
+        "S3.5"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "combinatorial",
+      "content_load": "dense",
+      "next": "下一页进入第四章，说明合作模式与保障机制。",
+      "chapter_id": "C3",
+      "must_include": [
+        "五个维度是独立可组合关系，不是顺序步骤"
+      ],
+      "proof": {
+        "method": "combinatorial-options",
+        "claims": [
+          "五个维度组合形成具体服务方案"
+        ],
+        "evidence_refs": [
+          "F71",
+          "F72",
+          "F73",
+          "F74",
+          "F75"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P23",
+      "title": "第四章 合作模式与保障机制",
+      "question": "本章要交代哪些内容？",
+      "message": "本章说明合作伙伴类型、合作模式、平台支持内容、基本商务机制、数据安全权利保障和服务质量风险保障。",
+      "logic": "章节分隔页承接第三章合作机会，进入合作模式与保障机制",
+      "content": [
+        "合作伙伴类型",
+        "合作模式",
+        "平台支持内容",
+        "基本商务机制",
+        "数据安全、权利与衍生成果保障",
+        "服务质量与风险保障"
+      ],
+      "source_refs": [
+        "S4.0"
+      ],
+      "source_scope": [
+        "S4.0"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "chapter_divider",
+      "content_load": "light",
+      "next": "下一页说明合作伙伴的六类角色。",
+      "chapter_id": "C4",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P24",
+      "title": "合作伙伴按参与角色分为六类，可同时承担多种角色",
+      "question": "哪些机构可以成为合作伙伴，按什么角色分类？",
+      "message": "平台面向电力企业、能源企业、科研院所等各类机构开放合作，合作伙伴按参与角色分为需求与场景、数据资源、模型算法、专业服务、技术实施、市场与生态六类，同一单位可承担多种角色。",
+      "logic": "六类角色并列分类，角色可叠加",
+      "content": [
+        "需求与场景合作伙伴：业务问题和试点条件",
+        "数据资源合作伙伴：数据集、指标和权利责任",
+        "模型算法合作伙伴：模型算法和版本维护责任",
+        "专业服务合作伙伴：专家服务和质量保障责任",
+        "技术实施合作伙伴：连接治理和安全审计能力",
+        "市场与生态合作伙伴：客户渠道和联合推广"
+      ],
+      "source_refs": [
+        "S4.1"
+      ],
+      "source_scope": [
+        "S4.1"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "taxonomy",
+      "content_load": "dense",
+      "next": "下一页说明不同成熟度合作伙伴适用的合作模式。",
+      "chapter_id": "C4",
+      "must_include": [
+        "六类角色可以叠加，不是互斥分类"
+      ],
+      "proof": {
+        "method": "taxonomy",
+        "claims": [
+          "六类角色覆盖合作伙伴的不同参与方式"
+        ],
+        "evidence_refs": [
+          "F76",
+          "F77"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P25",
+      "title": "四类合作模式随合作伙伴成熟度从标准接入向战略生态深化",
+      "question": "合作伙伴按什么模式参与合作？",
+      "message": "平台根据合作伙伴资源成熟度、参与深度和业务目标，形成标准接入合作、联合产品合作、场景联合运营合作、战略生态合作四类模式，可独立采用也可逐步深化。",
+      "logic": "四类模式构成成熟度递进关系，从标准接入到战略生态逐步深化",
+      "content": [
+        "标准接入合作：产品接口成熟，重点完成上架和试用",
+        "联合产品合作：资源优质但需产品化封装",
+        "场景联合运营合作：多方能力组合的复杂场景",
+        "战略生态合作：行业影响力强的骨干企业长期机制"
+      ],
+      "source_refs": [
+        "S4.2"
+      ],
+      "source_scope": [
+        "S4.2"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "maturity-progression",
+      "content_load": "dense",
+      "next": "下一页说明平台为合作伙伴提供的支持内容。",
+      "chapter_id": "C4",
+      "must_include": [
+        "四类模式可以逐步深化，不是固定档位"
+      ],
+      "proof": {
+        "method": "maturity-progression",
+        "claims": [
+          "四类合作模式按成熟度递进"
+        ],
+        "evidence_refs": [
+          "F78",
+          "F79",
+          "F80",
+          "F81",
+          "F82"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P26",
+      "title": "平台从对接、产品化、技术交付、运营结算到推广五方面提供支持",
+      "question": "平台为合作伙伴提供哪些支持？",
+      "message": "中电联及中电联数智公司为合作伙伴提供需求与客户对接、资源产品化支持、技术接入与可信交付、运营与计量结算、联合推广与生态协同五方面协同支持。",
+      "logic": "五方面支持按合作全生命周期并列展开",
+      "content": [
+        "需求与客户对接：需求征集、场景组织",
+        "资源产品化支持：协助形成规范产品说明",
+        "技术接入与可信交付：接口衔接、可信连接",
+        "运营与计量结算：订单履行、账单确认",
+        "联合推广与生态协同：行业交流、复制推广"
+      ],
+      "source_refs": [
+        "S4.3"
+      ],
+      "source_scope": [
+        "S4.3"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "support-mapping",
+      "content_load": "standard",
+      "next": "下一页说明平台的基本商务机制。",
+      "chapter_id": "C4",
+      "must_include": [
+        "五方面支持覆盖合作对接到持续运营的全流程"
+      ],
+      "proof": {
+        "method": "support-mapping",
+        "claims": [
+          "五方面支持覆盖合作全流程"
+        ],
+        "evidence_refs": [
+          "F83"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P27",
+      "title": "商务机制按服务属性分类计价，具体价格由各方协商确定",
+      "question": "平台的商务定价机制是怎样的？",
+      "message": "平台建立与服务属性相适应的商务机制：公益任务性服务通过专项投入保障，行业基础服务通过订阅提供，市场化增值服务按需计费；具体价格、结算方式由各方在单项合作中协商确定，平台不设统一对外价格。",
+      "logic": "服务属性分类决定计价方式，具体价格留待单项协商",
+      "content": [
+        "服务属性分类：公益任务性、行业基础性、市场化增值",
+        "结算方式：固定价格/供给方结算单价、可分配收入比例、里程碑结算",
+        "定价原则：不设统一对外价格，收益安排与实际贡献匹配"
+      ],
+      "source_refs": [
+        "S4.4"
+      ],
+      "source_scope": [
+        "S4.4"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "mechanism",
+      "content_load": "dense",
+      "next": "下一页说明数据安全、权利与衍生成果保障。",
+      "chapter_id": "C4",
+      "must_include": [
+        "具体价格由各方协商确定，平台不设固定分成比例"
+      ],
+      "proof": {
+        "method": "mechanism",
+        "claims": [
+          "商务机制按服务属性分类计价并协商确定"
+        ],
+        "evidence_refs": [
+          "F84",
+          "F85",
+          "F86",
+          "F87"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P28",
+      "title": "平台建立覆盖登记到退出的全过程权利控制链，既有资源归属不变",
+      "question": "合作伙伴的数据、模型等权利如何保障？",
+      "message": "平台建立覆盖资源登记、产品设计、合同授权、运行审计和退出清理的全过程控制链，合作伙伴既有资源、客户专属资源、加工成果和联合成果分别明确归属和使用边界。",
+      "logic": "四类权利对象（既有资源、客户专属资源、单方成果、联合成果）分类保障，全过程控制链贯穿始终",
+      "content": [
+        "既有资源：原始数据、模型权重等原有归属不变",
+        "客户专属资源：按客户合同管理，不得越权使用",
+        "单方加工成果：按投入和可分离程度明确归属",
+        "多方联合成果：按各方投入明确权利和收益分配",
+        "二次使用需另行授权，终止时完成数据返还和账单结算"
+      ],
+      "source_refs": [
+        "S4.5"
+      ],
+      "source_scope": [
+        "S4.5"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "risk-control-protection",
+      "content_load": "dense",
+      "next": "下一页说明服务质量与风险保障机制。",
+      "chapter_id": "C4",
+      "must_include": [
+        "合作伙伴既有资源权利归属不因接入平台而改变"
+      ],
+      "proof": {
+        "method": "risk-control-protection",
+        "claims": [
+          "全过程控制链保障不同权利对象的边界"
+        ],
+        "evidence_refs": [
+          "F88",
+          "F89",
+          "F90",
+          "F91",
+          "F92"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P29",
+      "title": "质量标准、模型治理和分级响应机制保障服务质量与风险可控",
+      "question": "平台如何保障服务质量、管控风险？",
+      "message": "平台建立常态质量保障、运行监测、分级响应和变更控制机制：数据、模型、场景服务分别明确质量标准，人工智能服务实行模型登记和版本治理，异常情况按影响程度分级响应和整改。",
+      "logic": "质量标准分工—模型治理—监测响应—变更退出，构成风险保障的完整链条",
+      "content": [
+        "质量标准分工：数据服务重准确性，模型服务重可解释性，场景服务重业务成效",
+        "模型和版本治理：登记、评测、调用日志、人工复核",
+        "运行监测与异常响应：按影响程度分级处理",
+        "变更和退出管理：重大变化履行客户通知，严重问题限制或终止合作"
+      ],
+      "source_refs": [
+        "S4.6"
+      ],
+      "source_scope": [
+        "S4.6"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "risk-control-protection",
+      "content_load": "dense",
+      "next": "下一页进入第五章，说明合作对接与推进安排。",
+      "chapter_id": "C4",
+      "must_include": [
+        "机制回应第一章提出的规模化服务机制尚需完善的问题"
+      ],
+      "proof": {
+        "method": "risk-control-protection",
+        "claims": [
+          "质量和风险保障机制覆盖数据、模型和场景服务"
+        ],
+        "evidence_refs": [
+          "F93",
+          "F94",
+          "F95",
+          "F96",
+          "F97"
+        ],
+        "boundary_refs": [
+          "F5"
+        ],
+        "relation_basis": "inferred"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P30",
+      "title": "第五章 合作对接与推进安排",
+      "question": "本章要交代哪些内容？",
+      "message": "本章说明具体合作事项从合作意向登记到正式运营与复制推广的六步推进路径。",
+      "logic": "章节分隔页承接第四章保障机制，进入具体的合作推进步骤",
+      "content": [
+        "合作意向登记",
+        "资源与需求对接",
+        "合作事项成熟度评估",
+        "合作方案深化",
+        "试点验证",
+        "正式运营与复制推广"
+      ],
+      "source_refs": [
+        "S5.0"
+      ],
+      "source_scope": [
+        "S5.0"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "chapter_divider",
+      "content_load": "light",
+      "next": "下一页完整展开六步推进路径。",
+      "chapter_id": "C5",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P31",
+      "title": "合作事项按六步路径从意向登记推进到正式运营与复制推广",
+      "question": "一项具体合作从接洽到落地要经过哪些步骤？",
+      "message": "具体合作事项按照合作意向登记、资源与需求对接、成熟度评估、方案深化、试点验证、正式运营与复制推广六个步骤分阶段推进，每一步都有明确的阶段成果和进入下一步的判断依据。",
+      "logic": "路径型结构：六个步骤按时间顺序推进，前一步的阶段成果是后一步的输入",
+      "content": [
+        "①合作意向登记：形成意向登记和初步资源需求清单",
+        "②资源与需求对接：形成资源能力清单和需求场景清单",
+        "③成熟度评估：形成评估结论，判断是否优先推进",
+        "④合作方案深化：形成产品或场景方案及协议确认",
+        "⑤试点验证：真实条件验证价值、质量和商务价格",
+        "⑥正式运营与复制推广：标准化定型后纳入统一运营并复制推广"
+      ],
+      "source_refs": [
+        "S5.1",
+        "S5.2",
+        "S5.3",
+        "S5.4",
+        "S5.5",
+        "S5.6"
+      ],
+      "source_scope": [
+        "S5.1",
+        "S5.2",
+        "S5.3",
+        "S5.4",
+        "S5.5",
+        "S5.6"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "path",
+      "content_load": "dense",
+      "next": "下一页作为结束语，总结全篇并发出合作邀请。",
+      "chapter_id": "C5",
+      "must_include": [
+        "六个步骤具有严格的先后顺序，需要用①②③④⑤⑥标注"
+      ],
+      "proof": {
+        "method": "path",
+        "claims": [
+          "六步路径体现合作事项从意向到落地的推进顺序"
+        ],
+        "evidence_refs": [
+          "F98",
+          "F99",
+          "F100",
+          "F101",
+          "F102",
+          "F103",
+          "F104",
+          "F105",
+          "F106",
+          "F107",
+          "F108",
+          "F109",
+          "F110",
+          "F111",
+          "F112"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "P32",
+      "title": "共同建设可持续运营的电力领域数据基础设施",
+      "question": "本次交流材料的整体诉求是什么？",
+      "message": "电力领域数据基础设施是连接行业数据资源、专业能力和应用需求的重要平台，诚邀电力企业、能源企业、科研院所等各类机构参与平台合作，共同开发数据服务产品、建设应用场景、培育行业服务生态。",
+      "logic": "结束语呼应封面主题，从平台价值收束到合作邀请",
+      "content": [
+        "平台价值：连接行业数据资源、专业能力和应用需求",
+        "邀请对象：电力企业、能源企业、科研院所、高等院校等生态伙伴",
+        "合作愿景：共同开发产品、共同建设场景、共同培育生态"
+      ],
+      "source_refs": [
+        "结束语"
+      ],
+      "source_scope": [
+        "结束语"
+      ],
+      "structural_operation": "preserve",
+      "page_role": "closing",
+      "content_load": "standard",
+      "visibility_decision": "not_applicable"
+    }
+  ]
+}

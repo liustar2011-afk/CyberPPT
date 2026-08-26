@@ -1,0 +1,45 @@
+{
+  "communication_goal": "说明数据基础设施如何把分散的数据资源转化为可持续使用的数据服务。",
+  "audience": "业务管理人员",
+  "audience_scope": "internal",
+  "source_structure_mode": "preserve",
+  "audience_start": "知道行业拥有大量数据，但对数据如何形成可持续服务缺少完整认识。",
+  "audience_end": "理解源材料所描述的资源治理、可信使用和服务输出之间的内在联系。",
+  "thesis": "资源治理与可信使用共同支撑服务输出。",
+  "narrative_arc": "沿源材料第一章顺序展开：资源治理 → 可信使用 → 服务输出",
+  "chapters": [
+    {
+      "id": "C01",
+      "title": "数据服务形成机制",
+      "purpose": "将源材料第一章转换为可讲述的PPT页面。",
+      "question": "数据资源如何形成可持续服务？",
+      "message": "资源治理与可信使用共同支撑服务输出。",
+      "relationship_to_previous": "首章",
+      "source_chapter_ids": ["CH01"],
+      "source_scope": ["ST001", "ST002", "ST003", "ST004"],
+      "structural_operation": "preserve"
+    }
+  ],
+  "pages": [
+    {
+      "id": "P01",
+      "chapter_id": "C01",
+      "title": "数据服务形成机制",
+      "question": "数据基础设施如何把分散资源转化为可持续服务？",
+      "message": "数据资源先完成治理，再通过可信使用机制控制授权、安全和审计，二者共同支撑服务输出。",
+      "logic": "资源治理与可信使用共同形成服务输出的基础",
+      "content": ["数据目录、标准和质量治理", "授权控制、安全保护和审计留痕", "数据、模型和分析服务输出"],
+      "next": "下一页进一步说明支撑该机制的具体能力。",
+      "source_scope": ["ST001", "ST002", "ST003", "ST004"],
+      "structural_operation": "preserve",
+      "page_role": "mechanism",
+      "content_load": "standard",
+      "analysis_basis": {"model": "resource-transformation", "relation_basis": "inferred", "confidence": "high", "supports": ["F1", "F2", "F3"]},
+      "must_include": ["治理是可信使用的重要基础", "服务输出建立在治理和可信使用基础上"],
+      "reserved_for_later": ["具体技术能力清单留到后续页面"],
+      "proof": {"method": "mechanism", "claims": ["数据资源需要先完成治理", "可信使用控制授权、安全和审计", "二者共同支撑服务输出"], "evidence_refs": ["F1", "F2", "F3"], "boundary_refs": ["F4"], "relation_basis": "inferred"},
+      "visibility_decision": "not_applicable",
+      "source_refs": ["ST001", "ST002", "ST003", "ST004"]
+    }
+  ]
+}

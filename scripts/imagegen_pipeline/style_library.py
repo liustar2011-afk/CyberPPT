@@ -1,0 +1,210 @@
+"""CyberPPT default visual style library and project visual locks."""
+
+from __future__ import annotations
+
+import json
+import re
+from hashlib import sha256
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+
+STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
+VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
+# Style 09 is authored in this document.  A project lock may record which
+# style was selected, but it must never become the authority for the contract
+# sent to ImageGen.
+VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visual-system.md"
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"JSON root must be an object: {path}")
+    return data
+
+
+def load_style_library(path: Path = STYLE_LIBRARY_PATH) -> dict[str, Any]:
+    payload = _read_json(path)
+    styles = payload.get("styles")
+    if not isinstance(styles, list) or not styles:
+        raise ValueError(f"style library must contain non-empty styles: {path}")
+    return payload
+
+
+def default_style_choices(path: Path = STYLE_LIBRARY_PATH) -> str:
+    library = load_style_library(path)
+    choices: list[str] = []
+    for style in library["styles"]:
+        if style.get("extension_only"):
+            continue
+        choices.append(f"{style['id']}. {style['name']} - {style['scenario']}")
+    return "\n".join(choices)
+
+
+def resolve_default_style(
+    *,
+    style_id: int | None = None,
+    style_name: str | None = None,
+    path: Path = STYLE_LIBRARY_PATH,
+) -> dict[str, Any]:
+    library = load_style_library(path)
+    if style_id is None and not style_name:
+        default_style_id = library.get("default_style_id")
+        if not isinstance(default_style_id, int):
+            raise ValueError(
+                f"style library has no valid default_style_id: {path}"
+            )
+        style_id = default_style_id
+    normalized_name = (style_name or "").strip()
+    for style in library["styles"]:
+        if style_id is not None and int(style["id"]) == int(style_id):
+            resolved = dict(style)
+            if int(resolved["id"]) == 9:
+                _apply_live_extension_contract(resolved)
+            return resolved
+        aliases = {
+            str(alias).strip()
+            for alias in style.get("aliases", [])
+            if str(alias).strip()
+        }
+        if normalized_name and normalized_name in {str(style["name"]), str(style["slug"]), *aliases}:
+            resolved = dict(style)
+            if int(resolved["id"]) == 9:
+                _apply_live_extension_contract(resolved)
+            return resolved
+    raise ValueError(
+        f"unknown CyberPPT style selection: id={style_id!r}, name={style_name!r}. "
+        "Available styles:\n" + default_style_choices(path)
+    )
+
+
+def write_project_style_lock(
+    *,
+    project: Path,
+    style_id: int | None = None,
+    style_name: str | None = None,
+    source_script: Path | None = None,
+    path: Path = STYLE_LIBRARY_PATH,
+) -> Path:
+    style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
+    lock_path = project / VISUAL_LOCK_RELATIVE
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema": "cyberppt.visual_style_lock.v1",
+        "created_at": _utc_now(),
+        "style_source": str(path),
+        "source_reference": load_style_library(path).get("source_reference"),
+        "source_script": str(source_script) if source_script else None,
+        "style": style,
+        "policy": {
+            "selected_from_default_8": not bool(style.get("extension_only")),
+            "selected_from_extension": bool(style.get("extension_only")),
+            "prompt_must_use_style_lock": True,
+            "do_not_substitute_external_preset": True,
+            "samples_are_required_for_user_confirmation": True,
+        },
+    }
+    if int(style.get("id", -1)) in (9, 10) and style.get("sample"):
+        repository_root = path.resolve().parents[3]
+        reference_path = (repository_root / str(style["sample"])).resolve()
+        if reference_path.is_file():
+            payload["reference_image"] = {
+                "path": str(reference_path),
+                "sha256": sha256(reference_path.read_bytes()).hexdigest().upper(),
+                "required_for_every_page": True,
+                "role": "style_reference_only",
+            }
+    lock_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    return lock_path
+
+
+def _strip_style09_registry_meta(section: str) -> str:
+    """Keep Style 09/10 visual rules; drop heading and registry/routing meta."""
+
+    kept: list[str] = []
+    for raw in section.splitlines():
+        line = raw.strip()
+        if not line:
+            if kept and kept[-1] != "":
+                kept.append("")
+            continue
+        if line.startswith("## 扩展风格"):
+            continue
+        if (
+            "不进入默认候选" in line
+            or "可通过 ID" in line
+            or "默认8种风格仍保持" in line
+            or "slug `" in line
+            or "slug " in line and "ivory_deep_blue" in line
+        ):
+            continue
+        kept.append(line)
+    while kept and kept[0] == "":
+        kept.pop(0)
+    while kept and kept[-1] == "":
+        kept.pop()
+    # Collapse runs of blank lines to a single blank.
+    compact: list[str] = []
+    for line in kept:
+        if line == "" and compact and compact[-1] == "":
+            continue
+        compact.append(line)
+    return "\n".join(compact).strip()
+
+
+def _load_live_extension_contract(style_id: int) -> str:
+    """Load Style 09's contract from its canonical human-authored source."""
+
+    if style_id != 9:
+        raise ValueError(f"live extension contract is only defined for style 9: {style_id}")
+    if not VISUAL_SYSTEM_PATH.is_file():
+        raise FileNotFoundError(
+            f"Style {style_id:02d} source file is missing: {VISUAL_SYSTEM_PATH}"
+        )
+    text = VISUAL_SYSTEM_PATH.read_text(encoding="utf-8-sig")
+    marker = f"## 扩展风格{style_id}："
+    start = text.find(marker)
+    if start < 0:
+        raise ValueError(
+            f"Style {style_id:02d} section is missing from canonical source: {VISUAL_SYSTEM_PATH}"
+        )
+    tail_start = start + len(marker)
+    next_heading = re.search(r"(?m)^[ \t]{0,3}##[ \t]+", text[tail_start:])
+    end = tail_start + next_heading.start() if next_heading else len(text)
+    contract = _strip_style09_registry_meta(text[start:end].strip())
+    if not contract:
+        raise ValueError(
+            f"Style {style_id:02d} section is empty in canonical source: {VISUAL_SYSTEM_PATH}"
+        )
+    return contract
+
+
+def _apply_live_extension_contract(style: dict[str, Any]) -> None:
+    """Attach provenance and the live contract without trusting lock content."""
+
+    contract = _load_live_extension_contract(int(style["id"]))
+    style["prompt_contract"] = contract
+    style["prompt_contract_source"] = str(VISUAL_SYSTEM_PATH)
+    style["prompt_contract_sha256"] = sha256(contract.encode("utf-8")).hexdigest().upper()
+
+
+def load_style_lock(path: Path) -> dict[str, Any]:
+    payload = _read_json(path)
+    style = payload.get("style")
+    style_id = int(style.get("id", -1)) if isinstance(style, dict) else -1
+    if not isinstance(style, dict) or style_id != 9:
+        return payload
+
+    # The lock only records selection metadata.  Do not consult either its
+    # historical prompt snapshot or a caller-controlled source path: both can
+    # silently drift away from references/visual-system.md.
+    refreshed = dict(payload)
+    refreshed_style = dict(style)
+    _apply_live_extension_contract(refreshed_style)
+    refreshed["style"] = refreshed_style
+    return refreshed

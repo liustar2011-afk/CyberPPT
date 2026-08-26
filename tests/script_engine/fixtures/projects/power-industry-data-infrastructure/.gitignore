@@ -1,0 +1,6 @@
+# Non-authoritative artifacts produced by downstream pipelines (Stage 02 and later).
+# This repo's only authoritative content is foundation.json, deck-plan.json and dist/final-script.md.
+workbench/
+outputs/
+delivery/
+visual/

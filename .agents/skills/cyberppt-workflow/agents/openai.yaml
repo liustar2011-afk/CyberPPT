@@ -1,0 +1,3 @@
+interface:
+  display_name: "CyberPPT Workflow"
+  short_description: "Route CyberPPT tasks through the main workflow"

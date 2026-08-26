@@ -1,0 +1,791 @@
+{
+  "cases": {
+    "content_first": {
+      "audit_page_semantic_intent": {
+        "blocking_issues": [],
+        "composition": {
+          "avoid": [
+            "equal_card_wall",
+            "one_icon_per_bullet",
+            "disconnected_left_text_right_image",
+            "multiple_visual_centers",
+            "equal_horizontal_bands",
+            "generic_software_boxes"
+          ],
+          "dominant_ratio": 0.65,
+          "max_independent_units": 5,
+          "primary_axis": "bottom_to_top",
+          "reading_path": [
+            "foundation",
+            "capability",
+            "service",
+            "application"
+          ],
+          "relationship_encoding": [
+            "support",
+            "layer dependency"
+          ],
+          "required_elements": [
+            "foundation",
+            "dependent layers",
+            "one main flow"
+          ],
+          "semantic_intent": "layered_architecture",
+          "spatial_organization": "non-equal depth layers show foundation, capability, service, and application dependencies"
+        },
+        "composition_guidance": "Use spatial_system_cutaway as the single dominant carrier occupying about 65% of the body area. Organize it as: non-equal depth layers show foundation, capability, service, and application dependencies. Reading path: foundation -> capability -> service -> application. Encode relations with support, layer dependency.",
+        "confidence": 0.7,
+        "evidence": [
+          "signal:分层",
+          "legacy:hierarchy_support"
+        ],
+        "legacy_canonical_intent": "layered_architecture",
+        "legacy_compatible_intent": "hierarchy_support",
+        "legacy_intent": "hierarchy_support",
+        "legacy_matches": true,
+        "legacy_source": "explicit",
+        "page_id": "p02",
+        "page_title": "能力共同支撑业务运行",
+        "primary_intent": "layered_architecture",
+        "rejected_candidates": [
+          {
+            "intent": "transformation_pipeline",
+            "reason": "score 2 below selected 2.5"
+          },
+          {
+            "intent": "risk_control_boundary",
+            "reason": "score 2 below selected 2.5"
+          },
+          {
+            "intent": "closed_loop_operation",
+            "reason": "score 1 below selected 2.5"
+          }
+        ],
+        "secondary_intents": [],
+        "semantic_refinement": false,
+        "source": "semantic_scored",
+        "supporting_relations": [],
+        "visual_carrier": {
+          "candidates": [
+            {
+              "carrier": "spatial_system_cutaway",
+              "risk": "software stack appearance",
+              "score": 100,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 25,
+                "reading_path": 15,
+                "relation_fidelity": 20,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "dependencies have depth"
+            },
+            {
+              "carrier": "non_equal_platform_stack",
+              "risk": "equal horizontal bands",
+              "score": 95,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 23,
+                "reading_path": 15,
+                "relation_fidelity": 17,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "layer weight is visible"
+            },
+            {
+              "carrier": "foundation_service_house",
+              "risk": "over-literal house metaphor",
+              "score": 91,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 21,
+                "reading_path": 15,
+                "relation_fidelity": 15,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "support relation is intuitive"
+            }
+          ],
+          "selected": "spatial_system_cutaway",
+          "source": "registry_scored"
+        }
+      },
+      "build_page_prompt": "【锁定关键文字】\n统一治理\n可追溯输出\n权限边界\n\n【完整上屏内容】\n数据治理｜质量与授权\n模型生产｜验证与复盘\n安全运行｜权限与日志\n\n【核心意思表达要求｜不上屏】\n本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。\n【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【可读文字白名单｜硬约束】\n图中所有可读文字只能来自【锁定关键文字】或【完整上屏内容】中的原文字符串。页面任务、核心意思、页面逻辑、视觉结构、语义关系、演讲备注及所有“不上屏”区块只决定构图和对象关系；其中任何词句只要未在上屏白名单中逐字出现，就不得渲染、摘录、改写、缩写或组合成标题、中心结论、标签、按钮、图例、流程节点或总结框。允许用场景、对象、位置、连线、色调和视觉焦点表达这些非上屏语义。\n\n【并列语义防发散｜不上屏】\n共享谓词、共享限定语、父级说明只保留在原文所属层级，不得自动复制、分配或改写到每个并列子项。除非【完整上屏内容】逐项明确陈述，否则子项只呈现原文已有名称，不得生成“共享谓词 + 子项”的新判断、新标签或新事实。\n\n页面任务：\n说明支撑能力如何共同托底业务运行。\n\n核心意思：\n数据、模型、产品和安全能力共同支撑稳定业务运行。\n\n\n\n【页面逻辑｜不上屏】\n主导关系：分层支撑。\n结构形态：分层支撑：数据、模型、产品与安全能力共同托底业务运行。\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n【锁定关键文字】【完整上屏内容】中的业务编号与模块名（如 01｜）必须保留；禁止新增与锁定文案无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n适用语境：政企领导汇报、演讲辅助；flat editorial / integrated composition。\n色彩角色：背景 #FFFFFF；主文字 #101820；正文 #303030；次级文字 #6F7275；线条与分隔 #C9CDD1；强调色 #12355B。\n风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）：\n- 本风格只约束色彩、材质、字体、线条、留白、视觉节奏和高级编辑式气质，不预设页面必须使用场景、插画、照片、图标、三维物件或任何固定媒介。\n- 先保证锁定上屏文字完整、舒展、清晰，再区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色。\n整体呈现现代中文高端政企汇报设计气质，编辑式克制、业务清晰。\n如出现人物，仅使用远景、背影或局部，不出现可识别面孔。\n",
+      "input": {
+        "page": {
+          "boundary": "不新增输入中不存在的业务结论。",
+          "boundary_source_refs": [
+            "S002"
+          ],
+          "coaching_tip": "",
+          "contract_receipt": null,
+          "evidence_map": "统一治理→S001；权限边界→S002",
+          "evidence_map_refs": [
+            "S001",
+            "S002"
+          ],
+          "field_order": [],
+          "full_prose": "数据、模型、产品和安全能力共同支撑稳定业务运行。。业务关系：输入经过统一治理后形成可追溯输出，并由权限边界持续约束。",
+          "heading": "第2页：能力共同支撑业务运行",
+          "image_locked_text": "",
+          "judgment_role": "",
+          "layout_motif": "",
+          "main_message": "数据、模型、产品和安全能力共同支撑稳定业务运行。",
+          "module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "onscreen_expression_form": "",
+          "onscreen_judgment": "",
+          "onscreen_judgment_mode": "",
+          "onscreen_text": "数据治理｜质量与授权\n模型生产｜验证与复盘\n安全运行｜权限与日志",
+          "page_id": "p02",
+          "page_type": "content",
+          "prose_paragraph_map": [],
+          "raw_onscreen_text": "",
+          "scene_role": "",
+          "selection_notes": "冻结模块化前的 ImageGen handoff 行为。",
+          "sequence": 2,
+          "source_refs": [
+            "S001",
+            "S002"
+          ],
+          "speaker_notes": "强调每一层都有明确职责，不能把安全作为装饰项。",
+          "subtitle": "",
+          "title": "能力共同支撑业务运行",
+          "top_level_module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "visual_carrier": "",
+          "visual_intent_type": "hierarchy_support",
+          "visual_proof": "",
+          "visual_structure": "分层支撑：数据、模型、产品与安全能力共同托底业务运行。"
+        },
+        "page_mission": "说明支撑能力如何共同托底业务运行。",
+        "style_id": 10,
+        "text_render_mode": "full_image",
+        "visual_context": {
+          "argument_role": "foundation",
+          "page_job": "说明共同支撑"
+        },
+        "visual_intent_override": {}
+      },
+      "render_page_logic_contract": [
+        "hierarchy_support",
+        "explicit",
+        "【页面逻辑｜不上屏】\n主导关系：分层支撑。\n结构形态：分层支撑：数据、模型、产品与安全能力共同托底业务运行。"
+      ],
+      "resolve_page_visual_intent": [
+        "hierarchy_support",
+        "explicit"
+      ],
+      "resolve_presentation_decision": {
+        "layout_motif": "layered_system",
+        "reason": "hierarchy_support candidates: layered_system, control_room_bridge",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "visual_medium": "editorial_typographic"
+      },
+      "select_image_locked_text": "统一治理\n可追溯输出\n权限边界"
+    },
+    "locked_text_style09": {
+      "audit_page_semantic_intent": {
+        "blocking_issues": [],
+        "composition": {
+          "avoid": [
+            "equal_card_wall",
+            "one_icon_per_bullet",
+            "disconnected_left_text_right_image",
+            "multiple_visual_centers",
+            "decorative_glowing_circle",
+            "warning_card_wall"
+          ],
+          "dominant_ratio": 0.68,
+          "max_independent_units": 5,
+          "primary_axis": "outside_to_inside_to_output",
+          "reading_path": [
+            "outside",
+            "gate",
+            "controlled zone",
+            "allowed output"
+          ],
+          "relationship_encoding": [
+            "boundary",
+            "control gate"
+          ],
+          "required_elements": [
+            "inside",
+            "outside",
+            "controlled entry",
+            "allowed output"
+          ],
+          "semantic_intent": "risk_control_boundary",
+          "spatial_organization": "outside, authorized entry, controlled processing, and allowed output form a trusted boundary"
+        },
+        "composition_guidance": "Use trusted_processing_boundary as the single dominant carrier occupying about 68% of the body area. Organize it as: outside, authorized entry, controlled processing, and allowed output form a trusted boundary. Reading path: outside -> gate -> controlled zone -> allowed output. Encode relations with boundary, control gate.",
+        "confidence": 0.82,
+        "evidence": [
+          "signal:边界",
+          "signal:授权",
+          "signal:不得",
+          "signal:受控",
+          "legacy:boundary_guardrail"
+        ],
+        "legacy_canonical_intent": "risk_control_boundary",
+        "legacy_compatible_intent": "boundary_guardrail",
+        "legacy_intent": "boundary_guardrail",
+        "legacy_matches": true,
+        "legacy_source": "explicit",
+        "page_id": "p03",
+        "page_title": "关键判断必须完整保留",
+        "primary_intent": "risk_control_boundary",
+        "rejected_candidates": [
+          {
+            "intent": "transformation_pipeline",
+            "reason": "score 2 below selected 4.5"
+          }
+        ],
+        "secondary_intents": [],
+        "semantic_refinement": false,
+        "source": "semantic_scored",
+        "supporting_relations": [],
+        "visual_carrier": {
+          "candidates": [
+            {
+              "carrier": "trusted_processing_boundary",
+              "risk": "decorative enclosure",
+              "score": 100,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 25,
+                "reading_path": 15,
+                "relation_fidelity": 20,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "inside, gate, and output are explicit"
+            },
+            {
+              "carrier": "controlled_gateway",
+              "risk": "technical tunnel",
+              "score": 95,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 23,
+                "reading_path": 15,
+                "relation_fidelity": 17,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "admission mechanism is central"
+            },
+            {
+              "carrier": "segmented_trust_space",
+              "risk": "security diagram density",
+              "score": 91,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 21,
+                "reading_path": 15,
+                "relation_fidelity": 15,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "multiple control zones remain visible"
+            }
+          ],
+          "selected": "trusted_processing_boundary",
+          "source": "registry_scored"
+        }
+      },
+      "build_page_prompt": "【锁定关键文字】\n受控授权\n共享范围可核验、可撤销\n\n【完整上屏内容】\n受控授权\n共享范围\n可核验、可撤销\n\n【核心意思表达要求｜不上屏】\n本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。\n【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【可读文字白名单｜硬约束】\n图中所有可读文字只能来自【锁定关键文字】或【完整上屏内容】中的原文字符串。页面任务、核心意思、页面逻辑、视觉结构、语义关系、演讲备注及所有“不上屏”区块只决定构图和对象关系；其中任何词句只要未在上屏白名单中逐字出现，就不得渲染、摘录、改写、缩写或组合成标题、中心结论、标签、按钮、图例、流程节点或总结框。允许用场景、对象、位置、连线、色调和视觉焦点表达这些非上屏语义。\n\n【并列语义防发散｜不上屏】\n共享谓词、共享限定语、父级说明只保留在原文所属层级，不得自动复制、分配或改写到每个并列子项。除非【完整上屏内容】逐项明确陈述，否则子项只呈现原文已有名称，不得生成“共享谓词 + 子项”的新判断、新标签或新事实。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n【页面逻辑｜不上屏】\n主导关系：边界护栏。\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n【锁定关键文字】【完整上屏内容】中的业务编号与模块名（如 01｜）必须保留；禁止新增与锁定文案无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\nPalette: pure white background #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate an executive briefing page in a scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation.\n\n### 1. Style identity and semantic principle — hard\n\nBuild the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes; it should first communicate one clear business judgment, then reveal its supporting structure. Use abstract geometry, boundaries, color fields and connectors only to organize concrete meaning — do not let icons, decorative symbols or 3D objects become the page-level visual language when a recognizable scene or object can carry the meaning.\n\nKeep the visual character editorial and matte — a refined executive-report spread, not a technology advertisement or icon-driven infographic.\nUse pure white `#FFFFFF` as the page-level background. Do not shift the overall canvas toward ivory, cream, beige or warm paper tones. Pale blue-grey may be used only for local separation, evidence fields or subtle structural grouping.\n\n### 2. Semantic anchor and composition — hard\n\n1. Identify the page’s core judgment and primary business relationship.\n2. Select one recognizable, page-specific business anchor: an operating scene, business object, content or data asset, professional work environment or visible outcome.\n3. Give the dominant anchor approximately 35%–50% of the visual field when content permits.\n4. Build one continuous, asymmetric and unequally weighted composition around it.\n5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.\n6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.\n7. Complete the reading path with one clearly emphasized judgment or outcome region.\n8. Do not use arrows anywhere on the page; express relationships through position, proximity, grouping or numbering, using a plain undirected line only if truly necessary.\n\nCreate hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.\n\nDo not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages. The core judgment carries the greatest visual weight; supporting evidence remains quieter and subordinate.\n\nSuitable anchors include: source materials parsed into one structured object; two fields compared around one visible gap; several inputs converging into one result; one operational environment showing monitoring or coordinated action.\n\n### 3. Content fidelity and presentation expression — hard\n\nPreserve the full factual meaning, core judgments, named entities, numbers, dates, units, causal relationships, conditional relationships, comparison relationships, scope boundaries and business logic of the provided Chinese content.\n\nDo not add new facts, invent numbers, strengthen or weaken conclusions, change responsibility boundaries, alter policy meaning, omit required content or introduce unsupported labels. Do not shift modal strength while treating the wording as equivalent: do not turn a possibility into a certainty, a suggestion into a requirement, an exploratory or pilot description into a completed achievement, or a conditional statement into an unconditional conclusion.\n\nUnless a passage is explicitly marked as verbatim text, locked text, quoted source text, formal name, number, metric, policy wording or other exact wording, the visible Chinese wording may be restructured for presentation readability.\n\nAllowed presentation restructuring includes: splitting a long sentence into shorter presentation-scale statements; creating a short lead-in or micro-heading from wording already present in the source meaning; reorganizing parallel phrases into clearer visual levels; moving a qualifying phrase closer to the statement it qualifies; emphasizing key terms through weight, scale or deep-blue treatment; and reducing redundant function words when the factual meaning remains fully intact.\n\nEvery key metric number in the locked text (a count, percentage or threshold) must be visually emphasized through larger scale and deep-blue color directly inside its original sentence — plain body-text weight is not sufficient; never duplicate it as a separate large-number tile, badge or callout outside that sentence.\n\nPresentation restructuring must improve hierarchy, rhythm and readability without changing semantic force. No factual meaning may be added, removed, narrowed, broadened, weakened or strengthened.\n\n#### Verbatim text — hard when marked\n\nContent explicitly marked as verbatim text, locked text, quoted source wording, official titles, formal product or institution names, numbers, units, dates, policy clauses or other exact wording must remain complete and unchanged.\n\nDo not rewrite, shorten, relabel, reorder or paraphrase explicitly verbatim content.\n\n#### Presentation-scale text layout\n\nAllocate sufficient space for content before adding scenes, evidence, icons or decoration.\n\nUse one clear readable text region for each primary semantic unit; regions do not need matching size or position — content weight decides how each is shaped, and a generic scene must not crowd text into a minor corner.\n\nKeep body text at normal senior-presentation reading scale. If space is limited, simplify the scene or reorganize the wording — never shrink text into microcopy.\n\nRender only source-supported Chinese content. Screens, documents and interfaces may contain large text-free structures, highlighted regions, check states or simplified diagrams, but must not contain invented readable microtext.\n\nEach primary semantic region should read as one integrated unit of text and visual material. When a small supporting fragment genuinely clarifies one region, draw it from real business material relevant to that specific region — expressed in whatever concrete, recognizable form actually suits the content — rather than a symbolic icon or pictogram, and never repeat the same kind of fragment as a matching pair across every parallel region (see the icon discipline rules below). Regions do not have to be forced into perfectly equal treatment: some may carry a fuller scene-plus-text-plus-action unit, others may lean more on text with a lighter visual touch, depending on what each region's content actually needs.\n\nPlace text inside a quiet field within the scene, attach it to an object edge, align it with the corresponding action, or embed it in the outcome region. Visual splitting, line breaks and grouping must not alter the original sentence's logical relationship (for example turning a causal or conditional link into a flat parallel list). Font size, weight, color and position must not create a visual conclusion strength that misrepresents the source: a minor qualifier must not be made visually more prominent than the primary judgment it qualifies.\n\nThe governing principle is: factual fidelity is fixed; presentation wording and hierarchy may adapt to improve executive readability.\n\n### 4. Reusable composition grammars\n\nSelect one primary grammar from the page semantics. Use a second only when the locked content clearly contains a second essential relationship.\n\n#### A. Continuous object transformation\n\nShow one recognizable business object changing through input, processing, review, control or output, expressed through object state and spatial progression — not step cards or icon rows.\n\n#### B. Core scene with attached actions\n\nPlace one business object or operating environment in the main visual region. Attach supporting capabilities, conditions or outcomes directly to the scene through spatial relationship and unequal scale — not as separate icon modules.\n\n#### C. Dual-field comparison\n\nUse two concrete business fields or states in a controlled comparison; show the difference or transition through scale, alignment and one decisive judgment region — prefer concrete fields over symbolic icon comparisons.\n\n#### D. Multi-source convergence\n\nShow several distinct sources or actors entering one shared service, capability or result, through visible convergence into one dominant outcome field — concrete inputs, not a row of pictograms.\n\n#### E. Concrete controlled containment\n\nPlace one recognizable protected object or operating scene inside a controlled field. Express access, isolation and approved output through checkpoints and state changes; keep the object visible, boundaries subordinate.\n\n#### F. Parallel-direction shared evidence field\n\nWhen the page names several parallel abstract directions or principles that share one evaluation or classification framework, do not give each direction its own icon or scene fragment. Instead let a small number of genuine evidence fragments serve the framework as a whole, choosing how many and where to place them based on what this page's specific content actually supports — some directions may carry a concrete fragment and others may rely on text hierarchy and spatial grouping alone; a page whose directions are too abstract for any genuine evidence may use none at all rather than inventing one.\n\n### 5. Scene and evidence expression\n\nUse one dominant scene or concrete business object, plus two to four quieter supporting scene or evidence fragments when needed. Vary scale, crop and viewpoint so the page reads as one composed visual field rather than assembled modules.\n\nCreate richness through semantic scene selection, cropping, scale and viewpoint changes — richness should come from meaningful business expression, not decorative objects.\n\nWhen the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. If the items are abstract directions with no distinct concrete referent, drop the scene entirely and use a flat, structured relationship field instead.\n\nSuitable visual material includes: professional operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something actually named in this page's content — never a generic control room, dashboard wall or stock BI screen used as decoration; with no distinct concrete referent among the locked content, prefer the flat structured relationship field over a generic technology scene.\n\nAny realistic material must stay restrained, interpretive and page-specific — supporting evidence inside a broader scene, never an isolated product photo.\n\n### 6. Depth, material and icon discipline — hard\n\nMaintain a restrained flat editorial foundation with shallow natural depth, created through overlap, cropping, scale contrast, tonal separation and subtle variations of pure white, pale blue-grey and deep blue.\n\nUse matte surfaces, crisp edges and gentle tonal transitions; keep perspective natural and quiet.\n\nAvoid glossy or decorative 3D rendering, exaggerated isometric perspective, cinematic depth, dramatic spotlighting, floating hero objects, glassmorphism, polished metal, reflective floors, neon glow, luminous edges and product-showcase presentation.\n\nVisible drop shadows are generally discouraged; if needed, use an extremely soft, diffuse shadow. Business objects may retain natural physical form but must not be stylized into exhibition objects, toy-like miniatures or futuristic product concepts.\n\nIcons are not a default visual language for Style 09. Start from zero icons.\n\nUse an icon only when the page would lose immediate semantic clarity without it. A typical page should contain no icons; when genuinely necessary, use at most one very small, flat, deep-blue icon embedded inside an existing scene or text grouping.\n\nNever assign one icon to each bullet, module, stage, actor, capability or message. Do not create icon rows, icon grids, icon walls, icon badges, icon cards, pictogram sequences or decorative symbol clusters. When a page presents several parallel metric lines or several parallel named directions or principles (for example four evaluation dimensions), do not place any icon, pictogram or colored glyph immediately beside each individual line; a row of icon-plus-label pairs is itself an icon wall even without visible borders, and remains forbidden.\n\nIcons must never become the main visual carrier or repeated page structure. If a business meaning can be expressed through a scene, object or outcome region, remove the icon and use the concrete expression instead.\n\nIf one icon is indispensable, keep it simple, flat, deep blue, small and visually subordinate. Avoid 3D, gradient, glossy or holographic icon treatments.\n\n### 7. Semantic economy and final priority — hard\n\nRepresent each source-supported concept once; supporting elements may add evidence or outcome, but must not restate the same label, sequence or conclusion.\n\nWhen the composition already expresses a process, hierarchy or layered relationship, do not add a second icon chain, footer process or extra summary band unless explicitly required by the source content.\n\nUse one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop, color fields and purposeful connectors, not a left-structure + right-explanation + bottom-summary formula.\n\nKeep the result free from icon-led modular layouts, repeated device mockups, dense microtext and duplicated semantic summaries, and from any SaaS-marketing, app-store-style or futuristic 3D concept-art visual language (see the material and icon discipline rules above for the full decoration exclusion list). These exclusions are secondary: always prioritize content fidelity, recognizable business anchoring, open scene-led composition, semantic clarity, restrained editorial flatness and executive-level visual hierarchy.\n\nPriority:\ncontent fidelity, verbatim requirements and core judgment\n→ recognizable business anchor\n→ primary business relationship\n→ large-scale semantic actions\n→ evidence and outcomes\n→ crop, overlap and shallow tonal depth\n→ auxiliary symbols only when indispensable.\n\nFinal result: one calm, highly readable and visually refined executive-report composition with complete factual meaning and all required verbatim text, a recognizable business scene or object, open semantic grouping, clear page-specific meaning, strong hierarchy, restrained natural depth, minimal or zero icon use, no showy 3D rendering and no unnecessary semantic repetition.\n\n### 8. Authority lock — hard\n\nThis Style 09 definition is the controlling visual authority for every page that selects it. Reference images may influence palette, crop and polish only, never the semantic structure, content fidelity, composition grammar or icon discipline defined above. When a conflict arises, remove the lower-priority decorative element and keep the higher-priority rule, in the order already stated in Section 7's priority list.\n\nDo not reinterpret Style 09 into a card dashboard, icon infographic, SaaS marketing page or glossy 3D composition, even when such forms appear attractive in reference material. The final page must remain recognizably Style 09: concrete business meaning first, editorial hierarchy second, decoration last.\n\n[Hard constraints]\nRender only the PowerPoint body visual on a 2048x1024 canvas.\nDo not render title, subtitle, logo, page number, footer, or template frame.\nDo not render instructions, field labels, source references, evidence ids, or text ids.\nDo not invent visible business facts, numbers, organizations, actors, or conclusions.\nDo not change facts, numbers, dates or units.\nDo not change actors, responsibilities or status.\nDo not add presentation copy that is not part of the approved locked text.\nFor a \"label: sentence\" locked text item, render it once as that unit; do not repeat the label alone as a separate heading or tag, and do not invent a heading or label for text that has none.\nDo not map each body item to an isolated icon or decorative image.\nDo not create an independent text wall or second result chain.\nReserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image.\nDo not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.\nDo not invent a center hub or radial mechanism the declared relationship does not describe.\nPreserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.\n\n【风格09最终执行锁｜最高优先级】\nTreat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.\n\nDo not use arrows or arrowheads anywhere on the page. Express every relationship through position, proximity, grouping, numbering or a plain undirected line, never a pointed or directional connector. A line still must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship.\n\nEvery scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.\n\nPrefer scene-based semantic visuals over literal real-world photos. The illustration should convey the page's meaning through interpretable business scenarios, key objects, and clear relationship-driven composition, increasing semantic density and communication efficiency.\n\n默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。\n\nDo not depict organization names, logos, seals, signage, recognizable headquarters or landmarks. Keep real organization and person names in the editable text layer only. Generic, non-location-specific facilities, layered workspaces, control consoles, equipment rooms, and industrial scenes may be used as illustrative carriers when they map to the locked content. Schematic screens, charts, maps, and interface labels may organize the composition, but generated values are non-evidentiary; factual numbers and labels must be verified and remain editable.\n\nRender the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.\n\n线条：主关系用细、实、方向一致的深蓝线；反馈或复盘最多一条浅灰短虚线，虚线不作装饰节点链、不沿页面三边绕行，也不同时承担边框、回流和装饰；每条线必须落在对象外边界，圆点只用于真实接口、汇聚或分支，禁止线端悬空、靠近但不接触或跨越文字。边框：整页可见边界最多两级，只用细线直角矩形或开放平面色场表达业务范围与必要子组；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框；禁止胶囊、厚框、梯形、切角、异形、玻璃舱和立体门框。箭头：禁止使用，关系优先通过邻接、对齐、包含、留白和颜色表达；确需连线时只用细实线，不加箭头头，闭环用开放路径或短回接线。形状：默认使用平面直角矩形、开放色场和低矮哑光正视微立体，同页异形标题条最多一个；低矮平台只在平台承载、分层支撑或汇聚中枢语义明确时使用，且不得兼作页面外框、标题底座和装饰舞台；禁止徽章、盾牌、圆盘、梯形、六边形、切角容器、厚底座、多层台阶、夸张挤出和复杂光效；锁定内容未明确要求时，不生成对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。颜色：深蓝表达主关系和结论，浅蓝灰承载辅助信息，暖色只标记风险、异常、限制、禁止或待处理状态；不得仅为区分类目自动分配多色或彩虹色。\n边框、分隔线、连接线、箭头和几何形状须体现精密矢量级工艺——线条粗细全程一致、直角平直、曲线圆滑连续无棱角抖动、边缘干净无锯齿，同一图形家族的圆角半径保持统一；多层堆叠色块须对齐同一网格、间距均匀，若使用分层立体效果须保持对称克制，禁止交错错位投影、锯齿状或不均匀阴影边缘；边框与连接线应呈现如专业矢量工具绘制的精度，禁止手绘感抖动线、粗细不均、转角处衔接错位或断裂。盾牌、立体等距图标等具象元素本身不受限制，可正常按语义使用，只需与整体精致优雅的线条工艺保持一致。若上屏文字本身已带有序号前缀（如①②③或数字编号），不得再额外绘制独立的装饰性数字徽章、圆盘或序号标记来重复表达同一序号；每个步骤/阶段的序号只呈现一次。线条与边框的\"精密\"只针对笔画本身的干净度（不歪、不抖、边缘清晰），不等于全页处处等大、等距、等圆角；禁止为了显得规整就把所有卡片、图标、连接线做成完全相同的尺寸和间距、套成一个僵硬的网格；应保留非对称留白、按内容重要性调整大小和视觉权重，让版式呈现高级编辑排版的手工节奏感，而不是模板化图表网格。\n",
+      "input": {
+        "page": {
+          "boundary": "不新增输入中不存在的业务结论。",
+          "boundary_source_refs": [
+            "S002"
+          ],
+          "coaching_tip": "",
+          "contract_receipt": null,
+          "evidence_map": "统一治理→S001；权限边界→S002",
+          "evidence_map_refs": [
+            "S001",
+            "S002"
+          ],
+          "field_order": [],
+          "full_prose": "受控授权让共享范围可核验、可撤销。。业务关系：输入经过统一治理后形成可追溯输出，并由权限边界持续约束。",
+          "heading": "第3页：关键判断必须完整保留",
+          "image_locked_text": "受控授权\n共享范围可核验、可撤销",
+          "judgment_role": "",
+          "layout_motif": "",
+          "main_message": "受控授权让共享范围可核验、可撤销。",
+          "module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "onscreen_expression_form": "",
+          "onscreen_judgment": "",
+          "onscreen_judgment_mode": "",
+          "onscreen_text": "受控授权\n共享范围\n可核验、可撤销",
+          "page_id": "p03",
+          "page_type": "content",
+          "prose_paragraph_map": [],
+          "raw_onscreen_text": "",
+          "scene_role": "",
+          "selection_notes": "冻结模块化前的 ImageGen handoff 行为。",
+          "sequence": 3,
+          "source_refs": [
+            "S001",
+            "S002"
+          ],
+          "speaker_notes": "锁定结论要靠近授权边界和撤销机制，不得另造页面标题。",
+          "subtitle": "",
+          "title": "关键判断必须完整保留",
+          "top_level_module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "visual_carrier": "",
+          "visual_intent_type": "boundary_guardrail",
+          "visual_proof": "",
+          "visual_structure": "边界护栏：授权范围、有效期和撤销机制共同约束共享。"
+        },
+        "page_mission": "说明受控授权如何建立共享边界。",
+        "style_id": 9,
+        "text_render_mode": "full_image",
+        "visual_context": {
+          "argument_role": "governance",
+          "page_job": "说明授权边界"
+        },
+        "visual_intent_override": {}
+      },
+      "render_page_logic_contract": [
+        "boundary_guardrail",
+        "explicit",
+        "【页面逻辑｜不上屏】\n主导关系：边界护栏。\n结构形态：边界护栏：授权范围、有效期和撤销机制共同约束共享。"
+      ],
+      "resolve_page_visual_intent": [
+        "boundary_guardrail",
+        "explicit"
+      ],
+      "resolve_presentation_decision": {
+        "layout_motif": "decision_canvas",
+        "reason": "boundary_guardrail candidates: decision_canvas, evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "visual_medium": "editorial_typographic"
+      },
+      "select_image_locked_text": "受控授权\n共享范围可核验、可撤销"
+    },
+    "semantic_visual": {
+      "audit_page_semantic_intent": {
+        "blocking_issues": [],
+        "composition": {
+          "avoid": [
+            "equal_card_wall",
+            "one_icon_per_bullet",
+            "disconnected_left_text_right_image",
+            "multiple_visual_centers"
+          ],
+          "dominant_ratio": 0.65,
+          "max_independent_units": 5,
+          "primary_axis": "left_to_right",
+          "reading_path": [
+            "input",
+            "processing",
+            "output"
+          ],
+          "relationship_encoding": [
+            "transform",
+            "directional connector"
+          ],
+          "required_elements": [
+            "input",
+            "processing",
+            "output",
+            "direction"
+          ],
+          "semantic_intent": "transformation_pipeline",
+          "spatial_organization": "weighted input, processing, and output zones form one transformation channel"
+        },
+        "composition_guidance": "Use weighted_transformation_channel as the single dominant carrier occupying about 65% of the body area. Organize it as: weighted input, processing, and output zones form one transformation channel. Reading path: input -> processing -> output. Encode relations with transform, directional connector.",
+        "confidence": 0.82,
+        "evidence": [
+          "signal:输入",
+          "signal:输出",
+          "signal:转化",
+          "legacy:path_chain"
+        ],
+        "legacy_canonical_intent": "transformation_pipeline",
+        "legacy_compatible_intent": "path_chain",
+        "legacy_intent": "path_chain",
+        "legacy_matches": true,
+        "legacy_source": "explicit",
+        "page_id": "p01",
+        "page_title": "统一治理形成可追溯结果",
+        "primary_intent": "transformation_pipeline",
+        "rejected_candidates": [
+          {
+            "intent": "convergence_to_capability",
+            "reason": "score 1 below selected 4.5"
+          },
+          {
+            "intent": "risk_control_boundary",
+            "reason": "score 1 below selected 4.5"
+          },
+          {
+            "intent": "policy_to_action",
+            "reason": "score 0.7 below selected 4.5"
+          }
+        ],
+        "secondary_intents": [],
+        "semantic_refinement": false,
+        "source": "semantic_scored",
+        "supporting_relations": [],
+        "visual_carrier": {
+          "candidates": [
+            {
+              "carrier": "weighted_transformation_channel",
+              "risk": "equal box pipeline",
+              "score": 100,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 25,
+                "reading_path": 15,
+                "relation_fidelity": 20,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "input and output weights remain visible"
+            },
+            {
+              "carrier": "process_atlas",
+              "risk": "generic roadmap",
+              "score": 95,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 23,
+                "reading_path": 15,
+                "relation_fidelity": 17,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "clear directional main chain"
+            },
+            {
+              "carrier": "folded_transformation_band",
+              "risk": "decorative ribbon",
+              "score": 91,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 21,
+                "reading_path": 15,
+                "relation_fidelity": 15,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "stages remain connected"
+            }
+          ],
+          "selected": "weighted_transformation_channel",
+          "source": "registry_scored"
+        }
+      },
+      "build_page_prompt": "【语义视觉模式｜默认不上屏正文】\nImageGen 只负责把页面事实关系转译成有业务含义的场景、对象、动作、空间和结果状态；不要把完整正文逐字排版进图片。正文、数字和主体名称由后续 PPT 可编辑文字层完整承载。允许极少量短标签（0—3 个）贴附在对应对象旁，仅在它能显著帮助识别对象时使用；默认无可读长句、无界面伪文字、无新增标签。\n\n【事实真值锁｜仅供理解，不在图内排版】\n- 页面核心意思：统一治理把分散输入转化为可追溯业务结果。\n\n- 页面任务：说明统一治理如何完成输入到结果的转化。\n- 关键事实锚点（仅供校验）：统一治理\n可追溯输出\n权限边界\n\n【视觉语义参考｜用对象和关系表达，不照抄文字】\n- 页面业务锚点：统一治理 可追溯结果 权限边界\n\n\n\n\n【页面逻辑｜不上屏】\n主导关系：路径转化。\n结构形态：路径转化：分散输入汇聚至治理中枢，再输出可追溯结果。\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务语义底图，不绘制页面标题、副标题、Logo、页脚、页码、页面序号、母版装饰线或完整正文。正文和事实文字由后续 PPT 可编辑文字层承载。不要把提示词字段名、模块编号、调试信息、伪中文或新增标签画入图片。\n\n\n\n【视觉风格｜不上屏】\n适用语境：政企领导汇报、演讲辅助；flat editorial / integrated composition。\n色彩角色：背景 #FFFFFF；主文字 #101820；正文 #303030；次级文字 #6F7275；线条与分隔 #C9CDD1；强调色 #12355B。\n风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）：\n- 本风格只约束色彩、材质、字体、线条、留白、视觉节奏和高级编辑式气质，不预设页面必须使用场景、插画、照片、图标、三维物件或任何固定媒介。\n- 先保证锁定上屏文字完整、舒展、清晰，再区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色。\n整体呈现现代中文高端政企汇报设计气质，编辑式克制、业务清晰。\n如出现人物，仅使用远景、背影或局部，不出现可识别面孔。\n",
+      "input": {
+        "page": {
+          "boundary": "不新增输入中不存在的业务结论。",
+          "boundary_source_refs": [
+            "S002"
+          ],
+          "coaching_tip": "",
+          "contract_receipt": null,
+          "evidence_map": "统一治理→S001；权限边界→S002",
+          "evidence_map_refs": [
+            "S001",
+            "S002"
+          ],
+          "field_order": [],
+          "full_prose": "统一治理把分散输入转化为可追溯业务结果。。业务关系：输入经过统一治理后形成可追溯输出，并由权限边界持续约束。",
+          "heading": "第1页：统一治理形成可追溯结果",
+          "image_locked_text": "",
+          "judgment_role": "",
+          "layout_motif": "",
+          "main_message": "统一治理把分散输入转化为可追溯业务结果。",
+          "module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "onscreen_expression_form": "",
+          "onscreen_judgment": "",
+          "onscreen_judgment_mode": "",
+          "onscreen_text": "统一治理\n可追溯结果\n权限边界",
+          "page_id": "p01",
+          "page_type": "content",
+          "prose_paragraph_map": [],
+          "raw_onscreen_text": "",
+          "scene_role": "",
+          "selection_notes": "冻结模块化前的 ImageGen handoff 行为。",
+          "sequence": 1,
+          "source_refs": [
+            "S001",
+            "S002"
+          ],
+          "speaker_notes": "先解释输入为何需要汇聚，再说明结果如何回溯。",
+          "subtitle": "",
+          "title": "统一治理形成可追溯结果",
+          "top_level_module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "visual_carrier": "",
+          "visual_intent_type": "path_chain",
+          "visual_proof": "",
+          "visual_structure": "路径转化：分散输入汇聚至治理中枢，再输出可追溯结果。"
+        },
+        "page_mission": "说明统一治理如何完成输入到结果的转化。",
+        "style_id": 10,
+        "text_render_mode": "semantic_visual",
+        "visual_context": {
+          "argument_role": "solution",
+          "page_job": "说明转化路径"
+        },
+        "visual_intent_override": {}
+      },
+      "render_page_logic_contract": [
+        "path_chain",
+        "explicit",
+        "【页面逻辑｜不上屏】\n主导关系：路径转化。\n结构形态：路径转化：分散输入汇聚至治理中枢，再输出可追溯结果。"
+      ],
+      "resolve_page_visual_intent": [
+        "path_chain",
+        "explicit"
+      ],
+      "resolve_presentation_decision": {
+        "layout_motif": "process_atlas",
+        "reason": "path_chain candidates: process_atlas, control_room_bridge",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "visual_medium": "editorial_typographic"
+      },
+      "select_image_locked_text": "统一治理\n可追溯输出\n权限边界"
+    },
+    "style10_logic_and_notes": {
+      "audit_page_semantic_intent": {
+        "blocking_issues": [],
+        "composition": {
+          "avoid": [
+            "equal_card_wall",
+            "one_icon_per_bullet",
+            "disconnected_left_text_right_image",
+            "multiple_visual_centers",
+            "decorative_ring",
+            "unnamed_feedback_arrow"
+          ],
+          "dominant_ratio": 0.65,
+          "max_independent_units": 6,
+          "primary_axis": "forward_with_return",
+          "reading_path": [
+            "start",
+            "operation",
+            "result",
+            "validation",
+            "feedback"
+          ],
+          "relationship_encoding": [
+            "flow",
+            "feedback"
+          ],
+          "required_elements": [
+            "start",
+            "key nodes",
+            "feedback target",
+            "return direction"
+          ],
+          "semantic_intent": "closed_loop_operation",
+          "spatial_organization": "a main operating chain includes an explicit return path to a named feedback target"
+        },
+        "composition_guidance": "Use operational_feedback_loop as the single dominant carrier occupying about 65% of the body area. Organize it as: a main operating chain includes an explicit return path to a named feedback target. Reading path: start -> operation -> result -> validation -> feedback. Encode relations with flow, feedback.",
+        "confidence": 0.7,
+        "evidence": [
+          "signal:回流",
+          "legacy:closed_loop"
+        ],
+        "legacy_canonical_intent": "closed_loop_operation",
+        "legacy_compatible_intent": "closed_loop",
+        "legacy_intent": "closed_loop",
+        "legacy_matches": true,
+        "legacy_source": "explicit",
+        "page_id": "p04",
+        "page_title": "闭环运营持续校正结果",
+        "primary_intent": "closed_loop_operation",
+        "rejected_candidates": [
+          {
+            "intent": "transformation_pipeline",
+            "reason": "score 2 below selected 2.5"
+          },
+          {
+            "intent": "risk_control_boundary",
+            "reason": "score 1 below selected 2.5"
+          }
+        ],
+        "secondary_intents": [],
+        "semantic_refinement": false,
+        "source": "semantic_scored",
+        "supporting_relations": [],
+        "visual_carrier": {
+          "candidates": [
+            {
+              "carrier": "operational_feedback_loop",
+              "risk": "decorative ring",
+              "score": 100,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 25,
+                "reading_path": 15,
+                "relation_fidelity": 20,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "feedback target and return are explicit"
+            },
+            {
+              "carrier": "circular_control_workspace",
+              "risk": "dashboard drift",
+              "score": 95,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 23,
+                "reading_path": 15,
+                "relation_fidelity": 17,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "loop attaches to business objects"
+            },
+            {
+              "carrier": "scene_based_return_path",
+              "risk": "return path may be subtle",
+              "score": 91,
+              "score_breakdown": {
+                "deck_rhythm": 5,
+                "imagegen_stability": 10,
+                "mission_fit": 21,
+                "reading_path": 15,
+                "relation_fidelity": 15,
+                "single_center": 15,
+                "text_integration": 10
+              },
+              "strength": "feedback occurs in context"
+            }
+          ],
+          "selected": "operational_feedback_loop",
+          "source": "registry_scored"
+        }
+      },
+      "build_page_prompt": "【锁定关键文字】\n统一治理\n可追溯输出\n权限边界\n\n【完整上屏内容】\n业务输入\n治理与服务\n结果回流\n持续校正\n\n【核心意思表达要求｜不上屏】\n本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。\n【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【可读文字白名单｜硬约束】\n图中所有可读文字只能来自【锁定关键文字】或【完整上屏内容】中的原文字符串。页面任务、核心意思、页面逻辑、视觉结构、语义关系、演讲备注及所有“不上屏”区块只决定构图和对象关系；其中任何词句只要未在上屏白名单中逐字出现，就不得渲染、摘录、改写、缩写或组合成标题、中心结论、标签、按钮、图例、流程节点或总结框。允许用场景、对象、位置、连线、色调和视觉焦点表达这些非上屏语义。\n\n【并列语义防发散｜不上屏】\n共享谓词、共享限定语、父级说明只保留在原文所属层级，不得自动复制、分配或改写到每个并列子项。除非【完整上屏内容】逐项明确陈述，否则子项只呈现原文已有名称，不得生成“共享谓词 + 子项”的新判断、新标签或新事实。\n\n页面任务：\n说明业务结果如何形成持续校正的运营闭环。\n\n核心意思：\n业务结果回流后持续校正模型与服务策略。\n\n\n\n【页面逻辑｜不上屏】\n主导关系：闭环。\n结构形态：闭环：业务输入进入治理与服务，结果回流后持续校正策略。\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n【锁定关键文字】【完整上屏内容】中的业务编号与模块名（如 01｜）必须保留；禁止新增与锁定文案无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n适用语境：政企领导汇报、演讲辅助；flat editorial / integrated composition。\n色彩角色：背景 #FFFFFF；主文字 #101820；正文 #303030；次级文字 #6F7275；线条与分隔 #C9CDD1；强调色 #12355B。\n风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）：\n- 本风格只约束色彩、材质、字体、线条、留白、视觉节奏和高级编辑式气质，不预设页面必须使用场景、插画、照片、图标、三维物件或任何固定媒介。\n- 先保证锁定上屏文字完整、舒展、清晰，再区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色。\n整体呈现现代中文高端政企汇报设计气质，编辑式克制、业务清晰。\n如出现人物，仅使用远景、背影或局部，不出现可识别面孔。\n",
+      "input": {
+        "page": {
+          "boundary": "不新增输入中不存在的业务结论。",
+          "boundary_source_refs": [
+            "S002"
+          ],
+          "coaching_tip": "",
+          "contract_receipt": null,
+          "evidence_map": "统一治理→S001；权限边界→S002",
+          "evidence_map_refs": [
+            "S001",
+            "S002"
+          ],
+          "field_order": [],
+          "full_prose": "业务结果回流后持续校正模型与服务策略。。业务关系：输入经过统一治理后形成可追溯输出，并由权限边界持续约束。",
+          "heading": "第4页：闭环运营持续校正结果",
+          "image_locked_text": "",
+          "judgment_role": "",
+          "layout_motif": "",
+          "main_message": "业务结果回流后持续校正模型与服务策略。",
+          "module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "onscreen_expression_form": "",
+          "onscreen_judgment": "",
+          "onscreen_judgment_mode": "",
+          "onscreen_text": "业务输入\n治理与服务\n结果回流\n持续校正",
+          "page_id": "p04",
+          "page_type": "content",
+          "prose_paragraph_map": [],
+          "raw_onscreen_text": "",
+          "scene_role": "",
+          "selection_notes": "冻结模块化前的 ImageGen handoff 行为。",
+          "sequence": 4,
+          "source_refs": [
+            "S001",
+            "S002"
+          ],
+          "speaker_notes": "按输入、治理、结果、回流的顺序讲解，最后落到持续校正。",
+          "subtitle": "",
+          "title": "闭环运营持续校正结果",
+          "top_level_module_titles": [
+            "统一治理",
+            "可追溯输出",
+            "权限边界"
+          ],
+          "visual_carrier": "",
+          "visual_intent_type": "closed_loop",
+          "visual_proof": "",
+          "visual_structure": "闭环：业务输入进入治理与服务，结果回流后持续校正策略。"
+        },
+        "page_mission": "说明业务结果如何形成持续校正的运营闭环。",
+        "style_id": 10,
+        "text_render_mode": "full_image",
+        "visual_context": {
+          "argument_role": "implementation",
+          "page_job": "说明运营闭环"
+        },
+        "visual_intent_override": {}
+      },
+      "render_page_logic_contract": [
+        "closed_loop",
+        "explicit",
+        "【页面逻辑｜不上屏】\n主导关系：闭环。\n结构形态：闭环：业务输入进入治理与服务，结果回流后持续校正策略。"
+      ],
+      "resolve_page_visual_intent": [
+        "closed_loop",
+        "explicit"
+      ],
+      "resolve_presentation_decision": {
+        "layout_motif": "control_room_bridge",
+        "reason": "closed_loop candidates: control_room_bridge, process_atlas",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "visual_medium": "editorial_typographic"
+      },
+      "select_image_locked_text": "统一治理\n可追溯输出\n权限边界"
+    }
+  },
+  "schema": 1
+}

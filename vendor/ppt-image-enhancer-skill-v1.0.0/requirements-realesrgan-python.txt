@@ -1,0 +1,3 @@
+# Install PyTorch appropriate to your hardware first.
+# Then bootstrap official Real-ESRGAN:
+#   python tools/bootstrap.py --backend realesrgan

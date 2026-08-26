@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {"id": "SRC1", "title": "示例材料", "type": "docx", "path": "sources/example.docx", "visibility": "external_ok"}
+  ],
+  "source_structure": [
+    {"id": "CH01", "title": "第一章 数据服务形成机制", "order": 1, "level": "chapter", "source_refs": ["ST001"]},
+    {"id": "CH01-S01", "title": "一、资源治理与可信使用", "order": 2, "level": "section", "parent_id": "CH01", "source_refs": ["ST001", "ST002", "ST003", "ST004"]}
+  ],
+  "facts": [
+    {"id": "F1", "statement": "数据资源首先需要完成可识别和可管理的治理。", "source_refs": ["ST001"], "strength": "stated", "group_id": "G1", "visibility": "external_ok"},
+    {"id": "F2", "statement": "可信使用机制控制授权、安全和审计。", "source_refs": ["ST002"], "strength": "stated", "group_id": "G1", "visibility": "external_ok"},
+    {"id": "F3", "statement": "治理和可信使用共同支撑服务输出。", "source_refs": ["ST003"], "strength": "stated", "group_id": "G1", "visibility": "external_ok"},
+    {"id": "F4", "statement": "具体技术能力清单留到后续页面说明。", "source_refs": ["ST004"], "strength": "stated", "visibility": "external_ok"}
+  ],
+  "concepts": [
+    {"id": "C1", "term": "示例概念", "definition": "占位定义。", "source_refs": ["ST001"], "visibility": "external_ok"}
+  ],
+  "relations": [
+    {"id": "R1", "from": "数据资源治理", "to": "可信使用", "relation": "治理为可信使用提供可识别、可管理的资源基础", "basis": "inferred", "confidence": "high", "support": ["F1", "F2"], "source_refs": ["ST001", "ST002"], "visibility": "external_ok"}
+  ],
+  "arguments": [
+    {"id": "A1", "claim": "资源治理与可信使用共同支撑服务输出。", "support": ["F1", "F2", "F3"], "basis": "inferred", "confidence": "high", "source_refs": ["ST001", "ST002", "ST003"], "visibility": "external_ok"}
+  ]
+}

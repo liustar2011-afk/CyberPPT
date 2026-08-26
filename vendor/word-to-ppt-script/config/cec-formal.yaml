@@ -1,0 +1,44 @@
+profile: cec-formal
+language: zh-CN
+canvas:
+  ratio: "16:9"
+  reference_size: [1280, 720]
+text:
+  font_family: "Microsoft YaHei"
+  min_body_pt: 9
+  title_in_image: false
+  max_title_chars: 28
+  target_visible_chars_min: 180
+  target_visible_chars_max: 520
+  target_modules_min: 2
+  target_modules_max: 5
+style:
+  background: "#FFFFFF"
+  primary: "#12355B"
+  title: "#101820"
+  body: "#303030"
+  secondary: "#6F7275"
+  divider: "#C9CDD1"
+  real_scene_anchor: true
+  front_facing_people: false
+  logo_in_body_image: false
+  page_number_in_body_image: false
+  decorative_bars_in_body_image: false
+writing:
+  formal: true
+  decision_oriented: true
+  advertising_slogans: false
+  banned_contrast_frames:
+    - "不是.*而是"
+    - "不能只.*还要"
+    - "不只是.*更是"
+  banned_defensive_coaching_frames:
+    - "反复区分"
+    - "避免.{0,12}(?:误解|听成|当成)"
+    - "不要.{0,12}讲成"
+    - "不是.{0,8}承诺"
+    - "不构成.{0,8}承诺"
+    - "防止.{0,12}误解"
+    - "以免.{0,12}误解"
+  prohibited_markdown:
+    - "*"
