@@ -173,6 +173,30 @@ def _project_arguments(source_truth: dict[str, Any]) -> list[dict[str, Any]]:
     return arguments
 
 
+def _project_source_structure(source_truth: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        dict(item)
+        for item in source_truth.get("source_structure") or []
+        if isinstance(item, dict)
+    ]
+
+
+def _project_concepts(source_truth: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        dict(item)
+        for item in source_truth.get("semantic_concepts") or []
+        if isinstance(item, dict)
+    ]
+
+
+def _project_semantic_relations(source_truth: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        dict(item)
+        for item in source_truth.get("semantic_relations") or []
+        if isinstance(item, dict)
+    ]
+
+
 def project_source_truth_to_foundation(source_truth: dict[str, Any]) -> dict[str, Any]:
     """Return a foundation.json payload built from an already-validated Source Truth.
 
@@ -185,12 +209,20 @@ def project_source_truth_to_foundation(source_truth: dict[str, Any]) -> dict[str
     facts, constraints, entities, numbers = _project_facts_and_constraints(source_truth)
     return {
         "sources": _project_sources(source_truth),
+        "source_structure": _project_source_structure(source_truth),
         "facts": facts,
-        "concepts": [],
+        "concepts": _project_concepts(source_truth),
         "entities": entities,
-        "relations": _project_relations(source_truth),
+        "relations": [
+            *_project_relations(source_truth),
+            *_project_semantic_relations(source_truth),
+        ],
         "arguments": _project_arguments(source_truth),
         "constraints": constraints,
         "numbers": numbers,
-        "open_questions": [],
+        "open_questions": [
+            _text(item)
+            for item in source_truth.get("open_questions") or []
+            if _text(item)
+        ],
     }

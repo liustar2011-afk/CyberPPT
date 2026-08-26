@@ -1,0 +1,591 @@
+"""Project validated Source Foundation semantics into canonical Source Truth.
+
+This bridge is intentionally mechanical.  It binds layer-three normalized
+facts to the repository's stable source units and then delegates Source Truth
+record construction to :func:`cyberppt.stage01_compiler.compile_source_truth`.
+It does not plan pages, rewrite facts, or create a second semantic authority.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import re
+import unicodedata
+from typing import Any
+
+from cyberppt.semantic_understanding import SEMANTIC_ARGUMENT_MODEL
+from cyberppt.source_argument_model import SCHEMA as ARGUMENT_MODEL_SCHEMA
+from cyberppt.source_document_map import (
+    SOURCE_HEADING_TREE,
+    load_source_units,
+)
+from cyberppt.stage01_compiler import SOURCE_TRUTH, compile_source_truth
+
+
+_ROLE_MAP = {
+    "background": "foundation",
+    "context": "foundation",
+    "goal": "positioning",
+    "mechanism": "architecture",
+    "approach": "capability",
+    "constraint": "boundary",
+    "implementation": "implementation",
+    "evidence": "evidence",
+    "other": "evidence",
+}
+
+_DUTY_MAP = {
+    "metadata": "metadata",
+    "problem": "gap",
+    "constraint": "boundary",
+    "condition": "boundary",
+    "goal": "response",
+    "process": "driver",
+    "responsibility": "support",
+    "platform": "support",
+    "service": "support",
+    "capability": "support",
+    "dataset": "support",
+    "scenario": "support",
+    "technology": "support",
+    "metric": "support",
+}
+
+_EVIDENCE_ROLE_MAP = {
+    "problem": "problem",
+    "constraint": "boundary",
+    "condition": "boundary",
+    "requirement": "boundary",
+}
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"invalid JSON at {path}: {exc.msg}") from exc
+    if not isinstance(value, dict):
+        raise ValueError(f"JSON root must be an object: {path}")
+    return value
+
+
+def _write_json(path: Path, value: dict[str, Any]) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return path
+
+
+def _text(value: object) -> str:
+    return str(value or "").strip()
+
+
+def _items(value: object) -> list[dict[str, Any]]:
+    return [item for item in value if isinstance(item, dict)] if isinstance(value, list) else []
+
+
+def _strings(value: object) -> list[str]:
+    return [_text(item) for item in value if _text(item)] if isinstance(value, list) else []
+
+
+def _normalized_text(value: object) -> str:
+    text = unicodedata.normalize("NFKC", _text(value))
+    return re.sub(r"\s+", "", text)
+
+
+def _normalized_binding_text(value: object) -> str:
+    """Normalize converter-only Markdown emphasis before source binding."""
+
+    return _normalized_text(value).replace("**", "")
+
+
+def _discover_dirs(
+    project: Path,
+    foundation_dir: Path | None,
+    semantic_dir: Path | None,
+) -> tuple[Path, Path]:
+    if foundation_dir is not None or semantic_dir is not None:
+        if foundation_dir is None or semantic_dir is None:
+            raise ValueError("--foundation-dir and --semantic-dir must be supplied together")
+        return foundation_dir.expanduser().resolve(), semantic_dir.expanduser().resolve()
+
+    manifest_path = project / "workbench/source-foundation/manifest.json"
+    manifest = _read_json(manifest_path)
+    candidates = [
+        item
+        for item in _items(manifest.get("items"))
+        if item.get("status") == "ok" and item.get("foundation") and item.get("semantic")
+    ]
+    if len(candidates) != 1:
+        raise ValueError(
+            "source-foundation projection requires exactly one successful manifest item; "
+            f"found {len(candidates)}"
+        )
+    item = candidates[0]
+    return Path(str(item["foundation"])).expanduser().resolve(), Path(str(item["semantic"])).expanduser().resolve()
+
+
+def _block_to_source_unit(project: Path, structure: dict[str, Any]) -> dict[str, str]:
+    blocks = _items(structure.get("blocks"))
+    units = sorted(
+        (
+            item
+            for item in load_source_units(project)
+            if _text(item.get("kind")) != "heading"
+        ),
+        key=lambda item: int(item.get("source_order") or 0),
+    )
+    if len(blocks) != len(units):
+        raise ValueError(
+            "source-foundation blocks and stable non-heading source units differ in count: "
+            f"{len(blocks)} != {len(units)}"
+        )
+
+    result: dict[str, str] = {}
+    mismatches: list[str] = []
+    for block, unit in zip(blocks, units, strict=True):
+        block_id = _text(block.get("block_id"))
+        unit_id = _text(unit.get("unit_id"))
+        if not block_id or not unit_id:
+            raise ValueError("source-foundation block and source unit IDs must be non-empty")
+        if _normalized_binding_text(block.get("text")) != _normalized_binding_text(unit.get("text")):
+            mismatches.append(block_id)
+            continue
+        result[block_id] = unit_id
+    if mismatches:
+        preview = ", ".join(mismatches[:8])
+        raise ValueError(
+            "source-foundation block text does not match the current stable source map; "
+            f"first mismatches: {preview}"
+        )
+    return result
+
+
+def _source_structure(project: Path) -> list[dict[str, Any]]:
+    payload = _read_json(project / SOURCE_HEADING_TREE)
+    headings = sorted(
+        _items(payload.get("headings")),
+        key=lambda item: int(item.get("source_order") or 0),
+    )
+    result: list[dict[str, Any]] = []
+    for heading in headings:
+        title = _text(heading.get("title"))
+        level_number = int(heading.get("level") or 1)
+        if level_number == 1 and title.startswith("附件"):
+            level = "appendix"
+        elif level_number == 1 and title == "结束语":
+            level = "closing"
+        elif level_number == 1:
+            level = "chapter"
+        elif level_number == 2:
+            level = "section"
+        else:
+            level = "subsection"
+        item: dict[str, Any] = {
+            "id": _text(heading.get("heading_id")),
+            "title": title,
+            "order": int(heading.get("source_order") or 0),
+            "level": level,
+            "source_refs": [_text(heading.get("unit_id"))],
+        }
+        parent_id = _text(heading.get("parent_heading_id"))
+        if parent_id:
+            item["parent_id"] = parent_id
+        result.append(item)
+    return result
+
+
+def _fact_unit_refs(fact: dict[str, Any], block_map: dict[str, str]) -> list[str]:
+    refs: list[str] = []
+    for evidence in _items(fact.get("evidence")):
+        block_id = _text(evidence.get("block_id"))
+        unit_id = block_map.get(block_id)
+        if not unit_id:
+            raise ValueError(
+                f"normalized fact {_text(fact.get('normalized_fact_id'))} references unmapped block {block_id}"
+            )
+        if unit_id not in refs:
+            refs.append(unit_id)
+    if not refs:
+        raise ValueError(
+            f"normalized fact {_text(fact.get('normalized_fact_id'))} has no source-bound evidence"
+        )
+    return refs
+
+
+def _fact_section_ids(
+    fact: dict[str, Any],
+    blocks_by_id: dict[str, dict[str, Any]],
+) -> list[str]:
+    section_ids: list[str] = []
+    normalized_section = _text(fact.get("section_id"))
+    if normalized_section:
+        section_ids.append(normalized_section)
+    for evidence in _items(fact.get("evidence")):
+        block_id = _text(evidence.get("block_id"))
+        block = blocks_by_id.get(block_id)
+        if block is None:
+            raise ValueError(
+                f"normalized fact {_text(fact.get('normalized_fact_id'))} references unknown block {block_id}"
+            )
+        section_id = _text(block.get("section_id"))
+        if section_id and section_id not in section_ids:
+            section_ids.append(section_id)
+    return section_ids
+
+
+def _node(
+    item: dict[str, Any],
+    *,
+    node_id: str,
+    source_heading: str,
+    evidence_refs: list[str],
+    weight: str,
+) -> dict[str, Any]:
+    return {
+        "id": node_id,
+        "source_heading": source_heading or node_id,
+        "section_thesis": _text(item.get("statement")),
+        "argument_role": _ROLE_MAP.get(_text(item.get("role")), "evidence"),
+        "argument_weight": weight,
+        "status": "mixed",
+        "evidence_refs": evidence_refs,
+        "claim_origin": "source_implied",
+        "projection_only": True,
+    }
+
+
+def build_projection_model(
+    project: Path,
+    foundation_dir: Path,
+    semantic_dir: Path,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    structure = _read_json(foundation_dir / "structure.json")
+    normalized = _read_json(semantic_dir / "normalized-facts.json")
+    concepts = _read_json(semantic_dir / "concept-base.json")
+    relations = _read_json(semantic_dir / "relation-graph.json")
+    argument = _read_json(semantic_dir / "argument-chain.json")
+    report = _read_json(semantic_dir / "semantic-report.json")
+    if report.get("status") != "ok":
+        raise ValueError("semantic-report.json must report status: ok before projection")
+
+    facts = _items(normalized.get("facts"))
+    fact_by_id = {
+        _text(item.get("normalized_fact_id")): item
+        for item in facts
+        if _text(item.get("normalized_fact_id"))
+    }
+    block_map = _block_to_source_unit(project, structure)
+    refs_by_fact = {
+        fact_id: _fact_unit_refs(fact, block_map)
+        for fact_id, fact in fact_by_id.items()
+    }
+    blocks_by_id = {
+        _text(item.get("block_id")): item
+        for item in _items(structure.get("blocks"))
+        if _text(item.get("block_id"))
+    }
+    sections_by_fact = {
+        fact_id: _fact_section_ids(fact, blocks_by_id)
+        for fact_id, fact in fact_by_id.items()
+    }
+
+    reconstructed = _items(argument.get("reconstructed_chain"))
+    source_chain = _items(argument.get("source_chain"))
+    section_title = {
+        _text(item.get("section_id")): _text(item.get("title"))
+        for item in _items(_read_json(semantic_dir / "semantic-workpack.json").get("sections"))
+    }
+    fact_nodes: dict[str, list[str]] = {}
+    source_node_by_section: dict[str, str] = {}
+    section_nodes: list[dict[str, Any]] = []
+    for index, item in enumerate(reconstructed, start=1):
+        node_id = _text(item.get("node_id")) or f"RC-{index:03d}"
+        fact_ids = [fact_id for fact_id in _strings(item.get("normalized_fact_ids")) if fact_id in fact_by_id]
+        evidence_refs = list(dict.fromkeys(ref for fact_id in fact_ids for ref in refs_by_fact[fact_id]))
+        first_section = next(iter(_strings(item.get("section_ids"))), "")
+        section_nodes.append(
+            _node(
+                item,
+                node_id=node_id,
+                source_heading=section_title.get(first_section, first_section),
+                evidence_refs=evidence_refs,
+                weight="core" if index == 1 else "supporting",
+            )
+        )
+        for fact_id in fact_ids:
+            fact_nodes.setdefault(fact_id, []).append(node_id)
+
+    subsection_nodes: list[dict[str, Any]] = []
+    for index, item in enumerate(source_chain, start=1):
+        node_id = _text(item.get("node_id")) or f"SC-{index:03d}"
+        for section_id in _strings(item.get("section_ids")):
+            existing = source_node_by_section.setdefault(section_id, node_id)
+            if existing != node_id:
+                raise ValueError(
+                    f"source section {section_id} maps to multiple source-chain nodes: "
+                    f"{existing}, {node_id}"
+                )
+        fact_ids = [fact_id for fact_id in _strings(item.get("normalized_fact_ids")) if fact_id in fact_by_id]
+        evidence_refs = list(dict.fromkeys(ref for fact_id in fact_ids for ref in refs_by_fact[fact_id]))
+        first_section = next(iter(_strings(item.get("section_ids"))), "")
+        node = _node(
+            item,
+            node_id=node_id,
+            source_heading=section_title.get(first_section, first_section),
+            evidence_refs=evidence_refs,
+            weight="supporting",
+        )
+        node["parent_id"] = next(
+            (
+                _text(parent.get("node_id"))
+                for parent in reconstructed
+                if set(_strings(parent.get("section_ids"))) & set(_strings(item.get("section_ids")))
+            ),
+            "document",
+        )
+        subsection_nodes.append(node)
+        for fact_id in fact_ids:
+            fact_nodes.setdefault(fact_id, []).insert(0, node_id)
+
+    metadata_ids = [
+        fact_id
+        for fact_id, fact in fact_by_id.items()
+        if _text(fact.get("fact_type")) == "metadata"
+    ]
+    if metadata_ids:
+        metadata_refs = list(dict.fromkeys(ref for fact_id in metadata_ids for ref in refs_by_fact[fact_id]))
+        section_nodes.append(
+            {
+                "id": "META-001",
+                "source_heading": "题名与目录元数据",
+                "section_thesis": "题名、落款、日期和目录条目保留在来源追溯层。",
+                "argument_role": "evidence",
+                "argument_weight": "detail",
+                "status": "existing",
+                "evidence_refs": metadata_refs,
+                "claim_origin": "source_explicit",
+                "projection_only": True,
+            }
+        )
+        for fact_id in metadata_ids:
+            fact_nodes.setdefault(fact_id, []).append("META-001")
+
+    if not section_nodes:
+        raise ValueError("argument-chain.json has no reconstructed nodes to project")
+
+    core_fact_ids = {
+        next((fact_id for fact_id in _strings(item.get("normalized_fact_ids")) if fact_id in fact_by_id), "")
+        for item in reconstructed
+    }
+    core_fact_ids.discard("")
+    assignments: list[dict[str, Any]] = []
+    for fact_id, fact in fact_by_id.items():
+        fact_type = _text(fact.get("fact_type")) or "other"
+        semantic_node_ids = list(fact_nodes.get(fact_id, []))
+        if not semantic_node_ids:
+            section_ids = sections_by_fact[fact_id]
+            is_metadata = fact_type == "metadata" or section_ids == ["preamble"]
+            if is_metadata:
+                if "META-001" not in {item["id"] for item in section_nodes}:
+                    raise ValueError(f"metadata fact {fact_id} has no META-001 projection node")
+                semantic_node_ids = ["META-001"]
+            else:
+                semantic_node_ids = list(
+                    dict.fromkeys(
+                        source_node_by_section[section_id]
+                        for section_id in section_ids
+                        if section_id in source_node_by_section
+                    )
+                )
+                if not semantic_node_ids:
+                    joined = ", ".join(section_ids) or "<none>"
+                    raise ValueError(
+                        f"substantive normalized fact {fact_id} has no source-chain node "
+                        f"for section(s): {joined}"
+                    )
+        if fact_id in core_fact_ids:
+            importance = "core"
+        elif fact_type in {"constraint", "condition", "requirement"}:
+            importance = "constraint"
+        else:
+            importance = "detail"
+        assignments.append(
+            {
+                "semantic_node_ids": semantic_node_ids,
+                "atomic_items": [
+                    {
+                        "item_id": fact_id,
+                        "statement": _text(fact.get("statement")),
+                        "source_unit_refs": refs_by_fact[fact_id],
+                        "status": "unknown",
+                        "evidence_role": _EVIDENCE_ROLE_MAP.get(fact_type, "fact"),
+                        "importance": importance,
+                        "argument_duty": _DUTY_MAP.get(fact_type, "detail"),
+                        "claim_origin": (
+                            "source_explicit"
+                            if _text(fact.get("normalization")) == "verbatim"
+                            else "source_implied"
+                        ),
+                        "coverage_anchors": [_text(fact.get("statement"))[:48]],
+                    }
+                ],
+            }
+        )
+
+    thesis = "；".join(
+        _text(item.get("statement"))
+        for item in reconstructed
+        if _text(item.get("statement"))
+    )
+    thesis_refs = list(dict.fromkeys(ref for fact_id in core_fact_ids for ref in refs_by_fact[fact_id]))
+    source = structure.get("source") if isinstance(structure.get("source"), dict) else {}
+    source_file = _text(source.get("source_file")) or _text(structure.get("input_markdown"))
+    subject = Path(source_file).stem if source_file else project.name
+    business_objects = [
+        _text(item.get("canonical_name"))
+        for item in _items(concepts.get("concepts"))
+        if _text(item.get("canonical_name"))
+    ]
+    model = {
+        "schema": ARGUMENT_MODEL_SCHEMA,
+        "version": 1,
+        "interpretation_contract_mode": "projection",
+        "authority_mode": "projection_only",
+        "document_semantics": {
+            "document_role": "合作交流材料" if "合作交流" in subject else "正式材料",
+            "subject_of_report": subject,
+            "primary_thesis": thesis,
+            "decision_boundary": "内容范围、事实强度、主体责任、条件和状态均继承已验证 Source Foundation 产物。",
+            "author_purpose": "",
+            "argument_method": [
+                _text(item.get("statement")) for item in reconstructed if _text(item.get("statement"))
+            ],
+            "supporting_basis": business_objects,
+            "business_objects": business_objects,
+            "scope": "；".join(
+                item["title"] for item in _source_structure(project) if item["level"] == "chapter"
+            ),
+            "decision_intent": "为后续交流目标和脚本规划提供源材料事实与论证基础。",
+        },
+        "document_thesis": {
+            "statement": thesis,
+            "argument_role": "thesis",
+            "argument_weight": "core",
+            "status": "mixed",
+            "evidence_refs": thesis_refs,
+            "actor_refs": [],
+            "claim_origin": "source_implied",
+            "projection_only": True,
+        },
+        "section_nodes": section_nodes,
+        "subsection_nodes": subsection_nodes,
+        "argument_relations": [],
+        "source_coverage": {
+            "assignments": assignments,
+            "intentional_omissions": [],
+            "review_notes": [
+                "由已验证 normalized-facts.json 机械投影；未新增、合并或改写事实。"
+            ],
+        },
+        "source_gaps": _items(argument.get("diagnostics")),
+    }
+    return model, concepts, relations
+
+
+def _enrich_source_truth(
+    project: Path,
+    truth_path: Path,
+    concepts: dict[str, Any],
+    relations: dict[str, Any],
+    normalized: dict[str, Any],
+) -> Path:
+    truth = _read_json(truth_path)
+    record_by_fact = {
+        _text(item.get("atomic_item_id")): item
+        for item in _items(truth.get("records"))
+        if _text(item.get("atomic_item_id"))
+    }
+    projected_concepts: list[dict[str, Any]] = []
+    for item in _items(concepts.get("concepts")):
+        fact_ids = _strings(item.get("normalized_fact_ids"))
+        record_refs = [record_by_fact[fact_id]["id"] for fact_id in fact_ids if fact_id in record_by_fact]
+        projected_concepts.append(
+            {
+                "id": _text(item.get("concept_id")),
+                "term": _text(item.get("canonical_name")),
+                "definition": _text(item.get("definition")),
+                "source_refs": record_refs,
+                "visibility": "external_ok",
+            }
+        )
+    projected_relations: list[dict[str, Any]] = []
+    for item in _items(relations.get("relations")):
+        fact_ids = _strings(item.get("normalized_fact_ids"))
+        support = [record_by_fact[fact_id]["id"] for fact_id in fact_ids if fact_id in record_by_fact]
+        projected_relations.append(
+            {
+                "id": _text(item.get("relation_id")),
+                "from": _text(item.get("from_concept_id")),
+                "to": _text(item.get("to_concept_id")),
+                "relation": _text(item.get("relation_type")) or "associated_with",
+                "basis": _text(item.get("basis")) or "explicit",
+                "confidence": _text(item.get("confidence")) or "medium",
+                "support": support,
+                "source_refs": list(
+                    dict.fromkeys(
+                        ref
+                        for record_id in support
+                        for ref in _strings(
+                            next(
+                                (
+                                    record.get("source_unit_refs")
+                                    for record in _items(truth.get("records"))
+                                    if _text(record.get("id")) == record_id
+                                ),
+                                [],
+                            )
+                        )
+                    )
+                ),
+            }
+        )
+    issues = _items(normalized.get("conflicts")) + _items(normalized.get("ambiguities"))
+    truth["source_structure"] = _source_structure(project)
+    truth["semantic_concepts"] = projected_concepts
+    truth["semantic_relations"] = projected_relations
+    truth["open_questions"] = [
+        _text(item.get("statement") or item.get("description"))
+        for item in issues
+        if _text(item.get("statement") or item.get("description"))
+    ]
+    return _write_json(truth_path, truth)
+
+
+def project_source_foundation_truth(
+    project: Path,
+    *,
+    foundation_dir: Path | None = None,
+    semantic_dir: Path | None = None,
+    model_output: Path | None = None,
+    truth_output: Path | None = None,
+) -> tuple[Path, Path]:
+    project = project.expanduser().resolve()
+    if not project.is_dir():
+        raise FileNotFoundError(f"project does not exist: {project}")
+    foundation, semantic = _discover_dirs(project, foundation_dir, semantic_dir)
+    model, concepts, relations = build_projection_model(project, foundation, semantic)
+    model_path = (
+        model_output.expanduser().resolve()
+        if model_output is not None
+        else project / SEMANTIC_ARGUMENT_MODEL
+    )
+    _write_json(model_path, model)
+    truth_path = compile_source_truth(project, truth_output)
+    normalized = _read_json(semantic / "normalized-facts.json")
+    _enrich_source_truth(project, truth_path, concepts, relations, normalized)
+    return model_path, truth_path

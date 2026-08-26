@@ -6,6 +6,37 @@ from script_engine.contracts import validate_foundation
 
 def _source_truth() -> dict:
     return {
+        "source_structure": [
+            {
+                "id": "H-1",
+                "title": "第一章 建设背景",
+                "order": 1,
+                "level": "chapter",
+                "source_refs": ["SU-H1"],
+            }
+        ],
+        "semantic_concepts": [
+            {
+                "id": "C-1",
+                "term": "行业平台",
+                "definition": "组织行业资源与需求的平台。",
+                "source_refs": ["ST0001"],
+                "visibility": "external_ok",
+            }
+        ],
+        "semantic_relations": [
+            {
+                "id": "R-1",
+                "from": "C-1",
+                "to": "C-1",
+                "relation": "supports",
+                "basis": "explicit",
+                "confidence": "high",
+                "support": ["ST0001"],
+                "source_refs": ["SU-1"],
+            }
+        ],
+        "open_questions": ["待确认合作范围。"],
         "sources": [
             {
                 "id": "SRC-1",
@@ -103,3 +134,11 @@ def test_internal_only_visibility_is_preserved() -> None:
     foundation = project_source_truth_to_foundation(_source_truth())
     constraint = foundation["constraints"][0]
     assert constraint["visibility"] == "internal_only"
+
+
+def test_source_structure_concepts_relations_and_questions_are_preserved() -> None:
+    foundation = project_source_truth_to_foundation(_source_truth())
+    assert foundation["source_structure"][0]["id"] == "H-1"
+    assert foundation["concepts"][0]["id"] == "C-1"
+    assert any(item["id"] == "R-1" for item in foundation["relations"])
+    assert foundation["open_questions"] == ["待确认合作范围。"]

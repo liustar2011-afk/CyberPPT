@@ -34,6 +34,7 @@ from cyberppt.semantic_understanding import (
     run_semantic_understanding_audit,
 )
 from cyberppt.source_document_map import prepare_source_map, run_source_map_audit
+from cyberppt.source_foundation_projection import project_source_foundation_truth
 from cyberppt.stage02_handoff import (
     HANDOFF_AUDIT,
     HANDOFF_JSON,
@@ -130,6 +131,22 @@ def _compile_source_truth_command(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     print(str(output))
+    return 0
+
+
+def _source_foundation_truth_command(args: argparse.Namespace) -> int:
+    try:
+        model_path, truth_path = project_source_foundation_truth(
+            Path(args.project),
+            foundation_dir=Path(args.foundation_dir) if args.foundation_dir else None,
+            semantic_dir=Path(args.semantic_dir) if args.semantic_dir else None,
+            model_output=Path(args.model_output) if args.model_output else None,
+            truth_output=Path(args.output) if args.output else None,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps({"semantic_argument_model": str(model_path), "source_truth": str(truth_path)}, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -600,6 +617,33 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional output path; defaults to the canonical project source-truth.json.",
     )
     compile_truth.set_defaults(func=_compile_source_truth_command)
+
+    foundation_truth = subparsers.add_parser(
+        "source-foundation-truth",
+        help="Mechanically project one validated Source Foundation semantic set into canonical Source Truth.",
+    )
+    foundation_truth.add_argument("project", help="CyberPPT project directory.")
+    foundation_truth.add_argument(
+        "--foundation-dir",
+        default="",
+        help="Optional layer-two foundation directory; pair with --semantic-dir. Defaults to the unique successful source-foundation manifest item.",
+    )
+    foundation_truth.add_argument(
+        "--semantic-dir",
+        default="",
+        help="Optional validated semantic directory; pair with --foundation-dir.",
+    )
+    foundation_truth.add_argument(
+        "--model-output",
+        default="",
+        help="Optional projection-model destination; defaults to the canonical semantic-argument-model.json.",
+    )
+    foundation_truth.add_argument(
+        "--output",
+        default="",
+        help="Optional Source Truth destination; defaults to the canonical source-truth.json.",
+    )
+    foundation_truth.set_defaults(func=_source_foundation_truth_command)
 
     assemble_final = subparsers.add_parser(
         "assemble-final-script",
