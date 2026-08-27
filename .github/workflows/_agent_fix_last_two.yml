@@ -30,7 +30,7 @@ jobs:
           p = Path('cyberppt/script_quality/onscreen.py')
           s = p.read_text(encoding='utf-8')
           old = '''    for titles in comparison_sets:\n        by_shape: dict[int, list[tuple[str, tuple[str, ...]]]] = {}\n        for title in titles:\n'''
-          new = '''    for titles in comparison_sets:\n        by_shape: dict[int, list[tuple[str, tuple[str, ...]]]] = {}\n        # comparison_sets are intentionally sets because membership, not order,\n        # defines a peer group. Evidence, however, is user-visible/debug output\n        # and must be deterministic. Preserve the authored on-screen module\n        # order, with a lexical fallback for contract-only titles.\n        ordered_titles = sorted(\n            titles,\n            key=lambda title: (title_positions.get(title, 10**9), title),\n        )\n        for title in ordered_titles:\n'''
+          new = '''    module_order = {\n        title: index for index, title in enumerate(module_labels)\n    }\n    for titles in comparison_sets:\n        by_shape: dict[int, list[tuple[str, tuple[str, ...]]]] = {}\n        # comparison_sets are intentionally sets because membership, not order,\n        # defines a peer group. Evidence, however, is user-visible/debug output\n        # and must be deterministic. Preserve the authored on-screen module\n        # order, with a lexical fallback for contract-only titles.\n        ordered_titles = sorted(\n            titles,\n            key=lambda title: (module_order.get(title, 10**9), title),\n        )\n        for title in ordered_titles:\n'''
           if old not in s:
               raise SystemExit('dimension ordering marker missing')
           p.write_text(s.replace(old, new, 1), encoding='utf-8')
