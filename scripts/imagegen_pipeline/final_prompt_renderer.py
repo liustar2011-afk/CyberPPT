@@ -138,11 +138,15 @@ def render_debug_receipt(
     prompt_ir_version: str,
     source_hashes: tuple[tuple[str, str], ...] = (),
 ) -> dict[str, object]:
-    """Build the sidecar receipt carrying prompt-excluded provenance/bindings."""
+    """Build the sidecar receipt carrying prompt-excluded provenance/bindings.
+
+    Binding fields are additive under the existing v1 receipt schema so old
+    consumers continue to read the same authority/version token.
+    """
 
     rendered_group = {group.id: index for index, group in enumerate(ir.semantic_groups, start=1)}
     return {
-        "schema": "cyberppt.final_prompt_debug.v2",
+        "schema": "cyberppt.final_prompt_debug.v1",
         "page": page_id,
         "compiler": compiler,
         "prompt_ir_version": prompt_ir_version,
