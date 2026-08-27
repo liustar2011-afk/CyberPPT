@@ -74,6 +74,21 @@ def _project_facts_and_constraints(
             "strength": _text(record.get("priority")) or _text(record.get("verification_status")),
             "visibility": visibility,
         }
+        for field in (
+            "claim_role",
+            "status",
+            "semantic_status",
+            "semantic_argument_role",
+            "source_argument_role",
+            "argument_duty",
+            "normalized_fact_type",
+            "normalized_semantic_role",
+        ):
+            value = _text(record.get(field))
+            if value:
+                item[field] = value
+        if isinstance(record.get("table_context"), dict):
+            item["table_context"] = dict(record["table_context"])
         if _text(record.get("type")) in _CONSTRAINT_TYPES:
             constraints.append({
                 "id": record_id,

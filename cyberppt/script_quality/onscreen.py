@@ -13,6 +13,7 @@ from cyberppt.source_detail_visibility import (
     is_bare_business_label,
     source_has_richer_item_detail,
 )
+from cyberppt.semantic_group_review import source_colocation_grouping_mismatch
 
 from .common import _compact_len, _source_statement_overlap, normalized_tokens, text_similarity
 from .models import ScriptDocument, ScriptPage, ScriptQualityIssue, _issue
@@ -1800,6 +1801,69 @@ def _onscreen_source_detail_collapsed_to_label_issues(
                 "上屏明细把来源已有内容或页面职责压缩成了只有名称的标签，读者无法判断该项承担什么作用。",
                 "改为“标签：来源支持的对象、作用、任务或边界”，末尾不加句号。来源仅提供分类名称时，可在提纲中明确 label_only_onscreen_allowed=true。",
                 evidence=(f"module={heading}", *labels),
+            )
+        )
+    return issues
+
+
+def _onscreen_source_grouping_review_issues(
+    page: ScriptPage,
+    contract: dict[str, object] | None = None,
+) -> list[ScriptQualityIssue]:
+    """Reject source co-location promoted into a false parent-child grouping."""
+
+    if page.page_type != "content":
+        return []
+    contract = contract or {}
+    nested = contract.get("onscreen_contract")
+    nested = nested if isinstance(nested, dict) else {}
+    modules = [
+        module for module in nested.get("modules") or [] if isinstance(module, dict)
+    ]
+    if not modules:
+        return []
+
+    statements: dict[str, tuple[str, tuple[str, ...]]] = {}
+    for unit in contract.get("content_units") or []:
+        if not isinstance(unit, dict):
+            continue
+        unit_id = str(
+            unit.get("unit_id") or unit.get("record_id") or unit.get("id") or ""
+        ).strip()
+        statement = str(
+            unit.get("statement") or unit.get("source_statement") or ""
+        ).strip()
+        if unit_id and statement:
+            statements[unit_id] = (
+                statement,
+                tuple(str(value) for value in unit.get("source_refs") or [] if str(value)),
+            )
+
+    issues: list[ScriptQualityIssue] = []
+    for module in modules:
+        heading = str(module.get("heading") or "").strip()
+        refs = [str(ref) for ref in module.get("evidence_refs") or [] if str(ref)]
+        mismatch = source_colocation_grouping_mismatch(
+            heading,
+            (
+                (ref, *statements.get(ref, ("", ())))
+                for ref in refs
+            ),
+        )
+        if not mismatch:
+            continue
+        issues.append(
+            _issue(
+                "ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY",
+                page,
+                "同段出现的行动或应用要求被误作狭义制度模块的下位项。",
+                "把父级改为来源支持的政策要求类上位概念，或移动、拆分行动类明细。",
+                evidence=(
+                    f"module={heading}",
+                    f"action_refs={','.join(mismatch.action_refs)}",
+                    f"institution_refs={','.join(mismatch.institution_refs)}",
+                    f"shared_source_refs={','.join(mismatch.shared_source_refs)}",
+                ),
             )
         )
     return issues

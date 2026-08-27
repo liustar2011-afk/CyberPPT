@@ -12,6 +12,7 @@ from cyberppt.source_detail_visibility import (
     is_bare_business_label,
     source_has_richer_item_detail,
 )
+from cyberppt.semantic_group_review import source_colocation_grouping_mismatch
 from cyberppt.stage02_readiness import (
     audit_authored_stage02_readiness,
     audit_stage02_readiness,
@@ -43,6 +44,8 @@ _VISIBLE_CHAR_RE = re.compile(r"[一-鿿A-Za-z0-9]")
 _PROPOSITION_END_RE = re.compile(r"[。！？!?]\s*$")
 _EXPRESSION_MODES = {"phrase_led", "sentence_led", "mixed"}
 _ONSCREEN_COMPOSITION_MODES = {"evidence_first", "selective_lead"}
+_EVIDENCE_FIT_VALUES = {"direct", "indirect", "topic_only", "no", "uncertain"}
+_EVIDENCE_FIT_VERDICTS = {"keep", "rename", "move", "split", "reject"}
 _LEAD_LIKE_EVIDENCE_ITEM_RE = re.compile(
     r"(?:需要|应当|应|须|用于|构成|提供|支撑|形成|明确|保持|覆盖|衔接|检验|"
     r"推动|进入|完成|面向|达到|对应|转化|可(?:以|用于))|"
@@ -164,6 +167,149 @@ def _page_evidence_ids(page: dict[str, Any]) -> set[str]:
                     x for x in (module.get("evidence_refs") or []) if isinstance(x, str)
                 )
     return evidence_ids
+
+
+def _page_claim_evidence_ids(page: dict[str, Any]) -> set[str]:
+    """Return evidence that supports the page judgment outside visible modules."""
+
+    evidence_ids: set[str] = set()
+    proof = page.get("proof") or {}
+    if isinstance(proof, dict):
+        evidence_ids.update(x for x in (proof.get("evidence_refs") or []) if isinstance(x, str))
+        evidence_ids.update(x for x in (proof.get("boundary_refs") or []) if isinstance(x, str))
+    analysis_basis = page.get("analysis_basis") or {}
+    if isinstance(analysis_basis, dict):
+        evidence_ids.update(x for x in (analysis_basis.get("supports") or []) if isinstance(x, str))
+    return evidence_ids
+
+
+def _evidence_fit_review_issues(
+    review: object,
+    *,
+    expected_refs: set[str],
+    items: dict[str, dict[str, Any]],
+    context: str,
+    require_direct: bool,
+    allow_indirect: bool,
+    expected_question: object | None = None,
+) -> list[str]:
+    """Validate source-bound PLAN self-review without trusting its verdict alone."""
+
+    if not expected_refs:
+        return []
+    if not isinstance(review, dict):
+        return [f"{context}.evidence_fit_review is required in strict mode"]
+
+    issues: list[str] = []
+    question = str(review.get("question") or "").strip()
+    if not question:
+        issues.append(f"{context}.evidence_fit_review.question is required")
+    elif expected_question is not None and _normalized_review_text(question) != _normalized_review_text(expected_question):
+        issues.append(
+            f"{context}.evidence_fit_review.question must match the page question so evidence is reviewed against the actual page mission"
+        )
+
+    counter_case = str(review.get("counter_case") or "").strip()
+    if len(_normalized_review_text(counter_case)) < 4 or _normalized_review_text(counter_case) in {
+        "无", "没有", "暂无", "不适用", "无反例",
+    }:
+        issues.append(
+            f"{context}.evidence_fit_review.counter_case must state a concrete alternative grouping, boundary, or strongest counter-case"
+        )
+
+    verdict = str(review.get("verdict") or "").strip()
+    if verdict not in _EVIDENCE_FIT_VERDICTS:
+        issues.append(
+            f"{context}.evidence_fit_review.verdict must be one of {sorted(_EVIDENCE_FIT_VERDICTS)}"
+        )
+    elif verdict != "keep":
+        issues.append(
+            f"{context}.evidence_fit_review.verdict='{verdict}' requires PLAN repair before AUTHOR"
+        )
+
+    review_items = [entry for entry in review.get("items") or [] if isinstance(entry, dict)]
+    reviewed_refs = [str(entry.get("evidence_ref") or "").strip() for entry in review_items]
+    nonempty_refs = [ref for ref in reviewed_refs if ref]
+    duplicates = sorted({ref for ref in nonempty_refs if nonempty_refs.count(ref) > 1})
+    if duplicates:
+        issues.append(f"{context}.evidence_fit_review has duplicate evidence_refs {duplicates}")
+    missing = sorted(expected_refs - set(nonempty_refs))
+    extra = sorted(set(nonempty_refs) - expected_refs)
+    if missing:
+        issues.append(f"{context}.evidence_fit_review is missing evidence_refs {missing}")
+    if extra:
+        issues.append(f"{context}.evidence_fit_review reviews unassigned evidence_refs {extra}")
+
+    for item_index, entry in enumerate(review_items):
+        ref = str(entry.get("evidence_ref") or "").strip()
+        fit = str(entry.get("fit") or "").strip()
+        role = str(entry.get("role") or "").strip()
+        reason = str(entry.get("reason") or "").strip()
+        item_context = f"{context}.evidence_fit_review.items[{item_index}] ({ref or '?'})"
+        if ref and ref not in items:
+            issues.append(f"{item_context}: unknown evidence_ref")
+        if fit not in _EVIDENCE_FIT_VALUES:
+            issues.append(f"{item_context}: invalid fit '{fit}'")
+        elif fit in {"no", "uncertain"}:
+            issues.append(f"{item_context}: fit='{fit}' requires PLAN repair before AUTHOR")
+        elif fit == "topic_only":
+            issues.append(f"{item_context}: topic_only evidence cannot support the current page or module claim")
+        elif require_direct and fit != "direct":
+            issues.append(f"{item_context}: module evidence must answer its parent question directly")
+        elif fit == "indirect" and not allow_indirect:
+            issues.append(
+                f"{item_context}: indirect evidence requires an inferred relation_basis with explicit support"
+            )
+        if not role:
+            issues.append(f"{item_context}: role is required")
+        if not reason:
+            issues.append(f"{item_context}: reason is required")
+    return issues
+
+
+def _audit_evidence_fit_reviews(
+    page: dict[str, Any],
+    items: dict[str, dict[str, Any]],
+    *,
+    strict: bool,
+) -> list[str]:
+    if not strict:
+        return []
+
+    issues: list[str] = []
+    analysis = page.get("analysis_basis") if isinstance(page.get("analysis_basis"), dict) else {}
+    proof = page.get("proof") if isinstance(page.get("proof"), dict) else {}
+    inferred = analysis.get("relation_basis") == "inferred" or proof.get("relation_basis") == "inferred"
+    issues.extend(
+        _evidence_fit_review_issues(
+            page.get("evidence_fit_review"),
+            expected_refs=_page_claim_evidence_ids(page),
+            items=items,
+            context="page",
+            require_direct=False,
+            allow_indirect=inferred,
+            expected_question=page.get("question"),
+        )
+    )
+
+    contract = page.get("onscreen_contract")
+    if not isinstance(contract, dict):
+        return issues
+    for module_index, module in enumerate(contract.get("modules") or []):
+        if not isinstance(module, dict):
+            continue
+        refs = {ref for ref in module.get("evidence_refs") or [] if isinstance(ref, str) and ref}
+        issues.extend(
+            _evidence_fit_review_issues(
+                module.get("evidence_fit_review"),
+                expected_refs=refs,
+                items=items,
+                context=f"onscreen_contract.modules[{module_index}] ({module.get('heading') or '?'})",
+                require_direct=True,
+                allow_indirect=False,
+            )
+        )
+    return issues
 
 
 def _onscreen_module_lines(module: dict[str, Any]) -> list[str]:
@@ -414,6 +560,24 @@ def _onscreen_contract_definition_issues(
         if unknown:
             issues.append(
                 f"onscreen_contract.modules[{module_index}] ({heading or '?'}): unknown evidence_refs {unknown}"
+            )
+        mismatch = source_colocation_grouping_mismatch(
+            heading,
+            (
+                (ref, _item_text(items[ref]), items[ref].get("source_refs") or [])
+                for ref in refs
+                if ref in items
+            ),
+        )
+        if mismatch:
+            issues.append(
+                "ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY: onscreen_contract.modules"
+                f"[{module_index}] ({heading or '?'}): action/application evidence "
+                f"{list(mismatch.action_refs)} and institutional evidence "
+                f"{list(mismatch.institution_refs)} share a source location but do not "
+                "form one narrow institutional taxonomy; rename the parent to a supported "
+                "policy-requirement umbrella or move/split the action item; shared source "
+                f"locations={list(mismatch.shared_source_refs)}"
             )
         signals = [signal for signal in module.get("required_signals") or [] if isinstance(signal, str) and signal]
         if not signals:
@@ -1003,6 +1167,11 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
             issues.append(f"chapters: source chapter order/content differs from source_structure; expected {source_chapters}, got {planned}")
 
     audience_scope = plan.get("audience_scope", "unspecified")
+    strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
+    if not strict_evidence_fit:
+        issues.append(
+            "evidence_fit_review_mode: strict is required before PLAN can enter AUTHOR"
+        )
     for index, page in enumerate(plan.get("pages") or []):
         if not isinstance(page, dict):
             continue
@@ -1019,6 +1188,8 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
             issues.append(f"pages.{index} ({page_id}): {contract_issue}")
         for consumption_issue in _audit_source_consumption_definition(page, items):
             issues.append(f"pages.{index} ({page_id}): {consumption_issue}")
+        for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
+            issues.append(f"pages.{index} ({page_id}): {review_issue}")
         scope = page.get("source_scope") or []
         chapters = _scope_chapters(scope)
         operation = page.get("structural_operation")
@@ -1062,6 +1233,11 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
     structure = {x.get("id"): x for x in (foundation.get("source_structure") or []) if isinstance(x, dict) and isinstance(x.get("id"), str)}
     audience_scope = plan.get("audience_scope", "unspecified")
     preserve_structure = plan.get("source_structure_mode") == "preserve"
+    strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
+    if not strict_evidence_fit:
+        issues.append(
+            "PLAN evidence-fit gate: evidence_fit_review_mode: strict is required before AUTHOR"
+        )
 
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
@@ -1075,6 +1251,9 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
         plan_text = _page_text(page)
         evidence_ids = _page_evidence_ids(page)
         evidence = _support_items(sorted(evidence_ids), items)
+
+        for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
+            issues.append(f"slides.{index} ({slide_id}): PLAN evidence-fit gate: {review_issue}")
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
         plan_logic = str(page.get("logic") or "")

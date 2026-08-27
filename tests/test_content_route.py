@@ -19,7 +19,12 @@ def _page(**overrides: object) -> dict[str, object]:
 
 
 def _plan(page: dict[str, object]) -> dict[str, object]:
-    return {"communication_goal": "说明建设重点", "chapters": [], "pages": [page]}
+    return {
+        "communication_goal": "说明建设重点",
+        "evidence_fit_review_mode": "strict",
+        "chapters": [],
+        "pages": [page],
+    }
 
 
 def _foundation() -> dict[str, object]:
@@ -35,7 +40,7 @@ def _foundation() -> dict[str, object]:
     }
 
 
-def test_legacy_page_keeps_source_native_fallback_without_audit_change() -> None:
+def test_page_keeps_source_native_fallback_without_route_audit_change() -> None:
     page = _page()
     assert resolve_content_route(page).primary == "source_native"
     assert validate_deck_plan(_plan(page)) == []

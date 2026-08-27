@@ -169,6 +169,22 @@ dimension; it does not require equal detail counts or identical wording. Do not
 turn a parallel contract into a progression chain through arrows, temporal words or
 step language unless the approved plan declares that relation.
 
+Before AUTHOR, require the approved Deck Plan to declare
+`evidence_fit_review_mode: strict` and pass `audit-plan`. Do not treat a free-form
+Critic explanation as proof that sources fit: page and module reviews must bind
+every assigned `evidence_ref`, include a concrete counter-case, and finish with
+`verdict: keep`. Any `topic_only`, `no`, `uncertain`, `rename`, `move`, `split`
+or `reject` state returns the work to PLAN.
+
+Challenge the inherited grouping again before finalizing onscreen copy. For each
+module, ask what single question the heading poses, whether every child answers
+it, whether siblings have compatible semantic roles, which source ref supports
+each answer, whether paragraph co-location was mistaken for hierarchy, and what
+the strongest alternative grouping would be. `No` or `uncertain` requires a PLAN
+repair before polishing copy. Do not use AUTHOR wording to conceal an invalid
+parent-child relation. Keep the question-and-answer reasoning in Critic; deliver
+only the repaired script and deterministic issue codes.
+
 When `source_consumption.onscreen_refs` is present, compress only those selected
 representative records into the visible modules mapped by
 `onscreen_contract.modules[].evidence_refs`. Their `required_signals` are the
@@ -248,6 +264,8 @@ Run the tests in `script-quality-rubric.md`, especially:
 - compression loss;
 - title/message/module echo;
 - count claims;
+- parent-child exhaustiveness, sibling semantic-axis consistency and source
+  co-location mistaken for hierarchy;
 - final-facing cleanliness;
 - structural-change stale-reference checks;
 - formal register and speaker-note quality.

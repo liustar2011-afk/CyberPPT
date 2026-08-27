@@ -59,6 +59,16 @@ _EVIDENCE_ROLE_MAP = {
     "requirement": "boundary",
 }
 
+_RECOMMENDATION_MARKER_RE = re.compile(
+    r"(?:^|[：。；])\s*(?:建议|应当|应|坚持|优先)"
+)
+_PLANNED_ACTION_MARKER_RE = re.compile(
+    r"(?:^|[：。；])\s*(?:制定|完善|建立|完成|推动|形成|实现|开展|加快)"
+)
+_FUTURE_ACTION_MARKER_RE = re.compile(
+    r"(?:^|[：。；])\s*(?:后续|下一步|未来)|将(?:在|由|继续|持续)?"
+)
+
 
 def _read_json(path: Path) -> dict[str, Any]:
     try:
@@ -165,6 +175,31 @@ def _block_row_lines(block: dict[str, Any], row_count: int) -> list[int]:
     return [line_start]
 
 
+def _matches_explicit_table_header(block: dict[str, Any], unit: dict[str, Any]) -> bool:
+    """Return whether ``unit`` is the table header stored as block metadata.
+
+    The structure parser removes an explicit Markdown table header from
+    ``rows`` and records it in ``headers``. The stable DOCX source map keeps
+    that same physical row as a ``table_row`` source unit. Skip it only when
+    all structural and textual signals agree, so a real data row can never be
+    discarded merely because it happens to be first in a table.
+    """
+
+    headers = block.get("headers")
+    locator = unit.get("locator") if isinstance(unit.get("locator"), dict) else {}
+    if (
+        block.get("type") != "table"
+        or block.get("header_status") != "explicit"
+        or not isinstance(headers, list)
+        or not headers
+        or _text(unit.get("kind")) != "table_row"
+        or int(locator.get("table_row") or 0) != 1
+    ):
+        return False
+    header_text = " | ".join(str(cell) for cell in headers)
+    return _normalized_binding_text(header_text) == _normalized_binding_text(unit.get("text"))
+
+
 def _block_to_source_unit(project: Path, structure: dict[str, Any]) -> dict[tuple[str, int], str]:
     blocks = _items(structure.get("blocks"))
     # In the normal case (structure.json actually detected Markdown `#`
@@ -193,18 +228,33 @@ def _block_to_source_unit(project: Path, structure: dict[str, Any]) -> dict[tupl
     result: dict[tuple[str, int], str] = {}
     mismatches: list[str] = []
     consumed = 0
+    pending_unit: dict[str, Any] | None = None
     for block in blocks:
         block_id = _text(block.get("block_id"))
         row_texts = _block_row_texts(block)
         row_lines = _block_row_lines(block, len(row_texts))
-        for line, row_text in zip(row_lines, row_texts, strict=True):
+        if block.get("type") == "table" and block.get("header_status") == "explicit":
             try:
-                unit = next(units)
+                candidate = pending_unit or next(units)
             except StopIteration as exc:
                 raise ValueError(
                     "source-foundation blocks address more rows than the stable "
                     "non-heading source map has units"
                 ) from exc
+            pending_unit = None
+            if _matches_explicit_table_header(block, candidate):
+                consumed += 1
+            else:
+                pending_unit = candidate
+        for line, row_text in zip(row_lines, row_texts, strict=True):
+            try:
+                unit = pending_unit or next(units)
+            except StopIteration as exc:
+                raise ValueError(
+                    "source-foundation blocks address more rows than the stable "
+                    "non-heading source map has units"
+                ) from exc
+            pending_unit = None
             consumed += 1
             unit_id = _text(unit.get("unit_id"))
             if not block_id or not unit_id:
@@ -213,7 +263,7 @@ def _block_to_source_unit(project: Path, structure: dict[str, Any]) -> dict[tupl
                 mismatches.append(f"{block_id}@{line}")
                 continue
             result[(block_id, line)] = unit_id
-    remaining = sum(1 for _ in units)
+    remaining = (1 if pending_unit is not None else 0) + sum(1 for _ in units)
     if remaining:
         raise ValueError(
             "source-foundation blocks address fewer rows than the stable non-heading "
@@ -312,6 +362,130 @@ def _fact_section_ids(
     return section_ids
 
 
+def _fact_source_roles(argument: dict[str, Any]) -> dict[str, str]:
+    """Return the source-authored argument role for each normalized fact."""
+
+    roles: dict[str, str] = {}
+    for field in ("source_chain", "reconstructed_chain"):
+        for node in _items(argument.get(field)):
+            role = _text(node.get("role"))
+            if not role:
+                continue
+            for fact_id in _strings(node.get("normalized_fact_ids")):
+                roles.setdefault(fact_id, role)
+    return roles
+
+
+def _table_group_contexts(facts: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Resolve inherited first-column table groups without rewriting facts.
+
+    Vertically merged DOCX cells become blank Markdown cells on continuation
+    rows.  The literal normalized statement remains unchanged; this metadata
+    makes the row's parent category explicit for downstream planning.
+    """
+
+    rows: dict[tuple[str, int], dict[str, Any]] = {}
+    facts_by_row: dict[tuple[str, int], list[str]] = {}
+    for fact in facts:
+        fact_id = _text(fact.get("normalized_fact_id"))
+        cell = fact.get("table_cell")
+        evidence = _items(fact.get("evidence"))
+        if not fact_id or not isinstance(cell, dict) or not evidence:
+            continue
+        block_id = _text(evidence[0].get("block_id"))
+        row_index = cell.get("row_index")
+        if not block_id or not isinstance(row_index, int):
+            continue
+        key = (block_id, row_index)
+        facts_by_row.setdefault(key, []).append(fact_id)
+        label = _text(cell.get("row_label"))
+        row = rows.setdefault(key, {"cells": {}})
+        if label:
+            row["explicit_label"] = label
+        row["cells"][fact_id] = {
+            "row_index": row_index,
+            "cell_index": cell.get("cell_index"),
+            "header": _text(cell.get("header")),
+        }
+
+    result: dict[str, dict[str, Any]] = {}
+    current_by_block: dict[str, str] = {}
+    for block_id, row_index in sorted(rows, key=lambda value: (value[0], value[1])):
+        row = rows[(block_id, row_index)]
+        explicit = _text(row.get("explicit_label"))
+        if explicit:
+            current_by_block[block_id] = explicit
+        group_label = explicit or current_by_block.get(block_id, "")
+        if not group_label:
+            continue
+        basis = (
+            "explicit_first_column"
+            if explicit
+            else "inherited_previous_nonempty_first_column"
+        )
+        for fact_id in facts_by_row[(block_id, row_index)]:
+            result[fact_id] = {
+                **row["cells"][fact_id],
+                "group_label": group_label,
+                "basis": basis,
+            }
+    return result
+
+
+def _atomic_semantic_profile(
+    fact: dict[str, Any],
+    *,
+    source_role: str,
+) -> tuple[str, str, str]:
+    """Return evidence role, semantic status, and argument duty."""
+
+    fact_type = _text(fact.get("fact_type")) or "other"
+    statement = _text(fact.get("statement"))
+    if fact_type == "problem" or source_role == "problem":
+        return "problem", "existing", "gap"
+    if fact_type in {"constraint", "condition"}:
+        return "boundary", "existing", "boundary"
+    if fact_type == "metadata":
+        return "fact", "unknown", "metadata"
+
+    recommendation_marker = bool(_RECOMMENDATION_MARKER_RE.search(statement))
+    planned_action_marker = bool(_PLANNED_ACTION_MARKER_RE.search(statement))
+    future_action_marker = bool(_FUTURE_ACTION_MARKER_RE.search(statement))
+    if source_role == "approach":
+        return "recommendation", "recommendation", "response"
+    if source_role == "implementation":
+        return "recommendation", "planned", "response"
+    if source_role == "recommendation":
+        return "recommendation", "recommendation", "response"
+    if source_role == "goal":
+        return "fact", "planned", "response"
+    if source_role == "conclusion":
+        if recommendation_marker:
+            return "recommendation", "recommendation", "response"
+        if planned_action_marker or future_action_marker:
+            return "recommendation", "planned", "response"
+        return "fact", "existing", "response"
+    if source_role == "requirement":
+        if recommendation_marker:
+            return "recommendation", "recommendation", "response"
+        if planned_action_marker:
+            return "recommendation", "planned", "response"
+        return "boundary", "existing", "boundary"
+    if fact_type == "requirement":
+        if recommendation_marker:
+            return "recommendation", "recommendation", "response"
+        if planned_action_marker or future_action_marker:
+            return "recommendation", "planned", "response"
+        return "boundary", "existing", "boundary"
+    if fact_type == "responsibility" and recommendation_marker:
+        return "recommendation", "recommendation", "response"
+    return (
+        _EVIDENCE_ROLE_MAP.get(fact_type, "fact"),
+        "existing",
+        _DUTY_MAP.get(fact_type, "detail"),
+    )
+
+
 def _node_statement(item: dict[str, Any], fact_by_id: dict[str, dict[str, Any]]) -> str:
     statement = _text(item.get("statement"))
     if statement:
@@ -398,6 +572,8 @@ def build_projection_model(
 
     reconstructed = _items(argument.get("reconstructed_chain"))
     source_chain = _items(argument.get("source_chain"))
+    source_roles = _fact_source_roles(argument)
+    table_contexts = _table_group_contexts(facts)
     section_title = {
         _text(item.get("section_id")): _text(item.get("title"))
         for item in _items(_read_json(semantic_dir / "semantic-workpack.json").get("sections"))
@@ -493,6 +669,11 @@ def build_projection_model(
     assignments: list[dict[str, Any]] = []
     for fact_id, fact in fact_by_id.items():
         fact_type = _text(fact.get("fact_type")) or "other"
+        source_role = source_roles.get(fact_id, "")
+        evidence_role, semantic_status, argument_duty = _atomic_semantic_profile(
+            fact,
+            source_role=source_role,
+        )
         semantic_node_ids = list(fact_nodes.get(fact_id, []))
         if not semantic_node_ids:
             section_ids = sections_by_fact[fact_id]
@@ -529,10 +710,14 @@ def build_projection_model(
                         "item_id": fact_id,
                         "statement": _text(fact.get("statement")),
                         "source_unit_refs": refs_by_fact[fact_id],
-                        "status": "unknown",
-                        "evidence_role": _EVIDENCE_ROLE_MAP.get(fact_type, "fact"),
+                        "status": semantic_status,
+                        "evidence_role": evidence_role,
                         "importance": importance,
-                        "argument_duty": _DUTY_MAP.get(fact_type, "detail"),
+                        "argument_duty": argument_duty,
+                        "normalized_fact_type": fact_type,
+                        "normalized_semantic_role": _text(fact.get("semantic_role")),
+                        "source_argument_role": source_role,
+                        "table_context": table_contexts.get(fact_id),
                         "claim_origin": (
                             "source_explicit"
                             if _text(fact.get("normalization")) == "verbatim"

@@ -43,9 +43,10 @@ def _foundation() -> dict:
 
 
 def _plan() -> dict:
-    return {
+    plan = {
         "audience_scope": "external",
         "source_structure_mode": "preserve",
+        "evidence_fit_review_mode": "strict",
         "chapters": [
             {"id": "C1", "title": "建设背景与合作基础", "purpose": "x", "source_chapter_ids": ["CH01"], "structural_operation": "preserve"},
             {"id": "C3", "title": "重点服务与合作机会", "purpose": "x", "source_chapter_ids": ["CH03"], "structural_operation": "preserve"},
@@ -60,6 +61,28 @@ def _plan() -> dict:
             {"id": "P20", "chapter_id": "C4", "question": "x", "message": "商务机制分类协商。", "logic": "定价", "content": [], "source_scope": ["S4.4", "附件七"], "proof": {"evidence_refs": ["N7", "F59"]}, "visibility_decision": "external_ok", "source_refs": ["S4.4", "附件七"]},
         ],
     }
+    for page in plan["pages"]:
+        proof = page.get("proof") or {}
+        analysis = page.get("analysis_basis") or {}
+        refs = list(dict.fromkeys((proof.get("evidence_refs") or []) + (proof.get("boundary_refs") or []) + (analysis.get("supports") or [])))
+        if not refs:
+            continue
+        inferred = proof.get("relation_basis") == "inferred" or analysis.get("relation_basis") == "inferred"
+        page["evidence_fit_review"] = {
+            "question": page["question"],
+            "items": [
+                {
+                    "evidence_ref": ref,
+                    "fit": "indirect" if inferred else "direct",
+                    "role": "test_support",
+                    "reason": f"{ref} is assigned to the page proof responsibility",
+                }
+                for ref in refs
+            ],
+            "counter_case": "The page claim would need narrowing if an assigned record did not support it",
+            "verdict": "keep",
+        }
+    return plan
 
 
 def _final() -> dict:
@@ -128,9 +151,25 @@ def _contracted_gap_fixture() -> tuple[dict, dict, dict]:
     }
     plan = {
         "communication_goal": "说明差距",
+        "evidence_fit_review_mode": "strict",
         "chapters": [],
         "pages": [page],
     }
+    for module in contract["modules"]:
+        module["evidence_fit_review"] = {
+            "question": f"{module['heading']}模块呈现什么差距",
+            "items": [
+                {
+                    "evidence_ref": ref,
+                    "fit": "direct",
+                    "role": "gap_evidence",
+                    "reason": f"{ref} directly states the module gap",
+                }
+                for ref in module["evidence_refs"]
+            ],
+            "counter_case": "If the source described a measure, it would need a different module",
+            "verdict": "keep",
+        }
     return foundation, plan, {"slides": []}
 
 
@@ -161,11 +200,165 @@ def _contracted_final(*, mixed: bool = False, different_counts: bool = False) ->
     }
 
 
+def _strict_evidence_fit_fixture() -> tuple[dict, dict]:
+    foundation = {
+        "source_structure": [],
+        "facts": [
+            {"id": "E1", "statement": "分类分级要求构成页面判断依据。", "source_refs": ["S1"]},
+            {"id": "E2", "statement": "绿色低碳行动提出数据流通应用要求。", "source_refs": ["S2"]},
+        ],
+        "concepts": [],
+        "entities": [],
+        "relations": [],
+        "arguments": [],
+        "constraints": [],
+        "numbers": [],
+    }
+    page_question = "相关政策对标准体系提出哪些要求"
+    plan = {
+        "communication_goal": "说明政策要求",
+        "evidence_fit_review_mode": "strict",
+        "chapters": [],
+        "pages": [
+            {
+                "id": "P01",
+                "question": page_question,
+                "message": "政策要求为标准体系建设提供依据",
+                "logic": "政策要求归纳",
+                "content": [],
+                "proof": {"evidence_refs": ["E1"], "relation_basis": "explicit"},
+                "evidence_fit_review": {
+                    "question": page_question,
+                    "items": [
+                        {
+                            "evidence_ref": "E1",
+                            "fit": "direct",
+                            "role": "authority",
+                            "reason": "分类分级要求直接支撑政策依据判断",
+                        }
+                    ],
+                    "counter_case": "若只说明数据分类名称，则不足以支撑标准体系建设依据",
+                    "verdict": "keep",
+                },
+                "onscreen_contract": {
+                    "relation": "hierarchy",
+                    "detail_axis": "policy_requirement",
+                    "modules": [
+                        {
+                            "heading": "绿色低碳",
+                            "evidence_refs": ["E2"],
+                            "required_signals": ["流通应用要求"],
+                            "evidence_fit_review": {
+                                "question": "绿色低碳政策提出什么要求",
+                                "items": [
+                                    {
+                                        "evidence_ref": "E2",
+                                        "fit": "direct",
+                                        "role": "policy_action",
+                                        "reason": "行动计划直接提出数据流通应用要求",
+                                    }
+                                ],
+                                "counter_case": "该来源若只列场景名称，则应保留为标签而不承载要求判断",
+                                "verdict": "keep",
+                            },
+                        }
+                    ],
+                },
+            }
+        ],
+    }
+    return foundation, plan
+
+
 def test_onscreen_contract_schema_and_plan_audit_accept_declared_module_scope() -> None:
     foundation, plan, _ = _contracted_gap_fixture()
     assert validate_deck_plan(plan) == []
     issues, _ = audit_deck_plan(plan, foundation)
     assert issues == []
+
+
+def test_strict_evidence_fit_review_accepts_source_bound_page_and_module_reviews() -> None:
+    foundation, plan = _strict_evidence_fit_fixture()
+
+    assert validate_deck_plan(plan) == []
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert issues == []
+
+
+def test_strict_evidence_fit_review_requires_page_and_module_reviews() -> None:
+    foundation, plan = _strict_evidence_fit_fixture()
+    plan["pages"][0].pop("evidence_fit_review")
+    plan["pages"][0]["onscreen_contract"]["modules"][0].pop("evidence_fit_review")
+
+    issues, _ = audit_deck_plan(plan, foundation)
+    joined = "\n".join(issues)
+
+    assert "page.evidence_fit_review is required" in joined
+    assert "modules[0] (绿色低碳).evidence_fit_review is required" in joined
+
+
+def test_strict_evidence_fit_review_requires_exact_ref_coverage_and_real_counter_case() -> None:
+    foundation, plan = _strict_evidence_fit_fixture()
+    review = plan["pages"][0]["evidence_fit_review"]
+    review["items"][0]["evidence_ref"] = "E2"
+    review["counter_case"] = "无"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+    joined = "\n".join(issues)
+
+    assert "missing evidence_refs ['E1']" in joined
+    assert "unassigned evidence_refs ['E2']" in joined
+    assert "concrete alternative grouping" in joined
+
+
+def test_strict_evidence_fit_review_blocks_unresolved_fit_and_verdict() -> None:
+    foundation, plan = _strict_evidence_fit_fixture()
+    review = plan["pages"][0]["evidence_fit_review"]
+    review["items"][0]["fit"] = "topic_only"
+    review["verdict"] = "rename"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+    joined = "\n".join(issues)
+
+    assert "topic_only evidence cannot support" in joined
+    assert "verdict='rename' requires PLAN repair" in joined
+
+
+def test_page_indirect_fit_requires_inferred_relation_and_module_fit_stays_direct() -> None:
+    foundation, plan = _strict_evidence_fit_fixture()
+    page = plan["pages"][0]
+    page["evidence_fit_review"]["items"][0]["fit"] = "indirect"
+    module_item = page["onscreen_contract"]["modules"][0]["evidence_fit_review"]["items"][0]
+    module_item["fit"] = "indirect"
+
+    explicit_issues, _ = audit_deck_plan(plan, foundation)
+    page["proof"]["relation_basis"] = "inferred"
+    inferred_issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("indirect evidence requires an inferred relation_basis" in issue for issue in explicit_issues)
+    assert not any("page.evidence_fit_review.items" in issue and "indirect evidence requires" in issue for issue in inferred_issues)
+    assert any("module evidence must answer its parent question directly" in issue for issue in inferred_issues)
+
+
+def test_final_audit_rechecks_strict_plan_evidence_fit_gate() -> None:
+    foundation, plan = _strict_evidence_fit_fixture()
+    plan["pages"][0]["evidence_fit_review"]["items"][0]["fit"] = "uncertain"
+    final = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "title": "政策要求",
+                "core_message": "政策要求为标准体系建设提供依据",
+                "onscreen": [{"heading": "绿色低碳", "items": ["提出数据流通应用要求"]}],
+            }
+        ]
+    }
+
+    issues, _ = audit_final_script(final, plan, foundation)
+
+    assert any("PLAN evidence-fit gate" in issue and "fit='uncertain'" in issue for issue in issues)
 
 
 def test_onscreen_contract_requires_visible_support_signal_per_module() -> None:
@@ -197,6 +390,106 @@ def test_onscreen_contract_does_not_require_equal_detail_counts() -> None:
     foundation, plan, _ = _contracted_gap_fixture()
     issues, _ = audit_final_script(_contracted_final(different_counts=True), plan, foundation)
     assert issues == []
+
+
+def test_plan_and_final_audits_reject_source_colocation_as_hierarchy() -> None:
+    foundation = {
+        "source_structure": [],
+        "facts": [
+            {
+                "id": "ST0053",
+                "statement": "《数据要素×》行动计划将绿色低碳列为重点行动领域，"
+                "对电力数据采集、流通、应用提出明确要求",
+                "source_refs": ["S1"],
+            },
+            {
+                "id": "ST0054",
+                "statement": "能源行业数据分类分级指南实行一般、重要、核心三级管理",
+                "source_refs": ["S1"],
+            },
+        ],
+        "concepts": [],
+        "entities": [],
+        "relations": [],
+        "arguments": [],
+        "constraints": [],
+        "numbers": [],
+    }
+    page = {
+        "id": "P01",
+        "question": "相关政策提出哪些要求",
+        "message": "政策要求形成标准建设依据",
+        "logic": "并列政策要求",
+        "content": [],
+        "onscreen_contract": {
+            "relation": "parallel",
+            "detail_axis": "policy_requirement",
+            "modules": [
+                {
+                    "heading": "能源制度",
+                    "evidence_refs": ["ST0053", "ST0054"],
+                    "required_signals": ["绿色低碳", "三级管理"],
+                },
+                {
+                    "heading": "建设部署",
+                    "evidence_refs": ["ST0054"],
+                    "required_signals": ["分类分级"],
+                },
+            ],
+        },
+    }
+    plan = {"chapters": [], "pages": [page]}
+    final = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "title": "政策依据",
+                "core_message": "政策要求形成标准建设依据",
+                "onscreen": [
+                    {
+                        "heading": "能源制度",
+                        "items": ["绿色低碳提出应用要求", "能源数据实行三级管理"],
+                    },
+                    {
+                        "heading": "建设部署",
+                        "items": ["分类分级形成制度依据"],
+                    },
+                ],
+            }
+        ]
+    }
+
+    plan_issues, _ = audit_deck_plan(plan, foundation)
+    final_issues, _ = audit_final_script(final, plan, foundation)
+
+    assert any("ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY" in issue for issue in plan_issues)
+    assert any("ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY" in issue for issue in final_issues)
+
+
+def test_policy_requirement_heading_resolves_grouping_mismatch() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    foundation["facts"].extend(
+        [
+            {
+                "id": "P1",
+                "statement": "行动计划面向绿色低碳应用场景提出数据流通要求",
+                "source_refs": ["S5"],
+            },
+            {
+                "id": "P2",
+                "statement": "分类分级指南形成能源数据制度安排",
+                "source_refs": ["S5"],
+            },
+        ]
+    )
+    module = plan["pages"][0]["onscreen_contract"]["modules"][0]
+    module["heading"] = "能源政策要求"
+    module["evidence_refs"] = ["P1", "P2"]
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert not any("ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY" in issue for issue in issues)
 
 def test_onscreen_contract_expression_mode_warns_when_mixed_copy_has_no_proposition() -> None:
     foundation, plan, _ = _contracted_gap_fixture()
@@ -257,6 +550,7 @@ def test_clean_semantics_pass() -> None:
     plan["pages"][4]["message"] = "四类模式可以独立采用，也可以随着合作成熟度逐步深化。"
     plan["pages"][4]["logic"] = "分类 + 可选深化"
     plan["pages"][5]["proof"] = {"evidence_refs": []}
+    plan["pages"][5].pop("evidence_fit_review", None)
     plan["pages"][5]["source_scope"] = ["S4.4"]
     plan["pages"][5]["source_refs"] = ["S4.4"]
     plan["pages"][5].pop("visibility_decision", None)

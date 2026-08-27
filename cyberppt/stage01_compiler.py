@@ -495,7 +495,15 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
                     "semantic_status": semantic_status,
                     "claim_role": evidence_role,
                     "semantic_argument_role": str(atomic.get("claim_role") or node_argument_role),
+                    "source_argument_role": str(atomic.get("source_argument_role") or ""),
                     "argument_duty": str(atomic.get("argument_duty") or "detail"),
+                    "normalized_fact_type": str(atomic.get("normalized_fact_type") or ""),
+                    "normalized_semantic_role": str(atomic.get("normalized_semantic_role") or ""),
+                    "table_context": (
+                        dict(atomic["table_context"])
+                        if isinstance(atomic.get("table_context"), dict)
+                        else None
+                    ),
                     "argument_function": str(atomic.get("argument_function") or ""),
                     "decision_scope": str(atomic.get("decision_scope") or ""),
                     "decision_effect": str(atomic.get("decision_effect") or ""),

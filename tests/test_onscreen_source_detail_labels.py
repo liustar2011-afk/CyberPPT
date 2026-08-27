@@ -80,3 +80,38 @@ def test_page_lint_allows_explicit_label_only_taxonomy_for_thin_source() -> None
     }
 
     assert "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" not in codes
+
+
+def test_page_lint_rejects_source_colocation_as_institution_hierarchy() -> None:
+    page = _page(
+        "能源制度\n"
+        "  绿色低碳：提出数据采集流通应用要求\n"
+        "  分类分级：实行一般重要核心三级管理"
+    )
+    contract = {
+        "content_units": [
+            {
+                "unit_id": "ST0053",
+                "statement": "行动计划将绿色低碳列为重点行动领域，"
+                "对数据采集、流通、应用提出要求",
+                "source_refs": ["SU-001"],
+            },
+            {
+                "unit_id": "ST0054",
+                "statement": "能源行业数据分类分级指南实行一般重要核心三级管理",
+                "source_refs": ["SU-001"],
+            },
+        ],
+        "onscreen_contract": {
+            "modules": [
+                {
+                    "heading": "能源制度",
+                    "evidence_refs": ["ST0053", "ST0054"],
+                }
+            ]
+        },
+    }
+
+    codes = {issue.code for issue in _presentation_issues(page, contract)}
+
+    assert "ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY" in codes

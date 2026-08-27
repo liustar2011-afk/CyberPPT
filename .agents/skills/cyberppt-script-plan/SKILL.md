@@ -154,6 +154,56 @@ legitimately have different numbers of source-grounded details in different
 modules. Module headings, selective readable leads, and compact evidence details
 may coexist when the page's declared composition policy permits them.
 
+Set top-level `evidence_fit_review_mode: strict` for every source-grounded Deck
+Plan. There is no legacy compatibility path. Before accepting a page judgment or visible module,
+write its structured `evidence_fit_review` inside the same `deck-plan.json`.
+This is an internal contract field, not a fourth authority or a separate review
+artifact. Answer these questions from Foundation evidence, not from paragraph
+adjacency or title keywords:
+
+1. What one question does the module heading ask?
+2. Does every evidence record answer that question directly?
+3. Are the records peers on one semantic axis and at comparable granularity?
+4. Are their roles compatible: institution, policy action, scenario, task,
+   capability, measure, state, result or boundary?
+5. Which evidence ref proves each answer?
+6. Is the grouping based only on records occurring in the same paragraph?
+7. What is the strongest plausible alternative parent, move or split?
+
+Use this shape at page level and within every `onscreen_contract.modules[]`
+entry that has evidence:
+
+```json
+{
+  "question": "What exact page or module question is being tested?",
+  "items": [
+    {
+      "evidence_ref": "ST0053",
+      "fit": "direct",
+      "role": "policy_action",
+      "reason": "The source states the application requirement carried by this module."
+    }
+  ],
+  "counter_case": "The strongest alternative grouping or boundary",
+  "verdict": "keep"
+}
+```
+
+Allowed `fit` values are `direct`, `indirect`, `topic_only`, `no` and
+`uncertain`. A page-level indirect fit is allowed only for an explicitly
+declared inferred relation. Module evidence must be `direct`: every child must
+answer its visible parent question. `topic_only`, `no` and `uncertain` block
+AUTHOR. A verdict of `rename`, `move`, `split` or `reject` records unfinished
+repair and also blocks AUTHOR; apply the repair and reassess until the current
+plan can honestly use `keep`. Every assigned evidence ref must appear exactly
+once, and `counter_case` must state a concrete alternative or boundary rather
+than `无` or `不适用`.
+
+Keep this question-and-answer pass inside PLAN Critic. A narrow parent such as
+`能源制度` cannot absorb an application/action requirement merely because the
+two source facts share a paragraph. A supported umbrella such as `能源政策要求`
+may carry both when they answer that broader question.
+
 For role-bearing groups such as project positioning, capabilities, tasks or
 validation scenarios, plan each visible item as `label: source-grounded detail`
 whenever the source or approved page relation provides an object, role, task or
@@ -227,6 +277,10 @@ Run:
 12. Continuity test.
 13. Internal-expert voice test: valid enterprise topics remain available, while
     external-adviser address, viewpoint and unsupported generic advice are removed.
+14. Evidence-fit challenge: every page judgment and evidence-bearing module has
+    a source-bound `evidence_fit_review`; every parent exhaustively covers its
+    children, siblings share one answer axis, source co-location is not used as
+    hierarchy, and a counter-grouping has been considered.
 
 Repair the same plan. Reordering across chapters is not a default repair for weak continuity.
 

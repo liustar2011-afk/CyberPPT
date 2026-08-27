@@ -39,15 +39,40 @@ def _page() -> dict:
             "relation": "parallel",
             "detail_axis": "standard_scope",
             "modules": [
-                {"heading": "基础通用", "evidence_refs": ["ST1"], "required_signals": ["术语定义"]},
-                {"heading": "数据资源", "evidence_refs": ["ST2"], "required_signals": ["全过程质量控制"]},
+                {
+                    "heading": "基础通用",
+                    "evidence_refs": ["ST1"],
+                    "required_signals": ["术语定义"],
+                    "evidence_fit_review": {
+                        "question": "基础通用标准统一什么内容",
+                        "items": [{"evidence_ref": "ST1", "fit": "direct", "role": "standard_scope", "reason": "ST1 directly defines the terminology scope"}],
+                        "counter_case": "A resource-quality rule would belong to the data-resource module",
+                        "verdict": "keep",
+                    },
+                },
+                {
+                    "heading": "数据资源",
+                    "evidence_refs": ["ST2"],
+                    "required_signals": ["全过程质量控制"],
+                    "evidence_fit_review": {
+                        "question": "数据资源标准覆盖什么要求",
+                        "items": [{"evidence_ref": "ST2", "fit": "direct", "role": "quality_requirement", "reason": "ST2 directly states the lifecycle quality requirement"}],
+                        "counter_case": "A terminology definition would belong to the basic-common module",
+                        "verdict": "keep",
+                    },
+                },
             ],
         },
     }
 
 
 def _plan(page: dict | None = None) -> dict:
-    return {"communication_goal": "说明标准范围", "chapters": [], "pages": [page or _page()]}
+    return {
+        "communication_goal": "说明标准范围",
+        "evidence_fit_review_mode": "strict",
+        "chapters": [],
+        "pages": [page or _page()],
+    }
 
 
 def _final(full_copy: str | None = None) -> dict:

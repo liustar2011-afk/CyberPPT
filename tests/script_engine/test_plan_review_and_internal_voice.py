@@ -46,6 +46,44 @@ def test_plan_review_marks_unknown_evidence_as_incomplete() -> None:
     assert evidence_status(plan["pages"][0], foundation).startswith("证据责任不完整")
 
 
+def test_plan_review_renders_structured_evidence_fit_challenge() -> None:
+    plan, foundation = _example()
+    page = plan["pages"][0]
+    ref = page["proof"]["evidence_refs"][0]
+    page["evidence_fit_review"] = {
+        "question": page["question"],
+        "items": [
+            {
+                "evidence_ref": ref,
+                "fit": "direct",
+                "role": "mechanism",
+                "reason": "来源直接说明该机制",
+            }
+        ],
+        "counter_case": "若来源只描述能力清单，则不能支撑机制判断",
+        "verdict": "keep",
+    }
+
+    markdown = render_plan_review(plan, foundation)
+
+    assert "#### 页面来源适配质询" in markdown
+    assert "最强反例：若来源只描述能力清单，则不能支撑机制判断" in markdown
+    assert f"| {ref} | 直接支持 | mechanism | 来源直接说明该机制 |" in markdown
+    assert "证据适配结论：保留" in markdown
+
+
+def test_missing_evidence_fit_mode_is_visible_and_blocks_author() -> None:
+    plan, foundation = _example()
+    plan.pop("evidence_fit_review_mode")
+
+    issues, warnings = audit_deck_plan(plan, foundation)
+    markdown = render_plan_review(plan, foundation, issues=issues, warnings=warnings)
+
+    assert any("strict is required before PLAN can enter AUTHOR" in issue for issue in issues)
+    assert warnings == []
+    assert "来源适配门禁：缺失，阻断 AUTHOR" in markdown
+
+
 def test_review_plan_cli_prints_markdown_and_creates_no_artifact(tmp_path, capsys) -> None:
     plan, foundation = _example()
     plan_path = tmp_path / "deck-plan.json"

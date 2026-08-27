@@ -119,3 +119,22 @@ Rewrite when:
 - internal-only material leaks into external-facing prose;
 - the strongest source boundary disappears during compression;
 - the page has rich facts but no defensible analytical structure when one is available.
+
+## 11. Deck Plan evidence-fit gate
+
+All source-grounded plans require `evidence_fit_review_mode: strict`; there is
+no legacy compatibility path. Keep the
+question-and-answer review inside `deck-plan.json`, bound to the exact evidence
+records used by the page judgment and each visible module.
+
+For every record, distinguish `direct`, `indirect`, `topic_only`, `no` and
+`uncertain`. Page-level indirect support is valid only when the plan declares an
+inferred relation and identifies its supports. Module children must be direct
+answers to the module question. Topic similarity does not establish proof or a
+parent-child relation.
+
+The review must state a concrete counter-case and finish with the current-state
+verdict. `rename`, `move`, `split` and `reject` mean the plan still requires
+repair; apply the change and reassess before AUTHOR. Deterministic audit checks
+reference coverage and state consistency so the author cannot pass the gate by
+writing a free-form assurance.

@@ -3,10 +3,32 @@
   "$id": "https://cyberppt.local/contracts/deck-plan.schema.json",
   "title": "CyberPPT Deck Plan",
   "type": "object",
-  "required": ["communication_goal", "chapters", "pages"],
+  "required": ["communication_goal", "evidence_fit_review_mode", "chapters", "pages"],
   "$defs": {
     "relation_basis": {"type": "string", "enum": ["explicit", "inferred"]},
     "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+    "evidence_fit_review_item": {
+      "type": "object",
+      "required": ["evidence_ref", "fit", "role", "reason"],
+      "properties": {
+        "evidence_ref": {"type": "string", "minLength": 1},
+        "fit": {"type": "string", "enum": ["direct", "indirect", "topic_only", "no", "uncertain"]},
+        "role": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "evidence_fit_review": {
+      "type": "object",
+      "required": ["question", "items", "counter_case", "verdict"],
+      "properties": {
+        "question": {"type": "string", "minLength": 1},
+        "items": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_fit_review_item"}},
+        "counter_case": {"type": "string", "minLength": 1},
+        "verdict": {"type": "string", "enum": ["keep", "rename", "move", "split", "reject"]}
+      },
+      "additionalProperties": false
+    },
     "structural_operation": {"type": "string", "enum": ["preserve", "split", "merge_within_chapter", "user_authorized_cross_chapter"]},
     "content_route": {
       "type": "object",
@@ -63,7 +85,8 @@
         "heading": {"type": "string", "minLength": 1},
         "evidence_refs": {"type": "array", "items": {"type": "string"}},
         "required_signals": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-        "forbidden_signals": {"type": "array", "items": {"type": "string"}}
+        "forbidden_signals": {"type": "array", "items": {"type": "string"}},
+        "evidence_fit_review": {"$ref": "#/$defs/evidence_fit_review"}
       },
       "additionalProperties": true
     },
@@ -150,6 +173,7 @@
     "audience": {"type": "string"},
     "audience_scope": {"type": "string", "enum": ["internal", "external", "mixed", "unspecified"]},
     "source_structure_mode": {"type": "string", "enum": ["preserve", "user_authorized_restructure"]},
+    "evidence_fit_review_mode": {"type": "string", "enum": ["strict"]},
     "narrative_arc": {"type": "string"},
     "thesis": {"type": "string"},
     "audience_start": {"type": "string"},
@@ -157,7 +181,7 @@
     "storyline": {"type": "array", "items": {"type": "string"}},
     "content_load_curve": {"type": "string"},
     "chapters": {"type": "array", "items": {"type": "object", "required": ["id", "purpose"], "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "purpose": {"type": "string"}, "question": {"type": "string"}, "message": {"type": "string"}, "relationship_to_previous": {"type": "string"}, "source_chapter_ids": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}}, "additionalProperties": true}},
-    "pages": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "question", "message", "logic", "content"], "properties": {"id": {"type": "string"}, "chapter_id": {"type": "string"}, "title": {"type": "string"}, "question": {"type": "string"}, "message": {"type": "string"}, "logic": {"type": "string"}, "content": {"type": "array", "items": {"type": "string"}}, "next": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}, "page_role": {"type": "string"}, "content_load": {"type": "string", "enum": ["light", "standard", "dense"]}, "receives": {"type": "string"}, "must_include": {"type": "array", "items": {"type": "string"}}, "reserved_for_later": {"type": "array", "items": {"type": "string"}}, "analysis_basis": {"type": "object", "properties": {"model": {"type": "string"}, "relation_basis": {"$ref": "#/$defs/relation_basis"}, "confidence": {"$ref": "#/$defs/confidence"}, "supports": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "string"}}, "additionalProperties": true}, "content_route": {"$ref": "#/$defs/content_route"}, "stage02_readiness": {"$ref": "#/$defs/stage02_readiness"}, "onscreen_contract": {"$ref": "#/$defs/onscreen_contract"}, "onscreen_composition": {"$ref": "#/$defs/onscreen_composition"}, "source_consumption": {"$ref": "#/$defs/source_consumption"}, "proof": {"type": "object", "properties": {"method": {"type": "string"}, "claims": {"type": "array", "items": {"type": "string"}}, "evidence_refs": {"type": "array", "items": {"type": "string"}}, "boundary_refs": {"type": "array", "items": {"type": "string"}}, "relation_basis": {"$ref": "#/$defs/relation_basis"}}, "additionalProperties": true}, "visibility_decision": {"type": "string", "enum": ["external_ok", "internal_only_used_as_hidden_support", "user_approved_exposure", "not_applicable"]}}, "additionalProperties": true}}
+    "pages": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "question", "message", "logic", "content"], "properties": {"id": {"type": "string"}, "chapter_id": {"type": "string"}, "title": {"type": "string"}, "question": {"type": "string"}, "message": {"type": "string"}, "logic": {"type": "string"}, "content": {"type": "array", "items": {"type": "string"}}, "next": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}, "page_role": {"type": "string"}, "content_load": {"type": "string", "enum": ["light", "standard", "dense"]}, "receives": {"type": "string"}, "must_include": {"type": "array", "items": {"type": "string"}}, "reserved_for_later": {"type": "array", "items": {"type": "string"}}, "analysis_basis": {"type": "object", "properties": {"model": {"type": "string"}, "relation_basis": {"$ref": "#/$defs/relation_basis"}, "confidence": {"$ref": "#/$defs/confidence"}, "supports": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "string"}}, "additionalProperties": true}, "content_route": {"$ref": "#/$defs/content_route"}, "stage02_readiness": {"$ref": "#/$defs/stage02_readiness"}, "onscreen_contract": {"$ref": "#/$defs/onscreen_contract"}, "onscreen_composition": {"$ref": "#/$defs/onscreen_composition"}, "source_consumption": {"$ref": "#/$defs/source_consumption"}, "evidence_fit_review": {"$ref": "#/$defs/evidence_fit_review"}, "proof": {"type": "object", "properties": {"method": {"type": "string"}, "claims": {"type": "array", "items": {"type": "string"}}, "evidence_refs": {"type": "array", "items": {"type": "string"}}, "boundary_refs": {"type": "array", "items": {"type": "string"}}, "relation_basis": {"$ref": "#/$defs/relation_basis"}}, "additionalProperties": true}, "visibility_decision": {"type": "string", "enum": ["external_ok", "internal_only_used_as_hidden_support", "user_approved_exposure", "not_applicable"]}}, "additionalProperties": true}}
   },
   "additionalProperties": true
 }

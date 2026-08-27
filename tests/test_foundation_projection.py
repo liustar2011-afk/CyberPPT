@@ -71,6 +71,17 @@ def _source_truth() -> dict:
                 "type": "F",
                 "priority": "P1",
                 "claim_origin": "source_explicit",
+                "claim_role": "recommendation",
+                "status": "规划",
+                "semantic_status": "planned",
+                "source_argument_role": "implementation",
+                "argument_duty": "response",
+                "normalized_fact_type": "process",
+                "normalized_semantic_role": "process",
+                "table_context": {
+                    "group_label": "A 基础通用标准",
+                    "basis": "inherited_previous_nonempty_first_column",
+                },
                 "statement": "行业需要形成资源连接和持续服务基础。",
                 "source_unit_refs": ["SU-2"],
                 "actors": [],
@@ -142,3 +153,15 @@ def test_source_structure_concepts_relations_and_questions_are_preserved() -> No
     assert foundation["concepts"][0]["id"] == "C-1"
     assert any(item["id"] == "R-1" for item in foundation["relations"])
     assert foundation["open_questions"] == ["待确认合作范围。"]
+
+
+def test_fact_semantic_role_status_and_table_context_are_preserved() -> None:
+    foundation = project_source_truth_to_foundation(_source_truth())
+    fact = next(item for item in foundation["facts"] if item["id"] == "ST0002")
+    assert fact["claim_role"] == "recommendation"
+    assert fact["status"] == "规划"
+    assert fact["semantic_status"] == "planned"
+    assert fact["source_argument_role"] == "implementation"
+    assert fact["argument_duty"] == "response"
+    assert fact["normalized_fact_type"] == "process"
+    assert fact["table_context"]["group_label"] == "A 基础通用标准"

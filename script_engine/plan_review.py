@@ -32,6 +32,22 @@ _STRUCTURAL_OPERATION_LABELS = {
     "user_authorized_cross_chapter": "用户授权跨章调整",
 }
 
+_EVIDENCE_FIT_LABELS = {
+    "direct": "直接支持",
+    "indirect": "间接支持",
+    "topic_only": "仅主题相关",
+    "no": "不适配",
+    "uncertain": "待确认",
+}
+
+_EVIDENCE_FIT_VERDICT_LABELS = {
+    "keep": "保留当前规划",
+    "rename": "需要改名",
+    "move": "需要移动",
+    "split": "需要拆分",
+    "reject": "需要剔除",
+}
+
 
 def _text(value: object, fallback: str = "—") -> str:
     text = str(value or "").strip()
@@ -71,7 +87,48 @@ def evidence_status(page: dict[str, Any], foundation: dict[str, Any]) -> str:
         labels.append("需人工确认")
     if boundaries:
         labels.append("边界条件需保留")
+    review = page.get("evidence_fit_review")
+    if isinstance(review, dict):
+        labels.append(
+            "证据适配结论：保留"
+            if review.get("verdict") == "keep"
+            else "证据适配结论：待修复"
+        )
     return "；".join(labels)
+
+
+def _append_evidence_fit_review(
+    lines: list[str],
+    review: object,
+    *,
+    title: str,
+) -> None:
+    if not isinstance(review, dict):
+        return
+    lines.extend(
+        [
+            f"#### {title}",
+            "",
+            f"- 质询问题：{_text(review.get('question'))}",
+            f"- 最强反例：{_text(review.get('counter_case'))}",
+            f"- 当前结论：{_label(review.get('verdict'), _EVIDENCE_FIT_VERDICT_LABELS)}",
+            "",
+            "| 来源 | 适配关系 | 来源角色 | 判断依据 |",
+            "|---|---|---|---|",
+        ]
+    )
+    for item in review.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        lines.append(
+            "| {ref} | {fit} | {role} | {reason} |".format(
+                ref=_cell(item.get("evidence_ref")),
+                fit=_cell(_label(item.get("fit"), _EVIDENCE_FIT_LABELS)),
+                role=_cell(item.get("role")),
+                reason=_cell(item.get("reason")),
+            )
+        )
+    lines.append("")
 
 
 def render_plan_review(
@@ -104,6 +161,12 @@ def render_plan_review(
         f"- 汇报对象：{_text(plan.get('audience'))}",
         f"- 受众范围：{_text(plan.get('audience_scope'))}",
         f"- 来源结构：{_label(plan.get('source_structure_mode'), _STRUCTURE_MODE_LABELS)}",
+        "- 来源适配门禁："
+        + (
+            "严格质询"
+            if plan.get("evidence_fit_review_mode") == "strict"
+            else "缺失，阻断 AUTHOR"
+        ),
         f"- 全稿主旨：{_text(plan.get('thesis'))}",
         "",
     ]
@@ -148,6 +211,21 @@ def render_plan_review(
                     "",
                 ]
             )
+            _append_evidence_fit_review(
+                lines,
+                page.get("evidence_fit_review"),
+                title="页面来源适配质询",
+            )
+            contract = page.get("onscreen_contract")
+            if isinstance(contract, dict):
+                for module in contract.get("modules") or []:
+                    if not isinstance(module, dict):
+                        continue
+                    _append_evidence_fit_review(
+                        lines,
+                        module.get("evidence_fit_review"),
+                        title=f"模块来源适配质询：{_text(module.get('heading'))}",
+                    )
 
     for chapter in chapters:
         chapter_id = str(chapter.get("id") or "")

@@ -3,6 +3,7 @@
   "audience": "业务管理人员",
   "audience_scope": "internal",
   "source_structure_mode": "preserve",
+  "evidence_fit_review_mode": "strict",
   "audience_start": "知道行业拥有大量数据，但对数据如何形成可持续服务缺少完整认识。",
   "audience_end": "理解源材料所描述的资源治理、可信使用和服务输出之间的内在联系。",
   "thesis": "资源治理与可信使用共同支撑服务输出。",
@@ -37,6 +38,17 @@
       "analysis_basis": {"model": "resource-transformation", "relation_basis": "inferred", "confidence": "high", "supports": ["F1", "F2", "F3"]},
       "must_include": ["治理是可信使用的重要基础", "服务输出建立在治理和可信使用基础上"],
       "reserved_for_later": ["具体技术能力清单留到后续页面"],
+      "evidence_fit_review": {
+        "question": "数据基础设施如何把分散资源转化为可持续服务？",
+        "items": [
+          {"evidence_ref": "F1", "fit": "indirect", "role": "governance_prerequisite", "reason": "资源治理事实支撑转化机制的治理环节。"},
+          {"evidence_ref": "F2", "fit": "indirect", "role": "trusted_use_mechanism", "reason": "授权、安全和审计事实支撑可信使用环节。"},
+          {"evidence_ref": "F3", "fit": "direct", "role": "mechanism_conclusion", "reason": "来源直接说明治理和可信使用共同支撑服务输出。"},
+          {"evidence_ref": "F4", "fit": "indirect", "role": "scope_boundary", "reason": "来源明确将技术能力清单留到后页，限定当前页面范围。"}
+        ],
+        "counter_case": "若F3没有明确共同支撑关系，本页只能并列说明治理和可信使用，不能形成服务输出机制。",
+        "verdict": "keep"
+      },
       "proof": {"method": "mechanism", "claims": ["数据资源需要先完成治理", "可信使用控制授权、安全和审计", "二者共同支撑服务输出"], "evidence_refs": ["F1", "F2", "F3"], "boundary_refs": ["F4"], "relation_basis": "inferred"},
       "visibility_decision": "not_applicable",
       "source_refs": ["ST001", "ST002", "ST003", "ST004"]

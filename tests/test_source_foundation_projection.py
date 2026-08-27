@@ -5,7 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from cyberppt.source_foundation_projection import project_source_foundation_truth
+from cyberppt.source_foundation_projection import (
+    _atomic_semantic_profile,
+    _block_to_source_unit,
+    _table_group_contexts,
+    project_source_foundation_truth,
+)
 from cyberppt.source_truth_contract import audit_source_truth, load_source_truth
 
 
@@ -128,6 +133,113 @@ def test_projection_accepts_converter_only_bold_markers(tmp_path: Path) -> None:
     assert truth_path.is_file()
 
 
+def test_projection_skips_matching_explicit_table_header_source_unit(tmp_path: Path) -> None:
+    project = tmp_path / "project"
+    source_map = project / "workbench/stages/00-source-map"
+    source_map.mkdir(parents=True)
+    units = [
+        {
+            "unit_id": "SU-PRE",
+            "kind": "paragraph",
+            "source_order": 1,
+            "locator": {"paragraph": 1},
+            "text": "表格前说明",
+        },
+        {
+            "unit_id": "SU-HEADER",
+            "kind": "table_row",
+            "source_order": 2,
+            "locator": {"table": 1, "table_row": 1},
+            "text": "一级类目 | 二级子体系 | 重点方向",
+        },
+        {
+            "unit_id": "SU-A1",
+            "kind": "table_row",
+            "source_order": 2,
+            "locator": {"table": 1, "table_row": 2},
+            "text": "A 基础通用标准 | A1 术语 | 统一术语定义",
+        },
+        {
+            "unit_id": "SU-A2",
+            "kind": "table_row",
+            "source_order": 2,
+            "locator": {"table": 1, "table_row": 3},
+            "text": " | A2 架构 | 明确架构映射",
+        },
+        {
+            "unit_id": "SU-POST",
+            "kind": "paragraph",
+            "source_order": 3,
+            "locator": {"paragraph": 2},
+            "text": "表格后说明",
+        },
+    ]
+    (source_map / "source-units.jsonl").write_text(
+        "".join(json.dumps(item, ensure_ascii=False) + "\n" for item in units),
+        encoding="utf-8",
+        newline="\n",
+    )
+    structure = {
+        "blocks": [
+            {"block_id": "blk-pre", "type": "paragraph", "text": "表格前说明", "line_start": 1},
+            {
+                "block_id": "blk-table",
+                "type": "table",
+                "line_start": 2,
+                "header_status": "explicit",
+                "headers": ["**一级类目**", "**二级子体系**", "**重点方向**"],
+                "rows": [
+                    ["A 基础通用标准", "A1 术语", "统一术语定义"],
+                    ["", "A2 架构", "明确架构映射"],
+                ],
+            },
+            {"block_id": "blk-post", "type": "paragraph", "text": "表格后说明", "line_start": 6},
+        ]
+    }
+
+    mapping = _block_to_source_unit(project, structure)
+
+    assert mapping == {
+        ("blk-pre", 1): "SU-PRE",
+        ("blk-table", 4): "SU-A1",
+        ("blk-table", 5): "SU-A2",
+        ("blk-post", 6): "SU-POST",
+    }
+
+
+def test_projection_does_not_skip_nonmatching_first_table_row(tmp_path: Path) -> None:
+    project = tmp_path / "project"
+    source_map = project / "workbench/stages/00-source-map"
+    source_map.mkdir(parents=True)
+    unit = {
+        "unit_id": "SU-DATA",
+        "kind": "table_row",
+        "source_order": 1,
+        "locator": {"table": 1, "table_row": 1},
+        "text": "A 基础通用标准 | A1 术语 | 统一术语定义",
+    }
+    (source_map / "source-units.jsonl").write_text(
+        json.dumps(unit, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    structure = {
+        "blocks": [
+            {
+                "block_id": "blk-table",
+                "type": "table",
+                "line_start": 1,
+                "header_status": "explicit",
+                "headers": ["一级类目", "二级子体系", "重点方向"],
+                "rows": [["其他类目", "其他子体系", "其他方向"]],
+            }
+        ]
+    }
+
+    with pytest.raises(ValueError, match="does not match the current stable source map"):
+        _block_to_source_unit(project, structure)
+
+
 def test_unlisted_substantive_fact_inherits_its_section_source_node(tmp_path: Path) -> None:
     project, foundation, semantic = _project(tmp_path)
     argument_path = semantic / "argument-chain.json"
@@ -171,3 +283,101 @@ def test_unlisted_substantive_fact_without_section_node_fails_closed(tmp_path: P
             foundation_dir=foundation,
             semantic_dir=semantic,
         )
+
+
+def test_table_continuation_rows_inherit_first_column_group_as_context() -> None:
+    facts = [
+        {
+            "normalized_fact_id": "NF-A1",
+            "evidence": [{"block_id": "blk-table", "line_start": 10}],
+            "table_cell": {
+                "row_index": 1,
+                "cell_index": 2,
+                "header": "二级子体系",
+                "row_label": "A 基础通用标准",
+            },
+        },
+        {
+            "normalized_fact_id": "NF-A2",
+            "evidence": [{"block_id": "blk-table", "line_start": 11}],
+            "table_cell": {
+                "row_index": 2,
+                "cell_index": 2,
+                "header": "二级子体系",
+                "row_label": "",
+            },
+        },
+    ]
+
+    contexts = _table_group_contexts(facts)
+
+    assert contexts["NF-A1"]["group_label"] == "A 基础通用标准"
+    assert contexts["NF-A1"]["basis"] == "explicit_first_column"
+    assert contexts["NF-A2"]["group_label"] == "A 基础通用标准"
+    assert contexts["NF-A2"]["basis"] == "inherited_previous_nonempty_first_column"
+
+
+def test_source_argument_role_preserves_recommendation_and_plan_strength() -> None:
+    principle = {
+        "statement": "坚持顶层对接，确保概念、架构和术语协调一致。",
+        "fact_type": "requirement",
+    }
+    implementation = {
+        "statement": "此阶段应完成第一优先级标准立项。",
+        "fact_type": "process",
+    }
+
+    assert _atomic_semantic_profile(principle, source_role="approach") == (
+        "recommendation",
+        "recommendation",
+        "response",
+    )
+    assert _atomic_semantic_profile(implementation, source_role="implementation") == (
+        "recommendation",
+        "planned",
+        "response",
+    )
+
+
+def test_requirement_action_and_goal_are_not_flattened_to_existing_fact() -> None:
+    standard_direction = {
+        "statement": "制定电力数据基础设施参考架构行业实施细则。",
+        "fact_type": "requirement",
+    }
+    research_goal = {
+        "statement": "本研究旨在构建覆盖完整的标准体系框架。",
+        "fact_type": "goal",
+    }
+
+    assert _atomic_semantic_profile(standard_direction, source_role="") == (
+        "recommendation",
+        "planned",
+        "response",
+    )
+    assert _atomic_semantic_profile(research_goal, source_role="goal") == (
+        "fact",
+        "planned",
+        "response",
+    )
+
+
+def test_conclusion_keeps_completed_finding_separate_from_future_action() -> None:
+    completed = {
+        "statement": "本研究构建了七大类标准体系框架。",
+        "fact_type": "goal",
+    }
+    future = {
+        "statement": "后续工作中，中电联将持续完善标准体系框架。",
+        "fact_type": "goal",
+    }
+
+    assert _atomic_semantic_profile(completed, source_role="conclusion") == (
+        "fact",
+        "existing",
+        "response",
+    )
+    assert _atomic_semantic_profile(future, source_role="conclusion") == (
+        "recommendation",
+        "planned",
+        "response",
+    )

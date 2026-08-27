@@ -197,6 +197,20 @@ def _validate_normalized(
                     content_source_assertion_ids=list(repeated_table_labels[source_id]),
                 )
 
+        principle_source = any(
+            any("原则" in str(part) for part in source_facts[source_id].get("heading_path", []))
+            for source_id in source_ids
+            if source_id in source_facts
+        )
+        if statement.startswith("坚持") and principle_source and fact.get("fact_type") != "requirement":
+            _error(
+                errors,
+                "normalized_fact_principle_misclassified",
+                "A source principle beginning with '坚持' must be classified as a requirement, not as a generic fact; downstream projection needs its normative role and status.",
+                normalized_fact_id=nf_id,
+                value=fact.get("fact_type"),
+            )
+
         evidence = fact.get("evidence")
         if not isinstance(evidence, list) or not evidence:
             _error(errors, "missing_evidence", "Every normalized fact must carry evidence copied from layer two.", normalized_fact_id=nf_id)
@@ -476,6 +490,77 @@ def _validate_argument(payload: dict[str, Any], normalized_ids: set[str], sectio
     return source_count, reconstructed_count, len(diagnostics)
 
 
+def _validate_source_chain_section_coverage(
+    argument: dict[str, Any],
+    normalized: dict[str, Any],
+    structure: dict[str, Any],
+    errors: list[dict[str, Any]],
+) -> None:
+    """Require every substantive fact to reach a source-chain node.
+
+    A fact is covered when a source-chain node cites it directly or cites the
+    source section containing its evidence block. Metadata and preamble facts
+    remain outside the substantive argument chain by design.
+    """
+
+    nodes = argument.get("source_chain")
+    facts = normalized.get("facts")
+    blocks = structure.get("blocks")
+    if not isinstance(nodes, list) or not isinstance(facts, list) or not isinstance(blocks, list):
+        return
+    covered_facts = {
+        str(fact_id)
+        for node in nodes
+        if isinstance(node, dict) and isinstance(node.get("normalized_fact_ids"), list)
+        for fact_id in node["normalized_fact_ids"]
+        if str(fact_id)
+    }
+    covered_sections = {
+        str(section_id)
+        for node in nodes
+        if isinstance(node, dict) and isinstance(node.get("section_ids"), list)
+        for section_id in node["section_ids"]
+        if str(section_id)
+    }
+    block_sections = {
+        str(block.get("block_id")): str(block.get("section_id"))
+        for block in blocks
+        if isinstance(block, dict) and block.get("block_id") and block.get("section_id")
+    }
+    missing_by_section: dict[str, list[str]] = {}
+    for fact in facts:
+        if not isinstance(fact, dict) or fact.get("fact_type") == "metadata":
+            continue
+        fact_id = str(fact.get("normalized_fact_id") or "")
+        if not fact_id or fact_id in covered_facts:
+            continue
+        fact_sections = {
+            str(fact.get("section_id"))
+            if fact.get("section_id")
+            else ""
+        }
+        evidence = fact.get("evidence")
+        if isinstance(evidence, list):
+            fact_sections.update(
+                block_sections.get(str(item.get("block_id") or ""), "")
+                for item in evidence
+                if isinstance(item, dict)
+            )
+        fact_sections.discard("")
+        if fact_sections == {"preamble"} or fact_sections & covered_sections:
+            continue
+        key = ",".join(sorted(fact_sections)) or "<none>"
+        missing_by_section.setdefault(key, []).append(fact_id)
+    for section_key, fact_ids in sorted(missing_by_section.items()):
+        _error(
+            errors,
+            "substantive_section_missing_from_source_chain",
+            "Substantive normalized facts are not connected to any source-chain node.",
+            section_ids=section_key.split(","),
+            normalized_fact_ids=fact_ids,
+        )
+
+
 def validate_semantic_outputs(
     foundation_dir: Path | str,
     semantic_dir: Path | str,
@@ -529,6 +614,7 @@ def validate_semantic_outputs(
     relation_count = _validate_relations(relations, concept_ids, normalized_ids, errors, warnings)
     section_ids = _flatten_section_ids(list(structure.get("outline", [])))
     source_chain_count, reconstructed_count, diagnostic_count = _validate_argument(argument, normalized_ids, section_ids, errors, warnings)
+    _validate_source_chain_section_coverage(argument, normalized, structure, errors)
 
     result = {
         "schema_version": SCHEMA_VERSION,

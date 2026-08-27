@@ -206,6 +206,24 @@ do not add terminal punctuation. If the approved source contains only a counted
 or named taxonomy, preserve the names and declare `label_only_allowed` in PLAN.
 Never fabricate item-level differentiation to satisfy this form.
 
+## 5d. Challenge every semantic group before delivery
+
+Indentation asserts a real parent-child relationship. For every module, answer:
+
+1. What single question does the parent ask?
+2. Does every child answer it directly?
+3. Are all children peers on one semantic axis and at comparable granularity?
+4. Are their semantic roles compatible?
+5. Which source ref proves each placement?
+6. Did the grouping arise only because facts share a paragraph?
+7. What alternative parent, move or split best challenges the current choice?
+
+Use `yes / no / uncertain` internally. `No` and `uncertain` trigger repair; they
+cannot be waived by a fluent explanation. Source adjacency does not establish
+taxonomy. Keep this self-review inside PLAN/AUTHOR Critic and expose only the
+repaired copy or a deterministic failure such as
+`ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY`.
+
 ## 6a. `full_copy` must carry the page argument
 
 `full_copy` is the fully-argued paragraph a presenter could read verbatim and carries no fixed character floor. It must establish the page conclusion, the source-grounded proof, the approved relationship, and any declared business meaning. When any of those responsibilities is absent, pull the missing enumerated sub-point, number, named entity, condition, or synthesis sentence from `foundation.json`; do not pad by restating the same claim in different words.

@@ -14,6 +14,7 @@ from business_semantic_understanding.validate import (
     _validate_argument,
     _validate_normalized,
     _validate_semantic_issues,
+    _validate_source_chain_section_coverage,
     _validate_source_coverage,
 )
 
@@ -21,6 +22,76 @@ from business_semantic_understanding.validate import (
 class MetadataFactTypeTests(unittest.TestCase):
     def test_metadata_is_a_supported_normalized_fact_type(self) -> None:
         self.assertIn("metadata", FACT_TYPES)
+
+    def test_substantive_section_must_reach_source_chain(self) -> None:
+        errors: list[dict[str, object]] = []
+        _validate_source_chain_section_coverage(
+            {
+                "source_chain": [
+                    {
+                        "node_id": "SC-001",
+                        "section_ids": ["sec-1"],
+                        "normalized_fact_ids": ["NF-0001"],
+                    }
+                ]
+            },
+            {
+                "facts": [
+                    {
+                        "normalized_fact_id": "NF-0001",
+                        "fact_type": "problem",
+                        "evidence": [{"block_id": "blk-1"}],
+                    },
+                    {
+                        "normalized_fact_id": "NF-0002",
+                        "fact_type": "goal",
+                        "evidence": [{"block_id": "blk-2"}],
+                    },
+                ]
+            },
+            {
+                "blocks": [
+                    {"block_id": "blk-1", "section_id": "sec-1"},
+                    {"block_id": "blk-2", "section_id": "sec-2"},
+                ]
+            },
+            errors,
+        )
+
+        issue = next(
+            item
+            for item in errors
+            if item["code"] == "substantive_section_missing_from_source_chain"
+        )
+        self.assertEqual(["sec-2"], issue["context"]["section_ids"])
+        self.assertEqual(["NF-0002"], issue["context"]["normalized_fact_ids"])
+
+    def test_directly_cited_fact_does_not_require_duplicate_section_node(self) -> None:
+        errors: list[dict[str, object]] = []
+        _validate_source_chain_section_coverage(
+            {
+                "source_chain": [
+                    {
+                        "node_id": "SC-001",
+                        "section_ids": ["sec-1"],
+                        "normalized_fact_ids": ["NF-0002"],
+                    }
+                ]
+            },
+            {
+                "facts": [
+                    {
+                        "normalized_fact_id": "NF-0002",
+                        "fact_type": "goal",
+                        "evidence": [{"block_id": "blk-2"}],
+                    }
+                ]
+            },
+            {"blocks": [{"block_id": "blk-2", "section_id": "sec-2"}]},
+            errors,
+        )
+
+        self.assertEqual([], errors)
 
     def _fact(self, fact_type: str) -> dict[str, object]:
         return {
@@ -241,6 +312,26 @@ class MetadataFactTypeTests(unittest.TestCase):
 
         self.assertNotIn(
             "normalized_fact_redundant_table_row_label",
+            {item["code"] for item in errors},
+        )
+
+    def test_construction_principle_cannot_remain_generic_other(self) -> None:
+        fact = self._fact("other")
+        fact["statement"] = "坚持顶层对接，确保概念、架构和术语协调一致。"
+        errors: list[dict[str, object]] = []
+        _validate_normalized(
+            {"facts": [fact]},
+            {
+                "fact-0001": {
+                    "heading_path": ["三、总体思路", "（一）构建原则"],
+                }
+            },
+            errors,
+            [],
+        )
+
+        self.assertIn(
+            "normalized_fact_principle_misclassified",
             {item["code"] for item in errors},
         )
 

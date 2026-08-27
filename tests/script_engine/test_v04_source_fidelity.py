@@ -31,6 +31,7 @@ def _plan() -> dict:
         "communication_goal": "test",
         "audience_scope": "external",
         "source_structure_mode": "preserve",
+        "evidence_fit_review_mode": "strict",
         "chapters": [
             {"id": "C1", "purpose": "x", "source_chapter_ids": ["CH01"]},
             {"id": "C2", "purpose": "y", "source_chapter_ids": ["CH02"]},
@@ -40,6 +41,15 @@ def _plan() -> dict:
             "source_scope": ["S1.1"], "structural_operation": "preserve",
             "analysis_basis": {"model": "problem-diagnosis", "relation_basis": "inferred", "confidence": "high", "supports": ["F1", "F2"]},
             "proof": {"method": "reasoning", "evidence_refs": ["F1", "F2"], "relation_basis": "inferred"},
+            "evidence_fit_review": {
+                "question": "q",
+                "items": [
+                    {"evidence_ref": "F1", "fit": "indirect", "role": "reason", "reason": "F1 supports the inferred relation"},
+                    {"evidence_ref": "F2", "fit": "indirect", "role": "result", "reason": "F2 supports the inferred relation"},
+                ],
+                "counter_case": "Without both facts the inferred relation would need to be removed",
+                "verdict": "keep",
+            },
         }],
     }
 
@@ -144,11 +154,11 @@ def test_source_index_coverage_catches_unmapped_ref() -> None:
     issues = validate_source_index_coverage(final, index)
     assert len(issues) == 1 and "S9.9" in issues[0]
 
-def test_existing_real_project_remains_schema_compatible() -> None:
+def test_old_fixture_without_evidence_fit_gate_is_rejected() -> None:
     project = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure"
     if not project.exists():
         return
     foundation = json.loads((project / "foundation.json").read_text(encoding="utf-8"))
     plan = json.loads((project / "deck-plan.json").read_text(encoding="utf-8"))
     assert validate_foundation(foundation) == []
-    assert validate_deck_plan(plan) == []
+    assert any("evidence_fit_review_mode" in issue for issue in validate_deck_plan(plan))
