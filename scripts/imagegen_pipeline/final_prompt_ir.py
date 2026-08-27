@@ -2,27 +2,15 @@
 
 The IR is the single normalized shape between the audited ``PageArtifactSpec``
 and the final prompt text. It carries only what the image generator needs to
-see; internal Stage 02 bookkeeping (relationship qualifiers, priority codes,
-connector booleans, raw backend enum tokens) never reaches this type.
+see; internal Stage 02 bookkeeping never reaches the rendered prompt.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-# Technical safety ceiling on prompt size/complexity -- not a business rule
-# about how many modules a page may have. Semantic groups now mirror Stage
-# 02's authoritative root-module count (see content_integrity_contract.py);
-# pages with more root modules than this should be rare, and
-# MAX_PROMPT_CHARACTERS in final_prompt_contract.py remains the primary
-# backstop against runaway prompt size.
 MAX_SEMANTIC_GROUPS = 10
-
-# Bump when FinalPromptIR's field shape or normalization rules change in a
-# way that would make an old debug receipt misleading about how a prompt
-# was built.
-FINAL_PROMPT_IR_VERSION = "v2"
-
+FINAL_PROMPT_IR_VERSION = "v3"
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 
@@ -37,8 +25,7 @@ def _dangling_phrase(text: str) -> bool:
 
 @dataclass(frozen=True)
 class SemanticGroupIR:
-    """One deterministic bucket of evidence, grouped by content root module
-    (falling back to ``EvidenceSpec.kind`` when root structure is unavailable)."""
+    """One deterministic bucket of evidence grouped by audited content root."""
 
     id: str
     role: str
@@ -48,13 +35,35 @@ class SemanticGroupIR:
     def __post_init__(self) -> None:
         if self.emphasis not in {"primary", "secondary"}:
             raise PromptContractError(
-                f"semantic group {self.id!r} emphasis must be primary or secondary, "
-                f"got {self.emphasis!r}"
+                f"semantic group {self.id!r} emphasis must be primary or secondary, got {self.emphasis!r}"
             )
         if not self.id.strip():
             raise PromptContractError("semantic group requires a non-empty id")
         if not self.summary.strip():
             raise PromptContractError(f"semantic group {self.id!r} requires a summary")
+
+
+@dataclass(frozen=True)
+class TextBindingIR:
+    """Model-facing text ownership for one semantic group.
+
+    ``group_id`` remains an internal IR key and is not rendered directly.  The
+    renderer uses the semantic group's stable display order/role while the
+    debug receipt preserves this key for traceability.
+    """
+
+    group_id: str
+    role: str
+    hierarchy_level: int
+    exact_text: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if not self.group_id.strip():
+            raise PromptContractError("text binding requires group_id")
+        if not self.exact_text:
+            raise PromptContractError(f"text binding {self.group_id!r} requires exact text")
+        if self.hierarchy_level <= 0:
+            raise PromptContractError("text binding hierarchy_level must be positive")
 
 
 @dataclass(frozen=True)
@@ -100,6 +109,7 @@ class FinalPromptIR:
     page_mission: str = ""
     semantic_context: str = ""
     prompt_mode: str = "semantic_brief"
+    text_bindings: tuple[TextBindingIR, ...] = ()
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
@@ -134,6 +144,22 @@ class FinalPromptIR:
         if len(self.visible_text) != len(set(self.visible_text)):
             raise PromptContractError("visible text entries must be unique")
 
+        if self.text_bindings:
+            bound = tuple(text for binding in self.text_bindings for text in binding.exact_text)
+            if bound != self.visible_text:
+                raise PromptContractError(
+                    "text bindings must cover exact visible text once and in authoritative order"
+                )
+            group_ids = {group.id for group in self.semantic_groups}
+            unknown = [binding.group_id for binding in self.text_bindings if binding.group_id not in group_ids]
+            if unknown:
+                raise PromptContractError(
+                    f"text bindings reference unknown semantic groups: {', '.join(unknown)}"
+                )
+            binding_groups = [binding.group_id for binding in self.text_bindings]
+            if len(binding_groups) != len(set(binding_groups)):
+                raise PromptContractError("text bindings may define each semantic group at most once")
+
 
 __all__ = [
     "FINAL_PROMPT_IR_VERSION",
@@ -143,4 +169,5 @@ __all__ = [
     "PromptContractError",
     "RuntimeLockIR",
     "SemanticGroupIR",
+    "TextBindingIR",
 ]
