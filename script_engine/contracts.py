@@ -355,10 +355,20 @@ def check_onscreen_minimum_density(final_script: dict[str, Any], min_chars: int 
     the page's argument from the screen alone. A page under the floor should gain more short,
     parallel `items` per module (pulling real sub-facts from `foundation.json`), not longer
     sentences — that would immediately trip the ceiling instead. Only `page_type == "content"`
-    slides are checked, matching the ceiling check's scope."""
+    slides are checked, matching the ceiling check's scope.
+
+    A slide carrying `content_load: "light"` (copied over from the approved `deck-plan.json` page
+    of the same id — plan authors it when a page's source_scope is genuinely thin, e.g. a short
+    executive-summary table row) is exempt from this floor. Without this escape hatch, a page whose
+    source material is truly exhausted has no honest way to satisfy the floor except inventing a
+    module that restates other modules' content as a "relationship" — the exact anti-pattern
+    `references/screen-copy-authoring.md` section 5a warns against. The floor still applies by
+    default (a slide with no `content_load` or any value other than `light` is checked as before)."""
     issues: list[str] = []
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        if slide.get("content_load") == "light":
             continue
         slide_id = slide.get("id") or f"#{index}"
         total = 0
@@ -383,10 +393,15 @@ def check_full_copy_minimum_density(final_script: dict[str, Any], min_chars: int
     under the floor is usually missing a specific enumerated point, a closing synthesis sentence,
     or a concrete number/name that only lives in `foundation.json`'s facts — not filler; pull the
     missing substance from there rather than padding with restatement. Only `page_type == "content"`
-    slides are checked, matching the other density checks' scope."""
+    slides are checked, matching the other density checks' scope. A slide carrying
+    `content_load: "light"` is exempt, for the same reason `check_onscreen_minimum_density`
+    exempts one: a page whose source material is genuinely thin should not be forced into
+    restating itself just to clear a fixed character count."""
     issues: list[str] = []
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        if slide.get("content_load") == "light":
             continue
         slide_id = slide.get("id") or f"#{index}"
         chars = _meaningful_char_count(slide.get("full_copy"))

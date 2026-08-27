@@ -116,6 +116,7 @@ Compress only after full copy is sound.
 
 - Use concrete nouns, numbers, actors, conditions and distinctions.
 - Prefer 2–4 semantic modules unless the source mandates a larger counted set.
+- Do not add a module whose entire content is commentary on how the page's other modules relate to each other — that restates them under a "关系/相互关系/对应关系" heading without a new fact. The relationship itself belongs in `visual_thesis`/`relationships`, not a bonus onscreen card (`references/screen-copy-authoring.md` section 5b). If the page is short of the onscreen density floor and no such module is available, the page is genuinely thin — mark it `content_load: light` in the plan rather than inventing one.
 - Do not mechanically map every Word bullet into a card.
 - Do not thin a concrete claim into generic labels.
 - Keep source refs/citation codes outside onscreen content.
