@@ -48,14 +48,7 @@ def _model_visible_text(text: str) -> str:
 
 
 def _split_terminal_contract(raw_contract: str) -> tuple[str, str]:
-    """Split the authored terminal section before sanitizing style labels.
-
-    The previous implementation sanitized first, which changed a Chinese
-    legacy terminal heading containing ``风格09`` into a different string and
-    made the terminal section impossible to locate. Splitting first preserves
-    the semantic boundary while still removing routing labels from both body
-    and terminal text before they become model-visible.
-    """
+    """Split the authored terminal section before sanitizing style labels."""
 
     positions = [
         (raw_contract.find(marker), marker)
@@ -68,6 +61,44 @@ def _split_terminal_contract(raw_contract: str) -> tuple[str, str]:
     return raw_contract[:index].rstrip(), raw_contract[index + len(marker) :].strip()
 
 
+def project_runtime_style_contract(
+    raw_contract: str,
+    *,
+    source: str = "runtime_projection",
+    reference_image: Path | None = None,
+    digest: str = "",
+    explicit_terminal: str = "",
+) -> RuntimeStyleContract:
+    """Project any authored/transformed style contract into model-visible rules.
+
+    This is deliberately independent of style ids. Callers may first apply
+    their existing content-first or creative-brief compatibility transforms,
+    then pass that transformed contract here. The projection removes routing
+    labels and moves the terminal fragment to one generic execution lock.
+    """
+
+    raw = str(raw_contract or "")
+    if not raw.strip():
+        raise ValueError("runtime style projection requires a non-empty contract")
+    raw_body, raw_terminal = _split_terminal_contract(raw)
+    if explicit_terminal.strip():
+        raw_terminal = explicit_terminal.strip()
+    contract = _model_visible_text(raw_body)
+    terminal = _model_visible_text(raw_terminal)
+    if not contract:
+        raise ValueError("runtime style projection has no model-visible rules")
+    resolved_digest = str(digest or "").strip()
+    if not resolved_digest:
+        resolved_digest = sha256((contract + "\n" + terminal).encode("utf-8")).hexdigest().upper()
+    return RuntimeStyleContract(
+        contract=contract,
+        terminal_lock=terminal,
+        source=source,
+        sha256=resolved_digest,
+        reference_image=reference_image,
+    )
+
+
 def load_runtime_style_contract(style_lock: Path) -> RuntimeStyleContract:
     payload = load_style_lock(style_lock)
     style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
@@ -75,30 +106,16 @@ def load_runtime_style_contract(style_lock: Path) -> RuntimeStyleContract:
     if not raw_contract.strip():
         raise ValueError(f"style lock has no runtime prompt contract: {style_lock}")
 
-    raw_body, raw_terminal = _split_terminal_contract(raw_contract)
-    explicit_terminal = str(style.get("terminal_lock") or "").strip()
-    if explicit_terminal:
-        raw_terminal = explicit_terminal
-
-    contract = _model_visible_text(raw_body)
-    terminal = _model_visible_text(raw_terminal)
-    if not contract:
-        raise ValueError(f"style lock runtime prompt contract has no model-visible rules: {style_lock}")
-
-    source = str(style.get("prompt_contract_source") or payload.get("style_source") or style_lock)
     reference_image = None
     reference = payload.get("reference_image")
     if isinstance(reference, dict) and reference.get("path"):
         reference_image = Path(str(reference["path"]))
-    digest = str(style.get("prompt_contract_sha256") or "").strip()
-    if not digest:
-        digest = sha256((contract + "\n" + terminal).encode("utf-8")).hexdigest().upper()
-    return RuntimeStyleContract(
-        contract=contract,
-        terminal_lock=terminal,
-        source=source,
-        sha256=digest,
+    return project_runtime_style_contract(
+        raw_contract,
+        source=str(style.get("prompt_contract_source") or payload.get("style_source") or style_lock),
         reference_image=reference_image,
+        digest=str(style.get("prompt_contract_sha256") or "").strip(),
+        explicit_terminal=str(style.get("terminal_lock") or "").strip(),
     )
 
 
@@ -125,4 +142,5 @@ __all__ = [
     "enforce_terminal_execution_lock",
     "internal_style_token_leaks",
     "load_runtime_style_contract",
+    "project_runtime_style_contract",
 ]
