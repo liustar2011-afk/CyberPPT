@@ -26,7 +26,7 @@ RELATION_TYPES = {
     "requires", "constrains", "addresses", "measures", "precedes", "flows_to",
     "part_of", "responsible_for", "operates", "builds", "owns", "associated_with", "other",
 }
-RELATION_BASIS = {"explicit", "inferred"}
+RELATION_BASIS = {"source", "inferred", "external"}
 ARGUMENT_ROLES = {
     "context", "background", "problem", "cause", "policy_basis", "requirement", "goal",
     "principle", "approach", "capability", "mechanism", "process", "responsibility",
@@ -393,9 +393,9 @@ def _validate_relations(payload: dict[str, Any], concept_ids: set[str], normaliz
             _error(errors, "invalid_relation_type", "Relation uses an unsupported relation_type.", relation_id=relation_id, value=relation.get("relation_type"))
         basis = relation.get("basis")
         if basis not in RELATION_BASIS:
-            _error(errors, "invalid_relation_basis", "Relation basis must be explicit or inferred.", relation_id=relation_id)
-        if basis == "inferred" and not str(relation.get("inference_rationale", "")).strip():
-            _error(errors, "missing_inference_rationale", "Inferred relations require inference_rationale.", relation_id=relation_id)
+            _error(errors, "invalid_relation_basis", "Relation basis must be source, inferred, or external.", relation_id=relation_id)
+        if basis in ("inferred", "external") and not str(relation.get("inference_rationale", "")).strip():
+            _error(errors, "missing_inference_rationale", "Inferred or external relations require inference_rationale.", relation_id=relation_id)
         refs = relation.get("normalized_fact_ids")
         if not isinstance(refs, list) or not refs:
             _error(errors, "relation_without_evidence", "Every relation must reference normalized facts.", relation_id=relation_id)
@@ -407,6 +407,8 @@ def _validate_relations(payload: dict[str, Any], concept_ids: set[str], normaliz
             _error(errors, "invalid_confidence", "Relation confidence must be high, medium, or low.", relation_id=relation_id)
         if basis == "inferred":
             _warning(warnings, "inferred_relation", "Relation is explicitly labeled as model inference.", relation_id=relation_id)
+        if basis == "external":
+            _warning(warnings, "external_relation", "Relation depends on information outside the source material.", relation_id=relation_id)
     return len(relations)
 
 

@@ -820,6 +820,15 @@ def _enrich_source_truth(
                 "visibility": "external_ok",
             }
         )
+    # relation-graph.json (business-semantic-understanding) uses a three-way
+    # basis: source / inferred / external. Downstream Source Truth consumers
+    # (e.g. cyberppt/page_logic_contract.py's _VALID_BASES) only know the
+    # original two-way explicit/inferred distinction; map at the projection
+    # boundary rather than propagating a third value they cannot validate.
+    # `external` (depends on domain knowledge or a web check, not the source
+    # itself) is not source-stated, so it maps to `inferred` for downstream
+    # evidence-strength purposes.
+    _RELATION_BASIS_PROJECTION = {"source": "explicit", "inferred": "inferred", "external": "inferred"}
     projected_relations: list[dict[str, Any]] = []
     for item in _items(relations.get("relations")):
         fact_ids = _strings(item.get("normalized_fact_ids"))
@@ -830,7 +839,7 @@ def _enrich_source_truth(
                 "from": _text(item.get("from_concept_id")),
                 "to": _text(item.get("to_concept_id")),
                 "relation": _text(item.get("relation_type")) or "associated_with",
-                "basis": _text(item.get("basis")) or "explicit",
+                "basis": _RELATION_BASIS_PROJECTION.get(_text(item.get("basis")), "explicit"),
                 "confidence": _text(item.get("confidence")) or "medium",
                 "support": support,
                 "source_refs": list(

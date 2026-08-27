@@ -175,7 +175,7 @@ def build_workpack(
             "source_blocks": blocks,
             "semantic_policy": {
                 "truth_status": "source_assertions_unverified",
-                "external_enrichment": "forbidden",
+                "external_enrichment": "allowed_with_basis_label",
                 "inference_must_be_labeled": True,
             },
         })
@@ -254,7 +254,7 @@ def build_workpack(
         ],
         "semantic_policy": {
             "source_assertions_are_verified_truth": False,
-            "external_enrichment": "forbidden",
+            "external_enrichment": "allowed_with_basis_label",
             "preserve_conflicts_and_ambiguity": True,
             "inference_must_be_labeled": True,
         },
