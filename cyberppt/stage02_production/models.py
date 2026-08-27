@@ -33,6 +33,10 @@ class Stage02RunOptions:
     blueprint_only: bool = False
     no_style_reference: bool = False
     skip_image_text_audit: bool = False
+    # Deprecated compatibility telemetry only. No authorization/gate is allowed
+    # to branch on this field; it remains so old callers and test patch-points
+    # can observe that the legacy CLI flag was supplied during migration.
+    allow_script_edit_requested: bool = False
     allow_prompt_edit: bool = False
     prompt_overrides_dir: Path | None = None
 
