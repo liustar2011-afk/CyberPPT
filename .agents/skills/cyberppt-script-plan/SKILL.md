@@ -143,13 +143,24 @@ business dimensions, or absorb a page-level conclusion, add an optional
 - `scope_mode: exclusive` when a module must not carry another module's issue;
 - `detail_policy` when role boundaries need machine checking. Declare
   `allowed_roles`, `forbidden_roles`, and regex `role_markers` for roles such as
-  `gap`, `evidence`, `measure`, `outcome` or `summary`.
+  `gap`, `evidence`, `measure`, `outcome` or `summary`. Set
+  `label_only_allowed: true` only when the approved source intentionally offers
+  a label-only taxonomy and no item-level object, role, task, condition or
+  boundary is available.
 
 Use this contract to preserve the page's semantic axis and expression choice, not
 to force equal item counts or identical sentence patterns. A parallel page may
 legitimately have different numbers of source-grounded details in different
 modules. Module headings, selective readable leads, and compact evidence details
 may coexist when the page's declared composition policy permits them.
+
+For role-bearing groups such as project positioning, capabilities, tasks or
+validation scenarios, plan each visible item as `label: source-grounded detail`
+whenever the source or approved page relation provides an object, role, task or
+boundary. A bare label does not prove what that item contributes to the page.
+Do not invent differentiation when the source supplies names only; use the
+explicit `label_only_allowed` exception and keep the shared relationship at the
+parent level.
 
 When a page's assigned sources are rich enough that silent compression would be
 risky, add optional `source_consumption` with `mode: strict`:

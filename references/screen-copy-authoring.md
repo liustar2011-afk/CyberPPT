@@ -190,6 +190,22 @@ Every onscreen module must carry a concrete distinguishing fact — a number, na
 
 The dominant semantic relationship identified in section 5 belongs in `visual_thesis` (as the page's stated judgment) and in `relationships` (as the structure Stage 02 renders) — and it may thread through `full_copy`'s connective sentences. It does not need, and should not get, its own onscreen card unless that card itself introduces a fact the audience has not yet seen (e.g. a genuine dependency the audience must act on, stated as that dependency's concrete content, not as a meta-description of "the relationship"). When the source material is thin and no further evidence duty exists, plan it as `content_load: light` rather than manufacturing a relationship-narration module.
 
+## 5c. Keep source-backed payload attached to detail labels
+
+For groups that express positioning, capabilities, tasks, responsibilities or
+validation scenarios, a child item should normally answer what the named item
+does on this page:
+
+```text
+绿色低碳：检验标准在该类业务中的适用性
+主体接入：支撑参与主体可信接入行业节点
+```
+
+Use one colon between the business label and its source-grounded explanation;
+do not add terminal punctuation. If the approved source contains only a counted
+or named taxonomy, preserve the names and declare `label_only_allowed` in PLAN.
+Never fabricate item-level differentiation to satisfy this form.
+
 ## 6a. `full_copy` must carry the page argument
 
 `full_copy` is the fully-argued paragraph a presenter could read verbatim and carries no fixed character floor. It must establish the page conclusion, the source-grounded proof, the approved relationship, and any declared business meaning. When any of those responsibilities is absent, pull the missing enumerated sub-point, number, named entity, condition, or synthesis sentence from `foundation.json`; do not pad by restating the same claim in different words.

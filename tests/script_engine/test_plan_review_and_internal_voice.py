@@ -163,3 +163,101 @@ def test_adjacent_duplicate_messages_warn_without_banning_shared_business_terms(
 
     assert issues == []
     assert any("near-duplicate core messages" in warning for warning in warnings)
+
+
+def _label_detail_fixture(*, list_only_source: bool = False) -> tuple[dict, dict, dict]:
+    green = (
+        "重点场景包括行业治理、市场运行、绿色低碳、科技创新"
+        if list_only_source
+        else "绿色低碳场景用于检验标准在电碳业务中的适用性和可操作性"
+    )
+    foundation = {
+        "source_structure": [],
+        "facts": [
+            {"id": "V1", "statement": green, "source_refs": ["S1"]},
+            {
+                "id": "V2",
+                "statement": "科技创新场景用于检验标准对科研数据流通和成果应用的支撑能力",
+                "source_refs": ["S2"],
+            },
+        ],
+        "concepts": [],
+        "entities": [],
+        "relations": [],
+        "arguments": [],
+        "constraints": [],
+        "numbers": [],
+    }
+    module = {
+        "heading": "重点验证场景",
+        "evidence_refs": ["V1", "V2"],
+        "required_signals": ["绿色低碳", "科技创新"],
+    }
+    plan = {
+        "audience_scope": "internal",
+        "chapters": [],
+        "pages": [
+            {
+                "id": "P01",
+                "question": "哪些场景承担标准验证",
+                "message": "重点场景用于检验标准适用性",
+                "logic": "场景验证",
+                "content": ["绿色低碳", "科技创新"],
+                "content_load": "standard",
+                "proof": {"evidence_refs": ["V1", "V2"]},
+                "onscreen_contract": {
+                    "relation": "parallel",
+                    "detail_axis": "validation_scene",
+                    "modules": [module],
+                },
+            }
+        ],
+    }
+    final = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "title": "重点场景验证",
+                "core_message": "重点场景用于检验标准适用性",
+                "onscreen": [
+                    {"heading": "重点验证场景", "items": ["绿色低碳", "科技创新"]}
+                ],
+            }
+        ]
+    }
+    return foundation, plan, final
+
+
+def test_final_audit_blocks_source_detail_collapsed_to_bare_labels() -> None:
+    foundation, plan, final = _label_detail_fixture()
+
+    issues, _ = audit_final_script(final, plan, foundation)
+
+    assert any("ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" in issue for issue in issues)
+    assert any("绿色低碳" in issue for issue in issues)
+
+
+def test_final_audit_accepts_label_with_source_grounded_explanation() -> None:
+    foundation, plan, final = _label_detail_fixture()
+    final["slides"][0]["onscreen"][0]["items"] = [
+        "绿色低碳：检验标准在电碳业务中的适用性",
+        "科技创新：检验标准对科研数据流通的支撑能力",
+    ]
+
+    issues, _ = audit_final_script(final, plan, foundation)
+
+    assert not any("ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" in issue for issue in issues)
+
+
+def test_final_audit_allows_explicit_label_only_taxonomy_for_thin_source() -> None:
+    foundation, plan, final = _label_detail_fixture(list_only_source=True)
+    plan["pages"][0]["onscreen_contract"]["detail_policy"] = {
+        "label_only_allowed": True
+    }
+    plan["pages"][0]["proof"]["evidence_refs"] = ["V1"]
+    plan["pages"][0]["onscreen_contract"]["modules"][0]["evidence_refs"] = ["V1"]
+
+    issues, _ = audit_final_script(final, plan, foundation)
+
+    assert not any("ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" in issue for issue in issues)

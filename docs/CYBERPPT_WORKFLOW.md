@@ -113,6 +113,8 @@ Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundat
 
 页面可按 `onscreen_contract.expression_mode` 选择 `phrase_led`、`sentence_led` 或默认的 `mixed` 表达方式；完整判断句用于承载模块命题，短语或短分句用于承载具体证据。数字编号只表达来源支持的流程、阶段、时间、优先级、门控或其他真实顺序；普通并列分类使用无编号业务标题。共享标题、谓词、对象、限定语或结果只在父级表达一次，子项分别承载差异信息，避免为追求短语形式制造同义重复。
 
+项目定位、能力、任务、职责和验证场景等功能性模块的明细项，来源或已批准页面关系提供了对象、作用、任务或边界时，应采用“业务标签：细化说明”，如“绿色低碳：检验标准在该类业务中的适用性”，末尾不加句号。来源只列分类名称且没有项目级细节时，可以在 Plan 的 `onscreen_contract.detail_policy` 中声明 `label_only_allowed: true`，保留标签式列举；不得为满足形式补写无来源说明。`page-lint`、`script-audit` 和 Script Engine 的 PLAN→AUTHOR 审计共同检查 `ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL`。
+
 将已完成页面汇总为最终脚本，执行全稿审计，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约。
 
 `script-audit` 是 Stage 01 的编辑质量门。Stage 02 以已确认脚本为唯一内容输入；项目内脚本和外部脚本均可通过 `prepare-stage02-handoff --script <path>` 进入独立的视觉生产链。

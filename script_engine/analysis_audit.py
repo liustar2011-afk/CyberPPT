@@ -7,6 +7,11 @@ from typing import Any
 
 from cyberppt.content_route import audit_content_route
 from cyberppt.script_quality.common import _source_statement_overlap
+from cyberppt.source_detail_visibility import (
+    functional_group_needs_item_explanations,
+    is_bare_business_label,
+    source_has_richer_item_detail,
+)
 from cyberppt.stage02_readiness import (
     audit_authored_stage02_readiness,
     audit_stage02_readiness,
@@ -247,6 +252,76 @@ def _onscreen_expression_warnings(
             "combine compact evidence phrases with at least one source-grounded sentence"
         ]
     return []
+
+
+def _authored_bare_label_detail_issues(
+    page: dict[str, Any],
+    slide: dict[str, Any],
+    items: dict[str, dict[str, Any]],
+) -> list[str]:
+    """Keep source detail and role-bearing payload attached to visible labels."""
+
+    contract = page.get("onscreen_contract")
+    contract = contract if isinstance(contract, dict) else {}
+    detail_policy = contract.get("detail_policy")
+    detail_policy = detail_policy if isinstance(detail_policy, dict) else {}
+    label_only_allowed = detail_policy.get("label_only_allowed") is True
+    contract_modules = {
+        str(module.get("heading") or "").strip(): module
+        for module in contract.get("modules") or []
+        if isinstance(module, dict) and str(module.get("heading") or "").strip()
+    }
+    page_evidence_ids = _page_evidence_ids(page)
+    issues: list[str] = []
+    for module_index, module in enumerate(slide.get("onscreen") or []):
+        if not isinstance(module, dict):
+            continue
+        heading = str(module.get("heading") or "").strip()
+        visible_items = [
+            str(value).strip()
+            for value in module.get("items") or []
+            if isinstance(value, str) and value.strip()
+        ]
+        if not visible_items:
+            continue
+        module_contract = contract_modules.get(heading, {})
+        evidence_ids = {
+            str(value)
+            for value in module_contract.get("evidence_refs") or []
+            if str(value)
+        } or page_evidence_ids
+        source_statements = [
+            _item_text(items[item_id])
+            for item_id in evidence_ids
+            if item_id in items
+        ]
+        collapsed = [
+            value
+            for value in visible_items
+            if is_bare_business_label(value)
+            and source_has_richer_item_detail(value, source_statements)
+        ]
+        role_only = functional_group_needs_item_explanations(
+            heading,
+            visible_items,
+            content_load=page.get("content_load"),
+            label_only_allowed=label_only_allowed,
+        )
+        if collapsed or role_only:
+            labels = collapsed or [
+                value for value in visible_items if is_bare_business_label(value)
+            ]
+            issues.append(
+                "onscreen module {index} '{heading}' collapses source-backed or role-bearing "
+                "details into bare labels {labels}; write '标签：来源支持的对象、作用、任务或边界' "
+                "without terminal punctuation. Use detail_policy.label_only_allowed=true only "
+                "when the approved source intentionally provides a label-only taxonomy".format(
+                    index=module_index,
+                    heading=heading or "?",
+                    labels=labels,
+                )
+            )
+    return issues
 
 
 def _audit_content_coverage_definition(page: dict[str, Any]) -> list[str]:
@@ -1044,6 +1119,11 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
             issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
         for readiness_issue in audit_authored_stage02_readiness(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {readiness_issue}")
+        for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
+            issues.append(
+                f"slides.{index} ({slide_id}): ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: "
+                f"{detail_issue}"
+            )
         warnings.extend(
             f"slides.{index} ({slide_id}): {warning}"
             for warning in _onscreen_expression_warnings(page, slide)

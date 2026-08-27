@@ -43,6 +43,7 @@ from .onscreen import (
     _onscreen_markdown_hits,
     _onscreen_module_index_issues,
     _onscreen_module_dimension_consistency_issues,
+    _onscreen_source_detail_collapsed_to_label_issues,
     _onscreen_orphan_ordinal_hits,
     _onscreen_parallel_structure_issues,
     _onscreen_redundant_restatement_issues,
@@ -407,6 +408,7 @@ def _presentation_issues(
             )
         issues.extend(_onscreen_parallel_structure_issues(page))
         issues.extend(_onscreen_module_dimension_consistency_issues(page, contract))
+        issues.extend(_onscreen_source_detail_collapsed_to_label_issues(page, contract))
         issues.extend(_onscreen_redundant_restatement_issues(page))
         issues.extend(_onscreen_module_index_issues(page, contract))
         issues.extend(_legacy_onscreen_structure_migration_issues(page, contract))

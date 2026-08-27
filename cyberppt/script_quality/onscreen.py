@@ -7,6 +7,12 @@ from cyberppt.onscreen_expression import (
     resolve_onscreen_expression,
 )
 from cyberppt.paths import repo_path
+from cyberppt.source_detail_visibility import (
+    clean_visible_line,
+    functional_group_needs_item_explanations,
+    is_bare_business_label,
+    source_has_richer_item_detail,
+)
 
 from .common import _compact_len, _source_statement_overlap, normalized_tokens, text_similarity
 from .models import ScriptDocument, ScriptPage, ScriptQualityIssue, _issue
@@ -1703,6 +1709,99 @@ def _onscreen_module_dimension_consistency_issues(
                     severity="warning",
                 )
             )
+    return issues
+
+
+def _onscreen_source_detail_collapsed_to_label_issues(
+    page: ScriptPage,
+    contract: dict[str, object] | None = None,
+) -> list[ScriptQualityIssue]:
+    """Reject bare child labels when the source or page role carries payload."""
+
+    if page.page_type != "content":
+        return []
+    contract = contract or {}
+    units = [
+        unit
+        for unit in contract.get("content_units") or []
+        if isinstance(unit, dict)
+    ]
+    relevant_units = [
+        unit
+        for unit in units
+        if unit.get("onscreen_required") is True
+        or str(unit.get("visibility") or "")
+        in {"primary_onscreen", "supporting_onscreen"}
+    ] or units
+    source_statements: list[str] = []
+    for unit in relevant_units:
+        statement = str(unit.get("statement") or "").strip()
+        if statement:
+            source_statements.append(statement)
+        source_statements.extend(
+            str(value).strip()
+            for value in unit.get("source_statements") or []
+            if str(value).strip()
+        )
+
+    nested_contract = contract.get("onscreen_contract")
+    nested_contract = nested_contract if isinstance(nested_contract, dict) else {}
+    detail_policy = nested_contract.get("detail_policy")
+    detail_policy = detail_policy if isinstance(detail_policy, dict) else {}
+    label_only_allowed = (
+        contract.get("label_only_onscreen_allowed") is True
+        or detail_policy.get("label_only_allowed") is True
+    )
+
+    raw_lines = [line for line in page.onscreen_text.splitlines() if line.strip()]
+    headings = [
+        (_line_indent(line), index, _module_title(line))
+        for index, line in enumerate(raw_lines)
+        if _module_title(line) is not None
+    ]
+    base_indent = min((indent for indent, _, _ in headings), default=0)
+    issues: list[ScriptQualityIssue] = []
+    for position, (indent, start, heading) in enumerate(headings):
+        if indent != base_indent or heading is None:
+            continue
+        end = len(raw_lines)
+        for next_indent, next_index, _ in headings[position + 1 :]:
+            if next_indent <= indent:
+                end = next_index
+                break
+        visible_items = [
+            clean_visible_line(line)
+            for line in raw_lines[start + 1 : end]
+            if _line_indent(line) > indent and clean_visible_line(line)
+        ]
+        if not visible_items:
+            continue
+        collapsed = [
+            value
+            for value in visible_items
+            if is_bare_business_label(value)
+            and source_has_richer_item_detail(value, source_statements)
+        ]
+        role_only = functional_group_needs_item_explanations(
+            heading,
+            visible_items,
+            content_load=contract.get("content_load"),
+            label_only_allowed=label_only_allowed,
+        )
+        if not collapsed and not role_only:
+            continue
+        labels = collapsed or [
+            value for value in visible_items if is_bare_business_label(value)
+        ]
+        issues.append(
+            _issue(
+                "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL",
+                page,
+                "上屏明细把来源已有内容或页面职责压缩成了只有名称的标签，读者无法判断该项承担什么作用。",
+                "改为“标签：来源支持的对象、作用、任务或边界”，末尾不加句号。来源仅提供分类名称时，可在提纲中明确 label_only_onscreen_allowed=true。",
+                evidence=(f"module={heading}", *labels),
+            )
+        )
     return issues
 
 

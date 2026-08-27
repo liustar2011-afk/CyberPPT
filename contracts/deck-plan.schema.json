@@ -81,6 +81,7 @@
           "properties": {
             "allowed_roles": {"type": "array", "items": {"type": "string"}},
             "forbidden_roles": {"type": "array", "items": {"type": "string"}},
+            "label_only_allowed": {"type": "boolean"},
             "role_markers": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}},
             "forbidden_patterns": {"type": "array", "items": {"type": "string"}}
           },

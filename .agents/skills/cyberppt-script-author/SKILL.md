@@ -177,6 +177,13 @@ deterministic visible proof. Other fully consumed records may remain in
 items merely because they were assigned to the page.
 
 - Use concrete nouns, numbers, actors, conditions and distinctions.
+- In project-positioning, capability, task, responsibility and validation-scene
+  groups, do not leave child items as names alone. Write `label: object / role /
+  task / boundary` using approved evidence or the approved page relationship,
+  for example `绿色低碳：检验标准在该类业务中的适用性`. Keep the colon and omit
+  terminal punctuation. A label-only list is allowed only when PLAN explicitly
+  declares `detail_policy.label_only_allowed: true` because the source contains
+  names without item-level detail.
 - Give each permitted `sentence_led` lead module at least one readable
   proposition; use `mixed` when a page needs both sentence-like lead lines and
   compact evidence details.
