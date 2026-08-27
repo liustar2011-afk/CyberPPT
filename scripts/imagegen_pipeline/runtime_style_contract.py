@@ -1,9 +1,9 @@
 """Generic runtime style contract for model-visible ImageGen prompts.
 
 Internal style ids/names remain useful routing and provenance metadata, but the
-prompt sent to ImageGen must contain only self-contained visual rules.  This
-module centralizes that projection and terminal-lock enforcement so Style 09,
-Style 10, and future live styles share one production mechanism.
+prompt sent to ImageGen must contain only self-contained visual rules. This
+module centralizes that projection and terminal-lock enforcement so all live
+styles share one production mechanism.
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ class RuntimeStyleContract:
 
 
 def _model_visible_text(text: str) -> str:
-    """Remove routing labels while preserving the authored visual rules."""
+    """Remove routing labels while preserving authored visual rules."""
 
     cleaned = _INTERNAL_STYLE_TOKEN_RE.sub("当前视觉规则", str(text or ""))
     cleaned = re.sub(r"(?m)^\s*##\s*扩展风格\d+[^\n]*$", "", cleaned)
@@ -47,31 +47,44 @@ def _model_visible_text(text: str) -> str:
     return cleaned.strip()
 
 
-def _terminal_lock(contract: str) -> str:
+def _split_terminal_contract(raw_contract: str) -> tuple[str, str]:
+    """Split the authored terminal section before sanitizing style labels.
+
+    The previous implementation sanitized first, which changed a Chinese
+    legacy terminal heading containing ``风格09`` into a different string and
+    made the terminal section impossible to locate. Splitting first preserves
+    the semantic boundary while still removing routing labels from both body
+    and terminal text before they become model-visible.
+    """
+
     positions = [
-        (contract.find(marker), marker)
+        (raw_contract.find(marker), marker)
         for marker in _LEGACY_TERMINAL_HEADINGS
-        if marker in contract
+        if marker in raw_contract
     ]
     if not positions:
-        return ""
+        return raw_contract, ""
     index, marker = min(positions, key=lambda item: item[0])
-    return contract[index + len(marker) :].strip()
+    return raw_contract[:index].rstrip(), raw_contract[index + len(marker) :].strip()
 
 
 def load_runtime_style_contract(style_lock: Path) -> RuntimeStyleContract:
     payload = load_style_lock(style_lock)
     style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
-    contract = _model_visible_text(str(style.get("prompt_contract") or style.get("style_prompt_v2") or ""))
-    if not contract:
+    raw_contract = str(style.get("prompt_contract") or style.get("style_prompt_v2") or "")
+    if not raw_contract.strip():
         raise ValueError(f"style lock has no runtime prompt contract: {style_lock}")
-    terminal = _terminal_lock(contract)
-    if terminal:
-        for marker in _LEGACY_TERMINAL_HEADINGS:
-            pos = contract.find(marker)
-            if pos >= 0:
-                contract = contract[:pos].rstrip()
-                break
+
+    raw_body, raw_terminal = _split_terminal_contract(raw_contract)
+    explicit_terminal = str(style.get("terminal_lock") or "").strip()
+    if explicit_terminal:
+        raw_terminal = explicit_terminal
+
+    contract = _model_visible_text(raw_body)
+    terminal = _model_visible_text(raw_terminal)
+    if not contract:
+        raise ValueError(f"style lock runtime prompt contract has no model-visible rules: {style_lock}")
+
     source = str(style.get("prompt_contract_source") or payload.get("style_source") or style_lock)
     reference_image = None
     reference = payload.get("reference_image")
