@@ -130,12 +130,28 @@ def validate_final_prompt(
         )
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)
-    expected_reading_path_line = f"Reading path: {' -> '.join(ir.reading_path)}"
-    if len(reading_path_declarations) != 1 or reading_path_declarations[0] != expected_reading_path_line:
-        raise PromptContractError("final prompt must declare exactly one reading path")
+    reading_boundary_declarations = re.findall(
+        r"^Reading boundary: .*$", prompt, flags=re.MULTILINE
+    )
+    if ir.prompt_mode == "semantic_brief":
+        if reading_path_declarations or len(reading_boundary_declarations) != 1:
+            raise PromptContractError(
+                "semantic-brief prompt must declare one reading boundary and no fixed reading path"
+            )
+    else:
+        expected_reading_path_line = f"Reading path: {' -> '.join(ir.reading_path)}"
+        if (
+            len(reading_path_declarations) != 1
+            or reading_path_declarations[0] != expected_reading_path_line
+            or reading_boundary_declarations
+        ):
+            raise PromptContractError(
+                "directed-composition prompt must declare exactly one reading path"
+            )
 
-    if prompt.count(ir.page_judgment) != 1:
-        raise PromptContractError("final prompt must state the page judgment exactly once")
+    judgment_line = f"Core judgment (non-visible): {ir.page_judgment}"
+    if sum(line == judgment_line for line in prompt.splitlines()) != 1:
+        raise PromptContractError("final prompt must state one authoritative page judgment")
 
     if style_id not in (9, 10) and prompt.count(ir.runtime_lock.style_contract) != 1:
         # Style09/10 rewrite their contract text in place to relocate the

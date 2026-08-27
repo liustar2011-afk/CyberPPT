@@ -471,30 +471,44 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
         # rules — rendered in full via the runtime lock below — remain the
         # controlling authority; page-specific data here is advisory context,
         # not a competing layout recipe.
-        spatial_organization = _prompt_safe_visual_text(
-            spec.composition.spatial_organization
-        )
-        page_visual_responsibility = (
-            _style09_visual_responsibility(spec.composition, spec.visual_carrier)
-            if style09_surface
-            else _visual_responsibility(
-                spec.composition,
-                spec.visual_carrier,
-                spec.visual_budget,
+        if spec.prompt_mode == "semantic_brief":
+            composition = CompositionIR(
+                spatial_organization=(
+                    "Choose the spatial composition from the semantic context, exact visible "
+                    "text and style contract; do not inherit a fixed card, lane, matrix, scene "
+                    "or connector recipe from upstream planning."
+                ),
+                primary_focus=page_judgment,
+                visual_responsibility=(
+                    "Use the named business objects, actors, actions, conditions and outcomes "
+                    "as semantic anchors. ImageGen owns the scene-or-structure choice, carrier, "
+                    "spatial organization, visual reading implementation and supporting detail.",
+                    "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; "
+                    "do not invent a stronger relationship than the semantic context supports.",
+                ),
             )
-        )
-        visual_responsibility = (
-            "Use the named business objects, actors, actions and outcomes from "
-            "the semantic sections as the page-specific visual anchor. When the "
-            "content is abstract, use a flat structured relationship field; when "
-            "a concrete referent exists, use one restrained integrated scene or "
-            "business object.",
-        ) + page_visual_responsibility
-        composition = CompositionIR(
-            spatial_organization=spatial_organization,
-            primary_focus=spec.composition.primary_focus,
-            visual_responsibility=visual_responsibility,
-        )
+        else:
+            spatial_organization = _prompt_safe_visual_text(
+                spec.composition.spatial_organization
+            )
+            page_visual_responsibility = (
+                _style09_visual_responsibility(spec.composition, spec.visual_carrier)
+                if style09_surface
+                else _visual_responsibility(
+                    spec.composition,
+                    spec.visual_carrier,
+                    spec.visual_budget,
+                )
+            )
+            visual_responsibility = (
+                "Use the named business objects, actors, actions and outcomes from "
+                "the semantic sections as the page-specific visual anchor.",
+            ) + page_visual_responsibility
+            composition = CompositionIR(
+                spatial_organization=spatial_organization,
+                primary_focus=spec.composition.primary_focus,
+                visual_responsibility=visual_responsibility,
+            )
         hard_constraints = tuple(
             dict.fromkeys(
                 (
@@ -504,12 +518,17 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                 )
             )
         )
+        semantic_relationship = (
+            spec.semantic_context.argument_chain
+            or _prompt_safe_visual_text(
+                _avoid_judgment_repeat(spec.visual_thesis.strip(), page_judgment)
+            )
+            or "Preserve the declared business relationships without inventing sequence, causality or hierarchy."
+        )
         return FinalPromptIR(
             deliverable=_deliverable_sentence(spec),
             page_judgment=page_judgment,
-            dominant_relationship=_prompt_safe_visual_text(
-                _avoid_judgment_repeat(spec.visual_thesis.strip(), page_judgment)
-            ),
+            dominant_relationship=semantic_relationship,
             reading_path=tuple(
                 _avoid_judgment_repeat(item, page_judgment)
                 for item in spec.composition.reading_path
@@ -519,6 +538,9 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             visible_text=spec.typography.visible_text,
             hard_constraints=hard_constraints,
             runtime_lock=RuntimeLockIR(style_contract=spec.art_direction.contract),
+            page_mission=spec.communication_goal.page_mission,
+            semantic_context=spec.semantic_context.text,
+            prompt_mode=spec.prompt_mode,
         )
     except PromptContractError as exc:
         raise PromptContractError(f"{spec.page_id}: {exc}") from exc

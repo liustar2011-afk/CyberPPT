@@ -38,6 +38,9 @@ class PageArtifactSpecTests(unittest.TestCase):
             "title": "External title",
             "page_mission": "Show how governed input becomes a traceable result.",
             "core_message": "Unified governance makes the result traceable.",
+            "full_prose": "Governed input is transformed under an explicit control condition before the traceable result is released.",
+            "argument_chain": "governed input → control condition → traceable result",
+            "provenance_refs": ["SU-EXAMPLE-PARAGRAPH-01"],
             "must_not_include": ["Do not discuss the next chapter"],
             "stage02_visual_input": {
                 "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
@@ -171,6 +174,10 @@ class PageArtifactSpecTests(unittest.TestCase):
         self.assertEqual("Governance operations hub", spec.visual_carrier.business_object)
         self.assertTrue(spec.visual_carrier.use_scene)
         self.assertEqual("Pure white editorial art direction.", spec.art_direction.contract)
+        self.assertEqual("semantic_brief", spec.prompt_mode)
+        self.assertEqual(handoff_page["full_prose"], spec.semantic_context.text)
+        self.assertEqual(handoff_page["argument_chain"], spec.semantic_context.argument_chain)
+        self.assertEqual("full_prose", spec.semantic_context.source_kind)
         relationship = spec.relationships[0]
         self.assertEqual("项目", relationship.subject)
         self.assertEqual("has_goal", relationship.relation)
@@ -210,6 +217,26 @@ class PageArtifactSpecTests(unittest.TestCase):
         ):
             self.assertNotIn(backend_id, serialized)
         self.assertNotIn("Do not discuss the next chapter", serialized)
+        self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", serialized)
+
+    def test_explicit_hard_directed_relationship_enables_directed_composition(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            handoff_page["stage02_visual_input"]["semantic_topology"] = {
+                "primary_topology": "sequence",
+                "constraint_authority": "hard",
+            }
+
+            spec = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=visual_page,
+                style_lock=style_lock,
+                handoff_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+
+        self.assertEqual("directed_composition", spec.prompt_mode)
 
     def test_parallel_set_defaults_to_shared_page_level_visual_budget(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

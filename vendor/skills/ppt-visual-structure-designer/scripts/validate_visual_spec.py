@@ -251,7 +251,8 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         add(issues, "error", "front_portrait", "Front-facing people are prohibited by default", n)
     if ip.get("identifiable_location") is not False:
         add(issues, "error", "location", "Identifiable location is prohibited by default", n)
-    if schema_version == "1.1":
+    prompt_mode = str(page.get("prompt_mode") or "directed_composition")
+    if schema_version == "1.1" and prompt_mode == "directed_composition":
         carrier = str(ip.get("business_object") or "").strip()
         semantic_role = str(ip.get("semantic_role") or "").strip()
         primary = str(vd.get("visual_hierarchy", {}).get("primary") or "").strip()

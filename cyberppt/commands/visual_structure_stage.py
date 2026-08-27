@@ -161,6 +161,20 @@ def _render_business_relationships(value: object) -> str:
 def _decision_execution_design(
     source: dict[str, Any], decision: dict[str, Any], selected: dict[str, Any], page_id: str
 ) -> dict[str, object]:
+    prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
+    if prompt_mode == "semantic_brief":
+        relationships = _render_business_relationships(source.get("business_relationships"))
+        focus = str(source.get("core_judgment") or "本页核心判断").strip()
+        return {
+            "business_object": relationships,
+            "visual_focus": focus,
+            "text_integration_method": "精确上屏文字与其对应业务对象保持语义邻近",
+            "spatial_organization": "由ImageGen依据页面语义、真实关系和Style lock组织",
+            "relationship_encoding": "仅表达已声明的业务关系，不新增顺序、层级或因果",
+            "semantic_role": "承载已声明业务对象、动作、条件与结果",
+            "use_scene": False,
+            "scene_type": "由ImageGen依据页面语义和Style lock判断",
+        }
     design = decision.get("execution_design")
     if not isinstance(design, dict):
         design = {}
@@ -255,6 +269,9 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     """
 
     page_id = _page_id(source.get("page_id"))
+    prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
+    if prompt_mode not in {"semantic_brief", "directed_composition"}:
+        _fail(f"{page_id}: unsupported prompt_mode {prompt_mode!r}")
     if _page_id(decision.get("page_id")) != page_id:
         _fail(f"{page_id}: decision receipt page id does not match visual input")
     evidence = decision.get("evidence_units")
@@ -470,7 +487,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "scope": "page",
             "region_local_visuals": False,
         }
-        if topology == "parallel_set" or not bool(design["use_scene"])
+        if prompt_mode == "semantic_brief" or topology == "parallel_set" or not bool(design["use_scene"])
         else {
             "mode": "integrated_scene",
             "max_auxiliary_fragments": 4,
@@ -480,13 +497,14 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     )
     return {
         "schema_version": "1.1", "page_id": page_id, "page_number": int(source["page_number"]),
+        "prompt_mode": prompt_mode,
         "content_integrity": source.get("content_integrity") or {},
         "page_title": str(source["page_title"]), "page_role": str(source.get("argument_role") or "content"),
         "page_mission": str(source["page_mission"]), "core_judgment": str(source["core_judgment"]),
         "content_lock": {"mode": "strict", "locked_items": locked_items, "allowed_transformations": ["line_break", "grouping", "position_change"], "forbidden_transformations": ["Do not change facts, numbers, dates or units.", "Do not change actors, responsibilities or status.", "Do not add presentation copy that is not part of the approved locked text.", "For a \"label: sentence\" locked text item, render it once as that single label-plus-sentence unit; do not additionally repeat the label alone as a separate heading, card title, or tag.", "Do not invent a heading, label, or tag for a locked text item that has no label in the required text (for example a bare boundary sentence); render it as plain text with no invented label."]},
         "evidence_units": evidence_units,
         "semantic_graph": {"primary_relation": relation, "direction": direction, "topology": topology, "focus_node": focus_id, "nodes": graph_nodes, "edges": graph_edges, "decision_relationship": _render_business_relationships(source.get("business_relationships")), "business_relationships": normalized_business_relationships, "grouping_decisions": grouping_decisions, "forbidden_structures": forbidden_structures},
-        "structural_decision": {"semantic_focus": {"kind": semantic_focus_kind, "ref": focus_id}, "spatial_grammar": grammar, "semantic_tags": [str(selected.get("visual_intent_type") or "relationship")], "primary_refs": [focus_id], "secondary_refs": [eid[key] for key in evidence_keys if key != focus_key], "reading_sequence": [eid[key] for key in reading_keys], "text_bindings": [{"evidence_id": eid[key], "target_ref": eid[key], "binding": "result" if key == focus_key else "embedded", "text_ids": text_ids_by_evidence[key]} for key in evidence_keys], "representation_freedom": {"carrier": "free", "medium": "free", "reason": "上游仅锁定业务关系和正文，Stage02已选定具体业务关系场与文字贴附方式"}},
+        "structural_decision": {"semantic_focus": {"kind": semantic_focus_kind, "ref": focus_id}, "spatial_grammar": grammar, "semantic_tags": [str(selected.get("visual_intent_type") or "relationship")], "primary_refs": [focus_id], "secondary_refs": [eid[key] for key in evidence_keys if key != focus_key], "reading_sequence": [eid[key] for key in reading_keys], "text_bindings": [{"evidence_id": eid[key], "target_ref": eid[key], "binding": "result" if key == focus_key else "embedded", "text_ids": text_ids_by_evidence[key]} for key in evidence_keys], "representation_freedom": {"carrier": "free", "medium": "free", "reason": "语义简报模式由ImageGen决定载体与空间实现" if prompt_mode == "semantic_brief" else "定向构图模式锁定来源支持的业务关系场与文字贴附方式"}},
         "visual_decision": {"visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"), "visual_thesis": str(selected.get("visual_thesis") or source["core_judgment"]), "spatial_organization": design["spatial_organization"], "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys], "text_integration_method": design["text_integration_method"], "relationship_encoding": design["relationship_encoding"], "visual_center_count": 1, "visual_hierarchy": {"primary": design["visual_focus"], "secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if key != focus_key], "tertiary": []}},
         "text_integration": {"title_render_mode": str(source.get("title_render_mode") or "external_text_layer"), "subtitle_render_mode": str(source.get("subtitle_render_mode") or "external_text_layer"), "body_render_mode": "in_image", "placement_strategy": design["text_integration_method"]},
         "geometry": {"canvas": source.get("body_image_canvas") or {"width": 2048, "height": 1024, "ratio": "2:1"}, "title_exclusion_zone": {"x": 0, "y": 0, "w": 2048, "h": 0}, "regions": [{"id": "R_RELATION", "role": "relation-bearing business field", "x": 80, "y": 120, "w": 1888, "h": 800, "priority": "primary"}]},
@@ -495,7 +513,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "expression_contract": expression_contract,
         "quality_contract": quality_contract,
         "connectors": connectors, "final_text": final_text,
-        "generation_handoff": {"structural_guidance": {"source": "structural_decision", "additional_constraints": ["Use the selected business relationship field and its text attachment design; do not render instructions or internal text ids.", "Keep one visual focus and do not create an independent text wall or second summary structure.", "Respect visual_budget: semantic evidence units may share one page-level visual carrier; do not create region-local imagery when region_local_visuals is false."]}, "required_text_ids": expected_ids, "required_text": expected_text, "style_source_ref": "external style lock selected at final-script-pages", "title_exclusion_instruction": "Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image."},
+        "generation_handoff": {"structural_guidance": {"source": "semantic_graph" if prompt_mode == "semantic_brief" else "structural_decision", "additional_constraints": (["Choose the scene or structural carrier, spatial organization and supporting detail from the page semantics and Style lock.", "Preserve only source-supported relationship direction and keep exact visible text near its corresponding business meaning."] if prompt_mode == "semantic_brief" else ["Use the selected business relationship field and its text attachment design; do not render instructions or internal text ids.", "Keep one visual focus and do not create an independent text wall or second summary structure.", "Respect visual_budget: semantic evidence units may share one page-level visual carrier; do not create region-local imagery when region_local_visuals is false."])}, "required_text_ids": expected_ids, "required_text": expected_text, "style_source_ref": "external style lock selected at final-script-pages", "title_exclusion_instruction": "Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image."},
         "avoid": ["Do not map each body item to an isolated icon or decorative image.", "Do not create an independent text wall or second result chain."],
         "qa": {"status": "pending_audit", "score": None, "blocking_issues": [], "warnings": []},
     }
@@ -638,12 +656,15 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "page_mission": page.get("page_mission"),
                 "core_judgment": page.get("core_message"),
                 "semantic_context": page.get("full_prose"),
+                "argument_chain": page.get("argument_chain"),
+                "prompt_mode": page.get("prompt_mode") or "semantic_brief",
                 "locked_on_screen_text": page.get("onscreen_text"),
                 "locked_on_screen_items": page.get("onscreen_items") or [],
                 "locked_text_items": visual.get("locked_text_items") or [],
                 "content_integrity": visual.get("content_integrity") or {},
                 "trace_refs": list(dict.fromkeys([
                     *[str(value) for value in page.get("source_refs") or [] if str(value)],
+                    *[str(value) for value in page.get("provenance_refs") or [] if str(value)],
                     *[str(value) for value in page.get("boundary_source_refs") or [] if str(value)],
                 ])),
                 "onscreen_expression": expression,
@@ -740,6 +761,11 @@ def _write_skill_request(project: Path, script: Path, design_input: Path) -> Pat
             "content_lock": "strict",
             "relationship_authority": "business_relationships",
             "author_visual_notes_authority": "advisory_only",
+            "prompt_modes": {
+                "default": "semantic_brief",
+                "directed": "directed_composition",
+                "authority": "visual_design_input.pages[].prompt_mode",
+            },
             "required_outputs": [VISUAL_FILES["decisions"].as_posix()],
             "compiler_outputs": [
                 VISUAL_FILES["spec_json"].as_posix(),
@@ -823,7 +849,7 @@ def prepare_visual_structure_stage(
                 "",
                 "## Required action",
                 "",
-                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Write cyberppt.visual_design_decisions.v3. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must provide its own visual_thesis and expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. Each selected page decision must provide execution_design.business_object, visual_focus, semantic_role, use_scene (boolean), scene_type, text_integration_method, spatial_organization and relationship_encoding; these selected scene/carrier fields are authoritative and must survive unchanged into deck-visual-spec.json. For every page, also provide visual_budget with mode (relationship_field_only, shared_field or integrated_scene), max_auxiliary_fragments, scope (page or region) and region_local_visuals. A parallel_set page must use shared_field or relationship_field_only, with at most one page-level auxiliary fragment and region_local_visuals=false. For every page, record stage01_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Write one candidate when the page's business relationship type is unambiguous from expression_constraints.reading_requirement and content alone; when it is genuinely contested (for example parallel vs. hierarchical), generate and compare 2-3 materially different candidates and justify the selection. Deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
+                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Write cyberppt.visual_design_decisions.v3. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must provide its own visual_thesis and expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. Respect each page's prompt_mode. For semantic_brief, decide only the semantic focus, source-supported relationship boundary, evidence grouping and exact-text binding; omit execution_design or treat it as non-authoritative advice, leaving scene, carrier, spatial organization and supporting detail to ImageGen. For directed_composition, provide the full authoritative execution_design with business_object, visual_focus, semantic_role, use_scene, scene_type, text_integration_method, spatial_organization and relationship_encoding. For every page, record stage01_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Write one candidate when the page's business relationship type is unambiguous from expression_constraints.reading_requirement and content alone; when it is genuinely contested (for example parallel vs. hierarchical), generate and compare 2-3 materially different candidates and justify the selection. Deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
                 "",
                 "- `visual/visual-design-decisions.json`",
                 "",

@@ -5,6 +5,7 @@ import hashlib
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from PIL import Image
@@ -29,6 +30,7 @@ from cyberppt.script_quality_contract import parse_script_markdown
 from cyberppt.semantic_digest import outline_semantic_digest, source_truth_semantic_digest
 from cyberppt.onscreen_expression import expression_constraints
 from cyberppt.stage02_handoff import SCRIPT_PATH
+from cyberppt.content_integrity_contract import build_content_integrity_contract
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 
 
@@ -497,6 +499,16 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
         generation_prompts.write_text("\n".join(prompt_pages) + "\n", encoding="utf-8")
         fixture_pages = sorted(parse_page_blocks(script))
+        content_integrity = {
+            page_number: build_content_integrity_contract(
+                SimpleNamespace(
+                    page_id=f"p{page_number:02d}",
+                    sequence=page_number,
+                    onscreen_text="Fixture text",
+                )
+            ).to_dict()
+            for page_number in fixture_pages
+        }
         spec_json.write_text(
             json.dumps(
                 {
@@ -627,6 +639,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                             },
                             "expression_constraints": expression_constraints("key_points_3"),
                             "stage02_visual_input": {
+                                "content_integrity": content_integrity[page_number],
                                 "locked_text_items": [
                                     {
                                         "text_id": f"P{page_number:02d}-T01",

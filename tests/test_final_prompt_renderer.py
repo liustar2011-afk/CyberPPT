@@ -17,6 +17,9 @@ from scripts.imagegen_pipeline.final_prompt_renderer import (
     render_debug_receipt,
     render_final_prompt,
 )
+from scripts.imagegen_pipeline.deliverable_prompt import (
+    _style09_terminal_execution_lock,
+)
 
 
 def _sample_ir(**overrides: object) -> FinalPromptIR:
@@ -65,8 +68,8 @@ class RenderFinalPromptTests(unittest.TestCase):
 
     def test_style09_terminal_lock_ends_up_at_absolute_end(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"
-        terminal = "formal enterprise-report typography."
-        style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{terminal}"
+        legacy_terminal = "formal enterprise-report typography."
+        style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{legacy_terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
             lock.write_text(
@@ -77,10 +80,12 @@ class RenderFinalPromptTests(unittest.TestCase):
             )
             ir = _sample_ir(runtime_lock=RuntimeLockIR(style_contract=style_contract))
             prompt = render_final_prompt(ir, style_id=9, style_lock=lock)
+            terminal = _style09_terminal_execution_lock(lock)
 
         self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
         self.assertEqual(1, prompt.count(terminal))
         self.assertTrue(prompt.rstrip().endswith(terminal))
+        self.assertNotIn(legacy_terminal, prompt)
         # enforce_style09_terminal_lock slices the prompt at marker
         # positions to reassert the lock at the true end; without a
         # findable heading in front of them, every hard constraint
@@ -91,8 +96,8 @@ class RenderFinalPromptTests(unittest.TestCase):
 
     def test_style09_terminal_lock_preserves_hard_constraints(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"
-        terminal = "formal enterprise-report typography."
-        style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{terminal}"
+        legacy_terminal = "formal enterprise-report typography."
+        style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{legacy_terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
             lock.write_text(
@@ -109,6 +114,7 @@ class RenderFinalPromptTests(unittest.TestCase):
                 ),
             )
             prompt = render_final_prompt(ir, style_id=9, style_lock=lock)
+            terminal = _style09_terminal_execution_lock(lock)
 
         self.assertIn(
             "Do not render instructions, field labels, source references, evidence ids, or text ids.",
@@ -124,8 +130,8 @@ class RenderFinalPromptTests(unittest.TestCase):
         self.assertLess(prompt.index("Do not invent a center hub"), prompt.rindex(terminal))
 
     def test_style09_current_chinese_terminal_lock_is_reasserted(self) -> None:
-        terminal = "formal enterprise-report typography."
-        style_contract = f"STYLE09 body rules.\n\n【风格09最终执行锁｜最高优先级】\n\n{terminal}"
+        legacy_terminal = "formal enterprise-report typography."
+        style_contract = f"STYLE09 body rules.\n\n【风格09最终执行锁｜最高优先级】\n\n{legacy_terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
             lock.write_text(
@@ -135,10 +141,12 @@ class RenderFinalPromptTests(unittest.TestCase):
                 encoding="utf-8",
             )
             prompt = render_final_prompt(_sample_ir(runtime_lock=RuntimeLockIR(style_contract=style_contract)), style_id=9, style_lock=lock)
+            terminal = _style09_terminal_execution_lock(lock)
 
         self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
         self.assertEqual(1, prompt.count(terminal))
         self.assertTrue(prompt.rstrip().endswith(terminal))
+        self.assertNotIn(legacy_terminal, prompt)
 
     def test_style09_requires_style_lock(self) -> None:
         with self.assertRaisesRegex(ValueError, "style lock"):

@@ -88,17 +88,18 @@
 阻断条件：
 
 - 使用“简洁、大气、科技感、左文右图”等空泛描述。
-- 没有明确对象、位置、占比、阅读路径和连接方向。
+- `directed_composition`没有明确对象、位置、阅读路径和连接方向。
 - 标题区未留空但配置要求外部标题层。
 - `schema_version: 1.1`没有`style_source_ref`，或复制了风格正文。
 - CyberPPT工作台的`required_text_ids`与`final_text`、锁定正文集合或顺序不一致。
 - 结构字段包含字体、字号、颜色、线宽、边框、箭头头、材质或光效等实现细节。
 - 页面依赖前页文字才能独立生成。
 - 出现`overlay`字段。
-- `representation_freedom`被当作免除Stage02载体选择的理由；`business_object`只是页标题、抽象概念、语义节点集合或“由执行器决定”的占位语。
-- `visual_hierarchy.primary`没有与可画的业务对象或关系场一致，无法承载核心结论。
-- `spatial_organization`、`relationship_encoding`只复述路径、主链、焦点或阅读顺序，没有对象、动作、接口、边界或结果如何组成关系场。
-- `text_integration_method`只说“文字绑定节点/逐项绑定”，没有具体说明文字贴附的业务对象、动作、接口、边界或结果。
+- `directed_composition`的`business_object`只是页标题、抽象概念、语义节点集合或占位语。
+- `directed_composition`的`visual_hierarchy.primary`没有与可画的业务对象或关系场一致，无法承载核心结论。
+- `directed_composition`的`spatial_organization`、`relationship_encoding`只复述路径、主链、焦点或阅读顺序，没有对象、动作、接口、边界或结果如何组成关系场。
+- `directed_composition`的`text_integration_method`只说“文字绑定节点/逐项绑定”，没有具体说明文字贴附的业务对象、动作、接口、边界或结果。
+- `semantic_brief`仍出现固定场景、载体、构图模板或空间坐标等强制指令。
 
 ## G7 整套一致性
 

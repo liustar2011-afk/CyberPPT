@@ -18,6 +18,7 @@ from cyberppt.content_integrity_contract import (
     structure_hash_from_node_dicts,
 )
 from cyberppt.script_quality_contract import ScriptPage, parse_script_path
+from cyberppt.script_quality.models import ScriptDocument
 from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.stage02_semantic_intake import normalize_semantic_proposals
 from cyberppt.semantic_verifier import verify_semantic_proposals
@@ -248,7 +249,13 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         expression_ir = receipt_logic.get("onscreen_expression")
     if not isinstance(expression_ir, dict):
         expression_ir = None
-    page_mission = str(receipt.get("page_mission") or outline.get("page_mission") or page.main_message)
+    page_mission = str(
+        receipt.get("page_mission")
+        or outline.get("page_mission")
+        or outline.get("logic")
+        or page.page_mission
+        or page.main_message
+    )
     must_not_include = list(receipt.get("must_not_include") or outline.get("must_not_include") or [])
     consumed_content_unit_ids = list(
         receipt.get("consumed_content_unit_ids")
@@ -257,6 +264,14 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
             for item in (outline.get("content_units") or [])
             if isinstance(item, dict) and str(item.get("unit_id") or "")
         ]
+    )
+    source_refs = tuple(
+        page.source_refs
+        or tuple(
+            str(value)
+            for value in outline.get("source_refs") or []
+            if str(value)
+        )
     )
     render_role = _render_role(page.page_type)
     business_relationships = [
@@ -270,7 +285,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
 
     proposals = list(normalize_semantic_proposals(
         business_relationships,
-        default_source_refs=page.source_refs,
+        default_source_refs=source_refs,
         origin="stage01",
     ))
     verification = verify_semantic_proposals(
@@ -288,6 +303,44 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         verified_relationships,
         module_count=len(page.top_level_module_titles),
         page_text="\n".join((page_mission, page.main_message, page.full_prose, page.onscreen_text)),
+    )
+    explicit_prompt_mode = str(
+        receipt.get("stage02_prompt_mode")
+        or outline.get("stage02_prompt_mode")
+        or ""
+    ).strip()
+    if explicit_prompt_mode and explicit_prompt_mode not in {
+        "semantic_brief",
+        "directed_composition",
+    }:
+        raise ValueError(
+            f"unsupported Stage 02 prompt mode for {page.page_id}: {explicit_prompt_mode}"
+        )
+    directed_topologies = {
+        "sequence",
+        "dependency_chain",
+        "causal_chain",
+        "feedback_loop",
+        "layered_structure",
+        "support_convergence",
+    }
+    has_explicit_directed_relationship = any(
+        str(item.get("basis") or "").strip() == "explicit"
+        and bool(
+            str(item.get("direction") or "").strip()
+            or str(item.get("condition") or "").strip()
+            or str(item.get("relation") or "").strip()
+        )
+        for item in business_relationships
+    )
+    prompt_mode = explicit_prompt_mode or (
+        "directed_composition"
+        if (
+            str(semantic_topology.get("constraint_authority") or "") == "hard"
+            and str(semantic_topology.get("primary_topology") or "") in directed_topologies
+            and has_explicit_directed_relationship
+        )
+        else "semantic_brief"
     )
     visual_relationships, visual_relationship_source = _visual_relationship_contract(
         business_relationships,
@@ -323,7 +376,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "page_id": normalize_page_id(page.page_id, page.sequence),
         "page_number": page.sequence,
         "render_role": render_role,
-        "argument_role": str(outline.get("argument_role") or ""),
+        "argument_role": str(outline.get("argument_role") or outline.get("page_role") or ""),
         "title": page.title,
         "subtitle": page.subtitle,
         "page_mission": page_mission,
@@ -336,7 +389,10 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "image_locked_text": page.image_locked_text,
         "editable_body_text": page.onscreen_text,
         "speaker_notes": page.speaker_notes,
-        "source_refs": list(page.source_refs),
+        "source_refs": list(source_refs),
+        "provenance_refs": list(page.provenance_refs),
+        "argument_chain": page.argument_chain or str(outline.get("argument_chain") or ""),
+        "prompt_mode": prompt_mode,
         "consumed_content_unit_ids": consumed_content_unit_ids,
         "must_not_include": must_not_include,
         "business_relationships": business_relationships,
@@ -349,7 +405,15 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "expression_constraints": constraints,
         "field_provenance": {
             "content": "script-final.md",
-            "page_mission": "script-page-contract-or-outline",
+            "page_mission": (
+                "script-final.md"
+                if page.page_mission
+                else "script-page-contract-or-deck-plan"
+                if receipt.get("page_mission") or outline.get("page_mission") or outline.get("logic")
+                else "core-message-compatibility-fallback"
+            ),
+            "argument_chain": "script-final.md" if page.argument_chain else "deck-plan",
+            "provenance_refs": "script-final.md",
             "business_relationships": "stage01-proposal",
             "verified_business_relationships": "stage02-semantic-verifier",
             "semantic_topology": "stage02-topology-resolver",
@@ -371,6 +435,8 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
+        "argument_chain": page.argument_chain or str(outline.get("argument_chain") or ""),
+        "prompt_mode": prompt_mode,
         "onscreen_text": page.onscreen_text,
         "locked_text_items": locked_text_items,
         "content_integrity": content_integrity,
@@ -403,6 +469,48 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
     return record
 
 
+def _deck_plan_page_map(
+    project: Path,
+    requested_script: Path,
+    document: ScriptDocument,
+) -> dict[str, dict[str, Any]]:
+    """Load the authoritative Deck Plan only for a project-owned final script.
+
+    External scripts remain self-contained.  A present project Deck Plan must
+    match the final script's page title and core judgment before its planning
+    boundaries can be projected into Stage 02.
+    """
+
+    try:
+        requested_script.relative_to(project / "script")
+    except ValueError:
+        return {}
+    plan_path = project / "script" / "deck-plan.json"
+    if not plan_path.is_file():
+        return {}
+    payload = _read_json(plan_path)
+    pages = {
+        normalize_page_id(item.get("id") or item.get("page_id")):
+        item
+        for item in payload.get("pages") or []
+        if isinstance(item, dict) and (item.get("id") or item.get("page_id"))
+    }
+    for page in document.pages:
+        page_id = normalize_page_id(page.page_id, page.sequence)
+        plan = pages.get(page_id)
+        if plan is None:
+            raise ValueError(f"DECK_PLAN_SCRIPT_DRIFT: {page_id} is absent from deck-plan.json")
+        plan_title = str(plan.get("title") or "").strip()
+        plan_message = str(plan.get("message") or plan.get("core_message") or "").strip()
+        if (plan_title and plan_title != page.title) or (
+            plan_message and plan_message != page.main_message
+        ):
+            raise ValueError(
+                f"DECK_PLAN_SCRIPT_DRIFT: {page_id} title or core judgment differs from final-script.md"
+            )
+    return pages
+
+
 def build_stage02_handoff(
     project: Path,
     *,
@@ -423,7 +531,14 @@ def build_stage02_handoff(
             }
         )
     document = parse_script_path(script)
-    records = [_page_record(page, None) for page in document.pages]
+    deck_plan_pages = _deck_plan_page_map(project, requested_script, document)
+    records = [
+        _page_record(
+            page,
+            deck_plan_pages.get(normalize_page_id(page.page_id, page.sequence)),
+        )
+        for page in document.pages
+    ]
     return {
         "schema": "cyberppt.stage02_handoff.v1",
         "project": str(project),

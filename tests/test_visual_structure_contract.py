@@ -329,6 +329,18 @@ def test_audit_rejects_incomplete_execution_design() -> None:
     }
 
 
+def test_semantic_brief_does_not_require_or_lock_execution_design() -> None:
+    design, decisions, spec = _payloads()
+    design["pages"][0]["prompt_mode"] = "semantic_brief"
+    del decisions["pages"][0]["execution_design"]
+    spec["pages"][0]["image_plan"]["use_scene"] = True
+    spec["pages"][0]["visual_decision"]["spatial_organization"] = "ImageGen chooses"
+    codes = {item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]}
+    assert "EXECUTION_DESIGN_INVALID" not in codes
+    assert "SPEC_SCENE_POLICY_DRIFTED" not in codes
+    assert "SPEC_EXECUTION_DESIGN_DRIFTED" not in codes
+
+
 def test_audit_rejects_selected_execution_composition_drift() -> None:
     design, decisions, spec = _payloads()
     spec["pages"][0]["visual_decision"]["spatial_organization"] = "A different layout recipe"

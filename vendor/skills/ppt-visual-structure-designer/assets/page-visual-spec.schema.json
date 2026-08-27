@@ -99,6 +99,12 @@
         "1.1"
       ]
     },
+    "prompt_mode": {
+      "enum": [
+        "semantic_brief",
+        "directed_composition"
+      ]
+    },
     "page_id": {
       "type": "string",
       "pattern": "^P[0-9]{2,3}$"

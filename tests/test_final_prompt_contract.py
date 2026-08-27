@@ -43,7 +43,7 @@ class ValidateFinalPromptTests(unittest.TestCase):
         validate_final_prompt(prompt, ir)  # must not raise
 
     def test_rejects_two_reading_paths(self) -> None:
-        ir = _ir()
+        ir = _ir(prompt_mode="directed_composition")
         prompt = render_final_prompt(ir)
         corrupted = prompt.replace(
             "Reading path: authoritative input -> governance hub -> auditable outcome",

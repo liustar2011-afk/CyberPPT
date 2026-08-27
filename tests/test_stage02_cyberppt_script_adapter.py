@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 
 from cyberppt.onscreen_expression import resolve_onscreen_expression
 from cyberppt.script_quality_contract import parse_script_path
-from cyberppt.stage02_handoff import build_stage02_handoff
+from cyberppt.stage02_handoff import _page_record, build_stage02_handoff
 from cyberppt.stage02_relationship_adapter import derive_business_relationships
 
 
@@ -165,7 +166,7 @@ def test_cyberppt_script_canonical_markdown_populates_stage02_business_relations
 
 ### 内容来源
 
-- S1.1
+- SU-EXAMPLE-PARAGRAPH-01
 """,
         )
 
@@ -181,6 +182,74 @@ def test_cyberppt_script_canonical_markdown_populates_stage02_business_relations
     assert all(item["relation"] == "evidence_supports" for item in relationships)
     assert all(item["basis"] == "derived_from_script_visual_structure" for item in relationships)
     assert page["onscreen_expression"]["form"] == "support_convergence_3_6"
+    assert page["page_mission"] == "说明电力行业当前面临的三方面资源协同压力。"
+    assert page["page_mission"] != page["core_message"]
+    assert page["argument_chain"].startswith("问题诊断｜")
+    assert page["provenance_refs"] == ["SU-EXAMPLE-PARAGRAPH-01"]
+    assert page["prompt_mode"] == "semantic_brief"
+
+
+def test_project_final_script_consumes_matching_deck_plan_boundaries() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory) / "project"
+        script = project / "script" / "dist" / "final-script.md"
+        script.parent.mkdir(parents=True)
+        _write_script(
+            script,
+            """
+## P01 项目页
+
+- 页面类型：内容页
+- 页面标题：项目页
+- 页面使命：说明项目任务边界。
+- 核心结论：项目任务具有明确边界。
+- 主论证链：任务回应｜项目依据 → 任务边界
+
+### 完整文字稿
+
+项目依据明确了任务边界和适用条件。
+
+### 上屏文字
+
+- 项目依据：明确任务来源
+- 任务边界：限定实施范围
+
+### 视觉结构
+
+项目依据 → 任务边界：限定
+
+### 内容来源
+
+- SU-PROJECT-PARAGRAPH-01
+""",
+        )
+        (project / "script" / "deck-plan.json").write_text(
+            json.dumps(
+                {
+                    "pages": [
+                        {
+                            "id": "P01",
+                            "title": "项目页",
+                            "message": "项目任务具有明确边界。",
+                            "logic": "说明项目任务边界。",
+                            "page_role": "scope",
+                            "argument_chain": "项目依据 → 任务边界",
+                            "source_refs": ["ST0030"],
+                            "must_not_include": ["不得扩展到未批准任务"],
+                        }
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        page = build_stage02_handoff(project, script=script)["pages"][0]
+
+    assert page["argument_role"] == "scope"
+    assert page["source_refs"] == ["ST0030"]
+    assert page["provenance_refs"] == ["SU-PROJECT-PARAGRAPH-01"]
+    assert page["must_not_include"] == ["不得扩展到未批准任务"]
 
 
 def test_legacy_page_contract_relations_keep_priority_over_derived_visual_structure() -> None:
@@ -208,3 +277,30 @@ def test_legacy_page_contract_relations_keep_priority_over_derived_visual_struct
     assert len(page.content_relations) == 1
     assert page.content_relations[0]["basis"] == "explicit"
     assert page.content_relations[0]["relation"] == "supports"
+
+
+def test_source_explicit_directed_relation_upgrades_prompt_mode() -> None:
+    with TemporaryDirectory() as directory:
+        script = Path(directory) / "directed-script.md"
+        _write_script(
+            script,
+            """
+## P01 明确流程页
+
+- 页面类型：内容页
+- 页面标题：明确流程页
+- 页面使命：说明甲到乙的明确先后关系。
+- 核心结论：甲完成后进入乙。
+- 完整文字稿：来源明确规定甲完成后进入乙。
+- 上屏文字：
+  - 甲
+  - 乙
+- 视觉结构：甲 → 乙：先后
+<!-- cyberppt-page-contract {"content_relations":[{"subject":"甲","relation":"sequence_before","objects":["乙"],"direction":"subject_to_objects","basis":"explicit","confidence":"high","source_refs":["ST001"]}]} -->
+""",
+        )
+        page = parse_script_path(script).pages[0]
+
+    record = _page_record(page, None)
+    assert record["prompt_mode"] == "directed_composition"
+    assert record["stage02_visual_input"]["semantic_topology"]["constraint_authority"] == "hard"

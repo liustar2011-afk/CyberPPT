@@ -151,6 +151,15 @@ class HardConstraintSpec:
 
 
 @dataclass(frozen=True)
+class SemanticContextSpec:
+    text: str = ""
+    argument_chain: str = ""
+    source_sha256: str = ""
+    source_kind: str = ""
+    trace_refs: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class PageArtifactSpec:
     page_id: str
     page_number: int
@@ -167,9 +176,75 @@ class PageArtifactSpec:
     source_hashes: tuple[tuple[str, str], ...]
     visual_budget: VisualBudgetSpec = VisualBudgetSpec()
     content_root_count: int = 0
+    semantic_context: SemanticContextSpec = SemanticContextSpec()
+    prompt_mode: str = "semantic_brief"
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+DIRECTED_COMPOSITION_TOPOLOGIES = {
+    "directed_flow",
+    "lifecycle_loop",
+    "layered_architecture",
+    "causal_convergence",
+    "sequence",
+    "dependency_chain",
+    "causal_chain",
+    "feedback_loop",
+    "layered_structure",
+    "support_convergence",
+}
+
+
+def _prompt_mode(
+    handoff_page: Mapping[str, object],
+    visual_page: Mapping[str, object],
+    planning_policy: Mapping[str, object],
+) -> str:
+    """Choose prompt strength without turning page type into a layout class."""
+
+    explicit = str(
+        planning_policy.get("prompt_mode")
+        or handoff_page.get("prompt_mode")
+        or visual_page.get("prompt_mode")
+        or ""
+    ).strip()
+    if explicit:
+        if explicit not in {"semantic_brief", "directed_composition"}:
+            raise ValueError(f"unsupported Stage 02 prompt mode: {explicit!r}")
+        return explicit
+
+    visual_input = handoff_page.get("stage02_visual_input")
+    visual_input = visual_input if isinstance(visual_input, Mapping) else {}
+    topology = visual_input.get("semantic_topology")
+    topology = topology if isinstance(topology, Mapping) else {}
+    topology_name = str(
+        topology.get("primary_topology") or topology.get("topology") or ""
+    ).strip()
+    authority = str(
+        topology.get("constraint_authority")
+        or visual_input.get("constraint_authority")
+        or ""
+    ).strip()
+    relationships = visual_input.get("business_relationships")
+    explicit_relationship = any(
+        isinstance(item, Mapping)
+        and str(item.get("basis") or "").strip() == "explicit"
+        and bool(
+            str(item.get("direction") or "").strip()
+            or str(item.get("condition") or "").strip()
+            or str(item.get("relation") or "").strip()
+        )
+        for item in relationships or []
+    )
+    if (
+        authority == "hard"
+        and topology_name in DIRECTED_COMPOSITION_TOPOLOGIES
+        and explicit_relationship
+    ):
+        return "directed_composition"
+    return "semantic_brief"
 
 
 # semantic_graph.topology and forbidden_structures are snake_case backend
@@ -597,6 +672,13 @@ def build_page_artifact_spec(
             "Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.",
         )))
 
+    semantic_text = str(handoff_page.get("full_prose") or "").strip()
+    semantic_source_kind = "full_prose"
+    if not semantic_text:
+        semantic_text = core_judgment
+        semantic_source_kind = "core_judgment_compatibility_fallback"
+    prompt_mode = _prompt_mode(handoff_page, visual_page, policy)
+
     return PageArtifactSpec(
         page_id=visual_id,
         page_number=page_number,
@@ -658,6 +740,17 @@ def build_page_artifact_spec(
             visible_text=visible_text,
         ),
         content_root_count=content_root_count,
+        semantic_context=SemanticContextSpec(
+            text=semantic_text,
+            argument_chain=str(handoff_page.get("argument_chain") or "").strip(),
+            source_sha256=hashlib.sha256(semantic_text.encode("utf-8")).hexdigest(),
+            source_kind=semantic_source_kind,
+            # Source ids stay in the Stage 02 handoff and audit trail.  The
+            # artifact spec carries only a content hash so backend ids cannot
+            # leak into the final prompt authority.
+            trace_refs=(),
+        ),
+        prompt_mode=prompt_mode,
     )
 
 

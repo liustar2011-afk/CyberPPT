@@ -805,6 +805,20 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertNotIn("very long audit-only evidence", design["business_object"])
         self.assertLess(len(design["business_object"]), 64)
 
+    def test_semantic_brief_uses_non_authoritative_compatibility_design(self) -> None:
+        source = {
+            "prompt_mode": "semantic_brief",
+            "business_relationships": [
+                {"subject": "目录", "relation": "supports", "objects": ["数据流通利用"]}
+            ],
+            "core_judgment": "统一目录为数据流通利用提供共同基础",
+        }
+        design = _decision_execution_design(source, {}, {}, "P11")
+        self.assertEqual(False, design["use_scene"])
+        self.assertIn("ImageGen", design["scene_type"])
+        self.assertIn("ImageGen", design["spatial_organization"])
+        self.assertNotIn("card", design["spatial_organization"].lower())
+
     def test_handoff_separates_business_relations_from_author_layout_notes(self) -> None:
         page = ScriptPage(
             page_id="p06",
@@ -853,7 +867,7 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual("sec-0002", record["primary_source_heading_id"])
         self.assertEqual(outline["subtitle_policy"], record["subtitle_policy"])
         self.assertEqual("five horizontal lanes with a bottom result area", visual["author_visual_notes"])
-        self.assertEqual("framework_4", record["expression_constraints"]["form"])
+        self.assertEqual("key_points_3", record["expression_constraints"]["form"])
         self.assertEqual(record["expression_constraints"], visual["expression_constraints"])
         self.assertEqual("advisory_only", visual["author_visual_notes_authority"])
         self.assertEqual("stage01_semantic_handoff", visual["stage01_relationship_features"]["authority"])

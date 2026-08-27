@@ -17,6 +17,7 @@ from cyberppt.page_artifact_spec import (
     HardConstraintSpec,
     PageArtifactSpec,
     RelationshipSpec,
+    SemanticContextSpec,
     TypographySpec,
     VisualCarrierSpec,
 )
@@ -28,6 +29,7 @@ from scripts.imagegen_pipeline.artifact_prompt import (
     render_artifact_prompt,
 )
 from scripts.imagegen_pipeline.final_prompt_renderer import render_final_prompt
+from scripts.imagegen_pipeline.deliverable_prompt import style_contract as live_style_contract
 from scripts.imagegen_pipeline.imagegen_handoff import compile_page_prompt
 
 
@@ -147,7 +149,6 @@ class ArtifactPromptTests(unittest.TestCase):
     def test_style09_terminal_lock_is_unique_and_at_absolute_end(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"
         terminal = "保持纯白底，并保持唯一视觉中心。"
-        source_terminal = "formal enterprise-report typography."
         style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
@@ -166,6 +167,7 @@ class ArtifactPromptTests(unittest.TestCase):
                 encoding="utf-8",
             )
             prompt = render_artifact_prompt(_spec(style_id=9, contract=style_contract), style_lock=lock)
+            source_terminal = live_style_contract(lock).strip().splitlines()[-1]
 
         self.assertEqual(1, prompt.count("STYLE09 body rules."))
         self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
@@ -256,14 +258,45 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertEqual(expected, compiled.prompt)
         self.assertNotIn("WRONG LEGACY", compiled.prompt)
         self.assertEqual(_spec().to_dict(), compiled.build_metadata()["artifact_spec"])
-        self.assertEqual("v1", compiled.prompt_ir_version)
+        self.assertEqual("v2", compiled.prompt_ir_version)
         self.assertIsNotNone(compiled.debug_receipt)
         self.assertEqual("P07", compiled.debug_receipt["page"])
-        # The final send prompt must actually consume the Stage 02 visual
-        # structure design's topology, as a human-readable phrase -- never
-        # the raw backend enum token.
-        self.assertIn("multiple evidence lines converging on one judgment", compiled.prompt)
+        # Default production uses a semantic brief. Stage 02 composition
+        # details stay auditable in the artifact spec without becoming a
+        # second layout engine inside the ImageGen prompt.
+        self.assertNotIn("multiple evidence lines converging on one judgment", compiled.prompt)
+        self.assertNotIn("Visual carrier:", compiled.prompt)
+        self.assertNotIn("Spatial grammar:", compiled.prompt)
+        self.assertIn("ImageGen owns the scene-or-structure choice", compiled.prompt)
+        self.assertEqual("semantic_brief", compiled.debug_receipt["prompt_mode"])
         self.assertNotIn("causal_convergence", compiled.prompt)
+
+    def test_directed_composition_preserves_a_source_required_visual_path(self) -> None:
+        spec = replace(_spec(), prompt_mode="directed_composition")
+        prompt = render_final_prompt(build_final_prompt_ir(spec))
+
+        self.assertIn("Reading path: authoritative input -> governance hub -> auditable outcome", prompt)
+        self.assertIn("Visual carrier: Governance operations hub", prompt)
+        self.assertIn("Spatial grammar: convergence, path", prompt)
+
+    def test_semantic_brief_consumes_full_prose_without_making_it_visible_text(self) -> None:
+        unique_context = "Authorization may be withdrawn when the declared operating condition ends."
+        spec = replace(
+            _spec(),
+            semantic_context=SemanticContextSpec(
+                text=unique_context,
+                argument_chain="authorization → operating condition → withdrawal",
+                source_sha256="d" * 64,
+                source_kind="full_prose",
+                trace_refs=("SU-EXAMPLE-PARAGRAPH-01",),
+            ),
+        )
+        prompt = render_final_prompt(build_final_prompt_ir(spec))
+
+        self.assertIn(unique_context, prompt)
+        self.assertIn("Source-grounded semantic context (non-visible", prompt)
+        self.assertNotIn(f'Exact visible text: "{unique_context}"', prompt)
+        self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", prompt)
 
     def test_artifact_compiler_requires_projection(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

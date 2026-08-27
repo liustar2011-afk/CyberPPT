@@ -8,6 +8,7 @@ shape.
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -54,14 +55,40 @@ def render_final_prompt(
         )
     )
     hard_constraints_section = "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints))
+    mission_lines = (
+        (f"Page mission (non-visible): {ir.page_mission}",)
+        if ir.page_mission and ir.page_mission != ir.page_judgment
+        else ()
+    )
     sections_before_runtime = (
         "\n".join((SECTION_HEADINGS[0], ir.deliverable)),
-        "\n".join((SECTION_HEADINGS[1], ir.page_judgment)),
+        "\n".join(
+            (
+                SECTION_HEADINGS[1],
+                *mission_lines,
+                f"Core judgment (non-visible): {ir.page_judgment}",
+                *(
+                    (
+                        "Source-grounded semantic context (non-visible; use for business "
+                        "objects, conditions, boundaries and implications; render only text "
+                        "also present in the exact visible-text whitelist):",
+                        ir.semantic_context,
+                    )
+                    if ir.semantic_context
+                    else ()
+                ),
+            )
+        ),
         "\n".join(
             (
                 SECTION_HEADINGS[2],
                 ir.dominant_relationship,
-                f"Reading path: {' -> '.join(ir.reading_path)}",
+                (
+                    "Reading boundary: preserve only source-supported order and direction; "
+                    "choose the visual reading implementation freely."
+                    if ir.prompt_mode == "semantic_brief"
+                    else f"Reading path: {' -> '.join(ir.reading_path)}"
+                ),
             )
         ),
         "\n".join((SECTION_HEADINGS[3], *(_group_line(group) for group in ir.semantic_groups))),
@@ -116,6 +143,11 @@ def render_debug_receipt(
         "compiler": compiler,
         "prompt_ir_version": prompt_ir_version,
         "page_judgment": ir.page_judgment,
+        "page_mission": ir.page_mission,
+        "semantic_context_sha256": hashlib.sha256(
+            ir.semantic_context.encode("utf-8")
+        ).hexdigest() if ir.semantic_context else "",
+        "prompt_mode": ir.prompt_mode,
         "reading_path": list(ir.reading_path),
         "semantic_groups": [
             {

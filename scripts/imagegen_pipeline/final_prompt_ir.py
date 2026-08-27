@@ -21,7 +21,7 @@ MAX_SEMANTIC_GROUPS = 10
 # Bump when FinalPromptIR's field shape or normalization rules change in a
 # way that would make an old debug receipt misleading about how a prompt
 # was built.
-FINAL_PROMPT_IR_VERSION = "v1"
+FINAL_PROMPT_IR_VERSION = "v2"
 
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
@@ -97,8 +97,15 @@ class FinalPromptIR:
     visible_text: tuple[str, ...]
     hard_constraints: tuple[str, ...]
     runtime_lock: RuntimeLockIR
+    page_mission: str = ""
+    semantic_context: str = ""
+    prompt_mode: str = "semantic_brief"
 
     def __post_init__(self) -> None:
+        if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
+            raise PromptContractError(
+                f"unsupported final prompt mode: {self.prompt_mode!r}"
+            )
         if not self.deliverable.strip():
             raise PromptContractError("final prompt IR requires a deliverable")
         if not self.page_judgment.strip():

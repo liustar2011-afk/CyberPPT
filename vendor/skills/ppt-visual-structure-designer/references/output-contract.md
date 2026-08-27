@@ -165,7 +165,7 @@ CyberPPT工作台候选还必须包含：
 }
 ```
 
-工作台决策回执schema固定为`cyberppt.visual_design_decisions.v3`。每个候选必须包含自己的`visual_thesis`；每页选中决策还必须包含完整的执行设计：
+工作台决策回执schema固定为`cyberppt.visual_design_decisions.v3`。每个候选必须包含自己的`visual_thesis`。只有`directed_composition`页要求完整执行设计：
 
 ```json
 {
@@ -182,7 +182,7 @@ CyberPPT工作台候选还必须包含：
 }
 ```
 
-`execution_design`不是可选建议。仓库编译器必须将其中的载体、场景、语义角色、空间组织、关系编码和文字融合策略原样投影到`deck-visual-spec.json`；审计器应阻断缺失或漂移。
+`directed_composition`页的`execution_design`是构图权威，仓库编译器必须原样投影并阻断缺失或漂移。`semantic_brief`页可省略该字段；编译器生成中性兼容字段以满足旧规格读取器，正式Prompt不得消费这些字段形成载体、场景或空间指令。
 
 每页`relationship_coverage`逐项登记权威业务关系：
 
@@ -225,7 +225,7 @@ CyberPPT工作台候选还必须包含：
 - `text_bindings`：将证据单元绑定到语义节点；CyberPPT工作台模式还必须用`text_ids`逐项引用`locked_text_items`中的精确正文ID。所有正文ID必须被绑定且只能出现一次，不得引用未知ID。
 - `representation_freedom`：记录载体和媒介是否受来源约束。
 
-`representation_freedom`只记录上游是否限制选择，并不把选择责任交给生图模型。Stage02必须在`image_plan`和`visual_decision`中选定可执行方案：
+`representation_freedom`记录上游是否限制选择。以下规则只适用于`directed_composition`：
 
 - `image_plan.business_object`必须是本页选定的、承载关系的具体业务对象或关系场；不得写页面标题、抽象概念、`语义节点/动作/关系`、`可选媒介`等渲染占位语。
 - `visual_hierarchy.primary`必须与该对象或关系场一致，并能说明为何它承载核心结论。
@@ -265,7 +265,7 @@ CyberPPT工作台的`visual-design-input.json`使用以下权威边界：
 
 工作台中Skill只要求生成`visual-design-decisions.json`，保存每页按 SKILL.md"生成并比较构图候选"规则确定数量的结构候选（关系判断无争议时 1 个，有争议时 2–3 个）、候选各自的`visual_thesis`、候选完整证据覆盖、评分维度与总分、选中候选、完整`execution_design`、输入哈希，以及`stage01_visual_note_disposition`。`trace_refs`仅用于审计追溯，执行器可将其写为证据单元的`source_ref`，但提示词构建器不得读取它。仓库`execute-visual-structure`唯一生成规格JSON和Markdown；正式执行回执由仓库命令生成并绑定执行器、模型、Skill包、决策回执和编译产物哈希。编译产物的`qa`与`qa_summary`初始为`draft`且未评分，实际审计结果以`validation-report.json`为准。
 
-`generation-prompts.md`是由视觉审计器重建的旧结构预览，只用于人工检查和兼容诊断。CyberPPT正式ImageGen提示词由`artifact-spec-v2`从已审计的Stage 02 handoff、`deck-visual-spec.json`和style lock投影；审批、canonical和manifest必须复用同一份九段式结果。
+`generation-prompts.md`是由视觉审计器重建的旧结构预览，只用于人工检查和兼容诊断。CyberPPT正式ImageGen提示词由`artifact-spec-v2`从已审计的Stage 02 handoff、`deck-visual-spec.json`和style lock投影为`FinalPromptIR v2`；审批、canonical和manifest必须复用同一份结果。
 
 结构指令不得在画面中显示。标题与副标题默认由外部PPT文字层处理，正文按用户指定的生图模式执行。字体、字号、颜色、线条、边框、形状、人物外观和媒介质感由`style_source_ref`对应的风格文件负责。
 

@@ -291,6 +291,7 @@ class BuildFinalPromptIRTests(unittest.TestCase):
         # so exercise the general (non-Style09) surface this test targets.
         spec = replace(
             _artifact_spec(),
+            prompt_mode="directed_composition",
             art_direction=ArtDirectionSpec(
                 style_id=1, style_name="Style1", style_slug="style1", contract="Baseline direction."
             ),
@@ -309,6 +310,7 @@ class BuildFinalPromptIRTests(unittest.TestCase):
     def test_shared_field_budget_forbids_region_local_imagery(self) -> None:
         spec = replace(
             _artifact_spec(),
+            prompt_mode="directed_composition",
             art_direction=ArtDirectionSpec(
                 style_id=1, style_name="Style1", style_slug="style1", contract="Baseline direction."
             ),

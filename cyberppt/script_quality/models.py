@@ -78,6 +78,9 @@ class ScriptPage:
     onscreen_expression_form: str = ""
     layout_motif: str = ""
     scene_role: str = ""
+    page_mission: str = ""
+    argument_chain: str = ""
+    provenance_refs: tuple[str, ...] = ()
     field_order: tuple[str, ...] = ()
     coaching_tip: str = ""
     speaker_notes: str = ""

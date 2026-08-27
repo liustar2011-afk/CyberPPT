@@ -47,6 +47,7 @@ HEADING_FIELD_ALIASES = {
     "视觉结构": "视觉结构",
     "视觉意图与生图构图": "视觉结构",
     "演讲者备注": "演讲者备注",
+    "内容来源": "内容来源",
 }
 
 # Peer-level page-contract fields.  A ``- label: value`` line inside the
@@ -57,9 +58,11 @@ HEADING_FIELD_ALIASES = {
 PAGE_CONTRACT_FIELDS = {
     "页面类型",
     "页面标题",
+    "页面使命",
     "副标题",
     "核心结论",
     "主判断",
+    "主论证链",
     "完整文字稿",
     "完整文字稿段落映射",
     "文字稿取舍说明",
@@ -82,6 +85,7 @@ PAGE_CONTRACT_FIELDS = {
     "视觉结构",
     "讲解提示",
     "演讲者备注",
+    "内容来源",
 }
 
 
@@ -103,6 +107,7 @@ SOURCE_RANGE_RE = re.compile(
     r"(?P<prefix>ST?)?(?P<start>\d{3,4})\s*[—–-]\s*"
     r"(?P<end_prefix>ST?)(?P<end>\d{3,4})"
 )
+SOURCE_UNIT_RE = re.compile(r"SU-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+")
 PAGE_CONTRACT_RECEIPT_RE = re.compile(
     r"<!--\s*cyberppt-page-contract\s+(?P<payload>\{.*?\})\s*-->",
     re.S,
@@ -239,6 +244,14 @@ def _source_refs(text: str) -> tuple[str, ...]:
             f"{prefix}{number:0{width}d}" for number in range(start, end + 1)
         )
     return tuple(dict.fromkeys(refs))
+
+
+def _provenance_refs(text: str) -> tuple[str, ...]:
+    """Extract both Source Truth ids and opaque Stage 01 source-unit ids."""
+
+    source_refs = list(_source_refs(text))
+    source_refs.extend(match.group(0) for match in SOURCE_UNIT_RE.finditer(text or ""))
+    return tuple(dict.fromkeys(source_refs))
 
 
 def _parse_prose_paragraph_map(text: str) -> tuple[tuple[tuple[str, ...], str], ...]:
@@ -461,6 +474,7 @@ def parse_script_markdown(
                 page_type=page_type,
                 title=fields.get("页面标题", heading).strip(),
                 subtitle=fields.get("副标题", "").strip(),
+                page_mission=fields.get("页面使命", "").strip(),
                 main_message=(
                     fields.get("核心结论")
                     or fields.get("主判断")
@@ -500,6 +514,8 @@ def parse_script_markdown(
                 onscreen_expression_form=fields.get("上屏表达结构", "").strip(),
                 layout_motif=fields.get("版式母题", "").strip(),
                 scene_role=fields.get("场景角色", "").strip(),
+                argument_chain=fields.get("主论证链", "").strip(),
+                provenance_refs=_provenance_refs(fields.get("内容来源", "")),
                 field_order=_field_order(body),
                 coaching_tip=(
                     fields.get("讲解提示", "")

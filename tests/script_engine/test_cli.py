@@ -155,6 +155,30 @@ def test_cli_status_progresses_as_artifacts_are_added(tmp_path, capsys) -> None:
     assert out["final_script"]["page_count"] == len(final_payload["slides"])
 
 
+def test_cli_status_supports_repository_source_and_script_layout(tmp_path, capsys) -> None:
+    project_dir = tmp_path / "repository-layout"
+    (project_dir / "source").mkdir(parents=True)
+    (project_dir / "script" / "dist").mkdir(parents=True)
+    (project_dir / "source" / "brief.docx").write_bytes(b"placeholder")
+    (project_dir / "script" / "foundation.json").write_text(
+        (ROOT / "examples" / "foundation.example.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    (project_dir / "script" / "deck-plan.json").write_text(
+        (ROOT / "examples" / "deck-plan.example.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+
+    exit_code = main(["status", str(project_dir)])
+    out = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 0
+    assert "脚本规划待确认" in out["stage"]
+    assert out["sources"] == ["brief.docx"]
+    assert out["foundation"]["path"].endswith("script\\foundation.json")
+    assert out["deck_plan"]["path"].endswith("script\\deck-plan.json")
+
+
 def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, capsys) -> None:
     main(["new-project", "demo-slug", "--base-dir", str(tmp_path)])
     capsys.readouterr()

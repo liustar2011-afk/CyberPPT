@@ -191,7 +191,9 @@ def test_style_nine_ignores_lock_snapshot_and_caller_controlled_source_path() ->
     assert "Style 09 only." not in contract
     assert "Style 10 must not leak." not in contract
     assert "semantic scene-led editorial business-report style" in contract
-    assert payload["style"]["prompt_contract_source"].endswith("references/visual-system.md")
+    assert Path(payload["style"]["prompt_contract_source"]).as_posix().endswith(
+        "references/visual-system.md"
+    )
 
 
 def test_style_nine_component_contract_reaches_prompt_compiler() -> None:

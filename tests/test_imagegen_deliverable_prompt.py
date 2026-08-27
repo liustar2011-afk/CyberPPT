@@ -131,14 +131,14 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
 
             prompt = compile_pages(script, [1], style_lock_path=style)
 
-        self.assertIn("默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。", prompt)
+        self.assertIn("People are absent by default", prompt)
+        self.assertIn("no visible faces, round-table meetings, group discussions or staged office scenes", prompt)
         self.assertIn("organization names, logos, seals, signage", prompt)
         self.assertIn("editable text layer only", prompt)
-        self.assertIn("non-evidentiary", prompt)
-        self.assertIn("locked on-screen text faithfully in the main composition", prompt)
-        self.assertIn("may use a small amount of clear Chinese labels", prompt)
-        self.assertIn("dense pseudo-Chinese", prompt)
-        self.assertIn("箭头：禁止使用", prompt)
+        self.assertIn("Auxiliary imagery stays text-free by default", prompt)
+        self.assertIn("Preserve the full factual meaning", prompt)
+        self.assertIn("pseudo-Chinese", prompt)
+        self.assertIn("Use arrows only for an explicitly directional or cyclical relationship", prompt)
         self.assertIn("共享谓词、共享限定语和父级说明不得复制或改写到每个并列子项", prompt)
         self.assertIn("页面任务、核心意思、页面逻辑、视觉结构、语义关系和所有不上屏区块只决定构图", prompt)
 

@@ -179,11 +179,30 @@ def _artifact_report(path: Path, kind: str) -> dict:
 
 
 def _status(project_dir: Path) -> int:
-    sources_dir = project_dir / "sources"
-    foundation_path = project_dir / "foundation.json"
-    plan_path = project_dir / "deck-plan.json"
-    final_path = project_dir / "dist" / "final-script.json"
-    source_index_path = project_dir / ".cache" / "source-index.json"
+    script_dir = project_dir / "script"
+    uses_repository_layout = any(
+        path.exists()
+        for path in (
+            script_dir / "foundation.json",
+            script_dir / "deck-plan.json",
+            script_dir / "dist" / "final-script.json",
+        )
+    )
+    artifact_dir = script_dir if uses_repository_layout else project_dir
+    source_candidates = (project_dir / "source", project_dir / "sources")
+    sources_dir = next(
+        (
+            path
+            for path in source_candidates
+            if path.exists()
+            and any(item.is_file() and item.name != ".gitkeep" for item in path.glob("*"))
+        ),
+        next((path for path in source_candidates if path.exists()), project_dir / "sources"),
+    )
+    foundation_path = artifact_dir / "foundation.json"
+    plan_path = artifact_dir / "deck-plan.json"
+    final_path = artifact_dir / "dist" / "final-script.json"
+    source_index_path = artifact_dir / ".cache" / "source-index.json"
     sources = sorted(p.name for p in sources_dir.glob("*") if p.is_file() and p.name != ".gitkeep") if sources_dir.exists() else []
     foundation = _artifact_report(foundation_path, "foundation")
     plan = _artifact_report(plan_path, "plan")
@@ -220,7 +239,7 @@ def _status(project_dir: Path) -> int:
     if not project_dir.exists():
         stage = "项目目录不存在"
     elif not sources:
-        stage = "等待源材料：sources/ 目录为空"
+        stage = "等待源材料：source/ 或 sources/ 目录为空"
     elif not foundation["exists"]:
         stage = "待理解材料：尚未生成 foundation.json"
     elif not foundation.get("valid"):

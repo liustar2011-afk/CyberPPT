@@ -792,6 +792,7 @@ def audit_visual_design_package(
             _audit_rejection_rationale(candidate, selected, issue, page_id)
             _audit_text_capacity(candidate, expected_text_ids, evidence_key_set, issue, page_id)
 
+        prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
         execution_design = decision.get("execution_design")
         required_execution_text = (
             "business_object",
@@ -802,10 +803,10 @@ def audit_visual_design_package(
             "semantic_role",
             "scene_type",
         )
-        if not isinstance(execution_design, dict) or any(
+        if prompt_mode == "directed_composition" and (not isinstance(execution_design, dict) or any(
             not str(execution_design.get(key) or "").strip()
             for key in required_execution_text
-        ) or not isinstance(execution_design.get("use_scene"), bool):
+        ) or not isinstance(execution_design.get("use_scene"), bool)):
             issue(
                 "EXECUTION_DESIGN_INVALID",
                 "Selected execution design must preserve its carrier, scene policy, semantic role, composition, and text integration.",
@@ -827,7 +828,7 @@ def audit_visual_design_package(
                     "Spec visual thesis must match the selected Stage 02 candidate.",
                     page_id,
                 )
-            if isinstance(execution_design, dict):
+            if prompt_mode == "directed_composition" and isinstance(execution_design, dict):
                 image_plan = page_spec.get("image_plan")
                 image_plan = image_plan if isinstance(image_plan, dict) else {}
                 expected_scene = {
