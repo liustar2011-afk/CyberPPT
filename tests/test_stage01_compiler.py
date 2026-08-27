@@ -612,6 +612,20 @@ class Stage01CompilerTests(unittest.TestCase):
         self.assertNotIn("retry", truth)
         self.assertTrue(all(record["page_refs"] == [] for record in truth["records"]))
 
+    def test_source_truth_preserves_heading_tree_and_authored_relations(self) -> None:
+        truth = load_source_truth(compile_source_truth(self.project))
+        headings = json.loads(
+            (self.project / SOURCE_HEADING_TREE).read_text(encoding="utf-8")
+        )["headings"]
+
+        self.assertEqual(
+            [item["heading_id"] for item in headings],
+            [item["id"] for item in truth["source_structure"]],
+        )
+        self.assertEqual("r01", truth["semantic_relations"][0]["id"])
+        self.assertEqual("supports", truth["semantic_relations"][0]["relation"])
+        self.assertEqual([], truth["open_questions"])
+
         outline_path = compile_outline_draft(
             self.project,
             communication_goal="面向建设相关方说明现有基础并确认后续动作。",

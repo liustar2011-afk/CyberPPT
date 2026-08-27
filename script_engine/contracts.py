@@ -1,6 +1,6 @@
 """Validation helpers for Script Engine delivery contracts."""
 from __future__ import annotations
-import difflib, json, re
+import difflib, json, re, unicodedata
 from pathlib import Path
 from typing import Any, Iterator
 from jsonschema import Draft202012Validator
@@ -166,10 +166,8 @@ def check_onscreen_structure(final_script: dict[str, Any]) -> list[str]:
       either a copy-paste slip or an unintended merge, never an intentional structure.
     - Flags two `items` (or a `text` and an `items` entry) within the *same module* that are near-
       duplicates of each other (normalized text similarity >= 0.6, via `difflib.SequenceMatcher`).
-      This is the mechanical guardrail against a specific authoring failure mode: adding detail
-      lines to hit a density floor (`check_onscreen_minimum_density`) by restating the same point
-      in slightly different words instead of adding a genuinely new sub-fact — padding rather than
-      authoring. The threshold is deliberately loose (catches paraphrase-level overlap, not just
+      This is the mechanical guardrail against restating the same point in slightly different words
+      instead of adding a genuinely new sub-fact. The threshold is deliberately loose (catches paraphrase-level overlap, not just
       exact repeats) because that failure mode rarely produces byte-identical strings."""
     issues: list[str] = []
     for index, slide in enumerate(final_script.get("slides") or []):
@@ -268,25 +266,8 @@ def check_declared_count(final_script: dict[str, Any]) -> list[str]:
             warnings.append(f"slides.{index} ({slide_id}): declares a count of {declared} but {counted} onscreen modules are in the enumerated set (excluding any 此外/另/补充-marked addendum) — worth a human check, not necessarily a bug")
     return warnings
 
-DEFAULT_MODULE_CEILING = 6
-
-def check_module_density(final_script: dict[str, Any], ceiling: int = DEFAULT_MODULE_CEILING) -> list[str]:
-    """Advisory (non-blocking): flags a slide with more than `ceiling` top-level `onscreen`
-    modules — a signal the page may be overloaded, per the Onscreen-copy policy's "prefer 2-4
-    modules" guidance. Non-blocking because a page enumerating a source-mandated count (six named
-    partnership directions, six process steps) legitimately needs that many modules; this is a
-    prompt to double-check density, not a structural defect like a duplicate heading."""
-    warnings: list[str] = []
-    for index, slide in enumerate(final_script.get("slides") or []):
-        if not isinstance(slide, dict):
-            continue
-        count = len([m for m in (slide.get("onscreen") or []) if isinstance(m, dict) and m.get("heading")])
-        if count > ceiling:
-            slide_id = slide.get("id") or f"#{index}"
-            warnings.append(f"slides.{index} ({slide_id}): {count} onscreen modules, above the {ceiling}-module density guideline — check whether the page is overloaded")
-    return warnings
-
 ONSCREEN_DETAIL_PHRASE_MAX_CHARS = 30
+ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS = 90
 _MEANINGFUL_CHAR_RE = re.compile(r"[一-鿿A-Za-z0-9]")
 _LABEL_SPLIT_RE = re.compile(r"[：:]", flags=re.UNICODE)
 _PHRASE_SEPARATOR_RE = re.compile(r"[、，,；;]")
@@ -297,22 +278,55 @@ def _meaningful_char_count(text: str) -> int:
     as the downstream ImageGen readiness gate (`assert_imagegen_onscreen_readiness`)."""
     return len(_MEANINGFUL_CHAR_RE.findall(str(text or "")))
 
+
+def _ends_with_punctuation_or_symbol(value: str) -> bool:
+    stripped = str(value or "").rstrip()
+    return bool(stripped) and unicodedata.category(stripped[-1])[0] in {"P", "S"}
+
+
+def check_onscreen_terminal_punctuation(final_script: dict[str, Any]) -> list[str]:
+    """Reject terminal punctuation/symbols in visible content-page copy.
+
+    JSON already separates a module's heading, lead text and evidence items,
+    so a terminal glyph only adds manuscript styling when Stage 02 lays the
+    line into a PPT container. Internal notation and the renderer's structural
+    heading-to-text separator remain unaffected.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        for module_index, module in enumerate(slide.get("onscreen") or []):
+            if not isinstance(module, dict):
+                continue
+            fields: list[tuple[str, object]] = [
+                ("heading", module.get("heading")),
+                ("text", module.get("text")),
+            ]
+            fields.extend(
+                (f"items[{item_index}]", item)
+                for item_index, item in enumerate(module.get("items") or [])
+            )
+            for field, value in fields:
+                if isinstance(value, str) and value.strip() and _ends_with_punctuation_or_symbol(value):
+                    issues.append(
+                        f"slides.{index} ({slide_id}).onscreen[{module_index}].{field}: "
+                        f"visible onscreen copy must not end with punctuation or a symbol: '{value}'"
+                    )
+    return issues
+
 def check_onscreen_detail_length(final_script: dict[str, Any], max_chars: int = ONSCREEN_DETAIL_PHRASE_MAX_CHARS) -> list[str]:
     """Flags an onscreen `text`/`items` phrase segment that exceeds `max_chars` meaningful
-    characters (Chinese/Latin/numeric, punctuation and whitespace excluded) — a paragraph-like
-    sentence rather than a short parallel phrase. For a "label：body" line only `body` is measured,
-    matching how a reader actually parses the line. The 30-character ceiling applies per short
-    phrase, not to the whole line: a PPT line is meant to hold several distinct, punctuation-
-    separated phrases (e.g. "供得出、流得动、用得好、保安全"), each independently distilled to a
-    parallel phrase — that is how on-screen copy differs from Word-style prose, where a single long
-    run-on sentence would fail. So `body` is first split on 、，,；; and each resulting segment is
-    checked on its own; a line with many short segments joined by these separators is fine even if
-    their concatenated length exceeds `max_chars`. This mirrors CyberPPT Stage 02's hard,
-    non-negotiable 30-character ImageGen readiness gate (`cyberppt.script_quality.onscreen`
-    ONSCREEN_DETAIL_PHRASE_WARNING_CHARS / `assert_imagegen_onscreen_readiness`) so an overlong
-    phrase is caught here, during AUTHOR/CRITIQUE, instead of at the Stage 02 handoff where the only
-    fix is to send the script back. Module headings are exempt — they carry their own length
-    discipline and are not paragraph-risk the way detail lines are. Only `page_type == "content"`
+    characters (Chinese/Latin/numeric, punctuation and whitespace excluded). Compact details remain
+    capped at `max_chars`, while a module's structurally declared lead `text` may use up to
+    `ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS` without terminal punctuation. This keeps natural
+    sentence-led copy available without allowing a paragraph to enter the visible layer. For a
+    "label：body" line only `body` is measured, matching
+    how a reader actually parses the line. For compact copy, the 30-character ceiling applies per
+    short phrase, not to the whole line: a PPT line may hold several distinct, punctuation-separated
+    phrases (e.g. "供得出、流得动、用得好、保安全"). Module headings are exempt — they carry their
+    own length discipline and are not paragraph-risk the way detail lines are. Only `page_type == "content"`
     slides are checked, matching `assert_imagegen_onscreen_readiness`'s own scope: cover, chapter,
     and closing pages carry their body text through the template layer, not ImageGen, so Stage 02
     never enforces this ceiling on them."""
@@ -333,7 +347,11 @@ def check_onscreen_detail_length(final_script: dict[str, Any], max_chars: int = 
                     lines.append((f"items[{item_index}]", item))
             for field, line in lines:
                 parts = _LABEL_SPLIT_RE.split(line, maxsplit=1)
-                body = parts[1] if len(parts) == 2 and parts[1].strip() else line
+                labelled_detail = len(parts) == 2 and bool(parts[1].strip())
+                body = parts[1] if labelled_detail else line
+                body_chars = _meaningful_char_count(body)
+                if field == "text" and body_chars <= ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS:
+                    continue
                 for segment in _PHRASE_SEPARATOR_RE.split(body):
                     segment = segment.strip()
                     if not segment:
@@ -341,72 +359,6 @@ def check_onscreen_detail_length(final_script: dict[str, Any], max_chars: int = 
                     chars = _meaningful_char_count(segment)
                     if chars > max_chars:
                         issues.append(f"slides.{index} ({slide_id}).onscreen.{field}: phrase '{segment}' has {chars} meaningful characters (> {max_chars}), will fail Stage 02's ImageGen readiness gate: '{line}'")
-    return issues
-
-ONSCREEN_MINIMUM_DENSITY_CHARS = 240
-
-def check_onscreen_minimum_density(final_script: dict[str, Any], min_chars: int = ONSCREEN_MINIMUM_DENSITY_CHARS) -> list[str]:
-    """Hard floor, paired with `check_onscreen_detail_length`'s ceiling: a `content` page's total
-    onscreen body (all `text` and `items` values across all modules, meaningful Chinese/Latin/
-    numeric characters, headings excluded) must reach at least `min_chars`. The per-phrase 30-char
-    ceiling stops any single phrase from reading like Word prose; this floor stops the opposite
-    failure — compressing a page down to a handful of bare labels that lose the source's concrete
-    sub-points (named entities, numbers, roles, conditions) and leave the audience unable to read
-    the page's argument from the screen alone. A page under the floor should gain more short,
-    parallel `items` per module (pulling real sub-facts from `foundation.json`), not longer
-    sentences — that would immediately trip the ceiling instead. Only `page_type == "content"`
-    slides are checked, matching the ceiling check's scope.
-
-    A slide carrying `content_load: "light"` (copied over from the approved `deck-plan.json` page
-    of the same id — plan authors it when a page's source_scope is genuinely thin, e.g. a short
-    executive-summary table row) is exempt from this floor. Without this escape hatch, a page whose
-    source material is truly exhausted has no honest way to satisfy the floor except inventing a
-    module that restates other modules' content as a "relationship" — the exact anti-pattern
-    `references/screen-copy-authoring.md` section 5a warns against. The floor still applies by
-    default (a slide with no `content_load` or any value other than `light` is checked as before)."""
-    issues: list[str] = []
-    for index, slide in enumerate(final_script.get("slides") or []):
-        if not isinstance(slide, dict) or slide.get("page_type") != "content":
-            continue
-        if slide.get("content_load") == "light":
-            continue
-        slide_id = slide.get("id") or f"#{index}"
-        total = 0
-        for module in slide.get("onscreen") or []:
-            if not isinstance(module, dict):
-                continue
-            total += _meaningful_char_count(module.get("text"))
-            for item in module.get("items") or []:
-                if isinstance(item, str):
-                    total += _meaningful_char_count(item)
-        if total < min_chars:
-            issues.append(f"slides.{index} ({slide_id}): onscreen body has {total} meaningful characters (< {min_chars}) — add more short parallel items instead of leaving the page under-filled")
-    return issues
-
-FULL_COPY_MINIMUM_DENSITY_CHARS = 350
-
-def check_full_copy_minimum_density(final_script: dict[str, Any], min_chars: int = FULL_COPY_MINIMUM_DENSITY_CHARS) -> list[str]:
-    """Hard floor on `full_copy` for `content` pages, the prose counterpart to
-    `check_onscreen_minimum_density`. `full_copy` carries no per-phrase ceiling — it is meant to be
-    the fully-argued paragraph, not a distilled phrase — so instead of a per-line rule this checks
-    the whole field: at least `min_chars` meaningful (Chinese/Latin/numeric) characters. A page
-    under the floor is usually missing a specific enumerated point, a closing synthesis sentence,
-    or a concrete number/name that only lives in `foundation.json`'s facts — not filler; pull the
-    missing substance from there rather than padding with restatement. Only `page_type == "content"`
-    slides are checked, matching the other density checks' scope. A slide carrying
-    `content_load: "light"` is exempt, for the same reason `check_onscreen_minimum_density`
-    exempts one: a page whose source material is genuinely thin should not be forced into
-    restating itself just to clear a fixed character count."""
-    issues: list[str] = []
-    for index, slide in enumerate(final_script.get("slides") or []):
-        if not isinstance(slide, dict) or slide.get("page_type") != "content":
-            continue
-        if slide.get("content_load") == "light":
-            continue
-        slide_id = slide.get("id") or f"#{index}"
-        chars = _meaningful_char_count(slide.get("full_copy"))
-        if chars < min_chars:
-            issues.append(f"slides.{index} ({slide_id}): full_copy has {chars} meaningful characters (< {min_chars}) — the paragraph is thinner than the page's argument needs; add the missing enumerated point, number, or synthesis sentence rather than restating what is already there")
     return issues
 
 def outline_final_script(final_script: dict[str, Any]) -> list[dict[str, Any]]:

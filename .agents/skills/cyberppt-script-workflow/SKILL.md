@@ -96,6 +96,12 @@ Show a readable **脚本规划待确认** containing:
 
 Do not dump internal JSON by default.
 
+Run `cyberppt-script review-plan <deck-plan.json> <foundation.json>` and present
+its Markdown reading strip at this gate. The command is a derived review view and
+must not create another authoritative artifact or approval state. For internal
+and mixed audiences, apply the internal-expert voice check: enterprise operating
+topics remain valid, while external-consultant address and viewpoint are rejected.
+
 ## 8. Stage 02 boundary
 
 Visual style, image generation, SVG reconstruction and PPTX production remain outside this repository. Only `projects/<slug>/dist/final-script.md` crosses the boundary.

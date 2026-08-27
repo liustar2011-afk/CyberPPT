@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script, audit_foundation_analysis
+from script_engine.contracts import validate_deck_plan
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -72,6 +73,144 @@ def _final() -> dict:
             {"id": "P20", "page_type": "content", "title": "支持与商务机制", "core_message": "分类协商", "full_copy": "内部测算参考：平台运营收入约占客户净收入15%-25%。", "onscreen": []},
         ]
     }
+
+
+def _contracted_gap_fixture() -> tuple[dict, dict, dict]:
+    foundation = {
+        "source_structure": [],
+        "facts": [
+            {"id": "G1", "statement": "基础通用标准供给不足。", "source_refs": ["S2.1"]},
+            {"id": "G2", "statement": "新兴应用场景标准供给滞后。", "source_refs": ["S2.2"]},
+        ],
+        "concepts": [],
+        "entities": [],
+        "relations": [],
+        "arguments": [],
+        "constraints": [],
+        "numbers": [],
+    }
+    contract = {
+        "relation": "parallel",
+        "detail_axis": "gap_manifestation",
+        "scope_mode": "exclusive",
+        "modules": [
+            {
+                "heading": "基础通用",
+                "evidence_refs": ["G1"],
+                "required_signals": ["术语"],
+                "forbidden_signals": ["场景问题"],
+            },
+            {
+                "heading": "新兴场景",
+                "evidence_refs": ["G2"],
+                "required_signals": ["场景"],
+                "forbidden_signals": ["机制问题"],
+            },
+        ],
+        "detail_policy": {
+            "allowed_roles": ["gap", "evidence"],
+            "forbidden_roles": ["measure", "summary"],
+            "role_markers": {
+                "measure": [r"^(完善|建立|加强|构建)"],
+                "summary": [r"(共同指向|后续)"],
+                "gap": [r"(不足|滞后|不均衡|缺少|有待)"],
+                "evidence": [r"(术语|架构|场景)"],
+            },
+        },
+    }
+    page = {
+        "id": "P06",
+        "question": "现状差距集中在哪些方面？",
+        "message": "两类差距并列呈现。",
+        "logic": "并列差距清单",
+        "content": ["基础通用", "新兴场景"],
+        "onscreen_contract": contract,
+    }
+    plan = {
+        "communication_goal": "说明差距",
+        "chapters": [],
+        "pages": [page],
+    }
+    return foundation, plan, {"slides": []}
+
+
+def _contracted_final(*, mixed: bool = False, different_counts: bool = False) -> dict:
+    first_items = ["术语标准供给不足。", "共性规则供给不足。"]
+    if mixed:
+        first_items = [
+            "完善术语、参考架构和目录规范",
+            "场景问题影响新业态服务供给",
+            "共同指向体系化供给",
+        ]
+    elif different_counts:
+        first_items = ["术语标准供给不足。", "共性规则供给不足。", "接口规范供给不足。"]
+    second_items = ["新兴场景标准供给滞后。"]
+    return {
+        "slides": [
+            {
+                "id": "P06",
+                "page_type": "content",
+                "title": "现状差距",
+                "core_message": "两类差距并列呈现。",
+                "onscreen": [
+                    {"heading": "基础通用", "items": first_items},
+                    {"heading": "新兴场景", "items": second_items},
+                ],
+            }
+        ]
+    }
+
+
+def test_onscreen_contract_schema_and_plan_audit_accept_declared_module_scope() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    assert validate_deck_plan(plan) == []
+    issues, _ = audit_deck_plan(plan, foundation)
+    assert issues == []
+
+
+def test_onscreen_contract_requires_visible_support_signal_per_module() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    plan["pages"][0]["onscreen_contract"]["modules"][0].pop("required_signals")
+    assert validate_deck_plan(plan)
+    issues, _ = audit_deck_plan(plan, foundation)
+    assert any("required_signals" in issue for issue in issues)
+
+
+def test_onscreen_contract_flags_measure_cross_scope_and_page_summary_lines() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    issues, _ = audit_final_script(_contracted_final(mixed=True), plan, foundation)
+    joined = "\n".join(issues)
+    assert "disallowed role" in joined and "measure" in joined
+    assert "forbidden cross-scope signal '场景问题'" in joined
+    assert "disallowed role" in joined and "summary" in joined
+
+
+def test_onscreen_contract_flags_module_heading_drift() -> None:
+    foundation, plan, final = _contracted_gap_fixture()
+    final = _contracted_final()
+    final["slides"][0]["onscreen"][1]["heading"] = "实施协同"
+    issues, _ = audit_final_script(final, plan, foundation)
+    assert any("module headings do not match" in issue for issue in issues)
+
+
+def test_onscreen_contract_does_not_require_equal_detail_counts() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    issues, _ = audit_final_script(_contracted_final(different_counts=True), plan, foundation)
+    assert issues == []
+
+def test_onscreen_contract_expression_mode_warns_when_mixed_copy_has_no_proposition() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    plan["pages"][0]["onscreen_contract"]["expression_mode"] = "mixed"
+    issues, warnings = audit_final_script(_contracted_final(), plan, foundation)
+    assert issues == []
+    assert any("expression_mode='mixed'" in warning for warning in warnings)
+
+def test_onscreen_contract_rejects_unknown_expression_mode() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    plan["pages"][0]["onscreen_contract"]["expression_mode"] = "paragraph_led"
+    assert validate_deck_plan(plan)
+    issues, _ = audit_deck_plan(plan, foundation)
+    assert any("expression_mode" in issue for issue in issues)
 
 
 def test_real_source_contains_the_semantic_boundaries_that_drive_v041() -> None:

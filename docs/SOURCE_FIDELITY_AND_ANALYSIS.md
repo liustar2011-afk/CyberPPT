@@ -88,6 +88,13 @@ Audience information may control:
 
 Audience information does not, by default, authorize chapter reordering or a new content strategy.
 
+For internal and mixed audiences, the default authoring position is an internal
+expert accountable to the organisation's facts, responsibilities and operating
+conditions. Customer, market, transaction, value realisation, growth and
+commercialisation remain legitimate source-grounded enterprise topics. External
+consultant address (`贵司`), declared consulting viewpoint and unsupported generic
+advice are voice drift; business vocabulary itself is not evidence of drift.
+
 Use `visibility` to protect source items:
 
 - `external_ok` — may appear in external-facing material;

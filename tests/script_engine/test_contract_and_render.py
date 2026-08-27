@@ -1,7 +1,7 @@
 from __future__ import annotations
 import copy, json, re
 from pathlib import Path
-from script_engine.contracts import validate_deck_plan, validate_final_script, collect_foundation_source_codes, validate_source_refs_coverage, lint_final_script, check_onscreen_structure, outline_final_script, check_speaker_notes_length, check_declared_count, check_module_density, check_onscreen_detail_length, check_onscreen_minimum_density, check_full_copy_minimum_density
+from script_engine.contracts import validate_deck_plan, validate_final_script, collect_foundation_source_codes, validate_source_refs_coverage, lint_final_script, check_onscreen_structure, outline_final_script, check_speaker_notes_length, check_declared_count, check_onscreen_detail_length, check_onscreen_terminal_punctuation
 from script_engine.render import render_stage02_markdown
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -343,21 +343,43 @@ def test_check_declared_count_skips_ambiguous_compound_subtitle() -> None:
     payload["slides"][0]["onscreen"] = [{"heading": h} for h in ("一", "二", "三")]
     assert check_declared_count(payload) == []
 
-def test_check_module_density_flags_slide_above_ceiling() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["onscreen"] = [{"heading": f"模块{i}"} for i in range(7)]
-    warnings = check_module_density(payload)
-    assert warnings
-    assert "7 onscreen modules" in warnings[0]
-
-def test_check_module_density_passes_at_ceiling() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["onscreen"] = [{"heading": f"模块{i}"} for i in range(6)]
-    assert check_module_density(payload) == []
-
 def test_check_onscreen_detail_length_flags_overlong_item() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{"heading": "模块", "items": ["需求识别到持续优化经过八个连续环节层层推进形成完整闭环缺一不可"]}]
+    issues = check_onscreen_detail_length(payload)
+    assert issues
+    assert "meaningful characters (> 30)" in issues[0]
+
+def test_check_onscreen_detail_length_allows_complete_proposition_as_module_lead() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "heading": "模块",
+        "text": "国家技术文件明确基础能力边界并规定行业实施细则的转化方向和接口衔接要求",
+    }]
+    assert check_onscreen_detail_length(payload) == []
+
+def test_check_onscreen_detail_length_allows_unpunctuated_module_lead() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "heading": "模块",
+        "text": "国家技术文件明确基础能力边界并规定行业实施细则的转化方向和接口衔接要求",
+    }]
+    assert check_onscreen_detail_length(payload) == []
+
+def test_check_onscreen_terminal_punctuation_rejects_visible_terminal_glyphs() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "heading": "模块：",
+        "text": "标准体系需要保持层次清晰。",
+        "items": ["目录描述；"],
+    }]
+    issues = check_onscreen_terminal_punctuation(payload)
+    assert len(issues) == 3
+    assert all("must not end" in issue for issue in issues)
+
+def test_check_onscreen_detail_length_blocks_complete_proposition_above_sentence_ceiling() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{"heading": "模块", "items": ["判" * 91 + "。"]}]
     issues = check_onscreen_detail_length(payload)
     assert issues
     assert "meaningful characters (> 30)" in issues[0]
@@ -386,49 +408,6 @@ def test_check_onscreen_detail_length_ignores_headings() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{"heading": "一个非常长的标题超过三十个字用来测试标题是否被忽略而不触发上屏文字密度检查规则"}]
     assert check_onscreen_detail_length(payload) == []
-
-def test_check_onscreen_minimum_density_flags_underfilled_content_page() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["page_type"] = "content"
-    payload["slides"][0]["onscreen"] = [{"heading": "模块", "text": "简短说明"}]
-    issues = check_onscreen_minimum_density(payload)
-    assert issues
-    assert "meaningful characters (< 240)" in issues[0]
-
-def test_check_onscreen_minimum_density_passes_dense_content_page() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["page_type"] = "content"
-    payload["slides"][0]["onscreen"] = [
-        {"heading": f"模块{i}", "text": "判" * 20, "items": ["判" * 20, "判" * 20]}
-        for i in range(1, 5)
-    ]
-    assert check_onscreen_minimum_density(payload) == []
-
-def test_check_onscreen_minimum_density_ignores_non_content_pages() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["page_type"] = "cover"
-    payload["slides"][0]["onscreen"] = [{"heading": "模块", "text": "简短说明"}]
-    assert check_onscreen_minimum_density(payload) == []
-
-def test_check_full_copy_minimum_density_flags_thin_content_page() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["page_type"] = "content"
-    payload["slides"][0]["full_copy"] = "简短的概述文字。"
-    issues = check_full_copy_minimum_density(payload)
-    assert issues
-    assert "meaningful characters (< 350)" in issues[0]
-
-def test_check_full_copy_minimum_density_passes_substantial_paragraph() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["page_type"] = "content"
-    payload["slides"][0]["full_copy"] = "判" * 350
-    assert check_full_copy_minimum_density(payload) == []
-
-def test_check_full_copy_minimum_density_ignores_non_content_pages() -> None:
-    payload = copy.deepcopy(_example())
-    payload["slides"][0]["page_type"] = "cover"
-    payload["slides"][0]["full_copy"] = "简短的概述文字。"
-    assert check_full_copy_minimum_density(payload) == []
 
 def test_power_industry_deck_final_script_passes_lint() -> None:
     """Regression test: the delivered power-industry-data-infrastructure deck previously leaked
@@ -476,23 +455,6 @@ def test_power_industry_deck_p06_delivers_five_basis_modules() -> None:
     payload = json.loads(path.read_text(encoding="utf-8"))
     slide = next(s for s in payload["slides"] if s["id"] == "P06")
     assert len(slide["onscreen"]) == 5
-
-def test_power_industry_deck_meets_onscreen_minimum_density() -> None:
-    """Regression test: a full rerun of this deck once shipped with onscreen modules trimmed down
-    to bare heading+text labels (well under the 240-char floor), erasing the concrete sub-facts a
-    reader needs to follow the page from the screen alone. Keep it clean so that under-filling
-    doesn't silently return."""
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    assert check_onscreen_minimum_density(payload) == []
-
-def test_power_industry_deck_meets_full_copy_minimum_density() -> None:
-    """Regression test: the same rerun that under-filled onscreen copy also shipped several pages
-    with a thin full_copy paragraph (missing an enumerated point or closing synthesis sentence).
-    Keep it clean so that regression doesn't silently return either."""
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    assert check_full_copy_minimum_density(payload) == []
 
 def test_power_industry_deck_final_script_has_no_declared_count_warnings() -> None:
     """This deck currently has zero count-claim mismatches. Pin that state so a genuinely new

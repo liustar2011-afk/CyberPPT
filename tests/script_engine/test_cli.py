@@ -155,6 +155,36 @@ def test_cli_status_progresses_as_artifacts_are_added(tmp_path, capsys) -> None:
     assert out["final_script"]["page_count"] == len(final_payload["slides"])
 
 
+def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, capsys) -> None:
+    main(["new-project", "demo-slug", "--base-dir", str(tmp_path)])
+    capsys.readouterr()
+    project_dir = tmp_path / "demo-slug"
+    (project_dir / "sources" / "brief.docx").write_bytes(b"placeholder")
+    (project_dir / "foundation.json").write_text(
+        (ROOT / "examples" / "foundation.example.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    (project_dir / "deck-plan.json").write_text(
+        (ROOT / "examples" / "deck-plan.example.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    final_payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
+    final_payload["slides"][0]["page_type"] = "content"
+    final_payload["slides"][0]["onscreen"] = [{"heading": "模块", "text": "简短说明"}]
+    (project_dir / "dist" / "final-script.json").write_text(
+        json.dumps(final_payload, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    exit_code = main(["status", str(project_dir)])
+    out = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 0
+    assert out["stage"] == "最终脚本已生成"
+    assert out["final_script"]["lint"] == "passed"
+    assert out["final_script"].get("lint_warnings", []) == []
+
+
 def test_cli_lint_passes_on_example(capsys) -> None:
     path = ROOT / "examples" / "final-script.example.json"
     exit_code = main(["lint", str(path)])
@@ -162,6 +192,22 @@ def test_cli_lint_passes_on_example(capsys) -> None:
     assert exit_code == 0
     assert out["status"] == "passed"
     assert out["issues"] == []
+
+
+def test_cli_lint_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, capsys) -> None:
+    payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
+    payload["slides"][0]["page_type"] = "content"
+    payload["slides"][0]["onscreen"] = [{"heading": "模块", "text": "简短说明"}]
+    path = tmp_path / "underfilled.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    exit_code = main(["lint", str(path)])
+    out = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 0
+    assert out["status"] == "passed"
+    assert out["issues"] == []
+    assert out["warnings"] == []
 
 
 def test_cli_lint_reports_empty_warnings_list_on_clean_example(capsys) -> None:

@@ -15,6 +15,20 @@ Use this order:
 
 Do not start by compressing source paragraphs into short labels. Premature compression is a major cause of generic, repetitive PPT copy.
 
+### Internal-report composition order
+
+For internal reports, organize each content page in this authoring order:
+
+`结论 → 证据 → 解读 → 含义 → 来源`
+
+- **结论**: the bounded page judgment in `core_message` or a readable lead line.
+- **证据**: source-grounded facts, numbers, responsibilities, status, conditions, or explicit relations that prove the judgment.
+- **解读**: the page's approved relationship among the evidence; it may be a comparison, mechanism, taxonomy, boundary, or consequence.
+- **含义**: the evidence-based internal impact, attention point, work requirement, coordination item, risk reminder, or next arrangement. It must stay within the source boundary and must not manufacture an action conclusion.
+- **来源**: `source_refs` and evidence mappings remain in their traceable machine fields or the delivery source section, outside audience-facing onscreen wording.
+
+This is an authoring sequence, not a mandate to add five separate cards. A thin or source-special page may combine adjacent steps, and a source-native structure may retain its own organization after the same five questions have been answered.
+
 ## 2. Separate title, judgment, and support
 
 A page may use a topical title or a judgmental title depending on context. Do not force one title style for every page.
@@ -78,6 +92,18 @@ Before finalizing onscreen copy, identify the page's dominant semantic relations
 
 The copy should make this relationship legible before Stage 02 decides how to visualize it.
 
+### 5c. Internal-report content routes
+
+`content_route` is an optional Deck Plan field for the authoring organization of a content page. It does not replace `page_type`, `argument_role`, `source_scope`, or `page_logic_contract`; those fields retain their existing structural, authority, evidence, and relationship responsibilities.
+
+- `state`: present background, current state, progress, or review as **conclusion → factual state/progress → interpretation → attention point**.
+- `diagnosis`: present a source-supported issue as **conclusion → observed evidence → cause/impact interpretation → priority or risk reminder**.
+- `system`: present a principle, architecture, scope, or mechanism as **conclusion → components and boundaries → operating relationship → implementation concern**.
+- `action`: present a source-supported target, arrangement, task, or safeguard as **conclusion → work basis → responsibilities/measures → coordination, checkpoint, or next step**.
+- `source_native`: retain the source's special structure when the page does not have one clear route. Do not infer a route from title words alone.
+
+Facets such as `background`, `current`, `progress`, `comparison`, `risk`, `boundary`, `coordination`, and `next_step` refine the route. They do not create a new page type or require every page to cover every facet.
+
 ## 6. Language quality
 
 Prefer concrete institutional, business, technical, and operational wording.
@@ -94,9 +120,48 @@ Avoid:
 - source citations replacing actual explanation;
 - `source_refs` / citation codes / the word "证据" appearing inside onscreen wording. Traceability is a separate machine field rendered in its own section; the audience never reads it.
 
-## 7. Density
+## 7. Expression modes and density
 
 Do not impose one universal character count on every page. Density should follow the page's role and evidence burden.
+
+Use optional page-level `onscreen_composition` to decide where module lead lines
+belong before declaring a module-level `expression_mode`:
+
+- `evidence_first`: for taxonomy, object inventory, scene coverage, evidence,
+  and peer-category pages. Put the page judgment in `core_message`; every
+  onscreen module uses its heading and evidence `items`, with no module `text`.
+- `selective_lead`: for diagnosis, mechanism, boundary, or other pages where a
+  limited number of module judgments materially improves independent reading.
+  Set `lead_budget` to the exact maximum number of modules allowed to use `text`.
+
+This is a page-composition policy, not a fixed density target. Keep the budget at
+zero when facts are already legible as peer evidence, and retain a lead only when
+it adds a distinct source-grounded judgment that the page-level conclusion cannot
+carry alone. A plan without this optional field remains compatible with existing
+authoring.
+
+In `evidence_first`, do not move a former module judgment into the first item
+and leave shorter labels below it. The renderer gives every item the same visual
+level, so this creates a hidden hierarchy that readers cannot parse. Within one
+module, write peer evidence at the same granularity: objects, requirements,
+stages, actors, conditions, or source-supported facts answering one shared
+question. Keep a needed module judgment in `core_message`, or choose
+`selective_lead` and declare its budget.
+
+When a page has an `onscreen_contract`, declare `expression_mode` as:
+
+- `phrase_led` for classifications, lists, metrics, and object enumerations;
+- `sentence_led` for judgments, problem responses, mechanisms, and boundary explanations;
+- `mixed` where permitted module judgments and compact evidence details coexist.
+
+Under `mixed`, use a complete source-grounded proposition for a permitted module
+lead when it improves independent reading, then use compact clauses or phrases for
+differentiated evidence. Under `sentence_led`, every permitted lead module should
+carry at least one readable proposition. `evidence_first` takes precedence over
+these expression modes and keeps module `text` empty. A parallel page may use
+complete sentences without becoming a progression chain.
+
+Visible module copy must not end with a period, comma, semicolon, enumeration mark, or other punctuation/symbol. The module boundary already provides the visual pause: use `heading` + complete lead `text` without a terminal glyph, then compact supporting items without terminal glyphs. Keep internally meaningful notation such as `GB/T 13016`, `A3` and `IEC 61970`; the renderer's `标题：说明` separator is structural and remains outside the authored text.
 
 A strong page can be concise or dense. The requirement is that hierarchy stays readable and every visible line performs a distinct semantic job.
 
@@ -111,23 +176,31 @@ When a page is overloaded, first decide whether to:
 
 Overload and low density are different failure modes — do not fix one by silently causing the other. If compression starts erasing the sub-points that make a module concrete, the page needs a split (see storyline-planning.md's split test), not a thinner module.
 
-One hard, page-role-independent ceiling does apply: each short phrase inside an onscreen `text`/`items` line's body — the part after a `标签：` prefix, if present, split on `、，,；;` into individual phrases — must stay at or under 30 meaningful (Chinese/Latin/numeric) characters. The ceiling is per phrase, not per line: a line holding several punctuation-separated phrases (e.g. "供得出、流得动、用得好、保安全") is fine even if their combined length exceeds 30 — that per-phrase distillation is what makes on-screen copy read as PPT phrasing instead of Word-style prose. This is not a house-style preference; it is CyberPPT Stage 02's own ImageGen readiness gate (`assert_imagegen_onscreen_readiness`), enforced here by `cyberppt-script lint` so a paragraph-like phrase is caught during AUTHOR/CRITIQUE rather than at the Stage 02 handoff. A phrase at risk of exceeding it should be split into more, shorter parallel items (preserving every named entity) rather than trimmed down to a vaguer phrase — the full sentence belongs in `full_copy`/`speaker_notes`, which carry no such ceiling.
+The compact-detail threshold remains 30 meaningful (Chinese/Latin/numeric) characters for items and unstructured fragments. A single source-grounded module lead in the `text` field may exceed that threshold up to 90 meaningful characters when it carries one business claim. This distinction keeps natural sentence-led copy available while blocking paragraph-like detail.
 
-A paired floor applies in the other direction: a `content` page's total onscreen body (all `text` + `items` meaningful characters summed across every module on the page, headings excluded) must reach at least 240 characters, also enforced by `cyberppt-script lint`. The per-phrase ceiling above stops a single phrase from reading like prose; without a floor, a page can still be compressed down to a handful of near-empty labels that lose the source's concrete sub-points. When a page is under the floor, add more short, parallel `items` per module — pull real sub-facts, numbers, roles, and conditions from `foundation.json` — rather than lengthening any one phrase, which would trip the ceiling instead. A `light`-density page is exempt: the floor only applies to `content`-type pages, and within those, `cyberppt-script lint` additionally skips any page whose `content_load` is `light` (cover/divider/contents pages are naturally `light` by page type; a genuinely thin `content` page — e.g. a short executive-summary table row with only a handful of source facts — should also be planned as `content_load: light` in `deck-plan.json` rather than forced to invent filler to clear the floor).
+A page has no universal character-count or module-count target. Review density through the evidence and business meaning that the page must carry: source-grounded facts, numbers, roles, conditions, boundaries, and an earned internal implication when the page route declares one. Add a line only when it carries a missing source-grounded point. Do not add filler, duplicate a claim, or create a relationship-narration module to satisfy a numerical target.
 
-## 5a. Density floors are met by new facts, never by restating one
+## 5a. Density is earned by new facts, never by restating one
 
-Both density floors above (240 onscreen chars, and `full_copy`'s 350-char floor in 6a below) exist to stop content from being compressed into bare labels. They do not license the opposite failure: hitting the number by adding a second `items` line that says the same thing as the first in different words. `cyberppt-script lint` catches this mechanically — `check_onscreen_structure` flags any two lines within the same module whose normalized text similarity is 60% or higher. When a module is short of the floor, go back to `foundation.json` and pull a sub-fact, number, role, or condition the module does not yet carry; do not paraphrase what is already on the page. Within a module, order the lines the way the source presents them — chronologically for a sequence of events, causally for a mechanism, by stated priority for a list — rather than in whatever order they were added during drafting; an out-of-order list reads as assembled, not authored, even when every individual line is accurate.
+Do not pad a page by adding a second `items` line that says the same thing as the first in different words. `cyberppt-script lint` catches near-duplicate lines within a module. When a module lacks proof, return to `foundation.json` and pull a sub-fact, number, role, or condition that the page is already responsible for; do not paraphrase what is already on the page. Within a module, order lines as supported by the source — chronologically for a sequence, causally for a mechanism, by stated priority for a list — rather than in the order added during drafting.
 
 ## 5b. A "relationship" module is not a density strategy
 
 Every onscreen module must carry a concrete distinguishing fact — a number, named entity, role, condition, or boundary — that is not already stated by the other modules on the same page. A module whose entire content is commentary on how the *other* modules relate to each other ("A与B共同构成…的基础"、"C衡量…是否合理"、"D检验…能否…") adds no new fact; it just restates what the peer modules already show, wearing a "关系"/"相互关系"/"对应关系" heading. This is the multi-module version of the 5a anti-pattern (restating a point to reach the density floor) and is banned for the same reason, even though 5a's line-similarity check does not catch it (the restatement is spread across a whole module, in different words, not one duplicate line).
 
-The dominant semantic relationship identified in section 5 belongs in `visual_thesis` (as the page's stated judgment) and in `relationships` (as the structure Stage 02 renders) — and it may thread through `full_copy`'s connective sentences. It does not need, and should not get, its own onscreen card unless that card itself introduces a fact the audience has not yet seen (e.g. a genuine dependency the audience must act on, stated as that dependency's concrete content, not as a meta-description of "the relationship"). When a page is short of the density floor and no such module exists, the page's source material is thin — plan it as `content_load: light` (see section 7) rather than manufacturing a relationship-narration module to hit the count.
+The dominant semantic relationship identified in section 5 belongs in `visual_thesis` (as the page's stated judgment) and in `relationships` (as the structure Stage 02 renders) — and it may thread through `full_copy`'s connective sentences. It does not need, and should not get, its own onscreen card unless that card itself introduces a fact the audience has not yet seen (e.g. a genuine dependency the audience must act on, stated as that dependency's concrete content, not as a meta-description of "the relationship"). When the source material is thin and no further evidence duty exists, plan it as `content_load: light` rather than manufacturing a relationship-narration module.
 
-## 6a. `full_copy` needs its own floor, not just onscreen
+## 6a. `full_copy` must carry the page argument
 
-`full_copy` is the fully-argued paragraph a presenter could read verbatim — it carries no per-line ceiling, so it is not subject to the 30-character rule above. But it is not exempt from being thin: a `content` page's `full_copy` must reach at least 350 meaningful characters, enforced by `cyberppt-script lint`. A page under the floor is usually missing one of: an enumerated sub-point the source actually states (an "一是/二是/三是" item silently dropped), a concrete number or named entity, or the closing synthesis sentence that ties the enumerated points back to the page's core claim. Diagnose which is missing and pull it from `foundation.json` — do not pad by restating the same claim in different words, which reads as filler rather than substance.
+`full_copy` is the fully-argued paragraph a presenter could read verbatim and carries no fixed character floor. It must establish the page conclusion, the source-grounded proof, the approved relationship, and any declared business meaning. When any of those responsibilities is absent, pull the missing enumerated sub-point, number, named entity, condition, or synthesis sentence from `foundation.json`; do not pad by restating the same claim in different words.
+
+For a strict `source_consumption` page, complete the source-consumption pass
+before compression. Every assigned record outside declared details and specific
+omissions must survive in `full_copy`; source-specific anchors protect facts that
+generic wording can easily swallow. Then project only `onscreen_refs` into the
+mapped visible modules. This keeps the direct relationship
+`assigned source → complete argument → representative onscreen evidence` while
+avoiding both silent loss and a one-source-one-card layout.
 
 ## 8. Renderer independence
 

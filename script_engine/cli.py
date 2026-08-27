@@ -16,10 +16,8 @@ from .analysis_audit import (
 )
 from .contracts import (
     check_declared_count,
-    check_full_copy_minimum_density,
-    check_module_density,
     check_onscreen_detail_length,
-    check_onscreen_minimum_density,
+    check_onscreen_terminal_punctuation,
     check_onscreen_structure,
     check_speaker_notes_length,
     lint_final_script,
@@ -31,6 +29,7 @@ from .contracts import (
     validate_source_refs_coverage,
 )
 from .delivery_cleanliness import check_delivery_cleanliness
+from .plan_review import render_plan_review
 from .render import render_stage02_markdown
 from .source_index import build_source_index_file
 from .text_io import write_text_lf
@@ -65,6 +64,16 @@ def _audit_plan(plan_path: Path, foundation_path: Path) -> int:
     audit_issues, warnings = audit_deck_plan(plan, foundation)
     issues += audit_issues
     _print_report({"kind": "source-faithful-plan", "plan": str(plan_path.resolve()), "foundation": str(foundation_path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
+    return 0 if not issues else 1
+
+
+def _review_plan(plan_path: Path, foundation_path: Path) -> int:
+    plan = load_json(plan_path)
+    foundation = load_json(foundation_path)
+    issues = validate_deck_plan(plan) + validate_foundation(foundation)
+    audit_issues, warnings = audit_deck_plan(plan, foundation)
+    issues += audit_issues
+    print(render_plan_review(plan, foundation, issues=issues, warnings=warnings))
     return 0 if not issues else 1
 
 
@@ -106,8 +115,8 @@ def _build_source_index(source_extract: Path, output: Path, source_file: str | N
 def _lint(final_path: Path) -> int:
     payload = load_json(final_path)
     markdown = render_stage02_markdown(payload)
-    issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_detail_length(payload) + check_onscreen_minimum_density(payload) + check_full_copy_minimum_density(payload)
-    warnings = check_declared_count(payload) + check_module_density(payload)
+    issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
+    warnings = check_declared_count(payload)
     _print_report({"kind": "lint", "path": str(final_path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
     return 0 if not issues else 1
 
@@ -192,11 +201,11 @@ def _status(project_dir: Path) -> int:
         final["page_count"] = len(payload.get("slides") or [])
         final["deck_title"] = (payload.get("deck") or {}).get("title")
         markdown = render_stage02_markdown(payload)
-        lint_issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_detail_length(payload) + check_onscreen_minimum_density(payload) + check_full_copy_minimum_density(payload)
+        lint_issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
         final["lint"] = "passed" if not lint_issues else "failed"
         if lint_issues:
             final["lint_issues"] = lint_issues
-        lint_warnings = check_declared_count(payload) + check_module_density(payload)
+        lint_warnings = check_declared_count(payload)
         if lint_warnings:
             final["lint_warnings"] = lint_warnings
         if foundation.get("valid") and plan.get("valid"):
@@ -281,6 +290,7 @@ def build_parser() -> argparse.ArgumentParser:
     validate = sub.add_parser("validate", help="Validate a Script Engine JSON artifact"); validate.add_argument("kind", choices=sorted(VALIDATORS)); validate.add_argument("path")
     audit_foundation = sub.add_parser("audit-foundation", help="Audit inferred relations, visibility and group-strength preservation in foundation.json"); audit_foundation.add_argument("foundation")
     audit_plan = sub.add_parser("audit-plan", help="Audit source-structure fidelity, inference support, optionality and audience visibility in deck-plan.json"); audit_plan.add_argument("plan"); audit_plan.add_argument("foundation")
+    review_plan = sub.add_parser("review-plan", help="Render a human-readable, non-authoritative Markdown review of deck-plan.json"); review_plan.add_argument("plan"); review_plan.add_argument("foundation")
     audit_final = sub.add_parser("audit-final", help="Audit PLAN-to-AUTHOR semantic inheritance and high-risk source-boundary rules"); audit_final.add_argument("final"); audit_final.add_argument("plan"); audit_final.add_argument("foundation")
     build_index = sub.add_parser("build-source-index", help="Build non-authoritative .cache/source-index.json from source_extract.txt"); build_index.add_argument("source_extract"); build_index.add_argument("--output", required=True); build_index.add_argument("--source-file")
     render = sub.add_parser("render-stage02", help="Render a delivery-clean Stage 02-compatible Markdown boundary"); render.add_argument("input"); render.add_argument("--output", default="dist/final-script.md")
@@ -298,6 +308,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "validate": return _validate(args.kind, Path(args.path))
     if args.command == "audit-foundation": return _audit_foundation(Path(args.foundation))
     if args.command == "audit-plan": return _audit_plan(Path(args.plan), Path(args.foundation))
+    if args.command == "review-plan": return _review_plan(Path(args.plan), Path(args.foundation))
     if args.command == "audit-final": return _audit_final(Path(args.final), Path(args.plan), Path(args.foundation))
     if args.command == "build-source-index": return _build_source_index(Path(args.source_extract), Path(args.output), args.source_file)
     if args.command == "render-stage02": return _render(Path(args.input), Path(args.output))

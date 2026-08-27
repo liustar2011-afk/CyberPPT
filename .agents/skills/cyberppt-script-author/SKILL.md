@@ -30,6 +30,27 @@ Before prose, know:
 5. **proof** — facts, mechanisms, numbers and boundaries that earn the answer;
 6. **bridge** — how the next source-derived page follows.
 
+When the plan declares `content_route`, use it to arrange the page for internal
+reporting. The default sequence is **结论 → 证据 → 解读 → 含义 → 来源**:
+
+- keep the page judgment visible first;
+- prove it with the approved source facts and boundaries;
+- explain only declared or defensibly inferred relationships;
+- express “含义” as a source-grounded internal impact, attention point, work
+  requirement, coordination item, risk reminder, or next arrangement;
+- keep “来源” in `source_refs` and traceability fields, outside onscreen copy.
+
+This is a composition order, not a fixed external-consulting template. Do not
+add a generic “含义” card, and do not upgrade a state, diagnosis, or system page
+into an action conclusion. `content_route` does not override `argument_role` or
+the approved `page_logic_contract`; when it is `source_native`, preserve the
+source's own structure.
+
+When a page carries `stage02_readiness`, preserve its declared complete sentence
+signals and container headings verbatim enough for deterministic matching. Do
+not turn it into Stage 02 layout instructions: it records what later rendering
+must preserve, while Stage 02 decides geometry and verifies the actual output.
+
 If the plan lacks a defensible analysis basis, repair the page plan before polishing copy.
 
 ## 2. Whole-deck pass
@@ -90,6 +111,14 @@ For each content page write:
 
 Analytical writing may reorganize facts and draw supported interpretations. It may not add a new fact, unsupported current state, ranking, forecast, necessary condition or commitment.
 
+When the approved page declares `source_consumption.mode: strict`, treat
+`source_refs` as the assigned source inventory. Write every ref into `full_copy`
+unless PLAN classifies it under `detail_refs` or a specifically reasoned
+`intentional_omissions` entry. Preserve each declared `full_prose_anchors`
+threshold. This is a semantic-consumption rule: combine related records into a
+coherent argument and retain their objects, conditions, responsibilities,
+numbers, and source strength; do not paste one sentence per ref mechanically.
+
 Do not explain the writing process to the reader. Phrases such as `源文未逐一显式配对`, `分析性归纳`, `需要如实保留`, `不宜为追求页面整齐而抹平` belong to Foundation/PLAN/Critic diagnostics, not final prose.
 
 Do not navigate the document inside audience-facing prose. `上一页 / 下一页 / 本页展示 / 后续页面 / 第X页` belong to workflow metadata, not `full_copy`, `onscreen`, `visual_thesis`, `relationships` or `speaker_notes`.
@@ -114,9 +143,48 @@ For `audience_scope: external`, do not place `internal_only` material in `core_m
 
 Compress only after full copy is sound.
 
+Use the reference rules in `../../../references/screen-copy-authoring.md`. When
+the plan declares `onscreen_composition: evidence_first`, keep the page judgment
+in `core_message` and write every module as a heading plus source-grounded
+evidence items; do not write module `text`. When it declares
+`selective_lead`, use module `text` only for distinct source-grounded judgments
+and never exceed its `lead_budget`. A plan without this optional policy may use
+the normal expression-mode guidance. Do not place terminal punctuation or symbols
+on any visible module heading, lead line, or item; the module boundary supplies
+the visual pause. Shortening must remove redundancy, not the subject, predicate,
+state, condition or business relationship that makes the claim readable.
+
+For `evidence_first`, do not demote a former module lead by placing it as the
+first `items` entry. Flat evidence items render at the same level, so every item
+under a module must answer the same evidence question at comparable granularity.
+Use peer objects, requirements, stages, actors, conditions, or factual results.
+When one judgment must govern lighter supporting details, select `selective_lead`
+in the plan and keep the judgment in the permitted `text` field.
+
+If the approved page plan contains `onscreen_contract`, treat it as the visible
+module contract: preserve the declared relation and module-heading order, keep each
+module within its declared evidence scope, retain required signals, and remove
+forbidden cross-scope or role content. A `parallel` contract describes a shared
+dimension; it does not require equal detail counts or identical wording. Do not
+turn a parallel contract into a progression chain through arrows, temporal words or
+step language unless the approved plan declares that relation.
+
+When `source_consumption.onscreen_refs` is present, compress only those selected
+representative records into the visible modules mapped by
+`onscreen_contract.modules[].evidence_refs`. Their `required_signals` are the
+deterministic visible proof. Other fully consumed records may remain in
+`full_copy`, speaker explanation, or traceability; they do not become onscreen
+items merely because they were assigned to the page.
+
 - Use concrete nouns, numbers, actors, conditions and distinctions.
-- Prefer 2–4 semantic modules unless the source mandates a larger counted set.
-- Do not add a module whose entire content is commentary on how the page's other modules relate to each other — that restates them under a "关系/相互关系/对应关系" heading without a new fact. The relationship itself belongs in `visual_thesis`/`relationships`, not a bonus onscreen card (`references/screen-copy-authoring.md` section 5b). If the page is short of the onscreen density floor and no such module is available, the page is genuinely thin — mark it `content_load: light` in the plan rather than inventing one.
+- Give each permitted `sentence_led` lead module at least one readable
+  proposition; use `mixed` when a page needs both sentence-like lead lines and
+  compact evidence details.
+- Treat preferred character bands as layout guidance, not as a reason to delete
+  meaningful syntax. A complete proposition may be longer than a compact phrase
+  when it remains one source-grounded sentence and fits the downstream gate.
+- Choose the number of semantic modules from the distinct evidence and business meanings the page must carry; no fixed module count is a quality target.
+- Do not add a module whose entire content is commentary on how the page's other modules relate to each other — that restates them under a "关系/相互关系/对应关系" heading without a new fact. The relationship itself belongs in `visual_thesis`/`relationships`, not a bonus onscreen card (`../../../references/screen-copy-authoring.md` section 5b). When the source-grounded content is complete, mark genuinely thin source material as `content_load: light` rather than inventing one.
 - Do not mechanically map every Word bullet into a card.
 - Do not thin a concrete claim into generic labels.
 - Keep source refs/citation codes outside onscreen content.
@@ -137,6 +205,14 @@ Do not specify fonts, colors, images, layout coordinates or Stage 02 style decis
 Unless the user specifies another house style, use formal Chinese government / central-enterprise report register throughout audience-facing fields.
 
 Prefer direct institutional wording and concrete objects/mechanisms. Avoid literary slogans, consulting-marketing hooks, casual commentary, author-facing instructions and self-reference to page numbers.
+
+Write from an internal expert's position: state the organisation's operating
+facts, customer and market conditions, responsibilities, mechanisms, constraints
+and next arrangements with accountable subjects. Customer, market, transaction,
+value realisation, growth and commercialisation language is permitted when the
+approved plan and evidence support it. Do not address the organisation as `贵司`,
+declare an external consultant viewpoint, or replace a supported business judgment
+with generic advice to the enterprise.
 
 `contracts/banned-phrasing.json` is the deterministic prose rule set. The `不是A，而是B` contrastive-reveal family and its configured variants are prohibited in final prose. Normative boundaries such as `不得`, `未经授权不得` remain valid when they state genuine source requirements.
 

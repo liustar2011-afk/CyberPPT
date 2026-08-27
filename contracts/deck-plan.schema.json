@@ -7,7 +7,142 @@
   "$defs": {
     "relation_basis": {"type": "string", "enum": ["explicit", "inferred"]},
     "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
-    "structural_operation": {"type": "string", "enum": ["preserve", "split", "merge_within_chapter", "user_authorized_cross_chapter"]}
+    "structural_operation": {"type": "string", "enum": ["preserve", "split", "merge_within_chapter", "user_authorized_cross_chapter"]},
+    "content_route": {
+      "type": "object",
+      "required": ["primary"],
+      "properties": {
+        "primary": {"type": "string", "enum": ["state", "diagnosis", "system", "action", "source_native"]},
+        "facets": {"type": "array", "uniqueItems": true, "items": {"type": "string", "enum": ["background", "current", "progress", "comparison", "risk", "boundary", "coordination", "next_step"]}},
+        "confidence": {"$ref": "#/$defs/confidence"},
+        "basis": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "rationale": {"type": "string", "minLength": 1},
+        "meaning_signals": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "stage02_readiness": {
+      "type": "object",
+      "properties": {
+        "continuous_sentence_signals": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "containers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "heading"],
+            "properties": {
+              "id": {"type": "string", "minLength": 1},
+              "heading": {"type": "string", "minLength": 1},
+              "role": {"type": "string", "enum": ["module", "table", "shared"]}
+            },
+            "additionalProperties": false
+          }
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["container_id", "header_rows"],
+            "properties": {
+              "container_id": {"type": "string", "minLength": 1},
+              "header_rows": {"type": "integer", "minimum": 0},
+              "header_role": {"type": "string", "enum": ["header", "body", "note"]},
+              "body_role": {"type": "string", "enum": ["header", "body", "note"]},
+              "note_role": {"type": "string", "enum": ["header", "body", "note"]}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "onscreen_module": {
+      "type": "object",
+      "required": ["heading", "evidence_refs", "required_signals"],
+      "properties": {
+        "heading": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}},
+        "required_signals": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "forbidden_signals": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "onscreen_contract": {
+      "type": "object",
+      "required": ["relation", "detail_axis", "modules"],
+      "properties": {
+        "relation": {"type": "string", "enum": ["parallel", "sequence", "hierarchy", "matrix", "mixed"]},
+        "detail_axis": {"type": "string", "minLength": 1},
+        "expression_mode": {"type": "string", "enum": ["phrase_led", "sentence_led", "mixed"]},
+        "scope_mode": {"type": "string", "enum": ["exclusive", "shared"]},
+        "modules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/onscreen_module"}},
+        "detail_policy": {
+          "type": "object",
+          "properties": {
+            "allowed_roles": {"type": "array", "items": {"type": "string"}},
+            "forbidden_roles": {"type": "array", "items": {"type": "string"}},
+            "role_markers": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}},
+            "forbidden_patterns": {"type": "array", "items": {"type": "string"}}
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "onscreen_composition": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["evidence_first", "selective_lead"]},
+        "lead_budget": {"type": "integer", "minimum": 0}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"mode": {"const": "evidence_first"}}},
+          "then": {"properties": {"lead_budget": {"const": 0}}}
+        },
+        {
+          "if": {"properties": {"mode": {"const": "selective_lead"}}},
+          "then": {"required": ["lead_budget"], "properties": {"lead_budget": {"minimum": 1}}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "source_consumption": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["strict"]},
+        "detail_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "intentional_omissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source_refs", "reason"],
+            "properties": {
+              "source_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "reason": {"type": "string", "minLength": 8}
+            },
+            "additionalProperties": false
+          }
+        },
+        "full_prose_anchors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source_ref", "anchors"],
+            "properties": {
+              "source_ref": {"type": "string", "minLength": 1},
+              "anchors": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "minimum_hits": {"type": "integer", "minimum": 1}
+            },
+            "additionalProperties": false
+          }
+        },
+        "onscreen_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    }
   },
   "properties": {
     "communication_goal": {"type": "string"},
@@ -21,7 +156,7 @@
     "storyline": {"type": "array", "items": {"type": "string"}},
     "content_load_curve": {"type": "string"},
     "chapters": {"type": "array", "items": {"type": "object", "required": ["id", "purpose"], "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "purpose": {"type": "string"}, "question": {"type": "string"}, "message": {"type": "string"}, "relationship_to_previous": {"type": "string"}, "source_chapter_ids": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}}, "additionalProperties": true}},
-    "pages": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "question", "message", "logic", "content"], "properties": {"id": {"type": "string"}, "chapter_id": {"type": "string"}, "title": {"type": "string"}, "question": {"type": "string"}, "message": {"type": "string"}, "logic": {"type": "string"}, "content": {"type": "array", "items": {"type": "string"}}, "next": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}, "page_role": {"type": "string"}, "content_load": {"type": "string", "enum": ["light", "standard", "dense"]}, "receives": {"type": "string"}, "must_include": {"type": "array", "items": {"type": "string"}}, "reserved_for_later": {"type": "array", "items": {"type": "string"}}, "analysis_basis": {"type": "object", "properties": {"model": {"type": "string"}, "relation_basis": {"$ref": "#/$defs/relation_basis"}, "confidence": {"$ref": "#/$defs/confidence"}, "supports": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "string"}}, "additionalProperties": true}, "proof": {"type": "object", "properties": {"method": {"type": "string"}, "claims": {"type": "array", "items": {"type": "string"}}, "evidence_refs": {"type": "array", "items": {"type": "string"}}, "boundary_refs": {"type": "array", "items": {"type": "string"}}, "relation_basis": {"$ref": "#/$defs/relation_basis"}}, "additionalProperties": true}, "visibility_decision": {"type": "string", "enum": ["external_ok", "internal_only_used_as_hidden_support", "user_approved_exposure", "not_applicable"]}}, "additionalProperties": true}}
+    "pages": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "question", "message", "logic", "content"], "properties": {"id": {"type": "string"}, "chapter_id": {"type": "string"}, "title": {"type": "string"}, "question": {"type": "string"}, "message": {"type": "string"}, "logic": {"type": "string"}, "content": {"type": "array", "items": {"type": "string"}}, "next": {"type": "string"}, "source_refs": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}, "page_role": {"type": "string"}, "content_load": {"type": "string", "enum": ["light", "standard", "dense"]}, "receives": {"type": "string"}, "must_include": {"type": "array", "items": {"type": "string"}}, "reserved_for_later": {"type": "array", "items": {"type": "string"}}, "analysis_basis": {"type": "object", "properties": {"model": {"type": "string"}, "relation_basis": {"$ref": "#/$defs/relation_basis"}, "confidence": {"$ref": "#/$defs/confidence"}, "supports": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "string"}}, "additionalProperties": true}, "content_route": {"$ref": "#/$defs/content_route"}, "stage02_readiness": {"$ref": "#/$defs/stage02_readiness"}, "onscreen_contract": {"$ref": "#/$defs/onscreen_contract"}, "onscreen_composition": {"$ref": "#/$defs/onscreen_composition"}, "source_consumption": {"$ref": "#/$defs/source_consumption"}, "proof": {"type": "object", "properties": {"method": {"type": "string"}, "claims": {"type": "array", "items": {"type": "string"}}, "evidence_refs": {"type": "array", "items": {"type": "string"}}, "boundary_refs": {"type": "array", "items": {"type": "string"}}, "relation_basis": {"$ref": "#/$defs/relation_basis"}}, "additionalProperties": true}, "visibility_decision": {"type": "string", "enum": ["external_ok", "internal_only_used_as_hidden_support", "user_approved_exposure", "not_applicable"]}}, "additionalProperties": true}}
   },
   "additionalProperties": true
 }

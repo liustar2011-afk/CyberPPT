@@ -19,13 +19,13 @@
 
 ### Stage 01
 
-`cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`
+`cyberppt-source-foundation` → `business-semantic-understanding` → `project-foundation` → `cyberppt-script-workflow`（PLAN/AUTHOR）
 
 ### 全流程
 
 源材料 → Source Foundation → 业务语义理解 → 交流目标 → Outline 与页面计划 → Handoff → 逐页脚本 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
 
-`compile-outline-draft` 与 `cyberppt-author-stage01-outline` 仅用于旧项目迁移的内部兼容，不是新项目或已验证 Foundation 项目的第二条路线。
+旧版 Outline/Handoff 命令仅用于历史项目迁移的内部兼容，不是新项目或已验证 Source Truth 项目的第二条路线。
 
 ## 三、Stage 01 详细步骤
 
@@ -55,16 +55,22 @@
 
 交流目标中的受众、场景和行动要求，只有得到源材料直接支持时，才可以升级为源事实、源判断或页面结论。
 
-### 4. 规划 Outline 和页面计划
+### 4. 投影 Script Foundation
 
-根据已确认的交流目标，形成：
+语义模型验证通过后，运行 `.venv/bin/python3 -m cyberppt project-foundation <project>`，将 Source Truth 机械投影到脚本引擎的 `script/foundation.json`。该步骤只搬运已确认字段，不重新分析源材料。
 
-- `deck-brief.json`
-- `page-plan.json`
-- `ppt-outline.md`
-- `outline-report.json`
+产物：
 
-每个内容页至少明确：
+- `script/foundation.json`
+
+### 5. 规划与编写脚本
+
+依据已确认的交流目标和 `script/foundation.json`，按 `cyberppt-script-workflow` 的 `UNDERSTAND → PLAN → AUTHOR → CRITIQUE → REWRITE → DELIVER` 路线形成：
+
+- `script/deck-plan.json`
+- `script/dist/final-script.md`
+
+规划阶段的每个内容页至少明确：
 
 - 一个受众问题
 - 一个页面使命
@@ -77,31 +83,11 @@
 - 拆页风险
 - 前后页衔接
 
-主责 Skill：`ppt-outline-planning`。
+主责 Skill：`cyberppt-script-workflow`。
 
-### 5. 完成 Outline 作者化和审计
+规划确认是对话中的人工停点；审核稿必须以 Markdown 等可读格式展示，不直接把 JSON 作为审核材料。
 
-机器生成的 Outline 只是候选证据清单。作者必须补充页面使命、判断、论证链、证据取舍和不上屏边界，并为每条直接事实声明 required 页面消费语义：页面功能、命题关系、决策范围、可见层、拓扑角色、分组、同级集合和真实顺序。完成 `author_edited` 状态后，才进入正式 Outline 审计。
-
-审计检查来源、关系、层级和契约底线，不替代作者的页面取舍。
-
-### 6. 执行 Handoff
-
-Outline 审阅通过后，执行 Source Foundation 到 CyberPPT 的兼容投影，生成：
-
-- 投影后的 source units
-- `semantic-argument-model.json`
-- `source-truth.json`
-- CyberPPT Outline
-- 人工审阅 Markdown
-- `authority-map.json`
-- `integration/cyberppt-handoff-report.json`
-
-只有 `projection_validation.status=ok` 时，才可进入页面脚本编写。
-
-主责 Skill：`cyberppt-handoff`。
-
-### 7. 逐页编写内容脚本
+### 6. 汇总与交付最终全稿
 
 以当前项目的 Outline、Source Truth、source units、目标页和相邻页契约为依据，一次处理一张内容页。
 
@@ -117,13 +103,15 @@ Outline 审阅通过后，执行 Source Foundation 到 CyberPPT 的兼容投影�
 
 写作前运行 `page-preflight --page <page_id>`，读取本页的锚点策略、短语上限和语义拓扑。required 模式必须达到 `contract_status: ready`；门禁依据显式主链、卫星、边界、分组、同级集合、禁止合并边和可见性预算生成写作约束。每页完成后运行 `page-lint --page <page_id>`；状态分为 `passed`、`passed_with_warnings` 和 `rewrite_required`，后者阻断提交。`page-lint` 复用 `script-audit` 的页面规则，跨页关系和最终全稿格式继续在第 8 步统一确认。
 
-上屏文字的分组与短语化由 Stage 01 完成。数字编号只表达来源支持的流程、阶段、时间、优先级、门控或其他真实顺序；普通并列分类使用无编号业务标题。共享标题、谓词、对象、限定语或结果只在父级表达一次，子项分别承载差异信息，避免为追求短语形式制造同义重复。
+上屏文字的分组与结构化压缩由 Stage 01 完成。内部汇报的内容页可在 Deck Plan 中声明可选 `content_route`：`state`、`diagnosis`、`system`、`action` 或 `source_native`，并以 `background`、`current`、`progress`、`comparison`、`risk`、`boundary`、`coordination`、`next_step` 等侧面细化。它只提供作者化组织提示，不增加页面类型，不替代 `argument_role` 的论证权限，也不替代 `page_logic_contract` 的命题、节点和关系约束。作者按“结论 → 证据 → 解读 → 含义 → 来源”组织页面：含义必须表现为有来源依据的内部影响、关注点、工作要求、协同事项、风险提示或后续安排；来源保留在可追溯字段中，不写成上屏模块。路由不明确时使用 `source_native`，不得仅凭标题关键词猜测。
 
-主责 Skill：`cyberppt-write-single-page`。
+内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
-单页 Skill 不负责整套 Outline、不合并最终全稿、不进入 Stage 02、不生成图片或 PPTX。
+Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成只读 Markdown 页面判断带，连续展示标题、核心判断、页面职责、证据状态和前后页承接。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
 
-### 8. 汇总最终全稿
+页面信息密度不使用固定字数或固定模块数门槛。Stage 01 审计依据页面已声明的来源证据、页面命题、`onscreen_contract` 与 `content_route.meaning_signals` 检查应保留的业务信息；来源本身较薄且没有额外业务职责时可标记 `content_load: light`。需要为后续视觉生产预先锁定的完整判断句、业务容器或表格文字角色，写入可选 `stage02_readiness`。该字段只定义 Stage 02 必须保留的语义预期；实际换行、越界、碰撞和字号仍由 Stage 02 对生成结果核验。
+
+页面可按 `onscreen_contract.expression_mode` 选择 `phrase_led`、`sentence_led` 或默认的 `mixed` 表达方式；完整判断句用于承载模块命题，短语或短分句用于承载具体证据。数字编号只表达来源支持的流程、阶段、时间、优先级、门控或其他真实顺序；普通并列分类使用无编号业务标题。共享标题、谓词、对象、限定语或结果只在父级表达一次，子项分别承载差异信息，避免为追求短语形式制造同义重复。
 
 将已完成页面汇总为最终脚本，执行全稿审计，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约。
 

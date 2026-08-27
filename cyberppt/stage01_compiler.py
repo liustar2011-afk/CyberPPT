@@ -309,6 +309,60 @@ def _record_id(index: int) -> str:
     return f"ST{index:04d}"
 
 
+def _source_structure(project: Path) -> list[dict[str, Any]]:
+    """Project the current stable heading tree without rereading source prose."""
+
+    payload = _read_json(project / SOURCE_HEADING_TREE)
+    headings = sorted(
+        _items(payload.get("headings")),
+        key=lambda item: int(item.get("source_order") or 0),
+    )
+    result: list[dict[str, Any]] = []
+    for heading in headings:
+        level_number = int(heading.get("level") or 1)
+        title = str(heading.get("title") or "").strip()
+        level = "chapter" if level_number == 1 else "section" if level_number == 2 else "subsection"
+        item: dict[str, Any] = {
+            "id": str(heading.get("heading_id") or "").strip(),
+            "title": title,
+            "order": int(heading.get("source_order") or 0),
+            "level": level,
+            "source_refs": [str(heading.get("unit_id") or "").strip()],
+        }
+        parent_id = str(heading.get("parent_heading_id") or "").strip()
+        if parent_id:
+            item["parent_id"] = parent_id
+        result.append(item)
+    return result
+
+
+def _semantic_relations(model: dict[str, Any]) -> list[dict[str, Any]]:
+    """Carry authored section relations into Source Truth as a one-way projection."""
+
+    result: list[dict[str, Any]] = []
+    for relation in _items(model.get("argument_relations")):
+        relation_id = str(relation.get("id") or "").strip()
+        source = str(relation.get("from") or "").strip()
+        target = str(relation.get("to") or "").strip()
+        kind = str(relation.get("relation") or "").strip()
+        refs = _strings(relation.get("evidence_refs"))
+        if not relation_id or not source or not target or not kind or not refs:
+            continue
+        result.append(
+            {
+                "id": relation_id,
+                "from": source,
+                "to": target,
+                "relation": kind,
+                "basis": "explicit" if str(relation.get("claim_origin") or "") == "source_explicit" else "inferred",
+                "confidence": "high",
+                "support": [],
+                "source_refs": refs,
+            }
+        )
+    return result
+
+
 def compile_source_truth(project: Path, output: Path | None = None) -> Path:
     """Project semantic atomic items into the canonical Source Truth artifact."""
 
@@ -534,6 +588,7 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
     semantics["primary_thesis"] = str(thesis.get("statement") or semantics.get("primary_thesis") or "")
     semantics["source_refs"] = conclusion_refs
     coverage = model.get("source_coverage") if isinstance(model.get("source_coverage"), dict) else {}
+    concept_graph = model.get("concept_occurrence_graph") if isinstance(model.get("concept_occurrence_graph"), dict) else {}
     payload = {
         "schema": "cyberppt.source_truth.v1",
         "argument_contract_mode": "strict",
@@ -546,10 +601,18 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
         },
         "document_semantics": semantics,
         "sources": source_summaries,
+        "source_structure": _source_structure(project),
+        "semantic_concepts": _items(concept_graph.get("concepts")),
+        "semantic_relations": _semantic_relations(model),
         "coverage_targets": coverage_targets,
         "records": records,
         "conclusions": [conclusion],
         "pages": [],
+        "open_questions": [
+            str(item.get("description") or item.get("statement") or "").strip()
+            for item in _items(model.get("source_gaps"))
+            if str(item.get("description") or item.get("statement") or "").strip()
+        ],
         "intentional_source_unit_omissions": _items(coverage.get("intentional_omissions")),
     }
     if projection_model:

@@ -24,6 +24,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    print(
+        "[error] source_foundation_outline.py is a deprecated legacy compatibility wrapper. "
+        "Use `python -m cyberppt project-foundation <project>` followed by "
+        "cyberppt-script-workflow for current projects.",
+        file=sys.stderr,
+    )
+    return 2
+
+    # Retained below only for historical source compatibility; current projects
+    # must fail closed before invoking the retired outline planner.
     ns = build_parser().parse_args(argv)
     prepare_script = Path(os.environ.get("PPT_OUTLINE_PREPARE_SCRIPT", str(DEFAULT_PREPARE)))
     if not prepare_script.is_file():

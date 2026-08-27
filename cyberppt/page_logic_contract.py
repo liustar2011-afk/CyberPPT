@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from cyberppt.content_route import render_content_route
+
 
 REQUIRED_MODE = "required"
 _VALID_NODE_ROLES = {"context", "driver", "need", "constraint", "requirement", "consequence", "claim", "boundary", "support"}
@@ -517,9 +519,12 @@ def render_page_logic_contract(page: dict[str, object]) -> list[str]:
     """Return a readable non-audience view for authors and human reviewers."""
 
     if page_logic_mode(page) != REQUIRED_MODE:
-        return ["- 状态：advisory（尚未启用页面逻辑硬门禁）"]
+        return [
+            "- 状态：advisory（尚未启用页面逻辑硬门禁）",
+            render_content_route(page),
+        ]
     contract = _contract(page)
-    lines = ["- 状态：required"]
+    lines = ["- 状态：required", render_content_route(page)]
     proposition = contract.get("page_proposition")
     if isinstance(proposition, dict):
         lines.append(

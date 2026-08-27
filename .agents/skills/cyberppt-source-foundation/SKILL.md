@@ -21,22 +21,21 @@ Before acting, read the repository-wide [CyberPPT workflow overview](../../../do
 
 ## Canonical route
 
-The only formal route is `cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`. `compile-outline-draft` and `cyberppt-author-stage01-outline` are internal compatibility implementations for old-project migration only; they are not a second user-facing route and must not run over approved Source Foundation outputs.
+The only formal route is `cyberppt-source-foundation` → `business-semantic-understanding` → `project-foundation` → `cyberppt-script-workflow` (PLAN/AUTHOR). Legacy Outline/Handoff implementations are internal compatibility code for old-project migration only; they are not a second user-facing route and must not run over current Source Truth outputs.
 
 ## Required sequence
 
 1. From the repository root, run `.venv/bin/python3 scripts/source_foundation_pipeline.py <source> -o <project>/workbench/source-foundation --prepare-semantic --report`.
 2. Use `business-semantic-understanding` to author the four semantic outputs in the prepared semantic directory, then run its validator with `--report`.
 3. Before planning pages, derive one source-faithful communication-goal direction from the semantic outputs and present it as the recommendation. Do not offer multiple options. The user's wording may constrain audience, use, or delivery, but must not be promoted into a source fact, source judgment, or page conclusion without direct source support. After the user edits or confirms the direction, continue.
-4. Run `.venv/bin/python3 scripts/source_foundation_outline.py <semantic-dir> -o <outline-dir> --request-text "<selected communication goal and constraints>"`.
-5. Use `ppt-outline-planning` to author `deck-brief.json` and `page-plan.json`; validate them and render `ppt-outline.md`. Present the outline to the user for the existing human gate.
-6. After outline approval, run `.venv/bin/python3 scripts/source_foundation_handoff.py <foundation-dir> <semantic-dir> <outline-dir> -o <project> --cyberppt-root . --force`.
-7. Read `integration/cyberppt-handoff-report.json`. Proceed only when projection validation is `ok`; runtime audit must be recorded when the local CyberPPT checkout is available.
-8. Continue with the existing `cyberppt-write-single-page` skill. Do not rerun legacy semantic understanding, Source Truth authoring, or mechanical outline compilation over approved foundation outputs unless the user explicitly requests regeneration; if regeneration is requested, invoke this Skill first and treat the compiler as a compatibility projection only.
+4. Run `.venv/bin/python3 -m cyberppt semantic-check <project>` and confirm the semantic report is `ok`.
+5. Run `.venv/bin/python3 -m cyberppt compile-source-truth <project>` and `.venv/bin/python3 -m cyberppt source-truth-audit <project> --input <project>/workbench/stages/01-analysis/source-truth.json`.
+6. Run `.venv/bin/python3 -m cyberppt project-foundation <project>` to mechanically project the validated Source Truth into `script/foundation.json`.
+7. Continue with `cyberppt-script-workflow` for PLAN/AUTHOR. Present the readable deck plan at **脚本规划待确认** before writing the final script.
 
 ## Authority rules
 
-- `normalized-facts.json`, `concept-base.json`, `relation-graph.json`, `argument-chain.json`, `deck-brief.json`, and `page-plan.json` are upstream authorities.
+- `normalized-facts.json`, `concept-base.json`, `relation-graph.json`, and `argument-chain.json` are semantic-stage authorities; `script/foundation.json`, `script/deck-plan.json`, and `script/dist/final-script.md` are the authoritative PLAN/AUTHOR artifacts.
 - Projected `semantic-argument-model.json`, `source-truth.json`, and `outline.json` exist only to satisfy CyberPPT downstream consumers.
 - Handoff code may map IDs and fields but may not invent claims, merge facts, add page evidence, infer responsibilities, or raise maturity/status.
 - CyberPPT page `source_refs` must equal the page's explicitly authorized normalized-fact set after deterministic ID projection.
