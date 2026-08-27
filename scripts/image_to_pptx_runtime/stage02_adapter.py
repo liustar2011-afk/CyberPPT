@@ -20,7 +20,12 @@ from scripts.imagegen_pipeline.production_readiness import build_production_read
 from . import assert_internal_runtime
 from .quick import create_quick_project
 from .editable_page_validation import validate_editable_page
+from .authored_svg_preflight import (
+    SCHEMA as AUTHORED_SVG_PREFLIGHT_SCHEMA,
+    validate_authored_svg_preflight,
+)
 from .native_text_style import (
+    DEFAULT_PROFILE as NATIVE_TEXT_STYLE_PROFILE,
     apply_default_native_text_style,
     write_native_text_style_receipt,
 )
@@ -41,8 +46,6 @@ from .template_assembly import (
 )
 
 
-# The only production route allowed to publish an editable PPTX from a
-# rendered page is the hand-authored SVG Quick reconstruction path below.
 CANONICAL_EDITABLE_PPTX_ROUTE = "stage02-quick-image-to-pptx"
 
 
@@ -65,28 +68,45 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _quick_page_binding(pair: Mapping[str, Any], authored: Path) -> dict[str, str]:
-    """Bind a reusable page checkpoint to its three visible inputs.
+def _json_sha256(value: object) -> str:
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
-    A changed input simply causes local revalidation; it never rejects the
-    build or forces regeneration of an already-audited full image.
+
+def _quick_page_binding(
+    pair: Mapping[str, Any],
+    authored: Path,
+    *,
+    template_contract: Mapping[str, Any],
+    style_lock: Path | None,
+) -> dict[str, str]:
+    """Bind a reusable page checkpoint to all reconstruction authorities.
+
+    A changed binding invalidates only the affected reconstruction page. It
+    never invalidates or redraws an already-audited full image.
     """
 
     full = Path(str((pair.get("full") or {}).get("path") or ""))
     clean = Path(str((pair.get("clean_base") or {}).get("path") or ""))
+    full_audit = (pair.get("full") or {}).get("text_audit") or {}
+    root_qa = full_audit.get("content_root_qa") if isinstance(full_audit, Mapping) else None
     return {
         "authoring_svg_sha256": _sha256(authored),
         "full_image_sha256": _sha256(full),
         "clean_base_sha256": _sha256(clean) if clean.is_file() else "",
+        "clean_base_contract_sha256": _json_sha256(pair.get("clean_base") or {}),
+        "graphic_text_policy_sha256": _json_sha256(pair.get("graphic_text_policy") or {}),
+        "content_root_qa_sha256": _json_sha256(root_qa or {}),
+        "template_contract_sha256": _json_sha256(template_contract.get("rules") or {}),
+        "runtime_style_lock_sha256": _sha256(style_lock) if style_lock is not None and style_lock.is_file() else "",
+        "native_text_style_profile": NATIVE_TEXT_STYLE_PROFILE,
         "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".intra-text-v1",
         "clean_base_policy_schema": CLEAN_BASE_SCHEMA + ".verified-pixel-mask-v13",
+        "authored_svg_preflight_schema": AUTHORED_SVG_PREFLIGHT_SCHEMA,
     }
 
 
-def _current_quick_checkpoint(
-    checkpoint: object,
-    binding: Mapping[str, str],
-) -> bool:
+def _current_quick_checkpoint(checkpoint: object, binding: Mapping[str, str]) -> bool:
     if not isinstance(checkpoint, Mapping):
         return False
     if checkpoint.get("status") not in {
@@ -104,8 +124,6 @@ def _current_quick_checkpoint(
 
 
 def _require_official_orchestration(manifest_path: Path, manifest: Mapping[str, Any], *, assembly_mode: str) -> None:
-    """Reject direct adapter calls that bypass final-script-pages."""
-
     context_path = manifest_path.parent / "build_context.json"
     if not context_path.is_file():
         raise ValueError("Stage 02 adapter requires final-script-pages orchestration evidence (build_context.json)")
@@ -129,9 +147,6 @@ def _script_lines(script: Path, page_number: int) -> list[str]:
     page = parse_page_blocks(script).get(page_number)
     if page is None:
         raise ValueError(f"final script has no page {page_number}")
-    # The template wrapper owns the page title. Keep the Quick body inventory
-    # and editable-text QA scoped to body copy so a valid page does not need a
-    # duplicate title inside the reconstructed 2:1 body SVG.
     return [item for item in page.text.splitlines() if item.strip()]
 
 
@@ -150,7 +165,6 @@ def _require_audited_pairs(manifest: Mapping[str, Any], requested_pages: list[in
 
 
 def _copy_relative_svg_assets(source: Path, target: Path) -> None:
-    """Keep prepared SVG image layers valid inside the internal Quick project."""
     root = ET.fromstring(source.read_text(encoding="utf-8"))
     for node in root.iter():
         if node.tag.rsplit("}", 1)[-1] != "image":
@@ -166,12 +180,7 @@ def _copy_relative_svg_assets(source: Path, target: Path) -> None:
         shutil.copy2(asset, destination)
 
 
-def _validate_body_image(
-    source: Path,
-    page_number: int,
-    *,
-    expected_size: tuple[int, int] | None = None,
-) -> tuple[int, int]:
+def _validate_body_image(source: Path, page_number: int, *, expected_size: tuple[int, int] | None = None) -> tuple[int, int]:
     try:
         with Image.open(source) as image:
             size = image.size
@@ -181,8 +190,7 @@ def _validate_body_image(
         raise ValueError(f"page {page_number} body image must be 2:1; got {size[0]}x{size[1]}")
     if expected_size is not None and size != expected_size:
         raise ValueError(
-            f"page {page_number} body image must match the manifest canvas "
-            f"{expected_size[0]}x{expected_size[1]}; got {size[0]}x{size[1]}"
+            f"page {page_number} body image must match the manifest canvas {expected_size[0]}x{expected_size[1]}; got {size[0]}x{size[1]}"
         )
     return size
 
@@ -202,15 +210,12 @@ def _page_title(script: Path, page_number: int) -> str:
 
 
 def _speaker_notes_by_page(script: Path, page_numbers: list[int]) -> dict[str, str]:
-    """Map final-script speaker notes to the SVG stems used by the exporter."""
-
     document = parse_script_path(script)
     pages = {page.sequence: page for page in document.pages}
     missing = [number for number in page_numbers if number not in pages]
     if missing:
         raise ValueError(
-            "final script is missing requested speaker-note pages: "
-            + ", ".join(str(number) for number in missing)
+            "final script is missing requested speaker-note pages: " + ", ".join(str(number) for number in missing)
         )
     return {
         f"p{number:02d}": pages[number].speaker_notes.strip()
@@ -219,19 +224,25 @@ def _speaker_notes_by_page(script: Path, page_numbers: list[int]) -> dict[str, s
     }
 
 
-def _run_text_qa(export: Path, expected: list[str], *, include_body_text: bool) -> dict[str, Any]:
-    # The wrapper owns native title/footer/page-number text in both routes;
-    # editable mode additionally includes the authored body text.
-    values = expected
+def _run_text_qa(export: Path, expected: list[str]) -> dict[str, Any]:
     report = build_text_content_qa(
         export,
-        values,
+        expected,
         order_sensitive=False,
         allow_fragmented_actual=True,
     )
     if not report["valid"]:
         raise ValueError(f"exported PPTX native text differs from the approved script: {export}")
     return report
+
+
+def _write_page_receipt(path: Path, schema: str, pages: list[dict[str, Any]]) -> Path:
+    path.write_text(
+        json.dumps({"schema": schema, "pages": pages}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return path
 
 
 def run_stage02_reconstruction(
@@ -242,16 +253,6 @@ def run_stage02_reconstruction(
     requested_pages: list[int],
     assembly_mode: str = "editable",
 ) -> dict[str, Any]:
-    """Run the Stage 02 2:1 body-to-template assembly routes.
-
-    ``image`` publishes the original body image inside the template正文区;
-    ``editable`` publishes the Quick authoring SVG inside the same slot;
-    ``both`` publishes both artifacts from one audited input set.
-    """
-
-    # The Quick runtime is vendored into CyberPPT.  Fail before consuming any
-    # project artifact if a copied module regresses to an external ppt-master
-    # checkout dependency.
     assert_internal_runtime()
     if assembly_mode not in {"image", "editable", "both"}:
         raise ValueError("assembly_mode must be image, editable, or both")
@@ -287,11 +288,14 @@ def run_stage02_reconstruction(
     quality: list[dict[str, Any]] = []
     native_text_style: list[dict[str, Any]] = []
     native_text_geometry: list[dict[str, Any]] = []
+    authored_svg_preflight: list[dict[str, Any]] = []
     graphic_text_policy: list[dict[str, Any]] = []
     clean_base_policy: list[dict[str, Any]] = []
     editable_page_qa: list[dict[str, Any]] = []
     checker = SVGQualityChecker(quick_generate=True)
     contract = load_template_contract()
+    style_lock_raw = str(manifest.get("style_lock") or "").strip()
+    style_lock = Path(style_lock_raw).expanduser().resolve() if style_lock_raw else None
     title_by_page = {number: _page_title(script, number) for number in requested_pages}
     manifest_pairs = {
         int(pair["page_number"]): pair
@@ -308,29 +312,37 @@ def run_stage02_reconstruction(
             try:
                 if not authored.is_file():
                     raise ValueError("requires a hand-authored SVG from the image-to-PPTX runtime")
-                binding = _quick_page_binding(pair, authored)
+                preflight_report = validate_authored_svg_preflight(authored, page_number=page_number)
+                if preflight_report.get("valid") is not True:
+                    raise ValueError(
+                        "failed authored-SVG preflight: "
+                        + "; ".join(str(item.get("message") or item.get("code")) for item in preflight_report.get("errors") or [])
+                    )
+                binding = _quick_page_binding(
+                    pair,
+                    authored,
+                    template_contract=contract,
+                    style_lock=style_lock,
+                )
                 checkpoint = pair.get("quick_page_checkpoint")
                 if _current_quick_checkpoint(checkpoint, binding):
                     assert isinstance(checkpoint, Mapping)
                     if not quick_visual_review_passes(checkpoint):
                         pending_checkpoint = dict(checkpoint)
                         pending_checkpoint["status"] = (
-                            "visual_review_failed"
-                            if isinstance(checkpoint.get("visual_review"), Mapping)
-                            else "rendered_pending_visual_review"
+                            "visual_review_failed" if isinstance(checkpoint.get("visual_review"), Mapping) else "rendered_pending_visual_review"
                         )
                         pending_checkpoint["resume"] = "awaiting_visual_review"
                         manifest_pair["quick_page_checkpoint"] = pending_checkpoint
                         _write_json(manifest_file, manifest)
-                        page_failures.append(
-                            f"p{page_number:02d}: rendered preview awaits a passed visual review"
-                        )
+                        page_failures.append(f"p{page_number:02d}: rendered preview awaits a passed visual review")
                         continue
                     target = Path(str(checkpoint["target_svg"]))
                     page_validation = dict(checkpoint["editable_page_qa"])
                     geometry_report = dict(checkpoint["native_text_geometry"])
                     style_report = dict(checkpoint["native_text_style"])
                     quality_report = dict(checkpoint["svg_quality"])
+                    preflight_report = dict(checkpoint.get("authored_svg_preflight") or preflight_report)
                     checkpoint_payload = dict(checkpoint)
                     checkpoint_payload["resume"] = "reused"
                 else:
@@ -353,8 +365,7 @@ def run_stage02_reconstruction(
                     )
                     if geometry_report.get("valid") is not True:
                         raise ValueError(
-                            "failed native-text geometry validation: "
-                            + "; ".join(geometry_report.get("warnings") or [])
+                            "failed native-text geometry validation: " + "; ".join(geometry_report.get("warnings") or [])
                         )
                     style_report = apply_default_native_text_style(target)
                     quality_report = checker.check_file(str(target))
@@ -396,6 +407,7 @@ def run_stage02_reconstruction(
                         "preview_pptx": str(preview_pptx),
                         "preview_png": str(preview_png),
                         "preview_geometry": preview_geometry,
+                        "authored_svg_preflight": preflight_report,
                         "editable_page_qa": page_validation,
                         "native_text_geometry": geometry_report,
                         "native_text_style": style_report,
@@ -404,11 +416,10 @@ def run_stage02_reconstruction(
                     }
                     manifest_pair["quick_page_checkpoint"] = checkpoint_payload
                     _write_json(manifest_file, manifest)
-                    page_failures.append(
-                        f"p{page_number:02d}: rendered preview awaits visual review: {preview_png}"
-                    )
+                    page_failures.append(f"p{page_number:02d}: rendered preview awaits visual review: {preview_png}")
                     continue
 
+                authored_svg_preflight.append(preflight_report)
                 editable_page_qa.append(page_validation)
                 clean_base_policy.append(page_validation["clean_base"])
                 graphic_text_policy.append(page_validation["graphic_text_policy"])
@@ -428,8 +439,7 @@ def run_stage02_reconstruction(
                 page_failures.append(f"p{page_number:02d}: {exc}")
         if page_failures:
             raise ValueError(
-                "Stage 02 per-page Quick validation failed; passed pages were checkpointed: "
-                + "; ".join(page_failures)
+                "Stage 02 per-page Quick validation failed; passed pages were checkpointed: " + "; ".join(page_failures)
             )
 
     output_root = output / "template_assembly"
@@ -457,14 +467,20 @@ def run_stage02_reconstruction(
                 },
                 ensure_ascii=False,
                 indent=2,
-            )
-            + "\n",
+            ) + "\n",
             encoding="utf-8",
             newline="\n",
         )
         review_path = output / "analysis" / "image_review.json"
         review_path.parent.mkdir(parents=True, exist_ok=True)
-        review = {"schema": "cyberppt.image_to_pptx.visual_review.v1", "mode": "image", "issues": [], "requires_rebuild": False, "valid": True, "path": str(review_path)}
+        review = {
+            "schema": "cyberppt.image_to_pptx.visual_review.v1",
+            "mode": "image",
+            "issues": [],
+            "requires_rebuild": False,
+            "valid": True,
+            "path": str(review_path),
+        }
         review_path.write_text(json.dumps(review, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     speaker_notes = _speaker_notes_by_page(script, requested_pages)
     script_document = parse_script_path(script)
@@ -545,11 +561,21 @@ def run_stage02_reconstruction(
                 continue
             pair = pair_by_page[number]
             wrapper = output_root / "image" / "svg_output" / f"p{number:02d}.svg"
-            image_svgs.append(assemble_template_svg(source=Path(str(pair["full"]["path"])), output=wrapper, title=title_by_page[number], page_number=number, mode="image", contract=contract, body_image=Path(str(pair["full"]["path"]))))
+            image_svgs.append(
+                assemble_template_svg(
+                    source=Path(str(pair["full"]["path"])),
+                    output=wrapper,
+                    title=title_by_page[number],
+                    page_number=number,
+                    mode="image",
+                    contract=contract,
+                    body_image=Path(str(pair["full"]["path"])),
+                )
+            )
         image_export = output / "exports" / "template_image.pptx"
         assemble_template_pptx(image_svgs, image_export, notes=speaker_notes)
         exports["image"] = image_export
-        text_qa_by_mode["image"] = _run_text_qa(image_export, [*chrome_expected, *structural_expected], include_body_text=False)
+        text_qa_by_mode["image"] = _run_text_qa(image_export, [*chrome_expected, *structural_expected])
 
     if needs_editable:
         editable_svgs: list[Path] = []
@@ -560,11 +586,23 @@ def run_stage02_reconstruction(
                 editable_svgs.append(structural_svg(number, "editable"))
                 continue
             wrapper = output_root / "editable" / "svg_output" / f"p{number:02d}.svg"
-            editable_svgs.append(assemble_template_svg(source=quick.svg_path(number), output=wrapper, title=title_by_page[number], page_number=number, mode="editable", contract=contract))
+            editable_svgs.append(
+                assemble_template_svg(
+                    source=quick.svg_path(number),
+                    output=wrapper,
+                    title=title_by_page[number],
+                    page_number=number,
+                    mode="editable",
+                    contract=contract,
+                )
+            )
         editable_export = output / "exports" / "editable_svg.pptx"
         assemble_template_pptx(editable_svgs, editable_export, notes=speaker_notes)
         exports["editable"] = editable_export
-        text_qa_by_mode["editable"] = _run_text_qa(editable_export, [*expected, *chrome_expected, *structural_expected], include_body_text=True)
+        text_qa_by_mode["editable"] = _run_text_qa(
+            editable_export,
+            [*expected, *chrome_expected, *structural_expected],
+        )
 
     primary_mode = "editable" if "editable" in exports else "image"
     export = exports[primary_mode]
@@ -572,25 +610,84 @@ def run_stage02_reconstruction(
     analysis.mkdir(parents=True, exist_ok=True)
     text_path = analysis / "text_content_qa.json"
     text_path.write_text(json.dumps(text_qa_by_mode, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    editable_page_path = analysis / "editable_page_qa.json"
-    editable_page_path.write_text(
-        json.dumps({"schema": "cyberppt.stage02.editable_page_qa.v1", "pages": editable_page_qa}, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-        newline="\n",
+    editable_page_path = _write_page_receipt(
+        analysis / "editable_page_qa.json",
+        "cyberppt.stage02.editable_page_qa.v1",
+        editable_page_qa,
     )
-    native_text_style_path = write_native_text_style_receipt(
-        native_text_style,
-        analysis / "native_text_style_qa.json",
+    clean_base_policy_path = _write_page_receipt(
+        analysis / "clean_base_policy_qa.json",
+        "cyberppt.stage02.clean_base_policy_qa.v1",
+        clean_base_policy,
     )
-    native_text_geometry_path = write_native_text_geometry_receipt(
-        native_text_geometry,
-        analysis / "native_text_geometry_qa.json",
+    graphic_text_policy_path = _write_page_receipt(
+        analysis / "graphic_text_policy_qa.json",
+        "cyberppt.stage02.graphic_text_policy_qa.v1",
+        graphic_text_policy,
     )
+    authored_svg_preflight_path = _write_page_receipt(
+        analysis / "authored_svg_preflight_qa.json",
+        "cyberppt.stage02.authored_svg_preflight_qa.v1",
+        authored_svg_preflight,
+    )
+    native_text_style_path = write_native_text_style_receipt(native_text_style, analysis / "native_text_style_qa.json")
+    native_text_geometry_path = write_native_text_geometry_receipt(native_text_geometry, analysis / "native_text_geometry_qa.json")
     runtime_root = quick.root if quick is not None else output_root / "image"
-    artifacts = {"reconstruction_inventory": str(runtime_root / "analysis" / "reconstruction_inventory.json"), "svg_output": str(runtime_root / "svg_output"), "reconstruction_quality": str(analysis), "native_text_style_qa": str(native_text_style_path), "native_text_geometry_qa": str(native_text_geometry_path), "text_content_qa": str(text_path), "editable_page_qa": str(editable_page_path), "clean_base_policy_qa": str(editable_page_path), "graphic_text_policy_qa": str(editable_page_path), "render_compare": str(review["path"]), "exported_pptx": str(export)}
-    reports = {"reconstruction_inventory": {"valid": True}, "reconstruction_quality": {"valid": True, "pages": quality}, "svg_output": {"valid": True}, "native_text_style": {"valid": True, "pages": native_text_style}, "native_text_geometry": {"valid": True, "qa_only": True, "pages": native_text_geometry, "review_required": any(report.get("review_required") for report in native_text_geometry)}, "text_content_qa": text_qa_by_mode, "editable_page": {"valid": True, "pages": editable_page_qa}, "clean_base_policy": {"valid": True, "pages": clean_base_policy}, "graphic_text_policy": {"valid": True, "pages": graphic_text_policy}, "render_compare": {"valid": review["valid"], "review": review}, "exported_pptx": {"valid": True}, "exported_pptx_by_mode": {mode: {"valid": True, "path": str(path)} for mode, path in exports.items()}}
-    readiness = build_production_readiness(stage="02-production-build", artifacts=artifacts, reports=reports, required_tools=tuple(artifacts))
-    result = {"schema": "cyberppt.image_to_pptx.stage02.v1", "status": readiness["status"], "assembly_mode": assembly_mode, "runtime_project": str(runtime_root), "svg_roster": [str(svg) for svg in svgs], "svg_quality": quality, "visual_review": review, "artifacts": artifacts, "artifacts_by_mode": {mode: str(path) for mode, path in exports.items()}, "reports": reports, "text_content_qa": text_qa_by_mode, "release_gate": {"valid": True, "manual_adjustments": "local_only"}, "delivery_readiness": readiness}
+    artifacts = {
+        "reconstruction_inventory": str(runtime_root / "analysis" / "reconstruction_inventory.json"),
+        "svg_output": str(runtime_root / "svg_output"),
+        "reconstruction_quality": str(analysis),
+        "authored_svg_preflight_qa": str(authored_svg_preflight_path),
+        "native_text_style_qa": str(native_text_style_path),
+        "native_text_geometry_qa": str(native_text_geometry_path),
+        "text_content_qa": str(text_path),
+        "editable_page_qa": str(editable_page_path),
+        "clean_base_policy_qa": str(clean_base_policy_path),
+        "graphic_text_policy_qa": str(graphic_text_policy_path),
+        "render_compare": str(review["path"]),
+        "exported_pptx": str(export),
+    }
+    reports = {
+        "reconstruction_inventory": {"valid": True},
+        "reconstruction_quality": {"valid": True, "pages": quality},
+        "svg_output": {"valid": True},
+        "authored_svg_preflight": {"valid": all(item.get("valid") is True for item in authored_svg_preflight), "pages": authored_svg_preflight},
+        "native_text_style": {"valid": True, "pages": native_text_style},
+        "native_text_geometry": {
+            "valid": True,
+            "qa_only": True,
+            "pages": native_text_geometry,
+            "review_required": any(report.get("review_required") for report in native_text_geometry),
+        },
+        "text_content_qa": text_qa_by_mode,
+        "editable_page": {"valid": True, "pages": editable_page_qa},
+        "clean_base_policy": {"valid": True, "pages": clean_base_policy},
+        "graphic_text_policy": {"valid": True, "pages": graphic_text_policy},
+        "render_compare": {"valid": review["valid"], "review": review},
+        "exported_pptx": {"valid": True},
+        "exported_pptx_by_mode": {mode: {"valid": True, "path": str(path)} for mode, path in exports.items()},
+    }
+    readiness = build_production_readiness(
+        stage="02-production-build",
+        artifacts=artifacts,
+        reports=reports,
+        required_tools=tuple(artifacts),
+    )
+    result = {
+        "schema": "cyberppt.image_to_pptx.stage02.v1",
+        "status": readiness["status"],
+        "assembly_mode": assembly_mode,
+        "runtime_project": str(runtime_root),
+        "svg_roster": [str(svg) for svg in svgs],
+        "svg_quality": quality,
+        "visual_review": review,
+        "artifacts": artifacts,
+        "artifacts_by_mode": {mode: str(path) for mode, path in exports.items()},
+        "reports": reports,
+        "text_content_qa": text_qa_by_mode,
+        "release_gate": {"valid": True, "manual_adjustments": "local_only"},
+        "delivery_readiness": readiness,
+    }
     result_path = analysis / "image-to-pptx-result.json"
     result_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     result["artifacts"]["delivery_readiness"] = str(result_path)

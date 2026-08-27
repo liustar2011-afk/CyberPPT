@@ -13,6 +13,7 @@ def _page(**overrides: object) -> dict[str, object]:
         "message": "共性规则与场景供给需要协同完善。",
         "logic": "差距归纳",
         "content": ["共性规则", "场景供给"],
+        "primary_relation": {"type": "parallel", "scope": ["共性规则", "场景供给"], "authority": "hard"},
     }
     page.update(overrides)
     return page

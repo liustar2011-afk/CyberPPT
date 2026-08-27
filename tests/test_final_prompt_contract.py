@@ -140,14 +140,14 @@ class ValidateFinalPromptTests(unittest.TestCase):
     def test_style09_requires_exactly_one_terminal_lock(self) -> None:
         ir = _ir()
         prompt = render_final_prompt(ir)
-        with self.assertRaisesRegex(PromptContractError, "Style09/10 final prompt requires one terminal"):
+        with self.assertRaisesRegex(PromptContractError, "live runtime style prompt requires one terminal"):
             validate_final_prompt(prompt, ir, style_id=9)
 
     def test_non_style09_rejects_style09_terminal_marker(self) -> None:
         ir = _ir()
         prompt = render_final_prompt(ir)
-        corrupted = prompt.rstrip() + "\n\n【风格09最终执行锁｜最高优先级】\nsomething\n"
-        with self.assertRaisesRegex(PromptContractError, "non-Style09"):
+        corrupted = prompt.rstrip() + "\n\n【最终视觉执行约束｜最高优先级】\nsomething\n"
+        with self.assertRaisesRegex(PromptContractError, "non-live style prompt contains a live terminal"):
             validate_final_prompt(corrupted, ir)
 
 

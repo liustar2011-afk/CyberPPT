@@ -26,6 +26,7 @@ def _page() -> dict:
         "message": "标准覆盖共同语言与资源治理",
         "logic": "并列",
         "content": ["术语", "质量"],
+        "primary_relation": {"type": "parallel", "scope": ["术语", "质量"], "authority": "hard"},
         "source_refs": ["ST1", "ST2", "ST3"],
         "source_consumption": {
             "mode": "strict",

@@ -75,8 +75,8 @@ def test_style_ten_keeps_page_composition_guidance_and_full_contract() -> None:
     assert "主关系：多路能力汇聚为一个服务中枢。" in prompt
     assert "Keep all locked Chinese text complete, unchanged and readable" in prompt
     assert "one continuous" in prompt
-    assert prompt.count("【风格09最终执行锁｜最高优先级】") == 1
-    terminal_lock = prompt.split("【风格09最终执行锁｜最高优先级】", 1)[1]
+    assert prompt.count("【最终视觉执行约束｜最高优先级】") == 1
+    terminal_lock = prompt.split("【最终视觉执行约束｜最高优先级】", 1)[1]
     assert terminal_lock.count("Keep connection lines absent by default") == 1
     assert "purposeful connectors" not in prompt
 

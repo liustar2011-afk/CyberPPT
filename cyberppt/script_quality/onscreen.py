@@ -1681,9 +1681,20 @@ def _onscreen_module_dimension_consistency_issues(
     else:
         comparison_sets.append(set(module_labels))
 
+    module_order = {
+        title: index for index, title in enumerate(module_labels)
+    }
     for titles in comparison_sets:
         by_shape: dict[int, list[tuple[str, tuple[str, ...]]]] = {}
-        for title in titles:
+        # comparison_sets are intentionally sets because membership, not order,
+        # defines a peer group. Evidence, however, is user-visible/debug output
+        # and must be deterministic. Preserve the authored on-screen module
+        # order, with a lexical fallback for contract-only titles.
+        ordered_titles = sorted(
+            titles,
+            key=lambda title: (module_order.get(title, 10**9), title),
+        )
+        for title in ordered_titles:
             labels = module_labels.get(title)
             if labels:
                 by_shape.setdefault(len(labels), []).append((title, labels))

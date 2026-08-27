@@ -82,7 +82,7 @@ class RenderFinalPromptTests(unittest.TestCase):
             prompt = render_final_prompt(ir, style_id=9, style_lock=lock)
             terminal = _style09_terminal_execution_lock(lock)
 
-        self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
+        self.assertEqual(1, prompt.count("【最终视觉执行约束｜最高优先级】"))
         self.assertEqual(1, prompt.count(terminal))
         self.assertTrue(prompt.rstrip().endswith(terminal))
         self.assertNotIn(legacy_terminal, prompt)
@@ -131,7 +131,7 @@ class RenderFinalPromptTests(unittest.TestCase):
 
     def test_style09_current_chinese_terminal_lock_is_reasserted(self) -> None:
         legacy_terminal = "formal enterprise-report typography."
-        style_contract = f"STYLE09 body rules.\n\n【风格09最终执行锁｜最高优先级】\n\n{legacy_terminal}"
+        style_contract = f"STYLE09 body rules.\n\n【最终视觉执行约束｜最高优先级】\n\n{legacy_terminal}"
         with tempfile.TemporaryDirectory() as directory:
             lock = Path(directory) / "style09.json"
             lock.write_text(
@@ -143,7 +143,7 @@ class RenderFinalPromptTests(unittest.TestCase):
             prompt = render_final_prompt(_sample_ir(runtime_lock=RuntimeLockIR(style_contract=style_contract)), style_id=9, style_lock=lock)
             terminal = _style09_terminal_execution_lock(lock)
 
-        self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
+        self.assertEqual(1, prompt.count("【最终视觉执行约束｜最高优先级】"))
         self.assertEqual(1, prompt.count(terminal))
         self.assertTrue(prompt.rstrip().endswith(terminal))
         self.assertNotIn(legacy_terminal, prompt)

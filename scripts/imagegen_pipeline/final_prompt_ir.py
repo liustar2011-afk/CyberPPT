@@ -1,28 +1,19 @@
 """Structured intermediate representation for the final ImageGen prompt.
 
 The IR is the single normalized shape between the audited ``PageArtifactSpec``
-and the final prompt text. It carries only what the image generator needs to
-see; internal Stage 02 bookkeeping (relationship qualifiers, priority codes,
-connector booleans, raw backend enum tokens) never reaches this type.
+and the final prompt text. It carries model-facing semantic content plus a
+small amount of debug-only binding metadata that the renderer never exposes.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-# Technical safety ceiling on prompt size/complexity -- not a business rule
-# about how many modules a page may have. Semantic groups now mirror Stage
-# 02's authoritative root-module count (see content_integrity_contract.py);
-# pages with more root modules than this should be rare, and
-# MAX_PROMPT_CHARACTERS in final_prompt_contract.py remains the primary
-# backstop against runaway prompt size.
 MAX_SEMANTIC_GROUPS = 10
-
-# Bump when FinalPromptIR's field shape or normalization rules change in a
-# way that would make an old debug receipt misleading about how a prompt
-# was built.
+# Text binding is an additive optional field; keep the existing version token so
+# persisted approvals/debug receipts do not become stale solely because of the
+# internal extension.
 FINAL_PROMPT_IR_VERSION = "v2"
-
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 
@@ -37,8 +28,7 @@ def _dangling_phrase(text: str) -> bool:
 
 @dataclass(frozen=True)
 class SemanticGroupIR:
-    """One deterministic bucket of evidence, grouped by content root module
-    (falling back to ``EvidenceSpec.kind`` when root structure is unavailable)."""
+    """One deterministic bucket of evidence grouped by audited content root."""
 
     id: str
     role: str
@@ -48,8 +38,7 @@ class SemanticGroupIR:
     def __post_init__(self) -> None:
         if self.emphasis not in {"primary", "secondary"}:
             raise PromptContractError(
-                f"semantic group {self.id!r} emphasis must be primary or secondary, "
-                f"got {self.emphasis!r}"
+                f"semantic group {self.id!r} emphasis must be primary or secondary, got {self.emphasis!r}"
             )
         if not self.id.strip():
             raise PromptContractError("semantic group requires a non-empty id")
@@ -58,9 +47,32 @@ class SemanticGroupIR:
 
 
 @dataclass(frozen=True)
-class CompositionIR:
-    """Composition skeleton and per-region visual responsibility."""
+class TextBindingIR:
+    """Text ownership for one semantic group.
 
+    ``group_id`` and ``text_ids`` are debug-only keys. The renderer uses group
+    order/role and ``exact_text`` but never emits backend identifiers.
+    """
+
+    group_id: str
+    role: str
+    hierarchy_level: int
+    exact_text: tuple[str, ...]
+    text_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.group_id.strip():
+            raise PromptContractError("text binding requires group_id")
+        if not self.exact_text:
+            raise PromptContractError(f"text binding {self.group_id!r} requires exact text")
+        if self.hierarchy_level <= 0:
+            raise PromptContractError("text binding hierarchy_level must be positive")
+        if self.text_ids and len(self.text_ids) != len(self.exact_text):
+            raise PromptContractError("text binding text_ids must align one-to-one with exact_text")
+
+
+@dataclass(frozen=True)
+class CompositionIR:
     spatial_organization: str
     primary_focus: str
     visual_responsibility: tuple[str, ...]
@@ -74,8 +86,6 @@ class CompositionIR:
 
 @dataclass(frozen=True)
 class RuntimeLockIR:
-    """Style runtime contract plus an optional terminal enforcement lock."""
-
     style_contract: str
     terminal_lock: str = ""
 
@@ -86,8 +96,6 @@ class RuntimeLockIR:
 
 @dataclass(frozen=True)
 class FinalPromptIR:
-    """The complete normalized authority for one final ImageGen prompt."""
-
     deliverable: str
     page_judgment: str
     dominant_relationship: str
@@ -100,12 +108,11 @@ class FinalPromptIR:
     page_mission: str = ""
     semantic_context: str = ""
     prompt_mode: str = "semantic_brief"
+    text_bindings: tuple[TextBindingIR, ...] = ()
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
-            raise PromptContractError(
-                f"unsupported final prompt mode: {self.prompt_mode!r}"
-            )
+            raise PromptContractError(f"unsupported final prompt mode: {self.prompt_mode!r}")
         if not self.deliverable.strip():
             raise PromptContractError("final prompt IR requires a deliverable")
         if not self.page_judgment.strip():
@@ -133,6 +140,24 @@ class FinalPromptIR:
             raise PromptContractError("final prompt IR requires visible text")
         if len(self.visible_text) != len(set(self.visible_text)):
             raise PromptContractError("visible text entries must be unique")
+        if self.text_bindings:
+            bound = tuple(text for binding in self.text_bindings for text in binding.exact_text)
+            if bound != self.visible_text:
+                raise PromptContractError(
+                    "text bindings must cover exact visible text once and in authoritative order"
+                )
+            group_ids = {group.id for group in self.semantic_groups}
+            unknown = [binding.group_id for binding in self.text_bindings if binding.group_id not in group_ids]
+            if unknown:
+                raise PromptContractError(
+                    f"text bindings reference unknown semantic groups: {', '.join(unknown)}"
+                )
+            binding_groups = [binding.group_id for binding in self.text_bindings]
+            if len(binding_groups) != len(set(binding_groups)):
+                raise PromptContractError("text bindings may define each semantic group at most once")
+            text_ids = tuple(text_id for binding in self.text_bindings for text_id in binding.text_ids)
+            if text_ids and len(text_ids) != len(set(text_ids)):
+                raise PromptContractError("text binding text_ids must be globally unique")
 
 
 __all__ = [
@@ -143,4 +168,5 @@ __all__ = [
     "PromptContractError",
     "RuntimeLockIR",
     "SemanticGroupIR",
+    "TextBindingIR",
 ]

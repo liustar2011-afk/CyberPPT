@@ -12,10 +12,9 @@ from typing import Any
 
 STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
 VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
-# Style 09 is authored in this document.  A project lock may record which
-# style was selected, but it must never become the authority for the contract
-# sent to ImageGen.
 VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visual-system.md"
+LIVE_CONTRACT_STYLE_IDS = frozenset({9, 10})
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -46,6 +45,13 @@ def default_style_choices(path: Path = STYLE_LIBRARY_PATH) -> str:
     return "\n".join(choices)
 
 
+def _resolved_style(style: dict[str, Any]) -> dict[str, Any]:
+    resolved = dict(style)
+    if int(resolved.get("id") or -1) in LIVE_CONTRACT_STYLE_IDS:
+        _apply_live_extension_contract(resolved)
+    return resolved
+
+
 def resolve_default_style(
     *,
     style_id: int | None = None,
@@ -63,20 +69,14 @@ def resolve_default_style(
     normalized_name = (style_name or "").strip()
     for style in library["styles"]:
         if style_id is not None and int(style["id"]) == int(style_id):
-            resolved = dict(style)
-            if int(resolved["id"]) == 9:
-                _apply_live_extension_contract(resolved)
-            return resolved
+            return _resolved_style(style)
         aliases = {
             str(alias).strip()
             for alias in style.get("aliases", [])
             if str(alias).strip()
         }
         if normalized_name and normalized_name in {str(style["name"]), str(style["slug"]), *aliases}:
-            resolved = dict(style)
-            if int(resolved["id"]) == 9:
-                _apply_live_extension_contract(resolved)
-            return resolved
+            return _resolved_style(style)
     raise ValueError(
         f"unknown CyberPPT style selection: id={style_id!r}, name={style_name!r}. "
         "Available styles:\n" + default_style_choices(path)
@@ -109,7 +109,7 @@ def write_project_style_lock(
             "samples_are_required_for_user_confirmation": True,
         },
     }
-    if int(style.get("id", -1)) in (9, 10) and style.get("sample"):
+    if int(style.get("id", -1)) in LIVE_CONTRACT_STYLE_IDS and style.get("sample"):
         repository_root = path.resolve().parents[3]
         reference_path = (repository_root / str(style["sample"])).resolve()
         if reference_path.is_file():
@@ -123,8 +123,8 @@ def write_project_style_lock(
     return lock_path
 
 
-def _strip_style09_registry_meta(section: str) -> str:
-    """Keep Style 09/10 visual rules; drop heading and registry/routing meta."""
+def _strip_live_contract_registry_meta(section: str) -> str:
+    """Keep model-usable visual rules; drop registry/routing metadata."""
 
     kept: list[str] = []
     for raw in section.splitlines():
@@ -140,7 +140,7 @@ def _strip_style09_registry_meta(section: str) -> str:
             or "可通过 ID" in line
             or "默认8种风格仍保持" in line
             or "slug `" in line
-            or "slug " in line and "ivory_deep_blue" in line
+            or ("slug " in line and "ivory_deep_blue" in line)
         ):
             continue
         kept.append(line)
@@ -148,7 +148,6 @@ def _strip_style09_registry_meta(section: str) -> str:
         kept.pop(0)
     while kept and kept[-1] == "":
         kept.pop()
-    # Collapse runs of blank lines to a single blank.
     compact: list[str] = []
     for line in kept:
         if line == "" and compact and compact[-1] == "":
@@ -157,11 +156,17 @@ def _strip_style09_registry_meta(section: str) -> str:
     return "\n".join(compact).strip()
 
 
-def _load_live_extension_contract(style_id: int) -> str:
-    """Load Style 09's contract from its canonical human-authored source."""
+def _strip_style09_registry_meta(section: str) -> str:
+    """Compatibility wrapper for callers/tests using the previous private name."""
 
-    if style_id != 9:
-        raise ValueError(f"live extension contract is only defined for style 9: {style_id}")
+    return _strip_live_contract_registry_meta(section)
+
+
+def _load_live_extension_contract(style_id: int) -> str:
+    """Load a live extension contract from the canonical visual-system source."""
+
+    if style_id not in LIVE_CONTRACT_STYLE_IDS:
+        raise ValueError(f"live extension contract is not defined for style {style_id}: {style_id}")
     if not VISUAL_SYSTEM_PATH.is_file():
         raise FileNotFoundError(
             f"Style {style_id:02d} source file is missing: {VISUAL_SYSTEM_PATH}"
@@ -176,7 +181,7 @@ def _load_live_extension_contract(style_id: int) -> str:
     tail_start = start + len(marker)
     next_heading = re.search(r"(?m)^[ \t]{0,3}##[ \t]+", text[tail_start:])
     end = tail_start + next_heading.start() if next_heading else len(text)
-    contract = _strip_style09_registry_meta(text[start:end].strip())
+    contract = _strip_live_contract_registry_meta(text[start:end].strip())
     if not contract:
         raise ValueError(
             f"Style {style_id:02d} section is empty in canonical source: {VISUAL_SYSTEM_PATH}"
@@ -185,7 +190,7 @@ def _load_live_extension_contract(style_id: int) -> str:
 
 
 def _apply_live_extension_contract(style: dict[str, Any]) -> None:
-    """Attach provenance and the live contract without trusting lock content."""
+    """Attach provenance and live contract without trusting lock snapshots."""
 
     contract = _load_live_extension_contract(int(style["id"]))
     style["prompt_contract"] = contract
@@ -197,12 +202,11 @@ def load_style_lock(path: Path) -> dict[str, Any]:
     payload = _read_json(path)
     style = payload.get("style")
     style_id = int(style.get("id", -1)) if isinstance(style, dict) else -1
-    if not isinstance(style, dict) or style_id != 9:
+    if not isinstance(style, dict) or style_id not in LIVE_CONTRACT_STYLE_IDS:
         return payload
 
-    # The lock only records selection metadata.  Do not consult either its
-    # historical prompt snapshot or a caller-controlled source path: both can
-    # silently drift away from references/visual-system.md.
+    # The lock records selection metadata. Refresh model-facing contract text
+    # from references/visual-system.md so Style 09 and Style 10 cannot drift.
     refreshed = dict(payload)
     refreshed_style = dict(style)
     _apply_live_extension_contract(refreshed_style)

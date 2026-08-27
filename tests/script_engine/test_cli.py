@@ -175,8 +175,8 @@ def test_cli_status_supports_repository_source_and_script_layout(tmp_path, capsy
     assert exit_code == 0
     assert "脚本规划待确认" in out["stage"]
     assert out["sources"] == ["brief.docx"]
-    assert out["foundation"]["path"].endswith("script\\foundation.json")
-    assert out["deck_plan"]["path"].endswith("script\\deck-plan.json")
+    assert Path(out["foundation"]["path"]).parts[-2:] == ("script", "foundation.json")
+    assert Path(out["deck_plan"]["path"]).parts[-2:] == ("script", "deck-plan.json")
 
 
 def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, capsys) -> None:

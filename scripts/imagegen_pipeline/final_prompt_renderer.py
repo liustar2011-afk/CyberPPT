@@ -1,10 +1,4 @@
-"""The single renderer from ``FinalPromptIR`` to the final ImageGen prompt text.
-
-This module owns the fixed seven-section layout. It reads only IR fields —
-never the original Markdown, Stage 02 JSON, or any regex-based text
-splicing — so there is exactly one way a production prompt gets its final
-shape.
-"""
+"""The single renderer from ``FinalPromptIR`` to the final ImageGen prompt text."""
 
 from __future__ import annotations
 
@@ -14,6 +8,10 @@ from typing import Any
 
 from scripts.imagegen_pipeline.final_prompt_contract import validate_final_prompt
 from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR
+from scripts.imagegen_pipeline.runtime_style_contract import (
+    enforce_terminal_execution_lock,
+    load_runtime_style_contract,
+)
 
 SECTION_HEADINGS = (
     "[1. Deliverable]",
@@ -28,8 +26,23 @@ SECTION_HEADINGS = (
 HARD_CONSTRAINTS_HEADING = "[Hard constraints]"
 
 
-def _group_line(group: Any) -> str:
-    return f"- [{group.role} / {group.emphasis}] {group.summary}"
+def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    binding_by_group = {binding.group_id: binding for binding in ir.text_bindings}
+    lines: list[str] = []
+    for index, group in enumerate(ir.semantic_groups, start=1):
+        label = chr(64 + index) if index <= 26 else str(index)
+        lines.append(f"Semantic group {label}:")
+        lines.append(
+            f"- semantic responsibility: [{group.role} / {group.emphasis}] {group.summary}"
+        )
+        binding = binding_by_group.get(group.id)
+        if binding is not None:
+            lines.append("- exact visible text assigned to this group:")
+            lines.extend(f'  - "{text}"' for text in binding.exact_text)
+            lines.append(
+                f"- hierarchy: level {binding.hierarchy_level}; keep this group's text together in one coherent visual region."
+            )
+    return tuple(lines)
 
 
 def render_final_prompt(
@@ -40,18 +53,19 @@ def render_final_prompt(
 ) -> str:
     """Render the single production prompt in the required seven-part order."""
 
+    runtime = None
     runtime_style_contract = ir.runtime_lock.style_contract
-    if style_id in (9, 10) and style_lock is not None:
-        # Read the live human-authored source through the style-lock loader;
-        # this refreshes Style 09 from references/visual-system.md.
-        from scripts.imagegen_pipeline.deliverable_prompt import style_contract
+    if style_id in (9, 10):
+        if style_lock is None:
+            raise ValueError("live runtime style final prompt requires its style lock")
+        runtime = load_runtime_style_contract(style_lock)
+        runtime_style_contract = runtime.contract
 
-        runtime_style_contract = style_contract(style_lock)
     runtime_section = "\n".join(
         (
             SECTION_HEADINGS[6],
             runtime_style_contract,
-            *((ir.runtime_lock.terminal_lock,) if ir.runtime_lock.terminal_lock else ()),
+            *((ir.runtime_lock.terminal_lock,) if runtime is None and ir.runtime_lock.terminal_lock else ()),
         )
     )
     hard_constraints_section = "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints))
@@ -91,7 +105,7 @@ def render_final_prompt(
                 ),
             )
         ),
-        "\n".join((SECTION_HEADINGS[3], *(_group_line(group) for group in ir.semantic_groups))),
+        "\n".join((SECTION_HEADINGS[3], *_group_lines(ir))),
         "\n".join(
             (
                 SECTION_HEADINGS[4],
@@ -108,21 +122,10 @@ def render_final_prompt(
             )
         ),
     )
-    # Put page hard constraints before the live source contract.  Style 09's
-    # source-authored terminal lock must be the final instruction in the
-    # actual prompt, while the page constraints remain available to the
-    # renderer earlier in the prompt.
     sections = (*sections_before_runtime, hard_constraints_section, runtime_section)
-    prompt = "\n\n".join(section for section in sections if section.strip()).rstrip()
-
-    if style_id in (9, 10):
-        if style_lock is None:
-            raise ValueError("Style09/10 final prompt requires its style lock for terminal enforcement")
-        from scripts.imagegen_pipeline.deliverable_prompt import enforce_style09_terminal_lock
-
-        prompt = enforce_style09_terminal_lock(prompt, style_lock).rstrip()
-
-    prompt = prompt + "\n"
+    prompt = "\n\n".join(section for section in sections if section.strip()).rstrip() + "\n"
+    if runtime is not None:
+        prompt = enforce_terminal_execution_lock(prompt, runtime)
     validate_final_prompt(prompt, ir, style_id=style_id)
     return prompt
 
@@ -135,8 +138,13 @@ def render_debug_receipt(
     prompt_ir_version: str,
     source_hashes: tuple[tuple[str, str], ...] = (),
 ) -> dict[str, object]:
-    """Build the sidecar receipt carrying what the final prompt intentionally omits."""
+    """Build the sidecar receipt carrying prompt-excluded provenance/bindings.
 
+    Binding fields are additive under the existing v1 receipt schema so old
+    consumers continue to read the same authority/version token.
+    """
+
+    rendered_group = {group.id: index for index, group in enumerate(ir.semantic_groups, start=1)}
     return {
         "schema": "cyberppt.final_prompt_debug.v1",
         "page": page_id,
@@ -152,11 +160,23 @@ def render_debug_receipt(
         "semantic_groups": [
             {
                 "id": group.id,
+                "rendered_group": rendered_group[group.id],
                 "role": group.role,
                 "emphasis": group.emphasis,
                 "summary": group.summary,
             }
             for group in ir.semantic_groups
+        ],
+        "text_bindings": [
+            {
+                "root_id": binding.group_id,
+                "rendered_group": rendered_group[binding.group_id],
+                "role": binding.role,
+                "hierarchy_level": binding.hierarchy_level,
+                "text_ids": list(binding.text_ids),
+                "exact_text": list(binding.exact_text),
+            }
+            for binding in ir.text_bindings
         ],
         "composition": {
             "spatial_organization": ir.composition.spatial_organization,

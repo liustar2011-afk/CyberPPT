@@ -1,0 +1,123 @@
+{
+  "contract": "cyberppt.final-script",
+  "version": "1.0",
+  "deck": {
+    "title": "电力领域数据基础设施",
+    "communication_goal": "说明建设基础与总体架构。",
+    "audience": "行业管理人员",
+    "narrative": "建设基础 → 总体架构"
+  },
+  "slides": [
+    {
+      "id": "P06",
+      "page_type": "content",
+      "title": "建设基础",
+      "subtitle": "五方面基础",
+      "mission": "归纳现阶段建设基础。",
+      "core_message": "现有工作已形成五方面建设基础。",
+      "argument": {
+        "pattern": "classification / taxonomy",
+        "chain": [
+          "基础条件",
+          "实施准备"
+        ]
+      },
+      "full_copy": "现阶段已在组织机制、数据资源、技术能力、场景储备和实施推进五方面形成建设基础。",
+      "onscreen": [
+        {
+          "heading": "组织机制",
+          "items": [
+            "形成协同推进机制"
+          ]
+        },
+        {
+          "heading": "数据资源",
+          "items": [
+            "梳理重点数据资源"
+          ]
+        },
+        {
+          "heading": "技术能力",
+          "items": [
+            "验证可信流通能力"
+          ]
+        },
+        {
+          "heading": "场景储备",
+          "items": [
+            "形成重点场景清单"
+          ]
+        },
+        {
+          "heading": "实施推进",
+          "items": [
+            "完成实施准备工作"
+          ]
+        }
+      ],
+      "visual_thesis": "五方面基础共同支撑后续建设。",
+      "relationships": [],
+      "speaker_notes": "五方面基础分别对应组织、资源、技术、场景和实施条件。",
+      "source_refs": []
+    },
+    {
+      "id": "P12",
+      "page_type": "content",
+      "title": "总体架构",
+      "subtitle": "五层两贯穿",
+      "mission": "说明总体技术架构。",
+      "core_message": "总体架构由五层能力和两项贯穿机制构成。",
+      "argument": {
+        "pattern": "classification / taxonomy",
+        "chain": [
+          "五层能力",
+          "两项贯穿"
+        ]
+      },
+      "full_copy": "总体架构按照基础设施、资源治理、可信流通、数据服务和场景应用五层组织，并由安全与运营机制贯穿全过程。",
+      "onscreen": [
+        {
+          "heading": "基础设施层",
+          "items": [
+            "承载基础计算与连接能力"
+          ]
+        },
+        {
+          "heading": "资源治理层",
+          "items": [
+            "支撑目录标准与质量治理"
+          ]
+        },
+        {
+          "heading": "可信流通层",
+          "items": [
+            "落实授权控制与审计留痕"
+          ]
+        },
+        {
+          "heading": "数据服务层",
+          "items": [
+            "形成数据模型与分析服务"
+          ]
+        },
+        {
+          "heading": "场景应用层",
+          "items": [
+            "支撑行业重点业务场景"
+          ]
+        },
+        {
+          "heading": "此外：两项贯穿",
+          "items": [
+            "安全保障覆盖全过程",
+            "运营机制覆盖全过程"
+          ]
+        }
+      ],
+      "visual_thesis": "五层能力纵向衔接，两项机制贯穿全过程。",
+      "relationships": [],
+      "speaker_notes": "重点说明五层能力的分工以及安全、运营两项贯穿机制。",
+      "source_refs": []
+    }
+  ]
+}

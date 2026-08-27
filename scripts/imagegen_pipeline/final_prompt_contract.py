@@ -1,75 +1,32 @@
-"""Deterministic gate for the final ImageGen prompt text.
-
-Validation failure must block the prompt from being written out — this
-module never downgrades a violation to a warning.
-"""
+"""Deterministic gate for the final ImageGen prompt text."""
 
 from __future__ import annotations
 
 import re
 
 from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContractError
+from scripts.imagegen_pipeline.runtime_style_contract import (
+    TERMINAL_EXECUTION_HEADING,
+    internal_style_token_leaks,
+)
 
-# Re-measured 2026-08-21 against the current Style09 source contract and the
-# project's 16 content pages: 25741-26002 characters. The source contract
-# was expanded after the previous 25500-character ceiling was set.
-#
-# Earlier baseline, retained for context: against the same 23 real Style09
-# pages from projects/power-data-infrastructure-cooperation-v16-20260815-foundation,
-# after Style09's prompt_contract was restored to the scene-led spec from
-# references/visual-system.md (the earlier flat/minimal contract had lost
-# its "### Final ImageGen execution lock — hard" section and several other
-# sections entirely -- see the commit restoring it): min 21516, max 22047
-# characters, up from the prior measurement's 18954-19920 because the
-# restored contract (~18500 chars) is itself longer than the short one it
-# replaced (~4850 chars).
-#
-# Per-page IR content (deliverable + judgment + relationship + reading path
-# + semantic groups + visible text + composition) still totals under 2500
-# characters; the style runtime contract text alone continues to dominate
-# the budget. Shrinking it is a style-library authoring concern outside
-# this compiler's scope. Budget = measured max * 1.1, rounded up to the
-# nearest 100. Revisit per style family and with real ImageGen evaluation
-# data before tightening; re-measure whenever a style's prompt_contract
-# changes materially.
-# Rich, source-faithful on-screen copy can add a few hundred characters to
-# the measured style contract. Keep the safety ceiling above that variance
-# while retaining the hard upper bound for malformed or runaway prompts.
 MAX_PROMPT_CHARACTERS = 30_000
-
 _PLACEHOLDER_RE = re.compile(r"<[^>\n]{1,80}>")
-
-# Literal strings confirmed present in a real production manifest
-# (pages_005_031_22p_.../page_image_pairs.json, page P05) before this
-# compiler existed: "P0 process:", "direction=subject_to_object",
-# "basis=explicit", "confidence=high", and the "main chain" connector label.
 _BACKEND_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\bP[0-3]\s+\w+:"),
     re.compile(r"\b(?:direction|condition|modality|basis|confidence)="),
     re.compile(r"\bmain[ _]chain\b", re.IGNORECASE),
     re.compile(r"\bsecondary[ _]relation\b", re.IGNORECASE),
-    # Any bare snake_case token (>=2 segments) reads as a backend enum, not
-    # authored prose - e.g. "outside_to_center", "subject_to_object". The
-    # boundary uses an ASCII-only character class rather than \w: Python's
-    # \w matches CJK characters too, so a token glued directly onto Chinese
-    # prose with no space (e.g. "方向为outside_to_anchor，") would silently
-    # fail to match against a \w-based boundary and slip through.
     re.compile(r"(?<![A-Za-z0-9_-])[a-z]+(?:_[a-z0-9]+){1,}(?![A-Za-z0-9_-])"),
 )
-
-# Fixed, finite technical monikers that legitimately contain underscores.
-# Empty for now: ``asset_type`` used to be the hardcoded snake_case constant
-# "powerpoint_body_visual_asset" and needed this exemption; it is now the
-# natural-language phrase "presentation content visual" (see
-# cyberppt/page_artifact_spec.py), so no exemption is needed. Kept as a named
-# set, not deleted, so a future fixed technical moniker has an obvious place
-# to register itself rather than reopening the snake_case check.
 _ALLOWED_SNAKE_CASE_TOKENS: frozenset[str] = frozenset()
-
 _BACKEND_ID_RE = re.compile(
     r"(?<![A-Za-z0-9])(?:E\d+|P\d{2,3}-T(?:ITLE|\d+)|R_[A-Z0-9_]+|(?:NF|ST)-?\d+|rel-\d+)(?![A-Za-z0-9])",
     flags=re.IGNORECASE,
 )
+_FORBIDDEN_CHROME_TEXT = frozenset({"标题", "副标题", "页码", "logo", "页眉", "页脚"})
+_VISIBLE_TEXT_RE = re.compile(r'^- Exact visible text: "(.*)"$', flags=re.MULTILINE)
+_GROUP_HEADING_RE = re.compile(r"^Semantic group ([A-Z]|\d+):$", flags=re.MULTILINE)
 
 
 def backend_identifier_leaks(
@@ -77,14 +34,6 @@ def backend_identifier_leaks(
     *,
     approved_visible_text: tuple[str, ...] = (),
 ) -> tuple[str, ...]:
-    """Return backend-looking tokens that are not approved business copy.
-
-    Letter-number labels such as ``E1`` and ``E2`` are also legitimate
-    standard-category names in power-industry material.  A token is therefore
-    safe only when Stage 1 locked it into the exact visible-text contract;
-    otherwise it remains an internal-ID leak and blocks production.
-    """
-
     approved = {
         match.group(0).casefold()
         for text in approved_visible_text
@@ -96,9 +45,39 @@ def backend_identifier_leaks(
         if match.group(0).casefold() not in approved
     )
 
-_FORBIDDEN_CHROME_TEXT = frozenset({"标题", "副标题", "页码", "logo", "页眉", "页脚"})
 
-_VISIBLE_TEXT_RE = re.compile(r'^- Exact visible text: "(.*)"$', flags=re.MULTILINE)
+def _unapproved_style_token_leaks(prompt: str, visible_text: tuple[str, ...]) -> tuple[str, ...]:
+    approved = "\n".join(visible_text).casefold()
+    return tuple(
+        token
+        for token in internal_style_token_leaks(prompt)
+        if token.casefold() not in approved
+    )
+
+
+def _validate_text_bindings(prompt: str, ir: FinalPromptIR) -> None:
+    if not ir.text_bindings:
+        return
+    group_labels = tuple(_GROUP_HEADING_RE.findall(prompt))
+    if len(group_labels) != len(ir.semantic_groups):
+        raise PromptContractError(
+            "final prompt must render exactly one public semantic-group label per IR group"
+        )
+    if len(group_labels) != len(set(group_labels)):
+        raise PromptContractError("final prompt semantic-group labels must be unique")
+    for binding in ir.text_bindings:
+        for text in binding.exact_text:
+            rendered = f'  - "{text}"'
+            if prompt.count(rendered) != 1:
+                raise PromptContractError(
+                    "final prompt must render every bound exact-text item once inside its semantic group"
+                )
+    for binding in ir.text_bindings:
+        if binding.group_id in prompt:
+            raise PromptContractError("final prompt leaked a backend content-root id")
+        for text_id in binding.text_ids:
+            if text_id and text_id in prompt:
+                raise PromptContractError("final prompt leaked a backend text id")
 
 
 def validate_final_prompt(
@@ -107,8 +86,6 @@ def validate_final_prompt(
     *,
     style_id: int | None = None,
 ) -> None:
-    """Reject a rendered prompt that violates the final prompt contract."""
-
     from scripts.imagegen_pipeline.final_prompt_renderer import SECTION_HEADINGS
 
     positions: list[int] = []
@@ -129,38 +106,40 @@ def validate_final_prompt(
         raise PromptContractError(
             f"final prompt exceeds the {MAX_PROMPT_CHARACTERS}-character budget: {len(prompt)}"
         )
-
-    if _PLACEHOLDER_RE.search(prompt):
-        raise PromptContractError(f"final prompt contains an unresolved placeholder: {_PLACEHOLDER_RE.search(prompt).group(0)}")
-
-    if backend_identifier_leaks(
-        prompt,
-        approved_visible_text=ir.visible_text,
-    ):
+    placeholder = _PLACEHOLDER_RE.search(prompt)
+    if placeholder:
+        raise PromptContractError(
+            f"final prompt contains an unresolved placeholder: {placeholder.group(0)}"
+        )
+    if backend_identifier_leaks(prompt, approved_visible_text=ir.visible_text):
         raise PromptContractError("final prompt contains a backend identifier")
-
     for pattern in _BACKEND_LEAK_PATTERNS:
         for match in pattern.finditer(prompt):
             if match.group(0) in _ALLOWED_SNAKE_CASE_TOKENS:
                 continue
-            raise PromptContractError(f"final prompt contains an internal/backend field: {match.group(0)!r}")
+            raise PromptContractError(
+                f"final prompt contains an internal/backend field: {match.group(0)!r}"
+            )
+    style_leaks = _unapproved_style_token_leaks(prompt, ir.visible_text)
+    if style_leaks:
+        raise PromptContractError(
+            f"final prompt contains an internal style routing token: {style_leaks[0]!r}"
+        )
 
     for text in ir.visible_text:
         if text.strip().lower() in _FORBIDDEN_CHROME_TEXT:
             raise PromptContractError(
                 f"final prompt visible text contains excluded chrome content: {text!r}"
             )
-
     declared = tuple(_VISIBLE_TEXT_RE.findall(prompt))
     if declared != ir.visible_text:
         raise PromptContractError(
             "final prompt visible text declarations must exactly match the IR text contract"
         )
+    _validate_text_bindings(prompt, ir)
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)
-    reading_boundary_declarations = re.findall(
-        r"^Reading boundary: .*$", prompt, flags=re.MULTILINE
-    )
+    reading_boundary_declarations = re.findall(r"^Reading boundary: .*$", prompt, flags=re.MULTILINE)
     if ir.prompt_mode == "semantic_brief":
         if reading_path_declarations or len(reading_boundary_declarations) != 1:
             raise PromptContractError(
@@ -180,26 +159,27 @@ def validate_final_prompt(
     judgment_line = f"Core judgment (non-visible): {ir.page_judgment}"
     if sum(line == judgment_line for line in prompt.splitlines()) != 1:
         raise PromptContractError("final prompt must state one authoritative page judgment")
-
     if style_id not in (9, 10) and prompt.count(ir.runtime_lock.style_contract) != 1:
-        # Style09/10 rewrite their contract text in place to relocate the
-        # terminal execution lock (see enforce_style09_terminal_lock), so an
-        # exact-count check against the pre-rewrite text does not apply
-        # there; the terminal-lock checks below cover that case instead.
         raise PromptContractError("final prompt must state the runtime style contract exactly once")
 
-    terminal_header = "【风格09最终执行锁｜最高优先级】"
+    legacy_terminal_headers = (
+        "【风格09最终执行锁｜最高优先级】",
+        "【风格10最终执行锁｜最高优先级】",
+    )
+    if any(header in prompt for header in legacy_terminal_headers):
+        raise PromptContractError("final prompt contains a numbered legacy terminal style heading")
     if style_id in (9, 10):
-        if prompt.count(terminal_header) != 1:
-            raise PromptContractError("Style09/10 final prompt requires one terminal execution lock")
-        terminal = prompt.split(terminal_header, 1)[1].strip()
+        if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
+            raise PromptContractError("live runtime style prompt requires one terminal execution lock")
+        terminal = prompt.split(TERMINAL_EXECUTION_HEADING, 1)[1].strip()
         if not terminal or not prompt.rstrip().endswith(terminal):
-            raise PromptContractError("Style09/10 terminal execution lock must be at the absolute end")
-    elif terminal_header in prompt:
-        raise PromptContractError("non-Style09/10 final prompt contains a Style09/10 terminal lock")
+            raise PromptContractError("terminal execution lock must be at the absolute end")
+    elif TERMINAL_EXECUTION_HEADING in prompt:
+        raise PromptContractError("non-live style prompt contains a live terminal execution lock")
 
 
 __all__ = [
     "MAX_PROMPT_CHARACTERS",
+    "backend_identifier_leaks",
     "validate_final_prompt",
 ]

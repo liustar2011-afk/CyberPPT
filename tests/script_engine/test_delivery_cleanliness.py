@@ -61,7 +61,7 @@ def test_delivery_cleanliness_allows_page_navigation_only_in_mission_metadata() 
 
 
 def test_real_power_industry_deck_renders_delivery_clean() -> None:
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
+    path = ROOT / "tests" / "script_engine" / "fixtures" / "curated" / "power-industry-data-infrastructure-final-script.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     markdown = render_stage02_markdown(payload)
     assert check_delivery_cleanliness(markdown) == []

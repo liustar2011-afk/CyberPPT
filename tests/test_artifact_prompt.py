@@ -169,9 +169,11 @@ class ArtifactPromptTests(unittest.TestCase):
             prompt = render_artifact_prompt(_spec(style_id=9, contract=style_contract), style_lock=lock)
             source_terminal = live_style_contract(lock).strip().splitlines()[-1]
 
-        self.assertEqual(1, prompt.count("STYLE09 body rules."))
-        self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
-        self.assertEqual(1, prompt.count(terminal))
+        self.assertNotIn("STYLE09", prompt)
+        self.assertNotIn("Style09", prompt)
+        self.assertNotIn("风格09", prompt)
+        self.assertEqual(1, prompt.count("【最终视觉执行约束｜最高优先级】"))
+        self.assertEqual(1, prompt.count(source_terminal))
         self.assertIn(SECTION_HEADINGS[7], prompt)
         self.assertIn(SECTION_HEADINGS[8], prompt)
         self.assertTrue(prompt.rstrip().endswith(source_terminal))

@@ -414,7 +414,7 @@ def test_power_industry_deck_final_script_passes_lint() -> None:
     register drift, self-referential structure commentary, and contrastive-reveal sentences into
     the final script. Keep it clean so those specific, already-paid-for mistakes do not silently
     return."""
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
+    path = ROOT / "tests" / "script_engine" / "fixtures" / "curated" / "power-industry-data-infrastructure-final-script.json"
     assert lint_final_script(json.loads(path.read_text(encoding="utf-8"))) == []
 
 def test_power_industry_deck_architecture_page_uses_short_title_with_subtitle() -> None:
@@ -423,13 +423,13 @@ def test_power_industry_deck_architecture_page_uses_short_title_with_subtitle() 
     title ('总体架构') with the business-specific content only in `subtitle` ('五层两贯穿').
     Page ID for this content has moved across deck replans (was P11, now P12) — find it by
     subtitle rather than a pinned ID."""
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
+    path = ROOT / "tests" / "script_engine" / "fixtures" / "curated" / "power-industry-data-infrastructure-final-script.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     slide = next(s for s in payload["slides"] if s.get("subtitle") == "五层两贯穿")
     assert slide["title"] == "总体架构"
 
 def test_power_industry_deck_final_script_has_no_duplicate_onscreen_headings() -> None:
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
+    path = ROOT / "tests" / "script_engine" / "fixtures" / "curated" / "power-industry-data-infrastructure-final-script.json"
     assert check_onscreen_structure(json.loads(path.read_text(encoding="utf-8"))) == []
 
 def test_power_industry_deck_architecture_page_delivers_five_layer_modules_plus_marked_addendum() -> None:
@@ -439,7 +439,7 @@ def test_power_industry_deck_architecture_page_delivers_five_layer_modules_plus_
     (subtitle '五层两贯穿') is the deck's instance of this pattern — 5 layer modules plus one
     addendum module prefixed '此外：' for the two cross-cutting items. Page ID moves across
     deck replans (was P17, now P12); find it by subtitle rather than a pinned ID."""
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
+    path = ROOT / "tests" / "script_engine" / "fixtures" / "curated" / "power-industry-data-infrastructure-final-script.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     slide = next(s for s in payload["slides"] if s.get("subtitle") == "五层两贯穿")
     headings = [m["heading"] for m in slide["onscreen"]]
@@ -451,7 +451,7 @@ def test_power_industry_deck_p06_delivers_five_basis_modules() -> None:
     """Regression test for a second count-claim bug caught by check_declared_count: subtitle said
     五方面基础 but the last two dimensions (场景储备/实施推进) had been merged into one onscreen
     module, leaving only 4 visible. Now: 5 separate modules."""
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
+    path = ROOT / "tests" / "script_engine" / "fixtures" / "curated" / "power-industry-data-infrastructure-final-script.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     slide = next(s for s in payload["slides"] if s["id"] == "P06")
     assert len(slide["onscreen"]) == 5
@@ -459,6 +459,6 @@ def test_power_industry_deck_p06_delivers_five_basis_modules() -> None:
 def test_power_industry_deck_final_script_has_no_declared_count_warnings() -> None:
     """This deck currently has zero count-claim mismatches. Pin that state so a genuinely new
     mismatch (like the P06 bug this suite caught previously) doesn't blend in unnoticed."""
-    path = ROOT / "tests" / "script_engine" / "fixtures" / "projects" / "power-industry-data-infrastructure" / "dist" / "final-script.json"
+    path = ROOT / "tests" / "script_engine" / "fixtures" / "curated" / "power-industry-data-infrastructure-final-script.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     assert check_declared_count(payload) == []

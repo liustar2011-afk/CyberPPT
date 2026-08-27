@@ -2,6 +2,8 @@
   "document": {
     "pages": [
       {
+        "anchor_coverage_notes": "",
+        "argument_chain": "",
         "boundary": "",
         "boundary_source_refs": [],
         "coaching_tip": "",
@@ -38,8 +40,10 @@
         "onscreen_judgment_mode": "",
         "onscreen_text": "**统一运营链路**\n    需求接入 → 能力编排 → 服务交付",
         "page_id": "p01",
+        "page_mission": "",
         "page_type": "content",
         "prose_paragraph_map": [],
+        "provenance_refs": [],
         "raw_onscreen_text": "**统一运营链路**\n    需求接入 → 能力编排 → 服务交付",
         "scene_role": "",
         "selection_notes": "必留上屏：统一运营链路与服务供给结果。\n仅讲解：能力编排的执行细节。\n仅追溯：来源材料中的背景说明。",
@@ -102,19 +106,6 @@
       "suggested_action": "Keep the visible conclusion, at least two evidence-bearing lines, one explicit business relationship, and a readable closure."
     },
     {
-      "code": "PROHIBITED_COLLOQUIAL_MANUSCRIPT",
-      "evidence": [
-        "再说"
-      ],
-      "message": "Manuscript layer uses conversational wording; formal written-document expression is required.",
-      "pages": [
-        "p01"
-      ],
-      "severity": "error",
-      "source_ids": [],
-      "suggested_action": "Rewrite as objective written prose: state the subject, relation, condition, and conclusion directly; remove reader-address and spoken transition markers."
-    },
-    {
       "code": "ONSCREEN_MARKDOWN_LEAK",
       "evidence": [
         "bold"
@@ -154,19 +145,6 @@
       "severity": "error",
       "source_ids": [],
       "suggested_action": "Add source-supported modules or merge this page with the adjacent business question."
-    },
-    {
-      "code": "ONSCREEN_MODULE_COUNT_MISMATCH",
-      "evidence": [
-        "actual=1"
-      ],
-      "message": "三要素结构 requires 3–3 top-level modules.",
-      "pages": [
-        "p01"
-      ],
-      "severity": "warning",
-      "source_ids": [],
-      "suggested_action": "Revise the visible structure so its peer-module count matches the selected expression form."
     }
   ]
 }

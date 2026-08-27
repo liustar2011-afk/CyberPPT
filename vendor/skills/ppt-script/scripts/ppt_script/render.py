@@ -140,9 +140,10 @@ def render_audit(report: AuditReport) -> str:
     ]
     mapped = set(report.mapped_source_ids)
     for item in report.semantic_coverage:
+        escaped_content = item.content.replace("|", "\\|")
         lines.append(
             f"| {item.source_id} | {item.importance} | {'已引用' if item.source_id in mapped else '未引用'} | "
-            f"{item.status} | {item.best_slide or '-'} | {item.score:.3f} | {item.content.replace('|', '\\|')} |"
+            f"{item.status} | {item.best_slide or '-'} | {item.score:.3f} | {escaped_content} |"
         )
     lines.extend(["", "## 确定性问题", ""])
     for hit in report.forbidden_hits:

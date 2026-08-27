@@ -25,6 +25,26 @@ def _image_size(path: Path) -> list[int] | None:
         return None
 
 
+def _attach_content_root_qa(
+    *,
+    pair: dict[str, Any],
+    audit: dict[str, Any],
+) -> None:
+    """Attach diagnostic root coverage when artifact-spec binding metadata exists."""
+
+    full = pair.get("full") if isinstance(pair.get("full"), dict) else {}
+    debug_receipt = full.get("debug_receipt") if isinstance(full, dict) else None
+    if not isinstance(debug_receipt, dict):
+        return
+    from scripts.imagegen_pipeline.content_root_qa import build_content_root_qa
+
+    audit["content_root_qa"] = build_content_root_qa(
+        page_number=int(pair.get("page_number") or 0),
+        debug_receipt=debug_receipt,
+        text_audit=audit,
+    )
+
+
 def normalize_audited_manifest_images(manifest: dict[str, Any]) -> None:
     from scripts.imagegen_pipeline.providers.codex_oauth_image import raw_output_path
 
@@ -36,6 +56,8 @@ def normalize_audited_manifest_images(manifest: dict[str, Any]) -> None:
         path = Path(str(full.get("path") or "")) if isinstance(full, dict) else Path()
         if audit is None or audit.get("valid") is not True or not path.is_file():
             continue
+        if "content_root_qa" not in audit:
+            _attach_content_root_qa(pair=pair, audit=audit)
         if not audit.get("image_size"):
             raw_path = raw_output_path(path)
             source_size = _image_size(raw_path if raw_path.is_file() else path)
@@ -154,13 +176,16 @@ def _generate_manifest_images(
                 if reusable_audited_full and not prompt_matches_existing_image:
                     item["prompt_reuse_warning"] = "passed_text_audit_reused_despite_prompt_hash_change"
                 audit = item.get("text_audit") if isinstance(item.get("text_audit"), dict) else None
-                if audit is not None and not audit.get("image_size"):
-                    from scripts.imagegen_pipeline.providers.codex_oauth_image import raw_output_path
-                    raw_path = raw_output_path(output_path)
-                    audit_source = raw_path if raw_path.is_file() else output_path
-                    source_size = _image_size(audit_source)
-                    if source_size is not None:
-                        audit["image_size"] = source_size
+                if audit is not None:
+                    if "content_root_qa" not in audit:
+                        _attach_content_root_qa(pair=pair, audit=audit)
+                    if not audit.get("image_size"):
+                        from scripts.imagegen_pipeline.providers.codex_oauth_image import raw_output_path
+                        raw_path = raw_output_path(output_path)
+                        audit_source = raw_path if raw_path.is_file() else output_path
+                        source_size = _image_size(audit_source)
+                        if source_size is not None:
+                            audit["image_size"] = source_size
                 ensure_output_size(output_path, str(item.get("canvas") or "2048x1024"))
                 if audit is not None:
                     normalized_size = _image_size(output_path)
@@ -215,9 +240,14 @@ def _generate_manifest_images(
                         break
                     if isinstance(text_truth, dict):
                         from cyberppt.image_text_gate import audit_generated_image_text
-                        audit = audit_generated_image_text(output_path, script_text=str(text_truth.get("script_text") or ""), timeout=timeout)
+                        audit = audit_generated_image_text(
+                            output_path,
+                            script_text=str(text_truth.get("script_text") or ""),
+                            timeout=timeout,
+                        )
                         audit["page_number"] = pair.get("page_number")
                         audit["attempt"] = attempt
+                        _attach_content_root_qa(pair=pair, audit=audit)
                         text_audits.append(audit)
                         if not audit["valid"]:
                             if attempt < max_attempts:
@@ -226,7 +256,11 @@ def _generate_manifest_images(
                                 failed_image = _failed_text_audit_image_path(output_path, attempt)
                                 shutil.copy2(output_path, failed_image)
                                 audit["image"] = str(failed_image)
-                                audit["correction_retry"] = {"next_attempt": attempt + 1, "source_image": str(failed_image), "issues": audit.get("issues", [])}
+                                audit["correction_retry"] = {
+                                    "next_attempt": attempt + 1,
+                                    "source_image": str(failed_image),
+                                    "issues": audit.get("issues", []),
+                                }
                                 attempt_input_images = [failed_image, *input_images]
                                 prompt = _text_correction_prompt(base_prompt, audit)
                                 correction_audit = audit
@@ -245,7 +279,12 @@ def _generate_manifest_images(
             except (OSError, TimeoutError, http.client.HTTPException, RuntimeError) as exc:
                 item["status"] = "Failed"
                 item["last_error"] = f"{type(exc).__name__}: {exc}"
-                failed.append({"page_number": pair.get("page_number"), "variant": variant, "path": str(output_path), "error": item["last_error"]})
+                failed.append({
+                    "page_number": pair.get("page_number"),
+                    "variant": variant,
+                    "path": str(output_path),
+                    "error": item["last_error"],
+                })
                 if checkpoint_path is not None:
                     write_json(checkpoint_path, manifest)
                 continue
@@ -273,7 +312,11 @@ def _generate_manifest_images(
     }
 
 
-def run_image_stage(context: Stage02BuildContext, manifest_result: ManifestStageResult, options: Stage02RunOptions) -> ImageStageResult:
+def run_image_stage(
+    context: Stage02BuildContext,
+    manifest_result: ManifestStageResult,
+    options: Stage02RunOptions,
+) -> ImageStageResult:
     manifest = manifest_result.manifest
     generation = None
     if options.generate_images:
@@ -291,7 +334,10 @@ def run_image_stage(context: Stage02BuildContext, manifest_result: ManifestStage
         write_json(manifest_result.manifest_path, manifest)
         failed_pages = generation.get("failed") or []
         if failed_pages:
-            summary = "; ".join(f"page {item.get('page_number')} {item.get('variant')}: {item.get('error')}" for item in failed_pages)
+            summary = "; ".join(
+                f"page {item.get('page_number')} {item.get('variant')}: {item.get('error')}"
+                for item in failed_pages
+            )
             raise RuntimeError(
                 f"{len(failed_pages)} of {len(failed_pages) + len(generation.get('generated') or [])} image generation attempts failed (likely transient backend/network faults); "
                 f"already-generated pages were kept, re-run the same command to retry only the failed ones: {summary}"

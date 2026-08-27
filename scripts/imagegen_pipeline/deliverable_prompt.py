@@ -15,6 +15,12 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.imagegen_pipeline.style_library import default_style_choices, load_style_lock
+from scripts.imagegen_pipeline.runtime_style_contract import (
+    TERMINAL_EXECUTION_HEADING,
+    enforce_terminal_execution_lock,
+    load_runtime_style_contract,
+    project_runtime_style_contract,
+)
 from scripts.imagegen_pipeline.visual_grammar import (
     creative_brief_visual_grammar,
     default_visual_grammar,
@@ -532,6 +538,17 @@ def _style_contract_from_payload(
     return contract
 
 
+def _is_live_runtime_style(style_lock_path: Path) -> bool:
+    try:
+        payload = load_style_lock(style_lock_path)
+    except (OSError, ValueError, TypeError):
+        return False
+    style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
+    try:
+        return int(style.get("id") or 0) in (9, 10)
+    except (TypeError, ValueError):
+        return False
+
 def style_contract(
     style_lock_path: Path | None,
     *,
@@ -737,54 +754,17 @@ def _semantic_visual_lines(lines: list[str]) -> list[str]:
 
 
 def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
-    """Read Style 09's source-authored terminal lock from the refreshed contract."""
-
+    """Compatibility wrapper over the generic live-style runtime contract."""
     if style_lock_path is None:
         return ""
-    # Legacy callers may still pass a plain-text style description (the
-    # content-first compiler accepts that form for styles 1–8).  Style 09
-    # enforcement is optional, so a non-JSON lock must not break those callers.
     try:
-        payload = load_style_lock(style_lock_path)
+        return load_runtime_style_contract(style_lock_path).terminal_lock
     except (OSError, ValueError, TypeError):
         return ""
-    style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
-    if int(style.get("id") or 0) not in (9, 10):
-        return ""
-    contract = str(style.get("prompt_contract") or "")
-    markers = (
-        "### Final ImageGen execution lock — hard",
-        "【风格09最终执行锁｜最高优先级】",
-    )
-    marker_positions = [(contract.find(marker), marker) for marker in markers if marker in contract]
-    if not marker_positions:
-        return ""
-    _, marker = min(marker_positions)
-    tail = contract.split(marker, 1)[1]
-    lines = [line.strip() for line in tail.splitlines() if line.strip()]
-    # Older contracts place a "repeated verbatim..." meta-instruction after
-    # the English marker. Current source-authored Style09 contracts use their
-    # Chinese terminal-lock heading directly, so retain the first substantive
-    # rule in either format.
-    start = next(
-        (
-            index
-            for index, line in enumerate(lines)
-            if not line.startswith("This block must be repeated")
-        ),
-        None,
-    )
-    if start is None:
-        return ""
-    # The terminal section is deliberately authored as several short,
-    # complementary paragraphs (focal hierarchy, semantic imagery, visual
-    # rhythm, and icon policy). Reasserting only its first line at send time
-    # silently weakened all later rules and let dense pages fall back to
-    # equal-weight panels. Preserve the complete terminal tail verbatim.
-    return "\n\n".join(lines[start:])
 
 
-STYLE09_TERMINAL_LOCK_HEADER = "【风格09最终执行锁｜最高优先级】"
+
+STYLE09_TERMINAL_LOCK_HEADER = TERMINAL_EXECUTION_HEADING
 
 
 def _style09_people_rule(style_lock_path: Path | None) -> str:
@@ -806,69 +786,15 @@ def enforce_style09_terminal_lock(
     prompt: str,
     style_lock_path: Path | None,
 ) -> str:
-    """Keep Style 09's execution lock at the actual end of the prompt.
-
-    Visual-structure handoff is appended after the compiled prompt.  Without
-    reasserting the lock here, page-level carrier language (for example a
-    matrix or swim-lane recipe) can silently outrank the source-authored Style
-    09 surface rules.  Remove earlier copies and add one final copy so the
-    precedence contract is true in the string sent to ImageGen.
-    """
-
-    lock = _style09_terminal_execution_lock(style_lock_path)
-    people_rule = _style09_people_rule(style_lock_path)
-    if not lock:
+    """Compatibility wrapper over generic terminal-lock enforcement."""
+    if style_lock_path is None or TERMINAL_EXECUTION_HEADING in prompt:
         return prompt
-    body = str(prompt)
-    # A compiled Style 09 contract already contains the complete terminal
-    # source section. Remove that whole prior section (not merely an identical
-    # line) before appending the authoritative final copy. Line-level removal
-    # left every paragraph behind and sent the same high-priority rule three
-    # times, diluting the intended focal hierarchy.
-    # Remove the source contract's terminal section before reasserting it at
-    # the true end.  Preserve a Stage 02 module appended after that contract;
-    # otherwise a raw terminal tail makes the send prompt verbose and gives
-    # the same Style 09 rule two competing positions.
-    source_markers = (
-        "### Final ImageGen execution lock — hard",
-        STYLE09_TERMINAL_LOCK_HEADER,
-    )
-    continuation_markers = (
-        "【视觉结构设计模块｜不上屏】",
-        "[8. Typography & exact text / 文字资产合同]",
-        # The current seven-section FinalPromptIR renderer (final_prompt_renderer.py)
-        # never emits either marker above; without this one, every hard
-        # constraint appended after the style contract -- including the
-        # baseline "do not invent facts" ones, not just page-specific ones --
-        # was silently discarded by the body[:marker_index] fallback below.
-        "[Hard constraints]",
-    )
-    marker_positions = [(body.find(marker), marker) for marker in source_markers if marker in body]
-    marker_index = min(marker_positions)[0] if marker_positions else -1
-    if marker_index >= 0:
-        continuation_indices = [
-            body.find(marker, marker_index)
-            for marker in continuation_markers
-            if body.find(marker, marker_index) >= 0
-        ]
-        continuation_index = min(continuation_indices) if continuation_indices else -1
-        if continuation_index >= 0:
-            body = body[:marker_index] + body[continuation_index:]
-        else:
-            body = body[:marker_index]
-    else:
-        body = body.replace(lock, "")
-    if people_rule:
-        body = body.replace(people_rule, "")
-    lines = [
-        line for line in body.splitlines()
-        if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, people_rule}
-    ]
-    body = "\n".join(lines).rstrip()
-    suffix = f"{STYLE09_TERMINAL_LOCK_HEADER}\n{lock}"
-    if people_rule:
-        suffix = f"{suffix}\n{people_rule}"
-    return f"{body}\n\n{suffix}\n"
+    try:
+        runtime = load_runtime_style_contract(style_lock_path)
+    except (OSError, ValueError, TypeError):
+        return prompt
+    return enforce_terminal_execution_lock(prompt, runtime)
+
 
 
 def render_prompt(
@@ -889,6 +815,18 @@ def render_prompt(
     style09_semantic_tags = _style09_page_semantic_tags(page, content_lines)
     resolved_text_render_mode = _resolve_text_render_mode(style_lock_path, text_render_mode)
     semantic_visual = resolved_text_render_mode == "semantic_visual"
+    runtime_style = None
+    if include_style_contract and style_lock_path is not None and _is_live_runtime_style(style_lock_path):
+        authored_style_contract = (
+            _creative_brief_style_contract(
+                style_lock_path, semantic_tags=style09_semantic_tags
+            )
+            if creative_brief
+            else style_contract(style_lock_path, semantic_tags=style09_semantic_tags)
+        )
+        runtime_style = project_runtime_style_contract(
+            authored_style_contract, source=str(style_lock_path)
+        )
     if semantic_visual:
         semantic_lines = _semantic_visual_lines(content_lines)
         body = "\n".join(f"- {line}" for line in semantic_lines)
@@ -976,21 +914,28 @@ def render_prompt(
         parts.extend(
             [
                 "",
-                "【源头风格权威｜visual-system.md Style 09｜最高优先级】",
+                "【源头视觉规则权威｜最高优先级】",
                 (
-                    _creative_brief_style_contract(
-                        style_lock_path,
-                        semantic_tags=style09_semantic_tags,
-                    )
-                    if creative_brief
-                    else style_contract(
-                        style_lock_path,
-                        semantic_tags=style09_semantic_tags,
+                    runtime_style.contract
+                    if runtime_style is not None
+                    else (
+                        _creative_brief_style_contract(
+                            style_lock_path,
+                            semantic_tags=style09_semantic_tags,
+                        )
+                        if creative_brief
+                        else style_contract(
+                            style_lock_path,
+                            semantic_tags=style09_semantic_tags,
+                        )
                     )
                 ),
             ]
         )
-    return "\n".join(parts).strip() + "\n"
+    rendered = "\n".join(parts).strip() + "\n"
+    if runtime_style is not None:
+        rendered = enforce_terminal_execution_lock(rendered, runtime_style)
+    return rendered
 
 
 def append_composition_guidance(prompt: str, guidance: str) -> str:

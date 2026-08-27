@@ -382,6 +382,13 @@ def select_page_visual_intent_type(
     context: dict[str, str] | None = None,
     override: dict[str, str] | None = None,
 ) -> str:
+    script_visual_structure = str(getattr(page, "visual_structure", "") or "")
+    if any(token in script_visual_structure for token in ("闭环", "回流", "返回前序")):
+        return "closed_loop"
+    if any(token in script_visual_structure for token in ("双侧协同", "跨系统协同", "接口")):
+        return "capability_relationship"
+    if any(token in script_visual_structure for token in ("主体泳道", "统一托底", "底部支撑")):
+        return "hierarchy_support"
     """Select a page relationship without allowing one generic noun to hijack it."""
 
     return resolve_page_visual_intent(

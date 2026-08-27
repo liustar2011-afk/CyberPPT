@@ -262,8 +262,8 @@ def test_style_nine_terminal_lock_helper_is_not_the_formal_style_consumer() -> N
         prompt = enforce_style09_terminal_lock(style_contract(lock), lock)
 
     assert prompt.count("### Final ImageGen execution lock — hard") == 0
-    assert prompt.count("【风格09最终执行锁｜最高优先级】") == 1
-    terminal_lock = prompt.split("【风格09最终执行锁｜最高优先级】", 1)[1]
+    assert prompt.count("【最终视觉执行约束｜最高优先级】") == 1
+    terminal_lock = prompt.split("【最终视觉执行约束｜最高优先级】", 1)[1]
     assert terminal_lock.count("a plain undirected connecting line is never used") == 1
     assert "purposeful connectors" not in prompt
 
