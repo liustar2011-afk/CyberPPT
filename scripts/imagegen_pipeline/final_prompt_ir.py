@@ -10,7 +10,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 MAX_SEMANTIC_GROUPS = 10
-FINAL_PROMPT_IR_VERSION = "v3"
+# Text binding is an additive optional field; keep the existing version token so
+# persisted approvals/debug receipts do not become stale solely because of the
+# internal extension.
+FINAL_PROMPT_IR_VERSION = "v2"
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 
@@ -152,8 +155,8 @@ class FinalPromptIR:
             binding_groups = [binding.group_id for binding in self.text_bindings]
             if len(binding_groups) != len(set(binding_groups)):
                 raise PromptContractError("text bindings may define each semantic group at most once")
-            ids = tuple(text_id for binding in self.text_bindings for text_id in binding.text_ids)
-            if ids and len(ids) != len(set(ids)):
+            text_ids = tuple(text_id for binding in self.text_bindings for text_id in binding.text_ids)
+            if text_ids and len(text_ids) != len(set(text_ids)):
                 raise PromptContractError("text binding text_ids must be globally unique")
 
 
