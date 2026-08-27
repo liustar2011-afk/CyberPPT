@@ -148,6 +148,11 @@ def _contracted_gap_fixture() -> tuple[dict, dict, dict]:
         "logic": "并列差距清单",
         "content": ["基础通用", "新兴场景"],
         "onscreen_contract": contract,
+        "primary_relation": {
+            "type": "parallel",
+            "scope": ["基础通用", "新兴场景"],
+            "authority": "hard",
+        },
     }
     plan = {
         "communication_goal": "说明差距",
@@ -239,6 +244,11 @@ def _strict_evidence_fit_fixture() -> tuple[dict, dict]:
                     ],
                     "counter_case": "若只说明数据分类名称，则不足以支撑标准体系建设依据",
                     "verdict": "keep",
+                },
+                "primary_relation": {
+                    "type": "hierarchy",
+                    "scope": ["绿色低碳"],
+                    "authority": "hard",
                 },
                 "onscreen_contract": {
                     "relation": "hierarchy",
@@ -399,6 +409,59 @@ def test_onscreen_contract_flags_module_heading_drift() -> None:
 def test_onscreen_contract_does_not_require_equal_detail_counts() -> None:
     foundation, plan, _ = _contracted_gap_fixture()
     issues, _ = audit_final_script(_contracted_final(different_counts=True), plan, foundation)
+    assert issues == []
+
+
+def test_plan_requires_primary_relation_when_page_has_multiple_content_items() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    plan["pages"][0].pop("primary_relation")
+    issues, _ = audit_deck_plan(plan, foundation)
+    assert any("primary_relation is required" in issue for issue in issues)
+
+
+def test_secondary_relations_that_connect_every_parallel_scope_entry_are_rejected() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    plan["pages"][0]["secondary_relations"] = [
+        {
+            "from": "基础通用",
+            "to": "新兴场景",
+            "type": "influence",
+            "authority": "soft",
+        }
+    ]
+    issues, _ = audit_deck_plan(plan, foundation)
+    assert any("PRIMARY_RELATION_SMUGGLED_SEQUENCE" in issue for issue in issues)
+
+
+def test_authored_relationships_must_be_sanctioned_by_plan() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    final = _contracted_final()
+    final["slides"][0]["relationships"] = [
+        {"from": "基础通用", "to": "新兴场景", "relation": "需要通过验证和反馈推动标准迭代"}
+    ]
+    issues, _ = audit_final_script(final, plan, foundation)
+    assert any(
+        "not declared in plan's primary_relation topology or secondary_relations" in issue
+        for issue in issues
+    )
+
+
+def test_authored_relationships_declared_as_secondary_relations_pass() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    plan["pages"][0]["secondary_relations"] = [
+        {
+            "from": "新兴场景",
+            "to": "基础通用",
+            "type": "feedback",
+            "authority": "soft",
+            "basis": "explicit",
+        }
+    ]
+    final = _contracted_final()
+    final["slides"][0]["relationships"] = [
+        {"from": "新兴场景", "to": "基础通用", "relation": "验证结果反馈至共性规则修订"}
+    ]
+    issues, _ = audit_final_script(final, plan, foundation)
     assert issues == []
 
 

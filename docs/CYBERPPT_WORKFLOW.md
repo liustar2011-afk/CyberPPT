@@ -115,6 +115,8 @@ Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundat
 
 页面可按 `onscreen_contract.expression_mode` 选择 `phrase_led`、`sentence_led` 或默认的 `mixed` 表达方式；完整判断句用于承载模块命题，短语或短分句用于承载具体证据。数字编号只表达来源支持的流程、阶段、时间、优先级、门控或其他真实顺序；普通并列分类使用无编号业务标题。共享标题、谓词、对象、限定语或结果只在父级表达一次，子项分别承载差异信息，避免为追求短语形式制造同义重复。
 
+页面含 2 个及以上 `content` 条目，或声明了 `onscreen_contract` 时，必须同时声明顶层 `primary_relation`（`type`/`scope`/`authority: hard`）——这是页面主关系的唯一强约束声明，独立于是否需要完整的 `onscreen_contract` 模块契约，因此不会因为作者省略 `onscreen_contract` 而漏掉主关系声明。页面若存在真实的局部/辅助关系（不改变主关系拓扑的影响、依赖、反馈或引用），必须写入 `secondary_relations`（`authority: soft`），而不是留给 AUTHOR 在 `relationships[]` 里自行发明。`audit-plan` 阻断两类问题：缺少必填 `primary_relation`；`parallel` 页面的 `secondary_relations` 把全部 scope 条目串成一条链，变相塞入被禁止的隐藏顺序。`audit-final` 阻断 AUTHOR 写出的、未经 PLAN 在 `primary_relation`/`secondary_relations` 中批准的 `relationships[]` 边。
+
 项目定位、能力、任务、职责和验证场景等功能性模块的明细项，来源或已批准页面关系提供了对象、作用、任务或边界时，应采用“业务标签：细化说明”，如“绿色低碳：检验标准在该类业务中的适用性”，末尾不加句号。来源只列分类名称且没有项目级细节时，可以在 Plan 的 `onscreen_contract.detail_policy` 中声明 `label_only_allowed: true`，保留标签式列举；不得为满足形式补写无来源说明。`page-lint`、`script-audit` 和 Script Engine 的 PLAN→AUTHOR 审计共同检查 `ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL`。
 
 PLAN 与 AUTHOR Critic 还应执行来源适配质询：页面和模块分别提出什么问题、每条来源是否直接回答、同级项是否共享语义轴和角色、分组是否仅由同段出现造成。质询必须绑定具体 `evidence_ref`，同一模型的自由说明不能替代结构化门禁。回答为否或不确定时必须修复，不得自行解释后放行。确定性审计同时保留高置信的 `ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY` 检查。

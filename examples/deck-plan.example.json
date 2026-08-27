@@ -30,6 +30,11 @@
       "message": "数据资源先完成治理，再通过可信使用机制控制授权、安全和审计，二者共同支撑服务输出。",
       "logic": "资源治理与可信使用共同形成服务输出的基础",
       "content": ["数据目录、标准和质量治理", "授权控制、安全保护和审计留痕", "数据、模型和分析服务输出"],
+      "primary_relation": {
+        "type": "sequence",
+        "scope": ["数据资源", "可信流通", "服务应用"],
+        "authority": "hard"
+      },
       "next": "下一页进一步说明支撑该机制的具体能力。",
       "source_scope": ["ST001", "ST002", "ST003", "ST004"],
       "structural_operation": "preserve",

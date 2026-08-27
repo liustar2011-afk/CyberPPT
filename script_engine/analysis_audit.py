@@ -631,6 +631,109 @@ def _audit_onscreen_contract_definition(
     return _onscreen_contract_definition_issues(page, contract, items)
 
 
+_SECONDARY_RELATION_TYPES = {"influence", "dependency", "feedback", "reference"}
+
+
+def _primary_relation_issues(page: dict[str, Any]) -> list[str]:
+    """Validate the page's mandatory primary/secondary relation declaration.
+
+    `primary_relation` is the single hard-authority statement of a page's main
+    topology (parallel/sequence/hierarchy/matrix/mixed/none). `secondary_relations`
+    is the only sanctioned place for local, soft-authority arrows between scope
+    entries. Both exist so AUTHOR never has to invent a relation PLAN did not
+    approve, and so a parallel page cannot be silently turned into a sequence via
+    local arrows.
+    """
+    issues: list[str] = []
+    content = [c for c in (page.get("content") or []) if isinstance(c, str)]
+    has_contract = isinstance(page.get("onscreen_contract"), dict)
+    primary = page.get("primary_relation")
+    if not isinstance(primary, dict):
+        if len(content) >= 2 or has_contract:
+            issues.append(
+                "primary_relation is required when a page has 2+ content items or an onscreen_contract"
+            )
+        return issues
+
+    scope = [s for s in primary.get("scope") or [] if isinstance(s, str) and s]
+    scope_set = set(scope)
+    rel_type = primary.get("type")
+    if rel_type == "parallel" and len(scope) < 2:
+        issues.append("primary_relation.type='parallel' requires at least two scope entries")
+
+    secondary = [r for r in page.get("secondary_relations") or [] if isinstance(r, dict)]
+    for s_index, relation in enumerate(secondary):
+        from_label, to_label = relation.get("from"), relation.get("to")
+        if scope_set and (from_label not in scope_set or to_label not in scope_set):
+            issues.append(
+                f"secondary_relations[{s_index}]: from/to must both be within primary_relation.scope"
+            )
+        if relation.get("type") not in _SECONDARY_RELATION_TYPES:
+            issues.append(
+                f"secondary_relations[{s_index}].type must be one of: {sorted(_SECONDARY_RELATION_TYPES)}"
+            )
+
+    if rel_type == "parallel" and len(scope) >= 2 and secondary:
+        adjacency: dict[str, set[str]] = {}
+        for relation in secondary:
+            from_label, to_label = relation.get("from"), relation.get("to")
+            if from_label in scope_set and to_label in scope_set:
+                adjacency.setdefault(from_label, set()).add(to_label)
+                adjacency.setdefault(to_label, set()).add(from_label)
+        if adjacency:
+            start = next(iter(adjacency))
+            visited = {start}
+            stack = [start]
+            while stack:
+                node = stack.pop()
+                for neighbor in adjacency.get(node, ()):
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        stack.append(neighbor)
+            if visited >= scope_set:
+                issues.append(
+                    "PRIMARY_RELATION_SMUGGLED_SEQUENCE: secondary_relations connect every "
+                    "primary_relation.scope entry into one chain while type='parallel'; this "
+                    "reintroduces a hidden sequence through local relations"
+                )
+
+    return issues
+
+
+def _authored_relationships_issues(page: dict[str, Any], slide: dict[str, Any]) -> list[str]:
+    """Every `relationships[]` edge AUTHOR writes must trace to PLAN's approved topology."""
+    primary = page.get("primary_relation")
+    if not isinstance(primary, dict):
+        return []
+    scope = {s for s in primary.get("scope") or [] if isinstance(s, str)}
+    rel_type = primary.get("type")
+    secondary_pairs = {
+        (relation.get("from"), relation.get("to"))
+        for relation in (page.get("secondary_relations") or [])
+        if isinstance(relation, dict)
+    }
+    hard_topology_allows_scoped_pairs = rel_type in ("sequence", "hierarchy", "matrix", "mixed")
+
+    issues: list[str] = []
+    for r_index, relation in enumerate(slide.get("relationships") or []):
+        if not isinstance(relation, dict):
+            continue
+        from_label, to_label = relation.get("from"), relation.get("to")
+        pair = (from_label, to_label)
+        if pair in secondary_pairs:
+            continue
+        if hard_topology_allows_scoped_pairs and from_label in scope and to_label in scope:
+            continue
+        if not scope and not secondary_pairs:
+            continue
+        issues.append(
+            f"relationships[{r_index}] ({from_label} → {to_label}): not declared in plan's "
+            "primary_relation topology or secondary_relations; AUTHOR cannot invent a relation "
+            "edge PLAN did not sanction"
+        )
+    return issues
+
+
 def _source_consumption_sets(
     contract: dict[str, Any],
 ) -> tuple[set[str], set[str], set[str]]:
@@ -1178,6 +1281,8 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
             issues.append(f"pages.{index} ({page_id}): {composition_issue}")
         for contract_issue in _audit_onscreen_contract_definition(page, items):
             issues.append(f"pages.{index} ({page_id}): {contract_issue}")
+        for relation_issue in _primary_relation_issues(page):
+            issues.append(f"pages.{index} ({page_id}): {relation_issue}")
         for consumption_issue in _audit_source_consumption_definition(page, items):
             issues.append(f"pages.{index} ({page_id}): {consumption_issue}")
         for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
@@ -1284,6 +1389,8 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
             issues.append(f"slides.{index} ({slide_id}): {composition_issue}")
         for contract_issue in _audit_authored_onscreen_contract(page, slide, items):
             issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
+        for relation_issue in _authored_relationships_issues(page, slide):
+            issues.append(f"slides.{index} ({slide_id}): {relation_issue}")
         for consumption_issue in _audit_authored_source_consumption(page, slide, items):
             issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
         for coverage_issue in _audit_authored_content_coverage(page, slide):

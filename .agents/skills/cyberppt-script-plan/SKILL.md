@@ -129,6 +129,37 @@ audit checks the declaration; final-script audit checks that its sentence
 signals and container headings survive authoring. Actual wrapping, geometry,
 and font-size verification remains Stage 02 work.
 
+Whenever a page has two or more `content` items, or declares `onscreen_contract`,
+add required top-level `primary_relation`. This is the page's single hard-authority
+statement of its main topology — the mandatory counterpart to the optional
+`onscreen_contract`, so a page can never silently ship without declaring what its
+main relation is:
+
+- `type`: `parallel`, `sequence`, `hierarchy`, `matrix`, `mixed` or `none`;
+- `scope`: the canonical short labels of the items this relation covers. Pick the
+  exact labels AUTHOR must reuse verbatim as onscreen headings and as
+  `relationships[].from`/`to` — do not leave scope to be improvised downstream;
+- `authority`: always `hard`.
+
+When a page also carries a genuine local/directional relation between two scope
+entries (an influence, dependency, feedback loop, or cross-reference that is real
+but does not change the page's main topology), declare it as an entry in optional
+`secondary_relations`, never as a bare, unreviewed edge in AUTHOR's output:
+
+- `from` / `to`: labels drawn from `primary_relation.scope`;
+- `type`: `influence`, `dependency`, `feedback` or `reference`;
+- `authority`: always `soft` — it must not be read as changing the page's primary
+  topology;
+- `basis`: `explicit` or `inferred`, plus `evidence_ref` when available.
+
+`audit-plan` blocks a `parallel` page whose `secondary_relations` connect every
+scope entry into one chain — that is a hidden sequence smuggled in through local
+arrows, not a genuine set of independent local relations. `audit-final` blocks any
+`relationships[]` edge AUTHOR writes that is not present in `secondary_relations`
+(or, for `sequence`/`hierarchy`/`matrix`/`mixed` pages, not between two declared
+scope entries): AUTHOR may describe an approved relation in its own words, but may
+not invent a new edge PLAN never reviewed.
+
 When a content page's visible modules can be confused as a sequence, mix different
 business dimensions, or absorb a page-level conclusion, add an optional
 `onscreen_contract`. Keep it source-constrained and small:
@@ -286,6 +317,10 @@ Run:
     a source-bound `evidence_fit_review`; every parent exhaustively covers its
     children, siblings share one answer axis, source co-location is not used as
     hierarchy, and a counter-grouping has been considered.
+15. Primary/secondary relation test: every page with 2+ content items declares
+    `primary_relation`; any local arrow is a reviewed `secondary_relations` entry,
+    not a bare edge left for AUTHOR to invent; a `parallel` page's
+    `secondary_relations` do not chain every scope entry into one hidden sequence.
 
 Repair the same plan. Reordering across chapters is not a default repair for weak continuity.
 

@@ -169,6 +169,12 @@ dimension; it does not require equal detail counts or identical wording. Do not
 turn a parallel contract into a progression chain through arrows, temporal words or
 step language unless the approved plan declares that relation.
 
+Every page with 2+ content items also carries a required `primary_relation` — the
+plan's single hard-authority statement of the page's main topology, independent of
+whether `onscreen_contract` is present. Its `scope` entries are the canonical
+labels: reuse them verbatim as onscreen headings and as `relationships[].from`/`to`
+(see section 7). Do not relabel, merge or split a `primary_relation.scope` entry.
+
 Before AUTHOR, require the approved Deck Plan to declare
 `evidence_fit_review_mode: strict` and pass `audit-plan`. Do not treat a free-form
 Critic explanation as proof that sources fit: page and module reviews must bind
@@ -218,6 +224,8 @@ items merely because they were assigned to the page.
 ## 7. Visual semantics
 
 `visual_thesis` states the page's judgment (see the Thesis-voice rule above); `relationships` describes the semantic structure that supports it — the two are not the same job, and `visual_thesis` must not collapse into a structure description either.
+
+Every `relationships[]` edge must trace to the approved plan's `primary_relation`/`secondary_relations`: either it matches a declared `secondary_relations` entry (`from`/`to`/`type`), or the page's `primary_relation.type` is `sequence`, `hierarchy`, `matrix` or `mixed` and both endpoints are in its `scope`. Do not invent an edge PLAN never reviewed — `audit-final` blocks it. A `parallel` or `none` page may only carry the edges PLAN explicitly approved as `secondary_relations`; if a real local relation exists but PLAN did not declare it, return to PLAN rather than adding it here. Use `from`/`to` labels exactly as PLAN declared them in `primary_relation.scope`, matching the onscreen heading vocabulary.
 
 Every material arrow/dependency must be explicit or inferred with support. If the correct source structure is classification, use grouping/taxonomy semantics instead of arrows.
 
