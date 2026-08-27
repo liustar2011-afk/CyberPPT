@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+import warnings
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -505,19 +506,50 @@ def _visible_text_bindings(
     visible_text: tuple[str, ...],
     content_nodes: object,
 ) -> tuple[VisibleTextBindingSpec, ...]:
-    """Project the existing content-integrity tree without fuzzy matching."""
+    """Project the authoritative content-integrity tree without fuzzy matching.
+
+    Current Stage 02 output carries text/text_id/root_id/ordinal on each node.
+    A narrow compatibility path remains for older audited fixtures that already
+    carry a complete, unique text_id/root_id chain but predate the duplicated
+    node ``text``/``ordinal`` fields. That projection is positional, emits an
+    explicit warning, and never guesses ownership by text similarity.
+    """
 
     if not isinstance(content_nodes, list) or not content_nodes:
         return ()
-    ordered = sorted(
-        (node for node in content_nodes if isinstance(node, dict)),
-        key=lambda node: int(node.get("ordinal") or 0),
-    )
-    node_text = tuple(str(node.get("text") or "").strip() for node in ordered)
-    if node_text != visible_text:
-        raise ValueError(
-            "artifact spec cannot bind visible text because content-integrity node text/order drifted"
+    nodes = [node for node in content_nodes if isinstance(node, dict)]
+    if len(nodes) != len(content_nodes):
+        raise ValueError("artifact spec content-integrity nodes must all be objects")
+
+    has_text = [bool(str(node.get("text") or "").strip()) for node in nodes]
+    compatibility_projection = not any(has_text)
+    if compatibility_projection:
+        if len(nodes) != len(visible_text):
+            raise ValueError(
+                "legacy content-integrity projection requires one node per exact visible-text item"
+            )
+        ids = [str(node.get("text_id") or "").strip() for node in nodes]
+        roots = [str(node.get("root_id") or "").strip() for node in nodes]
+        if not all(ids) or len(ids) != len(set(ids)) or not all(roots):
+            raise ValueError(
+                "legacy content-integrity projection requires complete unique text_id/root_id authority"
+            )
+        warnings.warn(
+            "projecting legacy content-integrity nodes by audited list order; regenerate Stage 02 data to persist node text/ordinal",
+            RuntimeWarning,
+            stacklevel=2,
         )
+        ordered = list(nodes)
+    else:
+        if not all(has_text):
+            raise ValueError("artifact spec content-integrity nodes cannot mix text-bearing and legacy nodes")
+        ordered = sorted(nodes, key=lambda node: int(node.get("ordinal") or 0))
+        node_text = tuple(str(node.get("text") or "").strip() for node in ordered)
+        if node_text != visible_text:
+            raise ValueError(
+                "artifact spec cannot bind visible text because content-integrity node text/order drifted"
+            )
+
     bindings: list[VisibleTextBindingSpec] = []
     seen_ids: set[str] = set()
     for position, node in enumerate(ordered, start=1):
@@ -539,6 +571,7 @@ def _visible_text_bindings(
             )
         )
     return tuple(bindings)
+
 
 
 def build_page_artifact_spec(

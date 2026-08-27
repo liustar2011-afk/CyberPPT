@@ -288,7 +288,7 @@ class BuildFinalPromptIRTests(unittest.TestCase):
         # Style 09/10 deliberately does not forward the anti-generic-scene
         # constraint or the auxiliary-image budget (see
         # _style09_visual_responsibility's docstring in artifact_prompt.py),
-        # so exercise the general (non-Style09) surface this test targets.
+        # so exercise the general (internal style routing token) surface this test targets.
         spec = replace(
             _artifact_spec(),
             prompt_mode="directed_composition",

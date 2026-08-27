@@ -5,13 +5,15 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from scripts.imagegen_pipeline.imagegen_handoff import (
-    IMAGEGEN_CANVAS_CONTRACT as BODY_IMAGE_CANVAS_CONTRACT,
-)
-from scripts.imagegen_pipeline.page_manifest import FULL_IMAGE_MODE, require_generated
-from scripts.imagegen_pipeline.providers.codex_oauth_image import ensure_output_size, run_codex_image
-from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPTX_ROUTE
-from cyberppt.commands.production_qa import run_officecli_render_qa
+from cyberppt.stage02_production import compat as _compat
+
+BODY_IMAGE_CANVAS_CONTRACT = _compat.BODY_IMAGE_CANVAS_CONTRACT
+CANONICAL_EDITABLE_PPTX_ROUTE = _compat.CANONICAL_EDITABLE_PPTX_ROUTE
+FULL_IMAGE_MODE = _compat.FULL_IMAGE_MODE
+ensure_output_size = _compat.ensure_output_size
+require_generated = _compat.require_generated
+run_codex_image = _compat.run_codex_image
+run_officecli_render_qa = _compat.run_officecli_render_qa
 
 from cyberppt.stage02_production import image_stage as _image_stage
 from cyberppt.stage02_production import orchestrator as _orchestrator
@@ -39,12 +41,19 @@ from cyberppt.stage02_production.reconstruction_stage import _run_image_to_edita
 
 def _sync_legacy_patch_points() -> None:
     """Keep existing monkey-patch/import paths effective during migration."""
-    _image_stage.run_codex_image = run_codex_image
-    _image_stage.ensure_output_size = ensure_output_size
-    _orchestrator.require_generated = require_generated
-    _reconstruction_stage._run_image_to_editable_svg_build = _run_image_to_editable_svg_build
-    _delivery_stage.run_officecli_render_qa = run_officecli_render_qa
-    _delivery_stage._append_ledger = _append_ledger
+    _compat.sync_legacy_patch_points(
+        image_stage=_image_stage,
+        orchestrator=_orchestrator,
+        reconstruction_stage=_reconstruction_stage,
+        delivery_stage=_delivery_stage,
+        run_codex_image_patch=run_codex_image,
+        ensure_output_size_patch=ensure_output_size,
+        require_generated_patch=require_generated,
+        reconstruction_patch=_run_image_to_editable_svg_build,
+        officecli_patch=run_officecli_render_qa,
+        append_ledger_patch=_append_ledger,
+    )
+
 
 
 def _generate_manifest_images(*args: Any, **kwargs: Any) -> dict[str, Any]:
@@ -126,7 +135,6 @@ def run_final_script_pages(
             skip_image_text_audit=skip_image_text_audit,
             allow_prompt_edit=allow_prompt_edit,
             prompt_overrides_dir=prompt_overrides_dir,
-            allow_script_edit_requested=allow_script_edit,
         )
     )
     return result.delivery.summary

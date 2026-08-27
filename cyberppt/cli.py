@@ -44,6 +44,12 @@ from cyberppt.stage02_handoff import (
 from cyberppt.stage01_compiler import compile_source_truth
 
 
+def _warn_deprecated_compatibility_flag(name: str) -> None:
+    print(
+        f"warning: {name} is deprecated compatibility-only; it does not alter current gates and is planned for removal in the next major CLI revision.",
+        file=sys.stderr,
+    )
+
 def _doctor() -> int:
     required_palette_samples = [
         ASSETS_DIR / "palette-samples" / f"palette-{style_id:02d}.png"
@@ -191,6 +197,8 @@ def _semantic_check_command(args: argparse.Namespace) -> int:
 
 
 def _prepare_visual_structure_command(args: argparse.Namespace) -> int:
+    if getattr(args, "lightweight_stage01_confirmed", False):
+        _warn_deprecated_compatibility_flag("--lightweight-stage01-confirmed")
     try:
         path = prepare_visual_structure_stage(
             Path(args.project),
@@ -240,6 +248,8 @@ def _visual_structure_audit_command(args: argparse.Namespace) -> int:
 
 
 def _prepare_stage02_handoff_command(args: argparse.Namespace) -> int:
+    if getattr(args, "lightweight_stage01_confirmed", False):
+        _warn_deprecated_compatibility_flag("--lightweight-stage01-confirmed")
     try:
         report = prepare_stage02_handoff(
             Path(args.project),
@@ -385,6 +395,10 @@ def _enhance_image_command(args: argparse.Namespace) -> int:
 
 
 def _final_script_pages_command(args: argparse.Namespace) -> int:
+    if getattr(args, "lightweight_stage01_confirmed", False):
+        _warn_deprecated_compatibility_flag("--lightweight-stage01-confirmed")
+    if getattr(args, "allow_script_edit", False):
+        _warn_deprecated_compatibility_flag("--allow-script-edit")
     if args.blueprint_only and args.production_build:
         print("--blueprint-only cannot be combined with --production-build", file=sys.stderr)
         return 2
@@ -529,7 +543,7 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_visual_structure.add_argument(
         "--lightweight-stage01-confirmed",
         action="store_true",
-        help="Deprecated compatibility flag; Stage 02 authorization is determined by the current passed full-script audit.",
+        help="Deprecated compatibility-only flag; retained for old callers and does not change the current Stage 02 authorization gate.",
     )
     prepare_visual_structure.set_defaults(func=_prepare_visual_structure_command)
 
@@ -572,7 +586,7 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_handoff.add_argument(
         "--lightweight-stage01-confirmed",
         action="store_true",
-        help="Deprecated compatibility flag; Stage 02 uses the script contract and its current handoff.",
+        help="Deprecated compatibility-only flag; retained for old callers and does not change the current Stage 02 handoff gate.",
     )
     prepare_handoff.set_defaults(func=_prepare_stage02_handoff_command)
 
@@ -790,8 +804,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--allow-script-edit",
         action="store_true",
         help=(
-            "Deprecated compatibility flag. Refresh the Stage 02 handoff and visual structure "
-            "after changing a script; prompt and production gates remain required."
+            "Deprecated compatibility-only flag; retained for old callers and does not change the current Stage 02, prompt, or production gates."
         ),
     )
     final_script_pages_parser.add_argument(
@@ -810,8 +823,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--lightweight-stage01-confirmed",
         action="store_true",
         help=(
-            "Deprecated compatibility flag. It no longer grants Stage 02 authorization; "
-            "the current passed script-audit is the content precondition."
+            "Deprecated compatibility-only flag; retained for old callers and does not grant Stage 02 authorization or change the current content gate."
         ),
     )
     final_script_pages_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
@@ -872,7 +884,7 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument(
         "--no-style-reference",
         action="store_true",
-        help="Do not pass the Style 09 reference image to the image backend.",
+        help="Do not pass the selected style reference image to the image backend.",
     )
     final_script_pages_parser.add_argument("--dry-run-images", action="store_true")
     final_script_pages_parser.add_argument(
