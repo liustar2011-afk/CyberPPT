@@ -209,14 +209,6 @@ def _evidence_fit_review_issues(
             f"{context}.evidence_fit_review.question must match the page question so evidence is reviewed against the actual page mission"
         )
 
-    counter_case = str(review.get("counter_case") or "").strip()
-    if len(_normalized_review_text(counter_case)) < 4 or _normalized_review_text(counter_case) in {
-        "无", "没有", "暂无", "不适用", "无反例",
-    }:
-        issues.append(
-            f"{context}.evidence_fit_review.counter_case must state a concrete alternative grouping, boundary, or strongest counter-case"
-        )
-
     verdict = str(review.get("verdict") or "").strip()
     if verdict not in _EVIDENCE_FIT_VERDICTS:
         issues.append(

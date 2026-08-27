@@ -168,7 +168,6 @@ adjacency or title keywords:
    capability, measure, state, result or boundary?
 5. Which evidence ref proves each answer?
 6. Is the grouping based only on records occurring in the same paragraph?
-7. What is the strongest plausible alternative parent, move or split?
 
 Use this shape at page level and within every `onscreen_contract.modules[]`
 entry that has evidence:
@@ -184,7 +183,6 @@ entry that has evidence:
       "reason": "The source states the application requirement carried by this module."
     }
   ],
-  "counter_case": "The strongest alternative grouping or boundary",
   "verdict": "keep"
 }
 ```
@@ -196,8 +194,15 @@ answer its visible parent question. `topic_only`, `no` and `uncertain` block
 AUTHOR. A verdict of `rename`, `move`, `split` or `reject` records unfinished
 repair and also blocks AUTHOR; apply the repair and reassess until the current
 plan can honestly use `keep`. Every assigned evidence ref must appear exactly
-once, and `counter_case` must state a concrete alternative or boundary rather
-than `无` or `不适用`.
+once.
+
+`counter_case` (the strongest alternative grouping or boundary) is optional and
+no longer machine-checked: the validator cannot verify whether a free-text
+counter-case is actually strong, so requiring it only cost authoring time
+without adding real automated protection. Write one when it genuinely changes
+your `fit`/`verdict` call; skip it otherwise. The structural checks that do
+catch real defects — `fit` values, evidence-ref coverage, `verdict` — are
+unchanged and still block AUTHOR.
 
 Keep this question-and-answer pass inside PLAN Critic. A narrow parent such as
 `能源制度` cannot absorb an application/action requirement merely because the

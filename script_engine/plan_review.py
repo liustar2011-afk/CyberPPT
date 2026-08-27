@@ -110,7 +110,13 @@ def _append_evidence_fit_review(
             f"#### {title}",
             "",
             f"- 质询问题：{_text(review.get('question'))}",
-            f"- 最强反例：{_text(review.get('counter_case'))}",
+        ]
+    )
+    counter_case = str(review.get("counter_case") or "").strip()
+    if counter_case:
+        lines.append(f"- 最强反例：{counter_case}")
+    lines.extend(
+        [
             f"- 当前结论：{_label(review.get('verdict'), _EVIDENCE_FIT_VERDICT_LABELS)}",
             "",
             "| 来源 | 适配关系 | 来源角色 | 判断依据 |",

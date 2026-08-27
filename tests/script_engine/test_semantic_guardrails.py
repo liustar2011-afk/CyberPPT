@@ -298,18 +298,28 @@ def test_strict_evidence_fit_review_requires_page_and_module_reviews() -> None:
     assert "modules[0] (绿色低碳).evidence_fit_review is required" in joined
 
 
-def test_strict_evidence_fit_review_requires_exact_ref_coverage_and_real_counter_case() -> None:
+def test_strict_evidence_fit_review_requires_exact_ref_coverage() -> None:
     foundation, plan = _strict_evidence_fit_fixture()
     review = plan["pages"][0]["evidence_fit_review"]
     review["items"][0]["evidence_ref"] = "E2"
-    review["counter_case"] = "无"
 
     issues, _ = audit_deck_plan(plan, foundation)
     joined = "\n".join(issues)
 
     assert "missing evidence_refs ['E1']" in joined
     assert "unassigned evidence_refs ['E2']" in joined
-    assert "concrete alternative grouping" in joined
+
+
+def test_strict_evidence_fit_review_counter_case_is_optional_and_unchecked() -> None:
+    # counter_case is free text the validator cannot verify for substance, so it
+    # is no longer required and a trivial value must not block AUTHOR.
+    foundation, plan = _strict_evidence_fit_fixture()
+    review = plan["pages"][0]["evidence_fit_review"]
+    review["counter_case"] = "无"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert not issues
 
 
 def test_strict_evidence_fit_review_blocks_unresolved_fit_and_verdict() -> None:

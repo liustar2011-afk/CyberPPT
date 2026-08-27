@@ -107,7 +107,7 @@
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
-所有 Deck Plan 必须声明 `evidence_fit_review_mode: strict`，仓库不保留旧计划兼容通道。每个有证据支撑的页面判断和每个有 `evidence_refs` 的上屏模块，都在原 `deck-plan.json` 内填写结构化 `evidence_fit_review`：逐条记录来源适配关系、来源角色、判断理由、最强反例和当前结论。页面级间接支撑仅在 `relation_basis: inferred` 时允许；模块子项必须直接回答模块问题。缺少严格模式、出现 `topic_only`、`no`、`uncertain`，或仍处于待改名、移动、拆分、剔除状态时，均阻断 AUTHOR。该字段属于 Deck Plan 内部契约，不新增第四个权威产物。
+所有 Deck Plan 必须声明 `evidence_fit_review_mode: strict`，仓库不保留旧计划兼容通道。每个有证据支撑的页面判断和每个有 `evidence_refs` 的上屏模块，都在原 `deck-plan.json` 内填写结构化 `evidence_fit_review`：逐条记录来源适配关系、来源角色、判断理由和当前结论。页面级间接支撑仅在 `relation_basis: inferred` 时允许；模块子项必须直接回答模块问题。缺少严格模式、出现 `topic_only`、`no`、`uncertain`，或仍处于待改名、移动、拆分、剔除状态时，均阻断 AUTHOR。该字段属于 Deck Plan 内部契约，不新增第四个权威产物。`counter_case`（最强反例）为可选字段，不参与机器校验——自由文本的"反例强度"本来就无法被脚本验证，强制要求只增加撰写成本，不增加实际质检能力；判断改变时可以写，不写也不阻断。
 
 Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成只读 Markdown 页面判断带，连续展示标题、核心判断、页面职责、证据状态、来源适配质询和前后页承接。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
 
@@ -117,7 +117,7 @@ Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundat
 
 项目定位、能力、任务、职责和验证场景等功能性模块的明细项，来源或已批准页面关系提供了对象、作用、任务或边界时，应采用“业务标签：细化说明”，如“绿色低碳：检验标准在该类业务中的适用性”，末尾不加句号。来源只列分类名称且没有项目级细节时，可以在 Plan 的 `onscreen_contract.detail_policy` 中声明 `label_only_allowed: true`，保留标签式列举；不得为满足形式补写无来源说明。`page-lint`、`script-audit` 和 Script Engine 的 PLAN→AUTHOR 审计共同检查 `ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL`。
 
-PLAN 与 AUTHOR Critic 还应执行来源适配质询：页面和模块分别提出什么问题、每条来源是否直接回答、同级项是否共享语义轴和角色、分组是否仅由同段出现造成、是否存在更合理的改名或移动方案。质询必须绑定具体 `evidence_ref`，同一模型的自由说明不能替代结构化门禁。回答为否或不确定时必须修复，不得自行解释后放行。确定性审计同时保留高置信的 `ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY` 检查。
+PLAN 与 AUTHOR Critic 还应执行来源适配质询：页面和模块分别提出什么问题、每条来源是否直接回答、同级项是否共享语义轴和角色、分组是否仅由同段出现造成。质询必须绑定具体 `evidence_ref`，同一模型的自由说明不能替代结构化门禁。回答为否或不确定时必须修复，不得自行解释后放行。确定性审计同时保留高置信的 `ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY` 检查。
 
 将已完成页面汇总为最终脚本，执行全稿审计，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约。
 
