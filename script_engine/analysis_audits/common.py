@@ -15,7 +15,7 @@ from cyberppt.stage02_readiness import (
     audit_authored_stage02_readiness,
     audit_stage02_readiness,
 )
-from .internal_report_voice import (
+from ..internal_report_voice import (
     audit_final_internal_expert_voice,
     audit_plan_internal_expert_voice,
 )
