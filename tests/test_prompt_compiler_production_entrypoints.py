@@ -2,16 +2,14 @@
 
 ``scripts.imagegen_pipeline.prompt_compiler.DEFAULT_PROMPT_COMPILER`` stays
 "content-first-v1" on purpose: dozens of existing tests exercise the legacy
-compiler through that shared default (see tests/test_imagegen_creative_brief.py
-and friends). Flipping it breaks that coverage without fixing anything real,
-because the two actual production entry points already force
+compiler through that shared default. The actual production paths force
 "artifact-spec-v2" explicitly:
 
 - ``scripts/imagegen_pipeline/handoff/cli.py`` (the ``--prompt-compiler`` CLI flag)
-- ``cyberppt/commands/final_script_pages.py`` (the real Stage 02 build path)
+- ``cyberppt/stage02_production/manifest_stage.py`` (the typed Stage 02 manifest stage)
 
-These tests exist to catch a regression in either of those two call sites,
-not to change the shared multi-compiler library default.
+The command facade delegates to the typed production pipeline, so this test
+pins the implementation that now owns the manifest compilation responsibility.
 """
 
 from __future__ import annotations
@@ -69,8 +67,8 @@ class ProductionEntrypointCompilerTests(unittest.TestCase):
                 self.assertEqual(ARTIFACT_PROMPT_COMPILER, ast.literal_eval(default_node))
         self.assertTrue(found, "--prompt-compiler argument not found in handoff/cli.py")
 
-    def test_final_script_pages_build_manifest_uses_artifact_spec_v2(self) -> None:
-        source = (REPO_ROOT / "cyberppt/commands/final_script_pages.py").read_text(encoding="utf-8")
+    def test_stage02_manifest_stage_uses_artifact_spec_v2(self) -> None:
+        source = (REPO_ROOT / "cyberppt/stage02_production/manifest_stage.py").read_text(encoding="utf-8")
         value = _call_kwarg_value(source, "build_manifest", "prompt_compiler")
         self.assertEqual(ARTIFACT_PROMPT_COMPILER, value)
 
