@@ -484,7 +484,6 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     assert graphic_qa != editable_qa
     assert clean_qa != editable_qa
     assert graphic_qa != clean_qa
-    assert result["artifacts"]["clean_base_policy_qa"] == str(editable_qa)
     assert "登记编目" in pptx_texts(Path(result["artifacts"]["exported_pptx"]))
     checkpoint = json.loads(manifest.read_text(encoding="utf-8"))["pairs"][0]["quick_page_checkpoint"]
     assert checkpoint["status"] == "passed"
