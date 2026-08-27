@@ -1,0 +1,75 @@
+{
+  "mode": "chart_heavy",
+  "input": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-e_bseglu\\input.png",
+  "output": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-e_bseglu\\output.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-e_bseglu\\input.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 2610.83,
+    "edge_density": 0.065658,
+    "near_white_ratio": 0.605134,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.1014,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help.",
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "after": {
+    "file": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-e_bseglu\\output.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 2943.0429,
+    "edge_density": 0.063866,
+    "near_white_ratio": 0.606845,
+    "noise_estimate": 0.0,
+    "blockiness_score": 0.9601,
+    "notes": [
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.997265,
+    "normalized_mean_abs_delta": 0.008225,
+    "edge_recall": 0.998376,
+    "edge_precision": 0.934708
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "ppt_page",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-e_bseglu\\input.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 2610.83,
+      "edge_density": 0.065658,
+      "near_white_ratio": 0.605134,
+      "noise_estimate": 0.0,
+      "blockiness_score": 1.1014,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help.",
+        "Large near-white area detected; white-background protection is recommended."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}
