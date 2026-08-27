@@ -115,6 +115,10 @@ Important qualifiers, responsibilities, numbers, rights and distinctions must su
 
 If adjacent pages feel disconnected, strengthen the bridge or page argument first. Reordering across source chapters is not a default repair.
 
+### Thesis-voice test
+
+`core_message` and `visual_thesis` must state the page's actual judgment — the claim the audience should accept or reject — not describe how the author arrived at it. A sentence whose grammatical subject is an analytical action or artifact (识别起点、筛选标准、判断依据、分析框架、归纳结论) rather than a business subject (紫金云、首期MVP、交易员岗位、投入上限) is process narration wearing a thesis's clothes, even without any explicit/inferred/speculative label. Self-test: read the sentence aloud to the decision-maker it is written for — do they receive a business judgment they can act on, or a description of the method that produced one? Only the former passes. `contracts/banned-phrasing.json`'s `analysis-process-as-thesis` rule catches the clearest cases mechanically; less regular phrasing still needs Critic judgment.
+
 ### Echo test
 
 Title, subtitle, core message and module headings must perform different roles.
@@ -138,6 +142,10 @@ Render the canonical Markdown and verify it does not contain:
 
 After split, merge, deletion or renumbering, re-read every affected page's `full_copy`, `speaker_notes`, `visual_thesis` and relationships. Any reference to an old page boundary, old half-page split (`前三步/后三步`) or a page that no longer exists is a hard rewrite trigger.
 
+### Process-voice test
+
+Same check as the Thesis-voice test above, run at delivery time against the rendered Markdown's `核心结论` line and any visual-thesis text carried into it: the sentence must commit to a judgment, not describe the identification/screening/synthesis work that produced one.
+
 ### Argument-label rendering test
 
 Internal `argument.pattern` values may remain machine-oriented in JSON, but canonical Markdown must render a short Chinese semantic label (`问题回应 / 分类结构 / 演进路径 / 风险保障 / 推进流程` etc.). Unknown English model names must not pass through to the delivery boundary.
@@ -154,6 +162,7 @@ Rewrite when:
 - a group-wide claim overstates one member's evidence;
 - internal-only information appears in external-facing prose;
 - a plausible implication is written as a source fact;
+- `core_message` or `visual_thesis` narrates the analysis process (识别/筛选/归纳 as grammatical subject) instead of stating the judgment itself;
 - title/message/modules echo each other;
 - evidence-grade or analysis-model language appears in canonical Markdown;
 - a structural edit leaves `上一页/下一页/前三步/后三步` residue in affected prose;

@@ -89,7 +89,14 @@ def _import_skill_module(script_path: Path, module_name: str):
 
 
 def _run(command: list[str]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(command, text=True, capture_output=True, check=False)
+    # markitdown's magika dependency loads an onnxruntime session; with the
+    # default multi-threaded onnxruntime config this segfaults on interpreter
+    # shutdown on macOS ("recursive_mutex lock failed"), even though the
+    # conversion itself already completed successfully. Forcing single-threaded
+    # execution avoids the crash without changing conversion output.
+    env = dict(os.environ)
+    env.setdefault("OMP_NUM_THREADS", "1")
+    return subprocess.run(command, text=True, capture_output=True, check=False, env=env)
 
 
 def _extract_error(stdout: str, stderr: str, fallback: str, source: Path | None = None) -> str:

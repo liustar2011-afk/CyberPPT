@@ -129,33 +129,96 @@ def _discover_dirs(
     return Path(str(item["foundation"])).expanduser().resolve(), Path(str(item["semantic"])).expanduser().resolve()
 
 
-def _block_to_source_unit(project: Path, structure: dict[str, Any]) -> dict[str, str]:
-    blocks = _items(structure.get("blocks"))
-    units = sorted(
-        (
-            item
-            for item in load_source_units(project)
-            if _text(item.get("kind")) != "heading"
-        ),
-        key=lambda item: int(item.get("source_order") or 0),
-    )
-    if len(blocks) != len(units):
-        raise ValueError(
-            "source-foundation blocks and stable non-heading source units differ in count: "
-            f"{len(blocks)} != {len(units)}"
-        )
+def _block_row_texts(block: dict[str, Any]) -> list[str]:
+    """Return one comparable text per addressable row inside ``block``.
 
-    result: dict[str, str] = {}
+    A `paragraph`-type block (or any block without a `rows` breakdown) is a
+    single addressable row: its own text. A `table`-type block bundles every
+    data row of one Markdown table (plus its synthetic empty header and
+    divider lines) into one block, while fact-base.json's table facts and the
+    docx-native stable source map both address each row individually. `rows`/
+    `raw_rows` (written by source_structure_factbase's table parser) already
+    enumerate exactly those addressable rows in document order, so reuse them
+    instead of re-deriving row boundaries here.
+    """
+
+    rows = block.get("rows")
+    if isinstance(rows, list) and rows:
+        # `rows` holds each row already split into per-cell strings (no `|`
+        # table syntax); join with the same " | " separator the docx-native
+        # stable source map uses for its `table_row` unit text, so the two
+        # can be compared directly. `raw_rows` keeps the literal Markdown
+        # line (with its outer `|` and cell-separator syntax) and is not
+        # comparable to unit text without re-parsing it.
+        return [" | ".join(str(cell) for cell in row) for row in rows if isinstance(row, list)]
+    return [str(block.get("text", ""))]
+
+
+def _block_row_lines(block: dict[str, Any], row_count: int) -> list[int]:
+    line_start = int(block.get("line_start") or 0)
+    if block.get("type") == "table" and isinstance(block.get("rows"), list) and block.get("rows"):
+        # Matches source_structure_factbase.factbase's row_line formula
+        # (line_start + 2 to skip the block's own empty-header and divider
+        # lines), so fact evidence's `line_start` lines up with these keys,
+        # regardless of how many rows the table has.
+        return [line_start + 2 + row_index for row_index in range(row_count)]
+    return [line_start]
+
+
+def _block_to_source_unit(project: Path, structure: dict[str, Any]) -> dict[tuple[str, int], str]:
+    blocks = _items(structure.get("blocks"))
+    # In the normal case (structure.json actually detected Markdown `#`
+    # headings), heading text becomes an outline node rather than a block, so
+    # the docx-native heading-kind units it corresponds to must be excluded
+    # here too. But when a source used Word "Heading" styles or whole-
+    # paragraph bold emphasis for its section titles instead of `#`
+    # (`pseudo_headings_used`), the parser recovers an outline without
+    # removing those paragraphs from `blocks` (removing them now would
+    # invalidate every fact-base entry and semantic-authoring artifact
+    # already keyed to today's block IDs) — so their docx-native heading-kind
+    # units DO have a corresponding block and must stay in the pool, or
+    # block/unit counts permanently disagree for the whole document.
+    exclude_heading_units = not bool(structure.get("document", {}).get("pseudo_headings_used"))
+    units = iter(
+        sorted(
+            (
+                item
+                for item in load_source_units(project)
+                if not (exclude_heading_units and _text(item.get("kind")) == "heading")
+            ),
+            key=lambda item: int(item.get("source_order") or 0),
+        )
+    )
+
+    result: dict[tuple[str, int], str] = {}
     mismatches: list[str] = []
-    for block, unit in zip(blocks, units, strict=True):
+    consumed = 0
+    for block in blocks:
         block_id = _text(block.get("block_id"))
-        unit_id = _text(unit.get("unit_id"))
-        if not block_id or not unit_id:
-            raise ValueError("source-foundation block and source unit IDs must be non-empty")
-        if _normalized_binding_text(block.get("text")) != _normalized_binding_text(unit.get("text")):
-            mismatches.append(block_id)
-            continue
-        result[block_id] = unit_id
+        row_texts = _block_row_texts(block)
+        row_lines = _block_row_lines(block, len(row_texts))
+        for line, row_text in zip(row_lines, row_texts, strict=True):
+            try:
+                unit = next(units)
+            except StopIteration as exc:
+                raise ValueError(
+                    "source-foundation blocks address more rows than the stable "
+                    "non-heading source map has units"
+                ) from exc
+            consumed += 1
+            unit_id = _text(unit.get("unit_id"))
+            if not block_id or not unit_id:
+                raise ValueError("source-foundation block and source unit IDs must be non-empty")
+            if _normalized_binding_text(row_text) != _normalized_binding_text(unit.get("text")):
+                mismatches.append(f"{block_id}@{line}")
+                continue
+            result[(block_id, line)] = unit_id
+    remaining = sum(1 for _ in units)
+    if remaining:
+        raise ValueError(
+            "source-foundation blocks address fewer rows than the stable non-heading "
+            f"source map has units: {consumed} matched, {remaining} unit(s) left over"
+        )
     if mismatches:
         preview = ", ".join(mismatches[:8])
         raise ValueError(
@@ -199,14 +262,25 @@ def _source_structure(project: Path) -> list[dict[str, Any]]:
     return result
 
 
-def _fact_unit_refs(fact: dict[str, Any], block_map: dict[str, str]) -> list[str]:
+def _fact_unit_refs(
+    fact: dict[str, Any],
+    block_map: dict[tuple[str, int], str],
+    single_row_blocks: dict[str, str],
+) -> list[str]:
     refs: list[str] = []
     for evidence in _items(fact.get("evidence")):
         block_id = _text(evidence.get("block_id"))
-        unit_id = block_map.get(block_id)
+        line_start = evidence.get("line_start")
+        unit_id = block_map.get((block_id, int(line_start))) if line_start else None
+        if not unit_id:
+            # Evidence without a row-level `line_start` (or one that does not
+            # match) can still resolve unambiguously when the block addresses
+            # exactly one row.
+            unit_id = single_row_blocks.get(block_id)
         if not unit_id:
             raise ValueError(
-                f"normalized fact {_text(fact.get('normalized_fact_id'))} references unmapped block {block_id}"
+                f"normalized fact {_text(fact.get('normalized_fact_id'))} references unmapped block "
+                f"{block_id}" + (f"@{line_start}" if line_start else "")
             )
         if unit_id not in refs:
             refs.append(unit_id)
@@ -238,6 +312,24 @@ def _fact_section_ids(
     return section_ids
 
 
+def _node_statement(item: dict[str, Any], fact_by_id: dict[str, dict[str, Any]]) -> str:
+    statement = _text(item.get("statement"))
+    if statement:
+        return statement
+    # The semantic-contract does not require argument-chain nodes to carry
+    # their own `statement` (only normalized facts must have one); when a
+    # node omits it, its first cited normalized fact's statement stands in
+    # as the node's thesis instead of leaving it — and the deck's overall
+    # thesis derived from it — empty.
+    for fact_id in _strings(item.get("normalized_fact_ids")):
+        fact = fact_by_id.get(fact_id)
+        if fact is not None:
+            statement = _text(fact.get("statement"))
+            if statement:
+                return statement
+    return ""
+
+
 def _node(
     item: dict[str, Any],
     *,
@@ -245,11 +337,12 @@ def _node(
     source_heading: str,
     evidence_refs: list[str],
     weight: str,
+    statement: str,
 ) -> dict[str, Any]:
     return {
         "id": node_id,
         "source_heading": source_heading or node_id,
-        "section_thesis": _text(item.get("statement")),
+        "section_thesis": statement,
         "argument_role": _ROLE_MAP.get(_text(item.get("role")), "evidence"),
         "argument_weight": weight,
         "status": "mixed",
@@ -280,8 +373,17 @@ def build_projection_model(
         if _text(item.get("normalized_fact_id"))
     }
     block_map = _block_to_source_unit(project, structure)
+    single_row_blocks: dict[str, str] = {}
+    ambiguous_blocks: set[str] = set()
+    for (block_id, _line), unit_id in block_map.items():
+        if block_id in single_row_blocks:
+            ambiguous_blocks.add(block_id)
+        else:
+            single_row_blocks[block_id] = unit_id
+    for block_id in ambiguous_blocks:
+        del single_row_blocks[block_id]
     refs_by_fact = {
-        fact_id: _fact_unit_refs(fact, block_map)
+        fact_id: _fact_unit_refs(fact, block_map, single_row_blocks)
         for fact_id, fact in fact_by_id.items()
     }
     blocks_by_id = {
@@ -315,6 +417,7 @@ def build_projection_model(
                 source_heading=section_title.get(first_section, first_section),
                 evidence_refs=evidence_refs,
                 weight="core" if index == 1 else "supporting",
+                statement=_node_statement(item, fact_by_id),
             )
         )
         for fact_id in fact_ids:
@@ -324,12 +427,15 @@ def build_projection_model(
     for index, item in enumerate(source_chain, start=1):
         node_id = _text(item.get("node_id")) or f"SC-{index:03d}"
         for section_id in _strings(item.get("section_ids")):
-            existing = source_node_by_section.setdefault(section_id, node_id)
-            if existing != node_id:
-                raise ValueError(
-                    f"source section {section_id} maps to multiple source-chain nodes: "
-                    f"{existing}, {node_id}"
-                )
+            # The semantic-understanding contract lets one section's argument
+            # be reconstructed as several source_chain nodes (one per
+            # argument beat) rather than a single section-level summary; a
+            # section legitimately maps to more than one node here. Only the
+            # *first* node registered for a section is kept as its fallback
+            # representative below (for facts no chain node explicitly
+            # cites) — first-in-document-order is as good a default owner as
+            # any for a fact the author didn't place in the argument flow.
+            source_node_by_section.setdefault(section_id, node_id)
         fact_ids = [fact_id for fact_id in _strings(item.get("normalized_fact_ids")) if fact_id in fact_by_id]
         evidence_refs = list(dict.fromkeys(ref for fact_id in fact_ids for ref in refs_by_fact[fact_id]))
         first_section = next(iter(_strings(item.get("section_ids"))), "")
@@ -339,6 +445,7 @@ def build_projection_model(
             source_heading=section_title.get(first_section, first_section),
             evidence_refs=evidence_refs,
             weight="supporting",
+            statement=_node_statement(item, fact_by_id),
         )
         node["parent_id"] = next(
             (
@@ -437,10 +544,15 @@ def build_projection_model(
             }
         )
 
-    thesis = "；".join(
-        _text(item.get("statement"))
-        for item in reconstructed
-        if _text(item.get("statement"))
+    # The first reconstructed-chain node is the one node already treated as
+    # "core" above (`weight="core" if index == 1`); use its statement (or its
+    # cited fact's, via the same fallback as `_node_statement`) as the
+    # document's primary thesis. Joining every node's statement instead would
+    # produce an unusably long "thesis" once a document's argument chain is
+    # authored at fine (multi-node-per-section) granularity.
+    thesis = next(
+        (candidate for item in reconstructed[:1] if (candidate := _node_statement(item, fact_by_id))),
+        "",
     )
     thesis_refs = list(dict.fromkeys(ref for fact_id in core_fact_ids for ref in refs_by_fact[fact_id]))
     source = structure.get("source") if isinstance(structure.get("source"), dict) else {}

@@ -73,6 +73,10 @@ For each content page write:
 8. `speaker_notes`;
 9. `source_refs`.
 
+### Thesis-voice rule
+
+`core_message` and `visual_thesis` state the page's judgment itself — the claim the audience should accept or reject — never how it was derived. A sentence whose grammatical subject is an analytical action or artifact (识别起点、筛选标准、判断依据、分析框架) instead of a business subject is process narration wearing a thesis's clothes, even when it never uses a labeled evidence grade. Self-test: read the sentence to the decision-maker it is written for — do they receive a judgment they can act on, or a description of the method that produced one? `contracts/banned-phrasing.json`'s `analysis-process-as-thesis` rule catches the clearest cases mechanically; write clean prose rather than relying on it.
+
 ### Full-copy policy
 
 `full_copy` should:
@@ -119,7 +123,7 @@ Compress only after full copy is sound.
 
 ## 7. Visual semantics
 
-`visual_thesis` and `relationships` describe semantic structure only.
+`visual_thesis` states the page's judgment (see the Thesis-voice rule above); `relationships` describes the semantic structure that supports it — the two are not the same job, and `visual_thesis` must not collapse into a structure description either.
 
 Every material arrow/dependency must be explicit or inferred with support. If the correct source structure is classification, use grouping/taxonomy semantics instead of arrows.
 
