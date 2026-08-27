@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "semantic_validation_report",
+  "status": "ok",
+  "errors": [],
+  "warnings": [
+    {
+      "code": "inferred_relation",
+      "message": "Relation is explicitly labeled as model inference.",
+      "context": {
+        "relation_id": "R-012"
+      }
+    },
+    {
+      "code": "argument_diagnostics_present",
+      "message": "Source argument-chain diagnostics were retained rather than silently repaired.",
+      "context": {
+        "count": 2
+      }
+    }
+  ],
+  "counts": {
+    "normalized_facts": 549,
+    "concepts": 15,
+    "relations": 15,
+    "source_chain_nodes": 36,
+    "reconstructed_chain_nodes": 7,
+    "diagnostics": 2,
+    "atomic_source_assertions": 549,
+    "represented_source_assertions": 549,
+    "unrepresented_source_assertions": 0
+  }
+}

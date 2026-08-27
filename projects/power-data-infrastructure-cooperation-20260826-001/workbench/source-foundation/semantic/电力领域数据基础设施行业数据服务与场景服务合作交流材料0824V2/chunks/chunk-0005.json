@@ -1,0 +1,1763 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "semantic_work_chunk",
+  "chunk_id": "chunk-0005",
+  "section": {
+    "section_id": "sec-0020",
+    "level": 2,
+    "title": "一、合作伙伴类型",
+    "line": 330,
+    "parent_section_id": "sec-0019"
+  },
+  "sections": [
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "一、合作伙伴类型",
+      "line": 330,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "二、合作模式",
+      "line": 346,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 2,
+      "title": "三、平台支持内容",
+      "line": 358,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0023",
+      "level": 2,
+      "title": "四、基本商务机制",
+      "line": 372,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0024",
+      "level": 2,
+      "title": "五、数据安全、权利与衍生成果保障",
+      "line": 386,
+      "parent_section_id": "sec-0019"
+    }
+  ],
+  "section_ids": [
+    "sec-0020",
+    "sec-0021",
+    "sec-0022",
+    "sec-0023",
+    "sec-0024"
+  ],
+  "document_outline": [
+    {
+      "section_id": "sec-0001",
+      "level": 1,
+      "title": "第一章　建设背景与合作基础",
+      "line": 98,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0002",
+      "level": 2,
+      "title": "一、建设背景",
+      "line": 100,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0003",
+      "level": 2,
+      "title": "二、总体定位",
+      "line": 110,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0004",
+      "level": 2,
+      "title": "三、建设基础",
+      "line": 122,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0005",
+      "level": 2,
+      "title": "四、建设目标与合作空间",
+      "line": 136,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0006",
+      "level": 2,
+      "title": "五、合作价值与开放原则",
+      "line": 144,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0007",
+      "level": 1,
+      "title": "第二章　平台建设与运营体系",
+      "line": 150,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0008",
+      "level": 2,
+      "title": "一、总体业务模式",
+      "line": 152,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0009",
+      "level": 2,
+      "title": "二、参与主体与业务关系",
+      "line": 160,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0010",
+      "level": 2,
+      "title": "三、总体架构",
+      "line": 176,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0011",
+      "level": 2,
+      "title": "四、资源与产品形成机制",
+      "line": 192,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0012",
+      "level": 2,
+      "title": "五、服务运营闭环",
+      "line": 206,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0013",
+      "level": 1,
+      "title": "第三章　重点服务与合作机会",
+      "line": 214,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0014",
+      "level": 2,
+      "title": "一、总体服务体系",
+      "line": 216,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 2,
+      "title": "二、场景服务体系",
+      "line": 232,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0016",
+      "level": 2,
+      "title": "三、重点合作方向",
+      "line": 244,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0017",
+      "level": 2,
+      "title": "四、储备与拓展方向",
+      "line": 308,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "五、服务交付与应用方式",
+      "line": 314,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0019",
+      "level": 1,
+      "title": "第四章　合作模式与保障机制",
+      "line": 328,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "一、合作伙伴类型",
+      "line": 330,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "二、合作模式",
+      "line": 346,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 2,
+      "title": "三、平台支持内容",
+      "line": 358,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0023",
+      "level": 2,
+      "title": "四、基本商务机制",
+      "line": 372,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0024",
+      "level": 2,
+      "title": "五、数据安全、权利与衍生成果保障",
+      "line": 386,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0025",
+      "level": 2,
+      "title": "六、服务质量与风险保障",
+      "line": 402,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0026",
+      "level": 1,
+      "title": "第五章　合作对接与推进安排",
+      "line": 414,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0027",
+      "level": 2,
+      "title": "一、合作意向登记",
+      "line": 418,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0028",
+      "level": 2,
+      "title": "二、资源与需求对接",
+      "line": 426,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0029",
+      "level": 2,
+      "title": "三、合作事项成熟度评估",
+      "line": 434,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0030",
+      "level": 2,
+      "title": "四、合作方案深化",
+      "line": 442,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0031",
+      "level": 2,
+      "title": "五、试点验证",
+      "line": 450,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0032",
+      "level": 2,
+      "title": "六、正式运营与复制推广",
+      "line": 458,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0033",
+      "level": 1,
+      "title": "结束语",
+      "line": 470,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0034",
+      "level": 1,
+      "title": "附件一　合作伙伴资源与能力登记要点",
+      "line": 476,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0035",
+      "level": 1,
+      "title": "附件二　产品及场景服务说明要点",
+      "line": 496,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0036",
+      "level": 1,
+      "title": "附件三　合作事项成熟度评估要点",
+      "line": 524,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0037",
+      "level": 1,
+      "title": "附件四　试点实施与验收要点",
+      "line": 548,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0038",
+      "level": 1,
+      "title": "附件五　服务计量、账单与结算要点",
+      "line": 572,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0039",
+      "level": 1,
+      "title": "附件六　数据分类分级与交付方式适配要点",
+      "line": 600,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0040",
+      "level": 1,
+      "title": "附件七　商务报价与收益分配参考模型",
+      "line": 624,
+      "parent_section_id": null
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact-0241",
+      "fact_type": "statement",
+      "text": "三是模型算法合作伙伴。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0146",
+        "line_start": 338,
+        "line_end": 338
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0242",
+      "fact_type": "statement",
+      "text": "提供模型、算法、知识库、智能体及相关工具，承担功能说明、性能指标、版本维护、部署适配和结果边界责任。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0146",
+        "line_start": 338,
+        "line_end": 338
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0243",
+      "fact_type": "statement",
+      "text": "四是专业服务合作伙伴。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0147",
+        "line_start": 340,
+        "line_end": 340
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0244",
+      "fact_type": "statement",
+      "text": "提供专家服务、研究分析、评价认证、规则方法、咨询实施和行业经验，承担专业交付和质量保障责任。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0147",
+        "line_start": 340,
+        "line_end": 340
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0245",
+      "fact_type": "statement",
+      "text": "五是技术实施合作伙伴。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0148",
+        "line_start": 342,
+        "line_end": 342
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0246",
+      "fact_type": "statement",
+      "text": "提供可信连接、数据治理、隐私保护计算、安全审计、系统集成、算力资源、模型开发和运维保障等能力。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0148",
+        "line_start": 342,
+        "line_end": 342
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0247",
+      "fact_type": "statement",
+      "text": "六是市场与生态合作伙伴。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0149",
+        "line_start": 344,
+        "line_end": 344
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0248",
+      "fact_type": "statement",
+      "text": "提供客户渠道、项目机会、生态组织、联合推广和市场协同，参与需求发现、客户拓展和成果复制。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0149",
+        "line_start": 344,
+        "line_end": 344
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0249",
+      "fact_type": "statement",
+      "text": "平台根据合作伙伴资源成熟度、参与深度和业务目标，形成从资源接入、产品共建、场景共营到战略协同的四类合作模式。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0150",
+        "line_start": 348,
+        "line_end": 348
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0250",
+      "fact_type": "statement",
+      "text": "不同模式可以独立采用，也可以随着合作成熟度逐步深化。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0150",
+        "line_start": 348,
+        "line_end": 348
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0251",
+      "fact_type": "statement",
+      "text": "一是标准接入合作。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0151",
+        "line_start": 350,
+        "line_end": 350
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0252",
+      "fact_type": "statement",
+      "text": "适用于已经形成明确产品、接口或者服务能力，权利边界清晰、质量稳定、能够持续提供服务的合作伙伴。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0151",
+        "line_start": 350,
+        "line_end": 350
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0253",
+      "fact_type": "statement",
+      "text": "重点完成产品说明、权利和技术测试、服务上架及客户试用。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0151",
+        "line_start": 350,
+        "line_end": 350
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0254",
+      "fact_type": "statement",
+      "text": "二是联合产品合作。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0152",
+        "line_start": 352,
+        "line_end": 352
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0255",
+      "fact_type": "statement",
+      "text": "适用于拥有优质资源或者专业能力，仍需开展产品化封装、市场定位和服务设计的合作伙伴。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0152",
+        "line_start": 352,
+        "line_end": 352
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0256",
+      "fact_type": "statement",
+      "text": "各方共同开展需求分析、产品策划、治理加工、计量定价、样例验证和市场推广。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0152",
+        "line_start": 352,
+        "line_end": 352
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0257",
+      "fact_type": "statement",
+      "text": "三是场景联合运营合作。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0153",
+        "line_start": 354,
+        "line_end": 354
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0258",
+      "fact_type": "statement",
+      "text": "适用于客户业务问题复杂、需要多方能力组合和持续服务的场景。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0153",
+        "line_start": 354,
+        "line_end": 354
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0259",
+      "fact_type": "statement",
+      "text": "平台组织需求方、资源方、模型方、技术方和专业服务方共同形成服务方案、实施分工和持续运营安排。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0153",
+        "line_start": 354,
+        "line_end": 354
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0260",
+      "fact_type": "statement",
+      "text": "四是战略生态合作。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0154",
+        "line_start": 356,
+        "line_end": 356
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0261",
+      "fact_type": "statement",
+      "text": "适用于具有行业影响力、资源组织能力、技术平台基础和长期合作意愿的骨干企业、科研机构、区域平台及生态组织，围绕行业节点互联、重点资源、专业模型、示范场景、标准规则和联合推广建立持续合作机制。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0154",
+        "line_start": 356,
+        "line_end": 356
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0262",
+      "fact_type": "statement",
+      "text": "中电联及中电联数智公司依托行业组织、专业资源和平台运营能力，为合作伙伴提供从合作对接到持续运营的协同支持，重点包括以下方面。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0155",
+        "line_start": 360,
+        "line_end": 360
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0263",
+      "fact_type": "statement",
+      "text": "一是需求与客户对接。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0156",
+        "line_start": 362,
+        "line_end": 362
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0264",
+      "fact_type": "statement",
+      "text": "围绕行业共性需求、会员单位需求和重点客户业务问题开展需求征集、场景组织和客户沟通，为成熟资源和能力匹配应用场景。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0156",
+        "line_start": 362,
+        "line_end": 362
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0265",
+      "fact_type": "statement",
+      "text": "二是资源产品化支持。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0157",
+        "line_start": 364,
+        "line_end": 364
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0266",
+      "fact_type": "statement",
+      "text": "协助合作伙伴梳理资源范围、权利条件、质量说明、目标客户、服务规格和交付方式，形成规范的数据产品、数据服务或者场景服务说明。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0157",
+        "line_start": 364,
+        "line_end": 364
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0267",
+      "fact_type": "statement",
+      "text": "三是技术接入与可信交付。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0158",
+        "line_start": 366,
+        "line_end": 366
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0268",
+      "fact_type": "statement",
+      "text": "提供主体接入、接口衔接、服务网关、可信连接、授权控制、受控计算、日志审计和成果交付等共性能力，降低跨主体技术协同成本。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0158",
+        "line_start": 366,
+        "line_end": 366
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0269",
+      "fact_type": "statement",
+      "text": "四是运营与计量结算。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0159",
+        "line_start": 368,
+        "line_end": 368
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0270",
+      "fact_type": "statement",
+      "text": "组织产品发布、订单履行、服务权益、有效计量、账单确认、合作伙伴对账和运营评价，形成客户购买、技术执行和商务结算相互对应的业务依据。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0159",
+        "line_start": 368,
+        "line_end": 368
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0271",
+      "fact_type": "statement",
+      "text": "五是联合推广与生态协同。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0160",
+        "line_start": 370,
+        "line_end": 370
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0272",
+      "fact_type": "statement",
+      "text": "根据产品和场景成熟度组织行业交流、成果发布、客户拓展、续约增购和复制推广，推动形成持续订单和规模化服务能力。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0160",
+        "line_start": 370,
+        "line_end": 370
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0273",
+      "fact_type": "statement",
+      "text": "平台根据中电联行业服务职能和市场化运营要求，建立与数据服务、场景服务相适应的商务机制。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0161",
+        "line_start": 374,
+        "line_end": 374
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0274",
+      "fact_type": "statement",
+      "text": "商务合作明确服务属性、客户价值、基本计价逻辑和各方贡献；",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0161",
+        "line_start": 374,
+        "line_end": 374
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0275",
+      "fact_type": "statement",
+      "text": "具体价格、结算单价、分配比例、付款条件和税务安排，由相关各方在单项合作方案、合作协议或者项目合同中协商确定。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0161",
+        "line_start": 374,
+        "line_end": 374
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0276",
+      "fact_type": "statement",
+      "text": "一是分类明确服务属性。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0162",
+        "line_start": 376,
+        "line_end": 376
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0277",
+      "fact_type": "statement",
+      "text": "公益性和任务性服务通过专项任务、研究项目、行业共建投入或者其他合规方式保障；",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0162",
+        "line_start": 376,
+        "line_end": 376
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0278",
+      "fact_type": "statement",
+      "text": "行业基础服务可以通过年度服务、基础订阅或者统一服务包提供；",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0162",
+        "line_start": 376,
+        "line_end": 376
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0279",
+      "fact_type": "statement",
+      "text": "市场化增值服务根据订阅、调用、项目建设、持续运营或者专项服务等方式收费。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0162",
+        "line_start": 376,
+        "line_end": 376
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0280",
+      "fact_type": "statement",
+      "text": "二是围绕客户交付形成报价。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0163",
+        "line_start": 378,
+        "line_end": 378
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0281",
+      "fact_type": "statement",
+      "text": "客户报价根据服务产品、实施部署、专属资源、安全保障、持续运营和适用税费等因素组合形成，对外重点围绕服务事项、交付成果、服务周期、使用范围和服务等级表达。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0163",
+        "line_start": 378,
+        "line_end": 378
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0282",
+      "fact_type": "statement",
+      "text": "三是根据合作形态选择结算方式。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0164",
+        "line_start": 380,
+        "line_end": 380
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0283",
+      "fact_type": "statement",
+      "text": "成熟数据接口、标准数据集、已有模型和可独立计量的专业服务，可以采用固定价格或者供给方结算单价；",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0164",
+        "line_start": 380,
+        "line_end": 380
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0284",
+      "fact_type": "statement",
+      "text": "联合开发和持续运营产品可以采用可分配收入比例；",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0164",
+        "line_start": 380,
+        "line_end": 380
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0285",
+      "fact_type": "statement",
+      "text": "场景建设、私有化部署、系统集成和定制开发可以按照工作包、里程碑、实际工作量和验收成果结算。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0164",
+        "line_start": 380,
+        "line_end": 380
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0286",
+      "fact_type": "statement",
+      "text": "四是收益安排与实际贡献相匹配。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0165",
+        "line_start": 382,
+        "line_end": 382
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0287",
+      "fact_type": "statement",
+      "text": "各方根据资源贡献、产品与模型开发、客户获取、技术交付、平台运营、持续服务和风险责任协商确定收益安排，并以实际回款、可核验成本和有效履约记录为基础开展对账结算。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0165",
+        "line_start": 382,
+        "line_end": 382
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0288",
+      "fact_type": "statement",
+      "text": "平台不设置统一对外价格或者固定分成比例，具体商务报价、成本扣除、贡献评分和收益分配根据单项合作的客户采购条件、资源投入、服务责任和风险承担协商确定。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0166",
+        "line_start": 384,
+        "line_end": 384
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0289",
+      "fact_type": "statement",
+      "text": "平台按照国家数据安全、网络安全、个人信息保护和能源行业有关制度要求，建立覆盖资源登记、产品设计、合同授权、运行审计和退出清理的全过程控制链，并根据不同权利对象明确使用范围、成果边界和退出条件。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0167",
+        "line_start": 388,
+        "line_end": 388
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0290",
+      "fact_type": "statement",
+      "text": "一是合作伙伴既有资源。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0168",
+        "line_start": 390,
+        "line_end": 390
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0291",
+      "fact_type": "statement",
+      "text": "原始数据、核心模型、模型权重、关键算法、软件、专业知识和既有知识产权继续保持原有归属，平台和客户仅在合同授权用途、范围和期限内使用。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0168",
+        "line_start": 390,
+        "line_end": 390
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0292",
+      "fact_type": "statement",
+      "text": "二是客户专属资源。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0169",
+        "line_start": 392,
+        "line_end": 392
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0293",
+      "fact_type": "statement",
+      "text": "客户业务数据、提示词、上下文、专属知识库、配置参数和专属服务结果按照客户合同管理，未经授权不得用于其他客户或者超出约定范围的产品开发。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0169",
+        "line_start": 392,
+        "line_end": 392
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0294",
+      "fact_type": "statement",
+      "text": "三是单方加工成果。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0170",
+        "line_start": 394,
+        "line_end": 394
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0295",
+      "fact_type": "statement",
+      "text": "基于单方资源形成的数据清洗、指标标签、接口封装、报告模板和模型适配成果，根据基础权利、加工投入和可分离程度明确归属、使用许可、收益安排和后续改进权益。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0170",
+        "line_start": 394,
+        "line_end": 394
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0296",
+      "fact_type": "statement",
+      "text": "四是多方联合成果。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0171",
+        "line_start": 396,
+        "line_end": 396
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0297",
+      "fact_type": "statement",
+      "text": "联合数据产品、模型参数、场景方案、软件组件和标准规范，根据各方资源、资金、人员和持续运营投入，明确权利归属、使用范围、对外许可、收益分配和退出后的继续使用条件。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0171",
+        "line_start": 396,
+        "line_end": 396
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0298",
+      "fact_type": "statement",
+      "text": "五是平台运行信息。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0172",
+        "line_start": 398,
+        "line_end": 398
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0299",
+      "fact_type": "statement",
+      "text": "计量日志、服务记录、客户反馈、安全日志和运营分析结果按照法律法规、合同、保密要求和平台规则使用，用于安全审计、计量结算、质量改进和合规运营分析。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0172",
+        "line_start": 398,
+        "line_end": 398
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0300",
+      "fact_type": "statement",
+      "text": "涉及模型训练、模型微调、知识库扩展、数据产品扩展或者其他二次使用的，另行取得明确授权。",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0173",
+        "line_start": 400,
+        "line_end": 400
+      },
+      "segment_index": 1
+    }
+  ],
+  "source_blocks": [
+    {
+      "block_id": "blk-0146",
+      "type": "paragraph",
+      "text": "三是模型算法合作伙伴。提供模型、算法、知识库、智能体及相关工具，承担功能说明、性能指标、版本维护、部署适配和结果边界责任。",
+      "line_start": 338,
+      "line_end": 338,
+      "section_id": "sec-0020",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ]
+    },
+    {
+      "block_id": "blk-0147",
+      "type": "paragraph",
+      "text": "四是专业服务合作伙伴。提供专家服务、研究分析、评价认证、规则方法、咨询实施和行业经验，承担专业交付和质量保障责任。",
+      "line_start": 340,
+      "line_end": 340,
+      "section_id": "sec-0020",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ]
+    },
+    {
+      "block_id": "blk-0148",
+      "type": "paragraph",
+      "text": "五是技术实施合作伙伴。提供可信连接、数据治理、隐私保护计算、安全审计、系统集成、算力资源、模型开发和运维保障等能力。",
+      "line_start": 342,
+      "line_end": 342,
+      "section_id": "sec-0020",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ]
+    },
+    {
+      "block_id": "blk-0149",
+      "type": "paragraph",
+      "text": "六是市场与生态合作伙伴。提供客户渠道、项目机会、生态组织、联合推广和市场协同，参与需求发现、客户拓展和成果复制。",
+      "line_start": 344,
+      "line_end": 344,
+      "section_id": "sec-0020",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ]
+    },
+    {
+      "block_id": "blk-0150",
+      "type": "paragraph",
+      "text": "平台根据合作伙伴资源成熟度、参与深度和业务目标，形成从资源接入、产品共建、场景共营到战略协同的四类合作模式。不同模式可以独立采用，也可以随着合作成熟度逐步深化。",
+      "line_start": 348,
+      "line_end": 348,
+      "section_id": "sec-0021",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ]
+    },
+    {
+      "block_id": "blk-0151",
+      "type": "paragraph",
+      "text": "一是标准接入合作。适用于已经形成明确产品、接口或者服务能力，权利边界清晰、质量稳定、能够持续提供服务的合作伙伴。重点完成产品说明、权利和技术测试、服务上架及客户试用。",
+      "line_start": 350,
+      "line_end": 350,
+      "section_id": "sec-0021",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ]
+    },
+    {
+      "block_id": "blk-0152",
+      "type": "paragraph",
+      "text": "二是联合产品合作。适用于拥有优质资源或者专业能力，仍需开展产品化封装、市场定位和服务设计的合作伙伴。各方共同开展需求分析、产品策划、治理加工、计量定价、样例验证和市场推广。",
+      "line_start": 352,
+      "line_end": 352,
+      "section_id": "sec-0021",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ]
+    },
+    {
+      "block_id": "blk-0153",
+      "type": "paragraph",
+      "text": "三是场景联合运营合作。适用于客户业务问题复杂、需要多方能力组合和持续服务的场景。平台组织需求方、资源方、模型方、技术方和专业服务方共同形成服务方案、实施分工和持续运营安排。",
+      "line_start": 354,
+      "line_end": 354,
+      "section_id": "sec-0021",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ]
+    },
+    {
+      "block_id": "blk-0154",
+      "type": "paragraph",
+      "text": "四是战略生态合作。适用于具有行业影响力、资源组织能力、技术平台基础和长期合作意愿的骨干企业、科研机构、区域平台及生态组织，围绕行业节点互联、重点资源、专业模型、示范场景、标准规则和联合推广建立持续合作机制。",
+      "line_start": 356,
+      "line_end": 356,
+      "section_id": "sec-0021",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ]
+    },
+    {
+      "block_id": "blk-0155",
+      "type": "paragraph",
+      "text": "中电联及中电联数智公司依托行业组织、专业资源和平台运营能力，为合作伙伴提供从合作对接到持续运营的协同支持，重点包括以下方面。",
+      "line_start": 360,
+      "line_end": 360,
+      "section_id": "sec-0022",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ]
+    },
+    {
+      "block_id": "blk-0156",
+      "type": "paragraph",
+      "text": "一是需求与客户对接。围绕行业共性需求、会员单位需求和重点客户业务问题开展需求征集、场景组织和客户沟通，为成熟资源和能力匹配应用场景。",
+      "line_start": 362,
+      "line_end": 362,
+      "section_id": "sec-0022",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ]
+    },
+    {
+      "block_id": "blk-0157",
+      "type": "paragraph",
+      "text": "二是资源产品化支持。协助合作伙伴梳理资源范围、权利条件、质量说明、目标客户、服务规格和交付方式，形成规范的数据产品、数据服务或者场景服务说明。",
+      "line_start": 364,
+      "line_end": 364,
+      "section_id": "sec-0022",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ]
+    },
+    {
+      "block_id": "blk-0158",
+      "type": "paragraph",
+      "text": "三是技术接入与可信交付。提供主体接入、接口衔接、服务网关、可信连接、授权控制、受控计算、日志审计和成果交付等共性能力，降低跨主体技术协同成本。",
+      "line_start": 366,
+      "line_end": 366,
+      "section_id": "sec-0022",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ]
+    },
+    {
+      "block_id": "blk-0159",
+      "type": "paragraph",
+      "text": "四是运营与计量结算。组织产品发布、订单履行、服务权益、有效计量、账单确认、合作伙伴对账和运营评价，形成客户购买、技术执行和商务结算相互对应的业务依据。",
+      "line_start": 368,
+      "line_end": 368,
+      "section_id": "sec-0022",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ]
+    },
+    {
+      "block_id": "blk-0160",
+      "type": "paragraph",
+      "text": "五是联合推广与生态协同。根据产品和场景成熟度组织行业交流、成果发布、客户拓展、续约增购和复制推广，推动形成持续订单和规模化服务能力。",
+      "line_start": 370,
+      "line_end": 370,
+      "section_id": "sec-0022",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ]
+    },
+    {
+      "block_id": "blk-0161",
+      "type": "paragraph",
+      "text": "平台根据中电联行业服务职能和市场化运营要求，建立与数据服务、场景服务相适应的商务机制。商务合作明确服务属性、客户价值、基本计价逻辑和各方贡献；具体价格、结算单价、分配比例、付款条件和税务安排，由相关各方在单项合作方案、合作协议或者项目合同中协商确定。",
+      "line_start": 374,
+      "line_end": 374,
+      "section_id": "sec-0023",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ]
+    },
+    {
+      "block_id": "blk-0162",
+      "type": "paragraph",
+      "text": "一是分类明确服务属性。公益性和任务性服务通过专项任务、研究项目、行业共建投入或者其他合规方式保障；行业基础服务可以通过年度服务、基础订阅或者统一服务包提供；市场化增值服务根据订阅、调用、项目建设、持续运营或者专项服务等方式收费。",
+      "line_start": 376,
+      "line_end": 376,
+      "section_id": "sec-0023",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ]
+    },
+    {
+      "block_id": "blk-0163",
+      "type": "paragraph",
+      "text": "二是围绕客户交付形成报价。客户报价根据服务产品、实施部署、专属资源、安全保障、持续运营和适用税费等因素组合形成，对外重点围绕服务事项、交付成果、服务周期、使用范围和服务等级表达。",
+      "line_start": 378,
+      "line_end": 378,
+      "section_id": "sec-0023",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ]
+    },
+    {
+      "block_id": "blk-0164",
+      "type": "paragraph",
+      "text": "三是根据合作形态选择结算方式。成熟数据接口、标准数据集、已有模型和可独立计量的专业服务，可以采用固定价格或者供给方结算单价；联合开发和持续运营产品可以采用可分配收入比例；场景建设、私有化部署、系统集成和定制开发可以按照工作包、里程碑、实际工作量和验收成果结算。",
+      "line_start": 380,
+      "line_end": 380,
+      "section_id": "sec-0023",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ]
+    },
+    {
+      "block_id": "blk-0165",
+      "type": "paragraph",
+      "text": "四是收益安排与实际贡献相匹配。各方根据资源贡献、产品与模型开发、客户获取、技术交付、平台运营、持续服务和风险责任协商确定收益安排，并以实际回款、可核验成本和有效履约记录为基础开展对账结算。",
+      "line_start": 382,
+      "line_end": 382,
+      "section_id": "sec-0023",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ]
+    },
+    {
+      "block_id": "blk-0166",
+      "type": "paragraph",
+      "text": "平台不设置统一对外价格或者固定分成比例，具体商务报价、成本扣除、贡献评分和收益分配根据单项合作的客户采购条件、资源投入、服务责任和风险承担协商确定。",
+      "line_start": 384,
+      "line_end": 384,
+      "section_id": "sec-0023",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ]
+    },
+    {
+      "block_id": "blk-0167",
+      "type": "paragraph",
+      "text": "平台按照国家数据安全、网络安全、个人信息保护和能源行业有关制度要求，建立覆盖资源登记、产品设计、合同授权、运行审计和退出清理的全过程控制链，并根据不同权利对象明确使用范围、成果边界和退出条件。",
+      "line_start": 388,
+      "line_end": 388,
+      "section_id": "sec-0024",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    },
+    {
+      "block_id": "blk-0168",
+      "type": "paragraph",
+      "text": "一是合作伙伴既有资源。原始数据、核心模型、模型权重、关键算法、软件、专业知识和既有知识产权继续保持原有归属，平台和客户仅在合同授权用途、范围和期限内使用。",
+      "line_start": 390,
+      "line_end": 390,
+      "section_id": "sec-0024",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    },
+    {
+      "block_id": "blk-0169",
+      "type": "paragraph",
+      "text": "二是客户专属资源。客户业务数据、提示词、上下文、专属知识库、配置参数和专属服务结果按照客户合同管理，未经授权不得用于其他客户或者超出约定范围的产品开发。",
+      "line_start": 392,
+      "line_end": 392,
+      "section_id": "sec-0024",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    },
+    {
+      "block_id": "blk-0170",
+      "type": "paragraph",
+      "text": "三是单方加工成果。基于单方资源形成的数据清洗、指标标签、接口封装、报告模板和模型适配成果，根据基础权利、加工投入和可分离程度明确归属、使用许可、收益安排和后续改进权益。",
+      "line_start": 394,
+      "line_end": 394,
+      "section_id": "sec-0024",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    },
+    {
+      "block_id": "blk-0171",
+      "type": "paragraph",
+      "text": "四是多方联合成果。联合数据产品、模型参数、场景方案、软件组件和标准规范，根据各方资源、资金、人员和持续运营投入，明确权利归属、使用范围、对外许可、收益分配和退出后的继续使用条件。",
+      "line_start": 396,
+      "line_end": 396,
+      "section_id": "sec-0024",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    },
+    {
+      "block_id": "blk-0172",
+      "type": "paragraph",
+      "text": "五是平台运行信息。计量日志、服务记录、客户反馈、安全日志和运营分析结果按照法律法规、合同、保密要求和平台规则使用，用于安全审计、计量结算、质量改进和合规运营分析。",
+      "line_start": 398,
+      "line_end": 398,
+      "section_id": "sec-0024",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    },
+    {
+      "block_id": "blk-0173",
+      "type": "paragraph",
+      "text": "涉及模型训练、模型微调、知识库扩展、数据产品扩展或者其他二次使用的，另行取得明确授权。合作终止时，各方按照约定完成存量订单履行、客户通知、授权撤销、数据返还或者删除、模型和接口停用、账单结算和资料归档。",
+      "line_start": 400,
+      "line_end": 400,
+      "section_id": "sec-0024",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    }
+  ],
+  "semantic_policy": {
+    "truth_status": "source_assertions_unverified",
+    "external_enrichment": "forbidden",
+    "inference_must_be_labeled": true
+  }
+}

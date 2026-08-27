@@ -1,0 +1,198 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "concept_base",
+  "concepts": [
+    {
+      "concept_id": "C-01",
+      "canonical_name": "电力领域数据基础设施",
+      "concept_type": "platform",
+      "definition": "材料围绕电力领域数据基础设施形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0058",
+        "NF-0059"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-02",
+      "canonical_name": "行业数据与专业能力运营平台",
+      "concept_type": "platform",
+      "definition": "材料围绕行业数据与专业能力运营平台形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0058",
+        "NF-0061",
+        "NF-0096"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-03",
+      "canonical_name": "数据产品与数据服务",
+      "concept_type": "service",
+      "definition": "材料围绕数据产品与数据服务形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0002",
+        "NF-0062",
+        "NF-0083",
+        "NF-0096"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-04",
+      "canonical_name": "场景服务",
+      "concept_type": "scenario",
+      "definition": "材料围绕场景服务形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0002",
+        "NF-0020",
+        "NF-0040",
+        "NF-0062"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-05",
+      "canonical_name": "多主体协同机制",
+      "concept_type": "process",
+      "definition": "材料围绕多主体协同机制形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0014",
+        "NF-0058",
+        "NF-0063",
+        "NF-0102"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-06",
+      "canonical_name": "可信交付与授权",
+      "concept_type": "capability",
+      "definition": "材料围绕可信交付与授权形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0057",
+        "NF-0062",
+        "NF-0091",
+        "NF-0097"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-07",
+      "canonical_name": "运营计量与结算",
+      "concept_type": "process",
+      "definition": "材料围绕运营计量与结算形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0043",
+        "NF-0057",
+        "NF-0075",
+        "NF-0081"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-08",
+      "canonical_name": "安全合规保障",
+      "concept_type": "constraint",
+      "definition": "材料围绕安全合规保障形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0089",
+        "NF-0091",
+        "NF-0129",
+        "NF-0302"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-09",
+      "canonical_name": "合作伙伴体系",
+      "concept_type": "actor",
+      "definition": "材料围绕合作伙伴体系形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0025",
+        "NF-0110",
+        "NF-0235",
+        "NF-0236"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-10",
+      "canonical_name": "试点验证与复制推广",
+      "concept_type": "process",
+      "definition": "材料围绕试点验证与复制推广形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0036",
+        "NF-0037",
+        "NF-0086",
+        "NF-0145"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-11",
+      "canonical_name": "服务运营闭环",
+      "concept_type": "process",
+      "definition": "材料围绕服务运营闭环形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0017",
+        "NF-0101",
+        "NF-0150",
+        "NF-0151"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-12",
+      "canonical_name": "建设目标",
+      "concept_type": "goal",
+      "definition": "材料围绕建设目标形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0010",
+        "NF-0081",
+        "NF-0082",
+        "NF-0083"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-13",
+      "canonical_name": "商务报价与收益分配",
+      "concept_type": "requirement",
+      "definition": "材料围绕商务报价与收益分配形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0045",
+        "NF-0284",
+        "NF-0447",
+        "NF-0488"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-14",
+      "canonical_name": "数据分类分级与交付适配",
+      "concept_type": "constraint",
+      "definition": "材料围绕数据分类分级与交付适配形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0044",
+        "NF-0116",
+        "NF-0403",
+        "NF-0461"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-15",
+      "canonical_name": "资源与产品形成机制",
+      "concept_type": "process",
+      "definition": "材料围绕资源与产品形成机制形成的业务概念。",
+      "normalized_fact_ids": [
+        "NF-0016",
+        "NF-0131",
+        "NF-0132",
+        "NF-0133"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

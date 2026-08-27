@@ -1,0 +1,5102 @@
+{
+  "schema": "cyberppt.semantic_argument_model.v1",
+  "version": 1,
+  "interpretation_contract_mode": "projection",
+  "authority_mode": "projection_only",
+  "document_semantics": {
+    "document_role": "正式材料",
+    "subject_of_report": "电力领域数据基础设施标准体系建设研究",
+    "primary_thesis": "国家数据基础设施建设部署和电力行业数字化转型构成研究的共同背景.",
+    "decision_boundary": "内容范围、事实强度、主体责任、条件和状态均继承已验证 Source Foundation 产物。",
+    "author_purpose": "",
+    "argument_method": [
+      "国家数据基础设施建设部署和电力行业数字化转型构成研究的共同背景.",
+      "国家技术文件、数据分类分级制度和既有电力行业标准提供上位依据与实践基础.",
+      "标准框架、基础通用、数据资源、新兴场景和协同机制存在供给与衔接缺口.",
+      "以顶层对接、任务牵引、行业适配和体系完整原则构建七大类标准框架.",
+      "按急用先行、分类推进确定三类重点标准，并将标准研制与场景验证联动.",
+      "依照近期、中期、远期三阶段推进标准发布、覆盖、评估和成熟转化.",
+      "由中电联统筹项目参与单位，建立全流程协作、资源投入、动态评估和国际衔接机制.",
+      "研究形成七大类标准体系框架、重点方向、优先级和三阶段实施路径，并提出持续完善安排."
+    ],
+    "supporting_basis": [
+      "国家数据基础设施",
+      "电力领域数据基础设施",
+      "中电联先行先试项目",
+      "电力数据基础设施标准体系",
+      "统一目录、统一身份、统一标识",
+      "数据资源标准",
+      "数据流通利用能力",
+      "安全保障能力",
+      "重点应用场景",
+      "标准研制优先级",
+      "三阶段实施路径",
+      "标准实施保障机制"
+    ],
+    "business_objects": [
+      "国家数据基础设施",
+      "电力领域数据基础设施",
+      "中电联先行先试项目",
+      "电力数据基础设施标准体系",
+      "统一目录、统一身份、统一标识",
+      "数据资源标准",
+      "数据流通利用能力",
+      "安全保障能力",
+      "重点应用场景",
+      "标准研制优先级",
+      "三阶段实施路径",
+      "标准实施保障机制"
+    ],
+    "scope": "一、研究背景与意义；二、现状基础与差距分析；三、标准体系构建总体思路；四、电力领域数据基础设施标准体系框架设计；五、重点标准研制方向与优先级；六、分阶段实施路径；七、保障措施；八、结论",
+    "decision_intent": "为后续交流目标和脚本规划提供源材料事实与论证基础。"
+  },
+  "document_thesis": {
+    "statement": "国家数据基础设施建设部署和电力行业数字化转型构成研究的共同背景.",
+    "argument_role": "thesis",
+    "argument_weight": "core",
+    "status": "mixed",
+    "evidence_refs": [
+      "SU-B56DFFEECD-PARAGRAPH-2D1E57066918-01",
+      "SU-B56DFFEECD-PARAGRAPH-F8C546989279-01",
+      "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01",
+      "SU-B56DFFEECD-PARAGRAPH-65660DD62DE9-01",
+      "SU-B56DFFEECD-PARAGRAPH-22F54C1161C7-01",
+      "SU-B56DFFEECD-PARAGRAPH-02689104A034-01",
+      "SU-B56DFFEECD-PARAGRAPH-331D290FE21D-01",
+      "SU-B56DFFEECD-PARAGRAPH-A82C6EB505C0-01"
+    ],
+    "actor_refs": [],
+    "claim_origin": "source_implied",
+    "projection_only": true
+  },
+  "section_nodes": [
+    {
+      "id": "RC-001",
+      "source_heading": "**（一）国家数据基础设施建设进入全面实施阶段**",
+      "section_thesis": "国家数据基础设施建设部署和电力行业数字化转型构成研究的共同背景.",
+      "argument_role": "foundation",
+      "argument_weight": "core",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-F8C546989279-01",
+        "SU-B56DFFEECD-PARAGRAPH-71CA03380F46-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "RC-002",
+      "source_heading": "**（一）国家层面政策与标准基础**",
+      "section_thesis": "国家技术文件、数据分类分级制度和既有电力行业标准提供上位依据与实践基础.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-2D1E57066918-01",
+        "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "RC-003",
+      "source_heading": "**（三）现状问题与差距分析**",
+      "section_thesis": "标准框架、基础通用、数据资源、新兴场景和协同机制存在供给与衔接缺口.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-65660DD62DE9-01",
+        "SU-B56DFFEECD-PARAGRAPH-7F05ED4358DA-01",
+        "SU-B56DFFEECD-PARAGRAPH-7606FB82331F-01",
+        "SU-B56DFFEECD-PARAGRAPH-D91A803C5D2D-01",
+        "SU-B56DFFEECD-PARAGRAPH-01FE1C856B4E-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "RC-004",
+      "source_heading": "**（一）构建原则**",
+      "section_thesis": "以顶层对接、任务牵引、行业适配和体系完整原则构建七大类标准框架.",
+      "argument_role": "capability",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01",
+        "SU-B56DFFEECD-PARAGRAPH-E2A7B348659C-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "RC-005",
+      "source_heading": "**五、重点标准研制方向与优先级**",
+      "section_thesis": "按急用先行、分类推进确定三类重点标准，并将标准研制与场景验证联动.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-331D290FE21D-01",
+        "SU-B56DFFEECD-PARAGRAPH-5AD57A942BB1-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "RC-006",
+      "source_heading": "**六、分阶段实施路径**",
+      "section_thesis": "依照近期、中期、远期三阶段推进标准发布、覆盖、评估和成熟转化.",
+      "argument_role": "implementation",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-22F54C1161C7-01",
+        "SU-B56DFFEECD-PARAGRAPH-9E2153E54ADE-01",
+        "SU-B56DFFEECD-PARAGRAPH-4CD9E69B9968-01",
+        "SU-B56DFFEECD-PARAGRAPH-86C9EDAA4984-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "RC-007",
+      "source_heading": "**（一）组织保障**",
+      "section_thesis": "由中电联统筹项目参与单位，建立全流程协作、资源投入、动态评估和国际衔接机制.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-A82C6EB505C0-01",
+        "SU-B56DFFEECD-PARAGRAPH-205C2633F255-01",
+        "SU-B56DFFEECD-PARAGRAPH-F4CA7E36EC12-01",
+        "SU-B56DFFEECD-PARAGRAPH-621211F9FB85-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "RC-008",
+      "source_heading": "**八、结论**",
+      "section_thesis": "研究形成七大类标准体系框架、重点方向、优先级和三阶段实施路径，并提出持续完善安排.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-02689104A034-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true
+    },
+    {
+      "id": "META-001",
+      "source_heading": "题名与目录元数据",
+      "section_thesis": "题名、落款、日期和目录条目保留在来源追溯层。",
+      "argument_role": "evidence",
+      "argument_weight": "detail",
+      "status": "existing",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-BD7EAE377369-01",
+        "SU-B56DFFEECD-PARAGRAPH-CB191EEBC61C-01",
+        "SU-B56DFFEECD-PARAGRAPH-8E67511F4A73-01",
+        "SU-B56DFFEECD-PARAGRAPH-0F46B0C06939-01",
+        "SU-B56DFFEECD-PARAGRAPH-39DF1936C5E9-01",
+        "SU-B56DFFEECD-PARAGRAPH-043CFAC55989-01",
+        "SU-B56DFFEECD-PARAGRAPH-0B873A24D7AF-01",
+        "SU-B56DFFEECD-PARAGRAPH-485B3AB4FF59-01",
+        "SU-B56DFFEECD-PARAGRAPH-0BCB82740674-01",
+        "SU-B56DFFEECD-PARAGRAPH-AC0D61ECC948-01",
+        "SU-B56DFFEECD-PARAGRAPH-5553B632C64B-01",
+        "SU-B56DFFEECD-PARAGRAPH-4B4E3926ED82-01",
+        "SU-B56DFFEECD-PARAGRAPH-FF933310DC11-01",
+        "SU-B56DFFEECD-PARAGRAPH-92F0EF4B9DBC-01",
+        "SU-B56DFFEECD-PARAGRAPH-B1D2E33E82D9-01",
+        "SU-B56DFFEECD-PARAGRAPH-25455E025ECC-01",
+        "SU-B56DFFEECD-PARAGRAPH-5893953C87A0-01",
+        "SU-B56DFFEECD-PARAGRAPH-5CB4CB9574FF-01",
+        "SU-B56DFFEECD-PARAGRAPH-432E185B868A-01",
+        "SU-B56DFFEECD-PARAGRAPH-0374555F4DB4-01",
+        "SU-B56DFFEECD-PARAGRAPH-1916903A65A4-01",
+        "SU-B56DFFEECD-PARAGRAPH-1BA07B6A6C3B-01",
+        "SU-B56DFFEECD-PARAGRAPH-6EDEA29BAF80-01",
+        "SU-B56DFFEECD-PARAGRAPH-1836616820D8-01",
+        "SU-B56DFFEECD-PARAGRAPH-6EA67F861399-01",
+        "SU-B56DFFEECD-PARAGRAPH-DEC3E510184F-01",
+        "SU-B56DFFEECD-PARAGRAPH-D2C8EC005313-01",
+        "SU-B56DFFEECD-PARAGRAPH-6838F25F5EDC-01",
+        "SU-B56DFFEECD-PARAGRAPH-0434E4FA90B4-01"
+      ],
+      "claim_origin": "source_explicit",
+      "projection_only": true
+    }
+  ],
+  "subsection_nodes": [
+    {
+      "id": "SC-001",
+      "source_heading": "**（一）国家数据基础设施建设进入全面实施阶段**",
+      "section_thesis": "国家政策与建设阶段形成上位背景，标准体系建设进入国家数据基础设施落地实施的配套环节.",
+      "argument_role": "foundation",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-F8C546989279-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-001"
+    },
+    {
+      "id": "SC-002",
+      "source_heading": "**（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托**",
+      "section_thesis": "中电联先行先试项目为电力领域标准验证和场景牵引提供实践依托.",
+      "argument_role": "foundation",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-CB9FEF0E398E-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "document"
+    },
+    {
+      "id": "SC-003",
+      "source_heading": "**（三）电力行业数字化转型对标准体系提出迫切需求**",
+      "section_thesis": "电力行业数字化转型加快，现有标准分散且新业态标准供给滞后，形成体系化建设需求.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-71CA03380F46-01",
+        "SU-B56DFFEECD-PARAGRAPH-65660DD62DE9-01",
+        "SU-B56DFFEECD-PARAGRAPH-D91A803C5D2D-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-001"
+    },
+    {
+      "id": "SC-010",
+      "source_heading": "**（四）研究目的与意义**",
+      "section_thesis": "研究目标统筹政策落实、现状差距、体系框架、重点方向和实施路径，并服务标准立项研制实施及先行先试验证",
+      "argument_role": "positioning",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-7C71112F4466-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "document"
+    },
+    {
+      "id": "SC-004",
+      "source_heading": "**（一）国家层面政策与标准基础**",
+      "section_thesis": "国家政策标准基础与电力行业既有实践构成可承接的基础.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-2D1E57066918-01",
+        "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-002"
+    },
+    {
+      "id": "SC-005",
+      "source_heading": "**（一）构建原则**",
+      "section_thesis": "研究提出顶层对接、任务牵引、行业适配、体系完整等构建原则和方法依据.",
+      "argument_role": "capability",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01",
+        "SU-B56DFFEECD-PARAGRAPH-E272B23C7BE3-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-004"
+    },
+    {
+      "id": "SC-006",
+      "source_heading": "**（三）总体框架**",
+      "section_thesis": "总体框架将标准体系组织为七大类，并围绕电力数据基础设施建设任务展开.",
+      "argument_role": "positioning",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-E2A7B348659C-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-004"
+    },
+    {
+      "id": "SC-007",
+      "source_heading": "**五、重点标准研制方向与优先级**",
+      "section_thesis": "重点标准按三类优先级安排，并与先行先试项目重点场景同步验证.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-331D290FE21D-01",
+        "SU-B56DFFEECD-PARAGRAPH-5AD57A942BB1-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-005"
+    },
+    {
+      "id": "SC-008",
+      "source_heading": "**六、分阶段实施路径**",
+      "section_thesis": "标准体系按近期、中期、远期三阶段推进，逐步形成与国家体系衔接的主体结构.",
+      "argument_role": "implementation",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-22F54C1161C7-01",
+        "SU-B56DFFEECD-PARAGRAPH-9E2153E54ADE-01",
+        "SU-B56DFFEECD-PARAGRAPH-4CD9E69B9968-01",
+        "SU-B56DFFEECD-PARAGRAPH-86C9EDAA4984-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-006"
+    },
+    {
+      "id": "SC-009",
+      "source_heading": "**（一）组织保障**",
+      "section_thesis": "中电联牵头组织，通过组织、机制、资源和国际标准衔接安排推进研制与实施.",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-A82C6EB505C0-01",
+        "SU-B56DFFEECD-PARAGRAPH-205C2633F255-01",
+        "SU-B56DFFEECD-PARAGRAPH-F4CA7E36EC12-01",
+        "SU-B56DFFEECD-PARAGRAPH-621211F9FB85-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-007"
+    },
+    {
+      "id": "SC-011",
+      "source_heading": "**八、结论**",
+      "section_thesis": "研究形成七大类标准体系框架、重点研制方向和三阶段实施路径，后续由中电联持续完善并纳入先行先试项目统筹推进",
+      "argument_role": "evidence",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "evidence_refs": [
+        "SU-B56DFFEECD-PARAGRAPH-02689104A034-01"
+      ],
+      "claim_origin": "source_implied",
+      "projection_only": true,
+      "parent_id": "RC-008"
+    }
+  ],
+  "argument_relations": [],
+  "source_coverage": {
+    "assignments": [
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0001",
+            "statement": "**电力领域数据基础设施标准体系建设研究**",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-BD7EAE377369-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**电力领域数据基础设施标准体系建设研究**"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0002",
+            "statement": "**研究报告**",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-CB191EEBC61C-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**研究报告**"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0003",
+            "statement": "——国家数据基础设施建设先行先试项目配套研究",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-8E67511F4A73-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "——国家数据基础设施建设先行先试项目配套研究"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0004",
+            "statement": "编制单位：中国电力企业联合会",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-0F46B0C06939-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "编制单位：中国电力企业联合会"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0005",
+            "statement": "研究领域：电力行业数据基础设施标准化",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-39DF1936C5E9-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "研究领域：电力行业数据基础设施标准化"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0006",
+            "statement": "编制日期：2026年8月",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-043CFAC55989-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "编制日期：2026年8月"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0007",
+            "statement": "**目 录**",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-0B873A24D7AF-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**目 录**"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0008",
+            "statement": "**一、研究背景与意义** 3",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-485B3AB4FF59-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一、研究背景与意义** 3"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0009",
+            "statement": "（一）国家数据基础设施建设进入全面实施阶段 3",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-0BCB82740674-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（一）国家数据基础设施建设进入全面实施阶段 3"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0010",
+            "statement": "（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托 4",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-AC0D61ECC948-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托 4"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0011",
+            "statement": "（三）电力行业数字化转型对标准体系提出迫切需求 5",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-5553B632C64B-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（三）电力行业数字化转型对标准体系提出迫切需求 5"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0012",
+            "statement": "（四）研究目的与意义 6",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-4B4E3926ED82-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（四）研究目的与意义 6"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0013",
+            "statement": "**二、现状基础与差距分析** 6",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-FF933310DC11-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二、现状基础与差距分析** 6"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0014",
+            "statement": "（一）国家层面政策与标准基础 6",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-92F0EF4B9DBC-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（一）国家层面政策与标准基础 6"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0015",
+            "statement": "（二）电力行业现有标准与实践基础 7",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-B1D2E33E82D9-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（二）电力行业现有标准与实践基础 7"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0016",
+            "statement": "（三）现状问题与差距分析 8",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-25455E025ECC-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（三）现状问题与差距分析 8"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0017",
+            "statement": "**三、标准体系构建总体思路** 9",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-5893953C87A0-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**三、标准体系构建总体思路** 9"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0018",
+            "statement": "（一）构建原则 9",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-5CB4CB9574FF-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（一）构建原则 9"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0019",
+            "statement": "（二）构建方法与依据 9",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-432E185B868A-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（二）构建方法与依据 9"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0020",
+            "statement": "（三）总体框架 10",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-0374555F4DB4-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（三）总体框架 10"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0021",
+            "statement": "**四、电力领域数据基础设施标准体系框架设计** 10",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-1916903A65A4-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**四、电力领域数据基础设施标准体系框架设计** 10"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0022",
+            "statement": "**五、重点标准研制方向与优先级** 13",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-1BA07B6A6C3B-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**五、重点标准研制方向与优先级** 13"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0023",
+            "statement": "**六、分阶段实施路径** 13",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-6EDEA29BAF80-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**六、分阶段实施路径** 13"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0024",
+            "statement": "**七、保障措施** 14",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-1836616820D8-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**七、保障措施** 14"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0025",
+            "statement": "（一）组织保障 14",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-6EA67F861399-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（一）组织保障 14"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0026",
+            "statement": "（二）机制保障 15",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-DEC3E510184F-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（二）机制保障 15"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0027",
+            "statement": "（三）资源保障 15",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-D2C8EC005313-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（三）资源保障 15"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0028",
+            "statement": "（四）国际标准衔接 15",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-6838F25F5EDC-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "（四）国际标准衔接 15"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "META-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0029",
+            "statement": "**八、结论** 15",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-0434E4FA90B4-01"
+            ],
+            "status": "unknown",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "metadata",
+            "normalized_fact_type": "metadata",
+            "normalized_semantic_role": "metadata",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**八、结论** 15"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001",
+          "RC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0030",
+            "statement": "2025年1月，国家发展改革委、国家数据局、工业和信息化部联合印发《国家数据基础设施建设指引》，明确了国家数据基础设施的概念内涵、发展愿景与总体架构，提出围绕数据流通利用、算力底座、网络支撑、安全防护四个方向部署建设任务，覆盖数据采集、汇聚、传输、加工、流通、利用、运营、安全等数据全生命周期环节，并将行业、区域、企业数据基础设施纳入国家数据基础设施的整体布局。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-F8C546989279-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "core",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "context",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "2025年1月，国家发展改革委、国家数据局、工业和信息化部联合印发《国家数据基础设施建设指引》，"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0031",
+            "statement": "《指引》明确了三阶段建设目标：到2026年完成国家数据基础设施顶层设计并开展技术路线试点试验，到2028年建成支撑数据规模化流通、互联互通的数据基础设施并实现全国大中型城市基本覆盖，到2029年基本建成国家数据基础设施主体结构。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-F8C546989279-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "context",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "《指引》明确了三阶段建设目标：到2026年完成国家数据基础设施顶层设计并开展技术路线试点试验，到"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0032",
+            "statement": "为落实上述部署，国家数据局指导全国数据标准化技术委员会研究形成了《数据基础设施参考架构（试行）》《数据基础设施互联互通基本要求（试行）》《数据基础设施用户身份管理和接入规范（试行）》《数据基础设施标识管理规范（试行）》《数据基础设施接入连接器技术要求（试行）》《数据基础设施数据目录描述规范（试行）》等六项技术文件，引导各地区、各行业按照统一目录标识、统一身份登记、统一接口要求推进建设。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-F8C546989279-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "context",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "为落实上述部署，国家数据局指导全国数据标准化技术委员会研究形成了《数据基础设施参考架构（试行）》"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0033",
+            "statement": "标准体系建设由此成为国家数据基础设施落地实施的关键支撑。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-F8C546989279-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "标准体系建设由此成为国家数据基础设施落地实施的关键支撑。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0034",
+            "statement": "与此同时，国家数据局等十七部门联合印发《“数据要素×”三年行动计划（2024—2026年）》，将绿色低碳列为重点行动领域之一，提出提升能源利用效率、促进制造与能源数据融合创新、推动能源企业与高耗能企业打通订单排产用电等数据、支持能耗预测和多能互补及梯度定价等应用，对电力数据的采集、流通、应用提出了明确要求。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-D95AC8629201-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "与此同时，国家数据局等十七部门联合印发《“数据要素×”三年行动计划（2024—2026年）》，将"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0035",
+            "statement": "国家能源局印发的《能源行业数据分类分级指南（2026年版）》已于2026年7月1日起施行，按能源品种和能源活动两个维度对能源数据实行一般、重要、核心三级分类分级管理，电力作为能源品种一级分类的重要组成部分，其数据分类分级规则、识别标准和管理要求已由该指南作出统一规定，为电力数据基础设施标准体系建设提供了直接的制度依据。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-D95AC8629201-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "国家能源局印发的《能源行业数据分类分级指南（2026年版）》已于2026年7月1日起施行，按能源"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0036",
+            "statement": "国家能源局印发的《能源行业数据安全管理办法（试行）》，对能源数据处理活动安全管理、分类分级、重要数据和核心数据保护、数据安全责任落实、风险监测和应急处置作出制度安排，是电力数据安全类标准制定的重要上位依据。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-D95AC8629201-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "国家能源局印发的《能源行业数据安全管理办法（试行）》，对能源数据处理活动安全管理、分类分级、重要"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0037",
+            "statement": "国家数据局印发的《可信数据空间发展行动计划（2024—2028年）》，对可信数据空间建设、可信流通、场景验证、标准验证和生态培育作出系统部署，为电力数据基础设施标准体系建设提供了可信流通层面的制度参照。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-D95AC8629201-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "国家数据局印发的《可信数据空间发展行动计划（2024—2028年）》，对可信数据空间建设、可信流"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0038",
+            "statement": "2025年，中国电力企业联合会（以下简称“中电联”）成功申报国家数据局国家数据基础设施建设第二批先行先试任务书（成长级），承担电力领域数据基础设施建设先行先试项目。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-CB9FEF0E398E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "event",
+            "normalized_semantic_role": "event",
+            "source_argument_role": "background",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "2025年，中国电力企业联合会（以下简称“中电联”）成功申报国家数据局国家数据基础设施建设第二批"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0039",
+            "statement": "该项目以国家数据基础设施电力行业节点能力建设为牵引，聚焦统一目录、统一身份、统一标识“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设，任务书明确要求项目形成技术创新融合方案、支撑重点领域应用、开展标准验证、完善机制建设。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-CB9FEF0E398E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "event",
+            "normalized_semantic_role": "event",
+            "source_argument_role": "background",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "该项目以国家数据基础设施电力行业节点能力建设为牵引，聚焦统一目录、统一身份、统一标识“三统一”能"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0040",
+            "statement": "项目重点场景已覆盖行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购、数据产品服务等方向，具备以场景牵引平台能力建设、以平台支撑场景运营的工作基础。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-CB9FEF0E398E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "event",
+            "normalized_semantic_role": "event",
+            "source_argument_role": "background",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "项目重点场景已覆盖行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购、数据产"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0041",
+            "statement": "项目建设衔接中电联此前印发的《关于推进电力行业数据共享交换互联互通工作的倡议》和《电力行业企业间数据交换接口技术规范》等既有工作成果，前期研究、场景储备和实施路径已形成基础，具备转入建设实施的条件。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-CB9FEF0E398E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "event",
+            "normalized_semantic_role": "event",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "项目建设衔接中电联此前印发的《关于推进电力行业数据共享交换互联互通工作的倡议》和《电力行业企业间"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0042",
+            "statement": "标准验证是先行先试任务书明确的四项核心任务之一，也是电力领域数据基础设施节点建设行稳致远的基础支撑。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-CB9FEF0E398E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "event",
+            "normalized_semantic_role": "event",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "标准验证是先行先试任务书明确的四项核心任务之一，也是电力领域数据基础设施节点建设行稳致远的基础支"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0043",
+            "statement": "中电联作为项目牵头单位和电力行业标准化管理机构，组织开展本项研究，系统构建电力领域数据基础设施标准体系框架，推动先行先试项目在标准层面形成可交付、可验证、可运营的阶段性成果。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-CB9FEF0E398E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "event",
+            "normalized_semantic_role": "event",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "中电联作为项目牵头单位和电力行业标准化管理机构，组织开展本项研究，系统构建电力领域数据基础设施标"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003",
+          "RC-001"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0044",
+            "statement": "新型电力系统建设背景下，电力行业数字化转型进程持续加快。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-71CA03380F46-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "problem",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "新型电力系统建设背景下，电力行业数字化转型进程持续加快。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0045",
+            "statement": "国家电网有限公司发布《新型电力系统数字技术支撑体系白皮书》，明确以数据为核心要素、以数字技术为驱动力构建电网数字化支撑体系。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-71CA03380F46-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "problem",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "国家电网有限公司发布《新型电力系统数字技术支撑体系白皮书》，明确以数据为核心要素、以数字技术为驱"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0046",
+            "statement": "南方电网有限责任公司先后发布《数字电网白皮书》《数字电网实践白皮书》《数字电网推动构建以新能源为主体的新型电力系统白皮书》，提出以“基座、数据、创新、安全、AI”五大赋能能力支撑电网、服务、运营、产业“四位一体”数字化转型，并制定数字电网建设“2421”战略路径；",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-71CA03380F46-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "南方电网有限责任公司先后发布《数字电网白皮书》《数字电网实践白皮书》《数字电网推动构建以新能源为"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0047",
+            "statement": "同时发布能源行业首个《数据资产管理体系白皮书》，以国家数据管理能力成熟度模型（DCMM）最高等级通过评价。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-71CA03380F46-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "同时发布能源行业首个《数据资产管理体系白皮书》，以国家数据管理能力成熟度模型（DCMM）最高等级"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0048",
+            "statement": "上述实践表明，电力企业在数据基础设施建设方面已积累一定基础，但相关建设总体呈现企业自主推进、标准分散制定的特征。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-71CA03380F46-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "上述实践表明，电力企业在数据基础设施建设方面已积累一定基础，但相关建设总体呈现企业自主推进、标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0049",
+            "statement": "电力行业现有数据相关标准分布在数据安全、数据交易、统计编码、信息模型等不同专业领域，制定主体涵盖国家标准、行业标准、团体标准和企业标准等多个层级，标准之间衔接不足、覆盖范围不均衡的问题较为突出。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-95095F8B73E0-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力行业现有数据相关标准分布在数据安全、数据交易、统计编码、信息模型等不同专业领域，制定主体涵盖"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0050",
+            "statement": "随着算力电力协同、虚拟电厂、多能互补、新型储能等新业态、新场景不断涌现，电力数据基础设施建设对标准体系的系统性、协同性、前瞻性提出了更高要求，亟需以国家数据基础设施建设指引为总纲，结合电力行业专业特点，系统构建覆盖电力数据全生命周期、全产业链的标准体系。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-95095F8B73E0-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "随着算力电力协同、虚拟电厂、多能互补、新型储能等新业态、新场景不断涌现，电力数据基础设施建设对标"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-010"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0051",
+            "statement": "本研究由中电联组织开展，旨在贯彻落实国家数据基础设施建设总体部署，落实中电联承担的国家数据基础设施建设第二批先行先试任务书关于标准验证的任务要求，衔接能源行业数据分类分级等最新制度要求，系统梳理电力领域数据基础设施标准化现状与差距，构建具有电力行业特点、层次清晰、覆盖完整的数据基础设施标准体系框架，明确重点标准研制方向和分阶段实施路径，为电力行业主管部门、标准化技术委员会及电力企业开展标准立项、标准研制和标准实施提供系统性参考，为先行先试项目建设和电力数据要素价值释放提供标准支撑。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-7C71112F4466-01"
+            ],
+            "status": "planned",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "goal",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "本研究由中电联组织开展，旨在贯彻落实国家数据基础设施建设总体部署，落实中电联承担的国家数据基础设"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004",
+          "RC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0052",
+            "statement": "国家数据基础设施建设已形成“顶层指引加技术文件”的政策标准框架体系。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-2D1E57066918-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "core",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "evidence",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "国家数据基础设施建设已形成“顶层指引加技术文件”的政策标准框架体系。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0053",
+            "statement": "《国家数据基础设施建设指引》确立了数据流通利用、算力底座、网络支撑、安全防护四大建设方向和数据全生命周期八大能力要求，六项配套技术文件就参考架构、互联互通、身份管理、标识管理、接入连接器、数据目录等关键技术环节作出统一规定，形成了各行业数据基础设施建设可参照执行的基础规范。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-2D1E57066918-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "《国家数据基础设施建设指引》确立了数据流通利用、算力底座、网络支撑、安全防护四大建设方向和数据全"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0054",
+            "statement": "国家标准《GB/T 13016 标准体系构建原则和要求》规定了标准体系表编制的基本原则、分析方法、通用程序和格式要求，适用于国家、行业、组织、专业等各层次标准体系的构建，是本研究开展电力领域数据基础设施标准体系框架设计的方法论依据。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-2D1E57066918-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "国家标准《GB/T 13016 标准体系构建原则和要求》规定了标准体系表编制的基本原则、分析方法"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0055",
+            "statement": "《能源行业数据分类分级指南（2026年版）》进一步明确了能源数据分类分级的具体规则，为电力数据资源标准的制定提供了直接依据。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-2D1E57066918-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "policy_basis",
+            "normalized_semantic_role": "policy_basis",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "《能源行业数据分类分级指南（2026年版）》进一步明确了能源数据分类分级的具体规则，为电力数据资"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004",
+          "RC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0056",
+            "statement": "电力行业在数据领域已形成一定标准基础。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "evidence",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力行业在数据领域已形成一定标准基础。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "RC-002"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0057",
+            "statement": "在数据模型与互联互通方面，电力行业标准DL/T 890系列对应国际标准IEC 61970《能量管理系统应用程序接口》，以公共信息模型（CIM）和组件接口规范（CIS）为两大支柱，为电力系统资源信息交换提供了标准化数据模型，在电网调度自动化领域应用较为成熟。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "policy_basis",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "在数据模型与互联互通方面，电力行业标准DL/T 890系列对应国际标准IEC 61970《能量管"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0058",
+            "statement": "在数据安全方面，团体标准T/CSAS 0012—2025《电力行业数据安全要求》已于2025年发布实施，对数据采集、存储、使用、传输、备份、销毁等全生命周期环节提出总体要求和应用场景技术要求；",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "在数据安全方面，团体标准T/CSAS 0012—2025《电力行业数据安全要求》已于2025年发"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0059",
+            "statement": "T/GDCSA 020—2024《电力交易数据安全分类分级管理规范》就电力交易场景的数据分类分级作出专门规定。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "T/GDCSA 020—2024《电力交易数据安全分类分级管理规范》就电力交易场景的数据分类分级"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0060",
+            "statement": "在统计与基础编码方面，中电联归口管理的《电力行业统计编码规范》为电力行业统计数据的规范化奠定了基础。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "在统计与基础编码方面，中电联归口管理的《电力行业统计编码规范》为电力行业统计数据的规范化奠定了基"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0061",
+            "statement": "在数据共享交换方面，中电联印发的《关于推进电力行业数据共享交换互联互通工作的倡议》和《电力行业企业间数据交换接口技术规范》，已就电力行业数据共享交换互联互通形成组织倡议和接口规范基础，为电力领域数据基础设施先行先试项目建设提供了直接的行业工作基础。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "evidence",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "在数据共享交换方面，中电联印发的《关于推进电力行业数据共享交换互联互通工作的倡议》和《电力行业企"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0062",
+            "statement": "在管理机制方面，国家能源局自2023年起部署电力可靠性管理数据治理工作，明确到2025年初步建成、到2028年全面建成基于实时数据的电力可靠性管理体系。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "在管理机制方面，国家能源局自2023年起部署电力可靠性管理数据治理工作，明确到2025年初步建成"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0063",
+            "statement": "中电联作为电力行业标准化管理机构，承担电力行业标准和标准化指导性技术文件的归口管理职责，国家能源局每年发布能源行业标准计划立项指南，为电力数据相关标准的持续研制提供了组织渠道。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-797ABE1B854F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "中电联作为电力行业标准化管理机构，承担电力行业标准和标准化指导性技术文件的归口管理职责，国家能源"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0064",
+            "statement": "对照国家数据基础设施建设总体要求和电力行业数字化转型实际需求，电力领域数据基础设施标准化工作存在以下差距。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-F008BE6DDA4E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "对照国家数据基础设施建设总体要求和电力行业数字化转型实际需求，电力领域数据基础设施标准化工作存在"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003",
+          "RC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0065",
+            "statement": "标准体系尚未形成统一框架。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-65660DD62DE9-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "core",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "problem",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "标准体系尚未形成统一框架。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0066",
+            "statement": "现有标准分散制定于数据安全、数据交易、信息模型、统计编码等不同专业领域，制定主体包括国家标准、行业标准、团体标准和企业标准，标准之间层级关系、衔接关系不明确，尚未形成以国家数据基础设施参考架构为基础、体现电力行业特点的系统性标准体系。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-65660DD62DE9-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "现有标准分散制定于数据安全、数据交易、信息模型、统计编码等不同专业领域，制定主体包括国家标准、行"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "RC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0067",
+            "statement": "基础通用标准供给不足。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-7F05ED4358DA-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "problem",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "基础通用标准供给不足。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0068",
+            "statement": "电力数据基础设施建设所需的数据目录、数据标识、身份认证、接口协议等基础共性标准，尚未结合电力行业场景形成配套的电力行业实施细则，与国家数据基础设施六项技术文件的衔接工作有待加强。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-7F05ED4358DA-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力数据基础设施建设所需的数据目录、数据标识、身份认证、接口协议等基础共性标准，尚未结合电力行业"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "RC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0069",
+            "statement": "数据资源标准覆盖不均衡。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-7606FB82331F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "problem",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "数据资源标准覆盖不均衡。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0070",
+            "statement": "数据安全分类分级方面已有能源行业统一指南和电力交易专项规范，但电力数据资源目录、元数据、数据质量、数据字典等基础性资源标准仍不健全，制约电力数据资产的统一管理和高效利用。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-7606FB82331F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "数据安全分类分级方面已有能源行业统一指南和电力交易专项规范，但电力数据资源目录、元数据、数据质量"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003",
+          "RC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0071",
+            "statement": "新兴应用场景标准供给滞后。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-D91A803C5D2D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "problem",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "新兴应用场景标准供给滞后。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0072",
+            "statement": "算力电力协同、虚拟电厂、多能互补、新型储能、电动汽车与电网互动等新业态快速发展，相关数据接口、数据交互、数据服务标准的研制进度滞后于业务发展需求。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-D91A803C5D2D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "算力电力协同、虚拟电厂、多能互补、新型储能、电动汽车与电网互动等新业态快速发展，相关数据接口、数"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "RC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0073",
+            "statement": "标准实施与协同推进机制有待完善。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-01FE1C856B4E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "problem",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "标准实施与协同推进机制有待完善。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-003"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0074",
+            "statement": "电力企业在数据基础设施建设中的实践探索走在标准制定前面，国家电网、南方电网等企业已形成各自的数据架构和管理体系，标准制定工作需要加强与企业实践的双向衔接，避免出现企业标准事实先行、行业标准滞后跟进的局面。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-01FE1C856B4E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "problem",
+            "importance": "detail",
+            "argument_duty": "gap",
+            "normalized_fact_type": "problem",
+            "normalized_semantic_role": "problem",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力企业在数据基础设施建设中的实践探索走在标准制定前面，国家电网、南方电网等企业已形成各自的数据"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0075",
+            "statement": "电力领域数据基础设施标准体系构建应遵循以下原则。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力领域数据基础设施标准体系构建应遵循以下原则。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005",
+          "RC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0076",
+            "statement": "坚持顶层对接，以《国家数据基础设施建设指引》确立的总体架构和八大能力要求为基本遵循，确保电力行业标准体系与国家数据基础设施标准体系在概念、架构、术语上协调一致。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "core",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "approach",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "坚持顶层对接，以《国家数据基础设施建设指引》确立的总体架构和八大能力要求为基本遵循，确保电力行业"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005",
+          "RC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0077",
+            "statement": "坚持任务牵引，紧密衔接中电联承担的国家数据基础设施建设第二批先行先试任务书（成长级）关于统一目录、统一身份、统一标识“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设的任务要求，使标准体系建设与先行先试项目实施进度同步推进、成果互证。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "approach",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "坚持任务牵引，紧密衔接中电联承担的国家数据基础设施建设第二批先行先试任务书（成长级）关于统一目录"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005",
+          "RC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0078",
+            "statement": "坚持行业适配，结合电力系统发电、输电、变电、配电、用电、调度全环节业务特点和电力数据实时性强、专业性强、安全等级要求高的特征，形成体现电力行业专业性的标准内容。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "approach",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "坚持行业适配，结合电力系统发电、输电、变电、配电、用电、调度全环节业务特点和电力数据实时性强、专"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005",
+          "RC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0079",
+            "statement": "坚持体系完整，按照GB/T 13016关于标准体系构建的原则和方法，覆盖基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范等各个层面，做到层次清晰、边界明确、衔接有序。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "approach",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "坚持体系完整，按照GB/T 13016关于标准体系构建的原则和方法，覆盖基础通用、数据资源、技术"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0080",
+            "statement": "坚持急用先行，优先安排数据分类分级、数据安全、互联互通等国家已有明确要求且行业需求迫切的标准制修订工作，兼顾新兴业务场景标准的前瞻布局。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "坚持急用先行，优先安排数据分类分级、数据安全、互联互通等国家已有明确要求且行业需求迫切的标准制修"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0081",
+            "statement": "坚持开放协同，做好与国际标准特别是IEC 61970/61968等电力信息模型国际标准的对接工作，同时统筹国家标准、行业标准、团体标准、企业标准的分工协作。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-3455873A54FE-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "坚持开放协同，做好与国际标准特别是IEC 61970/61968等电力信息模型国际标准的对接工作"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0082",
+            "statement": "本研究采用GB/T 13016规定的标准体系表编制方法，以国家数据基础设施“数据流通利用、算力底座、网络支撑、安全防护”四大建设方向和“采集、汇聚、传输、加工、流通、利用、运营、安全”八大能力要求为基本坐标，以中电联承担的国家数据基础设施建设第二批先行先试任务书（成长级）确定的“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设要求为直接依据，结合《能源行业数据分类分级指南（2026年版）》关于能源数据分类分级的制度安排，以及电力行业发电输电变电配电用电调度的专业链条特点，将电力领域数据基础设施标准体系划分为基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类，并逐类细化二级子体系和重点标准方向，形成覆盖电力数据全生命周期的标准体系框架。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-E272B23C7BE3-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "approach",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "本研究采用GB/T 13016规定的标准体系表编制方法，以国家数据基础设施“数据流通利用、算力底"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006",
+          "RC-004"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0083",
+            "statement": "电力领域数据基础设施标准体系总体框架体现“四梁八柱、上下衔接”的结构特征。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-E2A7B348659C-01"
+            ],
+            "status": "planned",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "goal",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力领域数据基础设施标准体系总体框架体现“四梁八柱、上下衔接”的结构特征。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0084",
+            "statement": "“四梁”对应国家数据基础设施建设四大方向在电力行业的落地，即电力数据流通利用标准、电力算力底座标准、电力网络支撑标准、电力数据安全防护标准；",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-E2A7B348659C-01"
+            ],
+            "status": "planned",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "goal",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "“四梁”对应国家数据基础设施建设四大方向在电力行业的落地，即电力数据流通利用标准、电力算力底座标"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0085",
+            "statement": "“八柱”对应数据全生命周期八大能力在电力行业的标准化要求。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-E2A7B348659C-01"
+            ],
+            "status": "planned",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "goal",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "“八柱”对应数据全生命周期八大能力在电力行业的标准化要求。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0086",
+            "statement": "在此基础上，考虑到电力行业标准体系已有的组织管理传统和标准分类习惯，本研究将体系整体呈现为基础通用标准、数据资源标准、技术设施标准、互联互通标准、应用服务标准、安全保障标准、管理规范标准七个一级类目，各类目下设二级子体系，形成纵向到底、横向到边的标准体系结构。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-E2A7B348659C-01"
+            ],
+            "status": "planned",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "goal",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "在此基础上，考虑到电力行业标准体系已有的组织管理传统和标准分类习惯，本研究将体系整体呈现为基础通"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0087",
+            "statement": "标准体系一级、二级分类及重点标准方向如下表所示。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-E981A5489756-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "标准体系一级、二级分类及重点标准方向如下表所示。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0088",
+            "statement": "**一级类目**：A 基础通用标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-B4EB5156C5A4-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 1,
+              "cell_index": 1,
+              "header": "**一级类目**",
+              "group_label": "A 基础通用标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一级类目**：A 基础通用标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0089",
+            "statement": "A 基础通用标准｜**二级子体系**：A1 术语与概念",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-B4EB5156C5A4-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 1,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "A 基础通用标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "A 基础通用标准｜**二级子体系**：A1 术语与概念"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0090",
+            "statement": "A 基础通用标准｜**重点标准方向与说明**：统一电力数据基础设施相关术语定义，衔接国家数据基础设施参考架构术语体系",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-B4EB5156C5A4-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 1,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "A 基础通用标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "A 基础通用标准｜**重点标准方向与说明**：统一电力数据基础设施相关术语定义，衔接国家数据基础"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0091",
+            "statement": "**二级子体系**：A2 参考架构",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-B54D43F12D98-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 2,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "A 基础通用标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：A2 参考架构"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0092",
+            "statement": "**重点标准方向与说明**：制定电力数据基础设施参考架构行业实施细则，明确与国家数据基础设施参考架构的映射关系",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-B54D43F12D98-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 2,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "A 基础通用标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力数据基础设施参考架构行业实施细则，明确与国家数据基础设施参考"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0093",
+            "statement": "**二级子体系**：A3 标识与目录",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-C3206BE901A9-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 3,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "A 基础通用标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：A3 标识与目录"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0094",
+            "statement": "**重点标准方向与说明**：制定电力数据标识管理规范、电力数据目录描述规范，衔接国家数据基础设施标识管理规范与数据目录描述规范",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-C3206BE901A9-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 3,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "A 基础通用标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力数据标识管理规范、电力数据目录描述规范，衔接国家数据基础设施"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0095",
+            "statement": "**一级类目**：B 数据资源标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-6586BB672963-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 4,
+              "cell_index": 1,
+              "header": "**一级类目**",
+              "group_label": "B 数据资源标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一级类目**：B 数据资源标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0096",
+            "statement": "B 数据资源标准｜**二级子体系**：B1 数据分类分级",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-6586BB672963-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 4,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "B 数据资源标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "B 数据资源标准｜**二级子体系**：B1 数据分类分级"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0097",
+            "statement": "B 数据资源标准｜**重点标准方向与说明**：制定电力数据分类分级实施细则，衔接《能源行业数据分类分级指南（2026年版）》在电力品种、发输变配用调各环节的具体应用",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-6586BB672963-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 4,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "B 数据资源标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "B 数据资源标准｜**重点标准方向与说明**：制定电力数据分类分级实施细则，衔接《能源行业数据分"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0098",
+            "statement": "**二级子体系**：B2 数据字典与元数据",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-23AC4652A74F-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 5,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "B 数据资源标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：B2 数据字典与元数据"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0099",
+            "statement": "**重点标准方向与说明**：制定电力行业数据字典、元数据规范，规范电力设备、电网拓扑、量测数据等核心数据对象定义",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-23AC4652A74F-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 5,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "B 数据资源标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力行业数据字典、元数据规范，规范电力设备、电网拓扑、量测数据等"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0100",
+            "statement": "**二级子体系**：B3 数据质量",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-5F66522E4727-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 6,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "B 数据资源标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：B3 数据质量"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0101",
+            "statement": "**重点标准方向与说明**：制定电力数据质量评价指标体系和核查技术要求，覆盖数据生成、采集、存储、使用全过程质量控制",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-5F66522E4727-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 6,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "B 数据资源标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力数据质量评价指标体系和核查技术要求，覆盖数据生成、采集、存储"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0102",
+            "statement": "**二级子体系**：B4 数据资产管理",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-06E5E8C6D9C1-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 7,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "B 数据资源标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：B4 数据资产管理"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0103",
+            "statement": "**重点标准方向与说明**：制定电力数据资产登记、评估、入表相关标准，衔接数据管理能力成熟度评价要求",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-06E5E8C6D9C1-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 7,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "B 数据资源标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力数据资产登记、评估、入表相关标准，衔接数据管理能力成熟度评价"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0104",
+            "statement": "**一级类目**：C 技术设施标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-343217AF661D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 8,
+              "cell_index": 1,
+              "header": "**一级类目**",
+              "group_label": "C 技术设施标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一级类目**：C 技术设施标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0105",
+            "statement": "C 技术设施标准｜**二级子体系**：C1 感知与终端",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-343217AF661D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 8,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "C 技术设施标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "C 技术设施标准｜**二级子体系**：C1 感知与终端"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0106",
+            "statement": "C 技术设施标准｜**重点标准方向与说明**：制定电力物联网终端、智能传感装置数据接入技术要求",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-343217AF661D-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 8,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "C 技术设施标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "C 技术设施标准｜**重点标准方向与说明**：制定电力物联网终端、智能传感装置数据接入技术要求"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0107",
+            "statement": "**二级子体系**：C2 存储与计算",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-EF517B85CE1D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 9,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "C 技术设施标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：C2 存储与计算"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0108",
+            "statement": "**重点标准方向与说明**：制定电力数据存储、电力算力资源调度及算力电力协同相关技术标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-EF517B85CE1D-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 9,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "C 技术设施标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力数据存储、电力算力资源调度及算力电力协同相关技术标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0109",
+            "statement": "**二级子体系**：C3 平台与中台",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-A71F1509ECBA-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 10,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "C 技术设施标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：C3 平台与中台"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0110",
+            "statement": "**重点标准方向与说明**：制定电力大数据平台、数据中台技术导则及功能规范",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-A71F1509ECBA-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 10,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "C 技术设施标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力大数据平台、数据中台技术导则及功能规范"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0111",
+            "statement": "**一级类目**：D 互联互通标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-32B63A6249EC-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 11,
+              "cell_index": 1,
+              "header": "**一级类目**",
+              "group_label": "D 互联互通标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一级类目**：D 互联互通标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0112",
+            "statement": "D 互联互通标准｜**二级子体系**：D1 接口协议",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-32B63A6249EC-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 11,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "D 互联互通标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "D 互联互通标准｜**二级子体系**：D1 接口协议"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0113",
+            "statement": "D 互联互通标准｜**重点标准方向与说明**：制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-32B63A6249EC-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 11,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "D 互联互通标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "D 互联互通标准｜**重点标准方向与说明**：制定电力数据接入连接器技术要求，衔接国家数据基础设"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0114",
+            "statement": "**二级子体系**：D2 信息模型",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-DF45B5A7F76D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 12,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "D 互联互通标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：D2 信息模型"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0115",
+            "statement": "**重点标准方向与说明**：完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-DF45B5A7F76D-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 12,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "D 互联互通标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：完善以DL/T 890（IEC 61970/61968）公共信息模型"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0116",
+            "statement": "**二级子体系**：D3 身份与接入管理",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-F46369CF68AC-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 13,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "D 互联互通标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：D3 身份与接入管理"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0117",
+            "statement": "**重点标准方向与说明**：制定电力行业数据基础设施用户身份管理和接入规范实施细则",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-F46369CF68AC-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 13,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "D 互联互通标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力行业数据基础设施用户身份管理和接入规范实施细则"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0118",
+            "statement": "**一级类目**：E 应用服务标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-25520C20E4E5-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 14,
+              "cell_index": 1,
+              "header": "**一级类目**",
+              "group_label": "E 应用服务标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一级类目**：E 应用服务标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0119",
+            "statement": "E 应用服务标准｜**二级子体系**：E1 数据流通交易",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-25520C20E4E5-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 14,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "E 应用服务标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "E 应用服务标准｜**二级子体系**：E1 数据流通交易"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0120",
+            "statement": "E 应用服务标准｜**重点标准方向与说明**：制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-25520C20E4E5-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 14,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "E 应用服务标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "E 应用服务标准｜**重点标准方向与说明**：制定电力数据流通、共享、交易相关标准，衔接电力交易"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0121",
+            "statement": "**二级子体系**：E2 新兴场景应用",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-7F4B2818D73C-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 15,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "E 应用服务标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：E2 新兴场景应用"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0122",
+            "statement": "**重点标准方向与说明**：制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-7F4B2818D73C-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 15,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "E 应用服务标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0123",
+            "statement": "**二级子体系**：E3 公共服务",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-70762DB7164E-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "detail",
+            "normalized_fact_type": "other",
+            "normalized_semantic_role": "other",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 16,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "E 应用服务标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：E3 公共服务"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0124",
+            "statement": "**重点标准方向与说明**：制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-70762DB7164E-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 16,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "E 应用服务标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0125",
+            "statement": "**一级类目**：F 安全保障标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-D4C0FF16886B-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 17,
+              "cell_index": 1,
+              "header": "**一级类目**",
+              "group_label": "F 安全保障标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一级类目**：F 安全保障标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0126",
+            "statement": "F 安全保障标准｜**二级子体系**：F1 数据安全总体要求",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-D4C0FF16886B-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 17,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "F 安全保障标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "F 安全保障标准｜**二级子体系**：F1 数据安全总体要求"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0127",
+            "statement": "F 安全保障标准｜**重点标准方向与说明**：完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-D4C0FF16886B-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 17,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "F 安全保障标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "F 安全保障标准｜**重点标准方向与说明**：完善以T/CSAS 0012—2025电力行业数据"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0128",
+            "statement": "**二级子体系**：F2 全生命周期安全",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-F23D5190C6EB-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 18,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "F 安全保障标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：F2 全生命周期安全"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0129",
+            "statement": "**重点标准方向与说明**：制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-F23D5190C6EB-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 18,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "F 安全保障标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0130",
+            "statement": "**二级子体系**：F3 跨域安全",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-D92CDA7649BE-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 19,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "F 安全保障标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：F3 跨域安全"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0131",
+            "statement": "**重点标准方向与说明**：制定电力数据跨企业、跨行业、跨境流通安全管理规范",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-D92CDA7649BE-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 19,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "F 安全保障标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定电力数据跨企业、跨行业、跨境流通安全管理规范"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0132",
+            "statement": "**一级类目**：G 管理规范标准",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-FC64911471FD-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 20,
+              "cell_index": 1,
+              "header": "**一级类目**",
+              "group_label": "G 管理规范标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**一级类目**：G 管理规范标准"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0133",
+            "statement": "G 管理规范标准｜**二级子体系**：G1 治理机制",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-FC64911471FD-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 20,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "G 管理规范标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "G 管理规范标准｜**二级子体系**：G1 治理机制"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0134",
+            "statement": "G 管理规范标准｜**重点标准方向与说明**：制定电力数据治理组织、职责、流程相关管理规范",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-FC64911471FD-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 20,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "G 管理规范标准",
+              "basis": "explicit_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "G 管理规范标准｜**重点标准方向与说明**：制定电力数据治理组织、职责、流程相关管理规范"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0135",
+            "statement": "**二级子体系**：G2 标准化协同管理",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-29E26F5D27CC-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 21,
+              "cell_index": 2,
+              "header": "**二级子体系**",
+              "group_label": "G 管理规范标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**二级子体系**：G2 标准化协同管理"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0136",
+            "statement": "**重点标准方向与说明**：制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-TABLE-ROW-29E26F5D27CC-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "constraint",
+            "argument_duty": "response",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": {
+              "row_index": 21,
+              "cell_index": 3,
+              "header": "**重点标准方向与说明**",
+              "group_label": "G 管理规范标准",
+              "basis": "inherited_previous_nonempty_first_column"
+            },
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "**重点标准方向与说明**：制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0137",
+            "statement": "上述标准体系表中，A类基础通用标准和F类安全保障标准是电力数据基础设施标准体系的共性支撑基础，应优先完成与国家数据基础设施六项技术文件的对接。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-86E3E795A4C7-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "上述标准体系表中，A类基础通用标准和F类安全保障标准是电力数据基础设施标准体系的共性支撑基础，应"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0138",
+            "statement": "B类数据资源标准和D类互联互通标准是体现电力行业专业特点的核心内容，其中数据分类分级标准应直接衔接《能源行业数据分类分级指南（2026年版）》的相关规定，信息模型标准应在DL/T 890现有基础上做好继承和扩展。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-86E3E795A4C7-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "B类数据资源标准和D类互联互通标准是体现电力行业专业特点的核心内容，其中数据分类分级标准应直接衔"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0139",
+            "statement": "C类技术设施标准和E类应用服务标准面向电力数字化转型的具体场景，应保持与国家电网、南方电网等企业数字化实践的动态衔接。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-86E3E795A4C7-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "C类技术设施标准和E类应用服务标准面向电力数字化转型的具体场景，应保持与国家电网、南方电网等企业"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0140",
+            "statement": "G类管理规范标准是保障标准体系持续运行的制度基础。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-86E3E795A4C7-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "G类管理规范标准是保障标准体系持续运行的制度基础。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0141",
+            "statement": "上述标准体系框架与中电联承担的先行先试任务书确定的能力建设要求相互对应。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-05FBC7E1B0AB-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "上述标准体系框架与中电联承担的先行先试任务书确定的能力建设要求相互对应。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0142",
+            "statement": "A3标识与目录、D3身份与接入管理共同支撑任务书要求的统一目录、统一身份、统一标识“三统一”能力；",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-05FBC7E1B0AB-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "A3标识与目录、D3身份与接入管理共同支撑任务书要求的统一目录、统一身份、统一标识“三统一”能力"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0143",
+            "statement": "D1接口协议、D3身份与接入管理支撑主体接入能力；",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-05FBC7E1B0AB-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "D1接口协议、D3身份与接入管理支撑主体接入能力；"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0144",
+            "statement": "E1数据流通交易、E2新兴场景应用支撑数据流通利用能力；",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-05FBC7E1B0AB-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "E1数据流通交易、E2新兴场景应用支撑数据流通利用能力；"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0145",
+            "statement": "F类安全保障标准支撑安全保障能力。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-05FBC7E1B0AB-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "F类安全保障标准支撑安全保障能力。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0146",
+            "statement": "标准体系建设与先行先试项目建设同步推进，可为项目标准验证任务提供直接支撑。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-05FBC7E1B0AB-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "标准体系建设与先行先试项目建设同步推进，可为项目标准验证任务提供直接支撑。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-007",
+          "RC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0147",
+            "statement": "结合国家数据基础设施建设三阶段目标和电力行业实际需求，建议按照急用先行、分类推进的原则确定重点标准研制方向。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-331D290FE21D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "core",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "requirement",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "结合国家数据基础设施建设三阶段目标和电力行业实际需求，建议按照急用先行、分类推进的原则确定重点标"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-007",
+          "RC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0148",
+            "statement": "第一优先级标准包括电力数据基础设施参考架构行业实施细则、电力数据分类分级实施细则、电力数据标识管理规范、电力数据目录描述规范，此类标准直接衔接国家已发布的技术文件和分类分级指南，具备明确的上位依据，应尽快启动立项。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-331D290FE21D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "requirement",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "第一优先级标准包括电力数据基础设施参考架构行业实施细则、电力数据分类分级实施细则、电力数据标识管"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-007",
+          "RC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0149",
+            "statement": "第二优先级标准包括电力行业数据字典与元数据规范、电力数据质量评价标准、电力数据接入连接器技术要求、电力行业数据安全全生命周期技术标准，此类标准是支撑电力数据基础设施规模化建设的关键基础，建议在第一优先级标准发布后同步推进。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-331D290FE21D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "requirement",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "第二优先级标准包括电力行业数据字典与元数据规范、电力数据质量评价标准、电力数据接入连接器技术要求"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-007",
+          "RC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0150",
+            "statement": "第三优先级标准包括虚拟电厂数据接口标准、多能互补数据服务标准、算力电力协同数据交互标准、电力数据资产评估与入表标准，此类标准面向新兴业务场景，技术路线和业务模式仍在演进过程中，建议以团体标准先行先试，成熟后转化为行业标准或国家标准。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-331D290FE21D-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "requirement",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "第三优先级标准包括虚拟电厂数据接口标准、多能互补数据服务标准、算力电力协同数据交互标准、电力数据"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-007",
+          "RC-005"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0151",
+            "statement": "标准研制方向应重点衔接电力领域数据基础设施先行先试项目已确定的行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购、数据产品服务等重点场景，做到标准研制与场景验证同步推进、相互支撑，确保标准体系建设成果能够直接服务于先行先试项目的标准验证任务。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-5AD57A942BB1-01"
+            ],
+            "status": "existing",
+            "evidence_role": "boundary",
+            "importance": "constraint",
+            "argument_duty": "boundary",
+            "normalized_fact_type": "requirement",
+            "normalized_semantic_role": "requirement",
+            "source_argument_role": "requirement",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "标准研制方向应重点衔接电力领域数据基础设施先行先试项目已确定的行业治理、市场运行、绿色低碳、科技"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-008",
+          "RC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0152",
+            "statement": "电力领域数据基础设施标准体系建设应与国家数据基础设施建设三阶段目标保持同步，并与中电联承担的先行先试项目（成长级）建设节奏协调衔接，做到标准供给与项目建设、场景验证同步推进。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-22F54C1161C7-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "core",
+            "argument_duty": "response",
+            "normalized_fact_type": "process",
+            "normalized_semantic_role": "process",
+            "source_argument_role": "implementation",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力领域数据基础设施标准体系建设应与国家数据基础设施建设三阶段目标保持同步，并与中电联承担的先行"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-008",
+          "RC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0153",
+            "statement": "第一阶段为近期阶段，目标为完成标准体系顶层设计。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-9E2153E54ADE-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "process",
+            "normalized_semantic_role": "process",
+            "source_argument_role": "implementation",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "第一阶段为近期阶段，目标为完成标准体系顶层设计。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-008",
+          "RC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0154",
+            "statement": "此阶段应完成电力领域数据基础设施标准体系框架的正式发布，完成第一优先级标准的立项和研制，推动电力数据基础设施参考架构、标识管理、目录描述等基础标准与国家技术文件的对接，同步支撑先行先试项目统一目录、统一身份、统一标识“三统一”能力建设和年度标准验证任务，选取具备条件的电网企业和区域开展标准应用试点。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-9E2153E54ADE-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "process",
+            "normalized_semantic_role": "process",
+            "source_argument_role": "implementation",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "此阶段应完成电力领域数据基础设施标准体系框架的正式发布，完成第一优先级标准的立项和研制，推动电力"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-008",
+          "RC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0155",
+            "statement": "第二阶段为中期阶段，目标为形成支撑数据规模化流通的标准供给能力。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-4CD9E69B9968-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "process",
+            "normalized_semantic_role": "process",
+            "source_argument_role": "implementation",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "第二阶段为中期阶段，目标为形成支撑数据规模化流通的标准供给能力。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-008",
+          "RC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0156",
+            "statement": "此阶段应完成第二优先级标准的发布实施，推动电力数据基础设施标准在主要电网企业、发电企业、售电企业范围内基本覆盖，配合先行先试项目主体接入能力和数据流通利用能力建设进度，建立标准实施情况评估机制，根据试点经验和项目场景运营反馈对标准体系框架进行动态优化。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-4CD9E69B9968-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "process",
+            "normalized_semantic_role": "process",
+            "source_argument_role": "implementation",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "此阶段应完成第二优先级标准的发布实施，推动电力数据基础设施标准在主要电网企业、发电企业、售电企业"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-008",
+          "RC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0157",
+            "statement": "第三阶段为远期阶段，目标为基本建成电力领域数据基础设施标准体系主体结构。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-86C9EDAA4984-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "process",
+            "normalized_semantic_role": "process",
+            "source_argument_role": "implementation",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "第三阶段为远期阶段，目标为基本建成电力领域数据基础设施标准体系主体结构。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-008",
+          "RC-006"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0158",
+            "statement": "此阶段应完成第三优先级标准的成熟转化，形成基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类标准协同配套的完整体系，配合先行先试项目形成可交付、可验证、可运营的建设成果，实现电力数据基础设施标准体系与国家数据基础设施标准体系的全面衔接。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-86C9EDAA4984-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "process",
+            "normalized_semantic_role": "process",
+            "source_argument_role": "implementation",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "此阶段应完成第三优先级标准的成熟转化，形成基础通用、数据资源、技术设施、互联互通、应用服务、安全"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-009",
+          "RC-007"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0159",
+            "statement": "本项研究由中电联牵头组织，依托电力领域数据基础设施先行先试项目组工作机制推进标准体系建设。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-A82C6EB505C0-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "core",
+            "argument_duty": "support",
+            "normalized_fact_type": "responsibility",
+            "normalized_semantic_role": "responsibility",
+            "source_argument_role": "responsibility",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "本项研究由中电联牵头组织，依托电力领域数据基础设施先行先试项目组工作机制推进标准体系建设。"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-009"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0160",
+            "statement": "中电联在国家数据局、国家能源局的指导下，统筹协调电网企业、发电企业、售电企业、科研机构、高等院校等项目参与单位，建立标准立项、起草、审查、发布、复审全流程协作机制，明确项目组各专业方向在标准研制中的职责分工，推动标准体系建设与先行先试项目建设一体部署、一体推进。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-A82C6EB505C0-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "support",
+            "normalized_fact_type": "responsibility",
+            "normalized_semantic_role": "responsibility",
+            "source_argument_role": "",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "中电联在国家数据局、国家能源局的指导下，统筹协调电网企业、发电企业、售电企业、科研机构、高等院校"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-009",
+          "RC-007"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0161",
+            "statement": "建议将电力领域数据基础设施标准纳入国家能源局年度能源行业标准计划立项指南重点支持方向，建立标准立项与国家数据基础设施建设进度、能源行业数据分类分级指南实施要求相衔接的动态调整机制，建立标准实施情况跟踪评估和问题反馈机制。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-205C2633F255-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "responsibility",
+            "normalized_semantic_role": "responsibility",
+            "source_argument_role": "responsibility",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "建议将电力领域数据基础设施标准纳入国家能源局年度能源行业标准计划立项指南重点支持方向，建立标准立"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-009",
+          "RC-007"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0162",
+            "statement": "建议统筹电力企业、科研机构标准化研究力量，依托电网企业数字化转型实践经验，加大标准研制专项经费和人才队伍投入，鼓励电力企业将已形成的数据架构、数据资产管理等企业实践成果转化为行业标准和团体标准。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-F4CA7E36EC12-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "responsibility",
+            "normalized_semantic_role": "responsibility",
+            "source_argument_role": "responsibility",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "建议统筹电力企业、科研机构标准化研究力量，依托电网企业数字化转型实践经验，加大标准研制专项经费和"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-009",
+          "RC-007"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0163",
+            "statement": "建议在信息模型、互联互通等专业领域持续跟踪IEC 61970、IEC 61968等国际标准的最新进展，做好电力行业标准与国际标准的对标分析，积极参与国际标准化工作，提升电力数据基础设施标准的国际化水平。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-621211F9FB85-01"
+            ],
+            "status": "recommendation",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "responsibility",
+            "normalized_semantic_role": "responsibility",
+            "source_argument_role": "responsibility",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "建议在信息模型、互联互通等专业领域持续跟踪IEC 61970、IEC 61968等国际标准的最新"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-011",
+          "RC-008"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0164",
+            "statement": "电力领域数据基础设施标准体系建设是贯彻落实国家数据基础设施建设总体部署、支撑新型电力系统数字化转型的重要基础性工作，也是中电联落实国家数据基础设施建设第二批先行先试任务书标准验证任务的核心工作之一。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-02689104A034-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "core",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "conclusion",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "电力领域数据基础设施标准体系建设是贯彻落实国家数据基础设施建设总体部署、支撑新型电力系统数字化转"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-011",
+          "RC-008"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0165",
+            "statement": "本研究由中电联组织开展，以《国家数据基础设施建设指引》确立的总体架构和《能源行业数据分类分级指南（2026年版）》等最新制度要求为依据，紧密衔接先行先试任务书关于“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设的任务要求，结合电力行业现有标准基础和数字化转型实践，构建了涵盖基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类的电力领域数据基础设施标准体系框架，明确了重点标准研制方向、优先级排序和三阶段实施路径。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-02689104A034-01"
+            ],
+            "status": "existing",
+            "evidence_role": "fact",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "conclusion",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "本研究由中电联组织开展，以《国家数据基础设施建设指引》确立的总体架构和《能源行业数据分类分级指南"
+            ]
+          }
+        ]
+      },
+      {
+        "semantic_node_ids": [
+          "SC-011",
+          "RC-008"
+        ],
+        "atomic_items": [
+          {
+            "item_id": "NF-0166",
+            "statement": "后续工作中，中电联将在统一部署下持续跟踪国家数据基础设施建设进展，动态完善标准体系框架内容，加快重点标准立项研制，强化标准实施评估，推动本研究成果纳入先行先试项目整体建设进度统筹推进，为电力数据要素价值释放和电力行业高质量发展提供坚实的标准支撑。",
+            "source_unit_refs": [
+              "SU-B56DFFEECD-PARAGRAPH-02689104A034-01"
+            ],
+            "status": "planned",
+            "evidence_role": "recommendation",
+            "importance": "detail",
+            "argument_duty": "response",
+            "normalized_fact_type": "goal",
+            "normalized_semantic_role": "goal",
+            "source_argument_role": "conclusion",
+            "table_context": null,
+            "claim_origin": "source_explicit",
+            "coverage_anchors": [
+              "后续工作中，中电联将在统一部署下持续跟踪国家数据基础设施建设进展，动态完善标准体系框架内容，加快"
+            ]
+          }
+        ]
+      }
+    ],
+    "intentional_omissions": [],
+    "review_notes": [
+      "由已验证 normalized-facts.json 机械投影；未新增、合并或改写事实。"
+    ]
+  },
+  "source_gaps": [
+    {
+      "diagnostic_id": "AD-001",
+      "type": "duplicate_argument",
+      "statement": "国家数据基础设施总体部署、先行先试任务和标准体系建设目标在背景、原则与结论段落多次出现.",
+      "resolution": "保留各处来源断言；源链按章节记录，重构链将其归并为背景、依据和结论三个不同论证作用，后续页面规划时避免重复承担同一使命.",
+      "normalized_fact_ids": [
+        "NF-0030",
+        "NF-0076",
+        "NF-0164",
+        "NF-0165"
+      ],
+      "section_ids": [
+        "sec-0002",
+        "sec-0011",
+        "sec-0022"
+      ]
+    },
+    {
+      "diagnostic_id": "AD-002",
+      "type": "mixed_level",
+      "statement": "第四章表格同时呈现一级类目、二级子体系与重点标准方向，层级与标准条目粒度并存.",
+      "resolution": "表格父记录和纯行标签保留在来源追溯层，采用原子单元承载业务说明；后续页面规划需分别处理七大类框架与具体重点标准方向.",
+      "normalized_fact_ids": [
+        "NF-0083",
+        "NF-0089",
+        "NF-0090",
+        "NF-0148"
+      ],
+      "section_ids": [
+        "sec-0014",
+        "sec-0015"
+      ]
+    },
+    {
+      "diagnostic_id": "AD-003",
+      "type": "missing_bridge",
+      "statement": "现状差距到七大类标准框架之间的对应关系在原文中以总体论述表达，缺少逐项映射.",
+      "resolution": "保留该逻辑桥接缺口，不自行补造差距到标准类目的映射；页面规划阶段仅呈现原文明确的总体承接关系，并将逐项对应列为待确认事项.",
+      "normalized_fact_ids": [
+        "NF-0066",
+        "NF-0068",
+        "NF-0070",
+        "NF-0072",
+        "NF-0083",
+        "NF-0084"
+      ],
+      "section_ids": [
+        "sec-0009",
+        "sec-0014"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1727 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "semantic_work_chunk",
+  "chunk_id": "chunk-0003",
+  "section": {
+    "section_id": "sec-0010",
+    "level": 2,
+    "title": "三、总体架构",
+    "line": 176,
+    "parent_section_id": "sec-0007"
+  },
+  "sections": [
+    {
+      "section_id": "sec-0010",
+      "level": 2,
+      "title": "三、总体架构",
+      "line": 176,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0011",
+      "level": 2,
+      "title": "四、资源与产品形成机制",
+      "line": 192,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0012",
+      "level": 2,
+      "title": "五、服务运营闭环",
+      "line": 206,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0014",
+      "level": 2,
+      "title": "一、总体服务体系",
+      "line": 216,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 2,
+      "title": "二、场景服务体系",
+      "line": 232,
+      "parent_section_id": "sec-0013"
+    }
+  ],
+  "section_ids": [
+    "sec-0010",
+    "sec-0011",
+    "sec-0012",
+    "sec-0014",
+    "sec-0015"
+  ],
+  "document_outline": [
+    {
+      "section_id": "sec-0001",
+      "level": 1,
+      "title": "第一章　建设背景与合作基础",
+      "line": 98,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0002",
+      "level": 2,
+      "title": "一、建设背景",
+      "line": 100,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0003",
+      "level": 2,
+      "title": "二、总体定位",
+      "line": 110,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0004",
+      "level": 2,
+      "title": "三、建设基础",
+      "line": 122,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0005",
+      "level": 2,
+      "title": "四、建设目标与合作空间",
+      "line": 136,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0006",
+      "level": 2,
+      "title": "五、合作价值与开放原则",
+      "line": 144,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0007",
+      "level": 1,
+      "title": "第二章　平台建设与运营体系",
+      "line": 150,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0008",
+      "level": 2,
+      "title": "一、总体业务模式",
+      "line": 152,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0009",
+      "level": 2,
+      "title": "二、参与主体与业务关系",
+      "line": 160,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0010",
+      "level": 2,
+      "title": "三、总体架构",
+      "line": 176,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0011",
+      "level": 2,
+      "title": "四、资源与产品形成机制",
+      "line": 192,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0012",
+      "level": 2,
+      "title": "五、服务运营闭环",
+      "line": 206,
+      "parent_section_id": "sec-0007"
+    },
+    {
+      "section_id": "sec-0013",
+      "level": 1,
+      "title": "第三章　重点服务与合作机会",
+      "line": 214,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0014",
+      "level": 2,
+      "title": "一、总体服务体系",
+      "line": 216,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 2,
+      "title": "二、场景服务体系",
+      "line": 232,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0016",
+      "level": 2,
+      "title": "三、重点合作方向",
+      "line": 244,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0017",
+      "level": 2,
+      "title": "四、储备与拓展方向",
+      "line": 308,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "五、服务交付与应用方式",
+      "line": 314,
+      "parent_section_id": "sec-0013"
+    },
+    {
+      "section_id": "sec-0019",
+      "level": 1,
+      "title": "第四章　合作模式与保障机制",
+      "line": 328,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "一、合作伙伴类型",
+      "line": 330,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "二、合作模式",
+      "line": 346,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 2,
+      "title": "三、平台支持内容",
+      "line": 358,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0023",
+      "level": 2,
+      "title": "四、基本商务机制",
+      "line": 372,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0024",
+      "level": 2,
+      "title": "五、数据安全、权利与衍生成果保障",
+      "line": 386,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0025",
+      "level": 2,
+      "title": "六、服务质量与风险保障",
+      "line": 402,
+      "parent_section_id": "sec-0019"
+    },
+    {
+      "section_id": "sec-0026",
+      "level": 1,
+      "title": "第五章　合作对接与推进安排",
+      "line": 414,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0027",
+      "level": 2,
+      "title": "一、合作意向登记",
+      "line": 418,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0028",
+      "level": 2,
+      "title": "二、资源与需求对接",
+      "line": 426,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0029",
+      "level": 2,
+      "title": "三、合作事项成熟度评估",
+      "line": 434,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0030",
+      "level": 2,
+      "title": "四、合作方案深化",
+      "line": 442,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0031",
+      "level": 2,
+      "title": "五、试点验证",
+      "line": 450,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0032",
+      "level": 2,
+      "title": "六、正式运营与复制推广",
+      "line": 458,
+      "parent_section_id": "sec-0026"
+    },
+    {
+      "section_id": "sec-0033",
+      "level": 1,
+      "title": "结束语",
+      "line": 470,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0034",
+      "level": 1,
+      "title": "附件一　合作伙伴资源与能力登记要点",
+      "line": 476,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0035",
+      "level": 1,
+      "title": "附件二　产品及场景服务说明要点",
+      "line": 496,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0036",
+      "level": 1,
+      "title": "附件三　合作事项成熟度评估要点",
+      "line": 524,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0037",
+      "level": 1,
+      "title": "附件四　试点实施与验收要点",
+      "line": 548,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0038",
+      "level": 1,
+      "title": "附件五　服务计量、账单与结算要点",
+      "line": 572,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0039",
+      "level": 1,
+      "title": "附件六　数据分类分级与交付方式适配要点",
+      "line": 600,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0040",
+      "level": 1,
+      "title": "附件七　商务报价与收益分配参考模型",
+      "line": 624,
+      "parent_section_id": null
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact-0121",
+      "fact_type": "statement",
+      "text": "对数据、知识、文档、模型、算法和专业能力进行登记、编目、质量管理、血缘管理、版本管理和产品封装，建设统一目录、元数据、质量管理、产品开发、模型和知识资源管理等能力。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0078",
+        "line_start": 182,
+        "line_end": 182
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0122",
+      "fact_type": "statement",
+      "text": "三是服务交付与场景编排层。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0079",
+        "line_start": 184,
+        "line_end": 184
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0123",
+      "fact_type": "statement",
+      "text": "支撑接口调用、成果交付、模型任务、数据沙箱、隐私保护计算、场景流程和多方协同交付，按照客户订单、授权规则和服务权益提供稳定、受控、可审计的服务。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0079",
+        "line_start": 184,
+        "line_end": 184
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0124",
+      "fact_type": "statement",
+      "text": "四是运营与交易管理层。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0080",
+        "line_start": 186,
+        "line_end": 186
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0125",
+      "fact_type": "statement",
+      "text": "对客户、产品规格、订单、合同、授权、服务权益、计量、账单、对账、结算、客户服务和运营分析实行统一管理，支撑产品发布、客户订购、订单履行、合作伙伴结算和续约推广。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0080",
+        "line_start": 186,
+        "line_end": 186
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0126",
+      "fact_type": "statement",
+      "text": "五是数据与人工智能基础层。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0081",
+        "line_start": 188,
+        "line_end": 188
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0127",
+      "fact_type": "statement",
+      "text": "承载经合法授权进入平台环境的数据和模型，提供数据治理、存储计算、知识库、向量检索、模型服务、任务编排、模型评测和算力资源管理等公共能力；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0081",
+        "line_start": 188,
+        "line_end": 188
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0128",
+      "fact_type": "statement",
+      "text": "对不宜集中汇聚的资源，通过源端节点和受控计算环境提供协同处理能力。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0081",
+        "line_start": 188,
+        "line_end": 188
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0129",
+      "fact_type": "statement",
+      "text": "安全与合规贯穿主体接入、资源登记、产品开发、服务调用、成果交付、计量结算和退出管理全过程；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0082",
+        "line_start": 190,
+        "line_end": 190
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0130",
+      "fact_type": "statement",
+      "text": "标准与运维贯穿目录标识、接口、质量、服务等级、计量、审计、配置、版本、监控、容灾和故障处置全过程。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0082",
+        "line_start": 190,
+        "line_end": 190
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0131",
+      "fact_type": "statement",
+      "text": "平台业务对象分为资源能力、产品服务、应用场景和交付运行四个维度。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0083",
+        "line_start": 194,
+        "line_end": 194
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0132",
+      "fact_type": "statement",
+      "text": "资源能力构成供给基础，产品服务构成运营载体，应用场景对应业务领域，交付运行明确服务实现方式。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0083",
+        "line_start": 194,
+        "line_end": 194
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0133",
+      "fact_type": "statement",
+      "text": "一是资源能力。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0084",
+        "line_start": 196,
+        "line_end": 196
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0134",
+      "fact_type": "statement",
+      "text": "包括数据资源、知识资源、模型算法、专业能力和技术能力。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0084",
+        "line_start": 196,
+        "line_end": 196
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0135",
+      "fact_type": "statement",
+      "text": "数据资源包括数据集、指标、样本及相关数据成果；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0084",
+        "line_start": 196,
+        "line_end": 196
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0136",
+      "fact_type": "statement",
+      "text": "知识资源包括政策标准、技术资料、专业文档和知识库；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0084",
+        "line_start": 196,
+        "line_end": 196
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0137",
+      "fact_type": "statement",
+      "text": "模型算法包括模型、算法、智能体和相关工具；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0084",
+        "line_start": 196,
+        "line_end": 196
+      },
+      "segment_index": 5
+    },
+    {
+      "fact_id": "fact-0138",
+      "fact_type": "statement",
+      "text": "专业能力包括研究分析、评价认证、咨询实施、专家服务和行业经验；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0084",
+        "line_start": 196,
+        "line_end": 196
+      },
+      "segment_index": 6
+    },
+    {
+      "fact_id": "fact-0139",
+      "fact_type": "statement",
+      "text": "技术能力包括可信连接、数据治理、隐私保护计算、安全审计、系统集成、算力和运维等。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0084",
+        "line_start": 196,
+        "line_end": 196
+      },
+      "segment_index": 7
+    },
+    {
+      "fact_id": "fact-0140",
+      "fact_type": "statement",
+      "text": "二是数据产品。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0085",
+        "line_start": 198,
+        "line_end": 198
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0141",
+      "fact_type": "statement",
+      "text": "经过权利确认、治理加工、质量检验、标准封装和版本管理，可以独立登记和管理的数据成果，重点明确资源来源、数据口径、质量等级、版本更新、使用边界和交付方式。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0085",
+        "line_start": 198,
+        "line_end": 198
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0142",
+      "fact_type": "statement",
+      "text": "三是数据服务。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0086",
+        "line_start": 200,
+        "line_end": 200
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0143",
+      "fact_type": "statement",
+      "text": "基于数据产品、知识资源、模型能力或者专业能力形成的可订购、可调用、可计量的标准化专业服务，重点明确目标客户、服务内容、交付成果、服务等级、服务期限、计量单位、价格规则和客户支持。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0086",
+        "line_start": 200,
+        "line_end": 200
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0144",
+      "fact_type": "statement",
+      "text": "四是场景服务。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0087",
+        "line_start": 202,
+        "line_end": 202
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0145",
+      "fact_type": "statement",
+      "text": "面向客户具体业务问题，对数据产品、模型算法、专家能力、技术实施和安全措施进行组合形成的综合服务，重点明确业务目标、需求单位、资源清单、实施内容、交付成果、验收要求、运营期责任和复制推广条件。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0087",
+        "line_start": 202,
+        "line_end": 202
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0146",
+      "fact_type": "statement",
+      "text": "产品和场景主要通过两条路径形成。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0088",
+        "line_start": 204,
+        "line_end": 204
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0147",
+      "fact_type": "statement",
+      "text": "标准产品路径从资源与能力出发，经过治理封装、产品规格设计和客户验证形成数据产品及数据服务；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0088",
+        "line_start": 204,
+        "line_end": 204
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0148",
+      "fact_type": "statement",
+      "text": "场景组织路径从客户业务问题出发，先明确业务目标和交付成果，再反向组织所需数据、模型、专家和技术能力，形成场景服务。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0088",
+        "line_start": 204,
+        "line_end": 204
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0149",
+      "fact_type": "statement",
+      "text": "两条路径进入正式运营前统一完成权利、质量、安全、技术和商务审核。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0088",
+        "line_start": 204,
+        "line_end": 204
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0150",
+      "fact_type": "statement",
+      "text": "平台以产品形成、订单履行和运营反馈三条业务链构成持续运营闭环。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0089",
+        "line_start": 208,
+        "line_end": 208
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0151",
+      "fact_type": "statement",
+      "text": "产品形成阶段通过需求征集、资源登记、样例验证和审核准入形成可运营对象；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0089",
+        "line_start": 208,
+        "line_end": 208
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0152",
+      "fact_type": "statement",
+      "text": "订单履行阶段将客户购买内容转化为合同、授权和服务权益，并由技术系统执行；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0089",
+        "line_start": 208,
+        "line_end": 208
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0153",
+      "fact_type": "statement",
+      "text": "运营反馈阶段依据实际调用、交付质量、客户反馈、成本回款和合作履约情况开展优化、续约、调整或者退出。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0089",
+        "line_start": 208,
+        "line_end": 208
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0154",
+      "fact_type": "statement",
+      "text": "产品和场景实行阶段化管理。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0090",
+        "line_start": 210,
+        "line_end": 210
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0155",
+      "fact_type": "statement",
+      "text": "产品原则上按照需求立项、样例验证、开发准入、客户试用、正式运营、优化或退出推进；",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0090",
+        "line_start": 210,
+        "line_end": 210
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0156",
+      "fact_type": "statement",
+      "text": "场景原则上按照业务问题确认、方案设计、联合实施准备、真实客户试点、业务和技术验收、持续运营和标准化复制推进。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0090",
+        "line_start": 210,
+        "line_end": 210
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0157",
+      "fact_type": "statement",
+      "text": "各阶段明确进入条件、阶段成果和继续投入决策。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0090",
+        "line_start": 210,
+        "line_end": 210
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0158",
+      "fact_type": "statement",
+      "text": "平台对客户、合作伙伴、资源与能力、产品、产品规格、订单、合同、授权、服务权益、交付记录、计量结果、账单和结算信息等核心业务对象实行统一标识和关联管理，使业务运行、技术调用、财务结算和安全审计相互衔接、全程追溯。",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0091",
+        "line_start": 212,
+        "line_end": 212
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0159",
+      "fact_type": "statement",
+      "text": "平台面向政府治理、行业发展和企业生产经营需求，将数据、知识、模型和专业能力组织为可订购、可调用、可计量的标准化专业服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0092",
+        "line_start": 218,
+        "line_end": 218
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0160",
+      "fact_type": "statement",
+      "text": "根据服务内容，重点形成五类基础服务能力。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0092",
+        "line_start": 218,
+        "line_end": 218
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0161",
+      "fact_type": "statement",
+      "text": "一是数据获取服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0093",
+        "line_start": 220,
+        "line_end": 220
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0162",
+      "fact_type": "statement",
+      "text": "包括基础查询、专业指标、数据接口和数据集，满足信息核验、研究分析、业务系统调用、模型训练和专题应用等需求。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0093",
+        "line_start": 220,
+        "line_end": 220
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0163",
+      "fact_type": "statement",
+      "text": "二是知识内容服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0094",
+        "line_start": 222,
+        "line_end": 222
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0164",
+      "fact_type": "statement",
+      "text": "包括政策标准、技术资料、专业文档、行业知识库和结构化知识成果，为政策研究、业务查询、专业培训和智能问答提供内容支撑。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0094",
+        "line_start": 222,
+        "line_end": 222
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0165",
+      "fact_type": "statement",
+      "text": "三是模型与智能服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0095",
+        "line_start": 224,
+        "line_end": 224
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0166",
+      "fact_type": "statement",
+      "text": "包括预测、诊断、评价、优化、分类识别、智能检索、智能问答和报告生成等能力，可以通过在线调用、批量任务、专属实例或者客户环境部署等方式提供。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0095",
+        "line_start": 224,
+        "line_end": 224
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0167",
+      "fact_type": "statement",
+      "text": "四是分析监测服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0096",
+        "line_start": 226,
+        "line_end": 226
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0168",
+      "fact_type": "statement",
+      "text": "包括动态分析、专题研判、周期报告、趋势监测、异常预警、经营对标和辅助决策，按照约定对象、指标、频次和服务周期持续提供成果。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0096",
+        "line_start": 226,
+        "line_end": 226
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0169",
+      "fact_type": "statement",
+      "text": "五是数据治理与核验服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0097",
+        "line_start": 228,
+        "line_end": 228
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0170",
+      "fact_type": "statement",
+      "text": "包括数据清洗、标准映射、标签标注、质量评价、数据核验、可信证明、数据集加工和样本构建，帮助客户提升数据可用性和服务可信度。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0097",
+        "line_start": 228,
+        "line_end": 228
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0171",
+      "fact_type": "statement",
+      "text": "合作伙伴可以结合自身资源和能力提供专业数据、行业知识、指标体系、分析成果、高质量数据集、模型算法或者持续监测能力。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0098",
+        "line_start": 230,
+        "line_end": 230
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0172",
+      "fact_type": "statement",
+      "text": "平台结合资源成熟度、权利条件、客户需求和服务成本，共同形成标准产品规格并开展协同运营。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0098",
+        "line_start": 230,
+        "line_end": 230
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0173",
+      "fact_type": "statement",
+      "text": "场景服务以客户业务问题为起点，综合运用数据、知识、模型、算法、专家和技术实施能力，形成覆盖需求分析、方案设计、系统接入、试点运行、持续服务和成效评价的综合交付。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0099",
+        "line_start": 234,
+        "line_end": 234
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0174",
+      "fact_type": "statement",
+      "text": "根据成熟度和复制程度，场景服务形成标准型、配置型和定制型三种形态。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0099",
+        "line_start": 234,
+        "line_end": 234
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0175",
+      "fact_type": "statement",
+      "text": "一是标准型场景服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0100",
+        "line_start": 236,
+        "line_end": 236
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0176",
+      "fact_type": "statement",
+      "text": "业务对象、服务流程、数据要求、交付成果、服务等级和价格规则基本固定，可以按照统一服务说明快速复制，适用于行业知识检索、企业信息核验、设备可靠性分析、电碳因子查询和周期性行业监测等成熟服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0100",
+        "line_start": 236,
+        "line_end": 236
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0177",
+      "fact_type": "statement",
+      "text": "二是配置型场景服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0101",
+        "line_start": 238,
+        "line_end": 238
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0178",
+      "fact_type": "statement",
+      "text": "核心能力和业务流程已经标准化，可以根据客户区域、组织、设备、指标、频率和权限等参数灵活配置，兼顾共性能力复用和客户实际条件。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0101",
+        "line_start": 238,
+        "line_end": 238
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0179",
+      "fact_type": "statement",
+      "text": "三是定制型场景服务。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0102",
+        "line_start": 240,
+        "line_end": 240
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0180",
+      "fact_type": "statement",
+      "text": "面向重大客户和复杂业务问题进行专项设计，根据需要开展数据治理、模型开发、业务设计和系统集成，并在实施过程中同步沉淀可复用的数据产品、模型组件、接口、业务规则和实施清单。",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0102",
+        "line_start": 240,
+        "line_end": 240
+      },
+      "segment_index": 2
+    }
+  ],
+  "source_blocks": [
+    {
+      "block_id": "blk-0078",
+      "type": "paragraph",
+      "text": "二是资源与产品管理层。对数据、知识、文档、模型、算法和专业能力进行登记、编目、质量管理、血缘管理、版本管理和产品封装，建设统一目录、元数据、质量管理、产品开发、模型和知识资源管理等能力。",
+      "line_start": 182,
+      "line_end": 182,
+      "section_id": "sec-0010",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ]
+    },
+    {
+      "block_id": "blk-0079",
+      "type": "paragraph",
+      "text": "三是服务交付与场景编排层。支撑接口调用、成果交付、模型任务、数据沙箱、隐私保护计算、场景流程和多方协同交付，按照客户订单、授权规则和服务权益提供稳定、受控、可审计的服务。",
+      "line_start": 184,
+      "line_end": 184,
+      "section_id": "sec-0010",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ]
+    },
+    {
+      "block_id": "blk-0080",
+      "type": "paragraph",
+      "text": "四是运营与交易管理层。对客户、产品规格、订单、合同、授权、服务权益、计量、账单、对账、结算、客户服务和运营分析实行统一管理，支撑产品发布、客户订购、订单履行、合作伙伴结算和续约推广。",
+      "line_start": 186,
+      "line_end": 186,
+      "section_id": "sec-0010",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ]
+    },
+    {
+      "block_id": "blk-0081",
+      "type": "paragraph",
+      "text": "五是数据与人工智能基础层。承载经合法授权进入平台环境的数据和模型，提供数据治理、存储计算、知识库、向量检索、模型服务、任务编排、模型评测和算力资源管理等公共能力；对不宜集中汇聚的资源，通过源端节点和受控计算环境提供协同处理能力。",
+      "line_start": 188,
+      "line_end": 188,
+      "section_id": "sec-0010",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ]
+    },
+    {
+      "block_id": "blk-0082",
+      "type": "paragraph",
+      "text": "安全与合规贯穿主体接入、资源登记、产品开发、服务调用、成果交付、计量结算和退出管理全过程；标准与运维贯穿目录标识、接口、质量、服务等级、计量、审计、配置、版本、监控、容灾和故障处置全过程。",
+      "line_start": 190,
+      "line_end": 190,
+      "section_id": "sec-0010",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ]
+    },
+    {
+      "block_id": "blk-0083",
+      "type": "paragraph",
+      "text": "平台业务对象分为资源能力、产品服务、应用场景和交付运行四个维度。资源能力构成供给基础，产品服务构成运营载体，应用场景对应业务领域，交付运行明确服务实现方式。",
+      "line_start": 194,
+      "line_end": 194,
+      "section_id": "sec-0011",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ]
+    },
+    {
+      "block_id": "blk-0084",
+      "type": "paragraph",
+      "text": "一是资源能力。包括数据资源、知识资源、模型算法、专业能力和技术能力。数据资源包括数据集、指标、样本及相关数据成果；知识资源包括政策标准、技术资料、专业文档和知识库；模型算法包括模型、算法、智能体和相关工具；专业能力包括研究分析、评价认证、咨询实施、专家服务和行业经验；技术能力包括可信连接、数据治理、隐私保护计算、安全审计、系统集成、算力和运维等。",
+      "line_start": 196,
+      "line_end": 196,
+      "section_id": "sec-0011",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ]
+    },
+    {
+      "block_id": "blk-0085",
+      "type": "paragraph",
+      "text": "二是数据产品。经过权利确认、治理加工、质量检验、标准封装和版本管理，可以独立登记和管理的数据成果，重点明确资源来源、数据口径、质量等级、版本更新、使用边界和交付方式。",
+      "line_start": 198,
+      "line_end": 198,
+      "section_id": "sec-0011",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ]
+    },
+    {
+      "block_id": "blk-0086",
+      "type": "paragraph",
+      "text": "三是数据服务。基于数据产品、知识资源、模型能力或者专业能力形成的可订购、可调用、可计量的标准化专业服务，重点明确目标客户、服务内容、交付成果、服务等级、服务期限、计量单位、价格规则和客户支持。",
+      "line_start": 200,
+      "line_end": 200,
+      "section_id": "sec-0011",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ]
+    },
+    {
+      "block_id": "blk-0087",
+      "type": "paragraph",
+      "text": "四是场景服务。面向客户具体业务问题，对数据产品、模型算法、专家能力、技术实施和安全措施进行组合形成的综合服务，重点明确业务目标、需求单位、资源清单、实施内容、交付成果、验收要求、运营期责任和复制推广条件。",
+      "line_start": 202,
+      "line_end": 202,
+      "section_id": "sec-0011",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ]
+    },
+    {
+      "block_id": "blk-0088",
+      "type": "paragraph",
+      "text": "产品和场景主要通过两条路径形成。标准产品路径从资源与能力出发，经过治理封装、产品规格设计和客户验证形成数据产品及数据服务；场景组织路径从客户业务问题出发，先明确业务目标和交付成果，再反向组织所需数据、模型、专家和技术能力，形成场景服务。两条路径进入正式运营前统一完成权利、质量、安全、技术和商务审核。",
+      "line_start": 204,
+      "line_end": 204,
+      "section_id": "sec-0011",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ]
+    },
+    {
+      "block_id": "blk-0089",
+      "type": "paragraph",
+      "text": "平台以产品形成、订单履行和运营反馈三条业务链构成持续运营闭环。产品形成阶段通过需求征集、资源登记、样例验证和审核准入形成可运营对象；订单履行阶段将客户购买内容转化为合同、授权和服务权益，并由技术系统执行；运营反馈阶段依据实际调用、交付质量、客户反馈、成本回款和合作履约情况开展优化、续约、调整或者退出。",
+      "line_start": 208,
+      "line_end": 208,
+      "section_id": "sec-0012",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ]
+    },
+    {
+      "block_id": "blk-0090",
+      "type": "paragraph",
+      "text": "产品和场景实行阶段化管理。产品原则上按照需求立项、样例验证、开发准入、客户试用、正式运营、优化或退出推进；场景原则上按照业务问题确认、方案设计、联合实施准备、真实客户试点、业务和技术验收、持续运营和标准化复制推进。各阶段明确进入条件、阶段成果和继续投入决策。",
+      "line_start": 210,
+      "line_end": 210,
+      "section_id": "sec-0012",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ]
+    },
+    {
+      "block_id": "blk-0091",
+      "type": "paragraph",
+      "text": "平台对客户、合作伙伴、资源与能力、产品、产品规格、订单、合同、授权、服务权益、交付记录、计量结果、账单和结算信息等核心业务对象实行统一标识和关联管理，使业务运行、技术调用、财务结算和安全审计相互衔接、全程追溯。",
+      "line_start": 212,
+      "line_end": 212,
+      "section_id": "sec-0012",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ]
+    },
+    {
+      "block_id": "blk-0092",
+      "type": "paragraph",
+      "text": "平台面向政府治理、行业发展和企业生产经营需求，将数据、知识、模型和专业能力组织为可订购、可调用、可计量的标准化专业服务。根据服务内容，重点形成五类基础服务能力。",
+      "line_start": 218,
+      "line_end": 218,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0093",
+      "type": "paragraph",
+      "text": "一是数据获取服务。包括基础查询、专业指标、数据接口和数据集，满足信息核验、研究分析、业务系统调用、模型训练和专题应用等需求。",
+      "line_start": 220,
+      "line_end": 220,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0094",
+      "type": "paragraph",
+      "text": "二是知识内容服务。包括政策标准、技术资料、专业文档、行业知识库和结构化知识成果，为政策研究、业务查询、专业培训和智能问答提供内容支撑。",
+      "line_start": 222,
+      "line_end": 222,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0095",
+      "type": "paragraph",
+      "text": "三是模型与智能服务。包括预测、诊断、评价、优化、分类识别、智能检索、智能问答和报告生成等能力，可以通过在线调用、批量任务、专属实例或者客户环境部署等方式提供。",
+      "line_start": 224,
+      "line_end": 224,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0096",
+      "type": "paragraph",
+      "text": "四是分析监测服务。包括动态分析、专题研判、周期报告、趋势监测、异常预警、经营对标和辅助决策，按照约定对象、指标、频次和服务周期持续提供成果。",
+      "line_start": 226,
+      "line_end": 226,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0097",
+      "type": "paragraph",
+      "text": "五是数据治理与核验服务。包括数据清洗、标准映射、标签标注、质量评价、数据核验、可信证明、数据集加工和样本构建，帮助客户提升数据可用性和服务可信度。",
+      "line_start": 228,
+      "line_end": 228,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0098",
+      "type": "paragraph",
+      "text": "合作伙伴可以结合自身资源和能力提供专业数据、行业知识、指标体系、分析成果、高质量数据集、模型算法或者持续监测能力。平台结合资源成熟度、权利条件、客户需求和服务成本，共同形成标准产品规格并开展协同运营。",
+      "line_start": 230,
+      "line_end": 230,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0099",
+      "type": "paragraph",
+      "text": "场景服务以客户业务问题为起点，综合运用数据、知识、模型、算法、专家和技术实施能力，形成覆盖需求分析、方案设计、系统接入、试点运行、持续服务和成效评价的综合交付。根据成熟度和复制程度，场景服务形成标准型、配置型和定制型三种形态。",
+      "line_start": 234,
+      "line_end": 234,
+      "section_id": "sec-0015",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0100",
+      "type": "paragraph",
+      "text": "一是标准型场景服务。业务对象、服务流程、数据要求、交付成果、服务等级和价格规则基本固定，可以按照统一服务说明快速复制，适用于行业知识检索、企业信息核验、设备可靠性分析、电碳因子查询和周期性行业监测等成熟服务。",
+      "line_start": 236,
+      "line_end": 236,
+      "section_id": "sec-0015",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0101",
+      "type": "paragraph",
+      "text": "二是配置型场景服务。核心能力和业务流程已经标准化，可以根据客户区域、组织、设备、指标、频率和权限等参数灵活配置，兼顾共性能力复用和客户实际条件。",
+      "line_start": 238,
+      "line_end": 238,
+      "section_id": "sec-0015",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ]
+    },
+    {
+      "block_id": "blk-0102",
+      "type": "paragraph",
+      "text": "三是定制型场景服务。面向重大客户和复杂业务问题进行专项设计，根据需要开展数据治理、模型开发、业务设计和系统集成，并在实施过程中同步沉淀可复用的数据产品、模型组件、接口、业务规则和实施清单。",
+      "line_start": 240,
+      "line_end": 240,
+      "section_id": "sec-0015",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ]
+    }
+  ],
+  "semantic_policy": {
+    "truth_status": "source_assertions_unverified",
+    "external_enrichment": "forbidden",
+    "inference_must_be_labeled": true
+  }
+}

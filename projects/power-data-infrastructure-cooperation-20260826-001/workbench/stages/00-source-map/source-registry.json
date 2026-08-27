@@ -1,0 +1,16 @@
+{
+  "schema": "cyberppt.source_registry.v1",
+  "sources": [
+    {
+      "source_id": "SRC-03450B712C",
+      "path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "file_name": "电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "suffix": ".docx",
+      "bytes": 61770,
+      "sha256": "f9557ed10a7d2351df034c4d7873f351b401b81f3b553dd864bd735692767230",
+      "role": "primary",
+      "authority": "unspecified",
+      "version": "unclassified"
+    }
+  ]
+}

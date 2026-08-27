@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "semantic_validation_report",
+  "status": "ok",
+  "errors": [],
+  "warnings": [
+    {
+      "code": "argument_diagnostics_present",
+      "message": "Source argument-chain diagnostics were retained rather than silently repaired.",
+      "context": {
+        "count": 3
+      }
+    }
+  ],
+  "counts": {
+    "normalized_facts": 166,
+    "concepts": 12,
+    "relations": 9,
+    "source_chain_nodes": 11,
+    "reconstructed_chain_nodes": 8,
+    "diagnostics": 3,
+    "atomic_source_assertions": 166,
+    "represented_source_assertions": 166,
+    "unrepresented_source_assertions": 0
+  }
+}

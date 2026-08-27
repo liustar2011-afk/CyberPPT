@@ -1,0 +1,552 @@
+{
+  "schema": "cyberppt.source_heading_tree.v1",
+  "headings": [
+    {
+      "heading_id": "H-03450B712C-19BB725BE014-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "第一章　建设背景与合作基础",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 51,
+      "unit_id": "SU-03450B712C-HEADING-1C73CADA24C4-01",
+      "heading_path": [
+        "第一章　建设背景与合作基础"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-4E9389D6EBAA-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "一、建设背景",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-19BB725BE014-01",
+      "source_order": 52,
+      "unit_id": "SU-03450B712C-HEADING-A1533516FF29-01",
+      "heading_path": [
+        "第一章　建设背景与合作基础",
+        "一、建设背景"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-60C036B4B9F9-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "二、总体定位",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-19BB725BE014-01",
+      "source_order": 57,
+      "unit_id": "SU-03450B712C-HEADING-A12EF507B8F0-01",
+      "heading_path": [
+        "第一章　建设背景与合作基础",
+        "二、总体定位"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-AB02A2AD2FB2-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "三、建设基础",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-19BB725BE014-01",
+      "source_order": 63,
+      "unit_id": "SU-03450B712C-HEADING-4EE9FFFEB6DE-01",
+      "heading_path": [
+        "第一章　建设背景与合作基础",
+        "三、建设基础"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-700384649FB7-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "四、建设目标与合作空间",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-19BB725BE014-01",
+      "source_order": 70,
+      "unit_id": "SU-03450B712C-HEADING-FF2F0B2375C2-01",
+      "heading_path": [
+        "第一章　建设背景与合作基础",
+        "四、建设目标与合作空间"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-B34BDDF49A22-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "五、合作价值与开放原则",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-19BB725BE014-01",
+      "source_order": 74,
+      "unit_id": "SU-03450B712C-HEADING-82C2B19A3D5F-01",
+      "heading_path": [
+        "第一章　建设背景与合作基础",
+        "五、合作价值与开放原则"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-82A487592EC7-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "第二章　平台建设与运营体系",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 77,
+      "unit_id": "SU-03450B712C-HEADING-6F255D9A1606-01",
+      "heading_path": [
+        "第二章　平台建设与运营体系"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-8C89A77AFA36-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "一、总体业务模式",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-82A487592EC7-01",
+      "source_order": 78,
+      "unit_id": "SU-03450B712C-HEADING-2BA31F8A4BAB-01",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "一、总体业务模式"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-172920DBFF45-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "二、参与主体与业务关系",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-82A487592EC7-01",
+      "source_order": 82,
+      "unit_id": "SU-03450B712C-HEADING-8B6EA6E3416B-01",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "二、参与主体与业务关系"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-1E3D4C11308E-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "三、总体架构",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-82A487592EC7-01",
+      "source_order": 90,
+      "unit_id": "SU-03450B712C-HEADING-C8C069F551CB-01",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "三、总体架构"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-FBD2F8EE02CB-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "四、资源与产品形成机制",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-82A487592EC7-01",
+      "source_order": 98,
+      "unit_id": "SU-03450B712C-HEADING-25868FBC1B23-01",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "四、资源与产品形成机制"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-430255E52745-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "五、服务运营闭环",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-82A487592EC7-01",
+      "source_order": 105,
+      "unit_id": "SU-03450B712C-HEADING-739947EA7B2F-01",
+      "heading_path": [
+        "第二章　平台建设与运营体系",
+        "五、服务运营闭环"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-AB79DF6AAA27-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "第三章　重点服务与合作机会",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 109,
+      "unit_id": "SU-03450B712C-HEADING-990F6FE8F5BC-01",
+      "heading_path": [
+        "第三章　重点服务与合作机会"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-8C892B5677AE-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "一、总体服务体系",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-AB79DF6AAA27-01",
+      "source_order": 110,
+      "unit_id": "SU-03450B712C-HEADING-7976EF6B9884-01",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "一、总体服务体系"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-CD99F094A066-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "二、场景服务体系",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-AB79DF6AAA27-01",
+      "source_order": 118,
+      "unit_id": "SU-03450B712C-HEADING-F64EB07BB0CA-01",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "二、场景服务体系"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-722C6E0A950D-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "三、重点合作方向",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-AB79DF6AAA27-01",
+      "source_order": 124,
+      "unit_id": "SU-03450B712C-HEADING-07000BD94476-01",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "三、重点合作方向"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-7D6063EB6391-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "四、储备与拓展方向",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-AB79DF6AAA27-01",
+      "source_order": 156,
+      "unit_id": "SU-03450B712C-HEADING-35AE2D5674D7-01",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "四、储备与拓展方向"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-D1FC34E6021B-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "五、服务交付与应用方式",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-AB79DF6AAA27-01",
+      "source_order": 159,
+      "unit_id": "SU-03450B712C-HEADING-D52207A497B2-01",
+      "heading_path": [
+        "第三章　重点服务与合作机会",
+        "五、服务交付与应用方式"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-478AB0E8771F-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "第四章　合作模式与保障机制",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 166,
+      "unit_id": "SU-03450B712C-HEADING-98ABDA185DED-01",
+      "heading_path": [
+        "第四章　合作模式与保障机制"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-3E8F2C55E364-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "一、合作伙伴类型",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-478AB0E8771F-01",
+      "source_order": 167,
+      "unit_id": "SU-03450B712C-HEADING-A8DE765BC40E-01",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "一、合作伙伴类型"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-21B276C7B87F-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "二、合作模式",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-478AB0E8771F-01",
+      "source_order": 175,
+      "unit_id": "SU-03450B712C-HEADING-7AE74152284A-01",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "二、合作模式"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-0AE54D6F508F-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "三、平台支持内容",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-478AB0E8771F-01",
+      "source_order": 181,
+      "unit_id": "SU-03450B712C-HEADING-621EBC356C30-01",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "三、平台支持内容"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-1B4EF62910B6-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "四、基本商务机制",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-478AB0E8771F-01",
+      "source_order": 188,
+      "unit_id": "SU-03450B712C-HEADING-F9F60A963D0F-01",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "四、基本商务机制"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-3C380BA2862B-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "五、数据安全、权利与衍生成果保障",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-478AB0E8771F-01",
+      "source_order": 195,
+      "unit_id": "SU-03450B712C-HEADING-CAB33A5D2776-01",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "五、数据安全、权利与衍生成果保障"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-AE6D39106210-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "六、服务质量与风险保障",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-478AB0E8771F-01",
+      "source_order": 203,
+      "unit_id": "SU-03450B712C-HEADING-9FA39971F1D2-01",
+      "heading_path": [
+        "第四章　合作模式与保障机制",
+        "六、服务质量与风险保障"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-7DC3701E7447-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "第五章　合作对接与推进安排",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 209,
+      "unit_id": "SU-03450B712C-HEADING-68BFA0E44FEA-01",
+      "heading_path": [
+        "第五章　合作对接与推进安排"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-12FF83CF7395-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "一、合作意向登记",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-7DC3701E7447-01",
+      "source_order": 211,
+      "unit_id": "SU-03450B712C-HEADING-95E283F8C62E-01",
+      "heading_path": [
+        "第五章　合作对接与推进安排",
+        "一、合作意向登记"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-FC22309C8285-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "二、资源与需求对接",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-7DC3701E7447-01",
+      "source_order": 215,
+      "unit_id": "SU-03450B712C-HEADING-9DBA8808F49A-01",
+      "heading_path": [
+        "第五章　合作对接与推进安排",
+        "二、资源与需求对接"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-7B2D4A007236-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "三、合作事项成熟度评估",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-7DC3701E7447-01",
+      "source_order": 219,
+      "unit_id": "SU-03450B712C-HEADING-24E05398BEDE-01",
+      "heading_path": [
+        "第五章　合作对接与推进安排",
+        "三、合作事项成熟度评估"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-18F1560F699C-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "四、合作方案深化",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-7DC3701E7447-01",
+      "source_order": 223,
+      "unit_id": "SU-03450B712C-HEADING-6D8E78F77336-01",
+      "heading_path": [
+        "第五章　合作对接与推进安排",
+        "四、合作方案深化"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-0794CFDDAA75-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "五、试点验证",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-7DC3701E7447-01",
+      "source_order": 227,
+      "unit_id": "SU-03450B712C-HEADING-D865E912D28A-01",
+      "heading_path": [
+        "第五章　合作对接与推进安排",
+        "五、试点验证"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-0765E2DBB7CA-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "六、正式运营与复制推广",
+      "level": 2,
+      "parent_heading_id": "H-03450B712C-7DC3701E7447-01",
+      "source_order": 231,
+      "unit_id": "SU-03450B712C-HEADING-03EF6E996ABF-01",
+      "heading_path": [
+        "第五章　合作对接与推进安排",
+        "六、正式运营与复制推广"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-7E435DFBF82B-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "结束语",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 237,
+      "unit_id": "SU-03450B712C-HEADING-97AD57AA6A48-01",
+      "heading_path": [
+        "结束语"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-BFD7E8556D12-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "附件一　合作伙伴资源与能力登记要点",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 241,
+      "unit_id": "SU-03450B712C-HEADING-25A975975A39-01",
+      "heading_path": [
+        "附件一　合作伙伴资源与能力登记要点"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-7626A9FD48BB-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "附件二　产品及场景服务说明要点",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 251,
+      "unit_id": "SU-03450B712C-HEADING-8EF584929C6E-01",
+      "heading_path": [
+        "附件二　产品及场景服务说明要点"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-FD4D4EFD9F5E-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "附件三　合作事项成熟度评估要点",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 265,
+      "unit_id": "SU-03450B712C-HEADING-A8698BA2E4C9-01",
+      "heading_path": [
+        "附件三　合作事项成熟度评估要点"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-84FD4C569AF5-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "附件四　试点实施与验收要点",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 277,
+      "unit_id": "SU-03450B712C-HEADING-34F27A982D46-01",
+      "heading_path": [
+        "附件四　试点实施与验收要点"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-EB0632E10FD5-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "附件五　服务计量、账单与结算要点",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 289,
+      "unit_id": "SU-03450B712C-HEADING-06F7D64AC90A-01",
+      "heading_path": [
+        "附件五　服务计量、账单与结算要点"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-3C9834E87CB9-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "附件六　数据分类分级与交付方式适配要点",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 303,
+      "unit_id": "SU-03450B712C-HEADING-2F9CF7502805-01",
+      "heading_path": [
+        "附件六　数据分类分级与交付方式适配要点"
+      ]
+    },
+    {
+      "heading_id": "H-03450B712C-61EC28E0B1BC-01",
+      "source_id": "SRC-03450B712C",
+      "source_path": "source/电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.docx",
+      "title": "附件七　商务报价与收益分配参考模型",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 315,
+      "unit_id": "SU-03450B712C-HEADING-C21460D75D8F-01",
+      "heading_path": [
+        "附件七　商务报价与收益分配参考模型"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "communication_goal": "面向潜在资源与能力合作伙伴、技术与生态合作伙伴及具备真实场景需求的单位，系统说明电力领域数据基础设施的建设基础、运营机制、重点服务、合作模式和保障条件，引导符合条件的单位完成合作意向登记，进入资源与需求对接、成熟度评估和试点论证。",
+  "audience": "潜在资源与能力合作伙伴、技术与生态合作伙伴，以及具备真实场景需求的单位",
+  "audience_scope": "external",
+  "source_structure_mode": "preserve",
+  "narrative_arc": "建设依据与合作空间—平台如何运行—可合作的服务与场景—合作规则与保障—从意向到运营的推进路径",
+  "thesis": "电力领域数据基础设施依托中电联行业基础和平台化运营机制，把分散的数据、知识、模型与专业能力组织为可订购、可交付、可计量、可评价的行业服务，并通过分阶段合作和全过程保障推动成熟事项进入试点与持续运营。",
+  "audience_start": "了解自身可能拥有资源、能力或场景需求，但尚不清楚平台定位、合作入口、合作方式和落地条件。",
+  "audience_end": "能够判断自身适合的合作角色与模式，理解登记、评估、试点和运营要求，并愿意提交合作意向。",
+  "storyline": [
+    "先说明行业需求、建设基础与开放合作空间",
+    "再解释平台连接供需、形成产品并持续运营的机制",
+    "继而展示重点服务、场景形态与首期合作方向",
+    "随后明确合作角色、模式、商务、安全与质量规则",
+    "最后给出从意向登记到正式运营的可执行路径和登记要点"
+  ],
+  "content_load_curve": "标准—标准—密集—标准—行动收束；附件作为会后对接工具保留",
+  "chapters": [
+    {
+      "id": "CH01",
+      "title": "第一章 建设背景与合作基础",
+      "purpose": "回答为什么建设、依托什么建设、合作空间在哪里。",
+      "question": "建设背景、总体定位、建设基础、建设目标及合作原则分别是什么？",
+      "message": "本章依次说明建设背景、总体定位、建设基础、建设目标与合作空间、合作价值与开放原则。",
+      "relationship_to_previous": "承接封面与目录，建立合作交流的共同背景。",
+      "source_chapter_ids": ["H-03450B712C-19BB725BE014-01"],
+      "source_scope": ["H-03450B712C-19BB725BE014-01"],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "CH02",
+      "title": "第二章 平台建设与运营体系",
+      "purpose": "说明平台如何把供需、资源、产品、订单和运营反馈连成闭环。",
+      "question": "平台建设与运营体系由哪些业务、主体、架构和运营机制构成？",
+      "message": "本章依次说明总体业务模式、参与主体与业务关系、总体架构、资源与产品形成机制和服务运营闭环。",
+      "relationship_to_previous": "在建设基础上展开业务与技术实现机制。",
+      "source_chapter_ids": ["H-03450B712C-82A487592EC7-01"],
+      "source_scope": ["H-03450B712C-82A487592EC7-01"],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "CH03",
+      "title": "第三章 重点服务与合作机会",
+      "purpose": "把平台能力落到服务类型、场景形态、首期方向和交付方式。",
+      "question": "平台重点形成哪些服务、场景和合作方向？",
+      "message": "本章依次说明总体服务体系、场景服务体系、重点合作方向、储备与拓展方向及服务交付与应用方式。",
+      "relationship_to_previous": "从平台机制转入客户可感知的服务供给。",
+      "source_chapter_ids": ["H-03450B712C-AB79DF6AAA27-01"],
+      "source_scope": ["H-03450B712C-AB79DF6AAA27-01"],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "CH04",
+      "title": "第四章 合作模式与保障机制",
+      "purpose": "明确参与角色、合作模式、平台支持、商务规则和风险边界。",
+      "question": "合作伙伴类型、合作模式、平台支持及保障规则分别如何规定？",
+      "message": "本章依次说明合作伙伴类型、合作模式、平台支持内容、基本商务机制、数据安全与权利保障、服务质量与风险保障。",
+      "relationship_to_previous": "将服务机会转化为可协商、可执行的合作框架。",
+      "source_chapter_ids": ["H-03450B712C-478AB0E8771F-01"],
+      "source_scope": ["H-03450B712C-478AB0E8771F-01"],
+      "structural_operation": "preserve"
+    },
+    {
+      "id": "CH05",
+      "title": "第五章 合作对接与推进安排",
+      "purpose": "给出合作事项从登记到试点、正式运营和复制推广的阶段路径。",
+      "question": "合作事项如何从意向登记推进到正式运营与复制推广？",
+      "message": "本章依次说明合作意向登记、资源与需求对接、成熟度评估、方案深化、试点验证、正式运营与复制推广。",
+      "relationship_to_previous": "把合作框架收束为明确行动入口和决策关口。",
+      "source_chapter_ids": ["H-03450B712C-7DC3701E7447-01"],
+      "source_scope": ["H-03450B712C-7DC3701E7447-01"],
+      "structural_operation": "preserve"
+    }
+  ],
+  "pages": [
+    {
+      "id": "P01", "title": "依托电力领域数据基础设施开展行业数据服务与场景服务合作交流材料", "question": "这次交流围绕什么主题？", "message": "围绕行业数据服务、场景服务与合作落地开展交流。", "logic": "封面定位", "content": ["主标题", "中国电力企业联合会", "2026年8月"], "next": "从整体结构进入五章内容。", "source_refs": ["ST0001", "ST0002", "ST0003", "ST0004"], "source_scope": [], "structural_operation": "preserve", "page_role": "cover", "content_load": "light", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P02", "title": "交流内容", "question": "本次交流将依次回答哪些问题？", "message": "五章依次回答建设依据、运营机制、服务机会、合作保障和推进路径。", "logic": "章节导航", "content": ["建设背景与合作基础", "平台建设与运营体系", "重点服务与合作机会", "合作模式与保障机制", "合作对接与推进安排"], "next": "先看平台建设的行业背景与合作窗口。", "source_refs": ["ST0006", "ST0014", "ST0020", "ST0026", "ST0033"], "source_scope": [], "structural_operation": "preserve", "page_role": "agenda", "content_load": "light", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P03", "chapter_id": "CH01", "title": "第一章 建设背景与合作基础", "question": "章节过渡", "message": "仅呈现章标题“第一章 建设背景与合作基础”。", "logic": "章节过渡", "content": ["第一章 建设背景与合作基础"], "next": "进入建设背景。", "source_scope": ["H-03450B712C-19BB725BE014-01"], "structural_operation": "preserve", "page_role": "chapter", "content_load": "light"
+    },
+    {
+      "id": "P04", "chapter_id": "CH01", "title": "行业需求增长、资源分散与服务机制需求", "question": "建设背景由哪些行业变化和现实问题构成？", "message": "业务需求持续增长、行业资源较为分散、规模化服务机制仍需完善；行业需要形成稳定的资源连接、可信使用、产品组织和持续服务基础。", "logic": "问题分类与来源结论", "content": ["数字化、市场化、智能化提升跨主体协同需求", "资源分布在不同主体、系统和安全域", "资源方与需求方分别关注权利、质量、安全和服务保障", "行业需要完善资源登记、产品封装、授权执行、可信交付、服务计量、客户评价和价值结算机制"], "next": "明确电力领域数据基础设施的总体定位。", "source_refs": ["ST0046", "ST0047", "ST0048", "ST0050", "ST0053", "ST0054", "ST0056", "ST0057"], "source_scope": ["H-03450B712C-4E9389D6EBAA-01"], "structural_operation": "preserve", "page_role": "diagnosis", "content_load": "dense", "analysis_basis": {"model": "problem-diagnosis", "relation_basis": "inferred", "confidence": "high", "supports": ["ST0047", "ST0050", "ST0053", "ST0054", "ST0056", "ST0057"], "notes": "按原文三类问题组织，不添加合作机会或行动结论。"}, "proof": {"method": "evidence_synthesis", "claims": ["需求增长", "资源分散", "机制仍需完善"], "evidence_refs": ["ST0050", "ST0053", "ST0056", "ST0057"], "boundary_refs": [], "relation_basis": "inferred"}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P05", "chapter_id": "CH01", "title": "平台定位：行业中枢、运营平台与共创载体", "question": "电力领域数据基础设施承担什么角色？", "message": "平台以行业节点、专业能力运营平台和多主体共创载体三重定位组织资源与需求衔接。", "logic": "定位—功能—服务对象", "content": ["国家数据基础设施电力行业节点", "行业数据与专业能力运营平台", "多主体协同和价值共创载体", "服务国家、赋能行业、支撑中电联内部发展"], "next": "进一步说明首期建设依托的现实基础。", "source_refs": ["ST0058", "ST0059", "ST0060", "ST0061", "ST0062", "ST0063", "ST0064", "ST0065"], "source_scope": ["H-03450B712C-60C036B4B9F9-01"], "structural_operation": "preserve", "page_role": "positioning", "content_load": "standard", "analysis_basis": {"model": "definition-positioning", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0058", "ST0060", "ST0062", "ST0064"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P06", "chapter_id": "CH01", "title": "五方面建设基础", "question": "平台开展首期产品开发、场景试点和生态合作具备哪些基础？", "message": "中电联已形成组织制度、行业资源、既有平台、场景储备和实施推进等方面基础，具备开展首期产品开发、场景试点和生态合作的条件。", "logic": "来源分类", "content": ["组织制度基础", "行业资源基础", "既有平台基础", "场景储备基础", "实施推进基础", "项目进入建设实施准备阶段"], "next": "说明建设目标与合作空间。", "source_refs": ["ST0066", "ST0068", "ST0070", "ST0072", "ST0074", "ST0075", "ST0077", "ST0079"], "source_scope": ["H-03450B712C-AB02A2AD2FB2-01"], "structural_operation": "preserve", "page_role": "evidence", "content_load": "standard", "analysis_basis": {"model": "classification-taxonomy", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0066", "ST0068", "ST0072", "ST0074", "ST0077", "ST0079"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P07", "chapter_id": "CH01", "title": "建设目标与合作空间", "question": "建设目标与资源、产品和场景合作需求如何对应？", "message": "主体接入需要持续扩大资源与能力供给，产品发布需要组织数据、知识、模型和专业成果开展标准化封装，典型场景建设需要真实客户、真实资源、实际权限和多方专业能力共同参与。", "logic": "建设目标—来源明示的合作需求", "content": ["2026年12月初验、2027年6月终验", "600家以上数据流通利用主体接入", "不少于1200个数据产品", "20个以上典型应用场景", "分批开展合作对接、产品共建、试点验证和持续运营", "建设评价与运营评价分层管理"], "next": "明确不同合作主体的合作价值和开放原则。", "source_refs": ["ST0081", "ST0082", "ST0083", "ST0084", "ST0085", "ST0086", "ST0087", "ST0088", "ST0089"], "source_scope": ["H-03450B712C-700384649FB7-01"], "structural_operation": "preserve", "page_role": "opportunity", "content_load": "dense", "analysis_basis": {"model": "problem-to-response-mapping", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0083", "ST0084", "ST0085", "ST0086"]}, "proof": {"method": "target_mapping", "claims": ["接入目标", "产品目标", "场景目标"], "evidence_refs": ["ST0083", "ST0085"], "boundary_refs": ["ST0082", "ST0087"], "relation_basis": "explicit"}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P08", "chapter_id": "CH01", "title": "差异化价值建立在五项开放原则上", "question": "不同参与方能获得什么价值，合作遵循什么边界？", "message": "需求方、资源能力方、技术生态方和行业整体获得差异化价值，合作遵循平等自愿、需求牵引、权利清晰、安全可控和持续运营。", "logic": "对象—价值—原则", "content": ["需求单位：统一发现、组织、交付和运营入口", "资源与能力方：产品化、场景化、客户、结算与推广渠道", "技术与生态伙伴：真实场景、资源协同和联合产品机会", "既有资源控制关系保持不变", "具体事项按单项合作协商确定"], "next": "进入平台具体业务模式与运营体系。", "source_refs": ["ST0090", "ST0091", "ST0092", "ST0093", "ST0094", "ST0095"], "source_scope": ["H-03450B712C-B34BDDF49A22-01"], "structural_operation": "preserve", "page_role": "value", "content_load": "standard", "analysis_basis": {"model": "value-formation", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0091", "ST0092", "ST0093", "ST0094", "ST0095"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P09", "chapter_id": "CH02", "title": "第二章 平台建设与运营体系", "question": "章节过渡", "message": "仅呈现章标题“第二章 平台建设与运营体系”。", "logic": "章节过渡", "content": ["第二章 平台建设与运营体系"], "next": "进入总体业务模式。", "source_scope": ["H-03450B712C-82A487592EC7-01"], "structural_operation": "preserve", "page_role": "chapter", "content_load": "light"
+    },
+    {
+      "id": "P10", "chapter_id": "CH02", "title": "平台把供需两端连接为可执行的服务运营闭环", "question": "平台怎样组织需求、资源、交易与反馈？", "message": "平台以客户问题和资源能力为两端输入，通过产品形成、订购授权、交付计量和运营评价形成闭环。", "logic": "运营闭环", "content": ["需求识别", "资源组织", "产品形成", "客户订购", "授权交付", "计量结算", "运营评价", "持续优化"], "next": "明确闭环中各参与主体的职责衔接。", "source_refs": ["ST0096", "ST0097", "ST0098", "ST0099", "ST0100", "ST0101"], "source_scope": ["H-03450B712C-8C89A77AFA36-01"], "structural_operation": "preserve", "page_role": "mechanism", "content_load": "standard", "analysis_basis": {"model": "operating-loop", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0096", "ST0097", "ST0100", "ST0101"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P11", "chapter_id": "CH02", "title": "多角色协同贯通资源组织、客户服务与结算", "question": "平台各参与主体分别承担什么职责？", "message": "中电联统筹、数智公司运营、合作伙伴供给、需求单位使用反馈，技术实施与生态伙伴按事项参与。", "logic": "角色—职责—业务关联", "content": ["中电联：重大事项统筹、规则审定与行业协同", "中电联数智公司：平台运营、产品组织、客户服务、交付、评价和结算", "需求与场景单位：提出问题、边界并参与试用验收", "资源与能力伙伴：提供资源能力并承担权利、质量、版本、安全和服务责任", "市场生态伙伴：渠道、场景组织、推广与实施", "同一单位可以承担一种或多种角色"], "next": "看平台通过什么能力架构支撑多方协同。", "source_refs": ["ST0102", "ST0103", "ST0105", "ST0107", "ST0109", "ST0111", "ST0113", "ST0114", "ST0115"], "source_scope": ["H-03450B712C-172920DBFF45-01"], "structural_operation": "preserve", "page_role": "governance", "content_load": "dense", "analysis_basis": {"model": "actor-collaboration", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0102", "ST0105", "ST0107", "ST0109", "ST0111", "ST0113", "ST0114"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P12", "chapter_id": "CH02", "title": "五层能力与两项贯穿保障支撑全过程运行", "question": "平台用什么能力体系承接合作服务？", "message": "可信接入、资源产品、服务场景、运营交易、数据智能五层能力，叠加安全合规与标准运维两项贯穿保障。", "logic": "五层两贯穿架构", "content": ["可信连接与主体接入层", "资源与产品管理层", "服务交付与场景编排层", "运营与交易管理层", "数据与人工智能基础层", "安全与合规贯穿", "标准与运维贯穿"], "next": "把能力架构落到资源、产品、场景和交付对象。", "source_refs": ["ST0117", "ST0119", "ST0121", "ST0123", "ST0125", "ST0127", "ST0128", "ST0129", "ST0130"], "source_scope": ["H-03450B712C-1E3D4C11308E-01"], "structural_operation": "preserve", "page_role": "architecture", "content_load": "dense", "analysis_basis": {"model": "architecture", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0117", "ST0119", "ST0121", "ST0123", "ST0125", "ST0127", "ST0129", "ST0130"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P13", "chapter_id": "CH02", "title": "资源能力经过产品化组织进入场景与交付", "question": "合作伙伴的资源和能力如何成为可运营对象？", "message": "资源能力构成供给基础，数据产品与数据服务形成运营载体，场景服务组合多方能力，交付运行明确实现方式。", "logic": "资源转化", "content": ["资源能力：数据、知识、模型算法、专业能力、技术能力", "数据产品：可识别、可描述、可授权、可交付、可计量", "数据服务：可订购、可调用、可计量的标准化专业服务", "场景服务：围绕客户问题组合资源与能力", "交付运行：明确访问、部署、处理、周期和服务等级"], "next": "说明产品与场景如何持续推进和退出。", "source_refs": ["ST0131", "ST0132", "ST0134", "ST0140", "ST0143", "ST0145"], "source_scope": ["H-03450B712C-FBD2F8EE02CB-01"], "structural_operation": "preserve", "page_role": "transformation", "content_load": "dense", "analysis_basis": {"model": "resource-transformation", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0131", "ST0132", "ST0134", "ST0143", "ST0145"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P14", "chapter_id": "CH02", "title": "三条业务链与阶段化管理形成持续运营", "question": "产品和场景怎样从形成走向持续运营？", "message": "产品形成、订单履行和运营反馈三条业务链闭环运行，产品与场景按进入条件、阶段成果和继续投入决策推进。", "logic": "业务链—阶段门", "content": ["产品形成：需求征集、资源登记、样例验证、审核准入", "订单履行：合同、授权与服务权益转化为技术执行", "运营反馈：质量、客户、成本回款与履约驱动优化续约或退出", "产品阶段路径", "场景阶段路径", "核心业务对象统一标识和关联"], "next": "转入平台可以提供的服务与合作机会。", "source_refs": ["ST0150", "ST0151", "ST0152", "ST0153", "ST0154", "ST0155", "ST0156", "ST0157", "ST0158"], "source_scope": ["H-03450B712C-430255E52745-01"], "structural_operation": "preserve", "page_role": "operations", "content_load": "dense", "analysis_basis": {"model": "maturity-progression", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0150", "ST0151", "ST0152", "ST0153", "ST0155", "ST0156", "ST0157"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P15", "chapter_id": "CH03", "title": "第三章 重点服务与合作机会", "question": "章节过渡", "message": "仅呈现章标题“第三章 重点服务与合作机会”。", "logic": "章节过渡", "content": ["第三章 重点服务与合作机会"], "next": "进入总体服务体系。", "source_scope": ["H-03450B712C-AB79DF6AAA27-01"], "structural_operation": "preserve", "page_role": "chapter", "content_load": "light"
+    },
+    {
+      "id": "P16", "chapter_id": "CH03", "title": "五类基础服务能力", "question": "平台重点形成哪些基础服务能力？", "message": "平台重点形成数据获取、知识内容、模型与智能、分析监测、数据治理与核验五类基础服务能力。", "logic": "来源分类", "content": ["数据获取服务", "知识内容服务", "模型与智能服务", "分析监测服务", "数据治理与核验服务", "合作伙伴结合自身资源和能力参与产品规格形成及协同运营"], "next": "进一步说明场景服务体系。", "source_refs": ["ST0159", "ST0160", "ST0162", "ST0164", "ST0166", "ST0168", "ST0170", "ST0171", "ST0172"], "source_scope": ["H-03450B712C-8C892B5677AE-01"], "structural_operation": "preserve", "page_role": "taxonomy", "content_load": "standard", "analysis_basis": {"model": "classification-taxonomy", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0160", "ST0162", "ST0164", "ST0166", "ST0168", "ST0170"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P17", "chapter_id": "CH03", "title": "三类场景形态与复用程度提升路径", "question": "场景服务如何按照成熟度和复制程度形成不同形态？", "message": "场景服务形成标准型、配置型和定制型三种形态；具备稳定逻辑、可复用组件、可配置参数和统一验收规则后，定制型可转化为配置型，配置型经多客户验证并形成统一规格后可进一步沉淀为标准服务包。", "logic": "来源分类与条件化转化", "content": ["标准型：规则固定、快速复制", "配置型：核心标准化、参数灵活配置", "定制型：复杂问题专项设计并沉淀组件", "定制型转配置型的明确条件", "配置型转标准服务包的明确条件"], "next": "进入首期六个重点合作方向。", "source_refs": ["ST0173", "ST0174", "ST0176", "ST0178", "ST0180", "ST0181", "ST0182", "ST0183"], "source_scope": ["H-03450B712C-CD99F094A066-01"], "structural_operation": "preserve", "page_role": "typology", "content_load": "dense", "analysis_basis": {"model": "classification-and-maturity-progression", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0174", "ST0176", "ST0178", "ST0180", "ST0181", "ST0182", "ST0183"], "notes": "三类形态按成熟度和复制程度区分，转化路径保留原文条件。"}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P18", "chapter_id": "CH03", "title": "重点方向①②：设备可靠性与绿色低碳", "question": "设备运行和绿色低碳方向有哪些合作切入点？", "message": "设备方向围绕可靠性数据、诊断模型与真实场景协同；绿色低碳方向围绕碳数据、核算方法、专业模型与企业应用完善服务。", "logic": "需求—基础—服务—合作机会双列", "content": ["设备可靠性与生产运行：需求、现有基础、重点服务、合作对象", "绿色低碳与电碳因子：需求、现有基础、重点服务、合作对象", "共同准入关注真实需求、权利、可验证交付、商务和持续服务"], "next": "继续看供需市场与燃料供应链方向。", "source_refs": ["ST0184", "ST0185", "ST0186", "ST0187", "ST0188", "ST0189", "ST0190", "ST0191", "ST0192", "ST0193", "ST0194", "ST0195"], "source_scope": ["H-03450B712C-722C6E0A950D-01"], "structural_operation": "split", "page_role": "opportunity", "content_load": "dense", "analysis_basis": {"model": "problem-to-response-mapping", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0187", "ST0189", "ST0190", "ST0192", "ST0194", "ST0195"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P19", "chapter_id": "CH03", "title": "重点方向③④：供需市场与燃料供应链", "question": "市场经营和燃料采购方向有哪些合作切入点？", "message": "供需市场方向需要多源数据、预测模型和持续监测；燃料供应链方向围绕价格、采购、库存、成本和风险形成联合服务。", "logic": "需求—基础—服务—合作机会双列", "content": ["电力供需与市场经营：需求、基础、重点服务、合作对象", "燃料价格预测与供应链：需求、基础、重点服务、合作对象"], "next": "继续看科研教育与科技成果转化方向。", "source_refs": ["ST0196", "ST0197", "ST0198", "ST0199", "ST0200", "ST0201", "ST0202", "ST0203", "ST0204", "ST0205"], "source_scope": ["H-03450B712C-722C6E0A950D-01"], "structural_operation": "split", "page_role": "opportunity", "content_load": "dense", "analysis_basis": {"model": "problem-to-response-mapping", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0197", "ST0199", "ST0200", "ST0202", "ST0204", "ST0205"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P20", "chapter_id": "CH03", "title": "重点方向⑤⑥：科研教育与科技成果转化", "question": "知识、数据集和科技成果方向有哪些合作切入点？", "message": "科研教育方向聚焦高质量数据集、知识库与模型训练；成果转化方向贯通可信登记、评价、撮合、实施和推广。", "logic": "需求—基础—服务—合作机会双列", "content": ["科研教育与高质量数据集：需求、基础、重点服务、合作对象", "科技成果可信转化：需求、基础、重点服务、合作对象"], "next": "说明储备与跨行业拓展事项的进入条件。", "source_refs": ["ST0206", "ST0207", "ST0208", "ST0209", "ST0210", "ST0211", "ST0212", "ST0213", "ST0214", "ST0215"], "source_scope": ["H-03450B712C-722C6E0A950D-01"], "structural_operation": "split", "page_role": "opportunity", "content_load": "dense", "analysis_basis": {"model": "problem-to-response-mapping", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0207", "ST0209", "ST0210", "ST0212", "ST0214", "ST0215"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P21", "chapter_id": "CH03", "title": "储备与拓展方向按成熟条件动态进入", "question": "重点方向之外的合作事项如何进入平台？", "message": "储备培育和跨行业探索先完成需求、资源、主体、边界与安全条件论证，成熟一项推进一项。", "logic": "储备—条件—进入", "content": ["储备培育：新能源与综合能源、信用评价、产业链分析、经营管理", "探索拓展：气象、交通、工业、建筑、金融等跨行业协同", "关注共性需求、资源可得性、权利基础、采购条件和复制价值", "具备明确需求单位、可用资源和样例条件时优先对接"], "next": "明确服务如何适配访问、部署、处理和周期条件。", "source_refs": ["ST0216", "ST0217", "ST0218", "ST0219", "ST0220"], "source_scope": ["H-03450B712C-7D6063EB6391-01"], "structural_operation": "preserve", "page_role": "pipeline", "content_load": "standard", "analysis_basis": {"model": "implementation-gate", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0216", "ST0217", "ST0218", "ST0219", "ST0220"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P22", "chapter_id": "CH03", "title": "五个维度组合形成适配的服务交付方案", "question": "不同安全等级和业务条件怎样选择交付方式？", "message": "访问交付、部署环境、数据处理、服务周期和服务等级相互独立、按需组合。", "logic": "五维组合", "content": ["访问与成果交付", "共享、专属或客户私有部署环境", "平台受控、源端处理或多方留域联合计算", "单次、周期更新或持续运营", "服务等级指标", "明确主体、目的、额度、结果、下载和再使用边界"], "next": "进入合作角色、模式与保障规则。", "source_refs": ["ST0221", "ST0222", "ST0223", "ST0224", "ST0225", "ST0227", "ST0229", "ST0230", "ST0232", "ST0234"], "source_scope": ["H-03450B712C-D1FC34E6021B-01"], "structural_operation": "preserve", "page_role": "selection", "content_load": "dense", "analysis_basis": {"model": "classification-selection", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0221", "ST0222", "ST0224", "ST0227", "ST0229", "ST0232", "ST0234"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P23", "chapter_id": "CH04", "title": "第四章 合作模式与保障机制", "question": "章节过渡", "message": "仅呈现章标题“第四章 合作模式与保障机制”。", "logic": "章节过渡", "content": ["第四章 合作模式与保障机制"], "next": "进入合作伙伴类型。", "source_scope": ["H-03450B712C-478AB0E8771F-01"], "structural_operation": "preserve", "page_role": "chapter", "content_load": "light"
+    },
+    {
+      "id": "P24", "chapter_id": "CH04", "title": "六类合作伙伴角色及职责", "question": "合作伙伴按照哪些角色识别，各自承担什么责任？", "message": "合作伙伴按照需求与场景、数据资源、模型算法、专业服务、技术实施、市场与生态六类角色识别，同一单位可以根据实际条件承担一种或者多种角色。", "logic": "来源分类与职责对应", "content": ["需求与场景合作伙伴", "数据资源合作伙伴", "模型算法合作伙伴", "专业服务合作伙伴", "技术实施合作伙伴", "市场与生态合作伙伴", "各类角色的来源明示责任"], "next": "根据资源成熟度、参与深度和业务目标选择合作模式。", "source_refs": ["ST0235", "ST0236", "ST0238", "ST0240", "ST0242", "ST0244", "ST0246", "ST0248"], "source_scope": ["H-03450B712C-3E8F2C55E364-01"], "structural_operation": "preserve", "page_role": "taxonomy", "content_load": "dense", "analysis_basis": {"model": "actor-collaboration", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0236", "ST0238", "ST0240", "ST0242", "ST0244", "ST0246", "ST0248"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P25", "chapter_id": "CH04", "title": "四类合作模式既可独立采用，也可逐步深化", "question": "伙伴应选择哪种合作模式？", "message": "标准接入、联合产品、场景联合运营和战略生态分别适配不同成熟度与参与深度，可独立采用，也可随合作成熟度逐步深化。", "logic": "模式选择与成熟度", "content": ["标准接入合作", "联合产品合作", "场景联合运营合作", "战略生态合作", "按资源成熟度、参与深度和业务目标选择", "保留独立选择与逐步深化两种路径"], "next": "说明平台为合作伙伴提供的全周期支持。", "source_refs": ["ST0249", "ST0250", "ST0251", "ST0252", "ST0253", "ST0254", "ST0255", "ST0256", "ST0257", "ST0258", "ST0259", "ST0260", "ST0261"], "source_scope": ["H-03450B712C-21B276C7B87F-01"], "structural_operation": "preserve", "page_role": "selection", "content_load": "dense", "analysis_basis": {"model": "classification-and-maturity-progression", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0249", "ST0250", "ST0252", "ST0255", "ST0258", "ST0261"], "notes": "不得把四类模式写成强制升级路线。"}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P26", "chapter_id": "CH04", "title": "五项平台支持贯通对接、交付与持续运营", "question": "平台能为合作伙伴提供哪些支持？", "message": "平台围绕需求客户、资源产品化、技术交付、运营结算和联合推广提供协同支持。", "logic": "合作生命周期支持", "content": ["需求与客户对接", "资源产品化支持", "技术接入与可信交付", "运营与计量结算", "联合推广与生态协同"], "next": "进一步明确报价、结算和收益安排边界。", "source_refs": ["ST0262", "ST0264", "ST0266", "ST0268", "ST0270", "ST0272"], "source_scope": ["H-03450B712C-0AE54D6F508F-01"], "structural_operation": "preserve", "page_role": "support", "content_load": "standard", "analysis_basis": {"model": "value-formation", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0262", "ST0264", "ST0266", "ST0268", "ST0270", "ST0272"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P27", "chapter_id": "CH04", "title": "商务机制围绕服务交付与实际贡献协商确定", "question": "合作如何报价、结算并安排收益？", "message": "不同服务属性对应不同保障或收费方式，客户报价围绕交付形成，结算方式根据产品和项目形态选择，收益安排依据实际贡献与履约记录协商确定。", "logic": "服务属性—报价—结算—收益", "content": ["公益任务、行业基础、市场增值服务分类", "报价考虑产品、部署、资源、安全、运营和税费", "固定价格、供给方单价、可分配收入比例、工作包或里程碑等结算方式", "依据贡献、成本、回款和履约开展对账", "平台不设置统一对外价格或固定分成比例", "具体条件由单项方案、协议或合同确定"], "next": "明确数据、模型、客户资源和联合成果的权利边界。", "source_refs": ["ST0273", "ST0274", "ST0275", "ST0277", "ST0279", "ST0281", "ST0283", "ST0284", "ST0285", "ST0287", "ST0288"], "source_scope": ["H-03450B712C-1B4EF62910B6-01"], "structural_operation": "preserve", "page_role": "commercial", "content_load": "dense", "analysis_basis": {"model": "decision-criteria", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0273", "ST0275", "ST0281", "ST0283", "ST0284", "ST0285", "ST0287", "ST0288"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P28", "chapter_id": "CH04", "title": "全过程控制链保护资源权利与成果边界", "question": "资源、客户数据和联合成果如何管理？", "message": "资源登记、产品设计、合同授权、运行审计和退出清理贯穿合作全过程，各类权利对象按约定明确使用范围、成果归属和退出条件。", "logic": "风险—控制—保护", "content": ["合作伙伴既有资源保持原有归属", "客户专属资源按客户合同管理", "单方加工成果按基础权利与投入明确", "多方联合成果明确归属、许可、收益和退出后使用", "二次使用另行取得明确授权", "终止时完成履约、通知、撤权、返还删除、停用、结算和归档"], "next": "把权利控制扩展到质量、模型、异常和退出管理。", "source_refs": ["ST0289", "ST0291", "ST0293", "ST0295", "ST0297", "ST0299", "ST0300", "ST0301"], "source_scope": ["H-03450B712C-3C380BA2862B-01"], "structural_operation": "preserve", "page_role": "risk_control", "content_load": "dense", "analysis_basis": {"model": "risk-control-protection", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0289", "ST0291", "ST0293", "ST0295", "ST0297", "ST0300", "ST0301"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P29", "chapter_id": "CH04", "title": "质量、模型、运行与变更机制共同保障服务", "question": "持续服务质量和风险如何受控？", "message": "质量标准、模型版本治理、运行监测、分级响应和变更退出机制覆盖数据、模型、场景、商务与安全。", "logic": "风险—监测—响应—退出", "content": ["数据、模型、场景服务质量维度", "模型登记、评测、日志、回退和停用", "高风险结果明确适用条件、人工复核和责任边界", "监测异常并分级处置", "重大变更确认、更新和通知", "严重不达标事项可整改、限用、暂停、下架或终止"], "next": "进入合作意向如何转化为试点和运营。", "source_refs": ["ST0302", "ST0303", "ST0304", "ST0305", "ST0306", "ST0307", "ST0308", "ST0309", "ST0311", "ST0313", "ST0314"], "source_scope": ["H-03450B712C-AE6D39106210-01"], "structural_operation": "preserve", "page_role": "assurance", "content_load": "dense", "analysis_basis": {"model": "risk-control-protection", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0302", "ST0304", "ST0305", "ST0306", "ST0308", "ST0309", "ST0311", "ST0313", "ST0314"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P30", "chapter_id": "CH05", "title": "第五章 合作对接与推进安排", "question": "章节过渡", "message": "仅呈现章标题“第五章 合作对接与推进安排”。", "logic": "章节过渡", "content": ["第五章 合作对接与推进安排"], "next": "进入合作意向登记与资源需求对接。", "source_refs": ["ST0315"], "source_scope": ["H-03450B712C-7DC3701E7447-01"], "structural_operation": "preserve", "page_role": "chapter", "content_load": "light"
+    },
+    {
+      "id": "P31", "chapter_id": "CH05", "title": "合作意向登记与资源需求对接", "question": "合作意向登记和资源需求对接分别需要明确什么？", "message": "合作伙伴说明资源能力、业务问题、目标客户、预期产品或场景及合作诉求；平台同步梳理资源条件与客户需求，形成资源能力清单、需求场景清单、初步权利合规判断及可优先论证事项。", "logic": "登记事项—对接事项—阶段成果", "content": ["说明资源能力、业务问题、目标客户、预期产品或场景、投入与周期", "明确联系人和沟通机制", "形成资源能力清单与需求场景清单", "必要时提供样例数据、接口、报告或初步场景方案", "形成初步权利合规判断和可优先论证事项"], "next": "对拟进入实施方案编制和试点的事项开展成熟度评估。", "source_refs": ["ST0316", "ST0317", "ST0318", "ST0319", "ST0320", "ST0321", "ST0322", "ST0323"], "source_scope": ["H-03450B712C-12FF83CF7395-01", "H-03450B712C-FC22309C8285-01"], "structural_operation": "merge_within_chapter", "page_role": "action", "content_load": "dense", "analysis_basis": {"model": "implementation", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0317", "ST0318", "ST0319", "ST0321", "ST0322", "ST0323"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P32", "chapter_id": "CH05", "title": "第二步：九维评估决定优先推进、补充或储备", "question": "哪些合作事项具备进入方案与试点的条件？", "message": "需求、资源、权利、质量、技术、安全、商业、持续运营和复制价值九维评估形成结论与缺口清单。", "logic": "评估维度—结论—行动", "content": ["需求真实性", "资源可用性", "权利清晰度", "质量成熟度", "技术可行性", "安全合规性", "商业可行性", "持续运营能力", "复制推广价值", "依法履行审批、评估或备案"], "next": "具备条件的事项进入方案深化和真实试点。", "source_refs": ["ST0324", "ST0325", "ST0326", "ST0327"], "source_scope": ["H-03450B712C-7B2D4A007236-01"], "structural_operation": "preserve", "page_role": "decision_gate", "content_load": "dense", "analysis_basis": {"model": "decision", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0324", "ST0325", "ST0326", "ST0327"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P33", "chapter_id": "CH05", "title": "第三步：把合作方案放到真实条件下同步验证", "question": "如何把合作意向转化为可执行、可验证的试点？", "message": "各方明确资源、权利、交付、安全、商务、责任和验收安排，再用真实客户、真实资源和完整记录验证价值与持续运营条件。", "logic": "方案定义—真实试点—综合决策", "content": ["形成产品或场景方案、技术交付方案、权利安全说明、报价收益测算和责任矩阵", "明确服务对象、资源来源、部署处理、周期、等级、计量、价格和里程碑", "真实需求单位和业务人员实际使用", "同步验证客户价值、质量、技术、安全、商务、计量和持续责任", "形成验收、计量、质量、成本价格、安全和评估记录", "决策进入运营、优化再验、暂停或终止"], "next": "试点通过后完成标准化定型并纳入统一运营。", "source_refs": ["ST0328", "ST0329", "ST0330", "ST0331", "ST0332", "ST0333", "ST0334"], "source_scope": ["H-03450B712C-18F1560F699C-01", "H-03450B712C-0794CFDDAA75-01"], "structural_operation": "merge_within_chapter", "page_role": "pilot", "content_load": "dense", "analysis_basis": {"model": "implementation-gate", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0328", "ST0329", "ST0330", "ST0331", "ST0332", "ST0333", "ST0334"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P34", "chapter_id": "CH05", "title": "第四步：标准化定型后进入持续运营与复制推广", "question": "试点成果如何转化为持续订单和规模化服务？", "message": "试点通过后先完成产品和场景标准化定型，再纳入统一运营，并通过经营复盘、续约增购和复制推广形成规模化能力。", "logic": "试点—定型—运营—推广", "content": ["正式运营前完成完整订单、授权、交付、验收、计量账单和结算验证", "明确版本、范围、口径、频率、等级、价格和使用规则", "固化场景资源、组件、流程、指标、接口、参数、清单和报价边界", "纳入目录、发布、订单、客户服务、结算和质量评价", "中电联组织成果发布与示范推广，数智公司会同伙伴拓展客户", "成熟一项、推进一项，具体条件通过协议或合同明确"], "next": "以合作邀请和登记行动收束。", "source_refs": ["ST0335", "ST0336", "ST0337", "ST0338", "ST0339", "ST0340", "ST0341", "ST0342", "ST0343"], "source_scope": ["H-03450B712C-0765E2DBB7CA-01"], "structural_operation": "preserve", "page_role": "scale", "content_load": "dense", "analysis_basis": {"model": "maturity-progression", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0335", "ST0336", "ST0337", "ST0338", "ST0339", "ST0340", "ST0341", "ST0342"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P35", "title": "诚邀合作伙伴提交意向，共建可持续运营的行业服务", "question": "潜在伙伴现在可以采取什么行动？", "message": "具备优质数据、知识、模型、技术、场景或客户需求的单位，可提交合作意向并进入资源需求对接、成熟度评估和试点论证。", "logic": "邀请—行动—共同结果", "content": ["平台连接行业资源、专业能力和应用需求", "面向电力企业、能源企业、科研院所、高校、科技与服务机构及生态伙伴开放", "共同开发可持续运营的数据服务产品", "共同建设可复制推广的高价值应用场景", "行动入口：合作意向登记"], "next": "附件提供登记、评估、试点和运营所需的对接清单。", "source_refs": ["ST0344", "ST0345", "ST0346"], "source_scope": ["H-03450B712C-7E435DFBF82B-01"], "structural_operation": "preserve", "page_role": "call_to_action", "content_load": "standard", "analysis_basis": {"model": "value-formation", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0344", "ST0345", "ST0346"]}, "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P36", "title": "附件一：合作伙伴资源与能力登记要点", "question": "提交合作意向需要准备哪些基础信息？", "message": "登记信息覆盖主体、资源权利、质量版本、技术安全、服务保障、合作意向和市场案例七类要点。", "logic": "登记清单", "content": ["主体基本信息", "资源和权利信息", "质量和版本信息", "技术和安全信息", "服务保障信息", "合作意向信息", "市场与案例信息"], "next": "进一步形成产品或场景服务说明。", "source_refs": ["ST0347", "ST0349", "ST0351", "ST0355", "ST0357", "ST0359", "ST0361"], "source_scope": ["H-03450B712C-BFD7E8556D12-01"], "structural_operation": "preserve", "page_role": "appendix", "content_load": "dense", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P37", "title": "附件二：产品及场景服务说明要点", "question": "产品或场景服务说明需要包含哪些信息？", "message": "产品或场景服务说明涵盖基本信息、资源权利、服务规格、访问交付、部署处理、服务周期与等级、授权权益、计量商务及验收退出等要点。", "logic": "来源清单", "content": ["基本信息与成熟度", "资源和权利", "服务规格", "访问与成果交付", "部署与处理", "周期与服务等级", "授权和服务权益", "计量商务", "验收、变更与退出"], "next": "进入合作事项成熟度评估要点。", "source_refs": ["ST0365", "ST0366", "ST0367", "ST0369", "ST0371", "ST0373", "ST0376", "ST0378", "ST0380"], "source_scope": ["H-03450B712C-7626A9FD48BB-01"], "structural_operation": "preserve", "page_role": "appendix", "content_load": "dense", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P38", "title": "附件三：合作事项成熟度评估要点", "question": "成熟度评估具体检查哪些维度？", "message": "十项检查覆盖需求、资源、权利、质量、技术、安全、商业、运营、复制与综合结论。", "logic": "评估清单", "content": ["需求真实性", "资源可用性", "权利清晰度", "质量成熟度", "技术可行性", "安全合规性", "商业可行性", "持续运营能力", "复制推广价值", "综合评估结论"], "next": "把通过评估的事项转入试点实施与验收。", "source_refs": ["ST0392", "ST0393", "ST0394", "ST0396", "ST0398", "ST0400", "ST0402", "ST0404", "ST0406", "ST0408", "ST0410"], "source_scope": ["H-03450B712C-FD4D4EFD9F5E-01"], "structural_operation": "preserve", "page_role": "appendix", "content_load": "dense", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P39", "title": "附件四：试点实施与验收要点", "question": "试点实施与验收需要明确哪些内容？", "message": "试点实施与验收需要明确基本信息、资源范围、技术实施、安全与权利、客户使用、业务与技术指标、计量成本验证及评估材料。", "logic": "来源清单", "content": ["试点基本信息与决策机制", "资源范围", "技术实施", "安全与权利", "客户使用安排", "业务验收指标", "技术和服务指标", "计量和成本验证", "试点评估材料"], "next": "进入服务计量、账单与结算要点。", "source_refs": ["ST0413", "ST0414", "ST0415", "ST0417", "ST0421", "ST0423", "ST0425", "ST0427", "ST0429"], "source_scope": ["H-03450B712C-84FD4C569AF5-01"], "structural_operation": "preserve", "page_role": "appendix", "content_load": "dense", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P40", "title": "附件五：服务计量、账单与结算要点", "question": "如何让实际服务、客户账单和伙伴结算相互对应？", "message": "计量对象、有效事件、异常处理、套餐、账单确认、收入成本口径和结算基础共同建立可核验依据。", "logic": "计量—账单—结算", "content": ["业务对象关联", "有效计量事件", "异常计量处理", "试用和套餐", "账单生成与确认", "收入和成本口径", "结算基础与比例方法", "对账、争议和调整"], "next": "根据数据风险与控制要求适配交付方式。", "source_refs": ["ST0434", "ST0435", "ST0436", "ST0438", "ST0440", "ST0442", "ST0444", "ST0447", "ST0449"], "source_scope": ["H-03450B712C-EB0632E10FD5-01"], "structural_operation": "preserve", "page_role": "appendix", "content_load": "dense", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P41", "title": "附件六：数据分类分级与交付方式适配要点", "question": "不同风险和控制要求下如何选择处理与交付方式？", "message": "访问交付、部署环境和处理方式可组合使用，并按一般数据、商业敏感、个人信息、重要数据和核心数据落实相应控制。", "logic": "分类—交付适配", "content": ["访问与成果交付", "部署运行环境", "数据处理方式", "一般数据和公开知识", "商业敏感数据", "个人信息", "能源行业重要数据", "能源行业核心数据", "以法规、主管规定和各方制度为准"], "next": "最后明确报价与收益分配参考边界。", "source_refs": ["ST0462", "ST0463", "ST0465", "ST0469", "ST0473", "ST0475", "ST0477", "ST0479", "ST0481", "ST0482"], "source_scope": ["H-03450B712C-3C9834E87CB9-01"], "structural_operation": "preserve", "page_role": "appendix", "content_load": "dense", "visibility_decision": "external_ok"
+    },
+    {
+      "id": "P42", "title": "附件七：商务报价与收益分配参考模型", "question": "不同服务形态如何测算报价和收益分配？", "message": "客户报价可按服务产品、实施部署、专属资源、安全合规、持续运营和税费组合形成；收益安排依据实际贡献、可分配收入、成本和履约协商确定；平台不设置统一对外价格、固定服务费率或者固定分成比例。", "logic": "报价构成—贡献测算—分配边界", "content": ["客户报价基本公式", "接口、数据集知识、模型智能、监测报告和场景服务参考模型", "平台运营收入与合作伙伴结算基础", "可分配收入与成本扣除口径", "资源、开发、客户、交付、运营、持续服务与风险贡献", "单项事项协商并以合同为准", "不设置统一对外价格、固定服务费率或固定分成比例"], "next": "完成规划，等待确认后进入整份脚本写作。", "source_refs": ["ST0488", "ST0491", "ST0495", "ST0498", "ST0501", "ST0504"], "source_scope": ["H-03450B712C-61EC28E0B1BC-01"], "structural_operation": "preserve", "page_role": "appendix", "content_load": "dense", "analysis_basis": {"model": "commercial-decision", "relation_basis": "explicit", "confidence": "high", "supports": ["ST0488", "ST0491", "ST0495", "ST0498", "ST0501", "ST0504"]}, "visibility_decision": "external_ok"
+    }
+  ]
+}

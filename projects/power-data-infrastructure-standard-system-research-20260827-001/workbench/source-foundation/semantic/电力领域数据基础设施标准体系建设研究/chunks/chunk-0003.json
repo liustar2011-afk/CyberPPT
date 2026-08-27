@@ -1,0 +1,1870 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "semantic_work_chunk",
+  "chunk_id": "chunk-0003",
+  "section": {
+    "section_id": "sec-0014",
+    "level": 1,
+    "title": "**四、电力领域数据基础设施标准体系框架设计**",
+    "line": 126,
+    "parent_section_id": null
+  },
+  "sections": [
+    {
+      "section_id": "sec-0014",
+      "level": 1,
+      "title": "**四、电力领域数据基础设施标准体系框架设计**",
+      "line": 126,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 1,
+      "title": "**五、重点标准研制方向与优先级**",
+      "line": 158,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0016",
+      "level": 1,
+      "title": "**六、分阶段实施路径**",
+      "line": 164,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "**（一）组织保障**",
+      "line": 176,
+      "parent_section_id": "sec-0017"
+    }
+  ],
+  "section_ids": [
+    "sec-0014",
+    "sec-0015",
+    "sec-0016",
+    "sec-0018"
+  ],
+  "document_outline": [
+    {
+      "section_id": "sec-0001",
+      "level": 1,
+      "title": "**一、研究背景与意义**",
+      "line": 66,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0002",
+      "level": 2,
+      "title": "**（一）国家数据基础设施建设进入全面实施阶段**",
+      "line": 68,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0003",
+      "level": 2,
+      "title": "**（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托**",
+      "line": 74,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0004",
+      "level": 2,
+      "title": "**（三）电力行业数字化转型对标准体系提出迫切需求**",
+      "line": 78,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0005",
+      "level": 2,
+      "title": "**（四）研究目的与意义**",
+      "line": 84,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0006",
+      "level": 1,
+      "title": "**二、现状基础与差距分析**",
+      "line": 88,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0007",
+      "level": 2,
+      "title": "**（一）国家层面政策与标准基础**",
+      "line": 90,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0008",
+      "level": 2,
+      "title": "**（二）电力行业现有标准与实践基础**",
+      "line": 94,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0009",
+      "level": 2,
+      "title": "**（三）现状问题与差距分析**",
+      "line": 98,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0010",
+      "level": 1,
+      "title": "**三、标准体系构建总体思路**",
+      "line": 112,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0011",
+      "level": 2,
+      "title": "**（一）构建原则**",
+      "line": 114,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0012",
+      "level": 2,
+      "title": "**（二）构建方法与依据**",
+      "line": 118,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0013",
+      "level": 2,
+      "title": "**（三）总体框架**",
+      "line": 122,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0014",
+      "level": 1,
+      "title": "**四、电力领域数据基础设施标准体系框架设计**",
+      "line": 126,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 1,
+      "title": "**五、重点标准研制方向与优先级**",
+      "line": 158,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0016",
+      "level": 1,
+      "title": "**六、分阶段实施路径**",
+      "line": 164,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0017",
+      "level": 1,
+      "title": "**七、保障措施**",
+      "line": 174,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "**（一）组织保障**",
+      "line": 176,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0019",
+      "level": 2,
+      "title": "**（二）机制保障**",
+      "line": 180,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "**（三）资源保障**",
+      "line": 184,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "**（四）国际标准衔接**",
+      "line": 188,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 1,
+      "title": "**八、结论**",
+      "line": 192,
+      "parent_section_id": null
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact-0098",
+      "fact_type": "table_record",
+      "text": "| D 互联互通标准 | D1 接口协议 | 制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 142,
+        "line_end": 142
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "D 互联互通标准",
+          "D1 接口协议",
+          "制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求"
+        ],
+        "row_index": 11,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0098-c01-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**一级类目**：D 互联互通标准",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 142,
+        "line_end": 142
+      },
+      "parent_fact_id": "fact-0098",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 11,
+        "cell_index": 1,
+        "header": "**一级类目**",
+        "row_label": "D 互联互通标准",
+        "source_text": "D 互联互通标准",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0098-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "D 互联互通标准｜**二级子体系**：D1 接口协议",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 142,
+        "line_end": 142
+      },
+      "parent_fact_id": "fact-0098",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 11,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "D 互联互通标准",
+        "source_text": "D1 接口协议",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0098-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "D 互联互通标准｜**重点标准方向与说明**：制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 142,
+        "line_end": 142
+      },
+      "parent_fact_id": "fact-0098",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 11,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "D 互联互通标准",
+        "source_text": "制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0099",
+      "fact_type": "table_record",
+      "text": "|  | D2 信息模型 | 完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 143,
+        "line_end": 143
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "",
+          "D2 信息模型",
+          "完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景"
+        ],
+        "row_index": 12,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0099-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**二级子体系**：D2 信息模型",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 143,
+        "line_end": 143
+      },
+      "parent_fact_id": "fact-0099",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 12,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "",
+        "source_text": "D2 信息模型",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0099-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**重点标准方向与说明**：完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 143,
+        "line_end": 143
+      },
+      "parent_fact_id": "fact-0099",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 12,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "",
+        "source_text": "完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0100",
+      "fact_type": "table_record",
+      "text": "|  | D3 身份与接入管理 | 制定电力行业数据基础设施用户身份管理和接入规范实施细则 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 144,
+        "line_end": 144
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "",
+          "D3 身份与接入管理",
+          "制定电力行业数据基础设施用户身份管理和接入规范实施细则"
+        ],
+        "row_index": 13,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0100-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**二级子体系**：D3 身份与接入管理",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 144,
+        "line_end": 144
+      },
+      "parent_fact_id": "fact-0100",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 13,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "",
+        "source_text": "D3 身份与接入管理",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0100-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**重点标准方向与说明**：制定电力行业数据基础设施用户身份管理和接入规范实施细则",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 144,
+        "line_end": 144
+      },
+      "parent_fact_id": "fact-0100",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 13,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "",
+        "source_text": "制定电力行业数据基础设施用户身份管理和接入规范实施细则",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0101",
+      "fact_type": "table_record",
+      "text": "| E 应用服务标准 | E1 数据流通交易 | 制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 145,
+        "line_end": 145
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "E 应用服务标准",
+          "E1 数据流通交易",
+          "制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求"
+        ],
+        "row_index": 14,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0101-c01-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**一级类目**：E 应用服务标准",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 145,
+        "line_end": 145
+      },
+      "parent_fact_id": "fact-0101",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 14,
+        "cell_index": 1,
+        "header": "**一级类目**",
+        "row_label": "E 应用服务标准",
+        "source_text": "E 应用服务标准",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0101-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "E 应用服务标准｜**二级子体系**：E1 数据流通交易",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 145,
+        "line_end": 145
+      },
+      "parent_fact_id": "fact-0101",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 14,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "E 应用服务标准",
+        "source_text": "E1 数据流通交易",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0101-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "E 应用服务标准｜**重点标准方向与说明**：制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 145,
+        "line_end": 145
+      },
+      "parent_fact_id": "fact-0101",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 14,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "E 应用服务标准",
+        "source_text": "制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0102",
+      "fact_type": "table_record",
+      "text": "|  | E2 新兴场景应用 | 制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 146,
+        "line_end": 146
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "",
+          "E2 新兴场景应用",
+          "制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准"
+        ],
+        "row_index": 15,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0102-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**二级子体系**：E2 新兴场景应用",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 146,
+        "line_end": 146
+      },
+      "parent_fact_id": "fact-0102",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 15,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "",
+        "source_text": "E2 新兴场景应用",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0102-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**重点标准方向与说明**：制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 146,
+        "line_end": 146
+      },
+      "parent_fact_id": "fact-0102",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 15,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "",
+        "source_text": "制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0103",
+      "fact_type": "table_record",
+      "text": "|  | E3 公共服务 | 制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 147,
+        "line_end": 147
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "",
+          "E3 公共服务",
+          "制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准"
+        ],
+        "row_index": 16,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0103-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**二级子体系**：E3 公共服务",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 147,
+        "line_end": 147
+      },
+      "parent_fact_id": "fact-0103",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 16,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "",
+        "source_text": "E3 公共服务",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0103-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**重点标准方向与说明**：制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 147,
+        "line_end": 147
+      },
+      "parent_fact_id": "fact-0103",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 16,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "",
+        "source_text": "制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0104",
+      "fact_type": "table_record",
+      "text": "| F 安全保障标准 | F1 数据安全总体要求 | 完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 148,
+        "line_end": 148
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "F 安全保障标准",
+          "F1 数据安全总体要求",
+          "完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系"
+        ],
+        "row_index": 17,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0104-c01-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**一级类目**：F 安全保障标准",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 148,
+        "line_end": 148
+      },
+      "parent_fact_id": "fact-0104",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 17,
+        "cell_index": 1,
+        "header": "**一级类目**",
+        "row_label": "F 安全保障标准",
+        "source_text": "F 安全保障标准",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0104-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "F 安全保障标准｜**二级子体系**：F1 数据安全总体要求",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 148,
+        "line_end": 148
+      },
+      "parent_fact_id": "fact-0104",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 17,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "F 安全保障标准",
+        "source_text": "F1 数据安全总体要求",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0104-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "F 安全保障标准｜**重点标准方向与说明**：完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 148,
+        "line_end": 148
+      },
+      "parent_fact_id": "fact-0104",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 17,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "F 安全保障标准",
+        "source_text": "完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0105",
+      "fact_type": "table_record",
+      "text": "|  | F2 全生命周期安全 | 制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 149,
+        "line_end": 149
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "",
+          "F2 全生命周期安全",
+          "制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准"
+        ],
+        "row_index": 18,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0105-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**二级子体系**：F2 全生命周期安全",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 149,
+        "line_end": 149
+      },
+      "parent_fact_id": "fact-0105",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 18,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "",
+        "source_text": "F2 全生命周期安全",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0105-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**重点标准方向与说明**：制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 149,
+        "line_end": 149
+      },
+      "parent_fact_id": "fact-0105",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 18,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "",
+        "source_text": "制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0106",
+      "fact_type": "table_record",
+      "text": "|  | F3 跨域安全 | 制定电力数据跨企业、跨行业、跨境流通安全管理规范 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 150,
+        "line_end": 150
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "",
+          "F3 跨域安全",
+          "制定电力数据跨企业、跨行业、跨境流通安全管理规范"
+        ],
+        "row_index": 19,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0106-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**二级子体系**：F3 跨域安全",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 150,
+        "line_end": 150
+      },
+      "parent_fact_id": "fact-0106",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 19,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "",
+        "source_text": "F3 跨域安全",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0106-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**重点标准方向与说明**：制定电力数据跨企业、跨行业、跨境流通安全管理规范",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 150,
+        "line_end": 150
+      },
+      "parent_fact_id": "fact-0106",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 19,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "",
+        "source_text": "制定电力数据跨企业、跨行业、跨境流通安全管理规范",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0107",
+      "fact_type": "table_record",
+      "text": "| G 管理规范标准 | G1 治理机制 | 制定电力数据治理组织、职责、流程相关管理规范 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 151,
+        "line_end": 151
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "G 管理规范标准",
+          "G1 治理机制",
+          "制定电力数据治理组织、职责、流程相关管理规范"
+        ],
+        "row_index": 20,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0107-c01-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**一级类目**：G 管理规范标准",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 151,
+        "line_end": 151
+      },
+      "parent_fact_id": "fact-0107",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 20,
+        "cell_index": 1,
+        "header": "**一级类目**",
+        "row_label": "G 管理规范标准",
+        "source_text": "G 管理规范标准",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0107-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "G 管理规范标准｜**二级子体系**：G1 治理机制",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 151,
+        "line_end": 151
+      },
+      "parent_fact_id": "fact-0107",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 20,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "G 管理规范标准",
+        "source_text": "G1 治理机制",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0107-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "G 管理规范标准｜**重点标准方向与说明**：制定电力数据治理组织、职责、流程相关管理规范",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 151,
+        "line_end": 151
+      },
+      "parent_fact_id": "fact-0107",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 20,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "G 管理规范标准",
+        "source_text": "制定电力数据治理组织、职责、流程相关管理规范",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0108",
+      "fact_type": "table_record",
+      "text": "|  | G2 标准化协同管理 | 制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工 |",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 152,
+        "line_end": 152
+      },
+      "table": {
+        "headers": [
+          "**一级类目**",
+          "**二级子体系**",
+          "**重点标准方向与说明**"
+        ],
+        "header_status": "explicit",
+        "cells": [
+          "",
+          "G2 标准化协同管理",
+          "制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工"
+        ],
+        "row_index": 21,
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0108-c02-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**二级子体系**：G2 标准化协同管理",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 152,
+        "line_end": 152
+      },
+      "parent_fact_id": "fact-0108",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 21,
+        "cell_index": 2,
+        "header": "**二级子体系**",
+        "row_label": "",
+        "source_text": "G2 标准化协同管理",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0108-c03-s01",
+      "fact_type": "table_cell_statement",
+      "text": "**重点标准方向与说明**：制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0048",
+        "line_start": 152,
+        "line_end": 152
+      },
+      "parent_fact_id": "fact-0108",
+      "segment_index": 1,
+      "table_cell": {
+        "row_index": 21,
+        "cell_index": 3,
+        "header": "**重点标准方向与说明**",
+        "row_label": "",
+        "source_text": "制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工",
+        "row_role": "data"
+      }
+    },
+    {
+      "fact_id": "fact-0109",
+      "fact_type": "statement",
+      "text": "上述标准体系表中，A类基础通用标准和F类安全保障标准是电力数据基础设施标准体系的共性支撑基础，应优先完成与国家数据基础设施六项技术文件的对接。",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0049",
+        "line_start": 154,
+        "line_end": 154
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0110",
+      "fact_type": "statement",
+      "text": "B类数据资源标准和D类互联互通标准是体现电力行业专业特点的核心内容，其中数据分类分级标准应直接衔接《能源行业数据分类分级指南（2026年版）》的相关规定，信息模型标准应在DL/T 890现有基础上做好继承和扩展。",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0049",
+        "line_start": 154,
+        "line_end": 154
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0111",
+      "fact_type": "statement",
+      "text": "C类技术设施标准和E类应用服务标准面向电力数字化转型的具体场景，应保持与国家电网、南方电网等企业数字化实践的动态衔接。",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0049",
+        "line_start": 154,
+        "line_end": 154
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0112",
+      "fact_type": "statement",
+      "text": "G类管理规范标准是保障标准体系持续运行的制度基础。",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0049",
+        "line_start": 154,
+        "line_end": 154
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0113",
+      "fact_type": "statement",
+      "text": "上述标准体系框架与中电联承担的先行先试任务书确定的能力建设要求相互对应。",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0050",
+        "line_start": 156,
+        "line_end": 156
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0114",
+      "fact_type": "statement",
+      "text": "A3标识与目录、D3身份与接入管理共同支撑任务书要求的统一目录、统一身份、统一标识“三统一”能力；",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0050",
+        "line_start": 156,
+        "line_end": 156
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0115",
+      "fact_type": "statement",
+      "text": "D1接口协议、D3身份与接入管理支撑主体接入能力；",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0050",
+        "line_start": 156,
+        "line_end": 156
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0116",
+      "fact_type": "statement",
+      "text": "E1数据流通交易、E2新兴场景应用支撑数据流通利用能力；",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0050",
+        "line_start": 156,
+        "line_end": 156
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0117",
+      "fact_type": "statement",
+      "text": "F类安全保障标准支撑安全保障能力。",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0050",
+        "line_start": 156,
+        "line_end": 156
+      },
+      "segment_index": 5
+    },
+    {
+      "fact_id": "fact-0118",
+      "fact_type": "statement",
+      "text": "标准体系建设与先行先试项目建设同步推进，可为项目标准验证任务提供直接支撑。",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0050",
+        "line_start": 156,
+        "line_end": 156
+      },
+      "segment_index": 6
+    },
+    {
+      "fact_id": "fact-0119",
+      "fact_type": "statement",
+      "text": "结合国家数据基础设施建设三阶段目标和电力行业实际需求，建议按照急用先行、分类推进的原则确定重点标准研制方向。",
+      "heading_path": [
+        "**五、重点标准研制方向与优先级**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0051",
+        "line_start": 160,
+        "line_end": 160
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0120",
+      "fact_type": "statement",
+      "text": "第一优先级标准包括电力数据基础设施参考架构行业实施细则、电力数据分类分级实施细则、电力数据标识管理规范、电力数据目录描述规范，此类标准直接衔接国家已发布的技术文件和分类分级指南，具备明确的上位依据，应尽快启动立项。",
+      "heading_path": [
+        "**五、重点标准研制方向与优先级**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0051",
+        "line_start": 160,
+        "line_end": 160
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0121",
+      "fact_type": "statement",
+      "text": "第二优先级标准包括电力行业数据字典与元数据规范、电力数据质量评价标准、电力数据接入连接器技术要求、电力行业数据安全全生命周期技术标准，此类标准是支撑电力数据基础设施规模化建设的关键基础，建议在第一优先级标准发布后同步推进。",
+      "heading_path": [
+        "**五、重点标准研制方向与优先级**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0051",
+        "line_start": 160,
+        "line_end": 160
+      },
+      "segment_index": 3
+    },
+    {
+      "fact_id": "fact-0122",
+      "fact_type": "statement",
+      "text": "第三优先级标准包括虚拟电厂数据接口标准、多能互补数据服务标准、算力电力协同数据交互标准、电力数据资产评估与入表标准，此类标准面向新兴业务场景，技术路线和业务模式仍在演进过程中，建议以团体标准先行先试，成熟后转化为行业标准或国家标准。",
+      "heading_path": [
+        "**五、重点标准研制方向与优先级**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0051",
+        "line_start": 160,
+        "line_end": 160
+      },
+      "segment_index": 4
+    },
+    {
+      "fact_id": "fact-0123",
+      "fact_type": "statement",
+      "text": "标准研制方向应重点衔接电力领域数据基础设施先行先试项目已确定的行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购、数据产品服务等重点场景，做到标准研制与场景验证同步推进、相互支撑，确保标准体系建设成果能够直接服务于先行先试项目的标准验证任务。",
+      "heading_path": [
+        "**五、重点标准研制方向与优先级**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0052",
+        "line_start": 162,
+        "line_end": 162
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0124",
+      "fact_type": "statement",
+      "text": "电力领域数据基础设施标准体系建设应与国家数据基础设施建设三阶段目标保持同步，并与中电联承担的先行先试项目（成长级）建设节奏协调衔接，做到标准供给与项目建设、场景验证同步推进。",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0053",
+        "line_start": 166,
+        "line_end": 166
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0125",
+      "fact_type": "statement",
+      "text": "第一阶段为近期阶段，目标为完成标准体系顶层设计。",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0054",
+        "line_start": 168,
+        "line_end": 168
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0126",
+      "fact_type": "statement",
+      "text": "此阶段应完成电力领域数据基础设施标准体系框架的正式发布，完成第一优先级标准的立项和研制，推动电力数据基础设施参考架构、标识管理、目录描述等基础标准与国家技术文件的对接，同步支撑先行先试项目统一目录、统一身份、统一标识“三统一”能力建设和年度标准验证任务，选取具备条件的电网企业和区域开展标准应用试点。",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0054",
+        "line_start": 168,
+        "line_end": 168
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0127",
+      "fact_type": "statement",
+      "text": "第二阶段为中期阶段，目标为形成支撑数据规模化流通的标准供给能力。",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0055",
+        "line_start": 170,
+        "line_end": 170
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0128",
+      "fact_type": "statement",
+      "text": "此阶段应完成第二优先级标准的发布实施，推动电力数据基础设施标准在主要电网企业、发电企业、售电企业范围内基本覆盖，配合先行先试项目主体接入能力和数据流通利用能力建设进度，建立标准实施情况评估机制，根据试点经验和项目场景运营反馈对标准体系框架进行动态优化。",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0055",
+        "line_start": 170,
+        "line_end": 170
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0129",
+      "fact_type": "statement",
+      "text": "第三阶段为远期阶段，目标为基本建成电力领域数据基础设施标准体系主体结构。",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0056",
+        "line_start": 172,
+        "line_end": 172
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0130",
+      "fact_type": "statement",
+      "text": "此阶段应完成第三优先级标准的成熟转化，形成基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类标准协同配套的完整体系，配合先行先试项目形成可交付、可验证、可运营的建设成果，实现电力数据基础设施标准体系与国家数据基础设施标准体系的全面衔接。",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0056",
+        "line_start": 172,
+        "line_end": 172
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0131",
+      "fact_type": "statement",
+      "text": "本项研究由中电联牵头组织，依托电力领域数据基础设施先行先试项目组工作机制推进标准体系建设。",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（一）组织保障**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0057",
+        "line_start": 178,
+        "line_end": 178
+      },
+      "segment_index": 1
+    }
+  ],
+  "source_blocks": [
+    {
+      "block_id": "blk-0048",
+      "type": "table",
+      "text": "| **一级类目** | **二级子体系** | **重点标准方向与说明** |\n| --- | --- | --- |\n| A 基础通用标准 | A1 术语与概念 | 统一电力数据基础设施相关术语定义，衔接国家数据基础设施参考架构术语体系 |\n|  | A2 参考架构 | 制定电力数据基础设施参考架构行业实施细则，明确与国家数据基础设施参考架构的映射关系 |\n|  | A3 标识与目录 | 制定电力数据标识管理规范、电力数据目录描述规范，衔接国家数据基础设施标识管理规范与数据目录描述规范 |\n| B 数据资源标准 | B1 数据分类分级 | 制定电力数据分类分级实施细则，衔接《能源行业数据分类分级指南（2026年版）》在电力品种、发输变配用调各环节的具体应用 |\n|  | B2 数据字典与元数据 | 制定电力行业数据字典、元数据规范，规范电力设备、电网拓扑、量测数据等核心数据对象定义 |\n|  | B3 数据质量 | 制定电力数据质量评价指标体系和核查技术要求，覆盖数据生成、采集、存储、使用全过程质量控制 |\n|  | B4 数据资产管理 | 制定电力数据资产登记、评估、入表相关标准，衔接数据管理能力成熟度评价要求 |\n| C 技术设施标准 | C1 感知与终端 | 制定电力物联网终端、智能传感装置数据接入技术要求 |\n|  | C2 存储与计算 | 制定电力数据存储、电力算力资源调度及算力电力协同相关技术标准 |\n|  | C3 平台与中台 | 制定电力大数据平台、数据中台技术导则及功能规范 |\n| D 互联互通标准 | D1 接口协议 | 制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求 |\n|  | D2 信息模型 | 完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景 |\n|  | D3 身份与接入管理 | 制定电力行业数据基础设施用户身份管理和接入规范实施细则 |\n| E 应用服务标准 | E1 数据流通交易 | 制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求 |\n|  | E2 新兴场景应用 | 制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准 |\n|  | E3 公共服务 | 制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准 |\n| F 安全保障标准 | F1 数据安全总体要求 | 完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系 |\n|  | F2 全生命周期安全 | 制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准 |\n|  | F3 跨域安全 | 制定电力数据跨企业、跨行业、跨境流通安全管理规范 |\n| G 管理规范标准 | G1 治理机制 | 制定电力数据治理组织、职责、流程相关管理规范 |\n|  | G2 标准化协同管理 | 制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工 |",
+      "line_start": 130,
+      "line_end": 152,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ],
+      "headers": [
+        "**一级类目**",
+        "**二级子体系**",
+        "**重点标准方向与说明**"
+      ],
+      "header_status": "explicit",
+      "candidate_header": null,
+      "rows": [
+        [
+          "A 基础通用标准",
+          "A1 术语与概念",
+          "统一电力数据基础设施相关术语定义，衔接国家数据基础设施参考架构术语体系"
+        ],
+        [
+          "",
+          "A2 参考架构",
+          "制定电力数据基础设施参考架构行业实施细则，明确与国家数据基础设施参考架构的映射关系"
+        ],
+        [
+          "",
+          "A3 标识与目录",
+          "制定电力数据标识管理规范、电力数据目录描述规范，衔接国家数据基础设施标识管理规范与数据目录描述规范"
+        ],
+        [
+          "B 数据资源标准",
+          "B1 数据分类分级",
+          "制定电力数据分类分级实施细则，衔接《能源行业数据分类分级指南（2026年版）》在电力品种、发输变配用调各环节的具体应用"
+        ],
+        [
+          "",
+          "B2 数据字典与元数据",
+          "制定电力行业数据字典、元数据规范，规范电力设备、电网拓扑、量测数据等核心数据对象定义"
+        ],
+        [
+          "",
+          "B3 数据质量",
+          "制定电力数据质量评价指标体系和核查技术要求，覆盖数据生成、采集、存储、使用全过程质量控制"
+        ],
+        [
+          "",
+          "B4 数据资产管理",
+          "制定电力数据资产登记、评估、入表相关标准，衔接数据管理能力成熟度评价要求"
+        ],
+        [
+          "C 技术设施标准",
+          "C1 感知与终端",
+          "制定电力物联网终端、智能传感装置数据接入技术要求"
+        ],
+        [
+          "",
+          "C2 存储与计算",
+          "制定电力数据存储、电力算力资源调度及算力电力协同相关技术标准"
+        ],
+        [
+          "",
+          "C3 平台与中台",
+          "制定电力大数据平台、数据中台技术导则及功能规范"
+        ],
+        [
+          "D 互联互通标准",
+          "D1 接口协议",
+          "制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求"
+        ],
+        [
+          "",
+          "D2 信息模型",
+          "完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景"
+        ],
+        [
+          "",
+          "D3 身份与接入管理",
+          "制定电力行业数据基础设施用户身份管理和接入规范实施细则"
+        ],
+        [
+          "E 应用服务标准",
+          "E1 数据流通交易",
+          "制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求"
+        ],
+        [
+          "",
+          "E2 新兴场景应用",
+          "制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准"
+        ],
+        [
+          "",
+          "E3 公共服务",
+          "制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准"
+        ],
+        [
+          "F 安全保障标准",
+          "F1 数据安全总体要求",
+          "完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系"
+        ],
+        [
+          "",
+          "F2 全生命周期安全",
+          "制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准"
+        ],
+        [
+          "",
+          "F3 跨域安全",
+          "制定电力数据跨企业、跨行业、跨境流通安全管理规范"
+        ],
+        [
+          "G 管理规范标准",
+          "G1 治理机制",
+          "制定电力数据治理组织、职责、流程相关管理规范"
+        ],
+        [
+          "",
+          "G2 标准化协同管理",
+          "制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工"
+        ]
+      ],
+      "raw_rows": [
+        "| A 基础通用标准 | A1 术语与概念 | 统一电力数据基础设施相关术语定义，衔接国家数据基础设施参考架构术语体系 |",
+        "|  | A2 参考架构 | 制定电力数据基础设施参考架构行业实施细则，明确与国家数据基础设施参考架构的映射关系 |",
+        "|  | A3 标识与目录 | 制定电力数据标识管理规范、电力数据目录描述规范，衔接国家数据基础设施标识管理规范与数据目录描述规范 |",
+        "| B 数据资源标准 | B1 数据分类分级 | 制定电力数据分类分级实施细则，衔接《能源行业数据分类分级指南（2026年版）》在电力品种、发输变配用调各环节的具体应用 |",
+        "|  | B2 数据字典与元数据 | 制定电力行业数据字典、元数据规范，规范电力设备、电网拓扑、量测数据等核心数据对象定义 |",
+        "|  | B3 数据质量 | 制定电力数据质量评价指标体系和核查技术要求，覆盖数据生成、采集、存储、使用全过程质量控制 |",
+        "|  | B4 数据资产管理 | 制定电力数据资产登记、评估、入表相关标准，衔接数据管理能力成熟度评价要求 |",
+        "| C 技术设施标准 | C1 感知与终端 | 制定电力物联网终端、智能传感装置数据接入技术要求 |",
+        "|  | C2 存储与计算 | 制定电力数据存储、电力算力资源调度及算力电力协同相关技术标准 |",
+        "|  | C3 平台与中台 | 制定电力大数据平台、数据中台技术导则及功能规范 |",
+        "| D 互联互通标准 | D1 接口协议 | 制定电力数据接入连接器技术要求，衔接国家数据基础设施接入连接器技术要求 |",
+        "|  | D2 信息模型 | 完善以DL/T 890（IEC 61970/61968）公共信息模型为基础的电力信息模型标准，扩展至数据基础设施场景 |",
+        "|  | D3 身份与接入管理 | 制定电力行业数据基础设施用户身份管理和接入规范实施细则 |",
+        "| E 应用服务标准 | E1 数据流通交易 | 制定电力数据流通、共享、交易相关标准，衔接电力交易数据安全分类分级要求 |",
+        "|  | E2 新兴场景应用 | 制定虚拟电厂、多能互补、新型储能、电动汽车与电网互动、算力电力协同等场景数据接口与服务标准 |",
+        "|  | E3 公共服务 | 制定电力可靠性数据、电力统计数据等公共服务类数据发布与共享标准 |",
+        "| F 安全保障标准 | F1 数据安全总体要求 | 完善以T/CSAS 0012—2025电力行业数据安全要求为基础的行业数据安全标准体系 |",
+        "|  | F2 全生命周期安全 | 制定数据采集、传输、存储、使用、销毁全生命周期安全技术标准 |",
+        "|  | F3 跨域安全 | 制定电力数据跨企业、跨行业、跨境流通安全管理规范 |",
+        "| G 管理规范标准 | G1 治理机制 | 制定电力数据治理组织、职责、流程相关管理规范 |",
+        "|  | G2 标准化协同管理 | 制定标准立项、归口管理、实施评估相关工作规范，明确中国电力企业联合会等标准化技术组织职责分工 |"
+      ]
+    },
+    {
+      "block_id": "blk-0049",
+      "type": "paragraph",
+      "text": "上述标准体系表中，A类基础通用标准和F类安全保障标准是电力数据基础设施标准体系的共性支撑基础，应优先完成与国家数据基础设施六项技术文件的对接。B类数据资源标准和D类互联互通标准是体现电力行业专业特点的核心内容，其中数据分类分级标准应直接衔接《能源行业数据分类分级指南（2026年版）》的相关规定，信息模型标准应在DL/T 890现有基础上做好继承和扩展。C类技术设施标准和E类应用服务标准面向电力数字化转型的具体场景，应保持与国家电网、南方电网等企业数字化实践的动态衔接。G类管理规范标准是保障标准体系持续运行的制度基础。",
+      "line_start": 154,
+      "line_end": 154,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ]
+    },
+    {
+      "block_id": "blk-0050",
+      "type": "paragraph",
+      "text": "上述标准体系框架与中电联承担的先行先试任务书确定的能力建设要求相互对应。A3标识与目录、D3身份与接入管理共同支撑任务书要求的统一目录、统一身份、统一标识“三统一”能力；D1接口协议、D3身份与接入管理支撑主体接入能力；E1数据流通交易、E2新兴场景应用支撑数据流通利用能力；F类安全保障标准支撑安全保障能力。标准体系建设与先行先试项目建设同步推进，可为项目标准验证任务提供直接支撑。",
+      "line_start": 156,
+      "line_end": 156,
+      "section_id": "sec-0014",
+      "heading_path": [
+        "**四、电力领域数据基础设施标准体系框架设计**"
+      ]
+    },
+    {
+      "block_id": "blk-0051",
+      "type": "paragraph",
+      "text": "结合国家数据基础设施建设三阶段目标和电力行业实际需求，建议按照急用先行、分类推进的原则确定重点标准研制方向。第一优先级标准包括电力数据基础设施参考架构行业实施细则、电力数据分类分级实施细则、电力数据标识管理规范、电力数据目录描述规范，此类标准直接衔接国家已发布的技术文件和分类分级指南，具备明确的上位依据，应尽快启动立项。第二优先级标准包括电力行业数据字典与元数据规范、电力数据质量评价标准、电力数据接入连接器技术要求、电力行业数据安全全生命周期技术标准，此类标准是支撑电力数据基础设施规模化建设的关键基础，建议在第一优先级标准发布后同步推进。第三优先级标准包括虚拟电厂数据接口标准、多能互补数据服务标准、算力电力协同数据交互标准、电力数据资产评估与入表标准，此类标准面向新兴业务场景，技术路线和业务模式仍在演进过程中，建议以团体标准先行先试，成熟后转化为行业标准或国家标准。",
+      "line_start": 160,
+      "line_end": 160,
+      "section_id": "sec-0015",
+      "heading_path": [
+        "**五、重点标准研制方向与优先级**"
+      ]
+    },
+    {
+      "block_id": "blk-0052",
+      "type": "paragraph",
+      "text": "标准研制方向应重点衔接电力领域数据基础设施先行先试项目已确定的行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购、数据产品服务等重点场景，做到标准研制与场景验证同步推进、相互支撑，确保标准体系建设成果能够直接服务于先行先试项目的标准验证任务。",
+      "line_start": 162,
+      "line_end": 162,
+      "section_id": "sec-0015",
+      "heading_path": [
+        "**五、重点标准研制方向与优先级**"
+      ]
+    },
+    {
+      "block_id": "blk-0053",
+      "type": "paragraph",
+      "text": "电力领域数据基础设施标准体系建设应与国家数据基础设施建设三阶段目标保持同步，并与中电联承担的先行先试项目（成长级）建设节奏协调衔接，做到标准供给与项目建设、场景验证同步推进。",
+      "line_start": 166,
+      "line_end": 166,
+      "section_id": "sec-0016",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ]
+    },
+    {
+      "block_id": "blk-0054",
+      "type": "paragraph",
+      "text": "第一阶段为近期阶段，目标为完成标准体系顶层设计。此阶段应完成电力领域数据基础设施标准体系框架的正式发布，完成第一优先级标准的立项和研制，推动电力数据基础设施参考架构、标识管理、目录描述等基础标准与国家技术文件的对接，同步支撑先行先试项目统一目录、统一身份、统一标识“三统一”能力建设和年度标准验证任务，选取具备条件的电网企业和区域开展标准应用试点。",
+      "line_start": 168,
+      "line_end": 168,
+      "section_id": "sec-0016",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ]
+    },
+    {
+      "block_id": "blk-0055",
+      "type": "paragraph",
+      "text": "第二阶段为中期阶段，目标为形成支撑数据规模化流通的标准供给能力。此阶段应完成第二优先级标准的发布实施，推动电力数据基础设施标准在主要电网企业、发电企业、售电企业范围内基本覆盖，配合先行先试项目主体接入能力和数据流通利用能力建设进度，建立标准实施情况评估机制，根据试点经验和项目场景运营反馈对标准体系框架进行动态优化。",
+      "line_start": 170,
+      "line_end": 170,
+      "section_id": "sec-0016",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ]
+    },
+    {
+      "block_id": "blk-0056",
+      "type": "paragraph",
+      "text": "第三阶段为远期阶段，目标为基本建成电力领域数据基础设施标准体系主体结构。此阶段应完成第三优先级标准的成熟转化，形成基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类标准协同配套的完整体系，配合先行先试项目形成可交付、可验证、可运营的建设成果，实现电力数据基础设施标准体系与国家数据基础设施标准体系的全面衔接。",
+      "line_start": 172,
+      "line_end": 172,
+      "section_id": "sec-0016",
+      "heading_path": [
+        "**六、分阶段实施路径**"
+      ]
+    },
+    {
+      "block_id": "blk-0057",
+      "type": "paragraph",
+      "text": "本项研究由中电联牵头组织，依托电力领域数据基础设施先行先试项目组工作机制推进标准体系建设。中电联在国家数据局、国家能源局的指导下，统筹协调电网企业、发电企业、售电企业、科研机构、高等院校等项目参与单位，建立标准立项、起草、审查、发布、复审全流程协作机制，明确项目组各专业方向在标准研制中的职责分工，推动标准体系建设与先行先试项目建设一体部署、一体推进。",
+      "line_start": 178,
+      "line_end": 178,
+      "section_id": "sec-0018",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（一）组织保障**"
+      ]
+    }
+  ],
+  "semantic_policy": {
+    "truth_status": "source_assertions_unverified",
+    "external_enrichment": "forbidden",
+    "inference_must_be_labeled": true
+  }
+}

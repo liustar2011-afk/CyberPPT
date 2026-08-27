@@ -1,0 +1,9 @@
+{
+  "status": "ok",
+  "input": "D:\\CyberPPT\\projects\\power-data-infrastructure-cooperation-20260826-001\\workbench\\source-foundation\\markdown\\电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2.md",
+  "structure": "D:\\CyberPPT\\projects\\power-data-infrastructure-cooperation-20260826-001\\workbench\\source-foundation\\foundation\\电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2\\structure.json",
+  "fact_base": "D:\\CyberPPT\\projects\\power-data-infrastructure-cooperation-20260826-001\\workbench\\source-foundation\\foundation\\电力领域数据基础设施行业数据服务与场景服务合作交流材料0824V2\\fact-base.json",
+  "block_count": 288,
+  "fact_count": 549,
+  "warnings": []
+}
