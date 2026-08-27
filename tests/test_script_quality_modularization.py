@@ -95,7 +95,7 @@ LEGACY_FACT_SYMBOLS = frozenset(
     _onscreen_false_parallel_semantics
     _onscreen_flat_long_labelled_detail_hits _onscreen_flow_language_issues
     _onscreen_heading_candidates _onscreen_layout_meta_hits _onscreen_markdown_hits
-    _onscreen_module_dimension_consistency_issues
+    _onscreen_module_dimension_consistency_issues _onscreen_orphan_ordinal_hits
     _onscreen_module_provenance_issues _onscreen_parallel_structure_issues
     _onscreen_parent_child_role_mismatches _onscreen_redundant_restatement_issues
     _onscreen_relation_meta_hits
@@ -488,9 +488,9 @@ class ScriptQualityCompatibilityTests(unittest.TestCase):
         facade = Path(legacy.__file__).read_text(encoding="utf-8")
         tree = ast.parse(facade)
 
-        self.assertEqual(208, len(LEGACY_FACT_SYMBOLS))
+        self.assertEqual(209, len(LEGACY_FACT_SYMBOLS))
         self.assertEqual(13, len(BASE_PUBLIC_CONSTANT_SYMBOLS))
-        self.assertEqual(221, len(FROZEN_FACADE_SYMBOLS))
+        self.assertEqual(222, len(FROZEN_FACADE_SYMBOLS))
         self.assertEqual(FROZEN_FACADE_SYMBOLS, frozenset(getattr(legacy, "__all__", ())))
         self.assertEqual(
             [],

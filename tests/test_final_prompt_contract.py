@@ -147,7 +147,7 @@ class ValidateFinalPromptTests(unittest.TestCase):
         ir = _ir()
         prompt = render_final_prompt(ir)
         corrupted = prompt.rstrip() + "\n\n【最终视觉执行约束｜最高优先级】\nsomething\n"
-        with self.assertRaisesRegex(PromptContractError, "internal style routing token"):
+        with self.assertRaisesRegex(PromptContractError, "non-live style prompt contains a live terminal"):
             validate_final_prompt(corrupted, ir)
 
 

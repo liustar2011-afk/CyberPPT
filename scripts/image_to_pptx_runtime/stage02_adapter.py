@@ -390,7 +390,7 @@ def run_stage02_reconstruction(
                         render_dir,
                         dpi=150,
                         renderer="officecli",
-                        strict_renderer=False,
+                        strict_renderer=True,
                     )
                     preview_png = rendered[0] if rendered else None
                     preview_geometry = check_pptx_geometry(preview_pptx, dpi=96)

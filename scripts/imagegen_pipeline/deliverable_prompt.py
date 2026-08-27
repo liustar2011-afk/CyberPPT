@@ -19,6 +19,7 @@ from scripts.imagegen_pipeline.runtime_style_contract import (
     TERMINAL_EXECUTION_HEADING,
     enforce_terminal_execution_lock,
     load_runtime_style_contract,
+    project_runtime_style_contract,
 )
 from scripts.imagegen_pipeline.visual_grammar import (
     creative_brief_visual_grammar,
@@ -786,7 +787,7 @@ def enforce_style09_terminal_lock(
     style_lock_path: Path | None,
 ) -> str:
     """Compatibility wrapper over generic terminal-lock enforcement."""
-    if style_lock_path is None:
+    if style_lock_path is None or TERMINAL_EXECUTION_HEADING in prompt:
         return prompt
     try:
         runtime = load_runtime_style_contract(style_lock_path)
@@ -814,6 +815,18 @@ def render_prompt(
     style09_semantic_tags = _style09_page_semantic_tags(page, content_lines)
     resolved_text_render_mode = _resolve_text_render_mode(style_lock_path, text_render_mode)
     semantic_visual = resolved_text_render_mode == "semantic_visual"
+    runtime_style = None
+    if include_style_contract and style_lock_path is not None and _is_live_runtime_style(style_lock_path):
+        authored_style_contract = (
+            _creative_brief_style_contract(
+                style_lock_path, semantic_tags=style09_semantic_tags
+            )
+            if creative_brief
+            else style_contract(style_lock_path, semantic_tags=style09_semantic_tags)
+        )
+        runtime_style = project_runtime_style_contract(
+            authored_style_contract, source=str(style_lock_path)
+        )
     if semantic_visual:
         semantic_lines = _semantic_visual_lines(content_lines)
         body = "\n".join(f"- {line}" for line in semantic_lines)
@@ -903,8 +916,8 @@ def render_prompt(
                 "",
                 "【源头视觉规则权威｜最高优先级】",
                 (
-                    load_runtime_style_contract(style_lock_path).contract
-                    if style_lock_path is not None and _is_live_runtime_style(style_lock_path)
+                    runtime_style.contract
+                    if runtime_style is not None
                     else (
                         _creative_brief_style_contract(
                             style_lock_path,
@@ -919,7 +932,10 @@ def render_prompt(
                 ),
             ]
         )
-    return "\n".join(parts).strip() + "\n"
+    rendered = "\n".join(parts).strip() + "\n"
+    if runtime_style is not None:
+        rendered = enforce_terminal_execution_lock(rendered, runtime_style)
+    return rendered
 
 
 def append_composition_guidance(prompt: str, guidance: str) -> str:

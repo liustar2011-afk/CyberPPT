@@ -26,6 +26,17 @@ from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruc
 from scripts.presentation_qa.text_content import pptx_texts
 
 
+def _stub_quick_preview_renderer(monkeypatch) -> None:
+    def fake_render_to_png(_pptx, output_dir, **_kwargs):
+        output = Path(output_dir)
+        output.mkdir(parents=True, exist_ok=True)
+        preview = output / "preview.png"
+        Image.new("RGB", (1600, 900), "white").save(preview)
+        return [preview]
+
+    monkeypatch.setattr(stage02_adapter, "render_to_png", fake_render_to_png)
+
+
 def test_runtime_is_self_contained_and_importable() -> None:
     from scripts.image_to_pptx_runtime.svg_quality.checker import SVGQualityChecker
     from scripts.image_to_pptx_runtime.svg_to_pptx.pptx_package.builder import create_pptx_with_native_svg
@@ -368,6 +379,7 @@ def test_clean_base_policy_recomputes_outside_mask_diff_for_reference_edit(tmp_p
 
 
 def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path, monkeypatch) -> None:
+    _stub_quick_preview_renderer(monkeypatch)
     source = tmp_path / "source.png"
     Image.new("RGB", (400, 200), "white").save(source)
     clean = tmp_path / "clean-base.png"
@@ -490,7 +502,8 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     assert checkpoint["resume"] == "reused"
 
 
-def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: Path) -> None:
+def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: Path, monkeypatch) -> None:
+    _stub_quick_preview_renderer(monkeypatch)
     source = tmp_path / "source.png"
     Image.new("RGB", (400, 200), "white").save(source)
     clean = tmp_path / "clean-base.png"

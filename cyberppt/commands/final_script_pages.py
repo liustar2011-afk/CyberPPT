@@ -133,6 +133,7 @@ def run_final_script_pages(
             blueprint_only=blueprint_only,
             no_style_reference=no_style_reference,
             skip_image_text_audit=skip_image_text_audit,
+            allow_script_edit_requested=allow_script_edit,
             allow_prompt_edit=allow_prompt_edit,
             prompt_overrides_dir=prompt_overrides_dir,
         )
