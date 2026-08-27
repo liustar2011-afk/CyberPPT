@@ -1,0 +1,119 @@
+{
+  "schema": "cyberppt.visual_structure_stage.v2",
+  "build_id": "visual-20260827T110425Z-3381821af0",
+  "status": "passed",
+  "validated_at": "2026-08-27T11:04:25+00:00",
+  "skill": "ppt-visual-structure-designer",
+  "skill_sha256": "9c89f589aad3be09baadc3f2733ea711a4a9c48bd4fd15fb71ec879e88c0c323",
+  "skill_bundle_sha256": "5e7378cbba7c6b70cf4c7ad938c69823da3f48ffeb87b4cce3b9939500c5f0d7",
+  "skill_contract_sha256": {
+    "skill": "9c89f589aad3be09baadc3f2733ea711a4a9c48bd4fd15fb71ec879e88c0c323",
+    "prompt_builder": "155cba9e7e17b99ff5e08c4c0c4c5592903f1a474cbe84e44e83cdc85db9c17e",
+    "validator": "3cab158c9ae83c08a475d9d334fd67a5dbb34278410e2da2c44e37f846d79925",
+    "page_schema": "db7fa7a8d93eb8500646705754f042b9c8fe5ca0091fb7c1c57295fecc6280bc",
+    "deck_schema": "3e52759264824eb1b3bd3b5447b1c858472096870a4a452bb2a7079fc5263124",
+    "skill_bundle": "5e7378cbba7c6b70cf4c7ad938c69823da3f48ffeb87b4cce3b9939500c5f0d7"
+  },
+  "script": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\scripts\\final\\script-final.md",
+  "script_sha256": "3381821af031665acda90adcaed8a1a0804a269f39f03b3b14f11b2cf860fb75",
+  "script_semantic_sha256": "cd4af1e6adedb5b6175bb4bc0eb3966bd0f6980dc6d03737d44ad48758a4ad16",
+  "stage02_handoff": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\stages\\02-handoff\\stage02-handoff.json",
+  "stage02_handoff_sha256": "37431173c55d5047a11f73f06c5c13c42bea837c431522faf0fdf84d566e75a6",
+  "artifacts": {
+    "design_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\visual-design-input.json",
+    "skill_request": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\skill-request.json",
+    "skill_invocation": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\skill-invocation.md",
+    "decisions": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\visual-design-decisions.json",
+    "execution_receipt": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\execution-receipt.json",
+    "spec_json": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\deck-visual-spec.json",
+    "spec_markdown": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\script-visual-structure.md",
+    "generation_prompts": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\generation-prompts.md",
+    "review_summary": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\visual-review-summary.md"
+  },
+  "artifact_sha256": {
+    "design_input": "80cdc6a92639e047f79cd8edc5cc83c544140358af11cd8b4dc20e06691c6f1a",
+    "skill_request": "75554183620273c6fd022184a39db5e6a3b4bfb56f49a27b7cdc86b22cc02661",
+    "skill_invocation": "e997ccd5a34b981d30ff6793f35ef0b82749345c23da728ed554bd21577882bc",
+    "decisions": "98968844027c8d5ef7666109d65d86f33cccad10a63253d46c5cac0f590a4d78",
+    "execution_receipt": "d0a66770de325172813f93b85df718655bf2950c9c462adac7c675d3c97c9d93",
+    "spec_json": "5c33afb7cede8e6088f77de349038dcc13df603b8939698faf588cf0a68d2767",
+    "spec_markdown": "e3514c984abaae279d804ccbdf9d7c80b86f89c78113a2cab6c2c76cc43ad3e1",
+    "generation_prompts": "7b3dfa907867beeb3ec57091ee6507671f4ced15596858128c3b82a28cf42d84",
+    "review_summary": "bbbdc7f240bbff165abfde48f3d52687fb587aaec3f2564eab0ca4c13b746902"
+  },
+  "prompt_inputs_sha256": {
+    "script_semantic": "cd4af1e6adedb5b6175bb4bc0eb3966bd0f6980dc6d03737d44ad48758a4ad16",
+    "design_input": "80cdc6a92639e047f79cd8edc5cc83c544140358af11cd8b4dc20e06691c6f1a",
+    "decisions": "98968844027c8d5ef7666109d65d86f33cccad10a63253d46c5cac0f590a4d78",
+    "execution_receipt": "d0a66770de325172813f93b85df718655bf2950c9c462adac7c675d3c97c9d93",
+    "spec_json": "5c33afb7cede8e6088f77de349038dcc13df603b8939698faf588cf0a68d2767",
+    "spec_markdown": "e3514c984abaae279d804ccbdf9d7c80b86f89c78113a2cab6c2c76cc43ad3e1",
+    "contract_skill": "9c89f589aad3be09baadc3f2733ea711a4a9c48bd4fd15fb71ec879e88c0c323",
+    "contract_prompt_builder": "155cba9e7e17b99ff5e08c4c0c4c5592903f1a474cbe84e44e83cdc85db9c17e",
+    "contract_validator": "3cab158c9ae83c08a475d9d334fd67a5dbb34278410e2da2c44e37f846d79925",
+    "contract_page_schema": "db7fa7a8d93eb8500646705754f042b9c8fe5ca0091fb7c1c57295fecc6280bc",
+    "contract_deck_schema": "3e52759264824eb1b3bd3b5447b1c858472096870a4a452bb2a7079fc5263124",
+    "contract_skill_bundle": "5e7378cbba7c6b70cf4c7ad938c69823da3f48ffeb87b4cce3b9939500c5f0d7"
+  },
+  "prompt_rebuilt": true,
+  "prompt_rebuild_reasons": [
+    "design_input",
+    "decisions",
+    "execution_receipt",
+    "spec_json",
+    "contract_page_schema",
+    "contract_skill_bundle",
+    "generation_prompts_missing"
+  ],
+  "results": {
+    "markdown": {
+      "valid": true,
+      "score": 100,
+      "errors": [],
+      "warnings": [],
+      "notices": [],
+      "status": "passed"
+    },
+    "json": {
+      "valid": true,
+      "score": 100,
+      "errors": [],
+      "warnings": [],
+      "notices": [],
+      "status": "passed"
+    },
+    "decision_package": {
+      "schema": "cyberppt.visual_design_package_audit.v1",
+      "status": "passed",
+      "page_count": 21,
+      "candidate_page_count": 21,
+      "spec_page_count": 21,
+      "blocking_issues": [],
+      "warnings": []
+    },
+    "execution_receipt": {
+      "schema": "cyberppt.visual_structure_execution_audit.v1",
+      "status": "passed",
+      "blocking_issues": []
+    },
+    "deck_rhythm": {
+      "status": "passed",
+      "blocking_issues": [],
+      "warnings": []
+    },
+    "prompt_freshness": {
+      "status": "passed",
+      "rebuilt": true,
+      "rebuild_reasons": [
+        "design_input",
+        "decisions",
+        "execution_receipt",
+        "spec_json",
+        "contract_page_schema",
+        "contract_skill_bundle",
+        "generation_prompts_missing"
+      ],
+      "generation_prompts_sha256": "7b3dfa907867beeb3ec57091ee6507671f4ced15596858128c3b82a28cf42d84"
+    }
+  }
+}

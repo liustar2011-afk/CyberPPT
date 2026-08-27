@@ -1,0 +1,41 @@
+{
+  "schema": "cyberppt.visual_structure_skill_request.v1",
+  "skill": "ppt-visual-structure-designer",
+  "skill_root": "D:\\CyberPPT\\vendor\\skills\\ppt-visual-structure-designer",
+  "skill_bundle_sha256": "5e7378cbba7c6b70cf4c7ad938c69823da3f48ffeb87b4cce3b9939500c5f0d7",
+  "skill_contract_sha256": {
+    "skill": "9c89f589aad3be09baadc3f2733ea711a4a9c48bd4fd15fb71ec879e88c0c323",
+    "prompt_builder": "155cba9e7e17b99ff5e08c4c0c4c5592903f1a474cbe84e44e83cdc85db9c17e",
+    "validator": "3cab158c9ae83c08a475d9d334fd67a5dbb34278410e2da2c44e37f846d79925",
+    "page_schema": "db7fa7a8d93eb8500646705754f042b9c8fe5ca0091fb7c1c57295fecc6280bc",
+    "deck_schema": "3e52759264824eb1b3bd3b5447b1c858472096870a4a452bb2a7079fc5263124",
+    "skill_bundle": "5e7378cbba7c6b70cf4c7ad938c69823da3f48ffeb87b4cce3b9939500c5f0d7"
+  },
+  "approved_script": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\scripts\\final\\script-final.md",
+  "approved_script_sha256": "3381821af031665acda90adcaed8a1a0804a269f39f03b3b14f11b2cf860fb75",
+  "approved_script_semantic_sha256": "cd4af1e6adedb5b6175bb4bc0eb3966bd0f6980dc6d03737d44ad48758a4ad16",
+  "visual_design_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\visual\\visual-design-input.json",
+  "visual_design_input_sha256": "80cdc6a92639e047f79cd8edc5cc83c544140358af11cd8b4dc20e06691c6f1a",
+  "content_lock": "strict",
+  "relationship_authority": "business_relationships",
+  "author_visual_notes_authority": "advisory_only",
+  "prompt_modes": {
+    "default": "semantic_brief",
+    "directed": "directed_composition",
+    "authority": "visual_design_input.pages[].prompt_mode"
+  },
+  "required_outputs": [
+    "visual/visual-design-decisions.json"
+  ],
+  "compiler_outputs": [
+    "visual/deck-visual-spec.json",
+    "visual/script-visual-structure.md"
+  ],
+  "forbidden_outputs": [
+    "image",
+    "svg",
+    "html",
+    "pptx"
+  ],
+  "prepared_at": "2026-08-27T11:04:01+00:00"
+}

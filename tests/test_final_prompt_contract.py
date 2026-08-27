@@ -95,6 +95,12 @@ class ValidateFinalPromptTests(unittest.TestCase):
             with self.assertRaisesRegex(PromptContractError, "internal/backend field"):
                 validate_final_prompt(corrupted, ir)
 
+    def test_allows_source_locked_standard_category_labels(self) -> None:
+        ir = _ir(visible_text=("E1与E2支撑流通利用能力",))
+        prompt = render_final_prompt(ir)
+
+        validate_final_prompt(prompt, ir)
+
     def test_rejects_duplicate_visible_text_declaration(self) -> None:
         ir = _ir()
         prompt = render_final_prompt(ir)

@@ -71,6 +71,31 @@ _BACKEND_ID_RE = re.compile(
     flags=re.IGNORECASE,
 )
 
+
+def backend_identifier_leaks(
+    prompt: str,
+    *,
+    approved_visible_text: tuple[str, ...] = (),
+) -> tuple[str, ...]:
+    """Return backend-looking tokens that are not approved business copy.
+
+    Letter-number labels such as ``E1`` and ``E2`` are also legitimate
+    standard-category names in power-industry material.  A token is therefore
+    safe only when Stage 1 locked it into the exact visible-text contract;
+    otherwise it remains an internal-ID leak and blocks production.
+    """
+
+    approved = {
+        match.group(0).casefold()
+        for text in approved_visible_text
+        for match in _BACKEND_ID_RE.finditer(text)
+    }
+    return tuple(
+        match.group(0)
+        for match in _BACKEND_ID_RE.finditer(prompt)
+        if match.group(0).casefold() not in approved
+    )
+
 _FORBIDDEN_CHROME_TEXT = frozenset({"标题", "副标题", "页码", "logo", "页眉", "页脚"})
 
 _VISIBLE_TEXT_RE = re.compile(r'^- Exact visible text: "(.*)"$', flags=re.MULTILINE)
@@ -108,7 +133,10 @@ def validate_final_prompt(
     if _PLACEHOLDER_RE.search(prompt):
         raise PromptContractError(f"final prompt contains an unresolved placeholder: {_PLACEHOLDER_RE.search(prompt).group(0)}")
 
-    if _BACKEND_ID_RE.search(prompt):
+    if backend_identifier_leaks(
+        prompt,
+        approved_visible_text=ir.visible_text,
+    ):
         raise PromptContractError("final prompt contains a backend identifier")
 
     for pattern in _BACKEND_LEAK_PATTERNS:

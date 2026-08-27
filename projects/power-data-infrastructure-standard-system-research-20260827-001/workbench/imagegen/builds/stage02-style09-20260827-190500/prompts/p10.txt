@@ -1,0 +1,97 @@
+[1. Deliverable]
+Create one finished presentation content visual for a PowerPoint content page. Canvas: 2048x1024 (2:1). The asset is the body visual only; PowerPoint supplies all excluded chrome.
+[2. Page judgment]
+Page mission (non-visible): 按一级类目 → 二级子体系 → 重点标准方向展开A—C类分类。
+Core judgment (non-visible): A类统一术语、架构、标识和目录，B类规范分类分级、字典元数据、质量和资产，C类覆盖终端接入、存储计算和平台能力。
+Source-grounded semantic context (non-visible; use for business objects, conditions, boundaries and implications; render only text also present in the exact visible-text whitelist):
+标准体系一级、二级分类及重点标准方向按统一表式展开。A类基础通用标准统一电力数据基础设施术语定义并衔接国家数据基础设施参考架构术语体系；参考架构需要形成电力行业实施细则，明确与国家参考架构的映射关系；标识与目录需要制定电力数据标识管理规范和目录描述规范，并与国家数据基础设施相关规范衔接。A类由此承担共同语言、架构映射和目录标识规则的统一职责。
+B类数据资源标准把治理要求落实到具体对象和过程。分类分级实施细则需要衔接《能源行业数据分类分级指南（2026年版）》在电力品种及发输变配用调环节的应用；数据字典和元数据规范需要明确电力设备、电网拓扑、量测数据等核心数据对象定义；数据质量标准需要形成质量评价指标体系和核查技术要求，覆盖生成、采集、存储、使用全过程质量控制；数据资产管理标准需要覆盖登记、评估、入表，并衔接数据管理能力成熟度评价要求。
+C类技术设施标准提供采集、计算和平台承载。感知与终端标准面向电力物联网终端、智能传感装置的数据接入技术要求；存储与计算标准覆盖电力数据存储、算力资源调度和算力电力协同；平台与中台标准形成电力大数据平台、数据中台技术导则及功能规范。三类标准分别承担共同语言、资源治理和设施支撑职责，共同构成后续互联互通、应用服务、安全保障和管理规范的底层基础。
+[3. Dominant relationship and reading path]
+框架分解｜一级类目 → 二级子体系 → 重点标准方向
+Reading boundary: preserve only source-supported order and direction; choose the visual reading implementation freely.
+[4. Semantic groups]
+- [result / primary] 基础通用｜术语与国家体系衔接｜参考架构行业映射｜标识与目录规范
+- [process / secondary] 数据资源｜发输变配用调分类分级｜核心数据对象定义：规范设备拓扑和量测数据｜全过程质量控制｜资产登记评估入表
+- [process / secondary] 技术设施｜终端与传感接入｜算力资源调度与算力电力协同｜平台与中台功能规范
+[5. Composition skeleton and visual responsibility]
+Spatial organization: Choose the spatial composition from the semantic context, exact visible text and style contract; do not inherit a fixed card, lane, matrix, scene or connector recipe from upstream planning.
+Primary focus: A类统一术语、架构、标识和目录，B类规范分类分级、字典元数据、质量和资产，C类覆盖终端接入、存储计算和平台能力。
+Use the named business objects, actors, actions, conditions and outcomes as semantic anchors. ImageGen owns the scene-or-structure choice, carrier, spatial organization, visual reading implementation and supporting detail.
+Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; do not invent a stronger relationship than the semantic context supports.
+[6. Exact visible text contract]
+Only the following business text may be rendered visibly. Preserve every character and the listed order:
+- Exact visible text: "基础通用"
+- Exact visible text: "术语与国家体系衔接"
+- Exact visible text: "参考架构行业映射"
+- Exact visible text: "标识与目录规范"
+- Exact visible text: "数据资源"
+- Exact visible text: "发输变配用调分类分级"
+- Exact visible text: "核心数据对象定义：规范设备拓扑和量测数据"
+- Exact visible text: "全过程质量控制"
+- Exact visible text: "资产登记评估入表"
+- Exact visible text: "技术设施"
+- Exact visible text: "终端与传感接入"
+- Exact visible text: "算力资源调度与算力电力协同"
+- Exact visible text: "平台与中台功能规范"
+[Hard constraints]
+Render only the PowerPoint body visual on a 2048x1024 canvas.
+Do not render title, subtitle, logo, page number, footer, or template frame.
+Do not render instructions, field labels, source references, evidence ids, or text ids.
+Do not invent visible business facts, numbers, organizations, actors, or conclusions.
+Do not change facts, numbers, dates or units.
+Do not change actors, responsibilities or status.
+Do not add presentation copy that is not part of the approved locked text.
+For a "label: sentence" locked text item, render it once as that single label-plus-sentence unit; do not additionally repeat the label alone as a separate heading, card title, or tag.
+Do not invent a heading, label, or tag for a locked text item that has no label in the required text (for example a bare boundary sentence); render it as plain text with no invented label.
+Do not map each body item to an isolated icon or decorative image.
+Do not create an independent text wall or second result chain.
+Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image.
+Do not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.
+Do not invent a center hub or radial mechanism the declared relationship does not describe.
+Do not break the layered dependency chain; every layer must visibly connect to the next.
+[7. Runtime lock]
+Palette: pure white background #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+Create an executive briefing page in a semantic scene-led editorial business-report style: authoritative, calm, refined and ready for formal presentation. Canvas 2048x1024; render only the PowerPoint body visual. Reserve title, subtitle, logo, page number, footer, template frame, instructions, field labels, source references, evidence ids and text ids for external layers.
+### 1. Style identity — hard
+Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes. Build one report-orderly composition around a clear business judgment; shapes, flat panels, color fields and text hierarchy organize the relationship. Abstract comparisons, hierarchies, processes and enumerations may use a flat structured relationship field. Keep the character editorial, matte and calm on pure white #FFFFFF; pale blue-grey is local separation only. Generic office imagery, icon-led infographics, glossy SaaS cards and decorative 3D are excluded.
+### 2. Anchor selection and composition — hard
+Identify the page’s core judgment and primary business relationship. Select one recognizable business anchor that materially distinguishes the judgment: an operating scene, business object, content or data asset, visible action, evidence fragment or outcome. When the content names or directly implies a concrete referent, use that anchor actively and preserve enough recognizable detail to identify its business role. An abstract page with no useful concrete referent may use a flat structured relationship field.
+Locked text has priority. Set every locked text region at comfortable executive reading scale before allocating anchor space; crop, simplify or remove the anchor when needed. Build two to five open semantic regions with a stable center of gravity, one dominant focus and subordinate evidence. Item count does not dictate layout. Use asymmetric weighting only when it clarifies the declared relationship; an evenly balanced grid is valid when the content is genuinely parallel.
+Keep connectors absent by default; express relationships through position, grouping, containment, alignment, numbering and color. A plain undirected line is not part of this style's vocabulary. Use arrows only for an explicitly directional or cyclical relationship that spatial organization cannot show: each arrow joins one source and one target, is small, muted deep blue, vector-crisp, and stays local to that relationship, never a page-level organizing role. Never fork, branch, cross text, float or form a decorative chain. Suitable anchors include a structured business object, two fields around a visible gap, inputs converging on an outcome, or an interpretable operating action.
+### 3. Content fidelity and typography — hard
+Preserve the full factual meaning, core judgments, named entities, numbers, dates, units, causal/conditional/comparison relationships, scope boundaries and business logic of the source Chinese content. Do not add facts, invent numbers, change responsibility boundaries, alter policy meaning, omit required content, add unsupported labels, or change modal strength.
+Text explicitly marked verbatim, locked, quoted, a formal name, number, unit, date or policy clause remains complete and unchanged. Other source-supported text may be split, regrouped, shortened for function words, or given a lead-in already supported by its meaning. Keep causal and conditional links intact. Emphasize a key metric inside its original sentence in larger deep-blue type; never repeat it as a metric tile. Render a `label: sentence` item once as one unit.
+Size text before scenes and decoration. Each primary semantic unit receives a clear readable text region with generous margins. Use at least two type weights or sizes, a larger gap between semantic groups, and one alignment convention per region. Use consistent `【label】` header treatment; use a small dot or vertical bar for bullets when needed. A hairline rule, accent rule or narrow pale-blue-grey field marks subgroup boundaries. Auxiliary imagery stays text-free by default: no embedded words, labels, numbers, captions, UI copy, signage or pseudo-Chinese. Place essential locked labels as normal page text next to the visual.
+### 4. Reusable composition grammars
+Choose one primary grammar from the page semantics; add a second only for a separate essential relationship.
+- **Continuous transformation**: one object changes across sequential positions or a closed feedback loop, not step cards or icon rows.
+- **Core object with attached actions**: one object or environment with adjacent flat capability, condition or outcome panels.
+- **Dual-field comparison**: two matching fields and a decisive judgment region.
+- **Multi-source convergence**: distinct inputs visibly lead toward one shared outcome.
+- **Controlled containment**: a visible object inside a bounded field with small boundary checkpoints.
+- **Parallel-direction shared evidence**: one evidence field supports a group of parallel directions.
+Headers use one consistent deep-blue treatment. Panels use thin right-angle borders or pale-blue-grey fills. Use one numbering convention per page and never double-badge existing number prefixes.
+### 5. Scene, evidence and people — hard
+Use photography, illustration or evidence only when it strengthens a specific named concept, actor, action, asset or outcome. One dominant anchor and up to four quieter supporting fragments may support distinct items; their combined footprint remains subordinate to readable text. Richness comes from meaningful scene selection and cropping together with structural composition. Use text-free, page-specific business scenarios, objects, actions, data assets, documents or evidence fragments. Generic office and workplace imagery, generic control rooms, dashboard walls and stock BI screens are excluded.
+People are absent by default: no visible faces, round-table meetings, group discussions or staged office scenes. Never depict organization names, logos, seals, signage, recognizable headquarters or landmarks; keep real organization and person names in the editable text layer only.
+### 6. Depth, material, icon and line discipline — hard
+Use a restrained flat editorial foundation: overlap, crop, scale contrast, tonal separation, matte surfaces, crisp edges and shallow natural depth. Exclude glossy or decorative 3D, exaggerated isometric perspective, cinematic lighting, glassmorphism, neon, holographic treatment, floating hero objects, product-showcase styling and complex lighting. No 3D icons, miniature models, cubes, small server or building models, floating objects, thick pedestals, multi-step platforms, exaggerated extrusion or complex lighting.
+Icon count is zero by default. A single small flat deep-blue icon may appear only when immediate semantic clarity depends on it. Icon rows, grids, walls, badges, cards, pictogram sequences and symbol clusters are excluded. Use thin right-angle panels, flat fields and short dividers for grouping, with at most two visible boundary levels. Avoid pill shapes, thick frames, trapezoids, cut corners, glass capsules and 3D door-frames. Keep color disciplined: deep blue carries the primary relationship and conclusion, pale blue-grey supports, and warm color flags risk, restriction or pending status.
+Connectors stay rare; a plain undirected line is never used. Arrows follow Section 2. Precision is mandatory: consistent stroke weights, true right angles, smooth curves, clean edges, stable corner radii and aligned color blocks. If locked text already has ①②③ or digit prefixes, never add a separate decorative number badge.
+### 7. Semantic economy, priority and authority — hard
+Represent each source-supported concept once, without restating the same label, sequence or conclusion. Keep one primary visual metaphor and avoid duplicate icon chains, footer processes, extra summary bands, text walls and result chains. Priority order: content fidelity, verbatim requirements and core judgment → recognizable business anchor → primary relationship → semantic actions → evidence and outcomes → crop, overlap and shallow tonal depth → indispensable auxiliary symbols.
+This Style 09 definition controls every page selecting it. Reference images may influence palette, crop and polish only. Flat thin-bordered panels and tidy grids remain available for meaningful grouping; the visual system requires concrete business meaning, editorial hierarchy and restrained decoration.
+### 8. Hard constraints
+Do not invent visible business facts, numbers, organizations, actors or conclusions. Preserve approved actors, relationships, conditions, status and factual strength. Do not create equal-weight peer cards when the declared relationship differs, and do not invent a center hub or radial mechanism. Keep title and subtitle in the external PowerPoint layer.
+
+【风格09最终执行锁｜最高优先级】
+Treat the generated image as a reconstruction-friendly, semantic-anchor-led blueprint for editable PowerPoint conversion. Use a recognizable scene, object, action or evidence fragment for an eligible concrete referent; use a flat structured relationship field for an abstract page with no meaningful concrete referent. Shapes and containers organize the anchor and locked text into a disciplined composition. Locked Chinese text stays complete, unchanged and readable in high-contrast text-safe zones with stable geometry.
+
+Establish a calm balanced page frame before detailing regions. Distribute text, semantic imagery and structural fields across both axes; white space supports hierarchy, separation and reading path. Preserve one clear dominant focus with visibly subordinate supporting regions.
+
+Final check: a plain undirected connecting line is never used; arrows stay small, precise, local and single-source-to-single-target; icon count is zero by default, with no icon walls, grids or badge rows.
+
+Font: use PingFang SC (苹方) where available, otherwise the closest available Chinese sans-serif; make glyphs visibly wider and flatter than a standard modern Chinese sans-serif, with a broad horizontal proportion and reduced vertical proportion. Preserve open counters, crisp strokes, restrained spacing and legibility at small sizes.
+
+Typography: establish one clear hierarchy and repeat it consistently across the whole deck. Make the page title or main conclusion the largest text; use a clearly smaller subtitle. Make every module or chart heading noticeably larger and bolder than its supporting text. Keep body copy compact and consistently readable. Make a key metric the strongest focal text after the page title; keep chart labels smaller than body copy, and make sources, notes and evidence codes the smallest, quietest text. When the same role recurs on another page, reuse the same relative size and weight. If text feels crowded, shorten the copy or redesign the layout; never solve it by shrinking a role below its established level or introducing an extra in-between size.

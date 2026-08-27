@@ -1070,7 +1070,10 @@
           ],
           "properties": {
             "source": {
-              "const": "structural_decision"
+              "enum": [
+                "semantic_graph",
+                "structural_decision"
+              ]
             },
             "additional_constraints": {
               "type": "array",

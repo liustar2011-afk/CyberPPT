@@ -122,6 +122,7 @@ class VisualStructureStageTests(unittest.TestCase):
 
         source = {
             "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "prompt_mode": "semantic_brief",
             "page_mission": "Explain how the input relationship field supports the result.",
             "core_judgment": "Input visibly supports the result through one relationship field.",
             "locked_text_items": [
@@ -159,6 +160,10 @@ class VisualStructureStageTests(unittest.TestCase):
         validator = jsonschema.Draft202012Validator(schema)
 
         self.assertEqual([], list(validator.iter_errors(page)))
+        self.assertEqual(
+            "semantic_graph",
+            page["generation_handoff"]["structural_guidance"]["source"],
+        )
 
         for leaking_field, value in (
             ("topology", "directed_flow"),

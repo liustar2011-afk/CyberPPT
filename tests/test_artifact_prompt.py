@@ -200,6 +200,15 @@ class ArtifactPromptTests(unittest.TestCase):
                 expected_visible_text=("Governed input", "Traceable result"),
             )
 
+    def test_validator_allows_source_locked_standard_category_labels(self) -> None:
+        prompt = render_artifact_prompt(_spec())
+        prompt = prompt.replace("Governed input", "E1与E2支撑流通利用能力")
+
+        assert_artifact_prompt_contract(
+            prompt,
+            expected_visible_text=("E1与E2支撑流通利用能力", "Traceable result"),
+        )
+
     def test_exact_text_contract_remains_unique_when_evidence_reuses_the_words(self) -> None:
         spec = replace(
             _spec(),

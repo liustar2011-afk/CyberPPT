@@ -20,6 +20,7 @@ from scripts.imagegen_pipeline.final_prompt_ir import (
     RuntimeLockIR,
     SemanticGroupIR,
 )
+from scripts.imagegen_pipeline.final_prompt_contract import backend_identifier_leaks
 
 
 SECTION_HEADINGS = (
@@ -32,11 +33,6 @@ SECTION_HEADINGS = (
     "[7. Art direction / 视觉语言｜不上屏]",
     "[8. Typography & exact text / 文字资产合同]",
     "[9. Hard constraints / 硬约束]",
-)
-
-_BACKEND_ID_RE = re.compile(
-    r"(?<![A-Za-z0-9])(?:E\d+|P\d{2,3}-T(?:ITLE|\d+)|R_[A-Z0-9_]+|(?:NF|ST)-?\d+|rel-\d+)(?![A-Za-z0-9])",
-    flags=re.IGNORECASE,
 )
 
 # Visual-structure decisions retain machine enums for audit and routing.  The
@@ -256,7 +252,10 @@ def assert_artifact_prompt_contract(
         content_end = positions[index + 1] if index + 1 < len(positions) else len(prompt)
         if not prompt[content_start:content_end].strip():
             raise ValueError(f"artifact prompt section has no content: {heading}")
-    if _BACKEND_ID_RE.search(prompt):
+    if backend_identifier_leaks(
+        prompt,
+        approved_visible_text=expected_visible_text,
+    ):
         raise ValueError("artifact prompt contains a backend identifier")
     if expected_visible_text:
         declarations = tuple(

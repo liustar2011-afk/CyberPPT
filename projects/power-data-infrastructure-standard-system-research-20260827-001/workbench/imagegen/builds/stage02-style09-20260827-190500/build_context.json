@@ -1,0 +1,46 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "stage02-style09-20260827-190500",
+  "created_at": "2026-08-27T11:07:21+00:00",
+  "project": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001",
+  "source_script": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\scripts\\final\\script-final.md",
+  "source_script_sha256": "3381821af031665acda90adcaed8a1a0804a269f39f03b3b14f11b2cf860fb75",
+  "style_lock": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\locks\\visual_style_lock.json",
+  "style_lock_sha256": "6e72203eaa335a7621f5f0df482d8ae3ea196bcff479e316dbf13063c2816ab4",
+  "page_set": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "stage": "02-production-build",
+  "status": "in_progress",
+  "artifacts": {
+    "page_image_pairs": {
+      "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\imagegen\\builds\\stage02-style09-20260827-190500\\page_image_pairs.json",
+      "sha256": "f434fb3cb4d252500604ea957ac97ef1e9a234b49a7c1feac5f7f1830629f1fc"
+    }
+  }
+}
