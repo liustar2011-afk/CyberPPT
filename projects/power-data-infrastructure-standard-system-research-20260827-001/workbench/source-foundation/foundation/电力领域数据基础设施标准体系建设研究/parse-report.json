@@ -1,9 +1,0 @@
-{
-  "status": "ok",
-  "input": "projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\source-foundation\\markdown\\电力领域数据基础设施标准体系建设研究.md",
-  "structure": "projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\source-foundation\\foundation\\电力领域数据基础设施标准体系建设研究\\structure.json",
-  "fact_base": "projects\\power-data-infrastructure-standard-system-research-20260827-001\\workbench\\source-foundation\\foundation\\电力领域数据基础设施标准体系建设研究\\fact-base.json",
-  "block_count": 61,
-  "fact_count": 187,
-  "warnings": []
-}
