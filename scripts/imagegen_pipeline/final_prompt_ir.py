@@ -1,8 +1,8 @@
 """Structured intermediate representation for the final ImageGen prompt.
 
 The IR is the single normalized shape between the audited ``PageArtifactSpec``
-and the final prompt text. It carries only what the image generator needs to
-see; internal Stage 02 bookkeeping never reaches the rendered prompt.
+and the final prompt text. It carries model-facing semantic content plus a
+small amount of debug-only binding metadata that the renderer never exposes.
 """
 
 from __future__ import annotations
@@ -45,17 +45,17 @@ class SemanticGroupIR:
 
 @dataclass(frozen=True)
 class TextBindingIR:
-    """Model-facing text ownership for one semantic group.
+    """Text ownership for one semantic group.
 
-    ``group_id`` remains an internal IR key and is not rendered directly.  The
-    renderer uses the semantic group's stable display order/role while the
-    debug receipt preserves this key for traceability.
+    ``group_id`` and ``text_ids`` are debug-only keys. The renderer uses group
+    order/role and ``exact_text`` but never emits backend identifiers.
     """
 
     group_id: str
     role: str
     hierarchy_level: int
     exact_text: tuple[str, ...]
+    text_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.group_id.strip():
@@ -64,12 +64,12 @@ class TextBindingIR:
             raise PromptContractError(f"text binding {self.group_id!r} requires exact text")
         if self.hierarchy_level <= 0:
             raise PromptContractError("text binding hierarchy_level must be positive")
+        if self.text_ids and len(self.text_ids) != len(self.exact_text):
+            raise PromptContractError("text binding text_ids must align one-to-one with exact_text")
 
 
 @dataclass(frozen=True)
 class CompositionIR:
-    """Composition skeleton and per-region visual responsibility."""
-
     spatial_organization: str
     primary_focus: str
     visual_responsibility: tuple[str, ...]
@@ -83,8 +83,6 @@ class CompositionIR:
 
 @dataclass(frozen=True)
 class RuntimeLockIR:
-    """Style runtime contract plus an optional terminal enforcement lock."""
-
     style_contract: str
     terminal_lock: str = ""
 
@@ -95,8 +93,6 @@ class RuntimeLockIR:
 
 @dataclass(frozen=True)
 class FinalPromptIR:
-    """The complete normalized authority for one final ImageGen prompt."""
-
     deliverable: str
     page_judgment: str
     dominant_relationship: str
@@ -113,9 +109,7 @@ class FinalPromptIR:
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
-            raise PromptContractError(
-                f"unsupported final prompt mode: {self.prompt_mode!r}"
-            )
+            raise PromptContractError(f"unsupported final prompt mode: {self.prompt_mode!r}")
         if not self.deliverable.strip():
             raise PromptContractError("final prompt IR requires a deliverable")
         if not self.page_judgment.strip():
@@ -143,7 +137,6 @@ class FinalPromptIR:
             raise PromptContractError("final prompt IR requires visible text")
         if len(self.visible_text) != len(set(self.visible_text)):
             raise PromptContractError("visible text entries must be unique")
-
         if self.text_bindings:
             bound = tuple(text for binding in self.text_bindings for text in binding.exact_text)
             if bound != self.visible_text:
@@ -159,6 +152,9 @@ class FinalPromptIR:
             binding_groups = [binding.group_id for binding in self.text_bindings]
             if len(binding_groups) != len(set(binding_groups)):
                 raise PromptContractError("text bindings may define each semantic group at most once")
+            ids = tuple(text_id for binding in self.text_bindings for text_id in binding.text_ids)
+            if ids and len(ids) != len(set(ids)):
+                raise PromptContractError("text binding text_ids must be globally unique")
 
 
 __all__ = [
