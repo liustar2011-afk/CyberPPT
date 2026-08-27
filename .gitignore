@@ -37,6 +37,20 @@ build/
 !projects/**/script/dist/
 !projects/**/script/dist/**
 
+# Stage 02 transient binary/runtime outputs
+projects/**/workbench/imagegen/builds/**/*.png
+projects/**/workbench/imagegen/builds/**/*.jpg
+projects/**/workbench/imagegen/builds/**/*.jpeg
+projects/**/workbench/imagegen/builds/**/*.webp
+projects/**/workbench/imagegen/builds/**/*.png.report.json
+projects/**/workbench/imagegen/builds/**/*.jpg.report.json
+projects/**/workbench/imagegen/builds/**/*.jpeg.report.json
+projects/**/workbench/imagegen/builds/**/*.webp.report.json
+projects/**/workbench/imagegen/builds/**/raw/**
+projects/**/workbench/imagegen/builds/**/renders/**
+projects/**/workbench/imagegen/builds/**/office_render/**
+projects/**/workbench/imagegen/builds/**/image_to_pptx_runtime/**
+
 # Vendored PPT image enhancer: keep source, exclude bootstrapped/generated runtime state
 vendor/ppt-image-enhancer-skill-v1.0.0/.venv/
 vendor/ppt-image-enhancer-skill-v1.0.0/graft/
