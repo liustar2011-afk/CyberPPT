@@ -145,6 +145,30 @@ class TypographySpec:
 
 
 @dataclass(frozen=True)
+class VisibleTextBindingSpec:
+    """Authoritative ownership of one locked body-text item."""
+
+    text_id: str
+    text: str
+    root_id: str
+    order: int
+    role: str
+    hierarchy_level: int
+
+    def __post_init__(self) -> None:
+        if not self.text_id.strip():
+            raise ValueError("visible text binding requires text_id")
+        if not self.text.strip():
+            raise ValueError("visible text binding requires text")
+        if not self.root_id.strip():
+            raise ValueError(f"visible text binding {self.text_id!r} requires root_id")
+        if self.order <= 0:
+            raise ValueError("visible text binding order must be positive")
+        if self.hierarchy_level <= 0:
+            raise ValueError("visible text binding hierarchy_level must be positive")
+
+
+@dataclass(frozen=True)
 class HardConstraintSpec:
     global_constraints: tuple[str, ...]
     page_constraints: tuple[str, ...]
@@ -178,6 +202,18 @@ class PageArtifactSpec:
     content_root_count: int = 0
     semantic_context: SemanticContextSpec = SemanticContextSpec()
     prompt_mode: str = "semantic_brief"
+    visible_text_bindings: tuple[VisibleTextBindingSpec, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.visible_text_bindings:
+            binding_text = tuple(binding.text for binding in self.visible_text_bindings)
+            if binding_text != self.typography.visible_text:
+                raise ValueError(
+                    "visible text bindings must preserve typography.visible_text exactly and in order"
+                )
+            ids = tuple(binding.text_id for binding in self.visible_text_bindings)
+            if len(ids) != len(set(ids)):
+                raise ValueError("visible text binding text_id values must be unique")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -247,20 +283,6 @@ def _prompt_mode(
     return "semantic_brief"
 
 
-# semantic_graph.topology and forbidden_structures are snake_case backend
-# enum tokens (see cyberppt/commands/visual_structure_stage.py's
-# ALLOWED_TOPOLOGY and _FORBIDDEN_STRUCTURES_BY_TOPOLOGY). final_prompt_contract
-# rejects raw snake_case tokens in the final prompt text, so every value must
-# be mapped to a plain-English phrase here before it can reach the IR --
-# never interpolated as the raw token.
-#
-# Phrasing follows docs/superpowers/plans/2026-08-19-stage2-gpt-image-2-
-# prompt-sensitivity-optimization.md: GPT Image 2 responds far more to
-# concrete relationship verbs ("converge into", "branch into", "one
-# continuous flow", "hub-and-spoke", "closed-loop cycle", "foundation layer
-# supporting upper layers") than to static noun phrases describing the same
-# relationship. Each phrase below keeps its original business meaning and
-# only strengthens the verb/construction driving the composition.
 _TOPOLOGY_PHRASES: dict[str, str] = {
     "parallel_set": (
         "several equal-weight parallel items sharing one judgment; a "
@@ -444,12 +466,8 @@ def _business_relationships(
             raise ValueError(f"artifact spec requires {field}[{index}].objects")
         relationships.append(
             RelationshipSpec(
-                subject=_required_text(
-                    item.get("subject"), f"{field}[{index}].subject"
-                ),
-                relation=_required_text(
-                    item.get("relation"), f"{field}[{index}].relation"
-                ),
+                subject=_required_text(item.get("subject"), f"{field}[{index}].subject"),
+                relation=_required_text(item.get("relation"), f"{field}[{index}].relation"),
                 objects=objects,
                 direction=str(item.get("direction") or "").strip(),
                 condition=str(item.get("condition") or "").strip(),
@@ -467,16 +485,8 @@ def _normalized_relationship_payload(value: object) -> object:
     if not isinstance(value, list):
         return value
     keys = {
-        "subject",
-        "relation",
-        "objects",
-        "direction",
-        "condition",
-        "modality",
-        "basis",
-        "confidence",
-        "source_refs",
-        "authority_ref",
+        "subject", "relation", "objects", "direction", "condition", "modality",
+        "basis", "confidence", "source_refs", "authority_ref",
     }
     normalized: list[object] = []
     for item in value:
@@ -488,6 +498,47 @@ def _normalized_relationship_payload(value: object) -> object:
             record["confidence"] = str(record["confidence"])
         normalized.append(record)
     return normalized
+
+
+def _visible_text_bindings(
+    *,
+    visible_text: tuple[str, ...],
+    content_nodes: object,
+) -> tuple[VisibleTextBindingSpec, ...]:
+    """Project the existing content-integrity tree without fuzzy matching."""
+
+    if not isinstance(content_nodes, list) or not content_nodes:
+        return ()
+    ordered = sorted(
+        (node for node in content_nodes if isinstance(node, dict)),
+        key=lambda node: int(node.get("ordinal") or 0),
+    )
+    node_text = tuple(str(node.get("text") or "").strip() for node in ordered)
+    if node_text != visible_text:
+        raise ValueError(
+            "artifact spec cannot bind visible text because content-integrity node text/order drifted"
+        )
+    bindings: list[VisibleTextBindingSpec] = []
+    seen_ids: set[str] = set()
+    for position, node in enumerate(ordered, start=1):
+        text_id = str(node.get("text_id") or "").strip()
+        root_id = str(node.get("root_id") or "").strip()
+        if not text_id or text_id in seen_ids:
+            raise ValueError("artifact spec content-integrity text_id must be unique and non-empty")
+        if not root_id:
+            raise ValueError(f"artifact spec content-integrity node {text_id!r} has no root_id")
+        seen_ids.add(text_id)
+        bindings.append(
+            VisibleTextBindingSpec(
+                text_id=text_id,
+                text=visible_text[position - 1],
+                root_id=root_id,
+                order=int(node.get("ordinal") or position),
+                role=str(node.get("content_role") or "detail").strip() or "detail",
+                hierarchy_level=int(node.get("source_level") or 1),
+            )
+        )
+    return tuple(bindings)
 
 
 def build_page_artifact_spec(
@@ -533,9 +584,7 @@ def build_page_artifact_spec(
     subtitle_mode = _required_text(text_integration.get("subtitle_render_mode"), "subtitle render mode")
     body_mode = _required_text(text_integration.get("body_render_mode"), "body render mode")
     if (title_mode, subtitle_mode, body_mode) != (
-        "external_text_layer",
-        "external_text_layer",
-        "in_image",
+        "external_text_layer", "external_text_layer", "in_image",
     ):
         raise ValueError(
             "artifact spec requires external title/subtitle layers and in-image body text"
@@ -562,6 +611,10 @@ def build_page_artifact_spec(
     content_nodes = content_integrity.get("nodes") if isinstance(content_integrity, dict) else None
     root_nodes = content_integrity.get("root_nodes") if isinstance(content_integrity, dict) else None
     content_root_count = len(root_nodes) if isinstance(root_nodes, list) else 0
+    visible_text_bindings = _visible_text_bindings(
+        visible_text=visible_text,
+        content_nodes=content_nodes,
+    )
     text_id_to_root = {
         str(node.get("text_id")): str(node.get("root_id") or "")
         for node in content_nodes or [] if isinstance(node, dict)
@@ -745,12 +798,10 @@ def build_page_artifact_spec(
             argument_chain=str(handoff_page.get("argument_chain") or "").strip(),
             source_sha256=hashlib.sha256(semantic_text.encode("utf-8")).hexdigest(),
             source_kind=semantic_source_kind,
-            # Source ids stay in the Stage 02 handoff and audit trail.  The
-            # artifact spec carries only a content hash so backend ids cannot
-            # leak into the final prompt authority.
             trace_refs=(),
         ),
         prompt_mode=prompt_mode,
+        visible_text_bindings=visible_text_bindings,
     )
 
 
@@ -822,6 +873,7 @@ __all__ = [
     "HardConstraintSpec",
     "PageArtifactSpec",
     "TypographySpec",
+    "VisibleTextBindingSpec",
     "VisualCarrierSpec",
     "VisualBudgetSpec",
     "is_text_dense",

@@ -19,8 +19,15 @@ from scripts.imagegen_pipeline.final_prompt_ir import (
     PromptContractError,
     RuntimeLockIR,
     SemanticGroupIR,
+    TextBindingIR,
 )
 from scripts.imagegen_pipeline.final_prompt_contract import backend_identifier_leaks
+from scripts.imagegen_pipeline.runtime_style_contract import (
+    TERMINAL_EXECUTION_HEADING,
+    enforce_terminal_execution_lock,
+    internal_style_token_leaks,
+    load_runtime_style_contract,
+)
 
 
 SECTION_HEADINGS = (
@@ -35,10 +42,6 @@ SECTION_HEADINGS = (
     "[9. Hard constraints / 硬约束]",
 )
 
-# Visual-structure decisions retain machine enums for audit and routing.  The
-# final send prompt is a human-facing instruction surface, so project the
-# finite set of known enums into plain language before rendering it.  Do not
-# weaken the final-prompt contract by allowing arbitrary snake_case through.
 _VISUAL_ENUM_PHRASES = {
     "support_convergence_3_6": "multiple evidence lines converging on one judgment",
     "support_convergence": "multiple evidence lines converging on one judgment",
@@ -56,16 +59,11 @@ _VISUAL_ENUM_PHRASES = {
     "shared_evidence_peer_set": "a shared evidence peer set",
 }
 _VISUAL_ENUM_RE = re.compile(
-    "|".join(
-        re.escape(token)
-        for token in sorted(_VISUAL_ENUM_PHRASES, key=len, reverse=True)
-    )
+    "|".join(re.escape(token) for token in sorted(_VISUAL_ENUM_PHRASES, key=len, reverse=True))
 )
 
 
 def _prompt_safe_visual_text(value: str) -> str:
-    """Replace only known visual-routing enums in prompt prose."""
-
     return _VISUAL_ENUM_RE.sub(
         lambda match: _VISUAL_ENUM_PHRASES[match.group(0)],
         str(value),
@@ -90,24 +88,25 @@ def _relationship_line(relationship: RelationshipSpec) -> str:
         )
         if value
     )
-    line = (
-        f"{relationship.subject} --{relationship.relation}--> "
-        f"{'; '.join(relationship.objects)}"
-    )
+    line = f"{relationship.subject} --{relationship.relation}--> {'; '.join(relationship.objects)}"
     if qualifiers:
         line += " | " + " | ".join(qualifiers)
     return line
 
 
 def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = None) -> str:
-    """Render the single production prompt in the required nine-part order."""
+    """Render the compatibility nine-part artifact prompt."""
 
     deliverable = spec.deliverable
     communication = spec.communication_goal
     carrier = spec.visual_carrier
     composition = spec.composition
     typography = spec.typography
-    scene_policy = "Use the selected integrated scene." if carrier.use_scene else "Use the selected non-scene business relationship field."
+    scene_policy = (
+        "Use the selected integrated scene."
+        if carrier.use_scene
+        else "Use the selected non-scene business relationship field."
+    )
     connectors = tuple(
         " / ".join(
             value
@@ -121,115 +120,85 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
         )
         for connector in composition.connectors
     )
-    evidence_lines = tuple(
-        f"{item.priority} {item.kind}: {item.summary}" for item in spec.evidence
-    )
-    relationship_lines = tuple(
-        _relationship_line(relationship) for relationship in spec.relationships
-    )
+    evidence_lines = tuple(f"{item.priority} {item.kind}: {item.summary}" for item in spec.evidence)
+    relationship_lines = tuple(_relationship_line(relationship) for relationship in spec.relationships)
     visible_lines = tuple(f'Exact visible text: "{text}"' for text in typography.visible_text)
-    sections = (
-        "\n".join(
-            (
-                SECTION_HEADINGS[0],
-                f"Create one finished {deliverable.asset_type} for a PowerPoint {deliverable.page_role} page.",
-                f"Canvas: {deliverable.canvas[0]}x{deliverable.canvas[1]} ({deliverable.canvas[2]}).",
-                "The asset is the body visual only; PowerPoint supplies all excluded chrome.",
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[1],
-                f"Page mission: {communication.page_mission}",
-                f"Core judgment: {communication.core_judgment}",
-                "Use this section only to understand the communication outcome; do not render its labels or prose.",
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[2],
-                spec.visual_thesis,
-                "Make this relationship immediately legible from the visual asset; do not render this instruction as copy.",
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[3],
-                "Evidence:",
-                _bullets(evidence_lines),
-                "Authoritative business relationships:",
-                _bullets(relationship_lines),
-                "These facts govern the visual logic; the exact visible wording is defined only in section 8.",
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[4],
-                f"Selected carrier: {carrier.business_object}",
-                f"Semantic role: {carrier.semantic_role}",
-                f"Scene policy: {scene_policy} {carrier.scene_type}",
-                "Do not substitute a generic dashboard, icon collection, card wall, or unrelated decorative scene.",
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[5],
-                f"Spatial organization: {composition.spatial_organization}",
-                f"Reading path: {' -> '.join(composition.reading_path)}",
-                f"Primary focus: {composition.primary_focus}",
-                f"Secondary focus: {'; '.join(composition.secondary_focus) or 'none'}",
-                f"Relationship encoding: {composition.relationship_encoding}",
-                f"Text integration: {composition.text_integration_method}",
-                f"Spatial grammar: {', '.join(composition.spatial_grammar)}",
-                *(tuple(("Connectors:", _bullets(connectors))) if connectors else ()),
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[6],
-                spec.art_direction.contract,
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[7],
-                "Only the following business text may be rendered visibly. Preserve every character and the listed order:",
-                _bullets(visible_lines),
-                f"Allowed transformations: {', '.join(typography.allowed_transformations) or 'none'}.",
-                "Title and subtitle are external PowerPoint text layers and must not appear in this body image.",
-            )
-        ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[8],
-                _bullets(spec.hard_constraints.global_constraints),
-                _bullets(spec.hard_constraints.page_constraints),
-            )
-        ),
-    )
-    prompt = "\n\n".join(section for section in sections if section.strip()).rstrip()
+
+    style_contract = spec.art_direction.contract
+    runtime = None
     if spec.art_direction.style_id in (9, 10):
         if style_lock is None:
-            raise ValueError("Style09/10 artifact prompt requires its style lock for terminal enforcement")
-        # Style 09/10 is authored in references/visual-system.md.  Keep the
-        # complete refreshed Markdown contract at the absolute end of the
-        # prompt so page-specific carrier/layout prose cannot override its
-        # hard visual rules.  The legacy terminal-lock helper only recognizes
-        # an older English marker and is insufficient for the current source.
-        from scripts.imagegen_pipeline.deliverable_prompt import style_contract
+            raise ValueError("live runtime artifact prompt requires its style lock")
+        runtime = load_runtime_style_contract(style_lock)
+        style_contract = runtime.contract
 
-        source_contract = style_contract(style_lock)
-        prompt = (
-            f"{prompt}\n\n"
-            "【源头风格权威｜references/visual-system.md｜Style 09/10｜最高优先级】\n"
-            f"{source_contract}"
-        ).rstrip()
+    sections = (
+        "\n".join((
+            SECTION_HEADINGS[0],
+            f"Create one finished {deliverable.asset_type} for a PowerPoint {deliverable.page_role} page.",
+            f"Canvas: {deliverable.canvas[0]}x{deliverable.canvas[1]} ({deliverable.canvas[2]}).",
+            "The asset is the body visual only; PowerPoint supplies all excluded chrome.",
+        )),
+        "\n".join((
+            SECTION_HEADINGS[1],
+            f"Page mission: {communication.page_mission}",
+            f"Core judgment: {communication.core_judgment}",
+            "Use this section only to understand the communication outcome; do not render its labels or prose.",
+        )),
+        "\n".join((
+            SECTION_HEADINGS[2],
+            spec.visual_thesis,
+            "Make this relationship immediately legible from the visual asset; do not render this instruction as copy.",
+        )),
+        "\n".join((
+            SECTION_HEADINGS[3],
+            "Evidence:",
+            _bullets(evidence_lines),
+            "Authoritative business relationships:",
+            _bullets(relationship_lines),
+            "These facts govern the visual logic; the exact visible wording is defined only in section 8.",
+        )),
+        "\n".join((
+            SECTION_HEADINGS[4],
+            f"Selected carrier: {carrier.business_object}",
+            f"Semantic role: {carrier.semantic_role}",
+            f"Scene policy: {scene_policy} {carrier.scene_type}",
+            "Do not substitute a generic dashboard, icon collection, card wall, or unrelated decorative scene.",
+        )),
+        "\n".join((
+            SECTION_HEADINGS[5],
+            f"Spatial organization: {composition.spatial_organization}",
+            f"Reading path: {' -> '.join(composition.reading_path)}",
+            f"Primary focus: {composition.primary_focus}",
+            f"Secondary focus: {'; '.join(composition.secondary_focus) or 'none'}",
+            f"Relationship encoding: {composition.relationship_encoding}",
+            f"Text integration: {composition.text_integration_method}",
+            f"Spatial grammar: {', '.join(composition.spatial_grammar)}",
+            *(tuple(("Connectors:", _bullets(connectors))) if connectors else ()),
+        )),
+        "\n".join((SECTION_HEADINGS[6], style_contract)),
+        "\n".join((
+            SECTION_HEADINGS[7],
+            "Only the following business text may be rendered visibly. Preserve every character and the listed order:",
+            _bullets(visible_lines),
+            f"Allowed transformations: {', '.join(typography.allowed_transformations) or 'none'}.",
+            "Title and subtitle are external PowerPoint text layers and must not appear in this body image.",
+        )),
+        "\n".join((
+            SECTION_HEADINGS[8],
+            _bullets(spec.hard_constraints.global_constraints),
+            _bullets(spec.hard_constraints.page_constraints),
+        )),
+    )
+    prompt = "\n\n".join(section for section in sections if section.strip()).rstrip() + "\n"
+    if runtime is not None:
+        prompt = enforce_terminal_execution_lock(prompt, runtime)
     assert_artifact_prompt_contract(
         prompt,
         expected_visible_text=typography.visible_text,
         style_id=spec.art_direction.style_id,
     )
-    return prompt + "\n"
+    return prompt
 
 
 def assert_artifact_prompt_contract(
@@ -238,8 +207,6 @@ def assert_artifact_prompt_contract(
     expected_visible_text: tuple[str, ...] = (),
     style_id: int | None = None,
 ) -> None:
-    """Reject prompts that no longer satisfy the production artifact contract."""
-
     positions: list[int] = []
     for heading in SECTION_HEADINGS:
         if prompt.count(heading) != 1:
@@ -252,33 +219,37 @@ def assert_artifact_prompt_contract(
         content_end = positions[index + 1] if index + 1 < len(positions) else len(prompt)
         if not prompt[content_start:content_end].strip():
             raise ValueError(f"artifact prompt section has no content: {heading}")
-    if backend_identifier_leaks(
-        prompt,
-        approved_visible_text=expected_visible_text,
-    ):
+    if backend_identifier_leaks(prompt, approved_visible_text=expected_visible_text):
         raise ValueError("artifact prompt contains a backend identifier")
+    unapproved_style = [
+        token for token in internal_style_token_leaks(prompt)
+        if token.casefold() not in "\n".join(expected_visible_text).casefold()
+    ]
+    if unapproved_style:
+        raise ValueError(f"artifact prompt contains an internal style routing token: {unapproved_style[0]!r}")
     if expected_visible_text:
-        declarations = tuple(
-            re.findall(r'^- Exact visible text: "(.*)"$', prompt, flags=re.MULTILINE)
-        )
+        declarations = tuple(re.findall(r'^- Exact visible text: "(.*)"$', prompt, flags=re.MULTILINE))
         if declarations != expected_visible_text:
             raise ValueError(
                 "artifact prompt visible text declarations must exactly match the audited text contract"
             )
-    terminal_header = "【风格09最终执行锁｜最高优先级】"
+    legacy_headers = (
+        "【风格09最终执行锁｜最高优先级】",
+        "【风格10最终执行锁｜最高优先级】",
+    )
+    if any(header in prompt for header in legacy_headers):
+        raise ValueError("artifact prompt contains a numbered legacy terminal style heading")
     if style_id in (9, 10):
-        if prompt.count(terminal_header) != 1:
-            raise ValueError("Style09/10 artifact prompt requires one terminal execution lock")
-        terminal = prompt.split(terminal_header, 1)[1].strip()
+        if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
+            raise ValueError("live runtime artifact prompt requires one terminal execution lock")
+        terminal = prompt.split(TERMINAL_EXECUTION_HEADING, 1)[1].strip()
         if not terminal or not prompt.rstrip().endswith(terminal):
-            raise ValueError("Style09/10 terminal execution lock must be at the absolute end")
-    elif terminal_header in prompt:
-        raise ValueError("non-Style09/10 artifact prompt contains a Style09/10 terminal lock")
+            raise ValueError("terminal execution lock must be at the absolute end")
+    elif TERMINAL_EXECUTION_HEADING in prompt:
+        raise ValueError("non-live artifact prompt contains a live terminal execution lock")
 
 
 def _avoid_judgment_repeat(text: str, page_judgment: str) -> str:
-    """Keep the exact page judgment in its dedicated prompt section only."""
-
     if page_judgment and page_judgment in text:
         return text.replace(page_judgment, "结果节点（页面判断已锁定）")
     return text
@@ -287,17 +258,10 @@ def _avoid_judgment_repeat(text: str, page_judgment: str) -> str:
 def _semantic_groups(
     evidence: tuple[EvidenceSpec, ...],
     page_judgment: str,
+    *,
+    required_roots: tuple[tuple[str, str], ...] = (),
 ) -> tuple[SemanticGroupIR, ...]:
-    """Group evidence by its Stage 02 content root module, falling back to
-    ``EvidenceSpec.kind`` when the item carries no root (legacy pages that
-    predate the content-integrity contract).
-
-    Grouping by an already-audited structural field (rather than any
-    heuristic similarity match) keeps the collapse from ever merging two
-    evidence items that Stage 02 recorded as distinct facts. Root-module
-    grouping additionally keeps unrelated root modules from being merged
-    into a single "process" bucket just because they share a kind.
-    """
+    """Group evidence by authoritative content root; preserve empty text roots."""
 
     order: list[str] = []
     buckets: dict[str, list[str]] = {}
@@ -310,7 +274,14 @@ def _semantic_groups(
             order.append(key)
             kind_by_key[key] = kind
         buckets[key].append(_avoid_judgment_repeat(item.summary, page_judgment))
-    groups = tuple(
+    for root_id, role in required_roots:
+        if root_id not in buckets:
+            buckets[root_id] = [
+                "Preserve the locked content assigned to this semantic group as one coherent unit."
+            ]
+            order.append(root_id)
+            kind_by_key[root_id] = role or "content"
+    return tuple(
         SemanticGroupIR(
             id=key,
             role=kind_by_key[key],
@@ -319,7 +290,6 @@ def _semantic_groups(
         )
         for index, key in enumerate(order)
     )
-    return groups
 
 
 _ANTI_GENERIC_SCENE_CONSTRAINT = (
@@ -346,13 +316,6 @@ def _visual_responsibility(
     ]
     if composition.secondary_focus:
         lines.append(f"Secondary focus supports: {'; '.join(composition.secondary_focus)}")
-    # composition.relationship_encoding is deliberately not carried into the
-    # final prompt: in current Stage 02 output it embeds raw backend
-    # direction tokens (e.g. "outside_to_anchor", "left_to_right") inline
-    # with authored Chinese prose, which is exactly the class of leak this
-    # compiler exists to stop. Re-add it once Stage 02 authoring stops
-    # emitting those tokens; until then final_prompt_contract's snake_case
-    # check would (correctly) block it.
     if composition.text_integration_method:
         lines.append(composition.text_integration_method)
     if composition.spatial_grammar:
@@ -363,22 +326,11 @@ def _visual_responsibility(
     return tuple(dict.fromkeys(lines))
 
 
-def _style09_visual_responsibility(
+def _live_style_visual_responsibility(
     composition: CompositionSpec,
     carrier: VisualCarrierSpec,
 ) -> tuple[str, ...]:
-    """Style 09/10 variant of ``_visual_responsibility``.
-
-    Carries Stage 02's named anchor and relationship topology, but never
-    forwards its scene/no-scene call or auxiliary-image budget: those were
-    decided by an earlier, more conservative design stage that predates
-    Style 09's current stance that a photograph and a structural device are
-    equally legitimate, chosen by content. Forwarding "zero auxiliary
-    images" or "use the non-scene field" verbatim systematically suppressed
-    decoration across a whole deck instead of letting Style 09 judge each
-    page on its own content, so whether a photo, icon or decorative touch
-    appears is left entirely to visual-system.md's own rules.
-    """
+    """Page-specific context for live runtime styles without numbered wording."""
 
     lines: list[str] = [
         f"Visual carrier: {carrier.business_object} ({carrier.semantic_role})",
@@ -395,30 +347,32 @@ def _style09_visual_responsibility(
         if connector.label:
             lines.append(connector.label)
     lines.append(
-        "Whatever this page's content calls for — a photograph, or a pure "
-        "structural field — avoid ending up with nothing but plain colored "
-        "text panels; a small icon, a light background tint field, or a "
-        "restrained decorative touch is normal for this style, governed "
-        "entirely by the Style 09 rules above."
+        "Choose the page-specific amount of photography, structural fields and restrained "
+        "decorative detail from the runtime visual rules and this page's semantic content; "
+        "avoid a result made only of plain equal-weight text panels."
     )
     return tuple(dict.fromkeys(lines))
 
 
+def _style09_visual_responsibility(
+    composition: CompositionSpec,
+    carrier: VisualCarrierSpec,
+) -> tuple[str, ...]:
+    """Compatibility wrapper for tests/callers using the previous private name."""
+
+    return _live_style_visual_responsibility(composition, carrier)
+
+
 def _deliverable_sentence(spec: PageArtifactSpec) -> str:
     deliverable = spec.deliverable
-    return " ".join(
-        (
-            f"Create one finished {deliverable.asset_type} for a PowerPoint "
-            f"{deliverable.page_role} page.",
-            f"Canvas: {deliverable.canvas[0]}x{deliverable.canvas[1]} ({deliverable.canvas[2]}).",
-            "The asset is the body visual only; PowerPoint supplies all excluded chrome.",
-        )
-    )
+    return " ".join((
+        f"Create one finished {deliverable.asset_type} for a PowerPoint {deliverable.page_role} page.",
+        f"Canvas: {deliverable.canvas[0]}x{deliverable.canvas[1]} ({deliverable.canvas[2]}).",
+        "The asset is the body visual only; PowerPoint supplies all excluded chrome.",
+    ))
 
 
 def _bracketed_header_constraints(visible_text: tuple[str, ...]) -> tuple[str, ...]:
-    """Keep explicit ``【…】`` group headings as integrated hierarchy anchors."""
-
     headers = tuple(
         text.strip()
         for text in visible_text
@@ -434,42 +388,67 @@ def _bracketed_header_constraints(visible_text: tuple[str, ...]) -> tuple[str, .
         "Named child groups use one quieter level-2 style: aligned semibold text or a thin "
         "divider, with no decorative title plaques.",
         *(
-            (
-                f'Render "{header}" exactly once in its group container, readable and above its '
-                "group detail; do not omit it or reduce it to decorative microtext."
-            )
+            f'Render "{header}" exactly once in its group container, readable and above its group detail; do not omit it or reduce it to decorative microtext.'
             for header in headers
         ),
     )
 
 
-def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
-    """Project the audited ``PageArtifactSpec`` into the final prompt IR.
+def _required_binding_roots(spec: PageArtifactSpec) -> tuple[tuple[str, str], ...]:
+    roots: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for binding in spec.visible_text_bindings:
+        if binding.root_id in seen:
+            continue
+        seen.add(binding.root_id)
+        roots.append((binding.root_id, binding.role))
+    return tuple(roots)
 
-    Reads facts only; qualifiers such as ``direction``/``condition``/
-    ``modality``/``basis``/``confidence`` on relationships, the
-    ``EvidenceSpec.priority`` code, and ``ConnectorSpec.main_chain`` never
-    reach the IR text fields. They stay inside the audited spec, which the
-    debug receipt can still reference by hash.
-    """
+
+def _text_binding_ir(spec: PageArtifactSpec) -> tuple[TextBindingIR, ...]:
+    if not spec.visible_text_bindings:
+        return ()
+    order: list[str] = []
+    buckets: dict[str, list[object]] = {}
+    for binding in spec.visible_text_bindings:
+        if binding.root_id not in buckets:
+            buckets[binding.root_id] = []
+            order.append(binding.root_id)
+        buckets[binding.root_id].append(binding)
+    result = tuple(
+        TextBindingIR(
+            group_id=root_id,
+            role=str(buckets[root_id][0].role),
+            hierarchy_level=min(int(item.hierarchy_level) for item in buckets[root_id]),
+            exact_text=tuple(str(item.text) for item in buckets[root_id]),
+            text_ids=tuple(str(item.text_id) for item in buckets[root_id]),
+        )
+        for root_id in order
+    )
+    flattened = tuple(text for binding in result for text in binding.exact_text)
+    if flattened != spec.typography.visible_text:
+        raise PromptContractError(
+            "visible text root grouping is not contiguous in authoritative order; cannot render a deterministic binding"
+        )
+    return result
+
+
+def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
+    """Project the audited ``PageArtifactSpec`` into the final prompt IR."""
 
     try:
         page_judgment = spec.communication_goal.core_judgment.strip()
-        semantic_groups = _semantic_groups(spec.evidence, page_judgment)
+        semantic_groups = _semantic_groups(
+            spec.evidence,
+            page_judgment,
+            required_roots=_required_binding_roots(spec),
+        )
         if spec.content_root_count and len(semantic_groups) > spec.content_root_count:
             raise PromptContractError(
                 "CONTENT_STRUCTURE_CAPACITY_EXCEEDED: semantic groups "
-                f"({len(semantic_groups)}) exceed the page's {spec.content_root_count} "
-                "authoritative root modules"
+                f"({len(semantic_groups)}) exceed the page's {spec.content_root_count} authoritative root modules"
             )
-        style09_surface = int(spec.art_direction.style_id or 0) in (9, 10)
-        # Style 09/10 owns the visual surface, but still benefits from Stage 02's
-        # page-specific composition decisions (reading focus, named business
-        # anchor, scene/no-scene call, connector topology) instead of one
-        # identical sentence on every page. references/visual-system.md's own
-        # rules — rendered in full via the runtime lock below — remain the
-        # controlling authority; page-specific data here is advisory context,
-        # not a competing layout recipe.
+        live_style_surface = int(spec.art_direction.style_id or 0) in (9, 10)
         if spec.prompt_mode == "semantic_brief":
             composition = CompositionIR(
                 spatial_organization=(
@@ -487,41 +466,28 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                 ),
             )
         else:
-            spatial_organization = _prompt_safe_visual_text(
-                spec.composition.spatial_organization
-            )
+            spatial_organization = _prompt_safe_visual_text(spec.composition.spatial_organization)
             page_visual_responsibility = (
-                _style09_visual_responsibility(spec.composition, spec.visual_carrier)
-                if style09_surface
-                else _visual_responsibility(
-                    spec.composition,
-                    spec.visual_carrier,
-                    spec.visual_budget,
-                )
+                _live_style_visual_responsibility(spec.composition, spec.visual_carrier)
+                if live_style_surface
+                else _visual_responsibility(spec.composition, spec.visual_carrier, spec.visual_budget)
             )
             visual_responsibility = (
-                "Use the named business objects, actors, actions and outcomes from "
-                "the semantic sections as the page-specific visual anchor.",
+                "Use the named business objects, actors, actions and outcomes from the semantic sections as the page-specific visual anchor.",
             ) + page_visual_responsibility
             composition = CompositionIR(
                 spatial_organization=spatial_organization,
                 primary_focus=spec.composition.primary_focus,
                 visual_responsibility=visual_responsibility,
             )
-        hard_constraints = tuple(
-            dict.fromkeys(
-                (
-                    *spec.hard_constraints.global_constraints,
-                    *spec.hard_constraints.page_constraints,
-                    *(() if style09_surface else _bracketed_header_constraints(spec.typography.visible_text)),
-                )
-            )
-        )
+        hard_constraints = tuple(dict.fromkeys((
+            *spec.hard_constraints.global_constraints,
+            *spec.hard_constraints.page_constraints,
+            *(() if live_style_surface else _bracketed_header_constraints(spec.typography.visible_text)),
+        )))
         semantic_relationship = (
             spec.semantic_context.argument_chain
-            or _prompt_safe_visual_text(
-                _avoid_judgment_repeat(spec.visual_thesis.strip(), page_judgment)
-            )
+            or _prompt_safe_visual_text(_avoid_judgment_repeat(spec.visual_thesis.strip(), page_judgment))
             or "Preserve the declared business relationships without inventing sequence, causality or hierarchy."
         )
         return FinalPromptIR(
@@ -540,6 +506,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             page_mission=spec.communication_goal.page_mission,
             semantic_context=spec.semantic_context.text,
             prompt_mode=spec.prompt_mode,
+            text_bindings=_text_binding_ir(spec),
         )
     except PromptContractError as exc:
         raise PromptContractError(f"{spec.page_id}: {exc}") from exc
