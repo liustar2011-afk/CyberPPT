@@ -1,0 +1,25 @@
+name: P1-P2 workspace export
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  export-workspace:
+    if: github.event.pull_request.head.ref == 'agent/p1-p2-implementation-20260828'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Package source snapshot
+        run: zip -qr workspace.zip . -x '.git/*'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p1-p2-source-snapshot
+          path: workspace.zip
+          retention-days: 1
