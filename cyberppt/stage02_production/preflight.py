@@ -11,7 +11,7 @@ from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks, pars
 from scripts.imagegen_pipeline.page_manifest import PRODUCTION_MODES
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import write_json_atomic
-from cyberppt.stage02_handoff import HANDOFF_JSON, ensure_project_script, load_stage02_handoff
+from cyberppt.stage02_handoff import HANDOFF_JSON, ensure_project_script
 
 from .models import Stage02BuildContext, Stage02RunOptions
 
@@ -199,6 +199,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     source_mode = "autonomous_contract" if autonomous_authority is not None else "external_script" if options.external_script else "formal_project_script"
 
     from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
+    from cyberppt.stage02_handoff import load_stage02_handoff
 
     load_stage02_handoff(project, required=True)
     assert_visual_structure_ready(project, script)
