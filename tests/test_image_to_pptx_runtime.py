@@ -477,7 +477,13 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     assert 'data-cyberppt-native-text-style="editorial-source-text-v1"' in styled_svg.read_text(encoding="utf-8")
     editable_qa = Path(result["artifacts"]["editable_page_qa"])
     assert editable_qa.is_file()
-    assert result["artifacts"]["graphic_text_policy_qa"] == str(editable_qa)
+    graphic_qa = Path(result["artifacts"]["graphic_text_policy_qa"])
+    clean_qa = Path(result["artifacts"]["clean_base_policy_qa"])
+    assert graphic_qa.is_file()
+    assert clean_qa.is_file()
+    assert graphic_qa != editable_qa
+    assert clean_qa != editable_qa
+    assert graphic_qa != clean_qa
     assert result["artifacts"]["clean_base_policy_qa"] == str(editable_qa)
     assert "登记编目" in pptx_texts(Path(result["artifacts"]["exported_pptx"]))
     checkpoint = json.loads(manifest.read_text(encoding="utf-8"))["pairs"][0]["quick_page_checkpoint"]

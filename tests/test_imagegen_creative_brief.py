@@ -473,7 +473,7 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_typ
     assert "如【锁定关键文字】含正文结论句" in prompt
     assert "不得通栏放大" in prompt
     assert "标题竖线、横线等装饰" in prompt
-    terminal_lock = style_contract.split("【最终视觉执行约束｜最高优先级】", 1)[1]
+    terminal_lock = style_contract.split("【风格09最终执行锁｜最高优先级】", 1)[1]
     typography_lock = terminal_lock.strip().splitlines()[-1]
     composition_lock = "Establish a calm balanced page frame before detailing regions."
     assert style_contract.count(typography_lock) == 1
