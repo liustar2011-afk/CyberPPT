@@ -1,8 +1,4 @@
-"""Deterministic gate for the final ImageGen prompt text.
-
-Validation failure must block the prompt from being written out — this
-module never downgrades a violation to a warning.
-"""
+"""Deterministic gate for the final ImageGen prompt text."""
 
 from __future__ import annotations
 
@@ -15,7 +11,6 @@ from scripts.imagegen_pipeline.runtime_style_contract import (
 )
 
 MAX_PROMPT_CHARACTERS = 30_000
-
 _PLACEHOLDER_RE = re.compile(r"<[^>\n]{1,80}>")
 _BACKEND_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\bP[0-3]\s+\w+:"),
@@ -31,6 +26,7 @@ _BACKEND_ID_RE = re.compile(
 )
 _FORBIDDEN_CHROME_TEXT = frozenset({"标题", "副标题", "页码", "logo", "页眉", "页脚"})
 _VISIBLE_TEXT_RE = re.compile(r'^- Exact visible text: "(.*)"$', flags=re.MULTILINE)
+_GROUP_HEADING_RE = re.compile(r"^Semantic group ([A-Z]|\d+):$", flags=re.MULTILINE)
 
 
 def backend_identifier_leaks(
@@ -38,8 +34,6 @@ def backend_identifier_leaks(
     *,
     approved_visible_text: tuple[str, ...] = (),
 ) -> tuple[str, ...]:
-    """Return backend-looking tokens that are not approved business copy."""
-
     approved = {
         match.group(0).casefold()
         for text in approved_visible_text
@@ -61,14 +55,37 @@ def _unapproved_style_token_leaks(prompt: str, visible_text: tuple[str, ...]) ->
     )
 
 
+def _validate_text_bindings(prompt: str, ir: FinalPromptIR) -> None:
+    if not ir.text_bindings:
+        return
+    group_labels = tuple(_GROUP_HEADING_RE.findall(prompt))
+    if len(group_labels) != len(ir.semantic_groups):
+        raise PromptContractError(
+            "final prompt must render exactly one public semantic-group label per IR group"
+        )
+    if len(group_labels) != len(set(group_labels)):
+        raise PromptContractError("final prompt semantic-group labels must be unique")
+    for binding in ir.text_bindings:
+        for text in binding.exact_text:
+            rendered = f'  - "{text}"'
+            if prompt.count(rendered) != 1:
+                raise PromptContractError(
+                    "final prompt must render every bound exact-text item once inside its semantic group"
+                )
+    for binding in ir.text_bindings:
+        if binding.group_id in prompt:
+            raise PromptContractError("final prompt leaked a backend content-root id")
+        for text_id in binding.text_ids:
+            if text_id and text_id in prompt:
+                raise PromptContractError("final prompt leaked a backend text id")
+
+
 def validate_final_prompt(
     prompt: str,
     ir: FinalPromptIR,
     *,
     style_id: int | None = None,
 ) -> None:
-    """Reject a rendered prompt that violates the final prompt contract."""
-
     from scripts.imagegen_pipeline.final_prompt_renderer import SECTION_HEADINGS
 
     positions: list[int] = []
@@ -89,16 +106,13 @@ def validate_final_prompt(
         raise PromptContractError(
             f"final prompt exceeds the {MAX_PROMPT_CHARACTERS}-character budget: {len(prompt)}"
         )
-
     placeholder = _PLACEHOLDER_RE.search(prompt)
     if placeholder:
         raise PromptContractError(
             f"final prompt contains an unresolved placeholder: {placeholder.group(0)}"
         )
-
     if backend_identifier_leaks(prompt, approved_visible_text=ir.visible_text):
         raise PromptContractError("final prompt contains a backend identifier")
-
     for pattern in _BACKEND_LEAK_PATTERNS:
         for match in pattern.finditer(prompt):
             if match.group(0) in _ALLOWED_SNAKE_CASE_TOKENS:
@@ -106,7 +120,6 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt contains an internal/backend field: {match.group(0)!r}"
             )
-
     style_leaks = _unapproved_style_token_leaks(prompt, ir.visible_text)
     if style_leaks:
         raise PromptContractError(
@@ -118,17 +131,15 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt visible text contains excluded chrome content: {text!r}"
             )
-
     declared = tuple(_VISIBLE_TEXT_RE.findall(prompt))
     if declared != ir.visible_text:
         raise PromptContractError(
             "final prompt visible text declarations must exactly match the IR text contract"
         )
+    _validate_text_bindings(prompt, ir)
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)
-    reading_boundary_declarations = re.findall(
-        r"^Reading boundary: .*$", prompt, flags=re.MULTILINE
-    )
+    reading_boundary_declarations = re.findall(r"^Reading boundary: .*$", prompt, flags=re.MULTILINE)
     if ir.prompt_mode == "semantic_brief":
         if reading_path_declarations or len(reading_boundary_declarations) != 1:
             raise PromptContractError(
@@ -148,7 +159,6 @@ def validate_final_prompt(
     judgment_line = f"Core judgment (non-visible): {ir.page_judgment}"
     if sum(line == judgment_line for line in prompt.splitlines()) != 1:
         raise PromptContractError("final prompt must state one authoritative page judgment")
-
     if style_id not in (9, 10) and prompt.count(ir.runtime_lock.style_contract) != 1:
         raise PromptContractError("final prompt must state the runtime style contract exactly once")
 
@@ -158,7 +168,6 @@ def validate_final_prompt(
     )
     if any(header in prompt for header in legacy_terminal_headers):
         raise PromptContractError("final prompt contains a numbered legacy terminal style heading")
-
     if style_id in (9, 10):
         if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
             raise PromptContractError("live runtime style prompt requires one terminal execution lock")
