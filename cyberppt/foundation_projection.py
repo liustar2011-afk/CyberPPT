@@ -259,6 +259,18 @@ def project_source_truth_to_foundation(source_truth: dict[str, Any]) -> dict[str
         "source_consumption_contract_version": 2,
         "sources": _project_sources(source_truth),
         "source_structure": _project_source_structure(source_truth),
+        "document_semantics": deepcopy(source_truth.get("document_semantics") or {}),
+        "document_thesis": deepcopy(source_truth.get("document_thesis") or {}),
+        "argument_nodes": [
+            deepcopy(item)
+            for item in source_truth.get("semantic_argument_nodes") or []
+            if isinstance(item, dict)
+        ],
+        "argument_relations": [
+            deepcopy(item)
+            for item in source_truth.get("semantic_argument_relations") or []
+            if isinstance(item, dict)
+        ],
         "facts": facts,
         "concepts": _project_concepts(source_truth),
         "entities": entities,

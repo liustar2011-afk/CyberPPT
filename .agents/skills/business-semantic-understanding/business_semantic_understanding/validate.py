@@ -33,6 +33,11 @@ ARGUMENT_ROLES = {
     "input", "output", "deliverable", "benefit", "evidence", "constraint", "risk",
     "condition", "implementation", "conclusion", "recommendation", "other",
 }
+ARGUMENT_WEIGHTS = {"core", "supporting", "detail", "constraint"}
+ARGUMENT_RELATION_TYPES = {
+    "supports", "establishes", "motivates", "defines", "implements",
+    "constrains", "concludes", "precedes", "maps_to",
+}
 DIAGNOSTIC_TYPES = {
     "duplicate_argument", "overlap_or_non_mece", "logic_gap", "missing_bridge", "mixed_level",
     "scope_shift", "unsupported_jump", "contradictory_claims", "unbalanced_parallelism",
@@ -435,6 +440,24 @@ def _validate_chain_nodes(
             seen_orders.add(order)
         if node.get("role") not in ARGUMENT_ROLES:
             _error(errors, "invalid_argument_role", "Argument node uses an unsupported role.", node_id=node_id, scope=scope, value=node.get("role"))
+        if node.get("argument_weight") not in ARGUMENT_WEIGHTS:
+            _error(
+                errors,
+                "invalid_argument_weight",
+                "Every argument node must explicitly declare core, supporting, detail, or constraint weight.",
+                node_id=node_id,
+                scope=scope,
+                value=node.get("argument_weight"),
+            )
+        statement = str(node.get("statement") or "").strip()
+        if not statement:
+            _error(
+                errors,
+                "argument_statement_missing",
+                "Argument nodes must state the proposition carried by the node.",
+                node_id=node_id,
+                scope=scope,
+            )
         refs = node.get("normalized_fact_ids")
         if not isinstance(refs, list) or not refs:
             _error(errors, "argument_without_evidence", "Argument nodes must reference normalized facts.", node_id=node_id, scope=scope)
@@ -452,9 +475,142 @@ def _validate_chain_nodes(
     return len(nodes)
 
 
+def _validate_document_argument(
+    payload: dict[str, Any],
+    normalized_ids: set[str],
+    section_ids: set[str],
+    errors: list[dict[str, Any]],
+) -> tuple[set[str], set[str]]:
+    thesis = payload.get("document_thesis")
+    if not isinstance(thesis, dict):
+        _error(errors, "document_thesis_missing", "argument-chain.json must declare the whole-document thesis before section chains.")
+        thesis = {}
+    thesis_statement = str(thesis.get("statement") or "").strip()
+    if not thesis_statement:
+        _error(errors, "document_thesis_statement_missing", "The whole-document thesis must be a non-empty proposition.")
+    thesis_refs = thesis.get("normalized_fact_ids")
+    if not isinstance(thesis_refs, list) or not thesis_refs:
+        _error(errors, "document_thesis_evidence_missing", "The whole-document thesis must cite normalized facts.")
+        thesis_refs = []
+    for ref in thesis_refs:
+        if ref not in normalized_ids:
+            _error(errors, "unknown_normalized_fact", f"Document thesis references unknown normalized fact: {ref}.", normalized_fact_id=ref)
+    thesis_sections = thesis.get("section_ids")
+    if not isinstance(thesis_sections, list) or not thesis_sections:
+        _error(errors, "document_thesis_section_missing", "The whole-document thesis must cite the source sections that establish it.")
+        thesis_sections = []
+    for section_id in thesis_sections:
+        if section_id not in section_ids:
+            _error(errors, "unknown_section", f"Document thesis references unknown section: {section_id}.", section_id=section_id)
+    if thesis.get("basis") not in {"source", "inferred"}:
+        _error(errors, "document_thesis_basis_invalid", "Document thesis basis must be source or inferred.", value=thesis.get("basis"))
+    if thesis.get("basis") == "inferred" and not str(thesis.get("inference_rationale") or "").strip():
+        _error(errors, "document_thesis_inference_rationale_missing", "An inferred whole-document thesis must explain how its source facts support it.")
+
+    semantics = payload.get("document_semantics")
+    if not isinstance(semantics, dict):
+        _error(errors, "document_semantics_missing", "argument-chain.json must preserve whole-document semantics.")
+        semantics = {}
+    for field in (
+        "document_role", "subject_of_report", "primary_thesis", "author_purpose",
+        "decision_boundary", "scope", "decision_intent",
+    ):
+        if not str(semantics.get(field) or "").strip():
+            _error(errors, "document_semantics_incomplete", f"document_semantics.{field} is required.", field=field)
+    if thesis_statement and str(semantics.get("primary_thesis") or "").strip() != thesis_statement:
+        _error(errors, "document_semantics_thesis_drifted", "document_semantics.primary_thesis must exactly copy document_thesis.statement.")
+    for field in ("argument_method", "supporting_basis", "business_objects"):
+        values = semantics.get(field)
+        if not isinstance(values, list) or not values or any(not str(value).strip() for value in values):
+            _error(errors, "document_semantics_incomplete", f"document_semantics.{field} must be a non-empty array.", field=field)
+
+    reconstructed = [item for item in payload.get("reconstructed_chain") or [] if isinstance(item, dict)]
+    reconstructed_ids = {str(item.get("node_id") or "") for item in reconstructed if str(item.get("node_id") or "")}
+    method = [str(value) for value in semantics.get("argument_method") or [] if str(value)]
+    if method and (set(method) != reconstructed_ids or len(method) != len(reconstructed_ids)):
+        _error(
+            errors,
+            "argument_method_node_mismatch",
+            "document_semantics.argument_method must list every reconstructed-chain node exactly once in reading order.",
+            expected=sorted(reconstructed_ids),
+            actual=method,
+        )
+    support_basis = {str(value) for value in semantics.get("supporting_basis") or [] if str(value)}
+    unknown_basis = sorted(support_basis - normalized_ids)
+    if unknown_basis:
+        _error(errors, "supporting_basis_unknown", "document_semantics.supporting_basis references unknown normalized facts.", normalized_fact_ids=unknown_basis)
+    return reconstructed_ids, {
+        str(item.get("node_id"))
+        for item in reconstructed
+        if item.get("argument_weight") == "core" and str(item.get("node_id") or "")
+    }
+
+
+def _validate_argument_relations(
+    payload: dict[str, Any],
+    reconstructed_ids: set[str],
+    core_ids: set[str],
+    normalized_ids: set[str],
+    errors: list[dict[str, Any]],
+) -> int:
+    relations = payload.get("argument_relations")
+    if not isinstance(relations, list):
+        _error(errors, "invalid_shape", "argument-chain.json argument_relations must be an array.")
+        return 0
+    _duplicate_ids(relations, "relation_id", "argument_relations", errors)
+    allowed_nodes = reconstructed_ids | {"document_thesis"}
+    outgoing: dict[str, set[str]] = {}
+    for relation in relations:
+        relation_id = relation.get("relation_id", "<missing>")
+        source = str(relation.get("from_node_id") or "")
+        target = str(relation.get("to_node_id") or "")
+        if source not in reconstructed_ids or target not in allowed_nodes or source == target:
+            _error(errors, "argument_relation_endpoint_invalid", "Argument relations must connect reconstructed nodes toward another node or document_thesis.", relation_id=relation_id, from_node_id=source, to_node_id=target)
+        else:
+            outgoing.setdefault(source, set()).add(target)
+        if relation.get("relation_type") not in ARGUMENT_RELATION_TYPES:
+            _error(errors, "argument_relation_type_invalid", "Argument relation uses an unsupported logical relation.", relation_id=relation_id, value=relation.get("relation_type"))
+        if relation.get("basis") not in {"source", "inferred"}:
+            _error(errors, "argument_relation_basis_invalid", "Argument relation basis must be source or inferred.", relation_id=relation_id, value=relation.get("basis"))
+        if relation.get("basis") == "inferred" and not str(relation.get("inference_rationale") or "").strip():
+            _error(errors, "argument_relation_inference_rationale_missing", "An inferred argument relation must include its rationale.", relation_id=relation_id)
+        refs = relation.get("normalized_fact_ids")
+        if not isinstance(refs, list) or not refs:
+            _error(errors, "argument_relation_evidence_missing", "Every argument relation must cite normalized facts.", relation_id=relation_id)
+            refs = []
+        for ref in refs:
+            if ref not in normalized_ids:
+                _error(errors, "unknown_normalized_fact", f"Argument relation references unknown normalized fact: {ref}.", relation_id=relation_id, normalized_fact_id=ref)
+
+    def reaches_thesis(node_id: str) -> bool:
+        seen: set[str] = set()
+        pending = [node_id]
+        while pending:
+            current = pending.pop()
+            if current == "document_thesis":
+                return True
+            if current in seen:
+                continue
+            seen.add(current)
+            pending.extend(outgoing.get(current, ()))
+        return False
+
+    disconnected = sorted(node_id for node_id in core_ids if not reaches_thesis(node_id))
+    if disconnected:
+        _error(
+            errors,
+            "core_argument_not_connected_to_thesis",
+            "Every core reconstructed argument must have a declared logical path to document_thesis.",
+            node_ids=disconnected,
+        )
+    return len(relations)
+
+
 def _validate_argument(payload: dict[str, Any], normalized_ids: set[str], section_ids: set[str], errors: list[dict[str, Any]], warnings: list[dict[str, Any]]) -> tuple[int, int, int]:
     source_count = _validate_chain_nodes(payload.get("source_chain"), "source_chain", normalized_ids, section_ids, errors)
     reconstructed_count = _validate_chain_nodes(payload.get("reconstructed_chain"), "reconstructed_chain", normalized_ids, section_ids, errors)
+    reconstructed_ids, core_ids = _validate_document_argument(payload, normalized_ids, section_ids, errors)
+    _validate_argument_relations(payload, reconstructed_ids, core_ids, normalized_ids, errors)
     diagnostics = payload.get("diagnostics")
     if not isinstance(diagnostics, list):
         _error(errors, "invalid_shape", "argument-chain.json diagnostics must be an array.")

@@ -159,6 +159,124 @@ def _narrative_contract_diagnostics(
             )
     return issues, warnings
 
+
+def _source_argument_binding_issues(
+    plan: dict[str, Any], foundation: dict[str, Any]
+) -> list[str]:
+    """Keep PLAN attached to the source's document-level argument map.
+
+    Historical foundations have no semantic graph and remain compatible.  A
+    projected semantic foundation, however, must not be reduced back to a bag
+    of facts when pages are planned.
+    """
+
+    thesis = foundation.get("document_thesis") or {}
+    nodes = [item for item in foundation.get("argument_nodes") or [] if isinstance(item, dict)]
+    semantics = foundation.get("document_semantics") or {}
+    if not isinstance(thesis, dict) or not nodes or not isinstance(semantics, dict):
+        return []
+
+    issues: list[str] = []
+    thesis_statement = _narrative_text(thesis.get("statement"))
+    if _narrative_text(plan.get("source_thesis")) != thesis_statement:
+        issues.append(
+            "SOURCE_ARGUMENT_THESIS_DRIFT: plan.source_thesis must exactly copy foundation.document_thesis.statement"
+        )
+
+    node_index = {
+        _narrative_text(node.get("id")): node
+        for node in nodes
+        if _narrative_text(node.get("id"))
+    }
+    expected_method = [
+        _narrative_text(node_id)
+        for node_id in semantics.get("argument_method") or []
+        if _narrative_text(node_id)
+    ]
+    actual_method = [
+        _narrative_text(node_id)
+        for node_id in plan.get("source_argument_method") or []
+        if _narrative_text(node_id)
+    ]
+    if actual_method != expected_method:
+        issues.append(
+            "SOURCE_ARGUMENT_METHOD_DRIFT: plan.source_argument_method must preserve foundation.document_semantics.argument_method order"
+        )
+
+    consumed: list[str] = []
+    page_nodes_by_chapter: dict[str, set[str]] = {}
+    for index, page in enumerate(plan.get("pages") or []):
+        if not isinstance(page, dict):
+            continue
+        page_id = _narrative_text(page.get("id")) or f"#{index}"
+        structural_role = _narrative_text(page.get("page_role")) or _narrative_text(page.get("page_type"))
+        if structural_role in _STRUCTURAL_PAGE_ROLES:
+            continue
+        selected = [
+            _narrative_text(node_id)
+            for node_id in page.get("source_argument_node_ids") or []
+            if _narrative_text(node_id)
+        ]
+        if not selected:
+            issues.append(
+                f"pages.{index} ({page_id}): SOURCE_ARGUMENT_BINDING_MISSING: content page must identify its source argument responsibility"
+            )
+            continue
+        unknown = [node_id for node_id in selected if node_id not in node_index]
+        if unknown:
+            issues.append(
+                f"pages.{index} ({page_id}): SOURCE_ARGUMENT_NODE_UNKNOWN: {unknown}"
+            )
+        consumed.extend(node_id for node_id in selected if node_id in node_index)
+        chapter_id = _narrative_text(page.get("chapter_id"))
+        page_nodes_by_chapter.setdefault(chapter_id, set()).update(selected)
+        page_refs = set(_page_evidence_ids(page))
+        for node_id in selected:
+            node = node_index.get(node_id)
+            if node is None:
+                continue
+            node_refs = {
+                _narrative_text(ref)
+                for ref in node.get("source_refs") or []
+                if _narrative_text(ref)
+            }
+            if node_refs and page_refs.isdisjoint(node_refs):
+                issues.append(
+                    f"pages.{index} ({page_id}): SOURCE_ARGUMENT_EVIDENCE_DISCONNECTED: {node_id} has no evidence overlap with the page"
+                )
+
+    for index, chapter in enumerate(plan.get("chapters") or []):
+        if not isinstance(chapter, dict):
+            continue
+        chapter_id = _narrative_text(chapter.get("id")) or f"#{index}"
+        selected = {
+            _narrative_text(node_id)
+            for node_id in chapter.get("source_argument_node_ids") or []
+            if _narrative_text(node_id)
+        }
+        if not selected:
+            issues.append(
+                f"chapters.{index} ({chapter_id}): SOURCE_ARGUMENT_BINDING_MISSING: chapter must state its source argument responsibility"
+            )
+            continue
+        unknown = sorted(selected - set(node_index))
+        if unknown:
+            issues.append(
+                f"chapters.{index} ({chapter_id}): SOURCE_ARGUMENT_NODE_UNKNOWN: {unknown}"
+            )
+        unowned = sorted(page_nodes_by_chapter.get(chapter_id, set()) - selected)
+        if unowned:
+            issues.append(
+                f"chapters.{index} ({chapter_id}): SOURCE_ARGUMENT_CHAPTER_PAGE_MISMATCH: page bindings {unowned} are absent from the chapter binding"
+            )
+
+    missing_method_nodes = [node_id for node_id in expected_method if node_id not in consumed]
+    if missing_method_nodes:
+        issues.append(
+            f"SOURCE_ARGUMENT_METHOD_UNCONSUMED: no content page carries {missing_method_nodes}"
+        )
+    return issues
+
 def _adjacent_plan_duplication_warnings(plan: dict[str, Any]) -> list[str]:
     """Flag only high-confidence near duplication; shared terminology is valid."""
 
@@ -308,6 +426,7 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
     narrative_issues, narrative_warnings = _narrative_contract_diagnostics(plan)
     issues.extend(narrative_issues)
     warnings.extend(narrative_warnings)
+    issues.extend(_source_argument_binding_issues(plan, foundation))
     items = foundation_items_by_id(foundation)
     structure = [x for x in (foundation.get("source_structure") or []) if isinstance(x, dict)]
     source_chapters = [
@@ -398,4 +517,4 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
 
     return issues, warnings
 
-__all__ = ['_adjacent_plan_duplication_warnings', '_narrative_contract_diagnostics', '_scope_chapters', '_audit_content_coverage_definition', '_audit_onscreen_contract_definition', '_primary_relation_issues', 'audit_deck_plan']
+__all__ = ['_adjacent_plan_duplication_warnings', '_narrative_contract_diagnostics', '_source_argument_binding_issues', '_scope_chapters', '_audit_content_coverage_definition', '_audit_onscreen_contract_definition', '_primary_relation_issues', 'audit_deck_plan']

@@ -15,6 +15,7 @@ from cyberppt.source_argument_model import (
     load_model,
     render_review_markdown,
     validate_model,
+    validate_projection_model,
 )
 from cyberppt.source_document_map import (
     SOURCE_HEADING_TREE,
@@ -480,28 +481,53 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
     if argument_model is None:
         argument_model = extract_model(text)
     required_model = bool(prepared.get("semantic_argument_model_required"))
+    projection_interpretation = bool(
+        isinstance(argument_model, dict)
+        and argument_model.get("interpretation_contract_mode") == "projection"
+        and argument_model.get("authority_mode") == "projection_only"
+    )
+    if projection_interpretation:
+        # The rendered Markdown remains a human review view for projections,
+        # while the narrow machine contract is the authoritative gate.  Do
+        # not impose strict-authoring prose depth on mechanically projected
+        # Source Foundation content.
+        issues = [
+            item
+            for item in issues
+            if item.get("code")
+            not in {"SEMANTIC_SECTION_MISSING", "SEMANTIC_SECTION_SHALLOW"}
+        ]
     strict_interpretation = bool(
         isinstance(argument_model, dict)
         and argument_model.get("interpretation_contract_mode") == "strict"
     )
-    argument_model_issues = validate_model(
-        argument_model,
-        required_headings=prepared.get("source_headings") or [],
-        required_heading_records=prepared.get("source_heading_tree") or [],
-        source_unit_ids=set(prepared.get("source_unit_ids") or []),
-        required_content_unit_ids=set(
-            prepared.get("source_content_unit_ids") or []
-        ),
-        require_document_context=required_model,
-    )
+    if projection_interpretation:
+        argument_model_issues = validate_projection_model(
+            argument_model,
+            source_unit_ids=set(prepared.get("source_unit_ids") or []),
+        )
+    else:
+        argument_model_issues = validate_model(
+            argument_model,
+            required_headings=prepared.get("source_headings") or [],
+            required_heading_records=prepared.get("source_heading_tree") or [],
+            source_unit_ids=set(prepared.get("source_unit_ids") or []),
+            required_content_unit_ids=set(
+                prepared.get("source_content_unit_ids") or []
+            ),
+            require_document_context=required_model,
+        )
     if argument_model is None and not required_model:
         # Legacy text-only callers may still use the prose-only semantic
         # contract.  Do not pretend that it supplies a consumable argument
         # model; downstream strict workflows will require the structured form.
         argument_model_issues = []
     if (
+        not projection_interpretation
+        and (
         not isinstance(argument_model, dict)
         or argument_model.get("interpretation_contract_mode") != "strict"
+        )
     ):
         argument_model_issues.append(
             {
@@ -516,7 +542,7 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
             "section": "源材料论点模型（机器可读）",
             **({"node_id": item["node_id"]} if item.get("node_id") else {}),
         })
-    if required_model and isinstance(argument_model, dict):
+    if required_model and strict_interpretation and isinstance(argument_model, dict):
         context = argument_model.get("document_semantics")
         if isinstance(context, dict):
             if not str(context.get("author_purpose") or "").strip():
@@ -563,7 +589,11 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
             "section": "全文业务主语",
         })
     decision = resolved.get("decision", "")
-    if decision and not any(action in decision for action in DECISION_ACTIONS):
+    if (
+        decision
+        and not projection_interpretation
+        and not any(action in decision for action in DECISION_ACTIONS)
+    ):
         issues.append({
             "code": "DECISION_ACTION_MISSING",
             "message": "材料意图没有明确受众需要理解、审议、确认、协调、启动、部署、评估或验收什么。",

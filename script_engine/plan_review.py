@@ -246,6 +246,8 @@ def render_plan_review(
             if plan.get("evidence_fit_review_mode") == "strict"
             else "缺失，阻断 AUTHOR"
         ),
+        f"- 来源总论点：{_text(plan.get('source_thesis'))}",
+        "- 来源论证顺序：" + " → ".join(_ids(plan.get("source_argument_method"))),
         f"- 全稿主旨：{_text(plan.get('thesis'))}",
         f"- 叙事弧：{_text(plan.get('narrative_arc'))}",
         f"- 受众起点：{_text(plan.get('audience_start'))}",
@@ -267,10 +269,11 @@ def render_plan_review(
                     f"- 章节问题：{_text(chapter.get('question'))}",
                     f"- 章节结论：{_text(chapter.get('message'))}",
                     f"- 章节承接：{_text(chapter.get('relationship_to_previous'))}",
+                    "- 承担源论点：" + "、".join(_ids(chapter.get("source_argument_node_ids"))),
                     "",
                 ] if chapter is not None else []),
-                "| 页面 | 标题 | 核心判断 | 页面职责 | 证据状态 | 承接 |",
-                "|---|---|---|---|---|---|",
+                "| 页面 | 标题 | 核心判断 | 承担源论点 | 页面职责 | 证据状态 | 承接 |",
+                "|---|---|---|---|---|---|---|",
             ]
         )
         for page in chapter_pages:
@@ -280,10 +283,11 @@ def render_plan_review(
             if page.get("next"):
                 bridge_parts.append(f"去向：{_text(page.get('next'))}")
             lines.append(
-                "| {id} | {title} | {message} | {role} | {evidence} | {bridge} |".format(
+                "| {id} | {title} | {message} | {argument_nodes} | {role} | {evidence} | {bridge} |".format(
                     id=_cell(page.get("id")),
                     title=_cell(page.get("title")),
                     message=_cell(page.get("message")),
+                    argument_nodes=_cell("、".join(_ids(page.get("source_argument_node_ids"))) or "—"),
                     role=_cell(_label(page.get("page_role"), _PAGE_ROLE_LABELS, page.get("logic"))),
                     evidence=_cell(evidence_status(page, foundation)),
                     bridge=_cell("；".join(bridge_parts)),
@@ -298,6 +302,7 @@ def render_plan_review(
                     "",
                     f"- 页面问题：{_text(page.get('question'))}",
                     f"- 主逻辑：{_text(page.get('logic'))}",
+                    f"- 承担源论点：{'、'.join(_ids(page.get('source_argument_node_ids'))) or '—'}",
                     f"- 来源范围：{'、'.join(_ids(page.get('source_scope'))) or '—'}",
                     f"- 结构操作：{_label(page.get('structural_operation'), _STRUCTURAL_OPERATION_LABELS)}",
                     f"- 后续保留：{'；'.join(_ids(page.get('reserved_for_later'))) or '—'}",

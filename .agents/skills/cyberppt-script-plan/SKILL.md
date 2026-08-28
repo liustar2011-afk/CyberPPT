@@ -31,6 +31,21 @@ Use `user_authorized_restructure` only after an explicit user request to reorder
 
 Audience, communication goal, audience_start/end and thesis may guide explanation depth and emphasis inside pages; they do not override source chapter order in preserve mode.
 
+Before allocating any page, read the document identity and argument map carried
+by Foundation: `document_semantics`, `document_thesis`, `argument_nodes`, and
+`argument_relations`. Treat the title, subtitle, authoring body, document type,
+and table of contents as the structural map that explains what the whole source
+is doing. Body facts then prove, qualify, or constrain that map. Do not plan from
+an unordered inventory of facts.
+
+For semantic foundations, copy the exact thesis statement to `source_thesis`
+and the ordered node IDs in `document_semantics.argument_method` to
+`source_argument_method`. Every chapter and content page must declare
+`source_argument_node_ids`. The binding states which source proposition the
+chapter/page is responsible for proving; its evidence refs must intersect that
+node's evidence. A plan that omits, reorders, or disconnects these bindings
+must stop at PLAN audit.
+
 ## Pass 2 — Source section to page projection
 
 For each source chapter, decide how source sections become PPT pages.
@@ -78,6 +93,12 @@ recognition in `next`. Chapter membership is derived from page `chapter_id`;
 do not persist a second `chapter.page_ids` list. Structural pages may omit the
 content-page handoff contract. Historical plans remain readable and receive
 diagnostics from `audit-plan` until they are regenerated.
+
+The plan's `thesis` may phrase the communication outcome for the audience;
+`source_thesis` remains the exact source-level proposition. Each page
+`message` is the approved page proposition derived within its bound source
+argument node. AUTHOR must preserve that proposition verbatim as
+`core_message`.
 
 Required fields remain:
 

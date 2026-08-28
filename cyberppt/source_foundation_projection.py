@@ -521,8 +521,76 @@ def _node(
         "argument_weight": weight,
         "status": "mixed",
         "evidence_refs": evidence_refs,
-        "claim_origin": "source_implied",
+        "claim_origin": (
+            "source_explicit" if _text(item.get("basis")) == "source" else "source_implied"
+        ),
         "projection_only": True,
+        "source_section_ids": _strings(item.get("section_ids")),
+    }
+
+
+def _document_map(
+    structure: dict[str, Any], fact_by_id: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    """Preserve document identity and TOC before semantic argument details."""
+
+    def fact_text(fact_id: str) -> str:
+        return _text((fact_by_id.get(fact_id) or {}).get("statement"))
+
+    def metadata_value(fact_id: str, *prefixes: str) -> str:
+        value = fact_text(fact_id)
+        for prefix in prefixes:
+            if value.startswith(prefix):
+                value = value[len(prefix):].strip()
+        return value.lstrip("—–- ")
+
+    def clean_title(value: object) -> str:
+        return re.sub(r"^\*\*|\*\*$", "", _text(value)).strip()
+
+    def walk(
+        entries: list[dict[str, Any]], parent_id: str = ""
+    ) -> list[dict[str, Any]]:
+        result: list[dict[str, Any]] = []
+        for order, entry in enumerate(entries, start=1):
+            if not isinstance(entry, dict):
+                continue
+            section_id = _text(entry.get("section_id"))
+            item = {
+                "section_id": section_id,
+                "title": clean_title(entry.get("title")),
+                "level": int(entry.get("level") or 0),
+                "order": order,
+                "parent_section_id": parent_id,
+            }
+            result.append(item)
+            result.extend(walk(_items(entry.get("children")), section_id))
+        return result
+
+    toc = walk(_items(structure.get("outline")))
+    if not toc:
+        seen_sections: set[str] = set()
+        for order, block in enumerate(_items(structure.get("blocks")), start=1):
+            section_id = _text(block.get("section_id"))
+            heading_path = _strings(block.get("heading_path"))
+            if not section_id or section_id in seen_sections or not heading_path:
+                continue
+            seen_sections.add(section_id)
+            toc.append({
+                "section_id": section_id,
+                "title": clean_title(heading_path[0]),
+                "level": 1,
+                "order": order,
+                "parent_section_id": "",
+            })
+    source_file = _text((structure.get("source") or {}).get("source_file"))
+    return {
+        "title": fact_text("nf-0001") or Path(source_file).stem,
+        "document_type": metadata_value("nf-0002"),
+        "subtitle": metadata_value("nf-0003"),
+        "authoring_body": metadata_value("nf-0004", "编制单位：", "编制单位:"),
+        "research_field": metadata_value("nf-0005", "研究领域：", "研究领域:"),
+        "date": metadata_value("nf-0006", "编制日期：", "编制日期:"),
+        "table_of_contents": toc,
     }
 
 
@@ -592,7 +660,7 @@ def build_projection_model(
                 node_id=node_id,
                 source_heading=section_title.get(first_section, first_section),
                 evidence_refs=evidence_refs,
-                weight="core" if index == 1 else "supporting",
+                weight=_text(item.get("argument_weight")),
                 statement=_node_statement(item, fact_by_id),
             )
         )
@@ -620,7 +688,7 @@ def build_projection_model(
             node_id=node_id,
             source_heading=section_title.get(first_section, first_section),
             evidence_refs=evidence_refs,
-            weight="supporting",
+            weight=_text(item.get("argument_weight")),
             statement=_node_statement(item, fact_by_id),
         )
         node["parent_id"] = next(
@@ -661,11 +729,25 @@ def build_projection_model(
     if not section_nodes:
         raise ValueError("argument-chain.json has no reconstructed nodes to project")
 
+    thesis_contract = argument.get("document_thesis")
+    if not isinstance(thesis_contract, dict):
+        raise ValueError("argument-chain.json must declare document_thesis before projection")
+    document_semantics = argument.get("document_semantics")
+    if not isinstance(document_semantics, dict):
+        raise ValueError("argument-chain.json must declare document_semantics before projection")
     core_fact_ids = {
-        next((fact_id for fact_id in _strings(item.get("normalized_fact_ids")) if fact_id in fact_by_id), "")
+        fact_id
         for item in reconstructed
+        if _text(item.get("argument_weight")) == "core"
+        for fact_id in _strings(item.get("normalized_fact_ids"))
+        if fact_id in fact_by_id
     }
-    core_fact_ids.discard("")
+    thesis_fact_ids = {
+        fact_id
+        for fact_id in _strings(thesis_contract.get("normalized_fact_ids"))
+        if fact_id in fact_by_id
+    }
+    core_fact_ids.update(thesis_fact_ids)
     assignments: list[dict[str, Any]] = []
     for fact_id, fact in fact_by_id.items():
         fact_type = _text(fact.get("fact_type")) or "other"
@@ -729,45 +811,71 @@ def build_projection_model(
             }
         )
 
-    # The first reconstructed-chain node is the one node already treated as
-    # "core" above (`weight="core" if index == 1`); use its statement (or its
-    # cited fact's, via the same fallback as `_node_statement`) as the
-    # document's primary thesis. Joining every node's statement instead would
-    # produce an unusably long "thesis" once a document's argument chain is
-    # authored at fine (multi-node-per-section) granularity.
-    thesis = next(
-        (candidate for item in reconstructed[:1] if (candidate := _node_statement(item, fact_by_id))),
-        "",
+    thesis = _text(thesis_contract.get("statement"))
+    if not thesis:
+        raise ValueError("argument-chain.json document_thesis.statement cannot be empty")
+    thesis_refs = list(
+        dict.fromkeys(
+            ref
+            for fact_id in _strings(thesis_contract.get("normalized_fact_ids"))
+            if fact_id in refs_by_fact
+            for ref in refs_by_fact[fact_id]
+        )
     )
-    thesis_refs = list(dict.fromkeys(ref for fact_id in core_fact_ids for ref in refs_by_fact[fact_id]))
     source = structure.get("source") if isinstance(structure.get("source"), dict) else {}
     source_file = _text(source.get("source_file")) or _text(structure.get("input_markdown"))
     subject = Path(source_file).stem if source_file else project.name
-    business_objects = [
-        _text(item.get("canonical_name"))
-        for item in _items(concepts.get("concepts"))
-        if _text(item.get("canonical_name"))
-    ]
+    business_objects = _strings(document_semantics.get("business_objects"))
+    if not business_objects:
+        business_objects = [
+            _text(item.get("canonical_name"))
+            for item in _items(concepts.get("concepts"))
+            if _text(item.get("canonical_name"))
+        ]
+    projected_argument_relations: list[dict[str, Any]] = []
+    for item in _items(argument.get("argument_relations")):
+        fact_ids = [
+            fact_id
+            for fact_id in _strings(item.get("normalized_fact_ids"))
+            if fact_id in refs_by_fact
+        ]
+        projected_argument_relations.append(
+            {
+                "id": _text(item.get("relation_id")),
+                "from": _text(item.get("from_node_id")),
+                "to": _text(item.get("to_node_id")),
+                "relation": _text(item.get("relation_type")),
+                "weight_effect": "none",
+                "basis": "explicit" if _text(item.get("basis")) == "source" else "inferred",
+                "evidence_refs": list(
+                    dict.fromkeys(
+                        ref for fact_id in fact_ids for ref in refs_by_fact[fact_id]
+                    )
+                ),
+                "inference_rationale": _text(item.get("inference_rationale")),
+                "explanation": _text(item.get("explanation")),
+                "projection_only": True,
+            }
+        )
     model = {
         "schema": ARGUMENT_MODEL_SCHEMA,
         "version": 1,
         "interpretation_contract_mode": "projection",
         "authority_mode": "projection_only",
+        "document_map": _document_map(structure, fact_by_id),
         "document_semantics": {
-            "document_role": "合作交流材料" if "合作交流" in subject else "正式材料",
-            "subject_of_report": subject,
+            "document_role": _text(document_semantics.get("document_role")),
+            "subject_of_report": _text(document_semantics.get("subject_of_report")) or subject,
             "primary_thesis": thesis,
-            "decision_boundary": "内容范围、事实强度、主体责任、条件和状态均继承已验证 Source Foundation 产物。",
-            "author_purpose": "",
-            "argument_method": [
-                _text(item.get("statement")) for item in reconstructed if _text(item.get("statement"))
-            ],
-            "supporting_basis": business_objects,
+            "decision_boundary": _text(document_semantics.get("decision_boundary")),
+            "author_purpose": _text(document_semantics.get("author_purpose")),
+            "argument_method": list(document_semantics.get("argument_method") or []),
+            "supporting_basis": list(document_semantics.get("supporting_basis") or []),
             "business_objects": business_objects,
-            "scope": "；".join(
+            "scope": _text(document_semantics.get("scope")) or "；".join(
                 item["title"] for item in _source_structure(project) if item["level"] == "chapter"
             ),
-            "decision_intent": "为后续交流目标和脚本规划提供源材料事实与论证基础。",
+            "decision_intent": _text(document_semantics.get("decision_intent")),
         },
         "document_thesis": {
             "statement": thesis,
@@ -775,13 +883,15 @@ def build_projection_model(
             "argument_weight": "core",
             "status": "mixed",
             "evidence_refs": thesis_refs,
-            "actor_refs": [],
-            "claim_origin": "source_implied",
+            "actor_refs": list(thesis_contract.get("actor_refs") or []),
+            "claim_origin": (
+                "source_explicit" if _text(thesis_contract.get("basis")) == "source" else "source_implied"
+            ),
             "projection_only": True,
         },
         "section_nodes": section_nodes,
         "subsection_nodes": subsection_nodes,
-        "argument_relations": [],
+        "argument_relations": projected_argument_relations,
         "source_coverage": {
             "assignments": assignments,
             "intentional_omissions": [],

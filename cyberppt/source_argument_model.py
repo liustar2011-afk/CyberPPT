@@ -146,10 +146,17 @@ def render_review_markdown(model: dict[str, Any]) -> str:
     semantics = semantics if isinstance(semantics, dict) else {}
     thesis = model.get("document_thesis")
     thesis = thesis if isinstance(thesis, dict) else {}
+    document_map = model.get("document_map")
+    document_map = document_map if isinstance(document_map, dict) else {}
     sections = [item for item in _list(model.get("section_nodes")) if isinstance(item, dict)]
     nodes = sections + [
         item for item in _list(model.get("subsection_nodes")) if isinstance(item, dict)
     ]
+    review_nodes = (
+        sections
+        if _text(model.get("interpretation_contract_mode")) == "projection"
+        else nodes
+    )
 
     def value(field: str, fallback: str) -> str:
         return _text(semantics.get(field)) or fallback
@@ -164,26 +171,68 @@ def render_review_markdown(model: dict[str, Any]) -> str:
     business_objects = [
         _text(item) for item in _list(semantics.get("business_objects")) if _text(item)
     ]
+    toc_items = [
+        item for item in _list(document_map.get("table_of_contents"))
+        if isinstance(item, dict)
+    ]
+    children_by_parent: dict[str, set[str]] = {}
+    for item in toc_items:
+        parent = _text(item.get("parent_section_id"))
+        section_id = _text(item.get("section_id"))
+        if section_id:
+            children_by_parent.setdefault(parent, set()).add(section_id)
+
+    def toc_scope(section_id: str) -> set[str]:
+        scope: set[str] = set()
+        pending = [section_id]
+        while pending:
+            current = pending.pop()
+            if current in scope:
+                continue
+            scope.add(current)
+            pending.extend(children_by_parent.get(current, ()))
+        return scope
+
+    toc_rows: list[str] = []
+    for item in toc_items:
+        if int(item.get("level") or 0) != 1:
+            continue
+        scope = toc_scope(_text(item.get("section_id")))
+        duties = [
+            f"{_text(node.get('id'))}：{node_thesis(node)}"
+            for node in sections
+            if scope.intersection(
+                _text(section_id)
+                for section_id in _list(node.get("source_section_ids"))
+                if _text(section_id)
+            )
+        ]
+        toc_rows.append(
+            "| {title} | {duty} |".format(
+                title=_text(item.get("title")),
+                duty="；".join(duties) or "由该章正文论据承担",
+            )
+        )
     structure_lines = [
-        f"{index}. {_text(node.get('source_heading'))}：{node_thesis(node)}"
+        f"{index}. {_text(node.get('id'))}：{node_thesis(node)}"
         for index, node in enumerate(sections, start=1)
-        if _text(node.get("source_heading")) and node_thesis(node)
+        if _text(node.get("id")) and node_thesis(node)
     ]
     foundation_gap = [
         f"{_text(node.get('source_heading'))}：{node_thesis(node)}"
-        for node in nodes
+        for node in review_nodes
         if _text(node.get("argument_role")) in {"foundation", "gap"}
         and node_thesis(node)
     ]
     goal_support = [
         f"{_text(node.get('source_heading'))}：{node_thesis(node)}"
-        for node in nodes
+        for node in review_nodes
         if _text(node.get("argument_weight")) in {"core", "supporting"}
         and node_thesis(node)
     ]
     relations = [
         f"{_text(item.get('from'))} --{_text(item.get('relation'))}--> "
-        f"{_text(item.get('to'))}：{_text(item.get('explanation'))}"
+        f"{_text(item.get('to'))}：{_text(item.get('explanation') or item.get('inference_rationale'))}"
         for item in _list(model.get("argument_relations"))
         if isinstance(item, dict)
     ]
@@ -194,7 +243,7 @@ def render_review_markdown(model: dict[str, Any]) -> str:
             status=_text(node.get("status")) or "unknown",
             weight=_text(node.get("argument_weight")) or "detail",
         )
-        for node in nodes
+        for node in sections
     ]
     concept_rows = []
     graph = model.get("concept_occurrence_graph")
@@ -240,6 +289,19 @@ def render_review_markdown(model: dict[str, Any]) -> str:
         "",
         "> 本文由 semantic-argument-model.json 确定性渲染；机器模型是唯一语义作者产物。",
         "",
+        "## 材料担纲与目录地图",
+        "",
+        f"- 题名：{_text(document_map.get('title'))}",
+        f"- 材料类型：{_text(document_map.get('document_type'))}",
+        f"- 副标题：{_text(document_map.get('subtitle'))}",
+        f"- 编制主体：{_text(document_map.get('authoring_body'))}",
+        f"- 研究领域：{_text(document_map.get('research_field'))}",
+        f"- 编制日期：{_text(document_map.get('date'))}",
+        "",
+        "| 原文一级目录 | 该章论证责任 |",
+        "| --- | --- |",
+        *toc_rows,
+        "",
         "## 全文业务主语",
         "",
         value("subject_of_report", primary_thesis) + "；全文主论点为：" + primary_thesis,
@@ -251,7 +313,7 @@ def render_review_markdown(model: dict[str, Any]) -> str:
         "",
         "## 空间、时间与服务范围",
         "",
-        value("scope", "范围以来源单元、状态和边界字段的共同约束为准。")
+        value("scope", "范围以来源单元、状态和边界字段的共同约束为准。").rstrip("。；")
         + "；不得超出来源声明的空间、时间、服务及成熟度范围。",
         "",
         "## 材料意图与决策动作",
@@ -262,6 +324,7 @@ def render_review_markdown(model: dict[str, Any]) -> str:
         "",
         "## 原文结构与论证顺序",
         "",
+        "以下顺序由题名、目录层级和正文证据共同重建：",
         *bullet_lines(structure_lines, "按原文一级章节和语义节点顺序组织论证。"),
         "",
         "## 现有基础与能力缺口",
@@ -1031,6 +1094,16 @@ def validate_projection_model(
     if _text(model.get("authority_mode")) != "projection_only":
         issues.append(_issue("SEMANTIC_PROJECTION_AUTHORITY_REQUIRED", "Source Foundation 兼容模型必须声明 authority_mode=projection_only。"))
 
+    document_map = model.get("document_map")
+    if not isinstance(document_map, dict):
+        issues.append(_issue("SEMANTIC_PROJECTION_DOCUMENT_MAP_MISSING", "projection 模型必须先保留题名与目录形成的全文结构地图。"))
+    else:
+        if not _text(document_map.get("title")):
+            issues.append(_issue("SEMANTIC_PROJECTION_DOCUMENT_TITLE_MISSING", "projection document_map 必须保留材料题名。"))
+        toc = [item for item in _list(document_map.get("table_of_contents")) if isinstance(item, dict)]
+        if not toc or not any(int(item.get("level") or 0) == 1 for item in toc):
+            issues.append(_issue("SEMANTIC_PROJECTION_TOC_MISSING", "projection document_map 必须先保留至少一个一级目录节点。"))
+
     thesis = model.get("document_thesis")
     if not isinstance(thesis, dict) or not _text(thesis.get("statement")):
         issues.append(_issue("SEMANTIC_PROJECTION_THESIS_MISSING", "projection 模型必须保留非空 document_thesis.statement。"))
@@ -1040,12 +1113,69 @@ def validate_projection_model(
     context = model.get("document_semantics")
     if not isinstance(context, dict):
         issues.append(_issue("SEMANTIC_PROJECTION_CONTEXT_MISSING", "projection 模型必须保留 document_semantics。"))
-    elif not _text(context.get("document_role")) or not _text(context.get("subject_of_report")):
-        issues.append(_issue("SEMANTIC_PROJECTION_CONTEXT_INCOMPLETE", "projection 模型必须保留 document_role 和 subject_of_report。"))
+    else:
+        for field in (
+            "document_role", "subject_of_report", "primary_thesis", "author_purpose",
+            "decision_boundary", "scope", "decision_intent",
+        ):
+            if not _text(context.get(field)):
+                issues.append(_issue("SEMANTIC_PROJECTION_CONTEXT_INCOMPLETE", f"projection 模型必须保留 document_semantics.{field}。"))
+        for field in ("argument_method", "supporting_basis", "business_objects"):
+            values = _list(context.get(field))
+            if not values:
+                issues.append(_issue("SEMANTIC_PROJECTION_CONTEXT_INCOMPLETE", f"projection 模型必须保留非空 document_semantics.{field}。"))
+        if isinstance(thesis, dict) and _text(context.get("primary_thesis")) != _text(thesis.get("statement")):
+            issues.append(_issue("SEMANTIC_PROJECTION_THESIS_DRIFTED", "projection document_semantics.primary_thesis 必须与 document_thesis.statement 一致。"))
 
     nodes = node_index(model)
     if not nodes:
         issues.append(_issue("SEMANTIC_PROJECTION_NODES_MISSING", "projection 模型必须保留可供 Source Truth 绑定的语义节点。"))
+    core_nodes = {
+        node_id
+        for node_id, node in nodes.items()
+        if _text(node.get("argument_weight")) == "core"
+    }
+    if not core_nodes:
+        issues.append(_issue("SEMANTIC_PROJECTION_CORE_ARGUMENT_MISSING", "projection 模型必须保留至少一个明确的 core 论证节点。"))
+    invalid_weights = sorted(
+        node_id
+        for node_id, node in nodes.items()
+        if _text(node.get("argument_weight")) not in ARGUMENT_WEIGHTS
+    )
+    if invalid_weights:
+        issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHT_INVALID", "projection 语义节点必须显式声明合法 argument_weight：" + "、".join(invalid_weights)))
+
+    relations = [item for item in _list(model.get("argument_relations")) if isinstance(item, dict)]
+    outgoing: dict[str, set[str]] = {}
+    for relation in relations:
+        source = _text(relation.get("from"))
+        target = _text(relation.get("to"))
+        if source not in nodes or (target not in nodes and target != "document_thesis") or source == target:
+            issues.append(_issue("SEMANTIC_PROJECTION_RELATION_INVALID", "projection argument_relations 必须连接语义节点并指向其他节点或 document_thesis。", node_id=_text(relation.get("id"))))
+            continue
+        if _text(relation.get("weight_effect")) != "none":
+            issues.append(_issue("SEMANTIC_RELATION_WEIGHT_EFFECT_INVALID", "argument relation 不得改变节点论证权重。", node_id=_text(relation.get("id"))))
+        refs, refs_ok = _evidence_refs(relation.get("evidence_refs"))
+        if not refs_ok:
+            issues.append(_issue("SEMANTIC_PROJECTION_RELATION_EVIDENCE_MISSING", "projection argument relation 必须保留来源证据。", node_id=_text(relation.get("id"))))
+        outgoing.setdefault(source, set()).add(target)
+
+    def reaches_thesis(node_id: str) -> bool:
+        pending = [node_id]
+        seen: set[str] = set()
+        while pending:
+            current = pending.pop()
+            if current == "document_thesis":
+                return True
+            if current in seen:
+                continue
+            seen.add(current)
+            pending.extend(outgoing.get(current, ()))
+        return False
+
+    disconnected = sorted(node_id for node_id in core_nodes if not reaches_thesis(node_id))
+    if disconnected:
+        issues.append(_issue("SEMANTIC_PROJECTION_CORE_ARGUMENT_DISCONNECTED", "每个 core 论证节点都必须通过显式论证关系连接到 document_thesis：" + "、".join(disconnected)))
     assignments = model.get("source_coverage")
     assignments = assignments.get("assignments") if isinstance(assignments, dict) else None
     if not isinstance(assignments, list) or not assignments:

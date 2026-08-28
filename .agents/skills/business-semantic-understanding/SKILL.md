@@ -25,7 +25,7 @@ Run the commands below from this Skill directory with the repository interpreter
 ../../../.venv/bin/python3 scripts/prepare.py <foundation-dir> -o <semantic-dir>
 ```
 
-2. **Pass 0 — holistic comprehension (lightweight).** Before chunk-by-chunk work, read the whole document once and write a short free-text note to `comprehension-brief.json` in the semantic directory: `overview` (what the material is, who it's for, what problem it addresses), `open_questions` (anything that doesn't add up, is unclear, or is under-evidenced), and `external_notes` (anything you needed domain knowledge or a web check to understand). This file is a personal working note, not a validated artifact — it is not schema-checked, not hashed against upstream, and does not gate `semantic-report.json`. Skip fields that don't apply; there is no coverage requirement over sections.
+2. **Pass 0 — document map before body reading.** Read the title, subtitle, issuing/authoring body, document type, table of contents and complete heading tree before interpreting body paragraphs. Use them to identify the document's subject, author purpose, proposed whole-document thesis, chapter duties and expected argument order. The table of contents is structural authority: it is not body evidence, but every later semantic claim must be interpreted within the role declared by this document map. Then read the whole body once and write a short free-text note to `comprehension-brief.json`: `overview` (what the material is, who it's for, what problem it addresses), `open_questions`, and `external_notes`. This note remains a personal working aid; the authoritative thesis and argument map must be written to `argument-chain.json` and pass validation.
 
 3. **Pass 1 — section/chunk interpretation.** Read every file listed by `semantic-workpack.json`. For each section/chunk, identify candidate normalized facts, concepts, source-stated relations, possible inferred or externally-informed relations, argument roles, conflicts and ambiguities. Keep the original `fact_id` evidence attached.
 
@@ -59,7 +59,9 @@ Run the commands below from this Skill directory with the repository interpreter
 
 ## Argument reconstruction
 
-`source_chain` follows the source document's own argumentative order. `reconstructed_chain` may reorder semantic stages to expose the underlying logic. Do not silently repair weak logic. Record repetition, non-MECE overlap, logic gaps, missing bridges, mixed levels, scope shifts, unsupported jumps, contradictions and unbalanced parallelism in `diagnostics`; every diagnostic must record its resolution or deliberate retention. Prefer atomic table-cell assertions when layer two provides them and review every table-parent or composite-statement warning before validation is accepted.
+`argument-chain.json` must first declare `document_thesis` and `document_semantics`. `document_semantics.argument_method` lists every reconstructed-chain node exactly once in the source-faithful reading order, while `supporting_basis` cites the normalized facts that establish the argument. Every source and reconstructed node declares its own `argument_weight`. `argument_relations` must connect every core reconstructed node through a declared logical path to `document_thesis`; a list of adjacent summaries is not a valid argument.
+
+`source_chain` follows the source document's own argumentative order. `reconstructed_chain` may normalize semantic stages to expose the underlying logic. Do not silently repair weak logic. Record repetition, non-MECE overlap, logic gaps, missing bridges, mixed levels, scope shifts, unsupported jumps, contradictions and unbalanced parallelism in `diagnostics`; every diagnostic must record its resolution or deliberate retention. Prefer atomic table-cell assertions when layer two provides them and review every table-parent or composite-statement warning before validation is accepted.
 
 ## Stop boundary
 

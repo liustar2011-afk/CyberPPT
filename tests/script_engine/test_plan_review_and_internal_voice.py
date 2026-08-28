@@ -52,6 +52,20 @@ def test_plan_review_renders_deck_and_chapter_narrative_fields() -> None:
     assert "- 章节承接：" in markdown
 
 
+def test_plan_review_renders_source_argument_contract() -> None:
+    plan, foundation = _example()
+    plan["source_thesis"] = "来源总论点"
+    plan["source_argument_method"] = ["A01"]
+    plan["chapters"][0]["source_argument_node_ids"] = ["A01"]
+    plan["pages"][0]["source_argument_node_ids"] = ["A01"]
+
+    markdown = render_plan_review(plan, foundation)
+
+    assert "- 来源总论点：来源总论点" in markdown
+    assert "- 来源论证顺序：A01" in markdown
+    assert "- 承担源论点：A01" in markdown
+
+
 def test_plan_review_marks_unknown_evidence_as_incomplete() -> None:
     plan, foundation = _example()
     plan["pages"][0]["proof"]["evidence_refs"] = ["UNKNOWN"]
@@ -241,6 +255,59 @@ def test_adjacent_duplicate_messages_warn_without_banning_shared_business_terms(
     assert any("near-duplicate core messages" in warning for warning in warnings)
 
 
+def test_semantic_foundation_requires_deck_plan_argument_bindings() -> None:
+    plan, foundation = _example()
+    foundation["document_thesis"] = {
+        "statement": "标准体系框架统筹重点标准、实施路径和保障措施。",
+        "source_refs": ["F1"],
+        "argument_weight": "core",
+    }
+    foundation["document_semantics"] = {
+        "argument_method": ["A01"],
+    }
+    foundation["argument_nodes"] = [
+        {
+            "id": "A01",
+            "statement": "总体思路推导标准体系框架。",
+            "argument_weight": "core",
+            "source_refs": ["F1"],
+        }
+    ]
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("SOURCE_ARGUMENT_THESIS_DRIFT" in issue for issue in issues)
+    assert any("SOURCE_ARGUMENT_METHOD_DRIFT" in issue for issue in issues)
+    assert any("SOURCE_ARGUMENT_BINDING_MISSING" in issue for issue in issues)
+
+
+def test_semantic_foundation_accepts_connected_deck_plan_argument_bindings() -> None:
+    plan, foundation = _example()
+    source_ref = plan["pages"][0]["proof"]["evidence_refs"][0]
+    foundation["document_thesis"] = {
+        "statement": "标准体系框架统筹重点标准、实施路径和保障措施。",
+        "source_refs": [source_ref],
+        "argument_weight": "core",
+    }
+    foundation["document_semantics"] = {"argument_method": ["A01"]}
+    foundation["argument_nodes"] = [
+        {
+            "id": "A01",
+            "statement": "总体思路推导标准体系框架。",
+            "argument_weight": "core",
+            "source_refs": [source_ref],
+        }
+    ]
+    plan["source_thesis"] = foundation["document_thesis"]["statement"]
+    plan["source_argument_method"] = ["A01"]
+    plan["chapters"][0]["source_argument_node_ids"] = ["A01"]
+    plan["pages"][0]["source_argument_node_ids"] = ["A01"]
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert not any("SOURCE_ARGUMENT_" in issue for issue in issues)
+
+
 def _label_detail_fixture(*, list_only_source: bool = False) -> tuple[dict, dict, dict]:
     green = (
         "重点场景包括行业治理、市场运行、绿色低碳、科技创新"
@@ -324,6 +391,16 @@ def test_final_audit_accepts_label_with_source_grounded_explanation() -> None:
     issues, _ = audit_final_script(final, plan, foundation)
 
     assert not any("ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" in issue for issue in issues)
+
+
+def test_final_audit_blocks_page_proposition_drift_from_deck_plan() -> None:
+    foundation, plan, final = _label_detail_fixture()
+    plan["pages"][0]["source_argument_node_ids"] = ["A01"]
+    final["slides"][0]["core_message"] = "重点场景覆盖多类业务。"
+
+    issues, _ = audit_final_script(final, plan, foundation)
+
+    assert any("AUTHOR_PAGE_PROPOSITION_DRIFTED" in issue for issue in issues)
 
 
 def test_final_audit_allows_explicit_label_only_taxonomy_for_thin_source() -> None:

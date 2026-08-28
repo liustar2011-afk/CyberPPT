@@ -572,6 +572,7 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
         )
 
     coverage_targets = []
+    semantic_argument_nodes = []
     for node_id, node in nodes.items():
         record_refs = [
             record["id"]
@@ -591,6 +592,47 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
                 "record_refs": record_refs,
             }
         )
+        semantic_argument_nodes.append(
+            {
+                "id": node_id,
+                "source_heading": str(node.get("source_heading") or node_id),
+                "statement": str(node.get("section_thesis") or node.get("thesis") or "").strip(),
+                "argument_role": str(node.get("argument_role") or "evidence"),
+                "argument_weight": str(node.get("argument_weight") or "detail"),
+                "status": str(node.get("status") or "unknown"),
+                "source_refs": record_refs,
+            }
+        )
+
+    record_refs_by_unit: dict[str, list[str]] = {}
+    for record in records:
+        for source_unit_ref in _strings(record.get("source_unit_refs")):
+            record_refs_by_unit.setdefault(source_unit_ref, []).append(record["id"])
+    semantic_argument_relations = []
+    for relation in _items(model.get("argument_relations")):
+        source = str(relation.get("from") or "").strip()
+        target = str(relation.get("to") or "").strip()
+        kind = str(relation.get("relation") or "").strip()
+        relation_id = str(relation.get("id") or "").strip()
+        support = list(
+            dict.fromkeys(
+                record_ref
+                for source_unit_ref in _strings(relation.get("evidence_refs"))
+                for record_ref in record_refs_by_unit.get(source_unit_ref, [])
+            )
+        )
+        if relation_id and source and target and kind and support:
+            semantic_argument_relations.append(
+                {
+                    "id": relation_id,
+                    "from": source,
+                    "to": target,
+                    "relation": kind,
+                    "basis": str(relation.get("basis") or "inferred"),
+                    "support": support,
+                    "source_refs": support,
+                }
+            )
 
     semantics = dict(model.get("document_semantics") or {})
     semantics["primary_thesis"] = str(thesis.get("statement") or semantics.get("primary_thesis") or "")
@@ -608,10 +650,17 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
             "audience": "由后续交流目标确定",
         },
         "document_semantics": semantics,
+        "document_thesis": {
+            "statement": conclusion["statement"],
+            "source_refs": conclusion_refs,
+            "argument_weight": "core",
+        },
         "sources": source_summaries,
         "source_structure": _source_structure(project),
         "semantic_concepts": _items(concept_graph.get("concepts")),
         "semantic_relations": _semantic_relations(model),
+        "semantic_argument_nodes": semantic_argument_nodes,
+        "semantic_argument_relations": semantic_argument_relations,
         "coverage_targets": coverage_targets,
         "records": records,
         "conclusions": [conclusion],

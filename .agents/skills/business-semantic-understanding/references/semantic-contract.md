@@ -13,9 +13,10 @@ Layer three turns layer-two `source_assertion` entries into a stable semantic mo
 5. Contradictions are retained in `conflicts`; ambiguity is retained in `ambiguities`.
 6. Concept definitions may summarize evidence but may not introduce unsupported claims.
 7. Relations must carry a `basis` of `source`, `inferred`, or `external`. `source` means the source text states it. `inferred` means it follows from the source's own evidence. `external` means it depends on domain knowledge or information found outside the source (e.g. a web check). Both `inferred` and `external` require a concise `inference_rationale`; for `external`, name what it relies on (a URL, "industry practice", etc. — no fixed citation format required). Neither may be upgraded to `basis: source`.
-8. `source_chain` reconstructs the source document's own order. `reconstructed_chain` may normalize logical order but must not rewrite evidence.
-9. New semantic outputs declare `diagnostic_resolution_mode: required`. Logic defects are recorded in `diagnostics`; every diagnostic includes a non-empty `resolution` that explains how the author resolved, deferred, or deliberately retained it. Historical outputs without the root mode receive migration warnings.
-10. Do not draft the proposal, recommendation or PPT in this Skill.
+8. Read title, subtitle, document type, authoring body and table of contents before body paragraphs. These elements establish document identity and the source-native argument map. They are structural authority even when they remain metadata for fact-coverage purposes.
+9. `argument-chain.json` declares one evidence-bound `document_thesis`, authoritative `document_semantics`, explicit `argument_weight` on every node, and `argument_relations` connecting every core reconstructed node to the thesis. `source_chain` reconstructs the source document's own order. `reconstructed_chain` may normalize logical order but must not rewrite evidence.
+10. New semantic outputs declare `diagnostic_resolution_mode: required`. Logic defects are recorded in `diagnostics`; every diagnostic includes a non-empty `resolution` that explains how the author resolved, deferred, or deliberately retained it. Historical outputs without the root mode receive migration warnings.
+11. Do not draft the proposal, recommendation or PPT in this Skill.
 
 ## Output files
 
@@ -41,7 +42,7 @@ Validation performs reverse coverage from every atomic layer-two source assertio
 
 `actor`, `organization`, `project`, `platform`, `service`, `capability`, `requirement`, `goal`, `metric`, `process`, `deliverable`, `constraint`, `relationship`, `event`, `policy_basis`, `problem`, `technology`, `dataset`, `scenario`, `responsibility`, `condition`, `metadata`, `other`
 
-`metadata` is for facts sourced from the `preamble` chunk (`semantic-workpack.json` groups any source assertion with no enclosing heading into a `section_id: "preamble"` chunk — cover title, subtitle, issuing organization, publication date, table-of-contents entries, running headers/footers). These facts carry no business claim and must never be normalized as `other` or any business type. Downstream layer-four page evidence and fact-coverage gates treat `metadata` as non-substantive and exclude it from required page coverage — do not use `metadata` for anything that is actually part of the document's business argument, even if it appears early in the document.
+`metadata` is for facts sourced from the `preamble` chunk (`semantic-workpack.json` groups any source assertion with no enclosing heading into a `section_id: "preamble"` chunk — cover title, subtitle, issuing organization, publication date, table-of-contents entries, running headers/footers). These records do not serve as body evidence and remain excluded from page fact-coverage quotas. Title, subtitle, authoring body and table of contents still govern document identity and argument structure, so semantic authoring must consume them before body interpretation and preserve their meaning in `document_semantics` and the source-native argument map.
 
 ### concept types
 

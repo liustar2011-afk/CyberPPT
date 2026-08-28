@@ -651,6 +651,16 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
         if page is None:
             warnings.append(f"slides.{index} ({slide_id}): no matching deck-plan page; semantic inheritance cannot be audited")
             continue
+        plan_message = str(page.get("message") or "").strip()
+        authored_message = str(slide.get("core_message") or "").strip()
+        source_argument_ids = [
+            value for value in page.get("source_argument_node_ids") or []
+            if isinstance(value, str) and value.strip()
+        ]
+        if source_argument_ids and plan_message and authored_message != plan_message:
+            issues.append(
+                f"slides.{index} ({slide_id}): AUTHOR_PAGE_PROPOSITION_DRIFTED: core_message must preserve the approved deck-plan message"
+            )
         final_text = _slide_text(slide)
         plan_text = _page_text(page)
         evidence_ids = _page_evidence_ids(page)

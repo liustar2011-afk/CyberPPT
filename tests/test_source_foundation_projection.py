@@ -55,8 +55,38 @@ def _project(tmp_path: Path) -> tuple[Path, Path, Path]:
     _write_json(
         semantic / "argument-chain.json",
         {
-            "source_chain": [{"node_id": "SC-001", "role": "background", "statement": "建设背景", "normalized_fact_ids": ["NF-0001", "NF-0002", "NF-0003"], "section_ids": ["sec-1"]}],
-            "reconstructed_chain": [{"node_id": "RC-001", "role": "background", "statement": "资源分散要求形成连接和服务基础。", "normalized_fact_ids": ["NF-0001", "NF-0002"], "section_ids": ["sec-1"]}],
+            "document_semantics": {
+                "document_role": "建设方案",
+                "subject_of_report": "行业资源连接和服务基础",
+                "primary_thesis": "资源分散要求形成连接和服务基础。",
+                "author_purpose": "说明现有问题并提出建设目标。",
+                "argument_method": ["RC-001"],
+                "supporting_basis": ["NF-0001", "NF-0002"],
+                "business_objects": ["行业资源", "连接和服务基础"],
+                "decision_boundary": "合作事项仍按单项协商确定。",
+                "scope": "建设背景、建设目标和合作边界。",
+                "decision_intent": "确认建设必要性和合作边界。",
+            },
+            "document_thesis": {
+                "statement": "资源分散要求形成连接和服务基础。",
+                "normalized_fact_ids": ["NF-0001", "NF-0002"],
+                "section_ids": ["sec-1"],
+                "basis": "inferred",
+                "inference_rationale": "问题事实与目标事实共同构成建设必要性判断。",
+                "actor_refs": ["行业建设相关方"],
+            },
+            "source_chain": [{"node_id": "SC-001", "role": "background", "argument_weight": "supporting", "statement": "建设背景", "normalized_fact_ids": ["NF-0001", "NF-0002", "NF-0003"], "section_ids": ["sec-1"]}],
+            "reconstructed_chain": [{"node_id": "RC-001", "role": "background", "argument_weight": "core", "statement": "资源分散要求形成连接和服务基础。", "normalized_fact_ids": ["NF-0001", "NF-0002"], "section_ids": ["sec-1"]}],
+            "argument_relations": [{
+                "relation_id": "AR-001",
+                "from_node_id": "RC-001",
+                "to_node_id": "document_thesis",
+                "relation_type": "establishes",
+                "basis": "inferred",
+                "inference_rationale": "问题与目标共同建立全文判断。",
+                "normalized_fact_ids": ["NF-0001", "NF-0002"],
+                "explanation": "建设背景建立全文建设必要性判断。",
+            }],
             "diagnostics": [],
         },
     )
@@ -95,6 +125,50 @@ def test_projects_validated_semantics_into_auditable_source_truth(tmp_path: Path
     assert truth["source_structure"][0]["level"] == "chapter"
     assert truth["semantic_concepts"][0]["id"] == "C-1"
     assert truth["semantic_relations"][0]["id"] == "R-1"
+
+
+def test_projection_copies_authored_document_thesis_and_argument_graph(tmp_path: Path) -> None:
+    project, foundation, semantic = _project(tmp_path)
+
+    model_path, _ = project_source_foundation_truth(
+        project,
+        foundation_dir=foundation,
+        semantic_dir=semantic,
+    )
+    model = json.loads(model_path.read_text(encoding="utf-8"))
+
+    assert model["document_thesis"]["statement"] == "资源分散要求形成连接和服务基础。"
+    assert model["document_semantics"]["argument_method"] == ["RC-001"]
+    assert model["section_nodes"][0]["argument_weight"] == "core"
+    assert model["argument_relations"] == [
+        {
+            "id": "AR-001",
+            "from": "RC-001",
+            "to": "document_thesis",
+            "relation": "establishes",
+            "weight_effect": "none",
+            "basis": "inferred",
+            "evidence_refs": ["SU-1", "SU-2"],
+            "inference_rationale": "问题与目标共同建立全文判断。",
+            "explanation": "建设背景建立全文建设必要性判断。",
+            "projection_only": True,
+        }
+    ]
+
+
+def test_projection_rejects_argument_chain_without_authored_document_thesis(tmp_path: Path) -> None:
+    project, foundation, semantic = _project(tmp_path)
+    argument_path = semantic / "argument-chain.json"
+    argument = json.loads(argument_path.read_text(encoding="utf-8"))
+    del argument["document_thesis"]
+    _write_json(argument_path, argument)
+
+    with pytest.raises(ValueError, match="must declare document_thesis"):
+        project_source_foundation_truth(
+            project,
+            foundation_dir=foundation,
+            semantic_dir=semantic,
+        )
 
 
 def test_projection_fails_closed_when_source_map_text_differs(tmp_path: Path) -> None:

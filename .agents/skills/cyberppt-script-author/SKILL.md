@@ -24,11 +24,18 @@ Read:
 Before prose, know:
 
 1. `source_scope` — source section(s) that control the page;
-2. **page job** — one primary question;
-3. **answer** — bounded `core_message`;
-4. **analysis basis** — explicit or inferred relation and its supports;
-5. **proof** — facts, mechanisms, numbers and boundaries that earn the answer;
-6. **bridge** — how the next source-derived page follows.
+2. `source_argument_node_ids` — the source proposition(s) this page must carry;
+3. **page job** — one primary question;
+4. **answer** — the approved plan `message`, copied verbatim to bounded `core_message`;
+5. **analysis basis** — explicit or inferred relation and its supports;
+6. **proof** — facts, mechanisms, numbers and boundaries that earn the answer;
+7. **bridge** — how the next source-derived page follows.
+
+Read the bound argument nodes before their individual evidence records. The
+node establishes what the evidence is proving; the evidence establishes
+whether the proposition is earned and what qualifications must survive. If the
+node, page message, and evidence do not agree, return to PLAN. Do not repair the
+disagreement by improvising a different `core_message` during authoring.
 
 When the plan declares `content_route`, use it to arrange the page for internal
 reporting. The default sequence is **结论 → 证据 → 解读 → 含义 → 来源**:
@@ -55,7 +62,12 @@ If the plan lacks a defensible analysis basis, repair the page plan before polis
 
 ## 2. Whole-deck pass
 
-Read the entire Foundation and approved plan. Preserve approved source chapter order and source scopes. Establish continuity by explaining the source's existing progression; do not redesign chapter strategy unless the plan is explicitly `user_authorized_restructure`.
+Read the entire Foundation and approved plan. Begin with document identity,
+table-of-contents structure, document thesis, argument method, and argument
+relations; then inspect body evidence. Preserve approved source chapter order,
+source scopes, and page argument bindings. Establish continuity by explaining
+the source's existing progression; do not redesign chapter strategy unless the
+plan is explicitly `user_authorized_restructure`.
 
 ## 3. Chapter pass
 

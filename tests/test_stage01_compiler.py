@@ -548,7 +548,13 @@ class Stage01CompilerTests(unittest.TestCase):
         model = copy.deepcopy(self.model)
         model["interpretation_contract_mode"] = "projection"
         model["authority_mode"] = "projection_only"
-        model["document_semantics"]["scope"] = ""
+        model["document_map"] = {
+            "title": "建设方案",
+            "table_of_contents": [
+                {"section_id": "c01", "title": "第一章", "level": 1}
+            ],
+        }
+        model["document_semantics"]["scope"] = "保留建设方案的来源范围。"
         model["section_nodes"][0]["argument_role"] = "mechanism"
         model["section_nodes"][0]["primary_consumer"] = ""
         model["subsection_nodes"][0].update(
@@ -562,9 +568,19 @@ class Stage01CompilerTests(unittest.TestCase):
         model["argument_relations"] = [
             {
                 "id": "r-old",
-                "from_node_id": "c01-s01",
-                "to_node_id": "c01",
-                "relation_type": "contains",
+                "from": "c01-s01",
+                "to": "c01",
+                "relation": "contains",
+                "weight_effect": "none",
+                "basis": "explicit",
+                "evidence_refs": [next(iter(self.unit_ids))],
+                "projection_only": True,
+            },
+            {
+                "id": "r-thesis",
+                "from": "c01",
+                "to": "document_thesis",
+                "relation": "establishes",
                 "weight_effect": "none",
                 "basis": "explicit",
                 "evidence_refs": [next(iter(self.unit_ids))],
@@ -584,6 +600,9 @@ class Stage01CompilerTests(unittest.TestCase):
         (self.project / SEMANTIC_ARGUMENT_MODEL).write_text(
             json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8"
         )
+
+        code, report = run_semantic_understanding_audit(self.project)
+        self.assertEqual(0, code, report["issues"])
 
         truth_path = compile_source_truth(self.project)
         truth = load_source_truth(truth_path)

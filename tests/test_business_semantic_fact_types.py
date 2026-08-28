@@ -172,6 +172,80 @@ class MetadataFactTypeTests(unittest.TestCase):
         )
         self.assertIn("diagnostic_resolution_missing", {item["code"] for item in errors})
 
+    def test_argument_requires_document_thesis_and_semantic_map(self) -> None:
+        errors: list[dict[str, object]] = []
+        _validate_argument(
+            {
+                "source_chain": [{
+                    "node_id": "SC-001",
+                    "order": 1,
+                    "role": "background",
+                    "argument_weight": "supporting",
+                    "statement": "建设背景",
+                    "normalized_fact_ids": ["NF-0001"],
+                    "section_ids": ["sec-1"],
+                }],
+                "reconstructed_chain": [{
+                    "node_id": "RC-001",
+                    "order": 1,
+                    "role": "conclusion",
+                    "argument_weight": "core",
+                    "statement": "形成建设方案。",
+                    "normalized_fact_ids": ["NF-0001"],
+                    "section_ids": ["sec-1"],
+                }],
+                "argument_relations": [],
+                "diagnostics": [],
+            },
+            {"NF-0001"},
+            {"sec-1"},
+            errors,
+            [],
+        )
+
+        codes = {item["code"] for item in errors}
+        self.assertIn("document_thesis_missing", codes)
+        self.assertIn("document_semantics_missing", codes)
+        self.assertIn("core_argument_not_connected_to_thesis", codes)
+
+    def test_core_arguments_must_form_declared_path_to_document_thesis(self) -> None:
+        payload = {
+            "document_semantics": {
+                "document_role": "研究报告",
+                "subject_of_report": "标准体系建设",
+                "primary_thesis": "标准体系建设需要形成实施方案。",
+                "author_purpose": "提出建设方案。",
+                "argument_method": ["RC-001", "RC-002"],
+                "supporting_basis": ["NF-0001", "NF-0002"],
+                "business_objects": ["标准体系"],
+                "decision_boundary": "以来源研究范围为限。",
+                "scope": "建设依据与实施方案。",
+                "decision_intent": "支持建设决策。",
+            },
+            "document_thesis": {
+                "statement": "标准体系建设需要形成实施方案。",
+                "normalized_fact_ids": ["NF-0001", "NF-0002"],
+                "section_ids": ["sec-1", "sec-2"],
+                "basis": "inferred",
+                "inference_rationale": "建设依据与实施方案共同支撑全文判断。",
+            },
+            "source_chain": [],
+            "reconstructed_chain": [
+                {"node_id": "RC-001", "order": 1, "role": "policy_basis", "argument_weight": "core", "statement": "建设依据已经形成。", "normalized_fact_ids": ["NF-0001"], "section_ids": ["sec-1"]},
+                {"node_id": "RC-002", "order": 2, "role": "implementation", "argument_weight": "core", "statement": "实施方案明确建设路径。", "normalized_fact_ids": ["NF-0002"], "section_ids": ["sec-2"]},
+            ],
+            "argument_relations": [
+                {"relation_id": "AR-001", "from_node_id": "RC-001", "to_node_id": "RC-002", "relation_type": "supports", "basis": "source", "normalized_fact_ids": ["NF-0001"]},
+                {"relation_id": "AR-002", "from_node_id": "RC-002", "to_node_id": "document_thesis", "relation_type": "establishes", "basis": "inferred", "inference_rationale": "实施方案落实全文判断。", "normalized_fact_ids": ["NF-0002"]},
+            ],
+            "diagnostics": [],
+        }
+        errors: list[dict[str, object]] = []
+
+        _validate_argument(payload, {"NF-0001", "NF-0002"}, {"sec-1", "sec-2"}, errors, [])
+
+        self.assertEqual([], errors)
+
     def test_missing_atomic_source_assertion_is_rejected(self) -> None:
         errors: list[dict[str, object]] = []
         counts = _validate_source_coverage(
