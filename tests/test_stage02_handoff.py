@@ -180,7 +180,8 @@ def test_build_handoff_uses_only_the_script_contract() -> None:
         _write_inputs(project)
         payload = build_stage02_handoff(project, script=project / "script.md")
 
-    assert payload["source_bindings"]["script"]["path"] == str((project / SCRIPT_PATH).resolve())
+    assert payload["source_bindings"]["script"]["scope"] == "project"
+    assert payload["source_bindings"]["script"]["path"] == SCRIPT_PATH.as_posix()
     assert payload["source_bindings"]["script"]["external_path"] == str((project / "script.md").resolve())
     assert set(payload["source_bindings"]) == {"script"}
     assert payload["pages"][0]["page_mission"] == "先验证再扩展。"
@@ -208,11 +209,14 @@ def test_build_handoff_accepts_an_external_script_without_stage01_files() -> Non
         binding = payload["source_bindings"]["script"]
         assert set(payload["source_bindings"]) == {"script"}
         local_script = project / SCRIPT_PATH
-        assert binding["path"] == str(local_script.resolve())
+        assert binding["scope"] == "project"
+        assert binding["path"] == SCRIPT_PATH.as_posix()
         assert local_script.read_bytes() == script.read_bytes()
         assert binding["sha256"] == hashlib.sha256(local_script.read_bytes()).hexdigest()
         assert binding["source_mode"] == "external_script"
         assert binding["external_path"] == str(script.resolve())
+        assert binding["external_sha256"] == hashlib.sha256(script.read_bytes()).hexdigest()
+        assert binding["external_semantic_sha256"] == script_semantic_digest(script)
 
 
 def test_external_script_resume_uses_project_copy_when_source_disappears() -> None:
@@ -238,7 +242,66 @@ def test_external_script_resume_uses_project_copy_when_source_disappears() -> No
         payload = json.loads((project / HANDOFF_JSON).read_text(encoding="utf-8"))
 
         assert resumed["status"] == "passed"
-        assert payload["source_bindings"]["script"]["path"] == str(local_script.resolve())
+        assert payload["source_bindings"]["script"]["path"] == SCRIPT_PATH.as_posix()
+
+
+def test_formal_project_script_stays_authoritative_and_survives_project_move() -> None:
+    with TemporaryDirectory() as directory:
+        original = Path(directory) / "original" / "project"
+        formal = original / "script" / "dist" / "final-script.md"
+        formal.parent.mkdir(parents=True)
+        formal.write_text(
+            "## 第1页：正式脚本\n"
+            "- 页面类型：内容页\n"
+            "- 页面标题：正式脚本\n"
+            "- 核心结论：项目内权威稿直接进入 Stage 02。\n"
+            "- 完整文字稿：项目内权威稿直接进入 Stage 02。\n"
+            "- 上屏文字：\n"
+            "  - 项目内权威稿\n",
+            encoding="utf-8",
+        )
+
+        report = prepare_stage02_handoff(original, script=formal)
+        assert report["status"] == "passed"
+        binding = json.loads((original / HANDOFF_JSON).read_text(encoding="utf-8"))["source_bindings"]["script"]
+        assert binding["scope"] == "project"
+        assert binding["path"] == "script/dist/final-script.md"
+        assert "external_path" not in binding
+        assert not (original / SCRIPT_PATH).exists()
+
+        moved = Path(directory) / "moved" / "project"
+        moved.parent.mkdir()
+        original.rename(moved)
+        moved_report = audit_stage02_handoff(moved)
+        assert moved_report["status"] == "passed"
+
+
+def test_handoff_audit_rejects_changed_external_upstream_script() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory) / "project"
+        script = Path(directory) / "external-script.md"
+        script.write_text(
+            "## 第1页：外部脚本\n"
+            "- 页面类型：内容页\n"
+            "- 页面标题：外部脚本\n"
+            "- 核心结论：首版结论。\n"
+            "- 完整文字稿：首版结论。\n"
+            "- 上屏文字：\n"
+            "  - 首版结论\n",
+            encoding="utf-8",
+        )
+        assert prepare_stage02_handoff(project, script=script)["status"] == "passed"
+
+        script.write_text(
+            script.read_text(encoding="utf-8").replace("首版结论", "更新结论"),
+            encoding="utf-8",
+        )
+        report = audit_stage02_handoff(project)
+
+        assert report["status"] == "failed"
+        assert "HANDOFF_UPSTREAM_SCRIPT_STALE" in {
+            item["code"] for item in report["blocking_issues"]
+        }
 
 
 def test_prepare_reuses_handoff_when_stage01_inputs_change() -> None:

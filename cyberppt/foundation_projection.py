@@ -256,6 +256,7 @@ def project_source_truth_to_foundation(source_truth: dict[str, Any]) -> dict[str
     facts, constraints, entities, numbers = _project_facts_and_constraints(source_truth)
     return {
         "source_consumption_policy": "required",
+        "source_consumption_contract_version": 2,
         "sources": _project_sources(source_truth),
         "source_structure": _project_source_structure(source_truth),
         "facts": facts,

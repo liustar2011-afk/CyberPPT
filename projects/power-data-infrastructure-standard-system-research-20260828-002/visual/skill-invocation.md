@@ -1,15 +1,15 @@
 # PPT Visual Structure Designer Invocation
 
 - skill: ppt-visual-structure-designer
-- skill_path: D:\CyberPPT\vendor\skills\ppt-visual-structure-designer\SKILL.md
-- skill_sha256: 9c89f589aad3be09baadc3f2733ea711a4a9c48bd4fd15fb71ec879e88c0c323
-- skill_bundle_sha256: 5e7378cbba7c6b70cf4c7ad938c69823da3f48ffeb87b4cce3b9939500c5f0d7
-- approved_script: D:\CyberPPT\projects\power-data-infrastructure-standard-system-research-20260828-002\workbench\scripts\final\script-final.md
-- approved_script_sha256: 0df8d20b0523770c0ff9fbed0e964a26ae0a49b8bb71622fca4b58fe78d1a669
-- approved_script_semantic_sha256: 50c30fb14f32ffc9e16c16a07ca7e66b3feaecff16b330619593985bba015324
-- stage02_handoff: D:\CyberPPT\projects\power-data-infrastructure-standard-system-research-20260828-002\workbench\stages\02-handoff\stage02-handoff.json
-- visual_design_input: D:\CyberPPT\projects\power-data-infrastructure-standard-system-research-20260828-002\visual\visual-design-input.json
-- skill_request: D:\CyberPPT\projects\power-data-infrastructure-standard-system-research-20260828-002\visual\skill-request.json
+- skill_path: /Volumes/DOC/CyberPPT/vendor/skills/ppt-visual-structure-designer/SKILL.md
+- skill_sha256: e1458a735c0cae13c1750f3dd146254fcd132d2358e1fecb37415c30dc968d4f
+- skill_bundle_sha256: e053be94ae9d2a2cbc4e8463f7314cbd5f296128494e785c713176d087fbb8f8
+- approved_script: /Volumes/DOC/CyberPPT/projects/power-data-infrastructure-standard-system-research-20260828-002/script/dist/final-script.md
+- approved_script_sha256: 62ea0987054b1632bd23357cd4a0dc03df03401fad71b4a225c9b020021fac24
+- approved_script_semantic_sha256: 3e7e52bc19e8c16b4180624b55706182417d377c5b92276db12478637bf40b0a
+- stage02_handoff: /Volumes/DOC/CyberPPT/projects/power-data-infrastructure-standard-system-research-20260828-002/workbench/stages/02-handoff/stage02-handoff.json
+- visual_design_input: /Volumes/DOC/CyberPPT/projects/power-data-infrastructure-standard-system-research-20260828-002/visual/visual-design-input.json
+- skill_request: /Volumes/DOC/CyberPPT/projects/power-data-infrastructure-standard-system-research-20260828-002/visual/skill-request.json
 - mode: workbench-handoff
 - content_lock: strict
 

@@ -189,6 +189,7 @@ def test_projection_adds_strict_policy_and_explicit_fact_bindings() -> None:
     number = foundation["numbers"][0]
 
     assert foundation["source_consumption_policy"] == "required"
+    assert foundation["source_consumption_contract_version"] == 2
     assert fact1["entity_refs"] == [
         entities["电力企业"]["id"],
         entities["数据服务机构"]["id"],

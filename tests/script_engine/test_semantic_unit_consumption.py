@@ -205,3 +205,14 @@ def test_pages_without_unit_dispositions_are_unaffected() -> None:
         for issue in final_issues
         for code in ("FULL_COPY_SEMANTIC_UNIT_GAP", "ONSCREEN_SOURCE_DETAIL_INSUFFICIENT")
     )
+
+
+def test_contract_v2_requires_unit_dispositions_on_strict_pages() -> None:
+    page = _page()
+    page["source_consumption"].pop("unit_dispositions")
+    foundation = _foundation()
+    foundation["source_consumption_contract_version"] = 2
+
+    issues, _ = audit_deck_plan(_plan(page), foundation)
+
+    assert any("SOURCE_CONSUMPTION_UNIT_CONTRACT_MISSING" in issue for issue in issues)

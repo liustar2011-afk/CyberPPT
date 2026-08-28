@@ -350,14 +350,16 @@ def test_check_speaker_notes_length_passes_normal_note() -> None:
 def test_check_declared_count_flags_mismatch_between_subtitle_and_modules() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["subtitle"] = "五方面基础"
+    payload["slides"][0]["onscreen_expected_peer_count"] = 5
     payload["slides"][0]["onscreen"] = [{"heading": h} for h in ("一", "二", "三", "四")]
     warnings = check_declared_count(payload)
     assert warnings
-    assert "declares a count of 5" in warnings[0]
+    assert "expects 5 visible peers" in warnings[0]
 
 def test_check_declared_count_matches_when_addendum_excluded() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["subtitle"] = "五个维度"
+    payload["slides"][0]["onscreen_expected_peer_count"] = 5
     payload["slides"][0]["onscreen"] = [{"heading": h} for h in ("一", "二", "三", "四", "五", "此外：储备方向")]
     assert check_declared_count(payload) == []
 
@@ -365,6 +367,13 @@ def test_check_declared_count_skips_ambiguous_compound_subtitle() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["subtitle"] = "六类角色·四类模式"
     payload["slides"][0]["onscreen"] = [{"heading": h} for h in ("一", "二", "三")]
+    assert check_declared_count(payload) == []
+
+
+def test_check_declared_count_skips_intrinsic_title_count_without_visible_peer_contract() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["title"] = "形成七大类标准体系框架"
+    payload["slides"][0]["onscreen"] = [{"heading": "研究结论"}]
     assert check_declared_count(payload) == []
 
 def test_check_onscreen_detail_length_flags_overlong_item() -> None:

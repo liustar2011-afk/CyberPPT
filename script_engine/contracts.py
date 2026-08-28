@@ -275,14 +275,14 @@ def _declared_count(text: str | None) -> int | None:
     return _COUNT_WORDS.get(matches[0].group(1))
 
 def check_declared_count(final_script: dict[str, Any]) -> list[str]:
-    """Advisory (non-blocking) check: does a single, unambiguous count claim in `subtitle` (or
-    `title` if there is no `subtitle`) match the number of `onscreen` modules, excluding modules
-    explicitly marked as outside the enumerated set (此外/另/补充 — see the Count-claim test in
-    references/script-quality-rubric.md)? This is deliberately a *warning*, not a hard `lint`
-    failure: a page can legitimately carry a secondary, unmarked grouping alongside its main
-    declared count (e.g. "三重定位" plus a "服务四类对象" module that is a real but uncounted 4th
-    module, not a bug) — a hard gate would false-positive on exactly the pages this check is
-    least confident about. Treat a hit as "worth a human glance", not "definitely wrong"."""
+    """Check an explicitly declared visible peer count against onscreen modules.
+
+    Titles often name an object's intrinsic size (for example, a seven-category
+    framework) without enumerating those seven categories on the current page.
+    Regex-only inference therefore creates predictable false positives.  AUTHOR
+    opts into this advisory check with ``onscreen_expected_peer_count`` only when
+    the page actually promises a visible peer set.
+    """
     warnings: list[str] = []
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
@@ -290,17 +290,24 @@ def check_declared_count(final_script: dict[str, Any]) -> list[str]:
         onscreen = slide.get("onscreen") or []
         if not onscreen:
             continue
-        declared = _declared_count(slide.get("subtitle")) or _declared_count(slide.get("title"))
-        if declared is None:
+        expected = slide.get("onscreen_expected_peer_count")
+        if not isinstance(expected, int) or isinstance(expected, bool) or expected < 1:
             continue
+        declared = _declared_count(slide.get("subtitle")) or _declared_count(slide.get("title"))
+        if declared is not None and declared != expected:
+            slide_id = slide.get("id") or f"#{index}"
+            warnings.append(
+                f"slides.{index} ({slide_id}): title/subtitle declares a count of {declared} "
+                f"but onscreen_expected_peer_count is {expected}"
+            )
         counted = sum(
             1 for m in onscreen
             if isinstance(m, dict) and m.get("heading")
             and not str(m["heading"]).startswith(_ADDENDUM_MARKERS)
         )
-        if counted != declared:
+        if counted != expected:
             slide_id = slide.get("id") or f"#{index}"
-            warnings.append(f"slides.{index} ({slide_id}): declares a count of {declared} but {counted} onscreen modules are in the enumerated set (excluding any 此外/另/补充-marked addendum) — worth a human check, not necessarily a bug")
+            warnings.append(f"slides.{index} ({slide_id}): expects {expected} visible peers but {counted} onscreen modules are in the enumerated set (excluding any 此外/另/补充-marked addendum)")
     return warnings
 
 ONSCREEN_DETAIL_PHRASE_MAX_CHARS = 30

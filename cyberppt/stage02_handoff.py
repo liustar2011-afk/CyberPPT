@@ -47,15 +47,72 @@ def _compact(value: object) -> str:
     return re.sub(r"\s+", "", str(value or ""))
 
 
-def _file_binding(path: Path, semantic_digest: Callable[[Path], str]) -> dict[str, str]:
+def _is_within(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def _file_binding(
+    path: Path,
+    semantic_digest: Callable[[Path], str],
+    *,
+    project: Path | None = None,
+) -> dict[str, str]:
     path = path.expanduser().resolve()
     if not path.is_file():
         raise FileNotFoundError(f"required Stage 02 handoff source is missing: {path}")
-    return {
+    binding = {
         "path": str(path),
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "semantic_sha256": semantic_digest(path),
     }
+    if project is not None:
+        project = project.expanduser().resolve()
+        if _is_within(path, project):
+            binding["scope"] = "project"
+            binding["path"] = path.relative_to(project).as_posix()
+    return binding
+
+
+def _relocated_project_path(project: Path, raw_path: str) -> Path | None:
+    """Resolve a legacy absolute project path after the project was moved.
+
+    Older handoffs stored Windows or POSIX absolute paths.  When the original
+    path is unavailable, recover only the suffix below this exact project
+    directory name; hashes still decide whether the recovered file is valid.
+    """
+
+    normalized = raw_path.replace("\\", "/")
+    marker = f"/{project.name}/"
+    if marker not in f"/{normalized.lstrip('/')}":
+        return None
+    suffix = f"/{normalized.lstrip('/')}".split(marker, 1)[1]
+    candidate = (project / suffix).resolve()
+    return candidate if _is_within(candidate, project) else None
+
+
+def _resolve_binding_path(
+    project: Path,
+    binding: dict[str, Any],
+    *,
+    field: str = "path",
+) -> Path | None:
+    raw = str(binding.get(field) or "").strip()
+    if not raw:
+        return None
+    if field == "path" and binding.get("scope") == "project":
+        candidate = (project / raw).resolve()
+        return candidate if _is_within(candidate, project) else None
+    candidate = Path(raw).expanduser()
+    if candidate.is_absolute() and candidate.is_file():
+        return candidate.resolve()
+    relocated = _relocated_project_path(project, raw)
+    if relocated is not None and relocated.is_file():
+        return relocated
+    return candidate.resolve()
 
 
 def ensure_project_script(project: Path, script: Path) -> Path:
@@ -71,10 +128,11 @@ def ensure_project_script(project: Path, script: Path) -> Path:
     project = project.expanduser().resolve()
     requested = script.expanduser().resolve()
     target = (project / SCRIPT_PATH).resolve()
-    if requested == target:
-        if not target.is_file():
-            raise FileNotFoundError(f"approved final script is missing: {target}")
-        return target
+    formal = (project / "script" / "dist" / "final-script.md").resolve()
+    if requested in {target, formal}:
+        if not requested.is_file():
+            raise FileNotFoundError(f"approved final script is missing: {requested}")
+        return requested
 
     if requested.is_file():
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -90,7 +148,9 @@ def ensure_project_script(project: Path, script: Path) -> Path:
             except (OSError, json.JSONDecodeError, ValueError):
                 payload = None
             binding = (payload or {}).get("source_bindings", {}).get("script", {})
-            external_path = Path(str(binding.get("external_path") or "")).expanduser().resolve()
+            external_path = _resolve_binding_path(
+                project, binding, field="external_path"
+            )
             if (
                 external_path == requested
                 and binding.get("sha256") == hashlib.sha256(target.read_bytes()).hexdigest()
@@ -522,14 +582,37 @@ def build_stage02_handoff(
     project = project.expanduser().resolve()
     requested_script = script.expanduser().resolve() if script else (project / SCRIPT_PATH).resolve()
     script = ensure_project_script(project, requested_script)
-    bindings = {"script": _file_binding(script, script_semantic_digest)}
-    if requested_script != script:
-        bindings["script"].update(
-            {
-                "source_mode": "external_script",
-                "external_path": str(requested_script),
-            }
+    bindings = {
+        "script": _file_binding(
+            script, script_semantic_digest, project=project
         )
+    }
+    if requested_script != script:
+        external: dict[str, Any] = {
+            "source_mode": "external_script",
+            "external_path": str(requested_script),
+        }
+        if requested_script.is_file():
+            external.update(
+                {
+                    "external_sha256": hashlib.sha256(
+                        requested_script.read_bytes()
+                    ).hexdigest(),
+                    "external_semantic_sha256": script_semantic_digest(
+                        requested_script
+                    ),
+                }
+            )
+        else:
+            handoff_path = project / HANDOFF_JSON
+            if handoff_path.is_file():
+                previous = _read_json(handoff_path).get("source_bindings", {}).get(
+                    "script", {}
+                )
+                for key in ("external_sha256", "external_semantic_sha256"):
+                    if previous.get(key):
+                        external[key] = previous[key]
+        bindings["script"].update(external)
     document = parse_script_path(script)
     deck_plan_pages = _deck_plan_page_map(project, requested_script, document)
     records = [
@@ -687,9 +770,12 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
         if not isinstance(binding, dict) or not binding.get("path"):
             issue("HANDOFF_BINDING_STALE", f"Binding {name} is absent or incomplete for the current Stage 01 authority.")
             continue
-        path = Path(str(binding["path"])).expanduser().resolve()
-        if not path.is_file():
-            issue("HANDOFF_BINDING_MISSING", f"Binding {name} is missing: {path}")
+        path = _resolve_binding_path(project, binding)
+        if path is None or not path.is_file():
+            issue(
+                "HANDOFF_BINDING_MISSING",
+                f"Binding {name} is missing: {binding.get('path')}",
+            )
             continue
         current_sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
         try:
@@ -699,6 +785,35 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
             continue
         if binding.get("sha256") != current_sha256 or binding.get("semantic_sha256") != current_semantic_sha256:
             issue("HANDOFF_BINDING_STALE", f"Binding {name} sha256 or semantic_sha256 differs from the current file: {path}")
+            continue
+        if name == "script" and binding.get("source_mode") == "external_script":
+            upstream = _resolve_binding_path(
+                project, binding, field="external_path"
+            )
+            if upstream is not None and upstream.is_file():
+                upstream_sha256 = hashlib.sha256(upstream.read_bytes()).hexdigest()
+                upstream_semantic_sha256 = semantic_digest(upstream)
+                expected_upstream_sha256 = binding.get("external_sha256")
+                expected_upstream_semantic = binding.get(
+                    "external_semantic_sha256"
+                )
+                upstream_changed = (
+                    expected_upstream_sha256
+                    and expected_upstream_sha256 != upstream_sha256
+                ) or (
+                    expected_upstream_semantic
+                    and expected_upstream_semantic != upstream_semantic_sha256
+                )
+                snapshot_drift = (
+                    upstream_sha256 != current_sha256
+                    or upstream_semantic_sha256 != current_semantic_sha256
+                )
+                if upstream_changed or snapshot_drift:
+                    issue(
+                        "HANDOFF_UPSTREAM_SCRIPT_STALE",
+                        "The external/upstream final script differs from the bound project snapshot; "
+                        f"rerun prepare-stage02-handoff: {upstream}",
+                    )
 
     pages = payload.get("pages")
     if not isinstance(pages, list) or not pages:

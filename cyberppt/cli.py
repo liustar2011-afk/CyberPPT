@@ -29,6 +29,7 @@ from cyberppt.commands.visual_structure_stage import (
     run_visual_structure_audit,
 )
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
+from cyberppt.project_status import build_project_status
 from cyberppt.semantic_understanding import (
     prepare_semantic_understanding,
     run_semantic_understanding_audit,
@@ -90,6 +91,16 @@ def _init_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _project_status_command(args: argparse.Namespace) -> int:
+    try:
+        report = build_project_status(Path(args.project))
+    except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 1 if report.get("status") == "blocked" else 0
+
+
 def _source_truth_audit_command(args: argparse.Namespace) -> int:
     try:
         code, report = run_source_truth_audit(
@@ -122,11 +133,12 @@ def _project_foundation_command(args: argparse.Namespace) -> int:
             existing = json.loads(output_path.read_text(encoding="utf-8-sig"))
         except (OSError, json.JSONDecodeError):
             existing = None
-        if isinstance(existing, dict) and "source_consumption_policy" not in existing:
+        if isinstance(existing, dict) and existing.get("source_consumption_contract_version") != 2:
             print(
-                "warning: overwriting a legacy foundation.json will enable "
-                "source_consumption_policy='required'; update deck-plan source_consumption "
-                "contracts and rerun the PLAN gate before AUTHOR.",
+                "warning: overwriting this foundation.json will enable "
+                "source_consumption_policy='required' with "
+                "source_consumption_contract_version=2; update deck-plan "
+                "source_consumption.unit_dispositions and rerun the PLAN gate before AUTHOR.",
                 file=sys.stderr,
             )
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -281,9 +293,10 @@ def _stage02_handoff_check_command(args: argparse.Namespace) -> int:
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
-    from cyberppt.artifact_ledger import write_json_atomic
+    if not args.no_write:
+        from cyberppt.artifact_ledger import write_json_atomic
 
-    write_json_atomic(project / HANDOFF_AUDIT, report)
+        write_json_atomic(project / HANDOFF_AUDIT, report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report.get("status") == "passed" else 1
 
@@ -518,6 +531,13 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--force", action="store_true", help="Overwrite generated project manifest and README.")
     init.set_defaults(func=_init_command)
 
+    project_status = subparsers.add_parser(
+        "status",
+        help="Compute live Stage 01 and Stage 02 project status from current artifacts.",
+    )
+    project_status.add_argument("project", help="CyberPPT project directory.")
+    project_status.set_defaults(func=_project_status_command)
+
     prepare_source_map_parser = subparsers.add_parser(
         "prepare-source-map",
         help="Compile stable source units and the original source heading tree.",
@@ -607,6 +627,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Audit Stage 02 handoff fields, source paths, roles, text locks, and coordinate spaces.",
     )
     check_handoff.add_argument("project", help="CyberPPT project directory.")
+    check_handoff.add_argument(
+        "--no-write",
+        action="store_true",
+        help="Print the live audit result without updating the persisted audit receipt.",
+    )
     check_handoff.set_defaults(func=_stage02_handoff_check_command)
 
     source_truth_audit = subparsers.add_parser(

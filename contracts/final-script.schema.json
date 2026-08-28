@@ -124,6 +124,10 @@
               "additionalProperties": true
             }
           },
+          "onscreen_expected_peer_count": {
+            "type": "integer",
+            "minimum": 1
+          },
           "visual_thesis": {
             "type": "string"
           },

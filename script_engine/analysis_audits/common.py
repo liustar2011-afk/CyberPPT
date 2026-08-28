@@ -613,12 +613,10 @@ def _audit_unit_consumption_definition(
 ) -> list[str]:
     """Validate per-semantic-unit consumption disposition.
 
-    This is an optional refinement layered on top of the record-level
-    ``source_consumption`` contract: a single anchor hit on a record cannot
-    stand in for every semantic unit inside that record. Skipped entirely
-    when the page isn't under strict policy or hasn't declared
-    ``unit_dispositions`` yet, so historical and thin-source pages are
-    unaffected.
+    Contract version 2 makes the disposition array mandatory for strict
+    sourced pages. Historical foundations without that version retain the
+    optional behavior, so migration happens only when project-foundation is
+    explicitly rerun.
     """
     if not requires_source_consumption(page, foundation):
         return []
@@ -627,7 +625,15 @@ def _audit_unit_consumption_definition(
         return []
     dispositions = contract.get("unit_dispositions")
     if dispositions is None:
-        return []
+        return (
+            [
+                "SOURCE_CONSUMPTION_UNIT_CONTRACT_MISSING: "
+                "source_consumption.unit_dispositions is required by "
+                "source_consumption_contract_version=2"
+            ]
+            if foundation.get("source_consumption_contract_version") == 2
+            else []
+        )
     if not isinstance(dispositions, list):
         return ["source_consumption.unit_dispositions: must be an array"]
 

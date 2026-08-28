@@ -255,6 +255,7 @@ def test_cli_lint_fails_on_placeholder_speaker_notes(tmp_path, capsys) -> None:
 def test_cli_lint_declared_count_mismatch_is_a_warning_not_a_failure(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     payload["slides"][0]["subtitle"] = "五方面基础"
+    payload["slides"][0]["onscreen_expected_peer_count"] = 5
     filler = ["甲乙丙丁戊己庚辛壬癸子丑", "寅卯辰巳午未申酉戌亥零一", "二三四五六七八九十百千万", "东西南北春夏秋冬金木水火"]
     payload["slides"][0]["onscreen"] = [
         {"heading": h, "text": f"{h}项说明{filler[i]}", "items": [f"{h}项细节{filler[(i + 1) % 4]}", f"{h}项细节{filler[(i + 2) % 4]}", f"{h}项补充{filler[(i + 3) % 4]}"]}
@@ -266,7 +267,7 @@ def test_cli_lint_declared_count_mismatch_is_a_warning_not_a_failure(tmp_path, c
     out = json.loads(capsys.readouterr().out)
     assert exit_code == 0
     assert out["status"] == "passed"
-    assert any("declares a count of 5" in warning for warning in out["warnings"])
+    assert any("expects 5 visible peers" in warning for warning in out["warnings"])
 
 def test_cli_lint_flags_duplicate_onscreen_heading(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))

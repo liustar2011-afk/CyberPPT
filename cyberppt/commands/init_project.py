@@ -59,7 +59,8 @@ directories:
   final_script_json: script/dist/final-script.json
 status:
   stage: initialized
-  notes: "Authoritative Stage 01 uses canonical Markdown drafts/final script as the source of truth; lightweight controls omit approval ledgers and hash-freshness state."
+  live: false
+  notes: "Initialization metadata only. Run `python -m cyberppt status <project>` for live Stage 01 and Stage 02 status."
 """
 
 
@@ -84,6 +85,8 @@ CyberPPT authoritative Stage 01 workspace (lightweight controls).
 **Hand off to Stage 02**:
 
 6. Run `prepare-stage02-handoff --script script/dist/final-script.md`, then `stage02-handoff-check`.
+
+Use `python -m cyberppt status <project>` for a read-only live view across Stage 01 and Stage 02. The `manifest.yml` status block records initialization metadata only.
 
 The authoritative lightweight path creates no page-script-authoring JSON, approval JSON, interaction state, generation receipt, retry attempt, escalation, artifact ledger or hash-freshness gate. `script/foundation.json`, `script/deck-plan.json` and `script/dist/final-script.md` are the three authoritative Stage 01 planning/writing artifacts.
 """

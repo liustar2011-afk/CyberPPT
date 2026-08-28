@@ -59,7 +59,7 @@
 
 语义模型验证通过后，运行 `.venv/bin/python3 -m cyberppt project-foundation <project>`，将 Source Truth 机械投影到脚本引擎的 `script/foundation.json`。该步骤只搬运已确认字段，不重新分析源材料。
 
-正式投影同时写入 `source_consumption_policy: required`，并保留后续忠实度检查所需的 `semantic_units`、`coverage_anchors`、条件、原文定位以及事实与主体/数字的显式绑定。历史 Foundation 缺少策略字段时继续使用兼容路径。历史项目重新运行 `project-foundation` 会单向进入严格模式；命令在覆盖旧 Foundation 前输出非交互警告，随后必须补齐 Deck Plan 的来源消费合同并重新通过 PLAN Gate。
+正式投影同时写入 `source_consumption_policy: required` 和 `source_consumption_contract_version: 2`，并保留后续忠实度检查所需的 `semantic_units`、`coverage_anchors`、条件、原文定位以及事实与主体/数字的显式绑定。版本 2 要求严格内容页在 `source_consumption.unit_dispositions` 中逐项声明语义单元进入完整稿、上屏、后续页面、追溯或有理由删减。历史 Foundation 缺少版本字段时继续使用兼容路径。历史项目重新运行 `project-foundation` 会单向进入严格模式；命令在覆盖旧 Foundation 前输出非交互警告，随后必须补齐 Deck Plan 的来源消费合同并重新通过 PLAN Gate。
 
 产物：
 

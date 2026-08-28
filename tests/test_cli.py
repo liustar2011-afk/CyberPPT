@@ -144,9 +144,23 @@ class CliTests(unittest.TestCase):
                 code = main(["project-foundation", str(project)])
 
             self.assertEqual(0, code)
-            self.assertIn("overwriting a legacy foundation.json", stderr.getvalue())
+            self.assertIn("source_consumption_contract_version=2", stderr.getvalue())
             projected = json.loads(output_path.read_text(encoding="utf-8"))
             self.assertEqual("required", projected["source_consumption_policy"])
+            self.assertEqual(2, projected["source_consumption_contract_version"])
+
+    def test_stage02_handoff_check_no_write_keeps_receipt_unchanged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            receipt = project / "workbench/stages/02-handoff/stage02-handoff-audit.json"
+            receipt.parent.mkdir(parents=True)
+            receipt.write_text('{"status":"old"}\n', encoding="utf-8")
+            report = {"status": "passed", "blocking_issues": []}
+            with patch("cyberppt.cli.audit_stage02_handoff", return_value=report):
+                code = main(["stage02-handoff-check", str(project), "--no-write"])
+
+            self.assertEqual(0, code)
+            self.assertEqual('{"status":"old"}\n', receipt.read_text(encoding="utf-8"))
 
     def test_prepare_source_map_command_compiles_stable_units(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
