@@ -207,8 +207,12 @@ business dimensions, or absorb a page-level conclusion, add an optional
 - `relation`: `parallel`, `sequence`, `hierarchy`, `matrix` or `mixed`;
 - `detail_axis`: the common question answered by peer modules, such as
   `gap_manifestation` or `service_capability`;
-- `expression_mode`: `phrase_led`, `sentence_led` or `mixed`; choose the
-  permitted language form after `onscreen_composition` has set the lead policy;
+- `expression_mode`: use `mixed` as the normal choice for explanatory content;
+  use `sentence_led` when each module must carry a complete judgment, mechanism,
+  boundary or stage result; use `phrase_led` only for a genuine taxonomy,
+  metric set, object inventory, exact source-label set or short sequence, and
+  declare the matching `phrase_led_basis` (`taxonomy`, `metric_set`,
+  `object_inventory`, `exact_labels` or `short_sequence`);
 - `modules`: the approved module headings, each with `evidence_refs` and at least
   one visible `required_signals`, plus `forbidden_signals` when useful;
 - `scope_mode: exclusive` when a module must not carry another module's issue;
@@ -224,6 +228,12 @@ to force equal item counts or identical sentence patterns. A parallel page may
 legitimately have different numbers of source-grounded details in different
 modules. Module headings, selective readable leads, and compact evidence details
 may coexist when the page's declared composition policy permits them.
+
+Do not select one expression mode deck-wide for visual consistency. Diagnosis,
+mechanism, implementation, responsibility, comparison and conclusion pages
+normally require `mixed` or `sentence_led`; a sequence relation alone does not
+justify `phrase_led`. PLAN audit blocks `phrase_led` without a narrow declared
+basis so AUTHOR cannot be pre-compressed into field labels before writing.
 
 Set top-level `evidence_fit_review_mode: strict` for every source-grounded Deck
 Plan. There is no legacy compatibility path. Before accepting a page judgment or visible module,

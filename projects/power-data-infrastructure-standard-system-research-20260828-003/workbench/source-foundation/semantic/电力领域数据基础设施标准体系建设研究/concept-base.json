@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "concept_base",
+  "concepts": [
+    {
+      "concept_id": "c-standard-system",
+      "canonical_name": "电力领域数据基础设施标准体系",
+      "concept_type": "deliverable",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0082",
+        "nf-0137"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-cpe",
+      "canonical_name": "中国电力企业联合会",
+      "concept_type": "organization",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0131"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-pilot",
+      "canonical_name": "电力领域数据基础设施先行先试项目",
+      "concept_type": "project",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0038",
+        "nf-0077",
+        "nf-0124"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-national-infra",
+      "canonical_name": "国家数据基础设施",
+      "concept_type": "platform",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0119",
+        "nf-0124",
+        "nf-0137"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-policy-guide",
+      "canonical_name": "国家数据基础设施建设指引",
+      "concept_type": "policy",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0030"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-energy-class",
+      "canonical_name": "能源行业数据分类分级指南（2026年版）",
+      "concept_type": "policy",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0035",
+        "nf-0055",
+        "nf-0082",
+        "nf-0110"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-four-directions",
+      "canonical_name": "四大建设方向",
+      "concept_type": "requirement",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0053",
+        "nf-0082"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-eight-capabilities",
+      "canonical_name": "数据全生命周期八大能力",
+      "concept_type": "capability",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0053",
+        "nf-0082"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-seven-categories",
+      "canonical_name": "七大标准类目",
+      "concept_type": "deliverable",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0082",
+        "nf-0130",
+        "nf-0137"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-three-unified",
+      "canonical_name": "三统一能力",
+      "concept_type": "capability",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0039",
+        "nf-0077",
+        "nf-0114",
+        "nf-0126"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-access",
+      "canonical_name": "主体接入能力",
+      "concept_type": "capability",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0039",
+        "nf-0077",
+        "nf-0082",
+        "nf-0128",
+        "nf-0137"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-circulation",
+      "canonical_name": "数据流通利用能力",
+      "concept_type": "capability",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0039",
+        "nf-0077",
+        "nf-0082",
+        "nf-0128",
+        "nf-0137"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-security",
+      "canonical_name": "安全保障能力",
+      "concept_type": "capability",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0039",
+        "nf-0077",
+        "nf-0082",
+        "nf-0137"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-gaps",
+      "canonical_name": "现状标准化差距",
+      "concept_type": "problem",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0064"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-priority",
+      "canonical_name": "三级研制优先级",
+      "concept_type": "process",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0120"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-roadmap",
+      "canonical_name": "三阶段实施路径",
+      "concept_type": "process",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0125"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-scenes",
+      "canonical_name": "重点应用场景",
+      "concept_type": "scenario",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0040",
+        "nf-0123"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "c-assessment",
+      "canonical_name": "标准实施评估机制",
+      "concept_type": "process",
+      "definition": "由源材料中相关事实归并形成的业务概念。",
+      "aliases": [],
+      "normalized_fact_ids": [
+        "nf-0128"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

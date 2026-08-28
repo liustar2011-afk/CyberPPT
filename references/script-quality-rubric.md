@@ -111,6 +111,27 @@ Every strong page message identifies how it is established.
 
 Important qualifiers, responsibilities, numbers, rights and distinctions must survive in the correct layer.
 
+### Independent-reading test
+
+Assume the presenter remains silent. The title, optional subtitle or lead,
+modules and details must let the reader understand the page's main content,
+proof structure and material qualifications without consulting `full_copy` or
+speaker notes.
+
+### Visible-payload test
+
+Every visible line must add a source-grounded fact, distinction, action, state,
+role, condition, boundary or result in its parent context. Bare names, keywords,
+year ranges and number ranges fail when the page expects them to explain a
+task, milestone, positioning, capability or responsibility. Dates must bind to
+tasks, checkpoints or results; numbers must identify what they measure.
+
+### Ten-second and deletion tests
+
+After a short scan, a reader should be able to restate the page's principal
+content. If removing a line changes neither that understanding nor the page's
+proof, remove the line or replace it with missing evidence.
+
 ### Continuity test
 
 If adjacent pages feel disconnected, strengthen the bridge or page argument first. Reordering across source chapters is not a default repair.
@@ -164,6 +185,10 @@ Rewrite when:
 - a plausible implication is written as a source fact;
 - `core_message` or `visual_thesis` narrates the analysis process (识别/筛选/归纳 as grammatical subject) instead of stating the judgment itself;
 - title/message/modules echo each other;
+- the page passes source coverage but still requires presenter explanation to
+  connect visible fragments;
+- a visible item contains only a label, date span, number span or keyword where
+  a task, state, role, result or boundary is required;
 - evidence-grade or analysis-model language appears in canonical Markdown;
 - a structural edit leaves `上一页/下一页/前三步/后三步` residue in affected prose;
 - speaker notes read as author instructions or page-navigation commentary;

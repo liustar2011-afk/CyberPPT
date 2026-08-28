@@ -296,6 +296,22 @@ def test_strict_evidence_fit_review_accepts_source_bound_page_and_module_reviews
     assert issues == []
 
 
+def test_strict_evidence_fit_review_rejects_tautological_reasons() -> None:
+    foundation, plan = _strict_evidence_fit_fixture()
+    page = plan["pages"][0]
+    page["evidence_fit_review"]["items"][0]["reason"] = (
+        "E1直接回答当前页面问题并支撑页面判断"
+    )
+    page["onscreen_contract"]["modules"][0]["evidence_fit_review"]["items"][0]["reason"] = (
+        "E2直接说明“绿色低碳”所承载的来源事实或要求"
+    )
+
+    issues, _ = audit_deck_plan(plan, foundation)
+    joined = "\n".join(issues)
+
+    assert joined.count("EVIDENCE_FIT_REASON_GENERIC") == 2
+
+
 def test_strict_evidence_fit_review_requires_page_and_module_reviews() -> None:
     foundation, plan = _strict_evidence_fit_fixture()
     plan["pages"][0].pop("evidence_fit_review")
@@ -571,12 +587,51 @@ def test_onscreen_contract_expression_mode_warns_when_mixed_copy_has_no_proposit
     assert issues == []
     assert any("expression_mode='mixed'" in warning for warning in warnings)
 
+
+def test_onscreen_contract_accepts_readable_proposition_without_terminal_punctuation() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    plan["pages"][0]["onscreen_contract"]["expression_mode"] = "mixed"
+    final = _contracted_final()
+    final["slides"][0]["onscreen"][0]["text"] = (
+        "基础通用标准供给仍存在跨领域衔接不足"
+    )
+
+    issues, warnings = audit_final_script(final, plan, foundation)
+
+    assert issues == []
+    assert not any("expression_mode='mixed'" in warning for warning in warnings)
+
 def test_onscreen_contract_rejects_unknown_expression_mode() -> None:
     foundation, plan, _ = _contracted_gap_fixture()
     plan["pages"][0]["onscreen_contract"]["expression_mode"] = "paragraph_led"
     assert validate_deck_plan(plan)
     issues, _ = audit_deck_plan(plan, foundation)
     assert any("expression_mode" in issue for issue in issues)
+
+
+def test_phrase_led_requires_a_narrow_declared_basis() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    contract = plan["pages"][0]["onscreen_contract"]
+    contract["expression_mode"] = "phrase_led"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("ONSCREEN_PHRASE_LED_BASIS_MISSING" in issue for issue in issues)
+
+    contract["phrase_led_basis"] = "taxonomy"
+    issues, _ = audit_deck_plan(plan, foundation)
+    assert not any("ONSCREEN_PHRASE_LED_BASIS_MISSING" in issue for issue in issues)
+
+
+def test_phrase_led_basis_is_rejected_for_mixed_copy() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    contract = plan["pages"][0]["onscreen_contract"]
+    contract["expression_mode"] = "mixed"
+    contract["phrase_led_basis"] = "taxonomy"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("only valid when expression_mode='phrase_led'" in issue for issue in issues)
 
 
 def test_real_source_contains_the_semantic_boundaries_that_drive_v041() -> None:

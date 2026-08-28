@@ -38,6 +38,16 @@ def test_plan_review_renders_title_message_evidence_and_bridge_without_mutation(
     assert foundation == before_foundation
 
 
+def test_plan_review_renders_optional_subtitle_in_summary_and_detail() -> None:
+    plan, foundation = _example()
+    plan["pages"][0]["subtitle"] = "核心观点摘要"
+
+    markdown = render_plan_review(plan, foundation)
+
+    assert "数据服务形成机制<br>副标题：核心观点摘要" in markdown
+    assert "- 页面副标题：核心观点摘要" in markdown
+
+
 def test_plan_review_renders_deck_and_chapter_narrative_fields() -> None:
     plan, foundation = _example()
 

@@ -34,6 +34,35 @@ Automatically:
 7. run Critic, rewrite, deterministic audits and delivery validation;
 8. report **最终脚本已生成**.
 
+### AUTHOR execution model
+
+`AUTHOR` is a generative agent stage. It is not a deterministic transformation
+from `deck-plan.json` fields to Markdown, and it is not completed by passing a
+schema, lint or source-coverage audit.
+
+The author agent must read the document thesis and table of contents first,
+then the target page's argument node, complete source prose, adjacent-page
+contracts and approved evidence boundary. It independently decides what a
+silent reader must understand, which facts deserve visible weight, how related
+facts should be merged, how the page should be written, which business
+relationship must become visually legible, and how the presenter should explain
+the argument aloud. If the inherited
+module grouping is semantically invalid, it returns to PLAN and repairs the
+smallest affected page contract before writing.
+
+Deterministic code runs only after the generative pass. Its role is to detect
+source loss, proposition drift, unsupported relations, broken boundaries and
+delivery-format defects. It must never create onscreen copy by abbreviating
+source bullets, splitting one source sentence into cards, or filling one output
+field from each PLAN field. It must not synthesize `visual_thesis` by copying the
+core message or synthesize `speaker_notes` by concatenating module headings and
+items. An audit result proves compliance with a bounded
+contract; it does not prove authorship or reading quality.
+
+For revisions, the author agent rewrites the page from its semantic brief. It
+does not patch the previous onscreen copy line by line unless the user has
+explicitly requested a literal wording correction.
+
 ## 3. Re-plan
 
 Distinguish two cases.

@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "pipeline_version": "0.5.0",
+  "input": "projects/power-data-infrastructure-standard-system-research-20260828-003/source/电力领域数据基础设施标准体系建设研究.docx",
+  "output_root": "projects/power-data-infrastructure-standard-system-research-20260828-003/workbench/source-foundation",
+  "items": [
+    {
+      "source": "projects/power-data-infrastructure-standard-system-research-20260828-003/source/电力领域数据基础设施标准体系建设研究.docx",
+      "markdown": "projects/power-data-infrastructure-standard-system-research-20260828-003/workbench/source-foundation/markdown/电力领域数据基础设施标准体系建设研究.md",
+      "foundation": "projects/power-data-infrastructure-standard-system-research-20260828-003/workbench/source-foundation/foundation/电力领域数据基础设施标准体系建设研究",
+      "status": "ok",
+      "semantic": "projects/power-data-infrastructure-standard-system-research-20260828-003/workbench/source-foundation/semantic/电力领域数据基础设施标准体系建设研究",
+      "semantic_prepare": {
+        "upstream_changed": false,
+        "invalidated_authored_artifacts": [],
+        "foundation_digest": {
+          "digest_version": "semantic-foundation-v1",
+          "structure_sha256": "ca2a9679d6002a2408d7d4c8d13c992d9988e307bc2f34c356bcb5959fcd43c5",
+          "fact_base_sha256": "ffc4f5ef652394201794cbc15cedc9c861a278ab4d2d7ee377ab5f6e980e75ea"
+        }
+      },
+      "stage": "semantic-prepared",
+      "stages_built": [
+        "markdown",
+        "foundation",
+        "semantic"
+      ],
+      "stages_skipped": []
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "ok": 1,
+    "skipped": 0,
+    "errors": 0
+  }
+}

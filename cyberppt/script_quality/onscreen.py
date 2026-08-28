@@ -6,6 +6,7 @@ from cyberppt.onscreen_expression import (
     expression_requires_action_headings,
     resolve_onscreen_expression,
 )
+from cyberppt.onscreen_text_rules import is_readable_onscreen_proposition
 from cyberppt.paths import repo_path
 from cyberppt.source_detail_visibility import (
     clean_visible_line,
@@ -893,8 +894,9 @@ def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
     the compact-detail rule by dropping terminal punctuation.
     """
 
+    lines = text.splitlines()
     overages: list[tuple[str, int]] = []
-    for raw in text.splitlines():
+    for index, raw in enumerate(lines):
         line = strip_authoring_group_marker(raw).strip()
         line = re.sub(r"^[-*+•]\s*", "", line).strip()
         if not line or line.startswith("#") or MODULE_RE.match(line):
@@ -906,10 +908,27 @@ def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
         else:
             body = line
         body_chars = meaningful_char_count(body)
+        has_parent_module = any(
+            _line_indent(previous) < _line_indent(raw)
+            and _module_title(previous) is not None
+            for previous in lines[:index]
+            if previous.strip()
+        )
+        readable_proposition = (
+            not labelled_detail
+            and is_readable_onscreen_proposition(
+                line,
+                min_chars=16,
+                max_chars=ONSCREEN_COMPLETE_PROPOSITION_CHARS,
+            )
+        )
         if (
             not labelled_detail
-            and line.endswith(("。", "！", "？"))
             and body_chars <= ONSCREEN_COMPLETE_PROPOSITION_CHARS
+            and (
+                line.endswith(("。", "！", "？"))
+                or (has_parent_module and readable_proposition)
+            )
         ):
             continue
         if body_chars > ONSCREEN_DETAIL_PHRASE_WARNING_CHARS:

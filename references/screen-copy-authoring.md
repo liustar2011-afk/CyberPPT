@@ -15,6 +15,50 @@ Use this order:
 
 Do not start by compressing source paragraphs into short labels. Premature compression is a major cause of generic, repetitive PPT copy.
 
+### Mandatory author pass
+
+Onscreen copy is an editorial selection from the complete page argument. Before
+writing any visible line, perform these five actions in order:
+
+1. **Understand** — read the page question, approved message, argument chain,
+   full copy, selected `onscreen_refs`, module questions and source boundaries.
+2. **Select** — state internally what a silent reader must understand after the
+   page, then retain only the facts, distinctions, conditions and results that
+   directly establish that understanding. Source details that are fully
+   consumed in `full_copy` do not gain equal visual weight by default.
+3. **Organize** — choose modules from the real relationship among the retained
+   meanings: sequence, causality, hierarchy, comparison, actor responsibility,
+   transformation, taxonomy, boundary, or evidence-to-conclusion. Source
+   paragraph adjacency and bullet count do not establish a visible group.
+4. **Write** — make every visible module or detail communicate a self-contained
+   semantic payload in its parent context. Preserve the business object or
+   actor, action or state, and the material result, role, condition or boundary.
+5. **Read silently** — assume that the presenter says nothing. Rewrite when the
+   reader must recover a missing subject, action, result, relationship or
+   qualification from the manuscript or speaker notes.
+
+This pass is an AUTHOR responsibility, not a new artifact or authority. Keep
+the selection reasoning internal and deliver only the repaired script.
+
+### Visible-payload test
+
+A visible line passes when its wording and parent heading together let the
+reader answer what the item is, what it does or what state it is in, and why the
+item matters on this page. A bare name, year range, number range, keyword or
+generic management verb cannot carry a module's meaning by itself.
+
+Bind dates and numbers to their business meaning:
+
+```text
+Weak: 三阶段目标：2026年至2029年
+Readable: 2026年：完成标准体系框架研究和首批标准布局
+Readable: 2027—2028年：推进重点标准研制并开展应用验证
+Readable: 2029年：形成覆盖建设、运营和服务的标准体系
+```
+
+The examples illustrate semantic completeness; they do not prescribe a fixed
+three-item layout.
+
 ### Internal-report composition order
 
 For internal reports, organize each content page in this authoring order:
@@ -75,6 +119,9 @@ Do not use parallel boxes merely because several source bullets exist.
 - Avoid turning background details, form fields, attachment lists, or operational minutiae into equal-weight onscreen blocks.
 - Numerical ordering may be used only when the source supports real sequence, phase, priority, timing, dependency, or gating.
 - If a boundary controls how a claim may be understood, do not compress it away solely to make the page shorter.
+- Character limits diagnose layout risk. When shortening removes the subject,
+  action, state, result or boundary, split the line, promote a real proposition
+  to a permitted module lead, or repair the page structure.
 
 ## 5. Relationship-first expression
 
@@ -120,6 +167,15 @@ Avoid:
 - source citations replacing actual explanation;
 - `source_refs` / citation codes / the word "证据" appearing inside onscreen wording. Traceability is a separate machine field rendered in its own section; the audience never reads it.
 
+Before delivery, apply these silent-reading questions:
+
+- Can a reader state the page's main content after roughly ten seconds?
+- Does every visible line add a fact, distinction, condition, role or result?
+- Can dates and numbers be interpreted without consulting the full copy?
+- Does every child directly answer the question implied by its parent heading?
+- Would deleting a line leave the page's explanation unchanged? If yes, remove
+  it or replace it with missing evidence.
+
 ## 7. Expression modes and density
 
 Do not impose one universal character count on every page. Density should follow the page's role and evidence burden.
@@ -150,9 +206,12 @@ question. Keep a needed module judgment in `core_message`, or choose
 
 When a page has an `onscreen_contract`, declare `expression_mode` as:
 
-- `phrase_led` for classifications, lists, metrics, and object enumerations;
+- `mixed` as the normal choice for explanatory pages that combine readable
+  propositions with compact supporting evidence;
 - `sentence_led` for judgments, problem responses, mechanisms, and boundary explanations;
-- `mixed` where permitted module judgments and compact evidence details coexist.
+- `phrase_led` only for a genuine taxonomy, metric set, object inventory, exact
+  source-label set or short sequence. Declare the matching `phrase_led_basis`;
+  a sequence relation by itself does not justify phrase-only writing.
 
 Under `mixed`, use a complete source-grounded proposition for a permitted module
 lead when it improves independent reading, then use compact clauses or phrases for
@@ -160,6 +219,11 @@ differentiated evidence. Under `sentence_led`, every permitted lead module shoul
 carry at least one readable proposition. `evidence_first` takes precedence over
 these expression modes and keeps module `text` empty. A parallel page may use
 complete sentences without becoming a progression chain.
+
+Do not repeat one mode across the deck for visual consistency. Choose the mode
+from the reading duty of each page. Diagnosis, mechanism, implementation,
+responsibility, comparison and conclusion pages usually need normal sentence
+syntax somewhere in the visible hierarchy.
 
 Visible module copy must not end with a period, comma, semicolon, enumeration mark, or other punctuation/symbol. The module boundary already provides the visual pause: use `heading` + complete lead `text` without a terminal glyph, then compact supporting items without terminal glyphs. Keep internally meaningful notation such as `GB/T 13016`, `A3` and `IEC 61970`; the renderer's `标题：说明` separator is structural and remains outside the authored text.
 

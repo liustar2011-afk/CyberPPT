@@ -9,6 +9,33 @@ description: Author a complete PPT script from foundation.json and an approved s
 
 Turn the approved source-constrained plan into a source-faithful, analytically strong, presentation-ready script.
 
+## Execution identity
+
+This Skill defines the role of a generative **author agent**. The agent owns
+editorial selection, grouping, synthesis, prose, compression and rewrite. JSON
+schemas, audit functions, linters and renderers are post-writing guardrails;
+they are not content generators and cannot stand in for this role.
+
+For every page, begin from the document thesis, source table of contents, page
+question, argument node, complete source prose and adjacent-page handoff. Do not
+begin from the existing onscreen bullets. On revision, discard a weak visible
+structure and write a fresh candidate from that semantic brief. Preserve an
+existing line only when it earns its place in the new argument.
+
+Before deterministic validation, the author agent must have made six real
+editorial decisions:
+
+1. what the reader should understand after the page;
+2. which source facts are essential onscreen and which remain in full prose;
+3. what semantic relationship organizes the selected facts;
+4. what wording allows the page to be understood without a presenter;
+5. what business relationship the visual structure must make immediately legible;
+6. what the presenter should explain aloud to connect the evidence into a coherent account.
+
+Keep these decisions internal. If they cannot be made from the approved PLAN,
+repair PLAN first. Passing deterministic checks without this generative pass is
+not AUTHOR completion.
+
 Read:
 
 - `docs/SOURCE_FIDELITY_AND_ANALYSIS.md`;
@@ -170,6 +197,34 @@ For `audience_scope: external`, do not place `internal_only` material in `core_m
 
 Compress only after full copy is sound.
 
+### Mandatory editorial sequence
+
+Do not treat onscreen authoring as keyword-preserving abbreviation. For every
+content page, execute this sequence before producing the final `onscreen` field:
+
+1. **Understand** the page question, approved `message`, proof chain, full copy,
+   source boundaries, selected `onscreen_refs`, and each module's evidence-fit
+   question.
+2. **Select** the minimum sufficient visible facts and distinctions that let a
+   silent reader understand and verify the page's message. Keep other assigned
+   source details in `full_copy`, notes, or traceability according to PLAN.
+3. **Organize** the selection by the approved primary relation and the real
+   semantic role of each item. Do not derive modules from Word bullet count,
+   paragraph co-location, required-signal count, or a preferred visual grid.
+4. **Write** each module and detail as readable presentation language. In its
+   parent context, each visible unit must retain enough of the business object
+   or actor, action or state, and material result, role, condition, or boundary
+   to explain what it means.
+5. **Critique as a silent reader** and rewrite before deterministic audit. The
+   selection and Critic reasoning remain internal; do not create another
+   authoritative artifact or expose the reasoning in `final-script.md`.
+
+The deterministic source-consumption contract protects assigned facts from
+silent loss. It does not rank all assigned facts equally for visibility and it
+does not prove that the visible wording is understandable. Keyword hits,
+character counts and source-text overlap are evidence for narrow audit duties,
+not substitutes for the editorial sequence above.
+
 Use the reference rules in `../../../references/screen-copy-authoring.md`. When
 the plan declares `onscreen_composition: evidence_first`, keep the page judgment
 in `core_message` and write every module as a heading plus source-grounded
@@ -181,12 +236,27 @@ on any visible module heading, lead line, or item; the module boundary supplies
 the visual pause. Shortening must remove redundancy, not the subject, predicate,
 state, condition or business relationship that makes the claim readable.
 
+Treat `mixed` as the normal explanatory mode. `phrase_led` is valid only when
+PLAN declares `phrase_led_basis` for a taxonomy, metric set, object inventory,
+exact source-label set or genuinely short sequence. It does not authorize
+turning every fact into `标签：短语`; write natural propositions whenever the
+reader needs an action, state, mechanism, result or boundary to understand the
+module. A 30-character detail band applies to compact evidence fragments, not
+to a source-grounded proposition carried by a permitted module lead.
+
 For `evidence_first`, do not demote a former module lead by placing it as the
 first `items` entry. Flat evidence items render at the same level, so every item
 under a module must answer the same evidence question at comparable granularity.
 Use peer objects, requirements, stages, actors, conditions, or factual results.
 When one judgment must govern lighter supporting details, select `selective_lead`
 in the plan and keep the judgment in the permitted `text` field.
+
+Use `evidence_first` only when every module presents same-level peer evidence
+that remains intelligible without a module judgment: a taxonomy, object
+inventory, scene set or factual evidence set. A diagnosis, mechanism,
+implementation path, responsibility arrangement or conclusion page normally
+needs `selective_lead` or no composition restriction so natural explanatory
+sentences remain available.
 
 If the approved page plan contains `onscreen_contract`, treat it as the visible
 module contract: preserve the declared relation and module-heading order, keep each
@@ -228,6 +298,10 @@ deterministic visible proof. Other fully consumed records may remain in
 items merely because they were assigned to the page.
 
 - Use concrete nouns, numbers, actors, conditions and distinctions.
+- Reject visible units made only of a name, date range, number range, keyword,
+  or generic management label when the unit is expected to explain a task,
+  state, role, result or boundary. Bind every milestone date to its task,
+  checkpoint or result and every material number to what it measures.
 - In project-positioning, capability, task, responsibility and validation-scene
   groups, do not leave child items as names alone. Write `label: object / role /
   task / boundary` using approved evidence or the approved page relationship,
@@ -260,6 +334,27 @@ Evidence grades (`explicit / inferred / speculative`) stay in Foundation/PLAN or
 
 Do not specify fonts, colors, images, layout coordinates or Stage 02 style decisions.
 
+### Visual-author pass
+
+The author agent writes `visual_thesis` and `relationships` after the page
+argument and onscreen hierarchy are stable. Do not copy `core_message` into
+`visual_thesis` as a placeholder and do not derive a visual structure by
+counting modules.
+
+The pass has four responsibilities:
+
+1. identify the business judgment that must become visually obvious;
+2. identify the business objects or semantic groups that carry that judgment;
+3. select only source-supported or PLAN-approved relationships among them;
+4. express the result as renderer-independent visual semantics.
+
+For a taxonomy or parallel page, grouping, shared framing, comparison or
+coordinated coverage may be the complete visual structure. Do not add arrows to
+make the page look analytical. When PLAN declares `primary_relation: parallel`
+and no `secondary_relations`, keep `relationships` empty and make the grouping
+logic explicit in `visual_thesis`. Stage 02 decides geometry and style from
+these semantics; it does not invent a new business relationship.
+
 ## 8. Default register
 
 Unless the user specifies another house style, use formal Chinese government / central-enterprise report register throughout audience-facing fields.
@@ -284,6 +379,25 @@ Use a short functional title (`总体架构`, `建设基础`, `合作价值`) an
 
 Write words a presenter can actually say aloud. No stage-direction labels, third-person `听众/受众`, page-navigation phrases (`这一页/下一页`), conditional presenter instructions or meta-description of the speech.
 
+The author agent writes speaker notes only after `full_copy`, `onscreen`,
+`visual_thesis` and approved relationships are stable. Notes are a spoken
+explanation of the page argument, not a rule-generated concatenation of module
+headings and first items.
+
+A content-page note should normally:
+
+1. open with the page's business context or bounded judgment;
+2. explain the relationship among the visible groups;
+3. expand the most important evidence, condition or distinction that onscreen
+   compression cannot fully carry;
+4. close on the page's source-grounded significance or a natural thematic
+   handoff stated to the audience.
+
+Use complete spoken sentences and natural transitions. Do not say `本页`、`这一页`
+or `从具体内容看`; do not recite `A方面……B方面……`; do not repeat every visible
+line. Deterministic checks may reject prohibited wording or missing content,
+but they must not generate or repair the notes.
+
 ## 9. Whole-deck Critic
 
 Run the tests in `script-quality-rubric.md`, especially:
@@ -306,6 +420,22 @@ Run the tests in `script-quality-rubric.md`, especially:
 - final-facing cleanliness;
 - structural-change stale-reference checks;
 - formal register and speaker-note quality.
+
+For every content page, also run the independent-reading tests:
+
+- **silent-reader test** — with no presenter explanation, can the reader
+  understand the page's main content and the role of each module?
+- **ten-second test** — can the reader restate the page's principal content
+  after a short scan without reconstructing it from fragments?
+- **visible-payload test** — does every line carry a fact, distinction,
+  condition, role, action, state or result rather than a bare label or time span?
+- **parent-question test** — does every child directly answer the question its
+  heading poses, at compatible granularity with its siblings?
+- **deletion test** — if removing a line changes neither understanding nor
+  proof, remove it or replace it with missing source-grounded evidence.
+
+Failure on any of these tests is a rewrite trigger even when deterministic
+coverage and lint pass.
 
 ### Analysis-depth requirement
 

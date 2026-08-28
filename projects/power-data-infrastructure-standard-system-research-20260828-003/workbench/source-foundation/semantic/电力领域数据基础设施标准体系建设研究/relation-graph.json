@@ -1,0 +1,185 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "relation_graph",
+  "relations": [
+    {
+      "relation_id": "r01",
+      "from_concept_id": "c-policy-guide",
+      "to_concept_id": "c-standard-system",
+      "relation_type": "governs",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0076"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r02",
+      "from_concept_id": "c-energy-class",
+      "to_concept_id": "c-standard-system",
+      "relation_type": "governs",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0055"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r03",
+      "from_concept_id": "c-cpe",
+      "to_concept_id": "c-pilot",
+      "relation_type": "responsible_for",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0131"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r04",
+      "from_concept_id": "c-pilot",
+      "to_concept_id": "c-standard-system",
+      "relation_type": "requires",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0042"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r05",
+      "from_concept_id": "c-standard-system",
+      "to_concept_id": "c-pilot",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0118"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r06",
+      "from_concept_id": "c-four-directions",
+      "to_concept_id": "c-seven-categories",
+      "relation_type": "associated_with",
+      "basis": "inferred",
+      "normalized_fact_ids": [
+        "nf-0082"
+      ],
+      "confidence": "high",
+      "inference_rationale": "材料以四大方向为基本坐标并投影为七大类目，二者属于跨层映射关系。"
+    },
+    {
+      "relation_id": "r07",
+      "from_concept_id": "c-eight-capabilities",
+      "to_concept_id": "c-seven-categories",
+      "relation_type": "associated_with",
+      "basis": "inferred",
+      "normalized_fact_ids": [
+        "nf-0083"
+      ],
+      "confidence": "medium",
+      "inference_rationale": "材料以八大能力约束七大类目的覆盖范围，但未给出逐项一一映射。"
+    },
+    {
+      "relation_id": "r08",
+      "from_concept_id": "c-seven-categories",
+      "to_concept_id": "c-three-unified",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0114"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r09",
+      "from_concept_id": "c-seven-categories",
+      "to_concept_id": "c-access",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0115"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r10",
+      "from_concept_id": "c-seven-categories",
+      "to_concept_id": "c-circulation",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0116"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r11",
+      "from_concept_id": "c-seven-categories",
+      "to_concept_id": "c-security",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0117"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r12",
+      "from_concept_id": "c-gaps",
+      "to_concept_id": "c-standard-system",
+      "relation_type": "requires",
+      "basis": "inferred",
+      "normalized_fact_ids": [
+        "nf-0064"
+      ],
+      "confidence": "high",
+      "inference_rationale": "材料先列出现状差距，再提出体系框架，二者共同构成问题—响应逻辑。"
+    },
+    {
+      "relation_id": "r13",
+      "from_concept_id": "c-priority",
+      "to_concept_id": "c-standard-system",
+      "relation_type": "part_of",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0120"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r14",
+      "from_concept_id": "c-roadmap",
+      "to_concept_id": "c-standard-system",
+      "relation_type": "part_of",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0125"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r15",
+      "from_concept_id": "c-scenes",
+      "to_concept_id": "c-priority",
+      "relation_type": "constrains",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0123"
+      ],
+      "confidence": "high"
+    },
+    {
+      "relation_id": "r16",
+      "from_concept_id": "c-assessment",
+      "to_concept_id": "c-standard-system",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": [
+        "nf-0128"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

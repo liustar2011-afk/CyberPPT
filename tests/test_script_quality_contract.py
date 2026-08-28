@@ -2309,6 +2309,14 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         document = ScriptDocument(pages=(page,))
         assert_imagegen_onscreen_readiness(document, {1})
 
+    def test_complete_business_proposition_without_terminal_punctuation_is_allowed_under_module(self) -> None:
+        visible = (
+            "  **建设进展**\n"
+            "    两网数字化实践已经形成数据基础设施建设基础\n"
+        )
+
+        self.assertEqual((), _onscreen_detail_phrase_overages(visible))
+
     def test_complete_onscreen_proposition_over_ceiling_is_blocked(self) -> None:
         page = parse_script_markdown(
             "## 第1页：订单履行\n"

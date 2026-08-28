@@ -282,10 +282,13 @@ def render_plan_review(
                 bridge_parts.append(f"承接：{_text(page.get('receives'))}")
             if page.get("next"):
                 bridge_parts.append(f"去向：{_text(page.get('next'))}")
+            display_title = _text(page.get("title"))
+            if page.get("subtitle"):
+                display_title += f"<br>副标题：{_text(page.get('subtitle'))}"
             lines.append(
                 "| {id} | {title} | {message} | {argument_nodes} | {role} | {evidence} | {bridge} |".format(
                     id=_cell(page.get("id")),
-                    title=_cell(page.get("title")),
+                    title=_cell(display_title),
                     message=_cell(page.get("message")),
                     argument_nodes=_cell("、".join(_ids(page.get("source_argument_node_ids"))) or "—"),
                     role=_cell(_label(page.get("page_role"), _PAGE_ROLE_LABELS, page.get("logic"))),
@@ -300,6 +303,7 @@ def render_plan_review(
                 [
                     f"### {page_id} {_text(page.get('title'), '')}".rstrip(),
                     "",
+                    *([f"- 页面副标题：{_text(page.get('subtitle'))}"] if page.get("subtitle") else []),
                     f"- 页面问题：{_text(page.get('question'))}",
                     f"- 主逻辑：{_text(page.get('logic'))}",
                     f"- 承担源论点：{'、'.join(_ids(page.get('source_argument_node_ids'))) or '—'}",

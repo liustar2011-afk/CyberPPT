@@ -127,6 +127,53 @@ def test_projects_validated_semantics_into_auditable_source_truth(tmp_path: Path
     assert truth["semantic_relations"][0]["id"] == "R-1"
 
 
+def test_projection_preserves_authored_semantic_units_and_status_terms(tmp_path: Path) -> None:
+    project, foundation, semantic = _project(tmp_path)
+    normalized_path = semantic / "normalized-facts.json"
+    normalized = json.loads(normalized_path.read_text(encoding="utf-8"))
+    normalized["facts"][0]["semantic_units"] = [
+        {
+            "id": "NF-0001#event",
+            "text": "行业资源较为分散",
+            "semantic_role": "current_state",
+            "event_status": "现状",
+            "protected_terms": ["较为分散"],
+        },
+        {
+            "id": "NF-0001#effect",
+            "text": "资源协同成本较高",
+            "semantic_role": "effect",
+        },
+    ]
+    _write_json(normalized_path, normalized)
+
+    _, truth_path = project_source_foundation_truth(
+        project,
+        foundation_dir=foundation,
+        semantic_dir=semantic,
+    )
+    truth = load_source_truth(truth_path)
+
+    assert truth["records"][0]["semantic_units"] == [
+        {
+            "id": "NF-0001#event",
+            "text": "行业资源较为分散",
+            "semantic_role": "current_state",
+            "event_status": "现状",
+            "protected_terms": ["较为分散"],
+            "claim_role": "problem",
+            "source_unit_refs": ["SU-1"],
+        },
+        {
+            "id": "NF-0001#effect",
+            "text": "资源协同成本较高",
+            "semantic_role": "effect",
+            "claim_role": "problem",
+            "source_unit_refs": ["SU-1"],
+        },
+    ]
+
+
 def test_projection_copies_authored_document_thesis_and_argument_graph(tmp_path: Path) -> None:
     project, foundation, semantic = _project(tmp_path)
 

@@ -1,0 +1,789 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "argument_chain",
+  "diagnostic_resolution_mode": "required",
+  "document_semantics": {
+    "document_role": "研究报告（国家数据基础设施建设先行先试项目配套研究）",
+    "subject_of_report": "电力领域数据基础设施标准体系的建设基础、体系框架、重点标准和实施机制",
+    "primary_thesis": "本研究由中电联组织开展，以《国家数据基础设施建设指引》确立的总体架构和《能源行业数据分类分级指南（2026年版）》等最新制度要求为依据，紧密衔接先行先试任务书关于“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设的任务要求，结合电力行业现有标准基础和数字化转型实践，构建了涵盖基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类的电力领域数据基础设施标准体系框架，明确了重点标准研制方向、优先级排序和三阶段实施路径。",
+    "author_purpose": "为行业主管部门、标准化技术委员会和电力企业开展标准立项、研制、实施及先行先试项目标准验证提供系统性参考。",
+    "argument_method": [
+      "rec-01",
+      "rec-02",
+      "rec-03",
+      "rec-04",
+      "rec-05",
+      "rec-06",
+      "rec-07",
+      "rec-08",
+      "rec-09"
+    ],
+    "supporting_basis": [
+      "nf-0051",
+      "nf-0064",
+      "nf-0082",
+      "nf-0083",
+      "nf-0119",
+      "nf-0124",
+      "nf-0131",
+      "nf-0137",
+      "nf-0138"
+    ],
+    "business_objects": [
+      "电力领域数据基础设施",
+      "电力数据标准体系",
+      "先行先试项目",
+      "重点标准",
+      "场景验证"
+    ],
+    "decision_boundary": "研究形成标准体系框架、优先级和实施建议；具体标准仍需按立项、研制、审查、发布、实施评估程序推进，并随国家部署和场景验证动态完善。",
+    "scope": "覆盖电力数据全生命周期、全产业链及基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七类标准。",
+    "decision_intent": "推动体系框架发布、重点标准立项研制、项目场景验证和实施评估协同推进。"
+  },
+  "document_thesis": {
+    "statement": "本研究由中电联组织开展，以《国家数据基础设施建设指引》确立的总体架构和《能源行业数据分类分级指南（2026年版）》等最新制度要求为依据，紧密衔接先行先试任务书关于“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设的任务要求，结合电力行业现有标准基础和数字化转型实践，构建了涵盖基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类的电力领域数据基础设施标准体系框架，明确了重点标准研制方向、优先级排序和三阶段实施路径。",
+    "argument_weight": "core",
+    "basis": "source",
+    "normalized_fact_ids": [
+      "nf-0137"
+    ],
+    "section_ids": [
+      "sec-0022"
+    ],
+    "actor_refs": [
+      "中国电力企业联合会"
+    ]
+  },
+  "source_chain": [
+    {
+      "node_id": "src-sec-0002",
+      "order": 1,
+      "role": "policy_basis",
+      "argument_weight": "supporting",
+      "statement": "（一）国家数据基础设施建设进入全面实施阶段",
+      "normalized_fact_ids": [
+        "nf-0030",
+        "nf-0031",
+        "nf-0032",
+        "nf-0033",
+        "nf-0034",
+        "nf-0035",
+        "nf-0036",
+        "nf-0037"
+      ],
+      "section_ids": [
+        "sec-0002"
+      ]
+    },
+    {
+      "node_id": "src-sec-0003",
+      "order": 2,
+      "role": "background",
+      "argument_weight": "supporting",
+      "statement": "（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托",
+      "normalized_fact_ids": [
+        "nf-0038",
+        "nf-0039",
+        "nf-0040",
+        "nf-0041",
+        "nf-0042",
+        "nf-0043"
+      ],
+      "section_ids": [
+        "sec-0003"
+      ]
+    },
+    {
+      "node_id": "src-sec-0004",
+      "order": 3,
+      "role": "problem",
+      "argument_weight": "supporting",
+      "statement": "（三）电力行业数字化转型对标准体系提出迫切需求",
+      "normalized_fact_ids": [
+        "nf-0044",
+        "nf-0045",
+        "nf-0046",
+        "nf-0047",
+        "nf-0048",
+        "nf-0049",
+        "nf-0050"
+      ],
+      "section_ids": [
+        "sec-0004"
+      ]
+    },
+    {
+      "node_id": "src-sec-0005",
+      "order": 4,
+      "role": "goal",
+      "argument_weight": "supporting",
+      "statement": "（四）研究目的与意义",
+      "normalized_fact_ids": [
+        "nf-0051"
+      ],
+      "section_ids": [
+        "sec-0005"
+      ]
+    },
+    {
+      "node_id": "src-sec-0007",
+      "order": 5,
+      "role": "policy_basis",
+      "argument_weight": "supporting",
+      "statement": "（一）国家层面政策与标准基础",
+      "normalized_fact_ids": [
+        "nf-0052",
+        "nf-0053",
+        "nf-0054",
+        "nf-0055"
+      ],
+      "section_ids": [
+        "sec-0007"
+      ]
+    },
+    {
+      "node_id": "src-sec-0008",
+      "order": 6,
+      "role": "evidence",
+      "argument_weight": "supporting",
+      "statement": "（二）电力行业现有标准与实践基础",
+      "normalized_fact_ids": [
+        "nf-0056",
+        "nf-0057",
+        "nf-0058",
+        "nf-0059",
+        "nf-0060",
+        "nf-0061",
+        "nf-0062",
+        "nf-0063"
+      ],
+      "section_ids": [
+        "sec-0008"
+      ]
+    },
+    {
+      "node_id": "src-sec-0009",
+      "order": 7,
+      "role": "problem",
+      "argument_weight": "supporting",
+      "statement": "（三）现状问题与差距分析",
+      "normalized_fact_ids": [
+        "nf-0064",
+        "nf-0065",
+        "nf-0066",
+        "nf-0067",
+        "nf-0068",
+        "nf-0069",
+        "nf-0070",
+        "nf-0071",
+        "nf-0072",
+        "nf-0073",
+        "nf-0074"
+      ],
+      "section_ids": [
+        "sec-0009"
+      ]
+    },
+    {
+      "node_id": "src-sec-0011",
+      "order": 8,
+      "role": "principle",
+      "argument_weight": "supporting",
+      "statement": "（一）构建原则",
+      "normalized_fact_ids": [
+        "nf-0075",
+        "nf-0076",
+        "nf-0077",
+        "nf-0078",
+        "nf-0079",
+        "nf-0080",
+        "nf-0081"
+      ],
+      "section_ids": [
+        "sec-0011"
+      ]
+    },
+    {
+      "node_id": "src-sec-0012",
+      "order": 9,
+      "role": "approach",
+      "argument_weight": "supporting",
+      "statement": "（二）构建方法与依据",
+      "normalized_fact_ids": [
+        "nf-0082"
+      ],
+      "section_ids": [
+        "sec-0012"
+      ]
+    },
+    {
+      "node_id": "src-sec-0013",
+      "order": 10,
+      "role": "deliverable",
+      "argument_weight": "supporting",
+      "statement": "（三）总体框架",
+      "normalized_fact_ids": [
+        "nf-0083",
+        "nf-0084",
+        "nf-0085",
+        "nf-0086"
+      ],
+      "section_ids": [
+        "sec-0013"
+      ]
+    },
+    {
+      "node_id": "src-sec-0014",
+      "order": 11,
+      "role": "deliverable",
+      "argument_weight": "supporting",
+      "statement": "四、电力领域数据基础设施标准体系框架设计",
+      "normalized_fact_ids": [
+        "nf-0087",
+        "nf-0088-c01-s01",
+        "nf-0088-c02-s01",
+        "nf-0088-c03-s01",
+        "nf-0089-c02-s01",
+        "nf-0089-c03-s01",
+        "nf-0090-c02-s01",
+        "nf-0090-c03-s01",
+        "nf-0091-c01-s01",
+        "nf-0091-c02-s01",
+        "nf-0091-c03-s01",
+        "nf-0092-c02-s01",
+        "nf-0092-c03-s01",
+        "nf-0093-c02-s01",
+        "nf-0093-c03-s01",
+        "nf-0094-c02-s01",
+        "nf-0094-c03-s01",
+        "nf-0095-c01-s01",
+        "nf-0095-c02-s01",
+        "nf-0095-c03-s01",
+        "nf-0096-c02-s01",
+        "nf-0096-c03-s01",
+        "nf-0097-c02-s01",
+        "nf-0097-c03-s01",
+        "nf-0098-c01-s01",
+        "nf-0098-c02-s01",
+        "nf-0098-c03-s01",
+        "nf-0099-c02-s01",
+        "nf-0099-c03-s01",
+        "nf-0100-c02-s01",
+        "nf-0100-c03-s01",
+        "nf-0101-c01-s01",
+        "nf-0101-c02-s01",
+        "nf-0101-c03-s01",
+        "nf-0102-c02-s01",
+        "nf-0102-c03-s01",
+        "nf-0103-c02-s01",
+        "nf-0103-c03-s01",
+        "nf-0104-c01-s01",
+        "nf-0104-c02-s01",
+        "nf-0104-c03-s01",
+        "nf-0105-c02-s01",
+        "nf-0105-c03-s01",
+        "nf-0106-c02-s01",
+        "nf-0106-c03-s01",
+        "nf-0107-c01-s01",
+        "nf-0107-c02-s01",
+        "nf-0107-c03-s01",
+        "nf-0108-c02-s01",
+        "nf-0108-c03-s01",
+        "nf-0109",
+        "nf-0110",
+        "nf-0111",
+        "nf-0112",
+        "nf-0113",
+        "nf-0114",
+        "nf-0115",
+        "nf-0116",
+        "nf-0117",
+        "nf-0118"
+      ],
+      "section_ids": [
+        "sec-0014"
+      ]
+    },
+    {
+      "node_id": "src-sec-0015",
+      "order": 12,
+      "role": "recommendation",
+      "argument_weight": "supporting",
+      "statement": "五、重点标准研制方向与优先级",
+      "normalized_fact_ids": [
+        "nf-0119",
+        "nf-0120",
+        "nf-0121",
+        "nf-0122",
+        "nf-0123"
+      ],
+      "section_ids": [
+        "sec-0015"
+      ]
+    },
+    {
+      "node_id": "src-sec-0016",
+      "order": 13,
+      "role": "implementation",
+      "argument_weight": "supporting",
+      "statement": "六、分阶段实施路径",
+      "normalized_fact_ids": [
+        "nf-0124",
+        "nf-0125",
+        "nf-0126",
+        "nf-0127",
+        "nf-0128",
+        "nf-0129",
+        "nf-0130"
+      ],
+      "section_ids": [
+        "sec-0016"
+      ]
+    },
+    {
+      "node_id": "src-sec-0018",
+      "order": 14,
+      "role": "responsibility",
+      "argument_weight": "supporting",
+      "statement": "（一）组织保障",
+      "normalized_fact_ids": [
+        "nf-0131",
+        "nf-0132"
+      ],
+      "section_ids": [
+        "sec-0018"
+      ]
+    },
+    {
+      "node_id": "src-sec-0019",
+      "order": 15,
+      "role": "implementation",
+      "argument_weight": "supporting",
+      "statement": "（二）机制保障",
+      "normalized_fact_ids": [
+        "nf-0133"
+      ],
+      "section_ids": [
+        "sec-0019"
+      ]
+    },
+    {
+      "node_id": "src-sec-0020",
+      "order": 16,
+      "role": "implementation",
+      "argument_weight": "supporting",
+      "statement": "（三）资源保障",
+      "normalized_fact_ids": [
+        "nf-0134"
+      ],
+      "section_ids": [
+        "sec-0020"
+      ]
+    },
+    {
+      "node_id": "src-sec-0021",
+      "order": 17,
+      "role": "implementation",
+      "argument_weight": "supporting",
+      "statement": "（四）国际标准衔接",
+      "normalized_fact_ids": [
+        "nf-0135"
+      ],
+      "section_ids": [
+        "sec-0021"
+      ]
+    },
+    {
+      "node_id": "src-sec-0022",
+      "order": 18,
+      "role": "conclusion",
+      "argument_weight": "supporting",
+      "statement": "八、结论",
+      "normalized_fact_ids": [
+        "nf-0136",
+        "nf-0137",
+        "nf-0138"
+      ],
+      "section_ids": [
+        "sec-0022"
+      ]
+    }
+  ],
+  "reconstructed_chain": [
+    {
+      "node_id": "rec-01",
+      "order": 1,
+      "role": "context",
+      "argument_weight": "supporting",
+      "statement": "国家政策、先行先试任务与行业转型共同提出标准体系建设要求",
+      "normalized_fact_ids": [
+        "nf-0030",
+        "nf-0031",
+        "nf-0032",
+        "nf-0033",
+        "nf-0034",
+        "nf-0035",
+        "nf-0036",
+        "nf-0037",
+        "nf-0038",
+        "nf-0039",
+        "nf-0040",
+        "nf-0041",
+        "nf-0042",
+        "nf-0043",
+        "nf-0044",
+        "nf-0045",
+        "nf-0046",
+        "nf-0047",
+        "nf-0048",
+        "nf-0049",
+        "nf-0050",
+        "nf-0051"
+      ],
+      "section_ids": [
+        "sec-0002",
+        "sec-0003",
+        "sec-0004",
+        "sec-0005"
+      ]
+    },
+    {
+      "node_id": "rec-02",
+      "order": 2,
+      "role": "evidence",
+      "argument_weight": "supporting",
+      "statement": "国家与行业已有政策、标准和实践构成建设基础",
+      "normalized_fact_ids": [
+        "nf-0052",
+        "nf-0053",
+        "nf-0054",
+        "nf-0055",
+        "nf-0056",
+        "nf-0057",
+        "nf-0058",
+        "nf-0059",
+        "nf-0060",
+        "nf-0061",
+        "nf-0062",
+        "nf-0063"
+      ],
+      "section_ids": [
+        "sec-0007",
+        "sec-0008"
+      ]
+    },
+    {
+      "node_id": "rec-03",
+      "order": 3,
+      "role": "problem",
+      "argument_weight": "core",
+      "statement": "统一框架、基础通用、数据资源、新兴场景与实施协同仍存在五类差距",
+      "normalized_fact_ids": [
+        "nf-0064",
+        "nf-0065",
+        "nf-0066",
+        "nf-0067",
+        "nf-0068",
+        "nf-0069",
+        "nf-0070",
+        "nf-0071",
+        "nf-0072",
+        "nf-0073",
+        "nf-0074"
+      ],
+      "section_ids": [
+        "sec-0009"
+      ]
+    },
+    {
+      "node_id": "rec-04",
+      "order": 4,
+      "role": "approach",
+      "argument_weight": "core",
+      "statement": "以六项原则和国家四大方向、八大能力为坐标形成构建方法",
+      "normalized_fact_ids": [
+        "nf-0075",
+        "nf-0076",
+        "nf-0077",
+        "nf-0078",
+        "nf-0079",
+        "nf-0080",
+        "nf-0081",
+        "nf-0082"
+      ],
+      "section_ids": [
+        "sec-0011",
+        "sec-0012"
+      ]
+    },
+    {
+      "node_id": "rec-05",
+      "order": 5,
+      "role": "deliverable",
+      "argument_weight": "core",
+      "statement": "形成四梁八柱约束下的七大类标准体系框架及能力映射",
+      "normalized_fact_ids": [
+        "nf-0083",
+        "nf-0084",
+        "nf-0085",
+        "nf-0086",
+        "nf-0087",
+        "nf-0088-c01-s01",
+        "nf-0088-c02-s01",
+        "nf-0088-c03-s01",
+        "nf-0089-c02-s01",
+        "nf-0089-c03-s01",
+        "nf-0090-c02-s01",
+        "nf-0090-c03-s01",
+        "nf-0091-c01-s01",
+        "nf-0091-c02-s01",
+        "nf-0091-c03-s01",
+        "nf-0092-c02-s01",
+        "nf-0092-c03-s01",
+        "nf-0093-c02-s01",
+        "nf-0093-c03-s01",
+        "nf-0094-c02-s01",
+        "nf-0094-c03-s01",
+        "nf-0095-c01-s01",
+        "nf-0095-c02-s01",
+        "nf-0095-c03-s01",
+        "nf-0096-c02-s01",
+        "nf-0096-c03-s01",
+        "nf-0097-c02-s01",
+        "nf-0097-c03-s01",
+        "nf-0098-c01-s01",
+        "nf-0098-c02-s01",
+        "nf-0098-c03-s01",
+        "nf-0099-c02-s01",
+        "nf-0099-c03-s01",
+        "nf-0100-c02-s01",
+        "nf-0100-c03-s01",
+        "nf-0101-c01-s01",
+        "nf-0101-c02-s01",
+        "nf-0101-c03-s01",
+        "nf-0102-c02-s01",
+        "nf-0102-c03-s01",
+        "nf-0103-c02-s01",
+        "nf-0103-c03-s01",
+        "nf-0104-c01-s01",
+        "nf-0104-c02-s01",
+        "nf-0104-c03-s01",
+        "nf-0105-c02-s01",
+        "nf-0105-c03-s01",
+        "nf-0106-c02-s01",
+        "nf-0106-c03-s01",
+        "nf-0107-c01-s01",
+        "nf-0107-c02-s01",
+        "nf-0107-c03-s01",
+        "nf-0108-c02-s01",
+        "nf-0108-c03-s01",
+        "nf-0109",
+        "nf-0110",
+        "nf-0111",
+        "nf-0112",
+        "nf-0113",
+        "nf-0114",
+        "nf-0115",
+        "nf-0116",
+        "nf-0117",
+        "nf-0118"
+      ],
+      "section_ids": [
+        "sec-0013",
+        "sec-0014"
+      ]
+    },
+    {
+      "node_id": "rec-06",
+      "order": 6,
+      "role": "recommendation",
+      "argument_weight": "core",
+      "statement": "按三级优先级推进重点标准并绑定场景验证",
+      "normalized_fact_ids": [
+        "nf-0119",
+        "nf-0120",
+        "nf-0121",
+        "nf-0122",
+        "nf-0123"
+      ],
+      "section_ids": [
+        "sec-0015"
+      ]
+    },
+    {
+      "node_id": "rec-07",
+      "order": 7,
+      "role": "implementation",
+      "argument_weight": "core",
+      "statement": "近期、中期、远期三阶段同步国家目标与项目建设节奏",
+      "normalized_fact_ids": [
+        "nf-0124",
+        "nf-0125",
+        "nf-0126",
+        "nf-0127",
+        "nf-0128",
+        "nf-0129",
+        "nf-0130"
+      ],
+      "section_ids": [
+        "sec-0016"
+      ]
+    },
+    {
+      "node_id": "rec-08",
+      "order": 8,
+      "role": "responsibility",
+      "argument_weight": "supporting",
+      "statement": "以组织、机制、资源和国际衔接保障体系持续运行",
+      "normalized_fact_ids": [
+        "nf-0131",
+        "nf-0132",
+        "nf-0133",
+        "nf-0134",
+        "nf-0135"
+      ],
+      "section_ids": [
+        "sec-0018",
+        "sec-0019",
+        "sec-0020",
+        "sec-0021"
+      ]
+    },
+    {
+      "node_id": "rec-09",
+      "order": 9,
+      "role": "conclusion",
+      "argument_weight": "core",
+      "statement": "中电联持续完善体系、推进立项研制和实施评估",
+      "normalized_fact_ids": [
+        "nf-0136",
+        "nf-0137",
+        "nf-0138"
+      ],
+      "section_ids": [
+        "sec-0022"
+      ]
+    }
+  ],
+  "argument_relations": [
+    {
+      "relation_id": "argrel-01",
+      "from_node_id": "rec-01",
+      "to_node_id": "rec-03",
+      "relation_type": "motivates",
+      "basis": "inferred",
+      "inference_rationale": "国家部署、先行先试任务和行业转型要求共同构成识别标准供给差距的评价基准。",
+      "normalized_fact_ids": ["nf-0033", "nf-0042", "nf-0050", "nf-0064"]
+    },
+    {
+      "relation_id": "argrel-02",
+      "from_node_id": "rec-02",
+      "to_node_id": "rec-03",
+      "relation_type": "establishes",
+      "basis": "inferred",
+      "inference_rationale": "现有政策、标准和实践基础说明研究从既有成果出发，差距分析据此判断尚未覆盖和衔接的部分。",
+      "normalized_fact_ids": ["nf-0052", "nf-0056", "nf-0064"]
+    },
+    {
+      "relation_id": "argrel-03",
+      "from_node_id": "rec-03",
+      "to_node_id": "rec-04",
+      "relation_type": "motivates",
+      "basis": "inferred",
+      "inference_rationale": "五类差距提出统一框架、基础标准、资源标准、场景标准和协同机制需求，构建原则与方法对这些需求作出体系化回应。",
+      "normalized_fact_ids": ["nf-0065", "nf-0067", "nf-0069", "nf-0071", "nf-0073", "nf-0075", "nf-0082"]
+    },
+    {
+      "relation_id": "argrel-04",
+      "from_node_id": "rec-04",
+      "to_node_id": "rec-05",
+      "relation_type": "defines",
+      "basis": "source",
+      "normalized_fact_ids": ["nf-0082", "nf-0083", "nf-0086"]
+    },
+    {
+      "relation_id": "argrel-05",
+      "from_node_id": "rec-05",
+      "to_node_id": "document_thesis",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": ["nf-0083", "nf-0086", "nf-0137"]
+    },
+    {
+      "relation_id": "argrel-06",
+      "from_node_id": "rec-06",
+      "to_node_id": "document_thesis",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": ["nf-0119", "nf-0120", "nf-0121", "nf-0122", "nf-0137"]
+    },
+    {
+      "relation_id": "argrel-07",
+      "from_node_id": "rec-07",
+      "to_node_id": "document_thesis",
+      "relation_type": "supports",
+      "basis": "source",
+      "normalized_fact_ids": ["nf-0124", "nf-0125", "nf-0127", "nf-0129", "nf-0137"]
+    },
+    {
+      "relation_id": "argrel-08",
+      "from_node_id": "rec-08",
+      "to_node_id": "rec-09",
+      "relation_type": "supports",
+      "basis": "inferred",
+      "inference_rationale": "组织、机制、资源和国际衔接安排为后续持续完善、立项研制和实施评估提供执行条件。",
+      "normalized_fact_ids": ["nf-0131", "nf-0132", "nf-0133", "nf-0134", "nf-0135", "nf-0138"]
+    },
+    {
+      "relation_id": "argrel-09",
+      "from_node_id": "rec-09",
+      "to_node_id": "document_thesis",
+      "relation_type": "concludes",
+      "basis": "source",
+      "normalized_fact_ids": ["nf-0136", "nf-0137", "nf-0138"]
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "diag-01",
+      "type": "mixed_level",
+      "description": "“四梁”“八柱”是国家架构与能力坐标，七大类是行业标准分类，三者层级不同且缺少完整逐项映射。",
+      "resolution": "保留三层结构；下游规划将其表达为约束坐标到行业分类的映射，避免呈现为同级分类。",
+      "normalized_fact_ids": [
+        "nf-0083",
+        "nf-0082"
+      ],
+      "section_ids": [
+        "sec-0012",
+        "sec-0013"
+      ]
+    },
+    {
+      "diagnostic_id": "diag-02",
+      "type": "duplicate_argument",
+      "description": "结论集中复述政策依据、项目任务、七大类、优先级与三阶段路径。",
+      "resolution": "保留结论的收束功能；下游脚本压缩重复信息，突出后续行动与预期支撑。",
+      "normalized_fact_ids": [
+        "nf-0136",
+        "nf-0137",
+        "nf-0138"
+      ],
+      "section_ids": [
+        "sec-0022"
+      ]
+    },
+    {
+      "diagnostic_id": "diag-03",
+      "type": "overlap_or_non_mece",
+      "description": "部分标准方向同时涉及数据资源、互联互通、安全与应用，七大类在实施对象上存在交叉。",
+      "resolution": "保留源材料的七类框架，以主职责归类并在页面关系中标注跨类支撑，避免重复计数。",
+      "normalized_fact_ids": [
+        "nf-0114",
+        "nf-0116"
+      ],
+      "section_ids": [
+        "sec-0014"
+      ]
+    }
+  ]
+}

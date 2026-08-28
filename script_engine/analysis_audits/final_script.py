@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from .common import *
+from cyberppt.onscreen_text_rules import is_readable_onscreen_proposition
 
 def _onscreen_module_lines(module: dict[str, Any]) -> list[str]:
     lines: list[str] = []
@@ -47,12 +48,18 @@ def _evidence_first_item_hierarchy_issues(
     ]
 
 def _is_readable_proposition(line: str) -> bool:
-    """Return whether a visible line carries a compact, sentence-like proposition."""
-    value = str(line or "").strip()
-    if not value or re.search(r"[：:]", value) or not _PROPOSITION_END_RE.search(value):
-        return False
-    chars = len(_VISIBLE_CHAR_RE.findall(value))
-    return _COMPLETE_PROPOSITION_MIN_CHARS <= chars <= _COMPLETE_PROPOSITION_MAX_CHARS
+    """Return whether a visible line carries a compact, sentence-like proposition.
+
+    Visible module copy intentionally omits terminal punctuation, so punctuation
+    cannot prove semantic completeness.  This advisory check instead looks for
+    a compact line with a proposition-bearing predicate.  Coloned detail lines
+    remain phrase-led evidence and are assessed by their own rules.
+    """
+    return is_readable_onscreen_proposition(
+        line,
+        min_chars=_COMPLETE_PROPOSITION_MIN_CHARS,
+        max_chars=_COMPLETE_PROPOSITION_MAX_CHARS,
+    )
 
 def _onscreen_expression_warnings(
     page: dict[str, Any], slide: dict[str, Any],
@@ -74,7 +81,8 @@ def _onscreen_expression_warnings(
             if not any(_is_readable_proposition(line) for line in lines):
                 warnings.append(
                     f"module '{heading}': expression_mode='sentence_led' has no readable proposition; "
-                    "add one source-grounded sentence with a subject, predicate and terminal punctuation"
+                    "add one source-grounded proposition whose parent context and line preserve the "
+                    "business subject or object, predicate, and material result or boundary"
                 )
         return warnings
 
@@ -310,11 +318,6 @@ def _audit_authored_source_consumption(
                         f"FULL_COPY_RESPONSIBILITY_LOST: {ref} lost source actors {missing_entities}"
                     )
 
-                status = str(item.get("status") or "").strip()
-                if status and re.sub(r"\s+", "", status) not in compact_full_copy:
-                    issues.append(
-                        f"FULL_COPY_STATUS_STRENGTH_LOST: {ref} lost source status '{status}'"
-                    )
             continue
 
         if required_policy:
@@ -571,6 +574,17 @@ def _audit_authored_unit_consumption(
                     f"FULL_COPY_SEMANTIC_UNIT_GAP: {ref}#{unit_id} is assigned full_copy disposition "
                     f"but is absent from full_copy (overlap={overlap:.3f}); unit text: {unit_text}"
                 )
+            missing_terms = [
+                str(term).strip()
+                for term in unit.get("protected_terms") or []
+                if str(term).strip()
+                and re.sub(r"\s+", "", str(term)) not in re.sub(r"\s+", "", full_copy)
+            ]
+            if missing_terms:
+                issues.append(
+                    f"FULL_COPY_PROTECTED_TERM_LOST: {ref}#{unit_id} lost protected terms "
+                    f"{missing_terms}"
+                )
         elif disposition == "onscreen":
             headings = modules_by_ref.get(ref) or []
             module_text = " ".join(
@@ -583,6 +597,17 @@ def _audit_authored_unit_consumption(
                 issues.append(
                     f"ONSCREEN_SOURCE_DETAIL_INSUFFICIENT: {ref}#{unit_id} is assigned onscreen disposition "
                     f"but is absent from the mapped onscreen module(s); unit text: {unit_text}"
+                )
+            missing_terms = [
+                str(term).strip()
+                for term in unit.get("protected_terms") or []
+                if str(term).strip()
+                and re.sub(r"\s+", "", str(term)) not in re.sub(r"\s+", "", module_text)
+            ]
+            if missing_terms:
+                issues.append(
+                    f"ONSCREEN_PROTECTED_TERM_LOST: {ref}#{unit_id} lost protected terms "
+                    f"{missing_terms}"
                 )
     return issues
 

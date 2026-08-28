@@ -447,17 +447,33 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
                 if projection_model and semantic_status in {"mixed", "unknown"}
                 else STATUS.get(semantic_status, semantic_status or "待确认")
             )
-            clauses = [
-                clause.strip()
-                for clause in re.split(r"(?<=[。；;])", statement)
-                if clause.strip()
-            ]
-            if len(clauses) > 1:
+            authored_units = _items(atomic.get("semantic_units"))
+            if authored_units:
+                semantic_units = []
+                for unit_index, unit in enumerate(authored_units):
+                    unit_text = str(unit.get("text") or "").strip()
+                    if not unit_text:
+                        raise ValueError(
+                            f"atomic item {item_id} semantic_units[{unit_index}] needs text"
+                        )
+                    projected_unit = dict(unit)
+                    projected_unit.setdefault("id", f"{item_id}#u{unit_index + 1}")
+                    projected_unit.setdefault("claim_role", evidence_role)
+                    if not projected_unit.get("source_unit_ref") and not projected_unit.get("source_unit_refs"):
+                        projected_unit["source_unit_refs"] = refs
+                    semantic_units.append(projected_unit)
+            else:
+                clauses = [
+                    clause.strip()
+                    for clause in re.split(r"(?<=[。；;])", statement)
+                    if clause.strip()
+                ]
+            if not authored_units and len(clauses) > 1:
                 semantic_units = [
                     {"text": clause, "claim_role": evidence_role, "source_unit_refs": refs}
                     for clause in clauses
                 ]
-            else:
+            elif not authored_units:
                 semantic_units = [
                     {
                         # The atomic statement is already the authored,

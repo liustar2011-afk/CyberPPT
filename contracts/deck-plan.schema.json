@@ -120,6 +120,7 @@
         "relation": {"type": "string", "enum": ["parallel", "sequence", "hierarchy", "matrix", "mixed"]},
         "detail_axis": {"type": "string", "minLength": 1},
         "expression_mode": {"type": "string", "enum": ["phrase_led", "sentence_led", "mixed"]},
+        "phrase_led_basis": {"type": "string", "enum": ["taxonomy", "metric_set", "object_inventory", "exact_labels", "short_sequence"]},
         "scope_mode": {"type": "string", "enum": ["exclusive", "shared"]},
         "modules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/onscreen_module"}},
         "detail_policy": {

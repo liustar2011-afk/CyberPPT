@@ -805,6 +805,10 @@ def build_projection_model(
                             if _text(fact.get("normalization")) == "verbatim"
                             else "source_implied"
                         ),
+                        "semantic_units": [
+                            dict(unit)
+                            for unit in _items(fact.get("semantic_units"))
+                        ],
                         "coverage_anchors": [_text(fact.get("statement"))[:48]],
                     }
                 ],
