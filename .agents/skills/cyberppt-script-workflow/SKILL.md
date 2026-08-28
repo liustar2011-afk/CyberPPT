@@ -104,4 +104,8 @@ topics remain valid, while external-consultant address and viewpoint are rejecte
 
 ## 8. Stage 02 boundary
 
-Visual style, image generation, SVG reconstruction and PPTX production remain outside this repository. Only `projects/<slug>/dist/final-script.md` crosses the boundary.
+Stage 02 is part of the repository's formal production workflow. After Stage 01 delivers the approved `dist/final-script.md`, follow `AGENTS.md` and `docs/CYBERPPT_WORKFLOW.md` into the Stage 02 entry `final-script-pages` for image generation, image-text audit and PPTX assembly.
+
+`foundation.json`, `deck-plan.json` and `dist/final-script.md` remain the only authoritative Stage 01 content artifacts. Stage 02 manifests, generated images, QA outputs and PPTX files are downstream production artifacts and do not create another Stage 01 authority.
+
+Do not bypass `final-script-pages` by hand-calling reconstruction adapters or inventing a parallel Stage 02 route.
