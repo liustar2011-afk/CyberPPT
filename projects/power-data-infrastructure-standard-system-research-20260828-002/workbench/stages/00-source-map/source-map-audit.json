@@ -1,0 +1,19 @@
+{
+  "schema": "cyberppt.source_map_audit.v1",
+  "status": "passed",
+  "source_count": 1,
+  "heading_count": 22,
+  "unit_count": 104,
+  "unit_kind_counts": {
+    "heading": 22,
+    "paragraph": 60,
+    "table_row": 22
+  },
+  "source_registry_sha256": "618a8a9f9feb48404b9d5c7958150067f384fd3b3aae2edb4792c3c315159751",
+  "source_units_sha256": "908429295e0d294662c33180264f7c07e1afe9637adf33220b6b431350fa96a8",
+  "source_heading_tree_sha256": "25dd76df9f8757992261b26191ac247fb54e5fd7847f8ae8cc422e197eb11185",
+  "source_map_bundle_sha256": "c174b6010f5a0460c4023f7da89bddc91c9269b54c878e97ee356b796cfbc38b",
+  "issues": [],
+  "warnings": [],
+  "audited_at": "2026-08-28T03:23:10+00:00"
+}

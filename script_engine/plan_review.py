@@ -191,6 +191,22 @@ def _append_source_consumption_review(
                     hits=_cell(item.get("minimum_hits") or len(values)),
                 )
             )
+    unit_dispositions = [
+        item
+        for item in contract.get("unit_dispositions") or []
+        if isinstance(item, dict)
+    ]
+    if unit_dispositions:
+        lines.extend(["", "| 来源 | 语义单元 | 归宿 | 理由 |", "|---|---|---|---|"])
+        for item in unit_dispositions:
+            lines.append(
+                "| {ref} | {unit} | {disposition} | {reason} |".format(
+                    ref=_cell(item.get("source_ref")),
+                    unit=_cell(item.get("unit_id")),
+                    disposition=_cell(item.get("disposition")),
+                    reason=_cell(item.get("reason") or "—"),
+                )
+            )
     lines.append("")
 
 

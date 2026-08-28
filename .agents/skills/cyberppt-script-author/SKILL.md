@@ -123,6 +123,17 @@ a semantic-consumption rule: combine related records into a coherent argument;
 do not paste one sentence per ref mechanically. A historical Foundation without
 the policy field retains the legacy optional audit path.
 
+When PLAN has declared `source_consumption.unit_dispositions` for a page, a
+record-level anchor hit is not enough: every semantic unit tagged `full_copy`
+must independently be traceable in `full_copy`, and every unit tagged
+`onscreen` must be traceable in its mapped module. A record with several
+semantic units cannot be considered consumed by writing only its most
+convenient clause. Units PLAN tagged `reserved_for_later`, `trace_only` or
+`intentional_omission` are not your responsibility to express — do not add
+filler to cover them; that classification is PLAN's editorial decision, made
+with a specific stated reason. Pages without an `unit_dispositions`
+declaration are unaffected by this rule.
+
 Do not explain the writing process to the reader. Phrases such as `源文未逐一显式配对`, `分析性归纳`, `需要如实保留`, `不宜为追求页面整齐而抹平` belong to Foundation/PLAN/Critic diagnostics, not final prose.
 
 Do not navigate the document inside audience-facing prose. `上一页 / 下一页 / 本页展示 / 后续页面 / 第X页` belong to workflow metadata, not `full_copy`, `onscreen`, `visual_thesis`, `relationships` or `speaker_notes`.

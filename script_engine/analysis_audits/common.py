@@ -57,6 +57,12 @@ _EXPRESSION_MODES = {"phrase_led", "sentence_led", "mixed"}
 
 _ONSCREEN_COMPOSITION_MODES = {"evidence_first", "selective_lead"}
 
+_GENERIC_OMISSION_REASON_PHRASES = {"后续再说", "不重要", "暂不展开", "以后再说", "后续处理"}
+
+_UNIT_DISPOSITIONS = {"full_copy", "onscreen", "reserved_for_later", "trace_only", "intentional_omission"}
+
+_UNIT_REASON_REQUIRED_DISPOSITIONS = {"reserved_for_later", "intentional_omission"}
+
 _EVIDENCE_FIT_VALUES = {"direct", "indirect", "topic_only", "no", "uncertain"}
 
 _EVIDENCE_FIT_VERDICTS = {"keep", "rename", "move", "split", "reject"}
@@ -475,7 +481,7 @@ def _audit_source_consumption_definition(
                 f"source_consumption.intentional_omissions[{omission_index}]: reason must contain at least 8 characters"
             )
         normalized_reason = _normalized_review_text(reason)
-        if normalized_reason in {"后续再说", "不重要", "暂不展开", "以后再说", "后续处理"}:
+        if normalized_reason in _GENERIC_OMISSION_REASON_PHRASES:
             issues.append(
                 "SOURCE_CONSUMPTION_OMISSION_REASON_MISSING: "
                 f"source_consumption.intentional_omissions[{omission_index}]: reason must state a specific editorial boundary"
@@ -591,6 +597,95 @@ def _audit_source_consumption_definition(
                 )
     return issues
 
+def _record_unit_ids(ref: str, item: dict[str, Any]) -> set[str]:
+    """Stable per-unit identifiers, synthesized positionally when Source Truth didn't
+    assign one. Foundation projection is a deliberately pure mechanical copy (see
+    ``cyberppt/foundation_projection.py``) and must not write new fields onto Source
+    Truth data, so this identifier is derived at audit time rather than persisted."""
+    return {
+        str(unit.get("id") or "").strip() or f"{ref}#{index}"
+        for index, unit in enumerate(item.get("semantic_units") or [])
+        if isinstance(unit, dict)
+    }
+
+def _audit_unit_consumption_definition(
+    page: dict[str, Any], items: dict[str, dict[str, Any]], foundation: dict[str, Any]
+) -> list[str]:
+    """Validate per-semantic-unit consumption disposition.
+
+    This is an optional refinement layered on top of the record-level
+    ``source_consumption`` contract: a single anchor hit on a record cannot
+    stand in for every semantic unit inside that record. Skipped entirely
+    when the page isn't under strict policy or hasn't declared
+    ``unit_dispositions`` yet, so historical and thin-source pages are
+    unaffected.
+    """
+    if not requires_source_consumption(page, foundation):
+        return []
+    contract = page.get("source_consumption")
+    if not isinstance(contract, dict):
+        return []
+    dispositions = contract.get("unit_dispositions")
+    if dispositions is None:
+        return []
+    if not isinstance(dispositions, list):
+        return ["source_consumption.unit_dispositions: must be an array"]
+
+    detail_refs, omitted_refs, _onscreen_refs = _source_consumption_sets(contract)
+    page_refs = {ref for ref in page.get("source_refs") or [] if isinstance(ref, str) and ref}
+    required_refs = page_refs - detail_refs - omitted_refs
+
+    issues: list[str] = []
+    declared: set[tuple[str, str]] = set()
+    for index, entry in enumerate(dispositions):
+        if not isinstance(entry, dict):
+            issues.append(f"source_consumption.unit_dispositions[{index}]: must be an object")
+            continue
+        ref = str(entry.get("source_ref") or "").strip()
+        unit_id = str(entry.get("unit_id") or "").strip()
+        disposition = entry.get("disposition")
+        if not ref or not unit_id:
+            issues.append(
+                f"source_consumption.unit_dispositions[{index}]: source_ref and unit_id are required"
+            )
+            continue
+        item = items.get(ref)
+        if not isinstance(item, dict) or unit_id not in _record_unit_ids(ref, item):
+            issues.append(
+                "SOURCE_CONSUMPTION_UNIT_UNKNOWN: "
+                f"source_consumption.unit_dispositions[{index}] ({ref}#{unit_id}): "
+                "unit_id not found in the Foundation record's semantic_units"
+            )
+            continue
+        if disposition not in _UNIT_DISPOSITIONS:
+            issues.append(
+                f"source_consumption.unit_dispositions[{index}] ({ref}#{unit_id}): "
+                f"disposition must be one of {sorted(_UNIT_DISPOSITIONS)}"
+            )
+            continue
+        if disposition in _UNIT_REASON_REQUIRED_DISPOSITIONS:
+            reason = str(entry.get("reason") or "").strip()
+            if len(reason) < 8 or _normalized_review_text(reason) in _GENERIC_OMISSION_REASON_PHRASES:
+                issues.append(
+                    "SOURCE_CONSUMPTION_UNIT_REASON_MISSING: "
+                    f"source_consumption.unit_dispositions[{index}] ({ref}#{unit_id}): "
+                    "reserved_for_later/intentional_omission requires a specific reason of at least 8 characters"
+                )
+        declared.add((ref, unit_id))
+
+    for ref in sorted(required_refs):
+        item = items.get(ref)
+        if not isinstance(item, dict):
+            continue
+        for unit_id in sorted(_record_unit_ids(ref, item)):
+            if (ref, unit_id) not in declared:
+                issues.append(
+                    "SOURCE_CONSUMPTION_UNIT_MISSING: "
+                    "source_consumption.unit_dispositions must cover every semantic unit of a "
+                    f"full-copy source; missing {ref}#{unit_id}"
+                )
+    return issues
+
 def _audit_onscreen_composition_definition(page: dict[str, Any]) -> list[str]:
     """Validate an optional page-level module-lead policy.
 
@@ -642,4 +737,4 @@ def _page_text(page: dict[str, Any]) -> str:
                 parts.append(value)
     return " ".join(parts)
 
-__all__ = ['annotations', 're', 'SequenceMatcher', 'Any', 'audit_content_route', '_source_statement_overlap', 'functional_group_needs_item_explanations', 'is_bare_business_label', 'source_has_richer_item_detail', 'source_colocation_grouping_mismatch', 'audit_authored_stage02_readiness', 'audit_stage02_readiness', 'audit_final_internal_expert_voice', 'audit_plan_internal_expert_voice', 'CITABLE_KEYS', 'SOURCE_CHAPTER_RE', 'INTERNAL_MARKERS', 'OPTIONALITY_RE', 'INDEPENDENCE_RE', 'DEEPENING_RE', 'UNIVERSAL_RE', 'CRITICAL_GROUP_TERMS', 'PROGRESSION_RE', 'GAP_RE', 'CHAPTER_PREFIX_RE', '_VISIBLE_CHAR_RE', '_PROPOSITION_END_RE', '_EXPRESSION_MODES', '_ONSCREEN_COMPOSITION_MODES', '_EVIDENCE_FIT_VALUES', '_EVIDENCE_FIT_VERDICTS', '_LEAD_LIKE_EVIDENCE_ITEM_RE', '_COMPLETE_PROPOSITION_MIN_CHARS', '_COMPLETE_PROPOSITION_MAX_CHARS', '_SECONDARY_RELATION_TYPES', '_normalized_review_text', 'foundation_items_by_id', '_item_text', 'effective_visibility', '_support_items', '_has_optionality', '_preserves_optionality', '_group_strength_issue', '_page_evidence_ids', '_page_claim_evidence_ids', '_evidence_fit_review_issues', '_audit_evidence_fit_reviews', '_onscreen_contract_definition_issues', '_source_consumption_sets', 'requires_source_consumption', '_source_surface_values', '_anchor_is_source_grounded', '_audit_source_consumption_definition', '_audit_onscreen_composition_definition', '_page_text']
+__all__ = ['annotations', 're', 'SequenceMatcher', 'Any', 'audit_content_route', '_source_statement_overlap', 'functional_group_needs_item_explanations', 'is_bare_business_label', 'source_has_richer_item_detail', 'source_colocation_grouping_mismatch', 'audit_authored_stage02_readiness', 'audit_stage02_readiness', 'audit_final_internal_expert_voice', 'audit_plan_internal_expert_voice', 'CITABLE_KEYS', 'SOURCE_CHAPTER_RE', 'INTERNAL_MARKERS', 'OPTIONALITY_RE', 'INDEPENDENCE_RE', 'DEEPENING_RE', 'UNIVERSAL_RE', 'CRITICAL_GROUP_TERMS', 'PROGRESSION_RE', 'GAP_RE', 'CHAPTER_PREFIX_RE', '_VISIBLE_CHAR_RE', '_PROPOSITION_END_RE', '_EXPRESSION_MODES', '_ONSCREEN_COMPOSITION_MODES', '_EVIDENCE_FIT_VALUES', '_EVIDENCE_FIT_VERDICTS', '_LEAD_LIKE_EVIDENCE_ITEM_RE', '_COMPLETE_PROPOSITION_MIN_CHARS', '_COMPLETE_PROPOSITION_MAX_CHARS', '_SECONDARY_RELATION_TYPES', '_normalized_review_text', 'foundation_items_by_id', '_item_text', 'effective_visibility', '_support_items', '_has_optionality', '_preserves_optionality', '_group_strength_issue', '_page_evidence_ids', '_page_claim_evidence_ids', '_evidence_fit_review_issues', '_audit_evidence_fit_reviews', '_onscreen_contract_definition_issues', '_source_consumption_sets', 'requires_source_consumption', '_source_surface_values', '_anchor_is_source_grounded', '_audit_source_consumption_definition', '_record_unit_ids', '_audit_unit_consumption_definition', '_audit_onscreen_composition_definition', '_page_text']

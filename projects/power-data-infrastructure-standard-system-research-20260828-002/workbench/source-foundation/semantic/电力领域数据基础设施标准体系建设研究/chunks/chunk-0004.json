@@ -1,0 +1,403 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "semantic_work_chunk",
+  "chunk_id": "chunk-0004",
+  "section": {
+    "section_id": "sec-0018",
+    "level": 2,
+    "title": "**（一）组织保障**",
+    "line": 176,
+    "parent_section_id": "sec-0017"
+  },
+  "sections": [
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "**（一）组织保障**",
+      "line": 176,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0019",
+      "level": 2,
+      "title": "**（二）机制保障**",
+      "line": 180,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "**（三）资源保障**",
+      "line": 184,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "**（四）国际标准衔接**",
+      "line": 188,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 1,
+      "title": "**八、结论**",
+      "line": 192,
+      "parent_section_id": null
+    }
+  ],
+  "section_ids": [
+    "sec-0018",
+    "sec-0019",
+    "sec-0020",
+    "sec-0021",
+    "sec-0022"
+  ],
+  "document_outline": [
+    {
+      "section_id": "sec-0001",
+      "level": 1,
+      "title": "**一、研究背景与意义**",
+      "line": 66,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0002",
+      "level": 2,
+      "title": "**（一）国家数据基础设施建设进入全面实施阶段**",
+      "line": 68,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0003",
+      "level": 2,
+      "title": "**（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托**",
+      "line": 74,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0004",
+      "level": 2,
+      "title": "**（三）电力行业数字化转型对标准体系提出迫切需求**",
+      "line": 78,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0005",
+      "level": 2,
+      "title": "**（四）研究目的与意义**",
+      "line": 84,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0006",
+      "level": 1,
+      "title": "**二、现状基础与差距分析**",
+      "line": 88,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0007",
+      "level": 2,
+      "title": "**（一）国家层面政策与标准基础**",
+      "line": 90,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0008",
+      "level": 2,
+      "title": "**（二）电力行业现有标准与实践基础**",
+      "line": 94,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0009",
+      "level": 2,
+      "title": "**（三）现状问题与差距分析**",
+      "line": 98,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0010",
+      "level": 1,
+      "title": "**三、标准体系构建总体思路**",
+      "line": 112,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0011",
+      "level": 2,
+      "title": "**（一）构建原则**",
+      "line": 114,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0012",
+      "level": 2,
+      "title": "**（二）构建方法与依据**",
+      "line": 118,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0013",
+      "level": 2,
+      "title": "**（三）总体框架**",
+      "line": 122,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0014",
+      "level": 1,
+      "title": "**四、电力领域数据基础设施标准体系框架设计**",
+      "line": 126,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 1,
+      "title": "**五、重点标准研制方向与优先级**",
+      "line": 158,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0016",
+      "level": 1,
+      "title": "**六、分阶段实施路径**",
+      "line": 164,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0017",
+      "level": 1,
+      "title": "**七、保障措施**",
+      "line": 174,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "**（一）组织保障**",
+      "line": 176,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0019",
+      "level": 2,
+      "title": "**（二）机制保障**",
+      "line": 180,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "**（三）资源保障**",
+      "line": 184,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "**（四）国际标准衔接**",
+      "line": 188,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 1,
+      "title": "**八、结论**",
+      "line": 192,
+      "parent_section_id": null
+    }
+  ],
+  "facts": [
+    {
+      "fact_id": "fact-0132",
+      "fact_type": "statement",
+      "text": "中电联在国家数据局、国家能源局的指导下，统筹协调电网企业、发电企业、售电企业、科研机构、高等院校等项目参与单位，建立标准立项、起草、审查、发布、复审全流程协作机制，明确项目组各专业方向在标准研制中的职责分工，推动标准体系建设与先行先试项目建设一体部署、一体推进。",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（一）组织保障**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0057",
+        "line_start": 178,
+        "line_end": 178
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0133",
+      "fact_type": "statement",
+      "text": "建议将电力领域数据基础设施标准纳入国家能源局年度能源行业标准计划立项指南重点支持方向，建立标准立项与国家数据基础设施建设进度、能源行业数据分类分级指南实施要求相衔接的动态调整机制，建立标准实施情况跟踪评估和问题反馈机制。",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（二）机制保障**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0058",
+        "line_start": 182,
+        "line_end": 182
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0134",
+      "fact_type": "statement",
+      "text": "建议统筹电力企业、科研机构标准化研究力量，依托电网企业数字化转型实践经验，加大标准研制专项经费和人才队伍投入，鼓励电力企业将已形成的数据架构、数据资产管理等企业实践成果转化为行业标准和团体标准。",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（三）资源保障**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0059",
+        "line_start": 186,
+        "line_end": 186
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0135",
+      "fact_type": "statement",
+      "text": "建议在信息模型、互联互通等专业领域持续跟踪IEC 61970、IEC 61968等国际标准的最新进展，做好电力行业标准与国际标准的对标分析，积极参与国际标准化工作，提升电力数据基础设施标准的国际化水平。",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（四）国际标准衔接**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0060",
+        "line_start": 190,
+        "line_end": 190
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0136",
+      "fact_type": "statement",
+      "text": "电力领域数据基础设施标准体系建设是贯彻落实国家数据基础设施建设总体部署、支撑新型电力系统数字化转型的重要基础性工作，也是中电联落实国家数据基础设施建设第二批先行先试任务书标准验证任务的核心工作之一。",
+      "heading_path": [
+        "**八、结论**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0061",
+        "line_start": 194,
+        "line_end": 194
+      },
+      "segment_index": 1
+    },
+    {
+      "fact_id": "fact-0137",
+      "fact_type": "statement",
+      "text": "本研究由中电联组织开展，以《国家数据基础设施建设指引》确立的总体架构和《能源行业数据分类分级指南（2026年版）》等最新制度要求为依据，紧密衔接先行先试任务书关于“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设的任务要求，结合电力行业现有标准基础和数字化转型实践，构建了涵盖基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类的电力领域数据基础设施标准体系框架，明确了重点标准研制方向、优先级排序和三阶段实施路径。",
+      "heading_path": [
+        "**八、结论**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0061",
+        "line_start": 194,
+        "line_end": 194
+      },
+      "segment_index": 2
+    },
+    {
+      "fact_id": "fact-0138",
+      "fact_type": "statement",
+      "text": "后续工作中，中电联将在统一部署下持续跟踪国家数据基础设施建设进展，动态完善标准体系框架内容，加快重点标准立项研制，强化标准实施评估，推动本研究成果纳入先行先试项目整体建设进度统筹推进，为电力数据要素价值释放和电力行业高质量发展提供坚实的标准支撑。",
+      "heading_path": [
+        "**八、结论**"
+      ],
+      "claim_status": "source_assertion",
+      "verification_status": "unverified",
+      "semantic_role": "unclassified",
+      "source_ref": {
+        "block_id": "blk-0061",
+        "line_start": 194,
+        "line_end": 194
+      },
+      "segment_index": 3
+    }
+  ],
+  "source_blocks": [
+    {
+      "block_id": "blk-0057",
+      "type": "paragraph",
+      "text": "本项研究由中电联牵头组织，依托电力领域数据基础设施先行先试项目组工作机制推进标准体系建设。中电联在国家数据局、国家能源局的指导下，统筹协调电网企业、发电企业、售电企业、科研机构、高等院校等项目参与单位，建立标准立项、起草、审查、发布、复审全流程协作机制，明确项目组各专业方向在标准研制中的职责分工，推动标准体系建设与先行先试项目建设一体部署、一体推进。",
+      "line_start": 178,
+      "line_end": 178,
+      "section_id": "sec-0018",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（一）组织保障**"
+      ]
+    },
+    {
+      "block_id": "blk-0058",
+      "type": "paragraph",
+      "text": "建议将电力领域数据基础设施标准纳入国家能源局年度能源行业标准计划立项指南重点支持方向，建立标准立项与国家数据基础设施建设进度、能源行业数据分类分级指南实施要求相衔接的动态调整机制，建立标准实施情况跟踪评估和问题反馈机制。",
+      "line_start": 182,
+      "line_end": 182,
+      "section_id": "sec-0019",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（二）机制保障**"
+      ]
+    },
+    {
+      "block_id": "blk-0059",
+      "type": "paragraph",
+      "text": "建议统筹电力企业、科研机构标准化研究力量，依托电网企业数字化转型实践经验，加大标准研制专项经费和人才队伍投入，鼓励电力企业将已形成的数据架构、数据资产管理等企业实践成果转化为行业标准和团体标准。",
+      "line_start": 186,
+      "line_end": 186,
+      "section_id": "sec-0020",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（三）资源保障**"
+      ]
+    },
+    {
+      "block_id": "blk-0060",
+      "type": "paragraph",
+      "text": "建议在信息模型、互联互通等专业领域持续跟踪IEC 61970、IEC 61968等国际标准的最新进展，做好电力行业标准与国际标准的对标分析，积极参与国际标准化工作，提升电力数据基础设施标准的国际化水平。",
+      "line_start": 190,
+      "line_end": 190,
+      "section_id": "sec-0021",
+      "heading_path": [
+        "**七、保障措施**",
+        "**（四）国际标准衔接**"
+      ]
+    },
+    {
+      "block_id": "blk-0061",
+      "type": "paragraph",
+      "text": "电力领域数据基础设施标准体系建设是贯彻落实国家数据基础设施建设总体部署、支撑新型电力系统数字化转型的重要基础性工作，也是中电联落实国家数据基础设施建设第二批先行先试任务书标准验证任务的核心工作之一。本研究由中电联组织开展，以《国家数据基础设施建设指引》确立的总体架构和《能源行业数据分类分级指南（2026年版）》等最新制度要求为依据，紧密衔接先行先试任务书关于“三统一”能力、主体接入能力、数据流通利用能力和安全保障能力建设的任务要求，结合电力行业现有标准基础和数字化转型实践，构建了涵盖基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类的电力领域数据基础设施标准体系框架，明确了重点标准研制方向、优先级排序和三阶段实施路径。后续工作中，中电联将在统一部署下持续跟踪国家数据基础设施建设进展，动态完善标准体系框架内容，加快重点标准立项研制，强化标准实施评估，推动本研究成果纳入先行先试项目整体建设进度统筹推进，为电力数据要素价值释放和电力行业高质量发展提供坚实的标准支撑。",
+      "line_start": 194,
+      "line_end": 194,
+      "section_id": "sec-0022",
+      "heading_path": [
+        "**八、结论**"
+      ]
+    }
+  ],
+  "semantic_policy": {
+    "truth_status": "source_assertions_unverified",
+    "external_enrichment": "allowed_with_basis_label",
+    "inference_must_be_labeled": true
+  }
+}

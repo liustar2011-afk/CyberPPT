@@ -1,7 +1,7 @@
 from __future__ import annotations
 import copy, json, re
 from pathlib import Path
-from script_engine.contracts import validate_deck_plan, validate_final_script, collect_foundation_source_codes, validate_source_refs_coverage, lint_final_script, check_onscreen_structure, outline_final_script, check_speaker_notes_length, check_declared_count, check_onscreen_detail_length, check_onscreen_terminal_punctuation
+from script_engine.contracts import validate_deck_plan, validate_final_script, collect_foundation_source_codes, validate_source_refs_coverage, lint_final_script, check_onscreen_structure, check_full_copy_duplication, outline_final_script, check_speaker_notes_length, check_declared_count, check_onscreen_detail_length, check_onscreen_terminal_punctuation
 from script_engine.render import render_stage02_markdown
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -299,6 +299,30 @@ def test_check_onscreen_structure_ignores_headings_across_different_slides() -> 
     if len(payload["slides"]) > 1 and payload["slides"][1].get("onscreen"):
         payload["slides"][1]["onscreen"][0]["heading"] = heading
     assert check_onscreen_structure(payload) == []
+
+def test_check_full_copy_duplication_passes_on_clean_example() -> None:
+    assert check_full_copy_duplication(_example()) == []
+
+def test_check_full_copy_duplication_flags_restated_sentence() -> None:
+    """Regression fixture: the real repeated sentence found in P04's full_copy during the
+    2026-08-28 content-density root-cause investigation (see
+    projects/power-data-infrastructure-standard-system-research-20260828-002/
+    workbench/analysis/p04-stage01-content-density-code-root-cause-analysis.md)."""
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = (
+        "与此同时，国家能源局发布《能源行业数据分类分级指南（2026年版）》等制度安排，"
+        "进一步补充能源数据分类分级和安全管理要求。"
+        "与此同时，国家能源局发布《能源行业数据分类分级指南（2026年版）》等制度安排，"
+        "进一步补充能源数据分类分级和安全管理要求。"
+    )
+    issues = check_full_copy_duplication(payload)
+    assert issues
+    assert any("FULL_COPY_DUPLICATION" in issue for issue in issues)
+
+def test_check_full_copy_duplication_ignores_short_unrelated_sentences() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = "现状如此。因此如此。"
+    assert check_full_copy_duplication(payload) == []
 
 def test_outline_final_script_reports_module_count_matching_headings() -> None:
     rows = outline_final_script(_example())

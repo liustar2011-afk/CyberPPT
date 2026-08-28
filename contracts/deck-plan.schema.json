@@ -187,7 +187,22 @@
             "additionalProperties": false
           }
         },
-        "onscreen_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        "onscreen_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "unit_dispositions": {
+          "type": "array",
+          "description": "Per-semantic-unit consumption disposition, keyed by source_ref + unit_id. Optional; when absent, unit-level audit checks are skipped for the page.",
+          "items": {
+            "type": "object",
+            "required": ["source_ref", "unit_id", "disposition"],
+            "properties": {
+              "source_ref": {"type": "string", "minLength": 1},
+              "unit_id": {"type": "string", "minLength": 1},
+              "disposition": {"type": "string", "enum": ["full_copy", "onscreen", "reserved_for_later", "trace_only", "intentional_omission"]},
+              "reason": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
+        }
       },
       "additionalProperties": false
     }

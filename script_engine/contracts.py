@@ -202,6 +202,43 @@ def check_onscreen_structure(final_script: dict[str, Any]) -> list[str]:
                         issues.append(f"slides.{index} ({slide_id}).onscreen module '{module_heading}': near-duplicate lines ({ratio:.0%} similar) — '{lines[i]}' / '{lines[j]}' restate the same point instead of adding a new one")
     return issues
 
+_FULL_COPY_SENTENCE_SIMILARITY_THRESHOLD = 0.75
+_FULL_COPY_SENTENCE_MIN_CHARS = 12
+
+def check_full_copy_duplication(final_script: dict[str, Any]) -> list[str]:
+    """Flags near-duplicate sentences within the same slide's `full_copy`.
+
+    `check_onscreen_structure` already guards near-duplicate onscreen items within a
+    module; `full_copy` has no equivalent, so AUTHOR can restate the same source fact
+    across two argument paragraphs without any mechanical check catching it. The
+    threshold here is stricter than the onscreen check (0.75, not 0.6) because two full
+    sentences restating each other read as an obvious defect, while two evidence
+    phrases sharing vocabulary is common and legitimate."""
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict):
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        full_copy = slide.get("full_copy")
+        if not isinstance(full_copy, str) or not full_copy.strip():
+            continue
+        sentences = [s.strip() for s in re.split(r"(?<=[。！？])", full_copy) if s.strip()]
+        normalized = [_normalize_item_text(s) for s in sentences]
+        for i in range(len(sentences)):
+            if len(normalized[i]) < _FULL_COPY_SENTENCE_MIN_CHARS:
+                continue
+            for j in range(i + 1, len(sentences)):
+                if len(normalized[j]) < _FULL_COPY_SENTENCE_MIN_CHARS:
+                    continue
+                ratio = difflib.SequenceMatcher(None, normalized[i], normalized[j]).ratio()
+                if ratio >= _FULL_COPY_SENTENCE_SIMILARITY_THRESHOLD:
+                    issues.append(
+                        f"FULL_COPY_DUPLICATION: slides.{index} ({slide_id}).full_copy: "
+                        f"near-duplicate sentences ({ratio:.0%} similar) — '{sentences[i]}' / '{sentences[j]}' "
+                        "restate the same source fact instead of advancing the argument"
+                    )
+    return issues
+
 SPEAKER_NOTES_MIN_CHARS = 12
 
 def check_speaker_notes_length(final_script: dict[str, Any], min_chars: int = SPEAKER_NOTES_MIN_CHARS) -> list[str]:

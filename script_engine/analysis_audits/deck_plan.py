@@ -202,6 +202,8 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
             issues.append(f"pages.{index} ({page_id}): {relation_issue}")
         for consumption_issue in _audit_source_consumption_definition(page, items, foundation):
             issues.append(f"pages.{index} ({page_id}): {consumption_issue}")
+        for unit_issue in _audit_unit_consumption_definition(page, items, foundation):
+            issues.append(f"pages.{index} ({page_id}): {unit_issue}")
         for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
             issues.append(f"pages.{index} ({page_id}): {review_issue}")
         scope = page.get("source_scope") or []

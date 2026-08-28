@@ -1,0 +1,930 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "semantic_workpack",
+  "source": {
+    "source_file": "电力领域数据基础设施标准体系建设研究.docx",
+    "source_format": ".docx",
+    "conversion_engine": "Microsoft MarkItDown",
+    "converted_at": "2026-08-28T11:17:15+08:00",
+    "ocr_requested": false
+  },
+  "input_markdown": "电力领域数据基础设施标准体系建设研究.md",
+  "markdown_sha256": "ee9a1593c9f56af457f07d1ffbd1ecb07447c92d77b867dca3aedddf2bc1f9b4",
+  "foundation": {
+    "digest_version": "semantic-foundation-v1",
+    "structure_sha256": "6a8af30ed22102ef7fc81cbcc4c81c091802f1b084e6eb768087d2bd91659258",
+    "fact_base_sha256": "96a349576b43bc131d964d54aecb2281bb8cb3065eb7244be17eec5978d36256"
+  },
+  "document": {
+    "title": "**一、研究背景与意义**",
+    "heading_count": 22,
+    "block_count": 61,
+    "source_fact_count": 187,
+    "section_count": 22,
+    "chunk_count": 4
+  },
+  "outline": [
+    {
+      "section_id": "sec-0001",
+      "level": 1,
+      "title": "**一、研究背景与意义**",
+      "line": 66,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0002",
+      "level": 2,
+      "title": "**（一）国家数据基础设施建设进入全面实施阶段**",
+      "line": 68,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0003",
+      "level": 2,
+      "title": "**（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托**",
+      "line": 74,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0004",
+      "level": 2,
+      "title": "**（三）电力行业数字化转型对标准体系提出迫切需求**",
+      "line": 78,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0005",
+      "level": 2,
+      "title": "**（四）研究目的与意义**",
+      "line": 84,
+      "parent_section_id": "sec-0001"
+    },
+    {
+      "section_id": "sec-0006",
+      "level": 1,
+      "title": "**二、现状基础与差距分析**",
+      "line": 88,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0007",
+      "level": 2,
+      "title": "**（一）国家层面政策与标准基础**",
+      "line": 90,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0008",
+      "level": 2,
+      "title": "**（二）电力行业现有标准与实践基础**",
+      "line": 94,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0009",
+      "level": 2,
+      "title": "**（三）现状问题与差距分析**",
+      "line": 98,
+      "parent_section_id": "sec-0006"
+    },
+    {
+      "section_id": "sec-0010",
+      "level": 1,
+      "title": "**三、标准体系构建总体思路**",
+      "line": 112,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0011",
+      "level": 2,
+      "title": "**（一）构建原则**",
+      "line": 114,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0012",
+      "level": 2,
+      "title": "**（二）构建方法与依据**",
+      "line": 118,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0013",
+      "level": 2,
+      "title": "**（三）总体框架**",
+      "line": 122,
+      "parent_section_id": "sec-0010"
+    },
+    {
+      "section_id": "sec-0014",
+      "level": 1,
+      "title": "**四、电力领域数据基础设施标准体系框架设计**",
+      "line": 126,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 1,
+      "title": "**五、重点标准研制方向与优先级**",
+      "line": 158,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0016",
+      "level": 1,
+      "title": "**六、分阶段实施路径**",
+      "line": 164,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0017",
+      "level": 1,
+      "title": "**七、保障措施**",
+      "line": 174,
+      "parent_section_id": null
+    },
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "**（一）组织保障**",
+      "line": 176,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0019",
+      "level": 2,
+      "title": "**（二）机制保障**",
+      "line": 180,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "**（三）资源保障**",
+      "line": 184,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "**（四）国际标准衔接**",
+      "line": 188,
+      "parent_section_id": "sec-0017"
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 1,
+      "title": "**八、结论**",
+      "line": 192,
+      "parent_section_id": null
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "preamble",
+      "level": 0,
+      "title": "Preamble",
+      "parent_section_id": null,
+      "fact_ids": [
+        "fact-0001",
+        "fact-0002",
+        "fact-0003",
+        "fact-0004",
+        "fact-0005",
+        "fact-0006",
+        "fact-0007",
+        "fact-0008",
+        "fact-0009",
+        "fact-0010",
+        "fact-0011",
+        "fact-0012",
+        "fact-0013",
+        "fact-0014",
+        "fact-0015",
+        "fact-0016",
+        "fact-0017",
+        "fact-0018",
+        "fact-0019",
+        "fact-0020",
+        "fact-0021",
+        "fact-0022",
+        "fact-0023",
+        "fact-0024",
+        "fact-0025",
+        "fact-0026",
+        "fact-0027",
+        "fact-0028",
+        "fact-0029"
+      ],
+      "block_ids": [
+        "blk-0001",
+        "blk-0002",
+        "blk-0003",
+        "blk-0004",
+        "blk-0005",
+        "blk-0006",
+        "blk-0007",
+        "blk-0008",
+        "blk-0009",
+        "blk-0010",
+        "blk-0011",
+        "blk-0012",
+        "blk-0013",
+        "blk-0014",
+        "blk-0015",
+        "blk-0016",
+        "blk-0017",
+        "blk-0018",
+        "blk-0019",
+        "blk-0020",
+        "blk-0021",
+        "blk-0022",
+        "blk-0023",
+        "blk-0024",
+        "blk-0025",
+        "blk-0026",
+        "blk-0027",
+        "blk-0028",
+        "blk-0029"
+      ]
+    },
+    {
+      "section_id": "sec-0001",
+      "level": 1,
+      "title": "**一、研究背景与意义**",
+      "line": 66,
+      "parent_section_id": null,
+      "fact_ids": [],
+      "block_ids": []
+    },
+    {
+      "section_id": "sec-0002",
+      "level": 2,
+      "title": "**（一）国家数据基础设施建设进入全面实施阶段**",
+      "line": 68,
+      "parent_section_id": "sec-0001",
+      "fact_ids": [
+        "fact-0030",
+        "fact-0031",
+        "fact-0032",
+        "fact-0033",
+        "fact-0034",
+        "fact-0035",
+        "fact-0036",
+        "fact-0037"
+      ],
+      "block_ids": [
+        "blk-0030",
+        "blk-0031"
+      ]
+    },
+    {
+      "section_id": "sec-0003",
+      "level": 2,
+      "title": "**（二）中电联获批国家数据基础设施建设先行先试项目为标准体系建设提供实践依托**",
+      "line": 74,
+      "parent_section_id": "sec-0001",
+      "fact_ids": [
+        "fact-0038",
+        "fact-0039",
+        "fact-0040",
+        "fact-0041",
+        "fact-0042",
+        "fact-0043"
+      ],
+      "block_ids": [
+        "blk-0032"
+      ]
+    },
+    {
+      "section_id": "sec-0004",
+      "level": 2,
+      "title": "**（三）电力行业数字化转型对标准体系提出迫切需求**",
+      "line": 78,
+      "parent_section_id": "sec-0001",
+      "fact_ids": [
+        "fact-0044",
+        "fact-0045",
+        "fact-0046",
+        "fact-0047",
+        "fact-0048",
+        "fact-0049",
+        "fact-0050"
+      ],
+      "block_ids": [
+        "blk-0033",
+        "blk-0034"
+      ]
+    },
+    {
+      "section_id": "sec-0005",
+      "level": 2,
+      "title": "**（四）研究目的与意义**",
+      "line": 84,
+      "parent_section_id": "sec-0001",
+      "fact_ids": [
+        "fact-0051"
+      ],
+      "block_ids": [
+        "blk-0035"
+      ]
+    },
+    {
+      "section_id": "sec-0006",
+      "level": 1,
+      "title": "**二、现状基础与差距分析**",
+      "line": 88,
+      "parent_section_id": null,
+      "fact_ids": [],
+      "block_ids": []
+    },
+    {
+      "section_id": "sec-0007",
+      "level": 2,
+      "title": "**（一）国家层面政策与标准基础**",
+      "line": 90,
+      "parent_section_id": "sec-0006",
+      "fact_ids": [
+        "fact-0052",
+        "fact-0053",
+        "fact-0054",
+        "fact-0055"
+      ],
+      "block_ids": [
+        "blk-0036"
+      ]
+    },
+    {
+      "section_id": "sec-0008",
+      "level": 2,
+      "title": "**（二）电力行业现有标准与实践基础**",
+      "line": 94,
+      "parent_section_id": "sec-0006",
+      "fact_ids": [
+        "fact-0056",
+        "fact-0057",
+        "fact-0058",
+        "fact-0059",
+        "fact-0060",
+        "fact-0061",
+        "fact-0062",
+        "fact-0063"
+      ],
+      "block_ids": [
+        "blk-0037"
+      ]
+    },
+    {
+      "section_id": "sec-0009",
+      "level": 2,
+      "title": "**（三）现状问题与差距分析**",
+      "line": 98,
+      "parent_section_id": "sec-0006",
+      "fact_ids": [
+        "fact-0064",
+        "fact-0065",
+        "fact-0066",
+        "fact-0067",
+        "fact-0068",
+        "fact-0069",
+        "fact-0070",
+        "fact-0071",
+        "fact-0072",
+        "fact-0073",
+        "fact-0074"
+      ],
+      "block_ids": [
+        "blk-0038",
+        "blk-0039",
+        "blk-0040",
+        "blk-0041",
+        "blk-0042",
+        "blk-0043"
+      ]
+    },
+    {
+      "section_id": "sec-0010",
+      "level": 1,
+      "title": "**三、标准体系构建总体思路**",
+      "line": 112,
+      "parent_section_id": null,
+      "fact_ids": [],
+      "block_ids": []
+    },
+    {
+      "section_id": "sec-0011",
+      "level": 2,
+      "title": "**（一）构建原则**",
+      "line": 114,
+      "parent_section_id": "sec-0010",
+      "fact_ids": [
+        "fact-0075",
+        "fact-0076",
+        "fact-0077",
+        "fact-0078",
+        "fact-0079",
+        "fact-0080",
+        "fact-0081"
+      ],
+      "block_ids": [
+        "blk-0044"
+      ]
+    },
+    {
+      "section_id": "sec-0012",
+      "level": 2,
+      "title": "**（二）构建方法与依据**",
+      "line": 118,
+      "parent_section_id": "sec-0010",
+      "fact_ids": [
+        "fact-0082"
+      ],
+      "block_ids": [
+        "blk-0045"
+      ]
+    },
+    {
+      "section_id": "sec-0013",
+      "level": 2,
+      "title": "**（三）总体框架**",
+      "line": 122,
+      "parent_section_id": "sec-0010",
+      "fact_ids": [
+        "fact-0083",
+        "fact-0084",
+        "fact-0085",
+        "fact-0086"
+      ],
+      "block_ids": [
+        "blk-0046"
+      ]
+    },
+    {
+      "section_id": "sec-0014",
+      "level": 1,
+      "title": "**四、电力领域数据基础设施标准体系框架设计**",
+      "line": 126,
+      "parent_section_id": null,
+      "fact_ids": [
+        "fact-0087",
+        "fact-0088",
+        "fact-0088-c01-s01",
+        "fact-0088-c02-s01",
+        "fact-0088-c03-s01",
+        "fact-0089",
+        "fact-0089-c02-s01",
+        "fact-0089-c03-s01",
+        "fact-0090",
+        "fact-0090-c02-s01",
+        "fact-0090-c03-s01",
+        "fact-0091",
+        "fact-0091-c01-s01",
+        "fact-0091-c02-s01",
+        "fact-0091-c03-s01",
+        "fact-0092",
+        "fact-0092-c02-s01",
+        "fact-0092-c03-s01",
+        "fact-0093",
+        "fact-0093-c02-s01",
+        "fact-0093-c03-s01",
+        "fact-0094",
+        "fact-0094-c02-s01",
+        "fact-0094-c03-s01",
+        "fact-0095",
+        "fact-0095-c01-s01",
+        "fact-0095-c02-s01",
+        "fact-0095-c03-s01",
+        "fact-0096",
+        "fact-0096-c02-s01",
+        "fact-0096-c03-s01",
+        "fact-0097",
+        "fact-0097-c02-s01",
+        "fact-0097-c03-s01",
+        "fact-0098",
+        "fact-0098-c01-s01",
+        "fact-0098-c02-s01",
+        "fact-0098-c03-s01",
+        "fact-0099",
+        "fact-0099-c02-s01",
+        "fact-0099-c03-s01",
+        "fact-0100",
+        "fact-0100-c02-s01",
+        "fact-0100-c03-s01",
+        "fact-0101",
+        "fact-0101-c01-s01",
+        "fact-0101-c02-s01",
+        "fact-0101-c03-s01",
+        "fact-0102",
+        "fact-0102-c02-s01",
+        "fact-0102-c03-s01",
+        "fact-0103",
+        "fact-0103-c02-s01",
+        "fact-0103-c03-s01",
+        "fact-0104",
+        "fact-0104-c01-s01",
+        "fact-0104-c02-s01",
+        "fact-0104-c03-s01",
+        "fact-0105",
+        "fact-0105-c02-s01",
+        "fact-0105-c03-s01",
+        "fact-0106",
+        "fact-0106-c02-s01",
+        "fact-0106-c03-s01",
+        "fact-0107",
+        "fact-0107-c01-s01",
+        "fact-0107-c02-s01",
+        "fact-0107-c03-s01",
+        "fact-0108",
+        "fact-0108-c02-s01",
+        "fact-0108-c03-s01",
+        "fact-0109",
+        "fact-0110",
+        "fact-0111",
+        "fact-0112",
+        "fact-0113",
+        "fact-0114",
+        "fact-0115",
+        "fact-0116",
+        "fact-0117",
+        "fact-0118"
+      ],
+      "block_ids": [
+        "blk-0047",
+        "blk-0048",
+        "blk-0049",
+        "blk-0050"
+      ]
+    },
+    {
+      "section_id": "sec-0015",
+      "level": 1,
+      "title": "**五、重点标准研制方向与优先级**",
+      "line": 158,
+      "parent_section_id": null,
+      "fact_ids": [
+        "fact-0119",
+        "fact-0120",
+        "fact-0121",
+        "fact-0122",
+        "fact-0123"
+      ],
+      "block_ids": [
+        "blk-0051",
+        "blk-0052"
+      ]
+    },
+    {
+      "section_id": "sec-0016",
+      "level": 1,
+      "title": "**六、分阶段实施路径**",
+      "line": 164,
+      "parent_section_id": null,
+      "fact_ids": [
+        "fact-0124",
+        "fact-0125",
+        "fact-0126",
+        "fact-0127",
+        "fact-0128",
+        "fact-0129",
+        "fact-0130"
+      ],
+      "block_ids": [
+        "blk-0053",
+        "blk-0054",
+        "blk-0055",
+        "blk-0056"
+      ]
+    },
+    {
+      "section_id": "sec-0017",
+      "level": 1,
+      "title": "**七、保障措施**",
+      "line": 174,
+      "parent_section_id": null,
+      "fact_ids": [],
+      "block_ids": []
+    },
+    {
+      "section_id": "sec-0018",
+      "level": 2,
+      "title": "**（一）组织保障**",
+      "line": 176,
+      "parent_section_id": "sec-0017",
+      "fact_ids": [
+        "fact-0131",
+        "fact-0132"
+      ],
+      "block_ids": [
+        "blk-0057"
+      ]
+    },
+    {
+      "section_id": "sec-0019",
+      "level": 2,
+      "title": "**（二）机制保障**",
+      "line": 180,
+      "parent_section_id": "sec-0017",
+      "fact_ids": [
+        "fact-0133"
+      ],
+      "block_ids": [
+        "blk-0058"
+      ]
+    },
+    {
+      "section_id": "sec-0020",
+      "level": 2,
+      "title": "**（三）资源保障**",
+      "line": 184,
+      "parent_section_id": "sec-0017",
+      "fact_ids": [
+        "fact-0134"
+      ],
+      "block_ids": [
+        "blk-0059"
+      ]
+    },
+    {
+      "section_id": "sec-0021",
+      "level": 2,
+      "title": "**（四）国际标准衔接**",
+      "line": 188,
+      "parent_section_id": "sec-0017",
+      "fact_ids": [
+        "fact-0135"
+      ],
+      "block_ids": [
+        "blk-0060"
+      ]
+    },
+    {
+      "section_id": "sec-0022",
+      "level": 1,
+      "title": "**八、结论**",
+      "line": 192,
+      "parent_section_id": null,
+      "fact_ids": [
+        "fact-0136",
+        "fact-0137",
+        "fact-0138"
+      ],
+      "block_ids": [
+        "blk-0061"
+      ]
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_id": "chunk-0001",
+      "file": "chunks/chunk-0001.json",
+      "section_id": "preamble",
+      "section_ids": [
+        "preamble",
+        "sec-0002",
+        "sec-0003",
+        "sec-0004",
+        "sec-0005",
+        "sec-0007",
+        "sec-0008"
+      ],
+      "fact_ids": [
+        "fact-0001",
+        "fact-0002",
+        "fact-0003",
+        "fact-0004",
+        "fact-0005",
+        "fact-0006",
+        "fact-0007",
+        "fact-0008",
+        "fact-0009",
+        "fact-0010",
+        "fact-0011",
+        "fact-0012",
+        "fact-0013",
+        "fact-0014",
+        "fact-0015",
+        "fact-0016",
+        "fact-0017",
+        "fact-0018",
+        "fact-0019",
+        "fact-0020",
+        "fact-0021",
+        "fact-0022",
+        "fact-0023",
+        "fact-0024",
+        "fact-0025",
+        "fact-0026",
+        "fact-0027",
+        "fact-0028",
+        "fact-0029",
+        "fact-0030",
+        "fact-0031",
+        "fact-0032",
+        "fact-0033",
+        "fact-0034",
+        "fact-0035",
+        "fact-0036",
+        "fact-0037",
+        "fact-0038",
+        "fact-0039",
+        "fact-0040",
+        "fact-0041",
+        "fact-0042",
+        "fact-0043",
+        "fact-0044",
+        "fact-0045",
+        "fact-0046",
+        "fact-0047",
+        "fact-0048",
+        "fact-0049",
+        "fact-0050",
+        "fact-0051",
+        "fact-0052",
+        "fact-0053",
+        "fact-0054",
+        "fact-0055",
+        "fact-0056",
+        "fact-0057",
+        "fact-0058",
+        "fact-0059",
+        "fact-0060"
+      ]
+    },
+    {
+      "chunk_id": "chunk-0002",
+      "file": "chunks/chunk-0002.json",
+      "section_id": "sec-0008",
+      "section_ids": [
+        "sec-0008",
+        "sec-0009",
+        "sec-0011",
+        "sec-0012",
+        "sec-0013",
+        "sec-0014"
+      ],
+      "fact_ids": [
+        "fact-0061",
+        "fact-0062",
+        "fact-0063",
+        "fact-0064",
+        "fact-0065",
+        "fact-0066",
+        "fact-0067",
+        "fact-0068",
+        "fact-0069",
+        "fact-0070",
+        "fact-0071",
+        "fact-0072",
+        "fact-0073",
+        "fact-0074",
+        "fact-0075",
+        "fact-0076",
+        "fact-0077",
+        "fact-0078",
+        "fact-0079",
+        "fact-0080",
+        "fact-0081",
+        "fact-0082",
+        "fact-0083",
+        "fact-0084",
+        "fact-0085",
+        "fact-0086",
+        "fact-0087",
+        "fact-0088",
+        "fact-0088-c01-s01",
+        "fact-0088-c02-s01",
+        "fact-0088-c03-s01",
+        "fact-0089",
+        "fact-0089-c02-s01",
+        "fact-0089-c03-s01",
+        "fact-0090",
+        "fact-0090-c02-s01",
+        "fact-0090-c03-s01",
+        "fact-0091",
+        "fact-0091-c01-s01",
+        "fact-0091-c02-s01",
+        "fact-0091-c03-s01",
+        "fact-0092",
+        "fact-0092-c02-s01",
+        "fact-0092-c03-s01",
+        "fact-0093",
+        "fact-0093-c02-s01",
+        "fact-0093-c03-s01",
+        "fact-0094",
+        "fact-0094-c02-s01",
+        "fact-0094-c03-s01",
+        "fact-0095",
+        "fact-0095-c01-s01",
+        "fact-0095-c02-s01",
+        "fact-0095-c03-s01",
+        "fact-0096",
+        "fact-0096-c02-s01",
+        "fact-0096-c03-s01",
+        "fact-0097",
+        "fact-0097-c02-s01",
+        "fact-0097-c03-s01"
+      ]
+    },
+    {
+      "chunk_id": "chunk-0003",
+      "file": "chunks/chunk-0003.json",
+      "section_id": "sec-0014",
+      "section_ids": [
+        "sec-0014",
+        "sec-0015",
+        "sec-0016",
+        "sec-0018"
+      ],
+      "fact_ids": [
+        "fact-0098",
+        "fact-0098-c01-s01",
+        "fact-0098-c02-s01",
+        "fact-0098-c03-s01",
+        "fact-0099",
+        "fact-0099-c02-s01",
+        "fact-0099-c03-s01",
+        "fact-0100",
+        "fact-0100-c02-s01",
+        "fact-0100-c03-s01",
+        "fact-0101",
+        "fact-0101-c01-s01",
+        "fact-0101-c02-s01",
+        "fact-0101-c03-s01",
+        "fact-0102",
+        "fact-0102-c02-s01",
+        "fact-0102-c03-s01",
+        "fact-0103",
+        "fact-0103-c02-s01",
+        "fact-0103-c03-s01",
+        "fact-0104",
+        "fact-0104-c01-s01",
+        "fact-0104-c02-s01",
+        "fact-0104-c03-s01",
+        "fact-0105",
+        "fact-0105-c02-s01",
+        "fact-0105-c03-s01",
+        "fact-0106",
+        "fact-0106-c02-s01",
+        "fact-0106-c03-s01",
+        "fact-0107",
+        "fact-0107-c01-s01",
+        "fact-0107-c02-s01",
+        "fact-0107-c03-s01",
+        "fact-0108",
+        "fact-0108-c02-s01",
+        "fact-0108-c03-s01",
+        "fact-0109",
+        "fact-0110",
+        "fact-0111",
+        "fact-0112",
+        "fact-0113",
+        "fact-0114",
+        "fact-0115",
+        "fact-0116",
+        "fact-0117",
+        "fact-0118",
+        "fact-0119",
+        "fact-0120",
+        "fact-0121",
+        "fact-0122",
+        "fact-0123",
+        "fact-0124",
+        "fact-0125",
+        "fact-0126",
+        "fact-0127",
+        "fact-0128",
+        "fact-0129",
+        "fact-0130",
+        "fact-0131"
+      ]
+    },
+    {
+      "chunk_id": "chunk-0004",
+      "file": "chunks/chunk-0004.json",
+      "section_id": "sec-0018",
+      "section_ids": [
+        "sec-0018",
+        "sec-0019",
+        "sec-0020",
+        "sec-0021",
+        "sec-0022"
+      ],
+      "fact_ids": [
+        "fact-0132",
+        "fact-0133",
+        "fact-0134",
+        "fact-0135",
+        "fact-0136",
+        "fact-0137",
+        "fact-0138"
+      ]
+    }
+  ],
+  "semantic_policy": {
+    "source_assertions_are_verified_truth": false,
+    "external_enrichment": "allowed_with_basis_label",
+    "preserve_conflicts_and_ambiguity": true,
+    "inference_must_be_labeled": true
+  },
+  "warnings": []
+}

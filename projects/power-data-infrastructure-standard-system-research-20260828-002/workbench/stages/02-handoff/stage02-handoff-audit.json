@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.stage02_handoff_audit.v1",
+  "status": "passed",
+  "handoff": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-handoff\\stage02-handoff.json",
+  "page_count": 24,
+  "content_page_count": 13,
+  "template_page_count": 11,
+  "blocking_issues": [],
+  "warnings": [],
+  "audited_at": "2026-08-28T03:56:11+00:00"
+}

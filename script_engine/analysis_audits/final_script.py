@@ -502,6 +502,90 @@ def _audit_authored_onscreen_contract(
                     )
     return issues
 
+def _audit_authored_unit_consumption(
+    page: dict[str, Any], slide: dict[str, Any], items: dict[str, dict[str, Any]], foundation: dict[str, Any]
+) -> list[str]:
+    """Check that AUTHOR actually expressed every semantic unit PLAN assigned a disposition to.
+
+    Record-level source_consumption only proves one anchor from a record survived into
+    full_copy; a record with several semantic units can still lose most of them. This is
+    the per-unit follow-through, and only fires when PLAN declared ``unit_dispositions``
+    for the page (see ``_audit_unit_consumption_definition`` for the PLAN-side shape
+    validation). Pages without a declaration are unaffected.
+    """
+    if not requires_source_consumption(page, foundation):
+        return []
+    contract = page.get("source_consumption")
+    if not isinstance(contract, dict):
+        return []
+    dispositions = contract.get("unit_dispositions")
+    if not isinstance(dispositions, list) or not dispositions:
+        return []
+
+    full_copy = str(slide.get("full_copy") or "")
+    onscreen_contract = page.get("onscreen_contract") or {}
+    modules_by_ref: dict[str, list[str]] = {}
+    if isinstance(onscreen_contract, dict):
+        for module in onscreen_contract.get("modules") or []:
+            if not isinstance(module, dict):
+                continue
+            heading = str(module.get("heading") or "").strip()
+            for ref in module.get("evidence_refs") or []:
+                if isinstance(ref, str) and ref:
+                    modules_by_ref.setdefault(ref, []).append(heading)
+    actual_by_heading = {
+        str(module.get("heading") or "").strip(): module
+        for module in slide.get("onscreen") or []
+        if isinstance(module, dict)
+    }
+
+    issues: list[str] = []
+    for entry in dispositions:
+        if not isinstance(entry, dict):
+            continue
+        ref = str(entry.get("source_ref") or "").strip()
+        unit_id = str(entry.get("unit_id") or "").strip()
+        disposition = entry.get("disposition")
+        item = items.get(ref)
+        if not ref or not unit_id or not isinstance(item, dict):
+            continue
+        unit = next(
+            (
+                candidate
+                for candidate_index, candidate in enumerate(item.get("semantic_units") or [])
+                if isinstance(candidate, dict)
+                and (str(candidate.get("id") or "").strip() or f"{ref}#{candidate_index}") == unit_id
+            ),
+            None,
+        )
+        if not isinstance(unit, dict):
+            continue
+        unit_text = str(unit.get("text") or "").strip()
+        if not unit_text:
+            continue
+
+        if disposition == "full_copy":
+            overlap = _source_statement_overlap(unit_text, full_copy)
+            if overlap < 0.08:
+                issues.append(
+                    f"FULL_COPY_SEMANTIC_UNIT_GAP: {ref}#{unit_id} is assigned full_copy disposition "
+                    f"but is absent from full_copy (overlap={overlap:.3f}); unit text: {unit_text}"
+                )
+        elif disposition == "onscreen":
+            headings = modules_by_ref.get(ref) or []
+            module_text = " ".join(
+                " ".join(_onscreen_module_lines(actual_by_heading[heading]))
+                for heading in headings
+                if heading in actual_by_heading
+            )
+            overlap = _source_statement_overlap(unit_text, module_text) if module_text else 0.0
+            if overlap < 0.08:
+                issues.append(
+                    f"ONSCREEN_SOURCE_DETAIL_INSUFFICIENT: {ref}#{unit_id} is assigned onscreen disposition "
+                    f"but is absent from the mapped onscreen module(s); unit text: {unit_text}"
+                )
+    return issues
+
 def _slide_text(slide: dict[str, Any]) -> str:
     parts: list[str] = []
     for key in ("title", "subtitle", "mission", "core_message", "full_copy", "visual_thesis", "speaker_notes"):
@@ -618,6 +702,8 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
             page, slide, items, foundation
         ):
             issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
+        for unit_issue in _audit_authored_unit_consumption(page, slide, items, foundation):
+            issues.append(f"slides.{index} ({slide_id}): {unit_issue}")
         for coverage_issue in _audit_authored_content_coverage(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
         for readiness_issue in audit_authored_stage02_readiness(page, slide):
@@ -646,4 +732,4 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
 
     return issues, warnings
 
-__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_authored_source_consumption', '_audit_authored_onscreen_composition', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', 'audit_final_script']
+__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_authored_source_consumption', '_audit_authored_unit_consumption', '_audit_authored_onscreen_composition', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', 'audit_final_script']

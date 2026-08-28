@@ -1,0 +1,735 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "argument_chain",
+  "diagnostic_resolution_mode": "required",
+  "source_chain": [
+    {
+      "node_id": "SC-001",
+      "order": 1,
+      "role": "context",
+      "statement": "sec-0002",
+      "section_ids": [
+        "sec-0002"
+      ],
+      "normalized_fact_ids": [
+        "NF-0030",
+        "NF-0031",
+        "NF-0032",
+        "NF-0033",
+        "NF-0034",
+        "NF-0035",
+        "NF-0036",
+        "NF-0037"
+      ]
+    },
+    {
+      "node_id": "SC-002",
+      "order": 2,
+      "role": "context",
+      "statement": "sec-0003",
+      "section_ids": [
+        "sec-0003"
+      ],
+      "normalized_fact_ids": [
+        "NF-0038",
+        "NF-0039",
+        "NF-0040",
+        "NF-0041",
+        "NF-0042",
+        "NF-0043"
+      ]
+    },
+    {
+      "node_id": "SC-003",
+      "order": 3,
+      "role": "problem",
+      "statement": "sec-0004",
+      "section_ids": [
+        "sec-0004"
+      ],
+      "normalized_fact_ids": [
+        "NF-0044",
+        "NF-0045",
+        "NF-0046",
+        "NF-0047",
+        "NF-0048",
+        "NF-0049",
+        "NF-0050"
+      ]
+    },
+    {
+      "node_id": "SC-004",
+      "order": 4,
+      "role": "goal",
+      "statement": "sec-0005",
+      "section_ids": [
+        "sec-0005"
+      ],
+      "normalized_fact_ids": [
+        "NF-0051"
+      ]
+    },
+    {
+      "node_id": "SC-005",
+      "order": 5,
+      "role": "policy_basis",
+      "statement": "sec-0007",
+      "section_ids": [
+        "sec-0007"
+      ],
+      "normalized_fact_ids": [
+        "NF-0052",
+        "NF-0053",
+        "NF-0054",
+        "NF-0055"
+      ]
+    },
+    {
+      "node_id": "SC-006",
+      "order": 6,
+      "role": "capability",
+      "statement": "sec-0008",
+      "section_ids": [
+        "sec-0008"
+      ],
+      "normalized_fact_ids": [
+        "NF-0056",
+        "NF-0057",
+        "NF-0058",
+        "NF-0059",
+        "NF-0060",
+        "NF-0061",
+        "NF-0062",
+        "NF-0063"
+      ]
+    },
+    {
+      "node_id": "SC-007",
+      "order": 7,
+      "role": "problem",
+      "statement": "sec-0009",
+      "section_ids": [
+        "sec-0009"
+      ],
+      "normalized_fact_ids": [
+        "NF-0064",
+        "NF-0065",
+        "NF-0066",
+        "NF-0067",
+        "NF-0068",
+        "NF-0069",
+        "NF-0070",
+        "NF-0071",
+        "NF-0072",
+        "NF-0073",
+        "NF-0074"
+      ]
+    },
+    {
+      "node_id": "SC-008",
+      "order": 8,
+      "role": "principle",
+      "statement": "sec-0011",
+      "section_ids": [
+        "sec-0011"
+      ],
+      "normalized_fact_ids": [
+        "NF-0075",
+        "NF-0076",
+        "NF-0077",
+        "NF-0078",
+        "NF-0079",
+        "NF-0080",
+        "NF-0081"
+      ]
+    },
+    {
+      "node_id": "SC-009",
+      "order": 9,
+      "role": "approach",
+      "statement": "sec-0012",
+      "section_ids": [
+        "sec-0012"
+      ],
+      "normalized_fact_ids": [
+        "NF-0082"
+      ]
+    },
+    {
+      "node_id": "SC-010",
+      "order": 10,
+      "role": "mechanism",
+      "statement": "sec-0013",
+      "section_ids": [
+        "sec-0013"
+      ],
+      "normalized_fact_ids": [
+        "NF-0083",
+        "NF-0084",
+        "NF-0085",
+        "NF-0086"
+      ]
+    },
+    {
+      "node_id": "SC-011",
+      "order": 11,
+      "role": "responsibility",
+      "statement": "sec-0018",
+      "section_ids": [
+        "sec-0018"
+      ],
+      "normalized_fact_ids": [
+        "NF-0159",
+        "NF-0160"
+      ]
+    },
+    {
+      "node_id": "SC-012",
+      "order": 12,
+      "role": "requirement",
+      "statement": "sec-0019",
+      "section_ids": [
+        "sec-0019"
+      ],
+      "normalized_fact_ids": [
+        "NF-0161"
+      ]
+    },
+    {
+      "node_id": "SC-013",
+      "order": 13,
+      "role": "requirement",
+      "statement": "sec-0020",
+      "section_ids": [
+        "sec-0020"
+      ],
+      "normalized_fact_ids": [
+        "NF-0162"
+      ]
+    },
+    {
+      "node_id": "SC-014",
+      "order": 14,
+      "role": "recommendation",
+      "statement": "sec-0021",
+      "section_ids": [
+        "sec-0021"
+      ],
+      "normalized_fact_ids": [
+        "NF-0163"
+      ]
+    },
+    {
+      "node_id": "SC-015",
+      "order": 15,
+      "role": "capability",
+      "statement": "**四、电力领域数据基础设施标准体系框架设计**",
+      "section_ids": [
+        "sec-0014"
+      ],
+      "normalized_fact_ids": [
+        "NF-0087",
+        "NF-0088",
+        "NF-0089",
+        "NF-0090",
+        "NF-0091",
+        "NF-0092",
+        "NF-0093",
+        "NF-0094",
+        "NF-0095",
+        "NF-0096",
+        "NF-0097",
+        "NF-0098",
+        "NF-0099",
+        "NF-0100",
+        "NF-0101",
+        "NF-0102",
+        "NF-0103",
+        "NF-0104",
+        "NF-0105",
+        "NF-0106",
+        "NF-0107",
+        "NF-0108",
+        "NF-0109",
+        "NF-0110",
+        "NF-0111",
+        "NF-0112",
+        "NF-0113",
+        "NF-0114",
+        "NF-0115",
+        "NF-0116",
+        "NF-0117",
+        "NF-0118",
+        "NF-0119",
+        "NF-0120",
+        "NF-0121",
+        "NF-0122",
+        "NF-0123",
+        "NF-0124",
+        "NF-0125",
+        "NF-0126",
+        "NF-0127",
+        "NF-0128",
+        "NF-0129",
+        "NF-0130",
+        "NF-0131",
+        "NF-0132",
+        "NF-0133",
+        "NF-0134",
+        "NF-0135",
+        "NF-0136",
+        "NF-0137",
+        "NF-0138",
+        "NF-0139",
+        "NF-0140",
+        "NF-0141",
+        "NF-0142",
+        "NF-0143",
+        "NF-0144",
+        "NF-0145",
+        "NF-0146"
+      ]
+    },
+    {
+      "node_id": "SC-016",
+      "order": 16,
+      "role": "recommendation",
+      "statement": "**五、重点标准研制方向与优先级**",
+      "section_ids": [
+        "sec-0015"
+      ],
+      "normalized_fact_ids": [
+        "NF-0147",
+        "NF-0148",
+        "NF-0149",
+        "NF-0150",
+        "NF-0151"
+      ]
+    },
+    {
+      "node_id": "SC-017",
+      "order": 17,
+      "role": "implementation",
+      "statement": "**六、分阶段实施路径**",
+      "section_ids": [
+        "sec-0016"
+      ],
+      "normalized_fact_ids": [
+        "NF-0152",
+        "NF-0153",
+        "NF-0154",
+        "NF-0155",
+        "NF-0156",
+        "NF-0157",
+        "NF-0158"
+      ]
+    },
+    {
+      "node_id": "SC-018",
+      "order": 18,
+      "role": "conclusion",
+      "statement": "**八、结论**",
+      "section_ids": [
+        "sec-0022"
+      ],
+      "normalized_fact_ids": [
+        "NF-0164",
+        "NF-0165",
+        "NF-0166"
+      ]
+    }
+  ],
+  "reconstructed_chain": [
+    {
+      "node_id": "RC-001",
+      "order": 1,
+      "role": "evidence",
+      "statement": "sec-0002",
+      "section_ids": [
+        "sec-0002"
+      ],
+      "normalized_fact_ids": [
+        "NF-0030",
+        "NF-0031",
+        "NF-0032",
+        "NF-0033",
+        "NF-0034",
+        "NF-0035",
+        "NF-0036",
+        "NF-0037"
+      ]
+    },
+    {
+      "node_id": "RC-002",
+      "order": 2,
+      "role": "evidence",
+      "statement": "sec-0003",
+      "section_ids": [
+        "sec-0003"
+      ],
+      "normalized_fact_ids": [
+        "NF-0038",
+        "NF-0039",
+        "NF-0040",
+        "NF-0041",
+        "NF-0042",
+        "NF-0043"
+      ]
+    },
+    {
+      "node_id": "RC-003",
+      "order": 3,
+      "role": "evidence",
+      "statement": "sec-0004",
+      "section_ids": [
+        "sec-0004"
+      ],
+      "normalized_fact_ids": [
+        "NF-0044",
+        "NF-0045",
+        "NF-0046",
+        "NF-0047",
+        "NF-0048",
+        "NF-0049",
+        "NF-0050"
+      ]
+    },
+    {
+      "node_id": "RC-004",
+      "order": 4,
+      "role": "evidence",
+      "statement": "sec-0005",
+      "section_ids": [
+        "sec-0005"
+      ],
+      "normalized_fact_ids": [
+        "NF-0051"
+      ]
+    },
+    {
+      "node_id": "RC-005",
+      "order": 5,
+      "role": "evidence",
+      "statement": "sec-0007",
+      "section_ids": [
+        "sec-0007"
+      ],
+      "normalized_fact_ids": [
+        "NF-0052",
+        "NF-0053",
+        "NF-0054",
+        "NF-0055"
+      ]
+    },
+    {
+      "node_id": "RC-006",
+      "order": 6,
+      "role": "evidence",
+      "statement": "sec-0008",
+      "section_ids": [
+        "sec-0008"
+      ],
+      "normalized_fact_ids": [
+        "NF-0056",
+        "NF-0057",
+        "NF-0058",
+        "NF-0059",
+        "NF-0060",
+        "NF-0061",
+        "NF-0062",
+        "NF-0063"
+      ]
+    },
+    {
+      "node_id": "RC-007",
+      "order": 7,
+      "role": "evidence",
+      "statement": "sec-0009",
+      "section_ids": [
+        "sec-0009"
+      ],
+      "normalized_fact_ids": [
+        "NF-0064",
+        "NF-0065",
+        "NF-0066",
+        "NF-0067",
+        "NF-0068",
+        "NF-0069",
+        "NF-0070",
+        "NF-0071",
+        "NF-0072",
+        "NF-0073",
+        "NF-0074"
+      ]
+    },
+    {
+      "node_id": "RC-008",
+      "order": 8,
+      "role": "evidence",
+      "statement": "sec-0011",
+      "section_ids": [
+        "sec-0011"
+      ],
+      "normalized_fact_ids": [
+        "NF-0075",
+        "NF-0076",
+        "NF-0077",
+        "NF-0078",
+        "NF-0079",
+        "NF-0080",
+        "NF-0081"
+      ]
+    },
+    {
+      "node_id": "RC-009",
+      "order": 9,
+      "role": "evidence",
+      "statement": "sec-0012",
+      "section_ids": [
+        "sec-0012"
+      ],
+      "normalized_fact_ids": [
+        "NF-0082"
+      ]
+    },
+    {
+      "node_id": "RC-010",
+      "order": 10,
+      "role": "evidence",
+      "statement": "sec-0013",
+      "section_ids": [
+        "sec-0013"
+      ],
+      "normalized_fact_ids": [
+        "NF-0083",
+        "NF-0084",
+        "NF-0085",
+        "NF-0086"
+      ]
+    },
+    {
+      "node_id": "RC-011",
+      "order": 11,
+      "role": "evidence",
+      "statement": "sec-0018",
+      "section_ids": [
+        "sec-0018"
+      ],
+      "normalized_fact_ids": [
+        "NF-0159",
+        "NF-0160"
+      ]
+    },
+    {
+      "node_id": "RC-012",
+      "order": 12,
+      "role": "evidence",
+      "statement": "sec-0019",
+      "section_ids": [
+        "sec-0019"
+      ],
+      "normalized_fact_ids": [
+        "NF-0161"
+      ]
+    },
+    {
+      "node_id": "RC-013",
+      "order": 13,
+      "role": "evidence",
+      "statement": "sec-0020",
+      "section_ids": [
+        "sec-0020"
+      ],
+      "normalized_fact_ids": [
+        "NF-0162"
+      ]
+    },
+    {
+      "node_id": "RC-014",
+      "order": 14,
+      "role": "evidence",
+      "statement": "sec-0021",
+      "section_ids": [
+        "sec-0021"
+      ],
+      "normalized_fact_ids": [
+        "NF-0163"
+      ]
+    },
+    {
+      "node_id": "RC-015",
+      "order": 15,
+      "role": "capability",
+      "statement": "**四、电力领域数据基础设施标准体系框架设计**",
+      "section_ids": [
+        "sec-0014"
+      ],
+      "normalized_fact_ids": [
+        "NF-0087",
+        "NF-0088",
+        "NF-0089",
+        "NF-0090",
+        "NF-0091",
+        "NF-0092",
+        "NF-0093",
+        "NF-0094",
+        "NF-0095",
+        "NF-0096",
+        "NF-0097",
+        "NF-0098",
+        "NF-0099",
+        "NF-0100",
+        "NF-0101",
+        "NF-0102",
+        "NF-0103",
+        "NF-0104",
+        "NF-0105",
+        "NF-0106",
+        "NF-0107",
+        "NF-0108",
+        "NF-0109",
+        "NF-0110",
+        "NF-0111",
+        "NF-0112",
+        "NF-0113",
+        "NF-0114",
+        "NF-0115",
+        "NF-0116",
+        "NF-0117",
+        "NF-0118",
+        "NF-0119",
+        "NF-0120",
+        "NF-0121",
+        "NF-0122",
+        "NF-0123",
+        "NF-0124",
+        "NF-0125",
+        "NF-0126",
+        "NF-0127",
+        "NF-0128",
+        "NF-0129",
+        "NF-0130",
+        "NF-0131",
+        "NF-0132",
+        "NF-0133",
+        "NF-0134",
+        "NF-0135",
+        "NF-0136",
+        "NF-0137",
+        "NF-0138",
+        "NF-0139",
+        "NF-0140",
+        "NF-0141",
+        "NF-0142",
+        "NF-0143",
+        "NF-0144",
+        "NF-0145",
+        "NF-0146"
+      ]
+    },
+    {
+      "node_id": "RC-016",
+      "order": 16,
+      "role": "recommendation",
+      "statement": "**五、重点标准研制方向与优先级**",
+      "section_ids": [
+        "sec-0015"
+      ],
+      "normalized_fact_ids": [
+        "NF-0147",
+        "NF-0148",
+        "NF-0149",
+        "NF-0150",
+        "NF-0151"
+      ]
+    },
+    {
+      "node_id": "RC-017",
+      "order": 17,
+      "role": "implementation",
+      "statement": "**六、分阶段实施路径**",
+      "section_ids": [
+        "sec-0016"
+      ],
+      "normalized_fact_ids": [
+        "NF-0152",
+        "NF-0153",
+        "NF-0154",
+        "NF-0155",
+        "NF-0156",
+        "NF-0157",
+        "NF-0158"
+      ]
+    },
+    {
+      "node_id": "RC-018",
+      "order": 18,
+      "role": "conclusion",
+      "statement": "**八、结论**",
+      "section_ids": [
+        "sec-0022"
+      ],
+      "normalized_fact_ids": [
+        "NF-0164",
+        "NF-0165",
+        "NF-0166"
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "DIA-001",
+      "type": "mixed_level",
+      "statement": "框架设计表同时包含一级类目、二级子体系和重点标准方向。",
+      "resolution": "保留层级关系，表格原子单元按一级类目、二级子体系、方向说明分别承载。",
+      "normalized_fact_ids": [
+        "NF-0087",
+        "NF-0088",
+        "NF-0089",
+        "NF-0090"
+      ],
+      "section_ids": [
+        "sec-0014"
+      ]
+    },
+    {
+      "diagnostic_id": "DIA-002",
+      "type": "overlap_or_non_mece",
+      "statement": "四大建设方向、八大能力和七大类目承担不同层级的组织作用，存在交叉映射。",
+      "resolution": "将其记录为多坐标框架；页面规划时明确每一坐标的解释职责，避免把行业七类误写成国家四向或八柱的同义集合。",
+      "normalized_fact_ids": [
+        "NF-0083",
+        "NF-0084",
+        "NF-0085",
+        "NF-0086",
+        "NF-0146"
+      ],
+      "section_ids": [
+        "sec-0013",
+        "sec-0014"
+      ]
+    },
+    {
+      "diagnostic_id": "DIA-003",
+      "type": "unsupported_jump",
+      "statement": "报告从优先级与阶段安排推向标准供给和项目成果支撑，部分关系属于报告作者的规划性判断。",
+      "resolution": "保留为源文档的建议和实施安排；只有跨段综合关系才在关系图中标记为 inferred，不升级为已实现结果。",
+      "normalized_fact_ids": [
+        "NF-0147",
+        "NF-0148",
+        "NF-0149",
+        "NF-0152",
+        "NF-0153",
+        "NF-0154",
+        "NF-0155",
+        "NF-0156",
+        "NF-0157",
+        "NF-0158"
+      ],
+      "section_ids": [
+        "sec-0015",
+        "sec-0016"
+      ]
+    }
+  ]
+}

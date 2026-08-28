@@ -275,6 +275,21 @@ full-prose fact onscreen. Use this contract to make editorial selection
 auditable; do not derive a word floor, item quota, or module count from the
 number of source records.
 
+For a record with several `semantic_units`, a single anchor only proves that
+record's most convenient clause survived — the other units can still be lost.
+When a record's internal facts each carry distinct decision-relevant content
+(e.g. multiple construction directions, multiple protection tiers, multiple
+core tasks bundled into one Source Truth statement), declare
+`source_consumption.unit_dispositions`: one entry per `semantic_units[].id`
+(or, when Source Truth did not assign an id, the positional
+`{source_ref}#{index}`) tagged `full_copy`, `onscreen`, `reserved_for_later`,
+`trace_only`, or `intentional_omission`. `reserved_for_later` and
+`intentional_omission` require a specific reason, exactly like
+`intentional_omissions` above — the same boilerplate-reason rejection applies.
+This is optional and additive: a page with a thin or single-unit record has no
+need for it, and omitting the field entirely leaves the page under only the
+record-level contract.
+
 ## Pass 5 — Audience visibility
 
 Set top-level `audience_scope` when determinable: internal / external / mixed / unspecified.

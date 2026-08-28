@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "concept_base",
+  "concepts": [
+    {
+      "concept_id": "C-001",
+      "canonical_name": "电力领域数据基础设施标准体系",
+      "concept_type": "project",
+      "definition": "围绕电力数据基础设施形成的标准化框架、重点方向和实施安排。",
+      "normalized_fact_ids": [
+        "NF-0005",
+        "NF-0051",
+        "NF-0082",
+        "NF-0164",
+        "NF-0165",
+        "NF-0166"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-002",
+      "canonical_name": "国家数据基础设施政策与技术文件",
+      "concept_type": "policy",
+      "definition": "报告采用的国家数据基础设施建设指引、配套技术文件及相关制度依据。",
+      "normalized_fact_ids": [
+        "NF-0030",
+        "NF-0031",
+        "NF-0052",
+        "NF-0053",
+        "NF-0054",
+        "NF-0055"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-003",
+      "canonical_name": "电力领域先行先试项目",
+      "concept_type": "project",
+      "definition": "中电联承担的国家数据基础设施建设第二批先行先试任务及其能力建设与场景基础。",
+      "normalized_fact_ids": [
+        "NF-0038",
+        "NF-0039",
+        "NF-0040",
+        "NF-0041",
+        "NF-0042",
+        "NF-0043"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-004",
+      "canonical_name": "电力行业数字化转型",
+      "concept_type": "scenario",
+      "definition": "新型电力系统背景下电力企业数字化实践及新业态、新场景发展。",
+      "normalized_fact_ids": [
+        "NF-0044",
+        "NF-0045",
+        "NF-0046",
+        "NF-0047",
+        "NF-0048",
+        "NF-0049",
+        "NF-0050"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-005",
+      "canonical_name": "电力标准体系七大类目",
+      "concept_type": "capability",
+      "definition": "基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类标准构成的行业框架。",
+      "normalized_fact_ids": [
+        "NF-0087",
+        "NF-0088",
+        "NF-0089",
+        "NF-0090",
+        "NF-0095",
+        "NF-0111",
+        "NF-0118",
+        "NF-0125",
+        "NF-0132"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-006",
+      "canonical_name": "重点标准研制方向与优先级",
+      "concept_type": "requirement",
+      "definition": "按急用先行、分类推进确定的三档重点标准研制安排。",
+      "normalized_fact_ids": [
+        "NF-0147",
+        "NF-0148",
+        "NF-0149",
+        "NF-0150",
+        "NF-0151"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-007",
+      "canonical_name": "三阶段实施路径",
+      "concept_type": "process",
+      "definition": "与国家数据基础设施建设目标和先行先试项目节奏协调的近期、中期、远期实施安排。",
+      "normalized_fact_ids": [
+        "NF-0152",
+        "NF-0153",
+        "NF-0154",
+        "NF-0155",
+        "NF-0156",
+        "NF-0157",
+        "NF-0158"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-008",
+      "canonical_name": "标准体系治理与协同机制",
+      "concept_type": "capability",
+      "definition": "由中电联牵头并联合相关单位推进标准立项、研制、实施评估和国际衔接的保障安排。",
+      "normalized_fact_ids": [
+        "NF-0159",
+        "NF-0160",
+        "NF-0161",
+        "NF-0162",
+        "NF-0163"
+      ],
+      "confidence": "high"
+    },
+    {
+      "concept_id": "C-009",
+      "canonical_name": "标准验证与场景支撑",
+      "concept_type": "deliverable",
+      "definition": "先行先试项目中的标准验证任务及行业治理、市场运行、绿色低碳等重点场景支撑。",
+      "normalized_fact_ids": [
+        "NF-0040",
+        "NF-0042",
+        "NF-0151"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

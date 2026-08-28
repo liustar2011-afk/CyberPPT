@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "pipeline_version": "0.5.0",
+  "input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\source",
+  "output_root": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\source-foundation",
+  "items": [
+    {
+      "source": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\source\\电力领域数据基础设施标准体系建设研究.docx",
+      "markdown": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\source-foundation\\markdown\\电力领域数据基础设施标准体系建设研究.md",
+      "foundation": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\source-foundation\\foundation\\电力领域数据基础设施标准体系建设研究",
+      "status": "ok",
+      "semantic": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\source-foundation\\semantic\\电力领域数据基础设施标准体系建设研究",
+      "semantic_prepare": {
+        "upstream_changed": false,
+        "invalidated_authored_artifacts": [],
+        "foundation_digest": {
+          "digest_version": "semantic-foundation-v1",
+          "structure_sha256": "6a8af30ed22102ef7fc81cbcc4c81c091802f1b084e6eb768087d2bd91659258",
+          "fact_base_sha256": "96a349576b43bc131d964d54aecb2281bb8cb3065eb7244be17eec5978d36256"
+        }
+      },
+      "stage": "semantic-prepared",
+      "stages_built": [
+        "markdown",
+        "foundation",
+        "semantic"
+      ],
+      "stages_skipped": []
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "ok": 1,
+    "skipped": 0,
+    "errors": 0
+  }
+}

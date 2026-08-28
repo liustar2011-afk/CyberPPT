@@ -19,6 +19,7 @@ from .contracts import (
     check_onscreen_detail_length,
     check_onscreen_terminal_punctuation,
     check_onscreen_structure,
+    check_full_copy_duplication,
     check_speaker_notes_length,
     lint_final_script,
     load_json,
@@ -115,7 +116,7 @@ def _build_source_index(source_extract: Path, output: Path, source_file: str | N
 def _lint(final_path: Path) -> int:
     payload = load_json(final_path)
     markdown = render_stage02_markdown(payload)
-    issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
+    issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_full_copy_duplication(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
     warnings = check_declared_count(payload)
     _print_report({"kind": "lint", "path": str(final_path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
     return 0 if not issues else 1
@@ -220,7 +221,7 @@ def _status(project_dir: Path) -> int:
         final["page_count"] = len(payload.get("slides") or [])
         final["deck_title"] = (payload.get("deck") or {}).get("title")
         markdown = render_stage02_markdown(payload)
-        lint_issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
+        lint_issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_full_copy_duplication(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
         final["lint"] = "passed" if not lint_issues else "failed"
         if lint_issues:
             final["lint_issues"] = lint_issues
