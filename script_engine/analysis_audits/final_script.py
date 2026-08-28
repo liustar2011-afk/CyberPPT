@@ -452,7 +452,10 @@ def _audit_authored_onscreen_contract(
         body = " ".join(lines)
         for signal in expected.get("required_signals") or []:
             if isinstance(signal, str) and signal and signal not in body:
-                issues.append(f"{slide_id} module '{heading}': required signal '{signal}' is missing")
+                issues.append(
+                    f"ONSCREEN_REQUIRED_SIGNAL_MISSING: {slide_id} module '{heading}': "
+                    f"required signal '{signal}' is missing"
+                )
         for signal in expected.get("forbidden_signals") or []:
             if isinstance(signal, str) and signal and signal in body:
                 issues.append(f"{slide_id} module '{heading}': forbidden cross-scope signal '{signal}' is present")

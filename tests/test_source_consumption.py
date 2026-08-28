@@ -219,7 +219,10 @@ def test_mapped_onscreen_ref_requires_visible_signal() -> None:
     bad = _final()
     bad["slides"][0]["onscreen"][0]["items"] = ["统一架构"]
     issues, _ = audit_final_script(bad, _plan(), _foundation())
-    assert any("required signal '术语定义'" in issue for issue in issues)
+    assert any(
+        "ONSCREEN_REQUIRED_SIGNAL_MISSING" in issue and "required signal '术语定义'" in issue
+        for issue in issues
+    )
 
 
 def test_onscreen_ref_cannot_be_detail_or_omitted() -> None:
@@ -350,7 +353,7 @@ def test_p01_source_specific_full_copy_with_representative_onscreen_subset_passe
                 "SOURCE_CONSUMPTION_",
                 "FULL_COPY_",
                 "ONSCREEN_SOURCE_REF_MISSING",
-                "required signal",
+                "ONSCREEN_REQUIRED_SIGNAL_MISSING",
             )
         )
     ]
