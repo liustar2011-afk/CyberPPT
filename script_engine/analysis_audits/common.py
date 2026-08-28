@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from difflib import SequenceMatcher
 from typing import Any
-from cyberppt.content_route import audit_content_route
+from cyberppt.content_route import audit_content_route, is_structural_page
 from cyberppt.script_quality.common import _source_statement_overlap
 from cyberppt.source_detail_visibility import (
     functional_group_needs_item_explanations,
@@ -399,19 +399,56 @@ def _source_consumption_sets(
     }
     return detail_refs, omitted_refs, onscreen_refs
 
+def requires_source_consumption(
+    page: dict[str, Any], foundation: dict[str, Any]
+) -> bool:
+    """Return whether the compiler-owned strict contract applies to a page."""
+
+    return (
+        foundation.get("source_consumption_policy") == "required"
+        and bool([ref for ref in page.get("source_refs") or [] if isinstance(ref, str) and ref])
+        and not is_structural_page(page)
+    )
+
+def _source_surface_values(item: dict[str, Any]) -> list[str]:
+    values = [str(item.get("statement") or "").strip()]
+    values.extend(
+        str(unit.get("text") or "").strip()
+        for unit in item.get("semantic_units") or []
+        if isinstance(unit, dict)
+    )
+    values.extend(
+        str(value).strip()
+        for value in item.get("coverage_anchors") or []
+        if isinstance(value, str)
+    )
+    return [value for value in values if value]
+
+def _anchor_is_source_grounded(anchor: str, item: dict[str, Any]) -> bool:
+    normalized_anchor = _normalized_review_text(anchor)
+    return bool(normalized_anchor) and any(
+        normalized_anchor in _normalized_review_text(surface)
+        for surface in _source_surface_values(item)
+    )
+
 def _audit_source_consumption_definition(
-    page: dict[str, Any], items: dict[str, dict[str, Any]]
+    page: dict[str, Any], items: dict[str, dict[str, Any]], foundation: dict[str, Any]
 ) -> list[str]:
-    """Validate the optional Deck Plan source-to-prose-to-screen contract."""
+    """Validate the Foundation-governed source-to-prose-to-screen contract."""
+    required = requires_source_consumption(page, foundation)
     contract = page.get("source_consumption")
     if contract is None:
-        return []
+        return (
+            ["SOURCE_CONSUMPTION_CONTRACT_MISSING: strict sourced content page requires source_consumption"]
+            if required
+            else []
+        )
     if not isinstance(contract, dict):
-        return ["source_consumption: must be an object"]
+        return ["SOURCE_CONSUMPTION_CONTRACT_MISSING: source_consumption must be an object"]
 
     issues: list[str] = []
     if contract.get("mode") != "strict":
-        issues.append("source_consumption.mode: must be 'strict'")
+        issues.append("SOURCE_CONSUMPTION_MODE_INVALID: source_consumption.mode must be 'strict'")
 
     page_refs = {
         ref for ref in page.get("source_refs") or [] if isinstance(ref, str) and ref
@@ -434,7 +471,14 @@ def _audit_source_consumption_definition(
             )
         if len(reason) < 8:
             issues.append(
+                "SOURCE_CONSUMPTION_OMISSION_REASON_MISSING: "
                 f"source_consumption.intentional_omissions[{omission_index}]: reason must contain at least 8 characters"
+            )
+        normalized_reason = _normalized_review_text(reason)
+        if normalized_reason in {"后续再说", "不重要", "暂不展开", "以后再说", "后续处理"}:
+            issues.append(
+                "SOURCE_CONSUMPTION_OMISSION_REASON_MISSING: "
+                f"source_consumption.intentional_omissions[{omission_index}]: reason must state a specific editorial boundary"
             )
 
     for anchor_index, anchor in enumerate(contract.get("full_prose_anchors") or []):
@@ -460,6 +504,15 @@ def _audit_source_consumption_definition(
             issues.append(
                 f"source_consumption.full_prose_anchors[{anchor_index}] ({ref}): anchors must be non-empty"
             )
+        item = items.get(ref)
+        if isinstance(item, dict):
+            for value in anchors:
+                if not _anchor_is_source_grounded(value, item):
+                    issues.append(
+                        "SOURCE_CONSUMPTION_ANCHOR_NOT_SOURCE_GROUNDED: "
+                        f"source_consumption.full_prose_anchors[{anchor_index}] ({ref}): "
+                        f"anchor '{value}' is absent from the Foundation source surface"
+                    )
         if (
             not isinstance(minimum_hits, int)
             or isinstance(minimum_hits, bool)
@@ -479,7 +532,8 @@ def _audit_source_consumption_definition(
     outside = sorted(declared_refs - page_refs)
     if outside:
         issues.append(
-            f"source_consumption: declared refs must belong to page.source_refs; outside refs {outside}"
+            "SOURCE_CONSUMPTION_REF_OUTSIDE_PAGE: source_consumption declared refs "
+            f"must belong to page.source_refs; outside refs {outside}"
         )
     unknown = sorted(ref for ref in page_refs if ref not in items)
     if unknown:
@@ -495,13 +549,31 @@ def _audit_source_consumption_definition(
     for label, refs in conflicts.items():
         if refs:
             issues.append(
-                f"source_consumption: refs cannot be both {label.replace('/', ' and ')} {sorted(refs)}"
+                "SOURCE_CONSUMPTION_REF_CONFLICT: source_consumption refs cannot be both "
+                f"{label.replace('/', ' and ')} {sorted(refs)}"
+            )
+
+    if required and contract.get("mode") == "strict":
+        required_refs = page_refs - detail_refs - omitted_refs
+        missing_anchor_refs = sorted(required_refs - set(anchor_refs))
+        if missing_anchor_refs:
+            issues.append(
+                "SOURCE_CONSUMPTION_ANCHOR_MISSING: every full-copy source requires "
+                f"full_prose_anchors; missing refs {missing_anchor_refs}"
+            )
+        if not onscreen_refs:
+            issues.append(
+                "SOURCE_CONSUMPTION_ONSCREEN_SELECTION_MISSING: strict sourced content page "
+                "requires at least one representative onscreen_ref"
             )
 
     if onscreen_refs:
         onscreen_contract = page.get("onscreen_contract")
         if not isinstance(onscreen_contract, dict):
-            issues.append("source_consumption.onscreen_refs requires an onscreen_contract")
+            issues.append(
+                "SOURCE_CONSUMPTION_ONSCREEN_MAPPING_MISSING: "
+                "source_consumption.onscreen_refs requires an onscreen_contract"
+            )
         else:
             mapped_refs = {
                 ref
@@ -513,6 +585,7 @@ def _audit_source_consumption_definition(
             unmapped = sorted(onscreen_refs - mapped_refs)
             if unmapped:
                 issues.append(
+                    "SOURCE_CONSUMPTION_ONSCREEN_MAPPING_MISSING: "
                     "source_consumption.onscreen_refs must be mapped by "
                     f"onscreen_contract.modules[].evidence_refs; unmapped refs {unmapped}"
                 )
@@ -569,4 +642,4 @@ def _page_text(page: dict[str, Any]) -> str:
                 parts.append(value)
     return " ".join(parts)
 
-__all__ = ['annotations', 're', 'SequenceMatcher', 'Any', 'audit_content_route', '_source_statement_overlap', 'functional_group_needs_item_explanations', 'is_bare_business_label', 'source_has_richer_item_detail', 'source_colocation_grouping_mismatch', 'audit_authored_stage02_readiness', 'audit_stage02_readiness', 'audit_final_internal_expert_voice', 'audit_plan_internal_expert_voice', 'CITABLE_KEYS', 'SOURCE_CHAPTER_RE', 'INTERNAL_MARKERS', 'OPTIONALITY_RE', 'INDEPENDENCE_RE', 'DEEPENING_RE', 'UNIVERSAL_RE', 'CRITICAL_GROUP_TERMS', 'PROGRESSION_RE', 'GAP_RE', 'CHAPTER_PREFIX_RE', '_VISIBLE_CHAR_RE', '_PROPOSITION_END_RE', '_EXPRESSION_MODES', '_ONSCREEN_COMPOSITION_MODES', '_EVIDENCE_FIT_VALUES', '_EVIDENCE_FIT_VERDICTS', '_LEAD_LIKE_EVIDENCE_ITEM_RE', '_COMPLETE_PROPOSITION_MIN_CHARS', '_COMPLETE_PROPOSITION_MAX_CHARS', '_SECONDARY_RELATION_TYPES', '_normalized_review_text', 'foundation_items_by_id', '_item_text', 'effective_visibility', '_support_items', '_has_optionality', '_preserves_optionality', '_group_strength_issue', '_page_evidence_ids', '_page_claim_evidence_ids', '_evidence_fit_review_issues', '_audit_evidence_fit_reviews', '_onscreen_contract_definition_issues', '_source_consumption_sets', '_audit_source_consumption_definition', '_audit_onscreen_composition_definition', '_page_text']
+__all__ = ['annotations', 're', 'SequenceMatcher', 'Any', 'audit_content_route', '_source_statement_overlap', 'functional_group_needs_item_explanations', 'is_bare_business_label', 'source_has_richer_item_detail', 'source_colocation_grouping_mismatch', 'audit_authored_stage02_readiness', 'audit_stage02_readiness', 'audit_final_internal_expert_voice', 'audit_plan_internal_expert_voice', 'CITABLE_KEYS', 'SOURCE_CHAPTER_RE', 'INTERNAL_MARKERS', 'OPTIONALITY_RE', 'INDEPENDENCE_RE', 'DEEPENING_RE', 'UNIVERSAL_RE', 'CRITICAL_GROUP_TERMS', 'PROGRESSION_RE', 'GAP_RE', 'CHAPTER_PREFIX_RE', '_VISIBLE_CHAR_RE', '_PROPOSITION_END_RE', '_EXPRESSION_MODES', '_ONSCREEN_COMPOSITION_MODES', '_EVIDENCE_FIT_VALUES', '_EVIDENCE_FIT_VERDICTS', '_LEAD_LIKE_EVIDENCE_ITEM_RE', '_COMPLETE_PROPOSITION_MIN_CHARS', '_COMPLETE_PROPOSITION_MAX_CHARS', '_SECONDARY_RELATION_TYPES', '_normalized_review_text', 'foundation_items_by_id', '_item_text', 'effective_visibility', '_support_items', '_has_optionality', '_preserves_optionality', '_group_strength_issue', '_page_evidence_ids', '_page_claim_evidence_ids', '_evidence_fit_review_issues', '_audit_evidence_fit_reviews', '_onscreen_contract_definition_issues', '_source_consumption_sets', 'requires_source_consumption', '_source_surface_values', '_anchor_is_source_grounded', '_audit_source_consumption_definition', '_audit_onscreen_composition_definition', '_page_text']

@@ -248,8 +248,11 @@ Do not invent differentiation when the source supplies names only; use the
 explicit `label_only_allowed` exception and keep the shared relationship at the
 parent level.
 
-When a page's assigned sources are rich enough that silent compression would be
-risky, add optional `source_consumption` with `mode: strict`:
+When `foundation.source_consumption_policy` is `required`, every sourced content
+page must declare `source_consumption` with `mode: strict`. Cover, contents,
+chapter and closing pages are exempt, including the compiler aliases `agenda`
+and `ending`. A historical Foundation without the policy field keeps the legacy
+optional behavior:
 
 - the page's `source_refs` are the complete assigned inventory;
 - `detail_refs` retain structural or trace-only records that need not be narrated
@@ -263,10 +266,14 @@ risky, add optional `source_consumption` with `mode: strict`:
   `onscreen_contract.modules[].evidence_refs`.
 
 Every assigned ref outside `detail_refs` and `intentional_omissions` must be
-consumed by `full_copy`. `onscreen_refs` are a deliberate subset, never a demand
-to place every full-prose fact onscreen. Use this contract to make editorial
-selection auditable; do not derive a word floor, item quota, or module count from
-the number of source records.
+represented once in `full_prose_anchors`. Select each anchor from that ref's
+Foundation `statement`, `semantic_units[].text`, or `coverage_anchors`; broad
+topic labels do not prove source consumption. Strict content pages select at
+least one representative `onscreen_ref`, mapped through an onscreen module.
+`onscreen_refs` are a deliberate subset, never a demand to place every
+full-prose fact onscreen. Use this contract to make editorial selection
+auditable; do not derive a word floor, item quota, or module count from the
+number of source records.
 
 ## Pass 5 — Audience visibility
 
@@ -321,6 +328,9 @@ Run:
     `primary_relation`; any local arrow is a reviewed `secondary_relations` entry,
     not a bare edge left for AUTHOR to invent; a `parallel` page's
     `secondary_relations` do not chain every scope entry into one hidden sequence.
+16. Source-consumption test: every strict sourced content page has grounded
+    full-prose anchors for all non-detail, non-omitted refs, a specific reason
+    for each omission, and at least one module-mapped representative onscreen ref.
 
 Repair the same plan. Reordering across chapters is not a default repair for weak continuity.
 

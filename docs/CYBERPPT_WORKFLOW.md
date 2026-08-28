@@ -59,6 +59,8 @@
 
 语义模型验证通过后，运行 `.venv/bin/python3 -m cyberppt project-foundation <project>`，将 Source Truth 机械投影到脚本引擎的 `script/foundation.json`。该步骤只搬运已确认字段，不重新分析源材料。
 
+正式投影同时写入 `source_consumption_policy: required`，并保留后续忠实度检查所需的 `semantic_units`、`coverage_anchors`、条件、原文定位以及事实与主体/数字的显式绑定。历史 Foundation 缺少策略字段时继续使用兼容路径。历史项目重新运行 `project-foundation` 会单向进入严格模式；命令在覆盖旧 Foundation 前输出非交互警告，随后必须补齐 Deck Plan 的来源消费合同并重新通过 PLAN Gate。
+
 产物：
 
 - `script/foundation.json`
@@ -110,6 +112,10 @@
 所有 Deck Plan 必须声明 `evidence_fit_review_mode: strict`，仓库不保留旧计划兼容通道。每个有证据支撑的页面判断和每个有 `evidence_refs` 的上屏模块，都在原 `deck-plan.json` 内填写结构化 `evidence_fit_review`：逐条记录来源适配关系、来源角色、判断理由和当前结论。页面级间接支撑仅在 `relation_basis: inferred` 时允许；模块子项必须直接回答模块问题。缺少严格模式、出现 `topic_only`、`no`、`uncertain`，或仍处于待改名、移动、拆分、剔除状态时，均阻断 AUTHOR。该字段属于 Deck Plan 内部契约，不新增第四个权威产物。`counter_case`（最强反例）为可选字段，不参与机器校验——自由文本的"反例强度"本来就无法被脚本验证，强制要求只增加撰写成本，不增加实际质检能力；判断改变时可以写，不写也不阻断。
 
 Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成只读 Markdown 页面判断带，连续展示标题、核心判断、页面职责、证据状态、来源适配质询和前后页承接。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
+
+当 Foundation 声明 `source_consumption_policy: required` 时，每个带 `source_refs` 的内容页必须在原 `deck-plan.json` 内声明 `source_consumption.mode: strict`。封面、目录、章节和结束页豁免，`agenda/contents`、`ending/closing` 使用同一公共角色归一化判定。每条未归入 `detail_refs` 或具体理由删减项的来源，都要从对应 Foundation 的 `statement`、`semantic_units[].text` 或 `coverage_anchors` 中选择 `full_prose_anchors`；严格内容页还要选择至少一条 `onscreen_refs` 并映射到上屏模块。完整稿消费全部应保留来源，上屏层只消费 PLAN 选定的代表性子集。`review-plan` 同步展示完整稿来源、追溯详情、删减理由、代表性上屏来源和保护锚点。
+
+AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态和分类层级。上屏审计验证代表来源的模块映射和可见特征。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
 页面信息密度不使用固定字数或固定模块数门槛。Stage 01 审计依据页面已声明的来源证据、页面命题、`onscreen_contract` 与 `content_route.meaning_signals` 检查应保留的业务信息；来源本身较薄且没有额外业务职责时可标记 `content_load: light`。需要为后续视觉生产预先锁定的完整判断句、业务容器或表格文字角色，写入可选 `stage02_readiness`。该字段只定义 Stage 02 必须保留的语义预期；实际换行、越界、碰撞和字号仍由 Stage 02 对生成结果核验。
 

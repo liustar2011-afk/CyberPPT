@@ -19,6 +19,17 @@ def _foundation() -> dict:
     }
 
 
+def _strict_foundation() -> dict:
+    foundation = deepcopy(_foundation())
+    foundation["source_consumption_policy"] = "required"
+    foundation["facts"][0]["coverage_anchors"] = ["术语定义", "国家参考架构"]
+    foundation["facts"][1]["semantic_units"] = [
+        {"text": "数据质量评价指标体系覆盖全过程质量控制", "claim_role": "requirement"}
+    ]
+    foundation["facts"][2]["coverage_anchors"] = ["资产登记", "评估", "入表"]
+    return foundation
+
+
 def _page() -> dict:
     return {
         "id": "P01",
@@ -97,6 +108,27 @@ def test_legacy_page_without_source_consumption_remains_compatible() -> None:
     assert not any("source_consumption" in issue for issue in issues)
 
 
+def test_strict_foundation_missing_contract_fails_plan_and_author() -> None:
+    page = _page()
+    page.pop("source_consumption")
+
+    plan_issues, _ = audit_deck_plan(_plan(page), _strict_foundation())
+    final_issues, _ = audit_final_script(
+        _final("完全无关的完整稿"), _plan(page), _strict_foundation()
+    )
+
+    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in plan_issues)
+    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in final_issues)
+
+
+def test_strict_structural_page_with_sources_is_exempt() -> None:
+    page = _page()
+    page["page_role"] = "agenda"
+    page.pop("source_consumption")
+    issues, _ = audit_deck_plan(_plan(page), _strict_foundation())
+    assert not any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
+
+
 def test_schema_and_plan_audit_reject_invalid_mode_and_outside_ref() -> None:
     page = _page()
     page["source_consumption"]["mode"] = "required"
@@ -148,6 +180,26 @@ def test_unanchored_required_source_uses_statement_overlap() -> None:
     assert any("ST1" in issue and "overlap=" in issue for issue in issues)
 
 
+def test_strict_plan_requires_grounded_anchor_for_every_full_copy_ref() -> None:
+    page = _page()
+    page["source_consumption"]["full_prose_anchors"].append(
+        {"source_ref": "ST1", "anchors": ["完全不存在的来源特征"], "minimum_hits": 1}
+    )
+    issues, _ = audit_deck_plan(_plan(page), _strict_foundation())
+    joined = "\n".join(issues)
+    assert "SOURCE_CONSUMPTION_ANCHOR_NOT_SOURCE_GROUNDED" in joined
+    assert "SOURCE_CONSUMPTION_ANCHOR_MISSING" not in joined
+
+
+def test_strict_plan_rejects_missing_anchor_and_empty_onscreen_selection() -> None:
+    page = _page()
+    page["source_consumption"]["onscreen_refs"] = []
+    issues, _ = audit_deck_plan(_plan(page), _strict_foundation())
+    joined = "\n".join(issues)
+    assert "SOURCE_CONSUMPTION_ANCHOR_MISSING" in joined
+    assert "SOURCE_CONSUMPTION_ONSCREEN_SELECTION_MISSING" in joined
+
+
 def test_onscreen_ref_requires_contract_and_module_mapping() -> None:
     page = _page()
     page.pop("onscreen_contract")
@@ -175,3 +227,131 @@ def test_onscreen_ref_cannot_be_detail_or_omitted() -> None:
     page["source_consumption"]["detail_refs"] = ["ST1"]
     issues, _ = audit_deck_plan(_plan(page), _foundation())
     assert any("detail and onscreen" in issue for issue in issues)
+
+
+def _p01_regression_case() -> tuple[dict, dict, dict]:
+    foundation = {
+        "source_consumption_policy": "required",
+        "source_structure": [],
+        "facts": [
+            {
+                "id": "ST0034",
+                "statement": "标准体系应支撑绿色低碳领域具体应用。",
+                "coverage_anchors": ["绿色低碳领域", "具体应用"],
+            },
+            {
+                "id": "ST0035",
+                "statement": "相关要求自2026年7月1日起施行，数据分为一般、重要、核心三级。",
+                "coverage_anchors": ["2026年7月1日", "一般、重要、核心三级"],
+            },
+            {
+                "id": "ST0036",
+                "statement": "相关主体应落实安全责任，开展风险监测和应急处置。",
+                "coverage_anchors": ["安全责任", "风险监测", "应急处置"],
+                "conditions": ["发生安全风险时"],
+                "entity_refs": ["E-001"],
+            },
+            {
+                "id": "ST0037",
+                "statement": "推进可信数据空间建设、场景验证、标准验证和生态培育。",
+                "coverage_anchors": ["可信数据空间建设", "场景验证", "标准验证", "生态培育"],
+                "status": "规划",
+            },
+        ],
+        "concepts": [],
+        "entities": [
+            {"id": "E-001", "name": "相关主体", "fact_refs": ["ST0036"]}
+        ],
+        "relations": [],
+        "arguments": [],
+        "constraints": [],
+        "numbers": [],
+    }
+    page = {
+        "id": "P01",
+        "question": "标准体系建设应保留哪些来源要求",
+        "message": "来源要求覆盖应用、分类、安全与可信流通",
+        "logic": "并列",
+        "content": ["应用", "分类", "安全", "可信流通"],
+        "primary_relation": {
+            "type": "parallel",
+            "scope": ["应用", "分类", "安全", "可信流通"],
+            "authority": "hard",
+        },
+        "source_refs": ["ST0034", "ST0035", "ST0036", "ST0037"],
+        "source_consumption": {
+            "mode": "strict",
+            "detail_refs": [],
+            "intentional_omissions": [],
+            "full_prose_anchors": [
+                {"source_ref": "ST0034", "anchors": ["绿色低碳领域", "具体应用"], "minimum_hits": 2},
+                {"source_ref": "ST0035", "anchors": ["2026年7月1日", "一般、重要、核心三级"], "minimum_hits": 2},
+                {"source_ref": "ST0036", "anchors": ["安全责任", "风险监测", "应急处置"], "minimum_hits": 3},
+                {"source_ref": "ST0037", "anchors": ["可信数据空间建设", "场景验证", "标准验证", "生态培育"], "minimum_hits": 4},
+            ],
+            "onscreen_refs": ["ST0035"],
+        },
+        "onscreen_contract": {
+            "relation": "parallel",
+            "detail_axis": "source_requirements",
+            "modules": [
+                {
+                    "heading": "分类分级",
+                    "evidence_refs": ["ST0035"],
+                    "required_signals": ["2026年7月1日", "一般、重要、核心三级"],
+                }
+            ],
+        },
+    }
+    plan = _plan(page)
+    return foundation, plan, page
+
+
+def test_p01_compressed_copy_reports_specific_source_losses() -> None:
+    foundation, plan, _ = _p01_regression_case()
+    final = _final("绿色发展、分类分级、安全管理和可信流通共同构成标准重点。")
+    final["slides"][0]["onscreen"] = [
+        {"heading": "分类分级", "items": ["分类分级"]}
+    ]
+
+    issues, _ = audit_final_script(final, plan, foundation)
+    joined = "\n".join(issues)
+
+    for ref in ("ST0034", "ST0035", "ST0036", "ST0037"):
+        assert ref in joined
+    assert "FULL_COPY_NUMBER_OR_DATE_LOST" in joined
+    assert "FULL_COPY_CONDITION_LOST" in joined
+    assert "FULL_COPY_RESPONSIBILITY_LOST" in joined
+    assert "FULL_COPY_STATUS_STRENGTH_LOST" in joined
+    assert "required signal '2026年7月1日' is missing" in joined
+
+
+def test_p01_source_specific_full_copy_with_representative_onscreen_subset_passes() -> None:
+    foundation, plan, _ = _p01_regression_case()
+    final = _final(
+        "标准体系应支撑绿色低碳领域具体应用。相关要求自2026年7月1日起施行，"
+        "数据分为一般、重要、核心三级。发生安全风险时，相关主体应落实安全责任，"
+        "开展风险监测和应急处置。规划推进可信数据空间建设、场景验证、标准验证和生态培育。"
+    )
+    final["slides"][0]["onscreen"] = [
+        {
+            "heading": "分类分级",
+            "items": ["2026年7月1日起施行", "一般、重要、核心三级"],
+        }
+    ]
+
+    issues, _ = audit_final_script(final, plan, foundation)
+    source_issues = [
+        issue
+        for issue in issues
+        if any(
+            code in issue
+            for code in (
+                "SOURCE_CONSUMPTION_",
+                "FULL_COPY_",
+                "ONSCREEN_SOURCE_REF_MISSING",
+                "required signal",
+            )
+        )
+    ]
+    assert source_issues == []

@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from cyberppt.content_route import audit_content_route, resolve_content_route
+import pytest
+
+from cyberppt.content_route import (
+    audit_content_route,
+    is_structural_page,
+    normalize_page_role,
+    resolve_content_route,
+)
 from cyberppt.page_logic_contract import render_page_logic_contract
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script
 from script_engine.contracts import validate_deck_plan
@@ -299,3 +306,25 @@ def test_evidence_first_keeps_parallel_complete_facts() -> None:
 def test_page_logic_review_renders_resolved_content_route() -> None:
     lines = render_page_logic_contract(_page(argument_role="solution"))
     assert any("内容路由：system" in line for line in lines)
+
+
+@pytest.mark.parametrize(
+    ("role", "normalized"),
+    [
+        ("cover", "cover"),
+        ("contents", "contents"),
+        ("agenda", "contents"),
+        ("chapter", "chapter"),
+        ("closing", "closing"),
+        ("ending", "closing"),
+    ],
+)
+def test_structural_page_role_aliases_share_one_classifier(role: str, normalized: str) -> None:
+    page = _page(page_role=role, source_refs=["F1"])
+    assert normalize_page_role(role) == normalized
+    assert is_structural_page(page)
+
+
+def test_content_role_is_not_structural() -> None:
+    assert normalize_page_role("content") == "content"
+    assert not is_structural_page(_page(page_role="content", source_refs=["F1"]))

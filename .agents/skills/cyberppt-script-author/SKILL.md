@@ -111,13 +111,17 @@ For each content page write:
 
 Analytical writing may reorganize facts and draw supported interpretations. It may not add a new fact, unsupported current state, ranking, forecast, necessary condition or commitment.
 
-When the approved page declares `source_consumption.mode: strict`, treat
-`source_refs` as the assigned source inventory. Write every ref into `full_copy`
-unless PLAN classifies it under `detail_refs` or a specifically reasoned
-`intentional_omissions` entry. Preserve each declared `full_prose_anchors`
-threshold. This is a semantic-consumption rule: combine related records into a
-coherent argument and retain their objects, conditions, responsibilities,
-numbers, and source strength; do not paste one sentence per ref mechanically.
+When Foundation declares `source_consumption_policy: required`, do not enter
+AUTHOR until every sourced content page has passed the strict PLAN contract.
+Treat `source_refs` as the assigned source inventory. Write every ref into
+`full_copy` unless PLAN classifies it under `detail_refs` or a specifically
+reasoned `intentional_omissions` entry. Preserve each declared
+`full_prose_anchors` threshold together with protected numbers, dates,
+conditions, responsibilities, status and classification distinctions. The
+strict audit does not accept broad statement-overlap as the only proof. This is
+a semantic-consumption rule: combine related records into a coherent argument;
+do not paste one sentence per ref mechanically. A historical Foundation without
+the policy field retains the legacy optional audit path.
 
 Do not explain the writing process to the reader. Phrases such as `源文未逐一显式配对`, `分析性归纳`, `需要如实保留`, `不宜为追求页面整齐而抹平` belong to Foundation/PLAN/Critic diagnostics, not final prose.
 

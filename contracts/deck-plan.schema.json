@@ -157,6 +157,7 @@
     },
     "source_consumption": {
       "type": "object",
+      "description": "Foundation-governed source-to-full-copy-to-onscreen contract. New projected foundations require it on sourced content pages; historical foundations remain audit-compatible.",
       "required": ["mode"],
       "properties": {
         "mode": {"type": "string", "enum": ["strict"]},

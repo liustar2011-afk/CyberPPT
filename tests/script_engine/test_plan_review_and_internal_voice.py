@@ -72,6 +72,30 @@ def test_plan_review_renders_structured_evidence_fit_challenge() -> None:
     assert "证据适配结论：保留" in markdown
 
 
+def test_plan_review_renders_source_consumption_summary() -> None:
+    plan, foundation = _example()
+    page = plan["pages"][0]
+    refs = page["source_refs"][:2]
+    page["source_refs"] = refs
+    page["source_consumption"] = {
+        "mode": "strict",
+        "detail_refs": [refs[1]],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+            {"source_ref": refs[0], "anchors": ["来源特征A", "来源特征B"], "minimum_hits": 1}
+        ],
+        "onscreen_refs": [refs[0]],
+    }
+
+    markdown = render_plan_review(plan, foundation)
+
+    assert "#### 来源消费摘要" in markdown
+    assert f"完整稿必消费来源：{refs[0]}" in markdown
+    assert f"追溯详情：{refs[1]}" in markdown
+    assert f"必须上屏的代表性来源：{refs[0]}" in markdown
+    assert f"| {refs[0]} | 来源特征A；来源特征B | 1 |" in markdown
+
+
 def test_missing_evidence_fit_mode_is_visible_and_blocks_author() -> None:
     plan, foundation = _example()
     plan.pop("evidence_fit_review_mode")

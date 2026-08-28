@@ -114,6 +114,40 @@ class CliTests(unittest.TestCase):
         self.assertEqual(4, code)
         self.assertIn('"status": "rewrite_required"', buffer.getvalue())
 
+    def test_project_foundation_help_explains_strict_migration(self) -> None:
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            with self.assertRaises(SystemExit) as raised:
+                main(["project-foundation", "--help"])
+        self.assertEqual(0, raised.exception.code)
+        output = buffer.getvalue()
+        self.assertIn("source_consumption_policy='required'", output)
+        self.assertIn("one-way strict-mode migration", output)
+
+    def test_project_foundation_warns_before_overwriting_legacy_foundation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "project"
+            input_path = project / "workbench/stages/01-analysis/source-truth.json"
+            output_path = project / "script/foundation.json"
+            input_path.parent.mkdir(parents=True)
+            output_path.parent.mkdir(parents=True)
+            input_path.write_text(
+                json.dumps({"sources": [], "records": []}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            output_path.write_text(
+                json.dumps({"sources": [], "facts": [], "concepts": [], "relations": [], "arguments": []}),
+                encoding="utf-8",
+            )
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                code = main(["project-foundation", str(project)])
+
+            self.assertEqual(0, code)
+            self.assertIn("overwriting a legacy foundation.json", stderr.getvalue())
+            projected = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertEqual("required", projected["source_consumption_policy"])
+
     def test_prepare_source_map_command_compiles_stable_units(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "project"

@@ -27,6 +27,10 @@ CONTENT_ROUTE_FACETS = frozenset(
 )
 CONTENT_ROUTE_CONFIDENCE = frozenset({"high", "medium", "low"})
 STRUCTURAL_PAGE_ROLES = frozenset({"cover", "contents", "chapter", "closing"})
+PAGE_ROLE_ALIASES = {
+    "agenda": "contents",
+    "ending": "closing",
+}
 MEANING_FACETS = frozenset({"risk", "coordination", "next_step"})
 
 _ARGUMENT_ROLE_ROUTE = {
@@ -64,10 +68,17 @@ class ContentRouteDecision:
     source: str = "fallback"
 
 
+def normalize_page_role(value: object) -> str:
+    """Return the repository's canonical page-role vocabulary."""
+
+    role = str(value or "").strip()
+    return PAGE_ROLE_ALIASES.get(role, role)
+
+
 def is_structural_page(page: Mapping[str, object]) -> bool:
     """Return whether a page is a structural page that must not use a route."""
 
-    kind = str(page.get("page_type") or page.get("page_role") or "").strip()
+    kind = normalize_page_role(page.get("page_type") or page.get("page_role"))
     return kind in STRUCTURAL_PAGE_ROLES
 
 

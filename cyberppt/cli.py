@@ -117,6 +117,18 @@ def _project_foundation_command(args: argparse.Namespace) -> int:
     if errors:
         print(json.dumps({"errors": errors}, ensure_ascii=False, indent=2), file=sys.stderr)
         return 3
+    if output_path.is_file():
+        try:
+            existing = json.loads(output_path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            existing = None
+        if isinstance(existing, dict) and "source_consumption_policy" not in existing:
+            print(
+                "warning: overwriting a legacy foundation.json will enable "
+                "source_consumption_policy='required'; update deck-plan source_consumption "
+                "contracts and rerun the PLAN gate before AUTHOR.",
+                file=sys.stderr,
+            )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(foundation, ensure_ascii=False, indent=2) + "\n",
@@ -607,7 +619,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     project_foundation = subparsers.add_parser(
         "project-foundation",
-        help="Project an already-validated Source Truth into a script_engine foundation.json.",
+        help=(
+            "Project validated Source Truth into foundation.json and enable strict "
+            "source-consumption checks."
+        ),
+        description=(
+            "Mechanically project an already-validated Source Truth into script_engine "
+            "foundation.json. The result sets source_consumption_policy='required'. "
+            "Reprojecting a historical foundation is a one-way strict-mode migration: "
+            "update Deck Plan source_consumption contracts and rerun the PLAN gate "
+            "before AUTHOR."
+        ),
     )
     project_foundation.add_argument("project", help="CyberPPT project directory.")
     project_foundation.add_argument(

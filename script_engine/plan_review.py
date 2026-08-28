@@ -137,6 +137,63 @@ def _append_evidence_fit_review(
     lines.append("")
 
 
+def _append_source_consumption_review(
+    lines: list[str], page: dict[str, Any]
+) -> None:
+    source_refs = _ids(page.get("source_refs"))
+    if not source_refs:
+        return
+    lines.extend(["#### 来源消费摘要", ""])
+    contract = page.get("source_consumption")
+    if not isinstance(contract, dict):
+        lines.extend(["- 来源消费合同：未声明", ""])
+        return
+
+    detail_refs = _ids(contract.get("detail_refs"))
+    omissions = [
+        item
+        for item in contract.get("intentional_omissions") or []
+        if isinstance(item, dict)
+    ]
+    omitted_refs = {
+        ref for item in omissions for ref in _ids(item.get("source_refs"))
+    }
+    full_copy_refs = [
+        ref for ref in source_refs if ref not in detail_refs and ref not in omitted_refs
+    ]
+    lines.extend(
+        [
+            f"- 合同模式：{_text(contract.get('mode'))}",
+            f"- 完整稿必消费来源：{'、'.join(full_copy_refs) or '—'}",
+            f"- 追溯详情：{'、'.join(detail_refs) or '—'}",
+            f"- 必须上屏的代表性来源：{'、'.join(_ids(contract.get('onscreen_refs'))) or '—'}",
+        ]
+    )
+    if omissions:
+        lines.append("- 明确删减：")
+        for item in omissions:
+            lines.append(
+                f"  - {'、'.join(_ids(item.get('source_refs'))) or '—'}：{_text(item.get('reason'))}"
+            )
+    anchors = [
+        item
+        for item in contract.get("full_prose_anchors") or []
+        if isinstance(item, dict)
+    ]
+    if anchors:
+        lines.extend(["", "| 来源 | 完整稿保护锚点 | 最少命中 |", "|---|---|---|"])
+        for item in anchors:
+            values = [value for value in item.get("anchors") or [] if isinstance(value, str)]
+            lines.append(
+                "| {ref} | {anchors} | {hits} |".format(
+                    ref=_cell(item.get("source_ref")),
+                    anchors=_cell("；".join(values)),
+                    hits=_cell(item.get("minimum_hits") or len(values)),
+                )
+            )
+    lines.append("")
+
+
 def render_plan_review(
     plan: dict[str, Any],
     foundation: dict[str, Any],
@@ -222,6 +279,7 @@ def render_plan_review(
                 page.get("evidence_fit_review"),
                 title="页面来源适配质询",
             )
+            _append_source_consumption_review(lines, page)
             contract = page.get("onscreen_contract")
             if isinstance(contract, dict):
                 for module in contract.get("modules") or []:

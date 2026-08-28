@@ -10,6 +10,7 @@ re-derive source structure or facts from prose.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 FOUNDATION_SCHEMA_ID = "https://cyberppt.local/contracts/foundation.schema.json"
@@ -67,7 +68,7 @@ def _project_facts_and_constraints(
             _text(ref) for ref in record.get("source_unit_refs") or [] if _text(ref)
         ]
         visibility = _record_visibility(record)
-        item = {
+        item: dict[str, Any] = {
             "id": record_id,
             "statement": statement,
             "source_refs": source_refs,
@@ -87,40 +88,71 @@ def _project_facts_and_constraints(
             value = _text(record.get(field))
             if value:
                 item[field] = value
+        for field in (
+            "atomic_item_id",
+            "claim_origin",
+            "semantic_units",
+            "coverage_anchors",
+            "conditions",
+            "source_locator",
+            "allowed_page_roles",
+            "forbidden_page_roles",
+        ):
+            if field in record:
+                item[field] = deepcopy(record[field])
         if isinstance(record.get("table_context"), dict):
-            item["table_context"] = dict(record["table_context"])
-        if _text(record.get("type")) in _CONSTRAINT_TYPES:
-            constraints.append({
-                "id": record_id,
-                "statement": statement,
-                "source_refs": source_refs,
-                "visibility": visibility,
-            })
-        else:
-            facts.append(item)
+            item["table_context"] = deepcopy(record["table_context"])
 
+        entity_refs: list[str] = []
         for actor in record.get("actors") or []:
             name = _text(actor if isinstance(actor, str) else (actor or {}).get("name"))
-            if not name or name in entities:
+            if not name:
                 continue
-            entities[name] = {
-                "id": f"E-{len(entities) + 1:03d}",
-                "name": name,
-                "source_refs": source_refs,
-                "visibility": visibility,
-            }
+            entity = entities.get(name)
+            if entity is None:
+                entity = {
+                    "id": f"E-{len(entities) + 1:03d}",
+                    "name": name,
+                    "source_refs": list(source_refs),
+                    "fact_refs": [],
+                    "visibility": visibility,
+                }
+                entities[name] = entity
+            else:
+                entity["source_refs"] = list(
+                    dict.fromkeys([*entity.get("source_refs", []), *source_refs])
+                )
+                if visibility == "internal_only":
+                    entity["visibility"] = visibility
+            if record_id not in entity["fact_refs"]:
+                entity["fact_refs"].append(record_id)
+            if entity["id"] not in entity_refs:
+                entity_refs.append(entity["id"])
 
+        number_refs: list[str] = []
         for index, numeric in enumerate(record.get("numeric_facts") or []):
             if not isinstance(numeric, dict):
                 continue
-            numbers.append({
+            number = {
                 "id": f"{record_id}-N{index + 1}",
                 "value": numeric.get("value"),
                 "unit": _text(numeric.get("unit")),
                 "context": _text(numeric.get("context")) or statement,
                 "source_refs": source_refs,
+                "fact_ref": record_id,
                 "visibility": visibility,
-            })
+            }
+            numbers.append(number)
+            number_refs.append(number["id"])
+
+        if entity_refs:
+            item["entity_refs"] = entity_refs
+        if number_refs:
+            item["number_refs"] = number_refs
+        if _text(record.get("type")) in _CONSTRAINT_TYPES:
+            constraints.append(item)
+        else:
+            facts.append(item)
 
     return facts, constraints, list(entities.values()), numbers
 
@@ -223,6 +255,7 @@ def project_source_truth_to_foundation(source_truth: dict[str, Any]) -> dict[str
 
     facts, constraints, entities, numbers = _project_facts_and_constraints(source_truth)
     return {
+        "source_consumption_policy": "required",
         "sources": _project_sources(source_truth),
         "source_structure": _project_source_structure(source_truth),
         "facts": facts,

@@ -203,14 +203,23 @@ def _authored_relationships_issues(page: dict[str, Any], slide: dict[str, Any]) 
     return issues
 
 def _audit_authored_source_consumption(
-    page: dict[str, Any], slide: dict[str, Any], items: dict[str, dict[str, Any]]
+    page: dict[str, Any],
+    slide: dict[str, Any],
+    items: dict[str, dict[str, Any]],
+    foundation: dict[str, Any],
 ) -> list[str]:
     """Require assigned source facts in full_copy and selected facts onscreen."""
+    required_policy = requires_source_consumption(page, foundation)
     contract = page.get("source_consumption")
-    if not isinstance(contract, dict) or contract.get("mode") != "strict":
+    definition_issues = _audit_source_consumption_definition(page, items, foundation)
+    if not isinstance(contract, dict):
+        return definition_issues
+    if contract.get("mode") != "strict":
+        return definition_issues if required_policy else []
+    if not required_policy and foundation.get("source_consumption_policy") == "required":
         return []
 
-    issues = _audit_source_consumption_definition(page, items)
+    issues = definition_issues
     detail_refs, omitted_refs, _ = _source_consumption_sets(contract)
     required_refs = [
         ref
@@ -243,11 +252,75 @@ def _audit_authored_source_consumption(
             minimum_hits = anchor_contract.get("minimum_hits", len(anchors))
             if isinstance(minimum_hits, int) and len(hits) < minimum_hits:
                 missing = [anchor for anchor in anchors if anchor not in hits]
+                if not hits:
+                    issues.append(
+                        f"FULL_COPY_SOURCE_REF_MISSING: {ref} has no declared source anchor in full_copy"
+                    )
                 issues.append(
-                    f"source_consumption full_copy gap for {ref}: anchor hits "
+                    f"FULL_COPY_SOURCE_ANCHOR_MISSING: source_consumption full_copy gap for {ref}: anchor hits "
                     f"{len(hits)}/{minimum_hits}; missing anchors {missing}; "
                     f"source statement: {_item_text(item)}"
                 )
+            if required_policy:
+                source_surface = " ".join(_source_surface_values(item))
+                protected_numbers = set(
+                    re.findall(
+                        r"\d+(?:\.\d+)?(?:年\d{1,2}月\d{1,2}日|年|月|日|%|％|万|亿|项|级)?",
+                        source_surface,
+                    )
+                )
+                for number_ref in item.get("number_refs") or []:
+                    number = items.get(number_ref)
+                    if not isinstance(number, dict):
+                        continue
+                    raw_value = number.get("value")
+                    value = "" if raw_value is None else str(raw_value).strip()
+                    unit = str(number.get("unit") or "").strip()
+                    if value:
+                        protected_numbers.add(f"{value}{unit}")
+                        protected_numbers.add(value)
+                missing_numbers = sorted(
+                    value for value in protected_numbers
+                    if value and re.sub(r"\s+", "", value) not in compact_full_copy
+                )
+                if missing_numbers:
+                    issues.append(
+                        f"FULL_COPY_NUMBER_OR_DATE_LOST: {ref} lost protected values {missing_numbers}"
+                    )
+
+                missing_conditions = [
+                    str(value).strip()
+                    for value in item.get("conditions") or []
+                    if str(value).strip()
+                    and re.sub(r"\s+", "", str(value)) not in compact_full_copy
+                ]
+                if missing_conditions:
+                    issues.append(
+                        f"FULL_COPY_CONDITION_LOST: {ref} lost source conditions {missing_conditions}"
+                    )
+
+                missing_entities = []
+                for entity_ref in item.get("entity_refs") or []:
+                    entity = items.get(entity_ref)
+                    name = str((entity or {}).get("name") or "").strip()
+                    if name and re.sub(r"\s+", "", name) not in compact_full_copy:
+                        missing_entities.append(name)
+                if missing_entities:
+                    issues.append(
+                        f"FULL_COPY_RESPONSIBILITY_LOST: {ref} lost source actors {missing_entities}"
+                    )
+
+                status = str(item.get("status") or "").strip()
+                if status and re.sub(r"\s+", "", status) not in compact_full_copy:
+                    issues.append(
+                        f"FULL_COPY_STATUS_STRENGTH_LOST: {ref} lost source status '{status}'"
+                    )
+            continue
+
+        if required_policy:
+            issues.append(
+                f"FULL_COPY_SOURCE_ANCHOR_MISSING: {ref} has no strict full_prose_anchors contract"
+            )
             continue
 
         statements = [_item_text(item)]
@@ -265,6 +338,30 @@ def _audit_authored_source_consumption(
                 f"source_consumption full_copy gap for {ref}: source-specific content is absent "
                 f"(overlap={overlap:.3f}); source statement: {_item_text(item)}"
             )
+
+    if required_policy:
+        _, _, onscreen_refs = _source_consumption_sets(contract)
+        expected_modules = [
+            module
+            for module in (page.get("onscreen_contract") or {}).get("modules") or []
+            if isinstance(module, dict)
+            and onscreen_refs.intersection(
+                ref for ref in module.get("evidence_refs") or [] if isinstance(ref, str)
+            )
+        ]
+        actual_by_heading = {
+            str(module.get("heading") or "").strip(): module
+            for module in slide.get("onscreen") or []
+            if isinstance(module, dict)
+        }
+        for module in expected_modules:
+            heading = str(module.get("heading") or "").strip()
+            actual = actual_by_heading.get(heading)
+            if not isinstance(actual, dict) or not _onscreen_module_lines(actual):
+                issues.append(
+                    "ONSCREEN_SOURCE_REF_MISSING: representative source module "
+                    f"'{heading}' is absent or empty"
+                )
     return issues
 
 def _audit_authored_onscreen_composition(
@@ -514,7 +611,9 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
             issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
         for relation_issue in _authored_relationships_issues(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {relation_issue}")
-        for consumption_issue in _audit_authored_source_consumption(page, slide, items):
+        for consumption_issue in _audit_authored_source_consumption(
+            page, slide, items, foundation
+        ):
             issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
         for coverage_issue in _audit_authored_content_coverage(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
