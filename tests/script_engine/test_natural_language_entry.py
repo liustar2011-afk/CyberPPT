@@ -38,6 +38,16 @@ def test_user_facing_states_are_limited_to_plan_and_final() -> None:
     assert "Critic self-dialogue" in text
 
 
+def test_workflow_contract_keeps_stage02_on_the_formal_repository_entry() -> None:
+    text = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
+    assert "script/foundation.json" in text
+    assert "script/deck-plan.json" in text
+    assert "script/dist/final-script.md" in text
+    assert ".venv/bin/python3 -m cyberppt final-script-pages --production-build" in text
+    assert "one formal orchestration entry" in text
+    assert "outside this repository" not in text
+
+
 def test_quickstart_does_not_require_cli_or_skill_names() -> None:
     text = _read("docs/QUICKSTART.md")
     assert "根据这个 Word 生成 PPT 脚本" in text

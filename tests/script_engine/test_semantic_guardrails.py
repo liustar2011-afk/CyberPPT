@@ -642,3 +642,32 @@ def test_clean_semantics_pass() -> None:
     assert f_issues == []
     assert p_issues == []
     assert s_issues == []
+
+
+def test_narrative_audit_preserves_source_native_and_parallel_page_exceptions() -> None:
+    plan = {
+        "audience_scope": "internal",
+        "source_structure_mode": "preserve",
+        "evidence_fit_review_mode": "strict",
+        "thesis": "说明来源原生分类",
+        "narrative_arc": "沿来源顺序展开分类",
+        "storyline": ["分类"],
+        "chapters": [{
+            "id": "C1", "purpose": "说明分类", "question": "有哪些类别",
+            "message": "三类对象并列构成分类", "relationship_to_previous": "首章",
+            "source_chapter_ids": ["CH1"],
+        }],
+        "pages": [{
+            "id": "P01", "chapter_id": "C1", "page_role": "evidence",
+            "title": "对象分类", "question": "有哪些类别",
+            "message": "三类对象并列构成分类", "logic": "来源原生分类",
+            "content": ["对象一", "对象二", "对象三"],
+            "primary_relation": {"type": "parallel", "scope": ["对象一", "对象二", "对象三"], "authority": "hard"},
+        }],
+    }
+    foundation = {"source_structure": [{"id": "CH1", "level": "chapter", "order": 1}], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []}
+
+    issues, warnings = audit_deck_plan(plan, foundation)
+
+    assert issues == []
+    assert warnings == []

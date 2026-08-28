@@ -102,6 +102,28 @@ must not create another authoritative artifact or approval state. For internal
 and mixed audiences, apply the internal-expert voice check: enterprise operating
 topics remain valid, while external-consultant address and viewpoint are rejected.
 
-## 8. Stage 02 boundary
+## 8. Stage 02 boundary and formal handoff
 
-Visual style, image generation, SVG reconstruction and PPTX production remain outside this repository. Only `projects/<slug>/dist/final-script.md` crosses the boundary.
+Stage 01 owns the three authoritative script artifacts:
+
+- `script/foundation.json`;
+- `script/deck-plan.json`;
+- `script/dist/final-script.md`.
+
+After the final script is locked, Stage 02 remains in the CyberPPT repository and
+has one formal orchestration entry:
+
+`.venv/bin/python3 -m cyberppt final-script-pages --production-build ...`
+
+`final-script-pages` consumes the locked final script and the current Stage 02
+handoff/visual contracts before running image generation, image-text audit and
+the requested PPTX assembly branch. For high-fidelity editable reconstruction,
+use `--production-mode image-to-editable-svg` with the registered `editable`
+assembly branch; picture and dual delivery use the same orchestrator with their
+declared assembly branch. Do not call a Stage 02 adapter directly or create a
+parallel image/PPTX production route.
+
+The Stage 01/Stage 02 boundary is the locked
+`script/dist/final-script.md` plus its validated handoff. Visual production may
+derive runtime prompts, manifests and QA records, but it must not rewrite the
+three Stage 01 authority artifacts or become a second content authority.

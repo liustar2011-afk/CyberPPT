@@ -3,6 +3,162 @@ from __future__ import annotations
 
 from .common import *
 
+
+_STRUCTURAL_PAGE_ROLES = frozenset(
+    {"cover", "agenda", "contents", "chapter", "transition", "ending", "closing"}
+)
+
+
+def _narrative_text(value: object) -> str:
+    return str(value or "").strip()
+
+
+def _narrative_terms(value: object) -> set[str]:
+    text = _normalized_review_text(value)
+    return {text[index : index + 2] for index in range(max(0, len(text) - 1))}
+
+
+def _narrative_contract_diagnostics(
+    plan: dict[str, Any],
+) -> tuple[list[str], list[str]]:
+    """Check the explicit deck narrative without imposing a story pattern.
+
+    Missing fields are warnings for historical plans.  The deterministic
+    failures are limited to referential and ordering errors that can be
+    proven from the plan itself.
+    """
+
+    issues: list[str] = []
+    warnings: list[str] = []
+    narrative_keys = ("thesis", "narrative_arc", "storyline", "audience_start", "audience_end")
+    has_narrative_fields = any(key in plan for key in narrative_keys)
+    chapters = [item for item in plan.get("chapters") or [] if isinstance(item, dict)]
+    pages = [item for item in plan.get("pages") or [] if isinstance(item, dict)]
+    if not has_narrative_fields and not chapters:
+        return issues, warnings
+
+    missing_deck_fields = [
+        key for key in ("thesis", "narrative_arc", "storyline")
+        if not plan.get(key)
+    ]
+    if missing_deck_fields:
+        warnings.append(
+            "NARRATIVE_PLAN_FIELDS_INCOMPLETE: missing deck narrative field(s) "
+            f"{missing_deck_fields}; evidence=plan; suggested_action=fill the fields from the approved source-constrained planning decision"
+        )
+
+    chapter_ids = [str(chapter.get("id") or "").strip() for chapter in chapters]
+    duplicate_chapter_ids = sorted(
+        {chapter_id for chapter_id in chapter_ids if chapter_id and chapter_ids.count(chapter_id) > 1}
+    )
+    if duplicate_chapter_ids:
+        issues.append(
+            "NARRATIVE_CHAPTER_ID_DUPLICATE: duplicate chapter id(s) "
+            f"{duplicate_chapter_ids}; evidence=chapters; suggested_action=assign one stable id to each chapter"
+        )
+    chapter_id_set = {chapter_id for chapter_id in chapter_ids if chapter_id}
+    missing_chapter_fields: list[str] = []
+    for chapter in chapters:
+        chapter_id = str(chapter.get("id") or "?")
+        missing = [
+            key for key in ("purpose", "question", "message", "relationship_to_previous")
+            if not _narrative_text(chapter.get(key))
+        ]
+        if missing:
+            missing_chapter_fields.append(f"{chapter_id}: {','.join(missing)}")
+    if missing_chapter_fields:
+        warnings.append(
+            "NARRATIVE_CHAPTER_FIELDS_INCOMPLETE: "
+            f"{missing_chapter_fields}; evidence=chapters; suggested_action=state each chapter's purpose, question, message and handoff"
+        )
+
+    page_chapter_ids = []
+    for page in pages:
+        page_id = str(page.get("id") or "?")
+        chapter_id = str(page.get("chapter_id") or "").strip()
+        if chapter_id:
+            page_chapter_ids.append(chapter_id)
+            if chapter_id not in chapter_id_set:
+                issues.append(
+                    "NARRATIVE_PAGE_CHAPTER_MISMATCH: "
+                    f"page {page_id} references unknown chapter {chapter_id}; evidence={page_id}.chapter_id; "
+                    "suggested_action=assign the page to an existing chapter or add the approved chapter"
+                )
+    chapter_order = {chapter_id: index for index, chapter_id in enumerate(chapter_ids) if chapter_id}
+    ordered_page_chapters = [chapter_order[chapter_id] for chapter_id in page_chapter_ids if chapter_id in chapter_order]
+    if ordered_page_chapters != sorted(ordered_page_chapters):
+        issues.append(
+            "NARRATIVE_PAGE_CHAPTER_ORDER_CONFLICT: page chapter order differs from the declared chapter order; "
+            "evidence=pages.chapter_id; suggested_action=restore chapter order or record the authorized restructuring"
+        )
+
+    content_pages = [
+        page for page in pages
+        if str(page.get("page_role") or "").strip() not in _STRUCTURAL_PAGE_ROLES
+    ]
+    for index, page in enumerate(content_pages):
+        page_id = str(page.get("id") or "?")
+        title = _narrative_text(page.get("title"))
+        message = _narrative_text(page.get("message"))
+        if title and message and len(_normalized_review_text(title)) >= 4 and len(_normalized_review_text(message)) >= 8:
+            title_terms = _narrative_terms(title)
+            message_terms = _narrative_terms(message)
+            if title_terms and message_terms and not (title_terms & message_terms):
+                warnings.append(
+                    "NARRATIVE_TITLE_MESSAGE_OBJECT_MISMATCH: "
+                    f"page {page_id} title and core message have no identifiable object overlap; evidence={page_id}.title,{page_id}.message; "
+                    "suggested_action=check that the title names the object or judgment actually developed by the page"
+                )
+        if index > 0 and not _narrative_text(page.get("receives")):
+            warnings.append(
+                "NARRATIVE_PAGE_HANDOFF_MISSING: "
+                f"page {page_id} has no receives field; evidence={page_id}; suggested_action=state the prior question or recognition this page takes forward"
+            )
+        if index < len(content_pages) - 1 and not _narrative_text(page.get("next")):
+            warnings.append(
+                "NARRATIVE_PAGE_HANDOFF_MISSING: "
+                f"page {page_id} has no next field; evidence={page_id}; suggested_action=state the recognition or question handed to the next content page"
+            )
+
+        next_text = _narrative_text(page.get("next"))
+        if not next_text or index >= len(content_pages) - 1:
+            continue
+        next_page = content_pages[index + 1]
+        next_question = _narrative_text(next_page.get("question"))
+        next_terms = _narrative_terms(next_text)
+        question_terms = _narrative_terms(next_question)
+        if next_question and next_terms and question_terms and not (next_terms & question_terms):
+            warnings.append(
+                "NARRATIVE_NEXT_RECEIVES_CONFLICT: "
+                f"page {page_id}.next has no identifiable subject overlap with {next_page.get('id') or '?'} question; "
+                f"evidence={page_id}.next,{next_page.get('id') or '?'}.question; suggested_action=align the handoff wording with the next page's question"
+            )
+
+    page_messages_by_chapter: dict[str, list[str]] = {}
+    for page in pages:
+        chapter_id = str(page.get("chapter_id") or "").strip()
+        message = _narrative_text(page.get("message"))
+        if chapter_id and message:
+            page_messages_by_chapter.setdefault(chapter_id, []).append(message)
+    for chapter in chapters:
+        chapter_id = str(chapter.get("id") or "").strip()
+        chapter_message = _narrative_text(chapter.get("message"))
+        page_messages = page_messages_by_chapter.get(chapter_id, [])
+        if not chapter_message or not page_messages:
+            continue
+        chapter_terms = _narrative_terms(chapter_message)
+        best_overlap = max(
+            (len(chapter_terms & _narrative_terms(message)) / max(1, len(chapter_terms)) for message in page_messages),
+            default=0.0,
+        )
+        if best_overlap < 0.15:
+            warnings.append(
+                "NARRATIVE_CHAPTER_MESSAGE_UNSUPPORTED: "
+                f"chapter {chapter_id} message has weak overlap with its page messages; evidence={chapter_id}.message,pages[{chapter_id}].message; "
+                "suggested_action=narrow the chapter conclusion or ensure its pages form the stated conclusion"
+            )
+    return issues, warnings
+
 def _adjacent_plan_duplication_warnings(plan: dict[str, Any]) -> list[str]:
     """Flag only high-confidence near duplication; shared terminology is valid."""
 
@@ -16,7 +172,7 @@ def _adjacent_plan_duplication_warnings(plan: dict[str, Any]) -> list[str]:
         similarity = SequenceMatcher(None, previous_message, current_message).ratio()
         if similarity >= 0.90:
             warnings.append(
-                "adjacent pages {left} and {right} have near-duplicate core messages "
+                "ADJACENT_PLAN_MESSAGE_DUPLICATE: adjacent pages {left} and {right} have near-duplicate core messages "
                 "(similarity {similarity:.0%}); verify that each page has a distinct proof responsibility".format(
                     left=previous.get("id") or "?",
                     right=current.get("id") or "?",
@@ -149,6 +305,9 @@ def _primary_relation_issues(page: dict[str, Any]) -> list[str]:
 def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[list[str], list[str]]:
     issues: list[str] = audit_plan_internal_expert_voice(plan)
     warnings: list[str] = _adjacent_plan_duplication_warnings(plan)
+    narrative_issues, narrative_warnings = _narrative_contract_diagnostics(plan)
+    issues.extend(narrative_issues)
+    warnings.extend(narrative_warnings)
     items = foundation_items_by_id(foundation)
     structure = [x for x in (foundation.get("source_structure") or []) if isinstance(x, dict)]
     source_chapters = [
@@ -239,4 +398,4 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
 
     return issues, warnings
 
-__all__ = ['_adjacent_plan_duplication_warnings', '_scope_chapters', '_audit_content_coverage_definition', '_audit_onscreen_contract_definition', '_primary_relation_issues', 'audit_deck_plan']
+__all__ = ['_adjacent_plan_duplication_warnings', '_narrative_contract_diagnostics', '_scope_chapters', '_audit_content_coverage_definition', '_audit_onscreen_contract_definition', '_primary_relation_issues', 'audit_deck_plan']

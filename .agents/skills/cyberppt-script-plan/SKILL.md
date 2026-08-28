@@ -60,6 +60,25 @@ A taxonomy/classification is a valid analytical result. Do not manufacture arrow
 
 ## Pass 4 — Page plan
 
+### Deck narrative contract
+
+Before allocating pages, write the deck-level recognition path into the same
+plan authority:
+
+- `thesis`: the single recognition the audience should retain at the end;
+- `narrative_arc`: the source-constrained path from audience start to goal;
+- `storyline[]`: ordered recognition nodes, without copying page prose;
+- `audience_start` and `audience_end` when the communication decision defines
+  both endpoints.
+
+Each chapter must state `purpose`, `question`, `message` and
+`relationship_to_previous`. Each page must carry its owning `chapter_id` and,
+for content-page handoffs, the prior recognition in `receives` and the next
+recognition in `next`. Chapter membership is derived from page `chapter_id`;
+do not persist a second `chapter.page_ids` list. Structural pages may omit the
+content-page handoff contract. Historical plans remain readable and receive
+diagnostics from `audit-plan` until they are regenerated.
+
 Required fields remain:
 
 - `question`;

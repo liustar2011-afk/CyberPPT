@@ -1,0 +1,91 @@
+[
+  {
+    "id": "clean-parallel-evidence",
+    "deck_type": "formal-report",
+    "plan": {
+      "audience_scope": "internal",
+      "evidence_fit_review_mode": "strict",
+      "pages": [{"id": "P01", "page_role": "evidence", "question": "有哪些证据", "message": "三类证据共同支撑判断", "logic": "并列证据", "content": ["证据一", "证据二", "证据三"], "primary_relation": {"type": "parallel", "scope": ["证据一", "证据二", "证据三"], "authority": "hard"}}]
+    },
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": []}
+  },
+  {
+    "id": "structural-chapter-page",
+    "deck_type": "formal-report",
+    "plan": {
+      "audience_scope": "internal",
+      "evidence_fit_review_mode": "strict",
+      "pages": [{"id": "P01", "page_role": "chapter", "question": "本章说明什么", "message": "进入建设背景", "logic": "章节导入", "content": []}]
+    },
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": []}
+  },
+  {
+    "id": "theme-title-is-valid",
+    "deck_type": "policy-reading",
+    "plan": {
+      "audience_scope": "internal",
+      "evidence_fit_review_mode": "strict",
+      "pages": [{"id": "P01", "title": "建设背景", "question": "为什么建设", "message": "行业资源分散，需要统一基础", "logic": "背景到需求", "content": ["资源分散"]}]
+    },
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": []}
+  },
+  {
+    "id": "source-native-order",
+    "deck_type": "classification",
+    "plan": {"audience_scope": "internal", "source_structure_mode": "preserve", "evidence_fit_review_mode": "strict", "thesis": "按来源结构说明两章内容", "narrative_arc": "第一章进入基础，第二章展开能力", "storyline": ["基础", "能力"], "chapters": [{"id": "C1", "purpose": "说明基础", "question": "基础是什么", "message": "形成建设基础", "relationship_to_previous": "首章", "source_chapter_ids": ["CH1"]}, {"id": "C2", "purpose": "说明能力", "question": "能力是什么", "message": "形成服务能力", "relationship_to_previous": "承接建设基础", "source_chapter_ids": ["CH2"]}], "pages": [{"id": "P01", "chapter_id": "C1", "page_role": "chapter", "question": "进入基础", "message": "形成建设基础", "logic": "章节导入", "content": []}, {"id": "P02", "chapter_id": "C2", "page_role": "chapter", "question": "进入能力", "message": "形成服务能力", "logic": "章节导入", "content": []}]},
+    "foundation": {"source_structure": [{"id": "CH1", "level": "chapter", "order": 1}, {"id": "CH2", "level": "chapter", "order": 2}], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": []}
+  },
+  {
+    "id": "multiple-parallel-evidence-clusters",
+    "deck_type": "technical-architecture",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "pages": [{"id": "P01", "question": "能力由哪些证据支撑", "message": "多个并列证据簇共同支撑能力判断", "logic": "并列证据簇", "content": ["数据层", "服务层", "治理层"], "primary_relation": {"type": "parallel", "scope": ["数据层", "服务层", "治理层"], "authority": "hard"}}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": []}
+  },
+  {
+    "id": "adjacent-message-duplicate",
+    "deck_type": "formal-report",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "pages": [{"id": "P01", "question": "平台做什么", "message": "平台形成统一的数据服务能力", "logic": "能力说明", "content": ["能力"]}, {"id": "P02", "question": "平台如何服务", "message": "平台形成统一的数据服务能力", "logic": "服务说明", "content": ["服务"]}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": ["ADJACENT_PLAN_MESSAGE_DUPLICATE"]}
+  },
+  {
+    "id": "legacy-narrative-fields-missing",
+    "deck_type": "formal-report",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "thesis": "形成统一服务能力", "pages": [{"id": "P01", "question": "平台做什么", "message": "平台形成统一服务能力", "logic": "能力说明", "content": ["能力"]}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": ["NARRATIVE_PLAN_FIELDS_INCOMPLETE"]}
+  },
+  {
+    "id": "unknown-page-chapter",
+    "deck_type": "implementation-plan",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "chapters": [{"id": "C1", "purpose": "说明基础"}], "pages": [{"id": "P01", "chapter_id": "C2", "question": "基础是什么", "message": "形成建设基础", "logic": "基础说明", "content": ["基础"]}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": ["NARRATIVE_PAGE_CHAPTER_MISMATCH"], "warnings": ["NARRATIVE_PLAN_FIELDS_INCOMPLETE", "NARRATIVE_CHAPTER_FIELDS_INCOMPLETE"]}
+  },
+  {
+    "id": "next-question-conflict",
+    "deck_type": "implementation-plan",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "thesis": "从资源盘点进入预算安排", "narrative_arc": "资源盘点→预算安排", "storyline": ["资源盘点", "预算安排"], "pages": [{"id": "P01", "question": "资源有哪些", "message": "完成资源盘点", "logic": "盘点", "content": ["资源"], "next": "下一页说明预算规则"}, {"id": "P02", "question": "设备运行如何保障", "message": "形成设备保障机制", "logic": "保障", "content": ["设备"], "receives": "承接上一页的资源盘点结果"}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": ["NARRATIVE_NEXT_RECEIVES_CONFLICT"]}
+  },
+  {
+    "id": "chapter-message-unsupported",
+    "deck_type": "business-proposal",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "thesis": "形成可持续能力", "narrative_arc": "从基础进入能力", "storyline": ["基础", "能力"], "chapters": [{"id": "C1", "purpose": "说明基础", "question": "基础是什么", "message": "市场合作收入持续增长", "relationship_to_previous": "首章"}], "pages": [{"id": "P01", "chapter_id": "C1", "question": "能力是什么", "message": "设备运行技术能力持续完善", "logic": "能力说明", "content": ["设备"]}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": ["NARRATIVE_CHAPTER_MESSAGE_UNSUPPORTED"]}
+  },
+  {
+    "id": "title-message-object-mismatch",
+    "deck_type": "business-proposal",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "thesis": "形成可持续服务", "narrative_arc": "从组织进入服务", "storyline": ["组织", "服务"], "pages": [{"id": "P01", "title": "组织职责", "question": "平台形成什么能力", "message": "数据服务按需求形成产品", "logic": "能力说明", "content": ["产品"]}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": ["NARRATIVE_TITLE_MESSAGE_OBJECT_MISMATCH"]}
+  }
+]

@@ -38,6 +38,20 @@ def test_plan_review_renders_title_message_evidence_and_bridge_without_mutation(
     assert foundation == before_foundation
 
 
+def test_plan_review_renders_deck_and_chapter_narrative_fields() -> None:
+    plan, foundation = _example()
+
+    markdown = render_plan_review(plan, foundation)
+
+    assert "- 叙事弧：" in markdown
+    assert "- 受众起点：" in markdown
+    assert "- 受众终点：" in markdown
+    assert "- 章节使命：" in markdown
+    assert "- 章节问题：" in markdown
+    assert "- 章节结论：" in markdown
+    assert "- 章节承接：" in markdown
+
+
 def test_plan_review_marks_unknown_evidence_as_incomplete() -> None:
     plan, foundation = _example()
     plan["pages"][0]["proof"]["evidence_refs"] = ["UNKNOWN"]
@@ -104,7 +118,7 @@ def test_missing_evidence_fit_mode_is_visible_and_blocks_author() -> None:
     markdown = render_plan_review(plan, foundation, issues=issues, warnings=warnings)
 
     assert any("strict is required before PLAN can enter AUTHOR" in issue for issue in issues)
-    assert warnings == []
+    assert any("NARRATIVE_PLAN_FIELDS_INCOMPLETE" in warning for warning in warnings)
     assert "来源适配门禁：缺失，阻断 AUTHOR" in markdown
 
 

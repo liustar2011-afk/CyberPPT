@@ -11,6 +11,11 @@ Create a compact, complete semantic foundation that preserves what the source sa
 
 Output: `foundation.json`.
 
+This is the first of the three authoritative Stage 01 script artifacts. The
+following `deck-plan.json` and `dist/final-script.md` are produced by PLAN/AUTHOR
+after the semantic foundation and the planning gate; this Skill does not create
+or replace either of them.
+
 Read:
 
 - `docs/SOURCE_FIDELITY_AND_ANALYSIS.md`;

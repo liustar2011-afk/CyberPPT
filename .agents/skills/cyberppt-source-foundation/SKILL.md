@@ -39,6 +39,8 @@ The only formal route is `cyberppt-source-foundation` → `business-semantic-und
 - Projected `semantic-argument-model.json`, `source-truth.json`, and `outline.json` exist only to satisfy CyberPPT downstream consumers.
 - Handoff code may map IDs and fields but may not invent claims, merge facts, add page evidence, infer responsibilities, or raise maturity/status.
 - CyberPPT page `source_refs` must equal the page's explicitly authorized normalized-fact set after deterministic ID projection.
+- Stage 01 has exactly three authoritative script artifacts: `script/foundation.json`, `script/deck-plan.json`, and `script/dist/final-script.md`.
+- After the final script is locked, Stage 02 enters through `.venv/bin/python3 -m cyberppt final-script-pages --production-build ...`; visual prompts, manifests and QA records remain derived runtime outputs.
 
 ## Page planning discipline
 

@@ -247,14 +247,28 @@ def render_plan_review(
             else "缺失，阻断 AUTHOR"
         ),
         f"- 全稿主旨：{_text(plan.get('thesis'))}",
+        f"- 叙事弧：{_text(plan.get('narrative_arc'))}",
+        f"- 受众起点：{_text(plan.get('audience_start'))}",
+        f"- 受众终点：{_text(plan.get('audience_end'))}",
         "",
     ]
 
-    def append_chapter(title: str, chapter_pages: list[dict[str, Any]]) -> None:
+    def append_chapter(
+        title: str,
+        chapter_pages: list[dict[str, Any]],
+        chapter: dict[str, Any] | None = None,
+    ) -> None:
         lines.extend(
             [
                 f"## {title}",
                 "",
+                *([
+                    f"- 章节使命：{_text(chapter.get('purpose'))}",
+                    f"- 章节问题：{_text(chapter.get('question'))}",
+                    f"- 章节结论：{_text(chapter.get('message'))}",
+                    f"- 章节承接：{_text(chapter.get('relationship_to_previous'))}",
+                    "",
+                ] if chapter is not None else []),
                 "| 页面 | 标题 | 核心判断 | 页面职责 | 证据状态 | 承接 |",
                 "|---|---|---|---|---|---|",
             ]
@@ -309,7 +323,8 @@ def render_plan_review(
 
     for chapter in chapters:
         chapter_id = str(chapter.get("id") or "")
-        append_chapter(_text(chapter.get("title") or chapter_id), by_chapter.get(chapter_id, []))
+        chapter_pages = by_chapter.get(chapter_id, [])
+        append_chapter(_text(chapter.get("title") or chapter_id), chapter_pages, chapter)
     if unassigned:
         append_chapter("未分配章节", unassigned)
 

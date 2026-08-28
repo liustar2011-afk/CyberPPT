@@ -179,6 +179,25 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("`final-script-pages` 是脚本锁定后的唯一正式编排入口", text)
         self.assertIn("`final-script-pages --generate-images` 调用 Codex OAuth 生图后端", text)
 
+    def test_script_workflow_skill_matches_repository_stage02_contract(self) -> None:
+        workflow = (ROOT / ".agents" / "skills" / "cyberppt-script-workflow" / "SKILL.md").read_text(encoding="utf-8-sig")
+        for artifact in (
+            "script/foundation.json",
+            "script/deck-plan.json",
+            "script/dist/final-script.md",
+        ):
+            self.assertIn(artifact, workflow)
+        self.assertIn(".venv/bin/python3 -m cyberppt final-script-pages --production-build", workflow)
+        self.assertIn("one formal orchestration entry", workflow)
+        self.assertNotIn("outside this repository", workflow)
+
+    def test_plan_skill_declares_the_deck_narrative_contract(self) -> None:
+        text = (ROOT / ".agents" / "skills" / "cyberppt-script-plan" / "SKILL.md").read_text(encoding="utf-8-sig")
+        for field in ("thesis", "narrative_arc", "storyline[]", "audience_start", "audience_end", "relationship_to_previous", "receives", "next"):
+            self.assertIn(field, text)
+        self.assertIn("Chapter membership is derived from page `chapter_id`", text)
+        self.assertIn("Historical plans remain readable", text)
+
     def test_ppt_generation_requires_audited_full_image_reconstruction(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
