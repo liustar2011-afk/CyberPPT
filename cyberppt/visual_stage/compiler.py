@@ -54,6 +54,13 @@ ALLOWED_FOCUS_POLICIES = {
     "sequence_focus",
 }
 
+ALLOWED_SCENE_POLICIES = {
+    "required",
+    "allowed",
+    "forbidden",
+    "auto",
+}
+
 _FOCUS_POLICY_BY_TOPOLOGY = {
     "parallel_set": "peer_field",
     "causal_convergence": "single_anchor",
@@ -97,6 +104,57 @@ def _resolve_focus_policy(selected: dict[str, Any], topology: str, page_id: str)
     return _FOCUS_POLICY_BY_TOPOLOGY[topology]
 
 
+def _resolve_scene_policy(design: dict[str, Any], prompt_mode: str, page_id: str) -> str:
+    requested = str(design.get("scene_policy") or "").strip()
+    if requested:
+        if requested not in ALLOWED_SCENE_POLICIES:
+            _fail(f"{page_id}: unsupported scene_policy {requested!r}")
+        return requested
+    legacy = design.get("use_scene")
+    if isinstance(legacy, bool):
+        return "allowed" if legacy else "forbidden"
+    return "auto" if prompt_mode == "semantic_brief" else "forbidden"
+
+
+def _legacy_use_scene(scene_policy: str) -> bool:
+    return scene_policy != "forbidden"
+
+
+def _visual_budget(dense_text_page: bool, scene_policy: str) -> dict[str, object]:
+    if dense_text_page:
+        return {
+            "mode": "relationship_field_only",
+            "max_auxiliary_fragments": 0,
+            "scope": "page",
+            "region_local_visuals": False,
+        }
+    if scene_policy == "forbidden":
+        return {
+            "mode": "shared_field",
+            "max_auxiliary_fragments": 1,
+            "scope": "page",
+            "region_local_visuals": False,
+        }
+    return {
+        "mode": "integrated_scene",
+        "max_auxiliary_fragments": 4,
+        "scope": "region",
+        "region_local_visuals": True,
+    }
+
+
+def _fallback_spatial_organization(focus_policy: str, focus_label: str, subject: str) -> str:
+    if focus_policy == "peer_field":
+        return f"以{subject}形成一个完整共享关系场，各同权证据保持相近视觉权重并共同支撑页面判断；不得人为放大某一项为结果中心"
+    if focus_policy == "paired_focus":
+        return f"围绕{subject}保持两个主对象或两侧关系的成对重心，明确接口、边界或相互作用；不得将任一侧降为装饰性附属"
+    if focus_policy == "distributed_focus":
+        return f"围绕{subject}形成分布式关系场，各业务主体按真实关系连接；只有来源明确存在枢纽时才允许中心对象"
+    if focus_policy == "sequence_focus":
+        return f"围绕{subject}沿已声明阅读路径组织连续业务承接，视觉重心随阶段推进；不得额外制造第二条叙事链"
+    return f"以“{focus_label}”为主视觉锚点，围绕{subject}把输入、承接动作与结果组织为连续关系场；辅助信息仅贴附于对应对象"
+
+
 def _render_business_relationships(value: object) -> str:
     sentences: list[str] = []
     for item in value if isinstance(value, list) else []:
@@ -116,21 +174,27 @@ def _render_business_relationships(value: object) -> str:
 
 
 def _decision_execution_design(
-    source: dict[str, Any], decision: dict[str, Any], selected: dict[str, Any], page_id: str
+    source: dict[str, Any],
+    decision: dict[str, Any],
+    selected: dict[str, Any],
+    page_id: str,
+    focus_policy: str,
 ) -> dict[str, object]:
     prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
     if prompt_mode == "semantic_brief":
         relationships = _render_business_relationships(source.get("business_relationships"))
         focus = str(source.get("core_judgment") or "本页核心判断").strip()
+        scene_policy = "auto"
         return {
             "business_object": relationships,
             "visual_focus": focus,
             "text_integration_method": "精确上屏文字与其对应业务对象保持语义邻近",
-            "spatial_organization": "由ImageGen依据页面语义、真实关系和Style lock组织",
+            "spatial_organization": _fallback_spatial_organization(focus_policy, focus, relationships),
             "relationship_encoding": "仅表达已声明的业务关系，不新增顺序、层级或因果",
             "semantic_role": "承载已声明业务对象、动作、条件与结果",
-            "use_scene": False,
-            "scene_type": "由ImageGen依据页面语义和Style lock判断",
+            "scene_policy": scene_policy,
+            "use_scene": _legacy_use_scene(scene_policy),
+            "scene_type": "依据页面语义、视觉媒介策略和Style lock选择业务场景、对象插图或结构表达",
         }
     design = decision.get("execution_design")
     if not isinstance(design, dict):
@@ -146,11 +210,20 @@ def _decision_execution_design(
     missing = [key for key, value in normalized.items() if not value]
     corrupted = [key for key, value in normalized.items() if "?" in value]
     if not missing and not corrupted:
+        scene_policy = _resolve_scene_policy(design, prompt_mode, page_id)
         return {
             **normalized,
             "semantic_role": str(design.get("semantic_role") or normalized["relationship_encoding"]).strip(),
-            "use_scene": design.get("use_scene") if isinstance(design.get("use_scene"), bool) else False,
-            "scene_type": str(design.get("scene_type") or "不使用实景，由选定业务关系场承载").strip(),
+            "scene_policy": scene_policy,
+            "use_scene": _legacy_use_scene(scene_policy),
+            "scene_type": str(
+                design.get("scene_type")
+                or (
+                    "依据页面语义和Style lock选择适当业务场景或对象表达"
+                    if scene_policy != "forbidden"
+                    else "不使用实景，由选定业务关系场承载"
+                )
+            ).strip(),
         }
     relationships = source.get("business_relationships") or []
     subject = next(
@@ -173,14 +246,16 @@ def _decision_execution_design(
     focus_label = focus_label or subject
     if len(focus_label) > 28:
         focus_label = focus_label[:28].rstrip("，。；：")
+    scene_policy = "forbidden"
     return {
         "business_object": f"{subject}中围绕“{focus_label}”形成的业务关系场",
         "visual_focus": f"“{focus_label}”所承接的业务对象、动作与结果",
         "text_integration_method": f"将“{focus_label}”对应正文贴附在主业务对象及其承接动作上；其余正文贴附到输入、条件、接口或结果，不独立成文字栏",
-        "spatial_organization": f"以“{focus_label}”为唯一视觉焦点，围绕{subject}把输入、承接动作与结果组织为连续关系场；辅助信息仅贴附于对应对象",
+        "spatial_organization": _fallback_spatial_organization(focus_policy, focus_label, subject),
         "relationship_encoding": f"通过{subject}中对象、动作、条件与结果的承接关系表达本页判断；不以逐条文字或装饰对象代替业务关系",
         "semantic_role": f"以{subject}的对象、动作和结果关系证明本页判断",
-        "use_scene": False,
+        "scene_policy": scene_policy,
+        "use_scene": _legacy_use_scene(scene_policy),
         "scene_type": "不使用实景，由选定业务关系场承载",
     }
 
@@ -255,7 +330,6 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     if selected is None:
         _fail(f"{page_id}: selected candidate is missing")
     expression_contract = _expression_contract(source, selected)
-    design = _decision_execution_design(source, decision, selected, page_id)
     focus = selected.get("semantic_focus") if isinstance(selected.get("semantic_focus"), dict) else {}
     focus_key = str(focus.get("evidence_key") or "")
     if focus_key not in evidence_keys:
@@ -264,6 +338,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     if topology not in ALLOWED_TOPOLOGY:
         _fail(f"{page_id}: selected candidate must declare a topology from {sorted(ALLOWED_TOPOLOGY)}")
     focus_policy = _resolve_focus_policy(selected, topology, page_id)
+    design = _decision_execution_design(source, decision, selected, page_id, focus_policy)
     stage01_features = source.get("stage01_relationship_features")
     stage01_features = stage01_features if isinstance(stage01_features, dict) else {}
     semantic_topology = stage01_features.get("semantic_topology")
@@ -437,21 +512,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         for item_id, text in zip(expected_ids, expected_text)
     )
     dense_text_page = is_text_dense(expected_text)
-    visual_budget = (
-        {
-            "mode": "relationship_field_only" if dense_text_page else "shared_field",
-            "max_auxiliary_fragments": 0 if dense_text_page else 1,
-            "scope": "page",
-            "region_local_visuals": False,
-        }
-        if prompt_mode == "semantic_brief" or topology == "parallel_set" or not bool(design["use_scene"])
-        else {
-            "mode": "integrated_scene",
-            "max_auxiliary_fragments": 4,
-            "scope": "region",
-            "region_local_visuals": True,
-        }
-    )
+    scene_policy = str(design["scene_policy"])
+    visual_budget = _visual_budget(dense_text_page, scene_policy)
     return {
         "schema_version": "1.1",
         "page_id": page_id,
@@ -504,9 +566,9 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
                 for key in evidence_keys
             ],
             "representation_freedom": {
-                "carrier": "free",
-                "medium": "free",
-                "reason": "语义简报模式由ImageGen决定载体与空间实现" if prompt_mode == "semantic_brief" else "定向构图模式锁定来源支持的业务关系场与文字贴附方式",
+                "carrier": "bounded",
+                "medium": "bounded",
+                "reason": "视觉媒介须服从scene_policy与已声明业务关系；区域内部具体实现由ImageGen完成" if prompt_mode == "semantic_brief" else "定向构图模式锁定来源支持的业务关系场与文字贴附方式",
             },
         },
         "visual_decision": {
@@ -537,7 +599,9 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "regions": [{"id": "R_RELATION", "role": "relation-bearing business field", "x": 80, "y": 120, "w": 1888, "h": 800, "priority": "primary"}],
         },
         "image_plan": {
-            "use_scene": bool(design["use_scene"]),
+            "scene_policy": scene_policy,
+            # Deprecated compatibility field. `scene_policy` is authoritative.
+            "use_scene": _legacy_use_scene(scene_policy),
             "scene_type": str(design["scene_type"]),
             "business_object": design["business_object"],
             "semantic_role": str(design["semantic_role"]),
@@ -556,14 +620,15 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
                 "source": "semantic_graph" if prompt_mode == "semantic_brief" else "structural_decision",
                 "additional_constraints": (
                     [
-                        "Choose the scene or structural carrier, spatial organization and supporting detail from the page semantics and Style lock.",
+                        f"Respect scene_policy={scene_policy}; scene, business illustration or structural carrier may be selected only within that policy.",
+                        f"Respect focus_policy={focus_policy}; preserve the declared macro focus relationship and do not manufacture a dominant peer or extra result center.",
                         "Preserve only source-supported relationship direction and keep exact visible text near its corresponding business meaning.",
                     ]
                     if prompt_mode == "semantic_brief"
                     else [
                         "Use the selected business relationship field and its text attachment design; do not render instructions or internal text ids.",
-                        "Keep one visual focus and do not create an independent text wall or second summary structure.",
-                        "Respect visual_budget: semantic evidence units may share one page-level visual carrier; do not create region-local imagery when region_local_visuals is false.",
+                        f"Respect focus_policy={focus_policy}; do not create an independent text wall or second summary structure.",
+                        "Respect visual_budget: semantic evidence units may share one page-level visual carrier; region-local imagery is allowed only when region_local_visuals is true.",
                     ]
                 ),
             },
@@ -583,7 +648,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
 def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
     lines = [
         f"# {spec['deck_title']}视觉结构设计脚本", "", "## 整套视觉设计总则", "",
-        "- 以每页唯一业务关系场承载正文；具体视觉风格仅由最终 Style lock 提供。", "",
+        "- 每页以一个完整业务关系场承载正文；具体视觉风格仅由最终 Style lock 提供。", "",
     ]
     for page in spec["pages"]:
         vd, sg, structural = page["visual_decision"], page["semantic_graph"], page["structural_decision"]
@@ -614,10 +679,11 @@ def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
             f"- 禁止结构：{forbidden_summary}", "", *expression_lines, "", "### 视觉意图",
             f"- 视觉意图类型：{vd['visual_intent_type']}",
             f"- 语义焦点：{structural['semantic_focus']['kind']} / {structural['semantic_focus']['ref']}",
+            f"- 焦点策略：{vd['focus_policy']}",
             f"- 空间语法：{', '.join(structural['spatial_grammar'])}",
             f"- 主结构：{', '.join(structural['primary_refs'])}", f"- 文字归属：{vd['text_integration_method']}", "",
-            "### 页面草图", f"- 唯一业务关系场：{page['image_plan']['business_object']}",
-            f"- 配图预算：{visual_budget.get('mode', 'integrated_scene')}；最多辅助片段 {visual_budget.get('max_auxiliary_fragments', 4)} 个；作用域 {visual_budget.get('scope', 'region')}；区域局部配图 {visual_budget.get('region_local_visuals', True)}", "",
+            "### 页面草图", f"- 页面业务关系场：{page['image_plan']['business_object']}",
+            f"- 场景策略：{page['image_plan'].get('scene_policy', 'legacy')}；配图预算：{visual_budget.get('mode', 'integrated_scene')}；最多辅助片段 {visual_budget.get('max_auxiliary_fragments', 4)} 个；作用域 {visual_budget.get('scope', 'region')}；区域局部配图 {visual_budget.get('region_local_visuals', True)}", "",
             "### 页面构图", vd['spatial_organization'], "", "### 实景锚点与图文融合", vd['relationship_encoding'], "",
             "### 元素与空间关系", page['image_plan']['placement'], "", "### 箭头与连接关系",
             *[f"- {item['from']} -> {item['to']}：{item['label']}" for item in page['connectors']], "",
@@ -648,7 +714,7 @@ def compile_visual_spec(project: Path, design_input_path: Path, decisions_path: 
             "audience": "项目既定受众",
             "purpose": "承接已确认业务脚本形成可执行页面视觉设计",
             "usage_scene": "正式汇报",
-            "narrative": "每页以唯一业务关系场承载已锁定正文",
+            "narrative": "每页以一个完整业务关系场承载已锁定正文",
             "source_files": [str(design_input_path)],
         },
         "global_profile": "ppt-visual-structure-designer",
