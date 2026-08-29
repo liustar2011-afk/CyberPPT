@@ -496,20 +496,20 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             )
         live_style_surface = int(spec.art_direction.style_id or 0) in (9, 10)
         if spec.prompt_mode == "semantic_brief":
+            has_region_graph = spec.region_graph is not None
             composition = CompositionIR(
                 spatial_organization=(
-                    "Choose the spatial composition from the semantic context, exact visible "
-                    "text and style contract; do not inherit a fixed card, lane, matrix, scene "
-                    "or connector recipe from upstream planning."
+                    "Follow the authoritative macro region structure: preserve region roles, anchors, relative weights and inter-region relationships; do not replace it with a different macro layout. Region-internal arrangement remains free."
+                    if has_region_graph
+                    else
+                    "Choose the spatial composition from the semantic context, exact visible text and style contract; do not inherit a fixed card, lane, matrix, scene or connector recipe from upstream planning."
                 ),
                 primary_focus=spec.composition.primary_focus or page_judgment,
                 visual_responsibility=(
-                    "Use the declared visual thesis, named business objects, actors, actions, "
-                    "conditions and outcomes as semantic anchors. ImageGen owns the carrier, "
-                    "spatial implementation and supporting detail.",
-                    "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; "
-                    "do not invent a stronger relationship than the semantic context supports.",
+                    "Use the declared visual thesis, named business objects, actors, actions, conditions and outcomes as semantic anchors. Keep macro region ownership fixed when provided; ImageGen owns only region-internal implementation and supporting detail.",
+                    "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; do not invent a stronger relationship than the semantic context supports.",
                 ),
+                focus_policy=spec.composition.focus_policy,
             )
         else:
             spatial_organization = _prompt_safe_visual_text(spec.composition.spatial_organization)
@@ -525,6 +525,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                 spatial_organization=spatial_organization,
                 primary_focus=spec.composition.primary_focus,
                 visual_responsibility=visual_responsibility,
+                focus_policy=spec.composition.focus_policy,
             )
         hard_constraints = tuple(dict.fromkeys((
             *spec.hard_constraints.global_constraints,

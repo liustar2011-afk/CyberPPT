@@ -134,6 +134,11 @@ class CompositionSpec:
     spatial_grammar: tuple[str, ...]
     connectors: tuple[ConnectorSpec, ...]
     topology: str
+    focus_policy: str = "single_anchor"
+
+    def __post_init__(self) -> None:
+        if self.focus_policy not in {"single_anchor", "paired_focus", "peer_field", "distributed_focus", "sequence_focus"}:
+            raise ValueError(f"unsupported focus policy: {self.focus_policy!r}")
 
 
 @dataclass(frozen=True)
@@ -827,6 +832,7 @@ def build_page_artifact_spec(
             spatial_grammar=_strings(structural.get("spatial_grammar")),
             connectors=connectors,
             topology=_topology_phrase(semantic_graph.get("topology"), "semantic graph topology"),
+            focus_policy=str(visual_decision.get("focus_policy") or "single_anchor"),
         ),
         art_direction=_style_metadata(style_lock),
         typography=TypographySpec(

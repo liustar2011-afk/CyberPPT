@@ -75,12 +75,15 @@ class CompositionIR:
     spatial_organization: str
     primary_focus: str
     visual_responsibility: tuple[str, ...]
+    focus_policy: str = "single_anchor"
 
     def __post_init__(self) -> None:
         if not self.spatial_organization.strip():
             raise PromptContractError("composition requires spatial organization")
         if not self.primary_focus.strip():
             raise PromptContractError("composition requires a primary focus")
+        if self.focus_policy not in {"single_anchor", "paired_focus", "peer_field", "distributed_focus", "sequence_focus"}:
+            raise PromptContractError(f"unsupported prompt focus policy: {self.focus_policy!r}")
 
 
 @dataclass(frozen=True)
