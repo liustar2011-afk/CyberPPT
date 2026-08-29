@@ -9,6 +9,8 @@ import warnings
 from pathlib import Path
 from typing import Any, Mapping
 
+from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
+
 
 TEXT_DENSE_ITEM_THRESHOLD = 14
 TEXT_DENSE_CHAR_THRESHOLD = 240
@@ -209,6 +211,7 @@ class PageArtifactSpec:
     semantic_context: SemanticContextSpec = SemanticContextSpec()
     prompt_mode: str = "semantic_brief"
     visible_text_bindings: tuple[VisibleTextBindingSpec, ...] = ()
+    region_graph: RegionGraphSpec | None = None
 
     def __post_init__(self) -> None:
         if self.visible_text_bindings:
@@ -693,6 +696,12 @@ def build_page_artifact_spec(
 
     semantic_graph = visual_page.get("semantic_graph")
     semantic_graph = semantic_graph if isinstance(semantic_graph, dict) else {}
+    raw_region_graph = visual_page.get("region_graph")
+    region_graph = (
+        validate_region_graph(raw_region_graph)
+        if isinstance(raw_region_graph, Mapping)
+        else None
+    )
     handoff_relationships = visual_input.get("business_relationships")
     visual_relationships = semantic_graph.get("business_relationships")
     if handoff_relationships == [] and visual_relationships == []:
@@ -850,6 +859,7 @@ def build_page_artifact_spec(
         ),
         prompt_mode=prompt_mode,
         visible_text_bindings=visible_text_bindings,
+        region_graph=region_graph,
     )
 
 
@@ -918,6 +928,7 @@ __all__ = [
     "EvidenceSpec",
     "HardConstraintSpec",
     "PageArtifactSpec",
+    "RegionGraphSpec",
     "TypographySpec",
     "VisibleTextBindingSpec",
     "VisualCarrierSpec",
