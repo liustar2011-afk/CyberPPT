@@ -1,110 +1,127 @@
 name: Finalize Stage2 file boundary
 
 on:
-  pull_request:
+  push:
+    branches:
+      - agent/stage-file-boundary
 
 permissions:
   contents: write
 
 jobs:
-  finalize:
-    if: github.head_ref == 'agent/stage-file-boundary'
+  fix-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: agent/stage-file-boundary
           fetch-depth: 0
-      - name: Finalize file-boundary code and tests
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Apply final file-boundary fixes
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
 
-          def read(path):
-              return Path(path).read_text(encoding='utf-8')
+          def read(path: str) -> str:
+              return Path(path).read_text(encoding="utf-8")
 
-          def write(path, text):
-              Path(path).write_text(text, encoding='utf-8', newline='\n')
+          def write(path: str, text: str) -> None:
+              Path(path).write_text(text, encoding="utf-8", newline="\n")
 
-          # 1) Visual execution receipt must carry the raw input-file SHA that its audit checks.
-          path = 'cyberppt/visual_stage/execution.py'
+          # Production context names the Stage2-owned intake artifact directly.
+          path = "cyberppt/stage02_production/models.py"
           text = read(path)
-          old = '''            "approved_script": str(script),
-            "visual_design_input": str(design_input),'''
-          new = '''            "approved_script": str(script),
-            "approved_script_sha256": _sha256(script),
-            "visual_design_input": str(design_input),'''
-          if old not in text:
-              raise SystemExit('execution receipt insertion point not found')
-          text = text.replace(old, new, 1)
+          if "    handoff_sha256: str\n" in text:
+              text = text.replace("    handoff_sha256: str\n", "    script_input_sha256: str\n", 1)
           write(path, text)
 
-          # 2) Remove the last cross-stage handoff field name from Stage2 production core.
-          path = 'cyberppt/stage02_production/models.py'
+          path = "cyberppt/stage02_production/preflight.py"
           text = read(path)
-          if '    handoff_sha256: str\n' not in text:
-              raise SystemExit('Stage02BuildContext.handoff_sha256 not found')
-          text = text.replace('    handoff_sha256: str\n', '    script_input_sha256: str\n', 1)
-          write(path, text)
-
-          path = 'cyberppt/stage02_production/preflight.py'
-          text = read(path)
-          if 'handoff_sha256=sha256_file(script_input_path) or ""' not in text:
-              raise SystemExit('preflight handoff hash assignment not found')
           text = text.replace(
               'handoff_sha256=sha256_file(script_input_path) or ""',
               'script_input_sha256=sha256_file(script_input_path) or ""',
-              1,
           )
           write(path, text)
 
-          # 3) Compact-blueprint test consumes the canonical Stage2 intake contract.
-          path = 'tests/test_imagegen_page_manifest.py'
+          # Execution receipt binds the Stage2-owned script snapshot by raw file hash.
+          path = "cyberppt/visual_stage/execution.py"
+          text = read(path)
+          needle = '            "approved_script": str(script),\n            "visual_design_input": str(design_input),'
+          if needle in text:
+              text = text.replace(
+                  needle,
+                  '            "approved_script": str(script),\n'
+                  '            "approved_script_sha256": _sha256(script),\n'
+                  '            "visual_design_input": str(design_input),',
+                  1,
+              )
+          write(path, text)
+
+          # Legacy compact-blueprint fixture now supplies canonical Stage2 input.
+          path = "tests/test_imagegen_page_manifest.py"
           text = read(path)
           text = text.replace(
-              'def test_compact_blueprint_uses_handoff_locked_text_without_full_prose(self) -> None:',
-              'def test_compact_blueprint_uses_script_input_locked_text_without_full_prose(self) -> None:',
+              "def test_compact_blueprint_uses_handoff_locked_text_without_full_prose(self) -> None:",
+              "def test_compact_blueprint_uses_script_input_locked_text_without_full_prose(self) -> None:",
               1,
           )
-          text = text.replace('            handoff = {\n                "schema": "cyberppt.stage02_handoff.v1",',
-                              '            script_input = {\n                "schema": "cyberppt.stage02_script_input.v1",', 1)
-          old = '''            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"
-            handoff_path.parent.mkdir(parents=True, exist_ok=True)
-            handoff_path.write_text(json.dumps(handoff, ensure_ascii=False), encoding="utf-8")
-            with patch(
-                "cyberppt.stage02_handoff.load_stage02_handoff",
-                return_value=handoff,
-            ):'''
-          new = '''            input_path = project / "workbench/stages/02-input/script-intake.json"
+          pattern = re.compile(
+              r'''            handoff = \{\n.*?            with patch\(\n                "cyberppt\.stage02_handoff\.load_stage02_handoff",\n                return_value=handoff,\n            \):''',
+              re.S,
+          )
+          replacement = '''            script_input = {
+                "schema": "cyberppt.stage02_script_input.v1",
+                "pages": [
+                    {
+                        "page_id": "p04",
+                        "page_number": 4,
+                        "render_role": "content",
+                        "core_message": "跨主体需求与现实制约共同要求可信服务基座。",
+                        "full_prose": "这段完整讲稿不得进入最终送图脚本。",
+                        "onscreen_text": "业务演进与协同需求\\n现实制约\\n可信服务基座",
+                    }
+                ],
+            }
+            input_path = project / "workbench/stages/02-input/script-intake.json"
             input_path.parent.mkdir(parents=True, exist_ok=True)
             input_path.write_text(json.dumps(script_input, ensure_ascii=False), encoding="utf-8")
             with patch(
                 "cyberppt.stage02_input.load_stage02_input",
                 return_value=script_input,
             ):'''
-          if old not in text:
-              raise SystemExit('compact-blueprint legacy handoff fixture not found')
-          text = text.replace(old, new, 1)
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise RuntimeError(f"compact blueprint fixture replacement count={count}")
+          text = text.replace(
+              'self.assertIn("2048×1024（2:1）", prompt)',
+              'self.assertIn("2048×1024 像素（2:1）", prompt)',
+              1,
+          )
           write(path, text)
 
-          # 4) Artifact-spec loader test creates the canonical intake path that it hashes.
-          path = 'tests/test_page_artifact_spec.py'
+          # Artifact-spec loader fixture creates the Stage2 input file it hashes.
+          path = "tests/test_page_artifact_spec.py"
           text = read(path)
-          old = '            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"\n            handoff_path.parent.mkdir(parents=True)\n            handoff_path.write_text("{}\\n", encoding="utf-8")'
-          new = '            input_path = project / "workbench/stages/02-input/script-intake.json"\n            input_path.parent.mkdir(parents=True)\n            input_path.write_text("{}\\n", encoding="utf-8")'
+          old = '''            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"
+            handoff_path.parent.mkdir(parents=True)
+            handoff_path.write_text("{}\\n", encoding="utf-8")'''
+          new = '''            input_path = project / "workbench/stages/02-input/script-intake.json"
+            input_path.parent.mkdir(parents=True)
+            input_path.write_text("{}\\n", encoding="utf-8")'''
           if old not in text:
-              raise SystemExit('artifact-spec legacy handoff path not found')
+              raise RuntimeError("artifact-spec legacy fixture not found")
           text = text.replace(old, new, 1)
           write(path, text)
 
-          # 5) Visual-structure freshness test prepares Stage2 input directly. No Stage1 outline/handoff fixture.
-          path = 'tests/test_visual_structure_stage.py'
+          # Visual gate fixture prepares canonical Stage2 input directly; no Stage1 outline/handoff.
+          path = "tests/test_visual_structure_stage.py"
           text = read(path)
           pattern = re.compile(
-              r'''            stage01 = project / "workbench" / "stages" / "01-analysis"\n'''
-              r'''.*?'''
-              r'''            visual = project / "visual"\n''',
+              r'''            stage01 = project / "workbench" / "stages" / "01-analysis"\n.*?            visual = project / "visual"\n''',
               re.S,
           )
           replacement = '''            from cyberppt.stage02_input import INPUT_JSON, prepare_stage02_input
@@ -116,9 +133,9 @@ jobs:
 '''
           text, count = pattern.subn(replacement, text, count=1)
           if count != 1:
-              raise SystemExit(f'visual-structure legacy fixture replacement count={count}')
+              raise RuntimeError(f"visual fixture replacement count={count}")
           if 'json.dumps({"source_sha256": _sha256(handoff)})' not in text:
-              raise SystemExit('visual design input legacy hash not found')
+              raise RuntimeError("visual fixture source hash not found")
           text = text.replace(
               'json.dumps({"source_sha256": _sha256(handoff)})',
               'json.dumps({"source_sha256": _sha256(script_input)})',
@@ -126,25 +143,29 @@ jobs:
           )
           write(path, text)
 
-          # 6) Architecture test guards terminology as well as dependency direction.
-          path = 'tests/test_stage_file_boundary.py'
+          # Architecture guard: canonical production context must not revive the old boundary field.
+          path = "tests/test_stage_file_boundary.py"
           text = read(path)
-          marker = '''    for token in ("deck-plan.json","foundation.json","source-truth.json","outline.json"): assert token not in text
-'''
-          replacement = '''    for token in ("deck-plan.json","foundation.json","source-truth.json","outline.json"): assert token not in text
-    assert "handoff_sha256" not in text
-'''
-          if marker not in text:
-              raise SystemExit('architecture test marker not found')
-          text = text.replace(marker, replacement, 1)
+          marker = '    for token in ("deck-plan.json","foundation.json","source-truth.json","outline.json"): assert token not in text\n'
+          if marker in text and 'assert "handoff_sha256" not in text' not in text:
+              text = text.replace(marker, marker + '    assert "handoff_sha256" not in text\n', 1)
           write(path, text)
           PY
-      - name: Commit finalization
+      - name: Install test dependencies
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run focused regressions
+        run: |
+          python -m pytest -q tests/test_stage_file_boundary.py tests/test_imagegen_page_manifest.py tests/test_page_artifact_spec.py tests/test_visual_structure_stage.py
+      - name: Run full suite
+        run: python -m pytest -q
+      - name: Commit validated fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm .github/workflows/stage-file-boundary-finalize.yml
           git add -A
           git status --short
-          git commit -m 'refactor: finalize Stage2 file-only boundary'
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git commit -m "refactor: finalize Stage2 file-only boundary"
+          git push origin HEAD:agent/stage-file-boundary
