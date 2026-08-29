@@ -33,6 +33,51 @@ from cyberppt.onscreen_expression import expression_constraints_sha256
 
 
 class VisualStructureStageTests(unittest.TestCase):
+    def test_render_topology_rejects_incompatible_selected_candidate(self) -> None:
+        source = {
+            "page_id": "p05",
+            "page_number": 5,
+            "page_title": "Title",
+            "page_mission": "Explain the directed dependency chain.",
+            "core_judgment": "The final target follows the preceding conditions.",
+            "locked_text_items": [
+                {"text_id": "P05-T01", "text": "Input"},
+                {"text_id": "P05-T02", "text": "Target"},
+            ],
+            "business_relationships": [],
+            "render_topology": {"primary_topology": "dependency_chain"},
+            "expression_constraints": expression_constraints("directed_dependency_2_6"),
+        }
+        decision = {
+            "page_id": "p05",
+            "evidence_units": [
+                {"key": "input", "summary": "Input", "text_ids": ["P05-T01"]},
+                {"key": "target", "summary": "Target", "text_ids": ["P05-T02"]},
+            ],
+            "candidates": [{
+                "id": "c1",
+                "semantic_focus": {"kind": "relationship", "evidence_key": "input"},
+                "reading_sequence": ["input", "target"],
+                "spatial_grammar": ["convergence"],
+                "topology": "causal_convergence",
+                "direction": "left_to_right",
+                "visual_intent_type": "problem_cause_resolution",
+                "expression_fit": {
+                    "form": "directed_dependency_2_6",
+                    "constraint_status": "default_profile",
+                    "satisfied_constraints": ["directed_dependency_edge"],
+                    "reading_relation": "input leads to target",
+                    "balance_strategy": "one directed path",
+                    "changed_constraints": [],
+                    "deviation_reason": "",
+                },
+            }],
+            "selected_candidate": "c1",
+        }
+
+        with self.assertRaisesRegex(ValueError, "incompatible with verified semantic topology"):
+            _build_executable_page(source, decision)
+
     def test_selected_visual_thesis_and_scene_policy_reach_executable_spec(self) -> None:
         source = {
             "page_id": "p01",

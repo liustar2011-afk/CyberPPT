@@ -364,7 +364,12 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     design = _decision_execution_design(source, decision, selected, page_id, focus_policy)
     stage01_features = source.get("stage01_relationship_features")
     stage01_features = stage01_features if isinstance(stage01_features, dict) else {}
-    semantic_topology = stage01_features.get("semantic_topology")
+    # ``render_topology`` is the canonical Stage 02 handoff field.  Keep the
+    # nested alias for older inputs, but never let its absence disable the
+    # candidate/topology compatibility guard.
+    semantic_topology = source.get("render_topology")
+    if not isinstance(semantic_topology, dict):
+        semantic_topology = stage01_features.get("semantic_topology")
     semantic_topology = semantic_topology if isinstance(semantic_topology, dict) else {}
     verified_topology = str(semantic_topology.get("primary_topology") or "").strip()
     compatible_topologies = _CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY.get(verified_topology)
