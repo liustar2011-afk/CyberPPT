@@ -22,8 +22,14 @@ from scripts.image_to_pptx_runtime.quick_page_review import (
     record_quick_page_review,
 )
 from scripts.image_to_pptx_runtime import stage02_adapter
-from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
+from scripts.image_to_pptx_runtime.stage02_adapter import _structural_display_lines, run_stage02_reconstruction
 from scripts.presentation_qa.text_content import pptx_texts
+
+
+def test_chapter_structural_copy_does_not_duplicate_its_directory_title() -> None:
+    assert _structural_display_lines(
+        ["02：体系构建与框架设计"], "体系构建与框架设计", "chapter"
+    ) == ["02：体系构建与框架设计"]
 
 
 def _stub_quick_preview_renderer(monkeypatch) -> None:

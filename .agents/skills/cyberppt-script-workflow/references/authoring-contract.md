@@ -208,6 +208,11 @@ copy into slogans, unexplained category labels or presenter cues.
 
 ### 3.2 Hierarchy model
 
+Chapter transition pages are navigation-only. Their onscreen copy exactly repeats
+the corresponding contents-page chapter title, including the chapter number when
+the contents page uses one. Do not add a secondary slogan, keyword chain, summary
+or alternate chapter name.
+
 Use one universal hierarchy rule:
 
 `one page, one conclusion → one level, one question → peers, one dimension → children, added evidence → different levels, visible relationships`

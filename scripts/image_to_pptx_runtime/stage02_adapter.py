@@ -46,6 +46,12 @@ from .template_assembly import (
 )
 
 
+def _structural_display_lines(lines: list[str], title: str, page_type: str) -> list[str]:
+    if title in lines or (page_type == "chapter" and any(line.endswith(title) for line in lines)):
+        return lines
+    return [title, *lines]
+
+
 CANONICAL_EDITABLE_PPTX_ROUTE = "stage02-quick-image-to-pptx"
 
 
@@ -492,10 +498,9 @@ def run_stage02_reconstruction(
     }
 
     def structural_display_lines(number: int) -> list[str]:
-        lines = structural_lines[number]
-        if title_by_page[number] in lines:
-            return lines
-        return [title_by_page[number], *lines]
+        return _structural_display_lines(
+            structural_lines[number], title_by_page[number], script_pages[number].page_type
+        )
 
     expected = [
         str(text)

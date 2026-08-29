@@ -309,6 +309,10 @@ def assemble_brand_page_svg(
     output.parent.mkdir(parents=True, exist_ok=True)
     lines = [line.strip() for line in onscreen_lines if line.strip()]
 
+    def numbered_entry(line: str, fallback: str) -> tuple[str, str]:
+        match = re.match(r"^(\d{1,2})\s*(?:[：:、.｜|\-—]\s*)?(.+)$", line)
+        return (match.group(1).zfill(2), match.group(2).strip()) if match else (fallback, line)
+
     def copy_asset(name: str) -> str:
         source = template_root / name
         target = output.parent / name
@@ -355,8 +359,8 @@ def assemble_brand_page_svg(
                         f'<g class="agenda-item-card" data-index="{index + 1}">',
                         f'<rect x="{74 + (index % 2) * 566}" y="{210 + (index // 2) * 118}" width="536" height="94" fill="#FFFFFF" fill-opacity="0.84" stroke="#C8D5E5" stroke-width="1"/>',
                         f'<rect x="{74 + (index % 2) * 566}" y="{210 + (index // 2) * 118}" width="58" height="94" fill="#123B66"/>',
-                        f'<text x="{103 + (index % 2) * 566}" y="{266 + (index // 2) * 118}" text-anchor="middle" font-family="Consolas, Arial, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">{index + 1:02d}</text>',
-                        f'<text x="{156 + (index % 2) * 566}" y="{266 + (index // 2) * 118}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="21" font-weight="700" fill="#123B66">{xml_escape(line)}</text>',
+                        f'<text x="{103 + (index % 2) * 566}" y="{266 + (index // 2) * 118}" text-anchor="middle" font-family="Consolas, Arial, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">{numbered_entry(line, f"{index + 1:02d}")[0]}</text>',
+                        f'<text x="{156 + (index % 2) * 566}" y="{266 + (index // 2) * 118}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="21" font-weight="700" fill="#123B66">{xml_escape(numbered_entry(line, f"{index + 1:02d}")[1])}</text>',
                         "</g>",
                     ]
                 )
@@ -364,9 +368,14 @@ def assemble_brand_page_svg(
             )
             template = template.replace("{{AGENDA_ITEMS}}", agenda_items)
         else:
-            template = template.replace("{{SECTION_NO}}", "章节导览")
-            template = template.replace("{{SECTION_TITLE}}", xml_escape(lines[0] if lines else "章节"))
-            template = template.replace("{{SECTION_SUBTITLE}}", xml_escape(lines[1] if len(lines) > 1 else ""))
+            if lines and re.fullmatch(r"\d{1,2}", lines[0]) and len(lines) > 1:
+                section_no, section_title, subtitle = lines[0].zfill(2), lines[1], lines[2] if len(lines) > 2 else ""
+            else:
+                section_no, section_title = numbered_entry(lines[0] if lines else "章节", "章节导览")
+                subtitle = lines[1] if len(lines) > 1 else ""
+            template = template.replace("{{SECTION_NO}}", xml_escape(section_no))
+            template = template.replace("{{SECTION_TITLE}}", xml_escape(section_title))
+            template = template.replace("{{SECTION_SUBTITLE}}", xml_escape(subtitle))
         template = template.replace("</svg>", f"{template_chrome()}\n</svg>")
         output.write_text(template, encoding="utf-8", newline="\n")
         return output

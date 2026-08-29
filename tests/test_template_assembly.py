@@ -61,6 +61,30 @@ def test_structural_page_roles_render_native_copy_without_ending_page_overflow(t
     assert 'id="sectionLeftWash"' in (tmp_path / "chapter.svg").read_text(encoding="utf-8")
 
 
+def test_cec_navigation_pages_split_authored_numbers_from_chapter_titles(tmp_path: Path) -> None:
+    contents = tmp_path / "contents.svg"
+    chapter = tmp_path / "chapter.svg"
+    assemble_brand_page_svg(
+        output=contents,
+        role="contents",
+        onscreen_lines=["汇报目录", "01 建设依据与现实差距", "02 体系构建与框架设计"],
+    )
+    assemble_brand_page_svg(
+        output=chapter,
+        role="chapter",
+        onscreen_lines=["02：体系构建与框架设计"],
+    )
+
+    contents_text = contents.read_text(encoding="utf-8")
+    chapter_text = chapter.read_text(encoding="utf-8")
+    assert ">01</text>" in contents_text
+    assert ">建设依据与现实差距</text>" in contents_text
+    assert ">01 建设依据与现实差距</text>" not in contents_text
+    assert ">02</text>" in chapter_text
+    assert ">体系构建与框架设计</text>" in chapter_text
+    assert "章节导览" not in chapter_text
+
+
 def test_template_contract_uses_exact_two_to_one_body_slot() -> None:
     contract = load_template_contract()
     body = contract["rules"]["content_regions"]["body_pages"]
