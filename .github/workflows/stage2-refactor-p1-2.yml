@@ -1,0 +1,88 @@
+name: Stage2 refactor P1.2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p1-2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Apply P1.2 patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          compiler = Path("cyberppt/visual_stage/compiler.py")
+          text = compiler.read_text(encoding="utf-8")
+          anchor = '''_DEFAULT_FORBIDDEN_STRUCTURES = list(_UNIVERSAL_FORBIDDEN_STRUCTURES)\n\n_CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {'''
+          replacement = '''_DEFAULT_FORBIDDEN_STRUCTURES = list(_UNIVERSAL_FORBIDDEN_STRUCTURES)\n\nALLOWED_FOCUS_POLICIES = {\n    "single_anchor",\n    "paired_focus",\n    "peer_field",\n    "distributed_focus",\n    "sequence_focus",\n}\n\n_FOCUS_POLICY_BY_TOPOLOGY = {\n    "parallel_set": "peer_field",\n    "causal_convergence": "single_anchor",\n    "layered_architecture": "sequence_focus",\n    "directed_flow": "sequence_focus",\n    "lifecycle_loop": "sequence_focus",\n    "governance_boundary": "paired_focus",\n    "ecosystem_map": "distributed_focus",\n    "allocation_flow": "sequence_focus",\n    "conclusion_anchor": "single_anchor",\n}\n\n_CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {'''
+          if anchor not in text:
+              raise SystemExit("P1.2 compiler constants anchor not found")
+          text = text.replace(anchor, replacement, 1)
+
+          anchor = '''def _render_business_relationships(value: object) -> str:\n'''
+          replacement = '''def _resolve_focus_policy(selected: dict[str, Any], topology: str, page_id: str) -> str:\n    requested = str(selected.get("focus_policy") or "").strip()\n    if requested:\n        if requested not in ALLOWED_FOCUS_POLICIES:\n            _fail(f"{page_id}: unsupported focus_policy {requested!r}")\n        return requested\n    return _FOCUS_POLICY_BY_TOPOLOGY[topology]\n\n\ndef _render_business_relationships(value: object) -> str:\n'''
+          if anchor not in text:
+              raise SystemExit("P1.2 compiler helper anchor not found")
+          text = text.replace(anchor, replacement, 1)
+
+          anchor = '''    if topology not in ALLOWED_TOPOLOGY:\n        _fail(f"{page_id}: selected candidate must declare a topology from {sorted(ALLOWED_TOPOLOGY)}")\n'''
+          replacement = '''    if topology not in ALLOWED_TOPOLOGY:\n        _fail(f"{page_id}: selected candidate must declare a topology from {sorted(ALLOWED_TOPOLOGY)}")\n    focus_policy = _resolve_focus_policy(selected, topology, page_id)\n'''
+          if anchor not in text:
+              raise SystemExit("P1.2 topology anchor not found")
+          text = text.replace(anchor, replacement, 1)
+
+          anchor = '''            "relationship_encoding": design["relationship_encoding"],\n            "visual_center_count": 1,\n            "visual_hierarchy": {'''
+          replacement = '''            "relationship_encoding": design["relationship_encoding"],\n            "focus_policy": focus_policy,\n            # Deprecated compatibility field. New structure logic must consume focus_policy.\n            "visual_center_count": 1,\n            "visual_hierarchy": {'''
+          if anchor not in text:
+              raise SystemExit("P1.2 visual decision anchor not found")
+          compiler.write_text(text.replace(anchor, replacement, 1), encoding="utf-8")
+
+          schema = Path("vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json")
+          schema_text = schema.read_text(encoding="utf-8")
+          anchor = '''        "visual_center_count": {\n          "const": 1\n        },\n        "visual_hierarchy": {'''
+          replacement = '''        "visual_center_count": {\n          "const": 1,\n          "description": "Deprecated compatibility field. New visual-structure logic uses focus_policy."\n        },\n        "focus_policy": {\n          "enum": [\n            "single_anchor",\n            "paired_focus",\n            "peer_field",\n            "distributed_focus",\n            "sequence_focus"\n          ]\n        },\n        "visual_hierarchy": {'''
+          if anchor not in schema_text:
+              raise SystemExit("P1.2 schema anchor not found")
+          schema.write_text(schema_text.replace(anchor, replacement, 1), encoding="utf-8")
+
+          skill = Path("vendor/skills/ppt-visual-structure-designer/SKILL.md")
+          skill_text = skill.read_text(encoding="utf-8")
+          anchor = '''- `semantic_focus`。\n- `spatial_grammar`。'''
+          replacement = '''- `semantic_focus`。\n- `focus_policy`：取 `single_anchor`、`paired_focus`、`peer_field`、`distributed_focus` 或 `sequence_focus`；它描述整页视觉重心组织方式，不等同于某个固定版式。未显式声明时由仓库编译器按 topology 生成兼容默认值。\n- `spatial_grammar`。'''
+          if anchor not in skill_text:
+              raise SystemExit("P1.2 Skill anchor not found")
+          skill.write_text(skill_text.replace(anchor, replacement, 1), encoding="utf-8")
+
+          test = Path("tests/test_stage2_focus_policy.py")
+          test.write_text('''from cyberppt.commands.visual_structure_stage import _build_executable_page\nfrom cyberppt.onscreen_expression import expression_constraints\n\n\ndef _expression_fit(form: str):\n    constraints = expression_constraints(form)\n    return {\n        "form": form,\n        "constraint_status": "default_profile",\n        "satisfied_constraints": list(constraints["required_features"]),\n        "reading_relation": str(constraints["relation_pattern"]),\n        "balance_strategy": str(constraints["balance_requirement"]),\n        "changed_constraints": [],\n        "deviation_reason": "",\n    }\n\n\ndef _page(topology: str, grammar: list[str], form: str):\n    source = {\n        "page_id": "p01",\n        "page_number": 1,\n        "page_title": "Title",\n        "prompt_mode": "semantic_brief",\n        "page_mission": "Explain the relationship between two approved evidence units.",\n        "core_judgment": "The evidence units form the approved page relationship.",\n        "locked_text_items": [\n            {"text_id": "P01-T01", "text": "Evidence A"},\n            {"text_id": "P01-T02", "text": "Evidence B"},\n        ],\n        "business_relationships": [],\n        "expression_constraints": expression_constraints(form),\n    }\n    decision = {\n        "page_id": "p01",\n        "evidence_units": [\n            {"key": "a", "summary": "Evidence A", "text_ids": ["P01-T01"]},\n            {"key": "b", "summary": "Evidence B", "text_ids": ["P01-T02"]},\n        ],\n        "candidates": [{\n            "id": "c1",\n            "visual_thesis": "The two evidence units visibly preserve their approved relationship.",\n            "semantic_focus": {"kind": "entity", "evidence_key": "a"},\n            "reading_sequence": ["a", "b"],\n            "spatial_grammar": grammar,\n            "topology": topology,\n            "direction": "left_to_right",\n            "visual_intent_type": "relationship_field",\n            "expression_fit": _expression_fit(form),\n        }],\n        "selected_candidate": "c1",\n    }\n    return _build_executable_page(source, decision)\n\n\ndef test_parallel_set_compiles_peer_field_focus_policy():\n    page = _page("parallel_set", ["peer"], "framework_4")\n    assert page["visual_decision"]["focus_policy"] == "peer_field"\n    assert page["visual_decision"]["visual_center_count"] == 1\n\n\ndef test_convergence_compiles_single_anchor_focus_policy():\n    page = _page("causal_convergence", ["convergence"], "pyramid_argument")\n    assert page["visual_decision"]["focus_policy"] == "single_anchor"\n\n\ndef test_candidate_can_explicitly_select_supported_focus_policy():\n    page = _page("governance_boundary", ["boundary"], "flow_3_5")\n    # topology default is paired_focus\n    assert page["visual_decision"]["focus_policy"] == "paired_focus"\n''', encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run targeted regression
+        run: |
+          python -m pytest -q tests/test_stage2_focus_policy.py tests/test_visual_structure_stage.py tests/test_visual_structure_contract.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit P1.2
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/visual_stage/compiler.py vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json vendor/skills/ppt-visual-structure-designer/SKILL.md tests/test_stage2_focus_policy.py
+          git commit -m "feat(stage2): introduce focus policy contract"
+          git push origin HEAD:main
