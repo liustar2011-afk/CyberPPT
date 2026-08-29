@@ -53,6 +53,8 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
         lines.extend([f"## P{page_number:02d} {page_title}", "", f"- 页面类型：{PAGE_TYPE_LABELS.get(page_type, page_type)}", f"- 页面标题：{page_title}"])
         subtitle = _single_line(slide.get("subtitle"))
         if subtitle: lines.append(f"- 页面副标题：{subtitle}")
+        content_load = _single_line(slide.get("content_load"))
+        if content_load: lines.append(f"- 内容负载：{content_load}")
         mission = _single_line(slide.get("mission")); core_message = _single_line(slide.get("core_message"))
         if mission: lines.append(f"- 页面使命：{mission}")
         if core_message: lines.append(f"- 核心结论：{core_message}")
