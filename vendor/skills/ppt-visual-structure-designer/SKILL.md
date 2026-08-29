@@ -126,7 +126,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 
 工作台输入给出`expression_constraints`时，每个候选还必须写入`expression_fit`：保留收到的`form`，说明满足的中性结构约束、阅读关系与信息均衡策略。`constraint_status`只能为`default_profile`或`adapted`；默认档案的`changed_constraints`与`deviation_reason`必须为空，适配档案必须列出改动项并说明业务理由及保留的表达核心。表达档案约束关系与阅读，不得推导为卡片、列、箭头、循环、金字塔或矩阵等固定视觉模板。`expression_constraints.reading_requirement`是权威边界，不是候选参考：为`parallel`时，任何候选都不得把`semantic_focus.kind`设为`outcome`并指向某一并列证据组（仓库审计器`CANDIDATE_PARALLEL_FORM_FALSE_OUTCOME`会拦截这类候选）——正确做法见`references/visual-intent-router.md`的`coordinate_peer_set`。
 
-每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，总分必须为100，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
+每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，五项之和形成0–100的可生成性总分；`score`必须等于五项实际得分之和，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 
 每页必须写入`relationship_coverage`，逐项登记`business_relationships`与`stage01_relationship_features.actions`中的关键关系，标记为`primary`、`secondary`或有业务理由的`not_rendered`，并引用当前证据单元和锁定文字ID。页面使命、核心判断或P0证据所必需的关系不得标记为`not_rendered`。
 

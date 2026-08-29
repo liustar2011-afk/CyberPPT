@@ -323,15 +323,24 @@ def _audit_generation_feasibility(candidate: dict[str, Any], issue: Any, page_id
         score = int(feasibility.get("score"))
     except (TypeError, ValueError):
         score = -1
+    valid_dimensions = (
+        isinstance(dimensions, dict)
+        and set(dimensions) == _FEASIBILITY_DIMENSIONS
+        and all(isinstance(value, int) and 0 <= value <= 20 for value in dimensions.values())
+    )
+    total = sum(dimensions.values()) if valid_dimensions else -1
     if (
-        not isinstance(dimensions, dict)
-        or set(dimensions) != _FEASIBILITY_DIMENSIONS
-        or any(not isinstance(value, int) or not 0 <= value <= 20 for value in dimensions.values())
-        or sum(dimensions.values()) != 100
-        or score != 100
+        not valid_dimensions
+        or score != total
+        or not 0 <= score <= 100
         or not isinstance(feasibility.get("risks"), list)
     ):
-        issue("CANDIDATE_GENERATION_SCORE_INVALID", f"{candidate.get('id')!s} must provide five 0–20 generation dimensions totaling 100.", page_id)
+        issue(
+            "CANDIDATE_GENERATION_SCORE_INVALID",
+            f"{candidate.get('id')!s} must provide five 0–20 generation dimensions "
+            "with score equal to their 0–100 sum.",
+            page_id,
+        )
         return None
     return score
 
