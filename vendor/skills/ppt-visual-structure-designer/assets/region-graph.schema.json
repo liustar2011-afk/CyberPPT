@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/ppt-visual-structure-designer/region-graph.schema.json",
+  "title": "CyberPPT Stage2 Region Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "canvas_ratio",
+    "primary_axis",
+    "regions",
+    "relations"
+  ],
+  "properties": {
+    "canvas_ratio": {
+      "const": "2:1"
+    },
+    "primary_axis": {
+      "enum": [
+        "horizontal",
+        "vertical",
+        "radial",
+        "bidirectional",
+        "layered",
+        "free_spatial"
+      ]
+    },
+    "regions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "semantic_refs",
+          "role",
+          "anchor",
+          "weight",
+          "span",
+          "priority"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^RG[0-9]+$"
+          },
+          "semantic_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^E[0-9]+$"
+            }
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "anchor": {
+            "enum": [
+              "left",
+              "center",
+              "right",
+              "top",
+              "bottom",
+              "top_left",
+              "top_right",
+              "bottom_left",
+              "bottom_right",
+              "free"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "span": {
+            "enum": [
+              "compact",
+              "half",
+              "full",
+              "band",
+              "free"
+            ]
+          },
+          "priority": {
+            "enum": [
+              "primary",
+              "secondary",
+              "tertiary"
+            ]
+          },
+          "text_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to",
+          "type"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "pattern": "^RG[0-9]+$"
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^RG[0-9]+$"
+          },
+          "type": {
+            "enum": [
+              "peer",
+              "flow",
+              "converge",
+              "dependency",
+              "feedback",
+              "boundary",
+              "interface",
+              "allocation",
+              "support",
+              "containment"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
