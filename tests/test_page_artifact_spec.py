@@ -12,6 +12,7 @@ from cyberppt.page_artifact_spec import (
     build_page_artifact_spec,
     load_project_page_artifact_specs,
 )
+from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir
 
 
 class PageArtifactSpecTests(unittest.TestCase):
@@ -237,6 +238,38 @@ class PageArtifactSpecTests(unittest.TestCase):
             )
 
         self.assertEqual("directed_composition", spec.prompt_mode)
+
+    def test_projects_semantic_annotation_prompt_constraints_to_hard_constraints(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            visual_page["structural_decision"]["semantic_annotation_contract"] = {
+                "prompt_constraints": [
+                    "Preserve the declared Stage 1 hierarchy through top-to-bottom layers; do not flatten parent-child relationships.",
+                    "Honor this Stage 1 visual constraint: Keep the governance objective visually dominant.",
+                ]
+            }
+
+            spec = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=visual_page,
+                style_lock=style_lock,
+                script_input_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+
+        self.assertIn(
+            "Preserve the declared Stage 1 hierarchy through top-to-bottom layers; do not flatten parent-child relationships.",
+            spec.hard_constraints.page_constraints,
+        )
+        self.assertIn(
+            "Honor this Stage 1 visual constraint: Keep the governance objective visually dominant.",
+            spec.hard_constraints.page_constraints,
+        )
+        self.assertIn(
+            "Honor this Stage 1 visual constraint: Keep the governance objective visually dominant.",
+            build_final_prompt_ir(spec).hard_constraints,
+        )
 
     def test_parallel_set_defaults_to_shared_page_level_visual_budget(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

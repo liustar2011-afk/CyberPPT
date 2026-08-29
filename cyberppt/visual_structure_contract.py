@@ -90,6 +90,88 @@ def _index_pages(pages: object) -> tuple[dict[str, dict[str, Any]], list[str]]:
     return indexed, duplicates
 
 
+def _semantic_annotation_constraint_lines(annotations: dict[str, Any]) -> list[str]:
+    raw = str(annotations.get("visual_constraints_markdown") or "")
+    values = [
+        re.sub(r"^\s*[-*+]\s*", "", line).strip()
+        for line in raw.splitlines()
+    ]
+    return list(dict.fromkeys(value for value in values if value))
+
+
+def _audit_semantic_annotation_contract(
+    source: dict[str, Any],
+    decision: dict[str, Any],
+    page_spec: dict[str, Any],
+    selected_candidate: dict[str, Any] | None,
+    issue: Any,
+    page_id: str,
+) -> None:
+    """Ensure optional Stage 1 semantic annotations reach executable constraints."""
+
+    annotations = source.get("semantic_annotations")
+    annotations = annotations if isinstance(annotations, dict) else {}
+    nodes = [item for item in annotations.get("nodes") or [] if isinstance(item, dict)]
+    constraints = _semantic_annotation_constraint_lines(annotations)
+    if not nodes and not constraints:
+        return
+
+    disposition = decision.get("semantic_annotation_disposition")
+    if not isinstance(disposition, dict):
+        issue("SEMANTIC_ANNOTATION_DISPOSITION_MISSING", "Annotated Stage 1 pages require a semantic_annotation_disposition receipt.", page_id)
+        return
+
+    hierarchy = disposition.get("hierarchy")
+    if nodes:
+        if not isinstance(hierarchy, dict):
+            issue("SEMANTIC_ANNOTATION_HIERARCHY_DISPOSITION_MISSING", "Annotated hierarchy nodes require a hierarchy disposition.", page_id)
+        else:
+            status = str(hierarchy.get("status") or "").strip()
+            reason = str(hierarchy.get("reason") or "").strip()
+            encoding = str(hierarchy.get("encoding") or "").strip()
+            if status not in {"honored", "adapted", "rejected"} or not reason or (status != "rejected" and not encoding):
+                issue("SEMANTIC_ANNOTATION_HIERARCHY_DISPOSITION_INVALID", "Hierarchy disposition requires status, reason, and an encoding unless rejected.", page_id)
+            elif status != "rejected" and str((selected_candidate or {}).get("topology") or "") != "layered_architecture":
+                issue("SEMANTIC_ANNOTATION_HIERARCHY_FLATTENED", "An honored or adapted Stage 1 hierarchy requires a layered_architecture candidate.", page_id)
+
+    constraint_dispositions = disposition.get("visual_constraints")
+    if not isinstance(constraint_dispositions, list):
+        issue("SEMANTIC_ANNOTATION_CONSTRAINT_DISPOSITIONS_MISSING", "Annotated Stage 1 visual constraints require a disposition list.", page_id)
+        return
+    normalized = [
+        item for item in constraint_dispositions
+        if isinstance(item, dict)
+        and str(item.get("constraint") or "").strip()
+        and str(item.get("status") or "").strip() in {"honored", "adapted", "rejected"}
+        and str(item.get("reason") or "").strip()
+    ]
+    if len(normalized) != len(constraint_dispositions):
+        issue("SEMANTIC_ANNOTATION_CONSTRAINT_DISPOSITION_INVALID", "Each visual constraint disposition requires constraint, status, and reason.", page_id)
+    received = {str(item.get("constraint") or "").strip() for item in normalized}
+    if received != set(constraints) or len(received) != len(normalized):
+        issue("SEMANTIC_ANNOTATION_CONSTRAINT_COVERAGE_INVALID", "Visual constraint dispositions must cover each Stage 1 constraint exactly once.", page_id)
+
+    structural = page_spec.get("structural_decision")
+    contract = structural.get("semantic_annotation_contract") if isinstance(structural, dict) else None
+    if not isinstance(contract, dict):
+        issue("SEMANTIC_ANNOTATION_CONTRACT_MISSING", "Compiled visual spec must preserve the annotated Stage 1 semantic contract.", page_id)
+        return
+    if contract.get("source_nodes") != nodes or contract.get("source_topology") != str(annotations.get("topology") or ""):
+        issue("SEMANTIC_ANNOTATION_CONTRACT_SOURCE_DRIFT", "Compiled semantic annotation contract drifted from Stage 1 nodes or topology.", page_id)
+    if contract.get("constraint_dispositions") != normalized:
+        issue("SEMANTIC_ANNOTATION_CONTRACT_DISPOSITION_DRIFT", "Compiled semantic annotation constraint dispositions drifted from the decision receipt.", page_id)
+    if nodes and contract.get("hierarchy_disposition") != hierarchy:
+        issue("SEMANTIC_ANNOTATION_CONTRACT_HIERARCHY_DRIFT", "Compiled hierarchy disposition drifted from the decision receipt.", page_id)
+    prompt_constraints = contract.get("prompt_constraints")
+    if not isinstance(prompt_constraints, list):
+        issue("SEMANTIC_ANNOTATION_PROMPT_CONSTRAINTS_MISSING", "Compiled semantic annotation contract must expose prompt constraints.", page_id)
+    elif (
+        (nodes and isinstance(hierarchy, dict) and hierarchy.get("status") in {"honored", "adapted"})
+        or any(item.get("status") in {"honored", "adapted"} for item in normalized)
+    ) and not prompt_constraints:
+        issue("SEMANTIC_ANNOTATION_PROMPT_CONSTRAINTS_EMPTY", "Honored or adapted semantic annotations must reach final prompt constraints.", page_id)
+
+
 def _verified_relation_chain(relationships: object) -> bool:
     """Return whether source relations contain an actual subject-to-subject chain."""
     if not isinstance(relationships, list):
@@ -918,6 +1000,15 @@ def audit_visual_design_package(
         for candidate in candidate_records.values():
             _audit_rejection_rationale(candidate, selected, issue, page_id)
             _audit_text_capacity(candidate, expected_text_ids, evidence_key_set, issue, page_id)
+
+        _audit_semantic_annotation_contract(
+            source,
+            decision,
+            page_spec,
+            candidate_records.get(selected),
+            issue,
+            page_id,
+        )
 
         prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
         execution_design = decision.get("execution_design")

@@ -12,6 +12,7 @@ from cyberppt.visual_structure_contract import (
     prompt_contract_hashes,
     sha256,
 )
+from cyberppt.visual_stage.compiler import _semantic_annotation_contract
 from cyberppt.onscreen_expression import (
     VALID_EXPRESSION_FORMS,
     expression_constraints,
@@ -284,6 +285,40 @@ def _payloads() -> tuple[dict, dict, dict]:
     return design, decisions, spec
 
 
+def _annotated_payloads() -> tuple[dict, dict, dict]:
+    design, decisions, spec = _payloads()
+    annotations = {
+        "topology": "layered_architecture",
+        "nodes": [
+            {"id": "root", "label": "治理目标", "level": 1, "parent": ""},
+            {"id": "capability", "label": "支撑能力", "level": 2, "parent": "root"},
+        ],
+        "visual_constraints_markdown": "- 保持上下层级\n- 突出治理目标",
+    }
+    disposition = {
+        "hierarchy": {
+            "status": "honored",
+            "reason": "层级关系是页面论证的核心。",
+            "encoding": "top-to-bottom layered architecture",
+        },
+        "visual_constraints": [
+            {"constraint": "保持上下层级", "status": "honored", "reason": "直接保留阅读秩序。"},
+            {"constraint": "突出治理目标", "status": "adapted", "reason": "以顶部锚点实现焦点。"},
+        ],
+    }
+    design["pages"][0]["semantic_annotations"] = annotations
+    decisions["pages"][0]["semantic_annotation_disposition"] = disposition
+    decisions["pages"][0]["candidates"][0]["topology"] = "layered_architecture"
+    contract = _semantic_annotation_contract(
+        design["pages"][0],
+        decisions["pages"][0],
+        topology="layered_architecture",
+        page_id="p01",
+    )
+    spec["pages"][0]["structural_decision"]["semantic_annotation_contract"] = contract
+    return design, decisions, spec
+
+
 def _audit(design: dict, decisions: dict, spec: dict) -> dict:
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
@@ -302,6 +337,47 @@ def test_visual_design_package_passes_complete_candidate_and_text_contract() -> 
     report = _audit(design, decisions, spec)
     assert report["status"] == "passed"
     assert report["blocking_issues"] == []
+
+
+def test_annotation_contract_reaches_compiled_spec_and_prompt_constraints() -> None:
+    design, decisions, spec = _annotated_payloads()
+    report = _audit(design, decisions, spec)
+
+    assert report["status"] == "passed"
+    contract = spec["pages"][0]["structural_decision"]["semantic_annotation_contract"]
+    assert contract["source_nodes"] == design["pages"][0]["semantic_annotations"]["nodes"]
+    assert any("Preserve the declared Stage 1 hierarchy" in item for item in contract["prompt_constraints"])
+    assert any("突出治理目标" in item for item in contract["prompt_constraints"])
+
+
+def test_compiler_rejects_flattening_an_honored_semantic_hierarchy() -> None:
+    design, decisions, _ = _annotated_payloads()
+
+    try:
+        _semantic_annotation_contract(
+            design["pages"][0],
+            decisions["pages"][0],
+            topology="parallel_set",
+            page_id="p01",
+        )
+    except ValueError as error:
+        assert "cannot be flattened" in str(error)
+    else:
+        raise AssertionError("expected semantic hierarchy flattening to be rejected")
+
+
+def test_audit_rejects_missing_annotation_disposition_or_flattened_hierarchy() -> None:
+    design, decisions, spec = _annotated_payloads()
+    del decisions["pages"][0]["semantic_annotation_disposition"]
+    assert "SEMANTIC_ANNOTATION_DISPOSITION_MISSING" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+    design, decisions, spec = _annotated_payloads()
+    decisions["pages"][0]["candidates"][0]["topology"] = "parallel_set"
+    assert "SEMANTIC_ANNOTATION_HIERARCHY_FLATTENED" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
 
 
 def test_audit_rejects_candidate_without_visual_thesis() -> None:

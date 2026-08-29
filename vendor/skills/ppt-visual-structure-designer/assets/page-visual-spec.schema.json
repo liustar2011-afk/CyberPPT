@@ -662,6 +662,62 @@
               "minLength": 1
             }
           }
+        },
+        "semantic_annotation_contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_topology",
+            "source_nodes",
+            "constraint_dispositions",
+            "prompt_constraints"
+          ],
+          "properties": {
+            "source_topology": {
+              "type": "string"
+            },
+            "source_nodes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "label", "level", "parent"],
+                "properties": {
+                  "id": {"type": "string", "minLength": 1},
+                  "label": {"type": "string", "minLength": 1},
+                  "level": {"type": "integer", "minimum": 1},
+                  "parent": {"type": "string"}
+                }
+              }
+            },
+            "hierarchy_disposition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["status", "reason", "encoding"],
+              "properties": {
+                "status": {"enum": ["honored", "adapted", "rejected"]},
+                "reason": {"type": "string", "minLength": 1},
+                "encoding": {"type": "string"}
+              }
+            },
+            "constraint_dispositions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["constraint", "status", "reason"],
+                "properties": {
+                  "constraint": {"type": "string", "minLength": 1},
+                  "status": {"enum": ["honored", "adapted", "rejected"]},
+                  "reason": {"type": "string", "minLength": 1}
+                }
+              }
+            },
+            "prompt_constraints": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1}
+            }
+          }
         }
       }
     },

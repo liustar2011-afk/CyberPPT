@@ -776,11 +776,17 @@ def build_page_artifact_spec(
     forbidden_structure_phrases = _forbidden_structure_phrases(
         semantic_graph.get("forbidden_structures"), "semantic graph forbidden structures"
     )
+    semantic_annotation_contract = structural.get("semantic_annotation_contract")
+    semantic_annotation_constraints = _strings(
+        semantic_annotation_contract.get("prompt_constraints")
+        if isinstance(semantic_annotation_contract, dict) else None
+    )
     page_constraints = tuple(dict.fromkeys((
         *_strings(content_lock.get("forbidden_transformations")),
         *_strings(visual_page.get("avoid")),
         str(generation_handoff.get("title_exclusion_instruction") or "").strip(),
         *forbidden_structure_phrases,
+        *semantic_annotation_constraints,
     )))
     page_constraints = tuple(value for value in page_constraints if value)
     policy = planning_policy if isinstance(planning_policy, Mapping) else {}

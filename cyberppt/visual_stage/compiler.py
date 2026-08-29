@@ -49,6 +49,7 @@ _FORBIDDEN_STRUCTURES_BY_TOPOLOGY = {
     "conclusion_anchor": ["multiple_equal_conclusions"],
 }
 _DEFAULT_FORBIDDEN_STRUCTURES = list(_UNIVERSAL_FORBIDDEN_STRUCTURES)
+_ANNOTATION_DISPOSITION_STATUS = {"honored", "adapted", "rejected"}
 
 ALLOWED_FOCUS_POLICIES = {
     "single_anchor",
@@ -438,6 +439,123 @@ def _quality_contract(decision: dict[str, Any], selected: dict[str, Any], focus_
     }
 
 
+def _annotation_constraint_lines(annotations: dict[str, Any]) -> list[str]:
+    raw = str(annotations.get("visual_constraints_markdown") or "")
+    lines: list[str] = []
+    for value in raw.splitlines():
+        normalized = re.sub(r"^\s*[-*+]\s*", "", value).strip()
+        if normalized:
+            lines.append(normalized)
+    return list(dict.fromkeys(lines))
+
+
+def _semantic_annotation_contract(
+    source: dict[str, Any],
+    decision: dict[str, Any],
+    *,
+    topology: str,
+    page_id: str,
+) -> dict[str, object]:
+    """Validate and project optional Stage 1 hierarchy annotations."""
+
+    annotations = source.get("semantic_annotations")
+    annotations = annotations if isinstance(annotations, dict) else {}
+    nodes = [
+        {
+            "id": str(item.get("id") or "").strip(),
+            "label": str(item.get("label") or "").strip(),
+            "level": int(item.get("level") or 0),
+            "parent": str(item.get("parent") or "").strip(),
+        }
+        for item in annotations.get("nodes") or []
+        if isinstance(item, dict)
+    ]
+    constraints = _annotation_constraint_lines(annotations)
+    if not nodes and not constraints:
+        return {}
+    if nodes and (
+        any(not item["id"] or not item["label"] or item["level"] < 1 for item in nodes)
+        or len({item["id"] for item in nodes}) != len(nodes)
+    ):
+        _fail(f"{page_id}: semantic annotations must contain unique, complete hierarchy nodes")
+
+    disposition = decision.get("semantic_annotation_disposition")
+    if not isinstance(disposition, dict):
+        _fail(f"{page_id}: semantic annotations require a decision disposition")
+    hierarchy_status = ""
+    hierarchy_reason = ""
+    hierarchy_encoding = ""
+    if nodes:
+        hierarchy = disposition.get("hierarchy")
+        if not isinstance(hierarchy, dict):
+            _fail(f"{page_id}: semantic hierarchy requires a hierarchy disposition")
+        hierarchy_status = str(hierarchy.get("status") or "").strip()
+        hierarchy_reason = str(hierarchy.get("reason") or "").strip()
+        hierarchy_encoding = str(hierarchy.get("encoding") or "").strip()
+        if hierarchy_status not in _ANNOTATION_DISPOSITION_STATUS or not hierarchy_reason:
+            _fail(f"{page_id}: semantic hierarchy disposition requires status and reason")
+        if hierarchy_status != "rejected" and not hierarchy_encoding:
+            _fail(f"{page_id}: honored or adapted semantic hierarchy requires an encoding")
+        if hierarchy_status != "rejected" and topology != "layered_architecture":
+            _fail(
+                f"{page_id}: declared semantic hierarchy cannot be flattened into "
+                f"candidate topology {topology!r}"
+            )
+
+    dispositions = disposition.get("visual_constraints")
+    if not isinstance(dispositions, list):
+        _fail(f"{page_id}: semantic annotations require visual constraint dispositions")
+    normalized_dispositions: list[dict[str, str]] = []
+    for item in dispositions:
+        if not isinstance(item, dict):
+            _fail(f"{page_id}: visual constraint disposition must be an object")
+        constraint = str(item.get("constraint") or "").strip()
+        status = str(item.get("status") or "").strip()
+        reason = str(item.get("reason") or "").strip()
+        if not constraint or status not in _ANNOTATION_DISPOSITION_STATUS or not reason:
+            _fail(f"{page_id}: visual constraint disposition requires constraint, status, and reason")
+        normalized_dispositions.append(
+            {"constraint": constraint, "status": status, "reason": reason}
+        )
+    if {item["constraint"] for item in normalized_dispositions} != set(constraints):
+        _fail(f"{page_id}: visual constraint dispositions must cover each Stage 1 constraint exactly")
+    if len({item["constraint"] for item in normalized_dispositions}) != len(normalized_dispositions):
+        _fail(f"{page_id}: visual constraint dispositions must not duplicate a constraint")
+
+    prompt_constraints: list[str] = []
+    if hierarchy_status in {"honored", "adapted"}:
+        prompt_constraints.append(
+            f"Preserve the declared Stage 1 hierarchy through {hierarchy_encoding}; do not flatten parent-child relationships."
+        )
+    for item in normalized_dispositions:
+        if item["status"] == "honored":
+            prompt_constraints.append(
+                f"Honor this Stage 1 visual constraint: {item['constraint']}"
+            )
+        elif item["status"] == "adapted":
+            prompt_constraints.append(
+                f"Honor this adapted Stage 1 visual constraint: {item['constraint']}. Adaptation: {item['reason']}"
+            )
+
+    return {
+        "source_topology": str(annotations.get("topology") or ""),
+        "source_nodes": nodes,
+        **(
+            {
+                "hierarchy_disposition": {
+                    "status": hierarchy_status,
+                    "reason": hierarchy_reason,
+                    "encoding": hierarchy_encoding,
+                }
+            }
+            if nodes
+            else {}
+        ),
+        "constraint_dispositions": normalized_dispositions,
+        "prompt_constraints": prompt_constraints,
+    }
+
+
 def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> dict[str, Any]:
     page_id = _page_id(source.get("page_id"))
     prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
@@ -490,6 +608,12 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             f"{page_id}: selected candidate topology {topology!r} is incompatible with "
             f"verified semantic topology {verified_topology!r}"
         )
+    semantic_annotation_contract = _semantic_annotation_contract(
+        source,
+        decision,
+        topology=topology,
+        page_id=page_id,
+    )
     locked = source.get("locked_text_items")
     if not isinstance(locked, list) or not locked:
         _fail(f"{page_id}: visual input has no locked body text")
@@ -753,6 +877,11 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
                 "medium": "free",
                 "reason": "视觉媒介须服从scene policy与已声明业务关系；区域内部具体实现由ImageGen完成" if prompt_mode == "semantic_brief" else "定向构图模式锁定来源支持的业务关系场与文字贴附方式",
             },
+            **(
+                {"semantic_annotation_contract": semantic_annotation_contract}
+                if semantic_annotation_contract
+                else {}
+            ),
         },
         "visual_decision": {
             "visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"),
