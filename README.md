@@ -13,9 +13,9 @@ CyberPPT 的核心不是“套模板”，而是把源材料先转成可审计�
 - 从 DOCX、PDF、TXT、XLSX、研究报告、业务材料和原始数据中提取证据、事实、数字、判断和 caveat。
 - 建立 MBB 标准证据表，再做内容脑暴、故事线比较、SCR 收敛和逐页页面计划。
 - 默认提供 8 种固定 CyberPPT 视觉风格，每种风格都有独立 16:9 样张。
-- 生成逐页正文内容区 ImageGen 蓝图，用于锁定正文区构图、层级、密度、色板和图表语言；标题、副标题和公共模板元素由模板/可编辑文字层生成。
-- 使用“复杂视觉保真 + 主要文字可编辑”的混合还原策略生成 PPTX。
-- 第三阶段只使用已审计 full 图 → 可编辑 SVG → 原生 PPTX 的重建链。每页先盘点可还原区域和注册图层；未验证的数据图、标识或文字必须标记 `manual_required` 并阻断交付，禁止以整页截图蒙版回退。
+- 根据逐页脚本生成完整正文视觉稿，锁定页面主体的构图、层级、密度、色板和图表语言。
+- 使用“完整图视觉保真 + 原生文字/形状可编辑”的重建策略生成 PPTX。
+- 第三阶段只使用已审计 full 图 → 可编辑 SVG → 原生 PPTX 的重建链。可编辑分支对通过审计的 full 图写入 SHA-256 视觉来源绑定；SVG 阶段负责高保真复刻和拆层，不重新设计页面。每页先盘点可还原区域和注册图层；未验证的数据图、标识或文字必须标记 `manual_required` 并阻断交付，禁止以整页截图蒙版回退。
 - 执行结构 QA、视觉 QA、可编辑性 QA、容器溢出 QA、空间锚点 QA 和曲线追踪 QA。
 
 ## 当前正式主流程
@@ -67,14 +67,14 @@ CyberPPT 内置多层门禁，防止“文件生成了，但证据、密度、�
 | Render QA Gate | 是否逐页渲染并与蓝图对照 | 文件生成成功不等于完成 |
 | Strict QA Gate | `validate_pptx.py --strict` 是否通过 manifest 和 visual QA 检查 | 出现 errors 必须返工 |
 
-关键原则：`结构可编辑` 和 `视觉还原` 是同等硬门槛；`strict QA` 通过不等于视觉合格；ImageGen 蓝图是参考，不是最终 PPT 背景。
+关键原则：`结构可编辑` 和 `视觉还原` 是同等硬门槛；`strict QA` 通过不等于视觉合格；通过审计并完成来源绑定的 full 图是可编辑重建的视觉来源，后续拆层保持其已接受的视觉构图。
 
 ## 安装
 
 克隆仓库后，从仓库根目录启动 Codex。仓库级 Skills 位于 `.agents/skills/`，无需复制或安装根目录 Skill。
 
 ```powershell
-git clone https://github.com/crazyykhllc-bit/CyberPPT.git CyberPPT
+git clone https://github.com/liustar2011-afk/CyberPPT.git CyberPPT
 ```
 
 ## 更新

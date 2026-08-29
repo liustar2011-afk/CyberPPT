@@ -73,6 +73,37 @@ def normalize_audited_manifest_images(manifest: dict[str, Any]) -> None:
             audit["normalized_image_size"] = normalized_size
 
 
+def bind_reconstruction_visual_sources(manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    """Hash-bind text-audited full images as editable reconstruction sources."""
+
+    bound: list[dict[str, Any]] = []
+    for pair in manifest.get("pairs", []):
+        if not isinstance(pair, dict):
+            continue
+        full = pair.get("full") if isinstance(pair.get("full"), dict) else None
+        if full is None:
+            continue
+        audit = full.get("text_audit") if isinstance(full.get("text_audit"), dict) else None
+        full_path = Path(str(full.get("path") or ""))
+        if audit is None or audit.get("valid") is not True or not full_path.is_file():
+            continue
+        binding = {
+            "authority": "audited_full_image",
+            "path": str(full_path),
+            "sha256": sha256(full_path.read_bytes()).hexdigest(),
+            "immutable_visual_composition": True,
+        }
+        full["reconstruction_visual_source"] = binding
+        bound.append({"page_number": pair.get("page_number"), **binding})
+    manifest["visual_truth_policy"] = {
+        "authority": "audited_full_image",
+        "scope": "editable_reconstruction",
+        "rule": "downstream reconstruction may decompose or rebuild text but must preserve the accepted visual composition",
+        "bound_pages": [item.get("page_number") for item in bound],
+    }
+    return bound
+
+
 def _failed_text_audit_image_path(output_path: Path, attempt: int) -> Path:
     return output_path.with_name(f"{output_path.stem}.attempt-{attempt:02d}-text-audit-failed{output_path.suffix}")
 

@@ -60,6 +60,7 @@ PAGE_CONTRACT_FIELDS = {
     "页面标题",
     "页面使命",
     "副标题",
+    "内容负载",
     "核心结论",
     "主判断",
     "主论证链",
@@ -474,6 +475,7 @@ def parse_script_markdown(
                 page_type=page_type,
                 title=fields.get("页面标题", heading).strip(),
                 subtitle=fields.get("副标题", "").strip(),
+                content_load=fields.get("内容负载", "").strip(),
                 page_mission=fields.get("页面使命", "").strip(),
                 main_message=(
                     fields.get("核心结论")

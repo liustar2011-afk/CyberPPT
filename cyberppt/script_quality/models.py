@@ -24,6 +24,7 @@ LOCKED_JUDGMENT_ROLES = {
     "acceptance",
     "prohibition",
 }
+VALID_CONTENT_LOADS = {"light", "standard", "dense"}
 
 
 def resolve_judgment_mode(explicit_mode: str = "", judgment_role: str = "") -> str:
@@ -68,6 +69,7 @@ class ScriptPage:
     raw_onscreen_text: str = ""
     top_level_module_titles: tuple[str, ...] = ()
     subtitle: str = ""
+    content_load: str = ""
     visual_proof: str = ""
     onscreen_judgment: str = ""
     judgment_role: str = ""
@@ -98,6 +100,8 @@ class ScriptPage:
             object.__setattr__(
                 self, "top_level_module_titles", self.module_titles
             )
+        if self.content_load and self.content_load not in VALID_CONTENT_LOADS:
+            raise ValueError(f"unsupported content_load: {self.content_load}")
 
     @property
     def core_message(self) -> str:
