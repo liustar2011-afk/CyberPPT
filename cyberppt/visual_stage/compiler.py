@@ -138,6 +138,12 @@ def _coverage_business_edges(
 ) -> list[dict[str, Any]]:
     """Project only explicitly authored evidence endpoints into graph edges."""
     edges: list[dict[str, Any]] = []
+    selected_topology = ""
+    selected_id = str(decision.get("selected_candidate") or "")
+    for candidate in decision.get("candidates") or []:
+        if isinstance(candidate, dict) and str(candidate.get("id") or "") == selected_id:
+            selected_topology = str(candidate.get("topology") or "").strip()
+            break
     for item in decision.get("relationship_coverage") or []:
         if not isinstance(item, dict) or item.get("visual_status") == "not_rendered":
             continue
@@ -161,6 +167,12 @@ def _coverage_business_edges(
             "feeds_back": "loop",
             "returns_to": "loop",
         }.get(relation_name, "mapping")
+        if selected_topology == "directed_flow" and relation_name in {"directed_relation", "covers"}:
+            relation = "flow"
+        elif selected_topology == "lifecycle_loop" and relation_name in {"feeds_back_to", "feeds_back", "feedback"}:
+            relation = "loop"
+        elif selected_topology == "causal_convergence" and relation_name in {"evidence_supports", "supports", "sequence_before"}:
+            relation = "converge"
         label = {
             "support": "支撑关系",
             "cause": "因果关系",
@@ -168,6 +180,7 @@ def _coverage_business_edges(
             "flow": "业务先后",
             "mapping": "对应关系",
             "loop": "反馈回流",
+            "converge": "汇聚关系",
         }[relation]
         direction = "backward" if relation == "loop" else ("none" if relation == "mapping" else "forward")
         for source in raw_from:
