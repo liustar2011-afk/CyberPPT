@@ -461,18 +461,16 @@ def _style_contract_from_payload(
     if style_prompt_v2:
         return style_prompt_v2
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
-    # Style 09/10 are authored, self-contained source contracts: the people,
+    # Style 09 is an authored, self-contained source contract: the people,
     # factuality, on-screen-text and component/craftsmanship rules that used
     # to live as separate JSON fields (people_rule/factuality_rule/
     # semantic_image_text_rule/component_rule) are now authored directly
-    # inside references/visual-system.md's "扩展风格9"/"扩展风格10" sections
-    # and arrive here already folded into prompt_contract. Style 09 and Style
-    # 10 keep independently authored live contracts under their own numbered
-    # sections so either surface can evolve without lock-snapshot drift.
+    # inside references/visual-system.md's "扩展风格9" section and arrives
+    # here already folded into prompt_contract.
     # The final prompt must carry this entire contract verbatim under its
     # formal style lock, rather than letting a downstream compiler select
     # clauses or recreate a terminal fragment. Page layout belongs to Stage 02.
-    if int(style.get("id") or 0) in (9, 10) and prompt_contract:
+    if int(style.get("id") or 0) == 9 and prompt_contract:
         return prompt_contract
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
@@ -496,7 +494,7 @@ def _style_contract_from_payload(
     carrier_router = _collapse_text(style.get("carrier_router"))
     component_rule = (
         ""
-        if int(style.get("id") or 0) in (9, 10) and prompt_contract
+        if int(style.get("id") or 0) == 9 and prompt_contract
         else _collapse_text(style.get("component_rule"))
     )
     deck_consistency_rule = _collapse_text(style.get("deck_consistency_rule"))

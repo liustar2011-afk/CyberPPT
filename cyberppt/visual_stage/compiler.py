@@ -80,6 +80,112 @@ _FOCUS_POLICY_BY_TOPOLOGY = {
 _CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY
 
 
+def _connector_relation(topology: str, grammar: list[str], visual_intent: str) -> str:
+    """Map the selected carrier to its connector semantics.
+
+    ``reading_sequence`` is a placement order.  It becomes a business edge
+    only for a topology whose contract explicitly describes progression.
+    """
+    if topology == "parallel_set":
+        return "peer"
+    if topology in {"causal_convergence", "conclusion_anchor"}:
+        return "converge"
+    if topology == "lifecycle_loop":
+        return "loop"
+    if topology == "layered_architecture":
+        return "layer"
+    if topology == "governance_boundary":
+        return "boundary"
+    if topology == "ecosystem_map":
+        return "interface"
+    if topology == "allocation_flow":
+        return "allocation"
+    if "peer" in grammar:
+        return "peer"
+    if "convergence" in grammar:
+        return "converge"
+    if "feedback" in grammar:
+        return "loop"
+    if "boundary" in grammar:
+        return "boundary"
+    if "control" in grammar:
+        return "control"
+    return "transform" if "transform" in visual_intent else "flow"
+
+
+def _has_explicit_relationship_chain(value: object) -> bool:
+    """Return whether verified relationships contain an actual dependency chain."""
+    edges: list[tuple[str, str]] = []
+    for item in value if isinstance(value, list) else []:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        objects = item.get("objects")
+        if not isinstance(objects, list):
+            objects = [item.get("object")]
+        edges.extend(
+            (subject, str(object_).strip())
+            for object_ in objects
+            if subject and str(object_ or "").strip() and subject != str(object_).strip()
+        )
+    subjects = {subject for subject, _ in edges}
+    return any(object_ in subjects for _, object_ in edges)
+
+
+def _coverage_business_edges(
+    decision: dict[str, Any],
+    evidence_ids: dict[str, str],
+) -> list[dict[str, Any]]:
+    """Project only explicitly authored evidence endpoints into graph edges."""
+    edges: list[dict[str, Any]] = []
+    for item in decision.get("relationship_coverage") or []:
+        if not isinstance(item, dict) or item.get("visual_status") == "not_rendered":
+            continue
+        raw_from = item.get("from_evidence_refs") or item.get("source_evidence_refs")
+        raw_to = item.get("to_evidence_refs") or item.get("target_evidence_refs")
+        if not isinstance(raw_from, list) or not isinstance(raw_to, list):
+            continue
+        relation_name = str(item.get("relation") or "").strip()
+        relation = {
+            "supports": "support",
+            "evidence_supports": "support",
+            "causes": "cause",
+            "transforms_to": "transform",
+            "sequence_before": "flow",
+            "sequence_after": "flow",
+            "directed_dependency": "flow",
+            "directed_relation": "mapping",
+            "semantic_mapping": "mapping",
+            "corresponds_to": "mapping",
+            "feedback": "loop",
+            "feeds_back": "loop",
+            "returns_to": "loop",
+        }.get(relation_name, "mapping")
+        label = {
+            "support": "支撑关系",
+            "cause": "因果关系",
+            "transform": "转化关系",
+            "flow": "业务先后",
+            "mapping": "对应关系",
+            "loop": "反馈回流",
+        }[relation]
+        direction = "backward" if relation == "loop" else ("none" if relation == "mapping" else "forward")
+        for source in raw_from:
+            for target in raw_to:
+                source_id = evidence_ids.get(str(source).strip())
+                target_id = evidence_ids.get(str(target).strip())
+                if not source_id or not target_id or source_id == target_id:
+                    continue
+                edges.append({
+                    "from": source_id,
+                    "to": target_id,
+                    "relation": relation,
+                    "label": label,
+                    "direction": direction,
+                })
+    return edges
+
+
 def _fail(message: str) -> None:
     raise ValueError(message)
 
@@ -426,37 +532,63 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "interface", "network", "tension", "feedback", "control", "peer",
     }
     grammar = [item for item in grammar if item in allowed_grammar] or ["anchor"]
-    if "peer" in grammar:
-        relation = "peer"
-    else:
-        relation = "transform" if "transform" in str(selected.get("visual_intent_type")) else "flow"
-        if "convergence" in grammar:
-            relation = "converge"
-        elif "divergence" in grammar:
-            relation = "diverge"
-        elif "boundary" in grammar:
-            relation = "boundary"
-        elif "feedback" in grammar:
-            relation = "loop"
-        elif "control" in grammar:
-            relation = "control"
+    relation = _connector_relation(
+        topology,
+        grammar,
+        str(selected.get("visual_intent_type") or ""),
+    )
     direction = _DIRECTION_MAP.get(str(selected.get("direction") or ""), "spatial")
+    explicit_chain = _has_explicit_relationship_chain(source.get("business_relationships"))
+    authored_edges = _coverage_business_edges(decision, eid)
+    relationship_items = source.get("business_relationships")
+    if (
+        topology == "directed_flow"
+        and not explicit_chain
+        and isinstance(relationship_items, list)
+        and len(relationship_items) > 1
+    ):
+        _fail(
+            f"{page_id}: directed_flow requires an explicit relationship chain; "
+            "reading_sequence cannot create flow edges"
+        )
     graph_edges: list[dict[str, Any]] = []
     connectors: list[dict[str, Any]] = []
     if relation == "converge":
-        for key in reading_keys:
-            if key == focus_key:
-                continue
-            graph_edges.append({"from": eid[key], "to": eid[focus_key], "relation": "converge", "label": "汇聚支撑", "direction": "forward"})
-            connectors.append({"from": eid[key], "to": eid[focus_key], "type": "converge", "direction": direction, "label": "汇聚支撑", "main_chain": True})
+        if authored_edges:
+            graph_edges.extend(authored_edges)
+            connectors.extend(
+                {"from": edge["from"], "to": edge["to"], "type": edge["relation"], "direction": direction, "label": edge["label"], "main_chain": True}
+                for edge in authored_edges
+            )
+        else:
+            for key in reading_keys:
+                if key == focus_key:
+                    continue
+                graph_edges.append({"from": eid[key], "to": eid[focus_key], "relation": "converge", "label": "汇聚支撑", "direction": "forward"})
+                connectors.append({"from": eid[key], "to": eid[focus_key], "type": "converge", "direction": direction, "label": "汇聚支撑", "main_chain": True})
+    elif authored_edges and relation != "peer":
+        graph_edges.extend(authored_edges)
+        connectors.extend(
+            {"from": edge["from"], "to": edge["to"], "type": edge["relation"], "direction": direction, "label": edge["label"], "main_chain": edge["relation"] != "loop"}
+            for edge in authored_edges
+        )
     else:
         for left, right in zip(reading_keys, reading_keys[1:]):
             if relation == "peer":
                 graph_edges.append({"from": eid[left], "to": eid[right], "relation": "peer", "label": "共同支撑同一判断", "direction": "none"})
-                connectors.append({"from": eid[left], "to": eid[right], "type": "peer", "direction": "none", "label": "共同支撑同一判断", "main_chain": False})
+            elif relation in {"flow", "transform"} and not explicit_chain:
+                continue
             else:
-                graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接", "direction": "forward"})
-                connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
+                label = {
+                    "layer": "层级支撑",
+                    "boundary": "边界约束",
+                    "control": "控制约束",
+                    "interface": "接口关系",
+                    "allocation": "分配关系",
+                    "transform": "转化关系",
+                }.get(relation, "业务承接")
+                graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": label, "direction": "forward"})
+                connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": label, "main_chain": True})
         if relation == "loop" and len(reading_keys) > 1:
             last_key, first_key = reading_keys[-1], reading_keys[0]
             graph_edges.append({"from": eid[last_key], "to": eid[first_key], "relation": "loop", "label": "反馈回流", "direction": "backward"})
@@ -579,6 +711,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "focus_node": focus_id,
             "nodes": graph_nodes,
             "edges": graph_edges,
+            "edge_source": "relationship_coverage" if authored_edges else ("reading_sequence_legacy" if graph_edges else "none"),
             "decision_relationship": _render_business_relationships(source.get("business_relationships")),
             "business_relationships": normalized_business_relationships,
             "grouping_decisions": grouping_decisions,

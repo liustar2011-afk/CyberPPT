@@ -389,6 +389,13 @@
             }
           }
         },
+        "edge_source": {
+          "enum": [
+            "relationship_coverage",
+            "reading_sequence_legacy",
+            "none"
+          ]
+        },
         "decision_relationship": {
           "type": "string",
           "minLength": 4

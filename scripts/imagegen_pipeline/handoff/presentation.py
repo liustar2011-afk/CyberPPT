@@ -32,21 +32,6 @@ CONTENT_FIRST_STYLE_RULE_FIELDS: tuple[str, ...] = (
     "content_visual_rule",
 )
 
-STYLE10_SEMANTIC_RULE_FIELDS: tuple[str, ...] = (
-    "scope_rule",
-    "semantic_structure_rule",
-    "scene_layer_rule",
-    "semantic_image_rule",
-    "factuality_rule",
-    "semantic_image_text_rule",
-    "content_visual_rule",
-    "carrier_router",
-    "component_rule",
-    "default_text_render_mode",
-    "truth_lock",
-    "visual_freedom",
-)
-
 LAYOUT_MOTIFS = (
     "control_room_bridge",
     "evidence_landscape",
@@ -312,11 +297,7 @@ def render_content_first_style_contract(
         f"适用语境：{str(style.get('scenario') or '').strip()}。",
         f"色彩角色：{'；'.join(color_parts)}。",
     ]
-    rule_fields = (
-        STYLE10_SEMANTIC_RULE_FIELDS
-        if int(style.get("id") or 0) == 10
-        else CONTENT_FIRST_STYLE_RULE_FIELDS
-    )
+    rule_fields = CONTENT_FIRST_STYLE_RULE_FIELDS
     style_rules: list[str] = []
     for field in rule_fields:
         value = str(style.get(field) or "").strip()

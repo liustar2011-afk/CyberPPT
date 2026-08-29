@@ -90,6 +90,89 @@ def _index_pages(pages: object) -> tuple[dict[str, dict[str, Any]], list[str]]:
     return indexed, duplicates
 
 
+def _verified_relation_chain(relationships: object) -> bool:
+    """Return whether source relations contain an actual subject-to-subject chain."""
+    if not isinstance(relationships, list):
+        return False
+    subjects: set[str] = set()
+    edges: list[tuple[str, str]] = []
+    for item in relationships:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        objects = item.get("objects")
+        if not subject or not isinstance(objects, list):
+            continue
+        subjects.add(subject)
+        edges.extend(
+            (subject, str(value).strip())
+            for value in objects
+            if str(value).strip() and str(value).strip() != subject
+        )
+    return any(right in subjects for _, right in edges)
+
+
+def _audit_relation_carrier(
+    source: dict[str, Any],
+    selected_candidate: dict[str, Any],
+    page_spec: dict[str, Any],
+    issue: Any,
+    page_id: str,
+) -> None:
+    """Block flow carriers that are unsupported by the authoritative graph."""
+    topology = str(selected_candidate.get("topology") or "").strip()
+    verified_topology = str((source.get("render_topology") or {}).get("primary_topology") or "").strip() if isinstance(source.get("render_topology"), dict) else ""
+    relationships = source.get("business_relationships")
+    relation_names = {
+        str(item.get("relation") or "").strip()
+        for item in relationships or []
+        if isinstance(item, dict)
+    }
+    chain = _verified_relation_chain(relationships)
+    if topology == "directed_flow" and isinstance(relationships, list) and len(relationships) > 1 and not chain:
+        issue(
+            "FLOW_WITHOUT_VERIFIED_DIRECTION",
+            "directed_flow requires a verified relationship chain; independent statements cannot be joined by reading_sequence.",
+            page_id,
+        )
+    if verified_topology == "peer_set" and topology == "directed_flow":
+        issue(
+            "PARALLEL_PAGE_HAS_FLOW_TOPOLOGY",
+            "A page verified as a peer set cannot select directed_flow.",
+            page_id,
+        )
+    graph = page_spec.get("semantic_graph") if isinstance(page_spec.get("semantic_graph"), dict) else {}
+    edges = [item for item in graph.get("edges") or [] if isinstance(item, dict)]
+    connectors = [item for item in page_spec.get("connectors") or [] if isinstance(item, dict)]
+    graph_pairs = {
+        (str(item.get("from") or ""), str(item.get("to") or ""), str(item.get("relation") or ""))
+        for item in edges
+    }
+    connector_pairs = {
+        (str(item.get("from") or ""), str(item.get("to") or ""), str(item.get("type") or ""))
+        for item in connectors
+    }
+    if not connector_pairs.issubset(graph_pairs):
+        issue(
+            "CONNECTOR_EDGE_MISMATCH",
+            "Every visual connector must correspond to the same semantic graph edge.",
+            page_id,
+        )
+    if topology == "directed_flow" and graph.get("edge_source") == "reading_sequence_legacy":
+        issue(
+            "READING_SEQUENCE_USED_AS_BUSINESS_EDGE",
+            "directed_flow connectors must come from authored business-edge endpoints, not adjacent reading_sequence items.",
+            page_id,
+        )
+    if topology == "directed_flow" and "业务承接" in {str(item.get("label") or "") for item in connectors}:
+        if not relation_names & {"sequence_before", "sequence_after", "causes", "transforms_to", "directed_dependency"}:
+            issue(
+                "GENERIC_BUSINESS_HANDOFF_LABEL",
+                "A generic handoff label cannot establish a business relationship; use a verified relation or remove the connector.",
+                page_id,
+            )
+
+
 def _locked_pairs(page: dict[str, Any]) -> list[tuple[str, str]]:
     result: list[tuple[str, str]] = []
     for item in page.get("locked_text_items") or []:
@@ -529,7 +612,7 @@ def _audit_topology_consistency(page_spec: dict[str, Any], issue: Any, page_id: 
         ]
         if forced_sequential:
             issue("FORCED_SEQUENTIAL_EDGE", "parallel_set peers must not carry a forced sequential edge between them.", page_id)
-    if not edges_into_focus and not edges_from_focus and len(nodes) > 1:
+    if topology != "parallel_set" and not edges_into_focus and not edges_from_focus and len(nodes) > 1:
         issue("MISSING_FOCUS_EDGE", f"focus_node {graph_focus_node!r} has no edge connecting it to the rest of the graph.", page_id)
 
 
@@ -872,6 +955,7 @@ def audit_visual_design_package(
                     f"verified semantic topology {verified_topology!r}.",
                     page_id,
                 )
+            _audit_relation_carrier(source, selected_candidate, page_spec, issue, page_id)
             visual_decision = page_spec.get("visual_decision")
             actual_thesis = (
                 str(visual_decision.get("visual_thesis") or "").strip()

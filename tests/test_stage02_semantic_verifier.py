@@ -131,6 +131,32 @@ def test_topology_resolver_distinguishes_convergence_from_dependency_chain() -> 
     assert chain["eligibility"]["peer_set"]["allowed"] is False
 
 
+def test_topology_resolver_does_not_turn_independent_directed_relations_into_flow() -> None:
+    result = resolve_semantic_topology([
+        {"subject": "A", "relation": "directed_relation", "objects": ["B"], "confidence": 0.9},
+        {"subject": "C", "relation": "directed_relation", "objects": ["D"], "confidence": 0.9},
+    ], module_count=4)
+    assert result["primary_topology"] == "mapping"
+    assert all(item["topology"] != "dependency_chain" for item in result["candidates"])
+
+
+def test_topology_resolver_keeps_verified_chain_as_dependency_flow() -> None:
+    result = resolve_semantic_topology([
+        {"subject": "A", "relation": "directed_relation", "objects": ["B"], "confidence": 0.9},
+        {"subject": "B", "relation": "directed_relation", "objects": ["C"], "confidence": 0.9},
+    ], module_count=3)
+    assert result["primary_topology"] == "dependency_chain"
+
+
+def test_topology_resolver_honors_authored_anti_flow_language() -> None:
+    result = resolve_semantic_topology([
+        {"subject": "A", "relation": "directed_relation", "objects": ["B"], "confidence": 0.9},
+        {"subject": "B", "relation": "directed_relation", "objects": ["C"], "confidence": 0.9},
+    ], module_count=3, page_text="三类标准保持并列，表格顺序不代表实施先后")
+    assert result["primary_topology"] == "mapping"
+    assert all(item["topology"] not in {"dependency_chain", "sequence"} for item in result["candidates"])
+
+
 def test_expression_selector_consumes_verified_topology_before_surface_keywords() -> None:
     topology = {
         "primary_topology": "dependency_chain",

@@ -168,7 +168,7 @@ def validate_final_prompt(
     )
     if any(header in prompt for header in legacy_terminal_headers):
         raise PromptContractError("final prompt contains a numbered legacy terminal style heading")
-    if style_id in (9, 10):
+    if style_id == 9:
         if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
             raise PromptContractError("live runtime style prompt requires one terminal execution lock")
         terminal = prompt.split(TERMINAL_EXECUTION_HEADING, 1)[1].strip()

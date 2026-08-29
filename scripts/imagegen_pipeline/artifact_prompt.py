@@ -131,7 +131,7 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
 
     style_contract = spec.art_direction.contract
     runtime = None
-    if spec.art_direction.style_id in (9, 10):
+    if spec.art_direction.style_id == 9:
         if style_lock is None:
             raise ValueError("live runtime artifact prompt requires its style lock")
         runtime = load_runtime_style_contract(style_lock)
@@ -244,7 +244,7 @@ def assert_artifact_prompt_contract(
     )
     if any(header in prompt for header in legacy_headers):
         raise ValueError("artifact prompt contains a numbered legacy terminal style heading")
-    if style_id in (9, 10):
+    if style_id == 9:
         if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
             raise ValueError("live runtime artifact prompt requires one terminal execution lock")
         terminal = prompt.split(TERMINAL_EXECUTION_HEADING, 1)[1].strip()
@@ -548,7 +548,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                 f"({len(semantic_groups)}) exceed the page's {spec.content_root_count} authoritative root modules"
             )
         style_id = int(spec.art_direction.style_id or 0)
-        live_style_surface = style_id in (9, 10)
+        live_style_surface = style_id == 9
         style09_guidance = (_style09_template_guidance(spec),) if style_id == 9 else ()
         if spec.prompt_mode == "semantic_brief":
             has_region_graph = spec.region_graph is not None

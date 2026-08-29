@@ -13,7 +13,7 @@ from typing import Any
 STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
 VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
 VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visual-system.md"
-LIVE_CONTRACT_STYLE_IDS = frozenset({9, 10})
+LIVE_CONTRACT_STYLE_IDS = frozenset({9})
 
 
 def _utc_now() -> str:
@@ -205,8 +205,7 @@ def load_style_lock(path: Path) -> dict[str, Any]:
     if not isinstance(style, dict) or style_id not in LIVE_CONTRACT_STYLE_IDS:
         return payload
 
-    # The lock records selection metadata. Refresh model-facing contract text
-    # from references/visual-system.md so Style 09 and Style 10 cannot drift.
+    # The lock records selection metadata. Refresh Style 09 from the canonical source.
     refreshed = dict(payload)
     refreshed_style = dict(style)
     _apply_live_extension_contract(refreshed_style)

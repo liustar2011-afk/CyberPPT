@@ -202,6 +202,8 @@ CyberPPT工作台候选还必须包含：
 
 `visual_status`只能为`primary`、`secondary`或`not_rendered`；后者必须有业务理由，且不得用于页面使命、核心判断或P0证据所必需的关系。候选的可生成性评分不规定颜色、字体、形状、坐标、媒介或固定视觉模板。
 
+当关系需要在`semantic_graph.edges`中生成连接时，关系覆盖项还必须声明`from_evidence_refs`与`to_evidence_refs`，分别列出连接两端的证据单元key。`evidence_refs`仅表示该关系的证据覆盖范围，不能替代连接端点。缺少端点时，编译器不会把`reading_sequence`相邻项当作该关系的连接端点。
+
 `deck-visual-spec.json`的`expression_contract`只保留选择追溯：`form`、`constraints_sha256`、`selected_candidate_id`、`fit_status`、`reading_relation`、`balance_strategy`与`deviation_reason`。它不得包含候选的内部证据解释、提示词或任何固定布局指令。
 
 `semantic_graph`是本页业务拓扑与关系的唯一权威字段；`structural_decision`只负责空间语法、阅读顺序、文字绑定和表达自由度，不得重复声明`topology`、`primary_relation`、`nodes`或`edges`（schema通过`structural_decision.additionalProperties: false`强制拒绝这些键）。候选必须在自己的字段中直接声明`topology`，取值必须是以下九种之一：`parallel_set`、`causal_convergence`、`layered_architecture`、`directed_flow`、`lifecycle_loop`、`governance_boundary`、`ecosystem_map`、`allocation_flow`、`conclusion_anchor`。编译器不会从`spatial_grammar`或`primary_relation`反推`topology`——这是视觉结构设计者（Skill本身）的业务判断，不是编译器的推断责任。

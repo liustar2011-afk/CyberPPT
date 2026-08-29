@@ -84,7 +84,9 @@ def test_unknown_arrow_relation_remains_directional() -> None:
         _page(("A", "B")),
         business_relationships=relationships,
     )
-    assert decision.form == "directed_dependency_2_6"
+    # A generic arrow records correspondence/direction, while its source
+    # contains no verified chain that would justify a process carrier.
+    assert decision.form == "mapping_2_6"
     assert decision.confidence == 0.68
 
 

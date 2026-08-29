@@ -33,7 +33,10 @@ CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
     "support_convergence": {"causal_convergence", "conclusion_anchor"},
     "sequence": {"directed_flow"},
     "dependency_chain": {"directed_flow"},
-    "mapping": {"directed_flow"},
+    # A mapping identifies correspondence.  It does not imply a temporal
+    # sequence; directed_flow remains available only to explicit sequence or
+    # verified dependency-chain semantics.
+    "mapping": {"parallel_set", "conclusion_anchor"},
     "causal_chain": {"directed_flow", "causal_convergence"},
     "layered_structure": {"layered_architecture"},
 }
@@ -41,6 +44,7 @@ _DIRECTIONAL_VALUES = {
     "subject_to_objects", "left_to_right", "right_to_left", "top_to_bottom", "bottom_to_top"
 }
 _MATRIX_RE = re.compile(r"象限|二维|双维|两维|高低|分群")
+_ANTI_FLOW_RE = re.compile(r"保持并列|顺序不代表|不代表实施先后|对应关系|支撑范围|相互独立")
 
 
 def _text(value: object) -> str:
@@ -200,9 +204,13 @@ def resolve_semantic_topology(
         )
 
     directed_names = names & _DIRECTED_RELATIONS
-    declared_direction = any(_text(item.get("direction")) in _DIRECTIONAL_VALUES for item in records)
     chain = _has_dependency_chain(edges)
-    if chain or names & {"directed_dependency", "directed_relation"} or (declared_direction and directed_names):
+    # Direction alone is insufficient to establish a process.  The old rule
+    # promoted generic directed_relation (and any directional annotation) to
+    # dependency_chain, which made reading order look like business flow.
+    # Keep this carrier for a verified graph chain, explicit sequence, or a
+    # named dependency relation with a verified chain.
+    if chain or ("directed_dependency" in names and chain):
         relation_names = directed_names or names
         confidence = _relevant_confidence(records, relation_names)
         evidence = ["directed_dependency"]
@@ -215,12 +223,45 @@ def resolve_semantic_topology(
             _relevant_authority(records, relation_names),
         ))
 
+    # Independent directed/mapping statements retain correspondence semantics
+    # and must be rendered as a set or conclusion anchor until a real chain is
+    # evidenced.
+    if directed_names and not chain and not sequence:
+        add(
+            "mapping",
+            directed_names,
+            0.70,
+            0.14,
+            ["independent_directed_relations", *sorted(directed_names)],
+        )
+
     if peer_allowed:
         peer_names = names & _PEER_RELATIONS
         add("peer_set", peer_names, 0.76, 0.16, ["verified_peer_relations", *sorted(peer_names)])
 
     if module_count == 4 and _MATRIX_RE.search(page_text):
         candidates.append(_candidate("matrix", 0.68, ["two_axis_surface_signal"], "soft"))
+
+    # Authored anti-flow language is a hard boundary for the render carrier.
+    # Preserve the relationship facts while preventing a layout sequence from
+    # being presented as implementation order.
+    if _ANTI_FLOW_RE.search(page_text):
+        had_flow = any(
+            str(item.get("topology")) in {"dependency_chain", "sequence"}
+            for item in candidates
+        )
+        candidates = [
+            item for item in candidates
+            if str(item.get("topology")) not in {"dependency_chain", "sequence"}
+        ]
+        if had_flow and directed_names:
+            add(
+                "mapping",
+                directed_names,
+                0.74,
+                0.12,
+                ["authored_anti_flow_signal", *sorted(directed_names)],
+            )
 
     candidates.sort(key=lambda item: (-float(item["score"]), str(item["topology"])))
     if not candidates or float(candidates[0]["score"]) < 0.60:

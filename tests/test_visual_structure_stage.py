@@ -153,6 +153,59 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual("integrated_scene", page["visual_budget"]["mode"])
         self.assertEqual(4, page["visual_budget"]["max_auxiliary_fragments"])
 
+    def test_parallel_topology_does_not_emit_connectors_from_reading_order(self) -> None:
+        source = {
+            "page_id": "p01",
+            "page_number": 1,
+            "page_title": "Parallel categories",
+            "page_mission": "Explain the parallel categories.",
+            "core_judgment": "The categories jointly cover the field.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Category A"},
+                {"text_id": "P01-T02", "text": "Category B"},
+                {"text_id": "P01-T03", "text": "Category C"},
+            ],
+            "business_relationships": [
+                {"subject": "Categories", "relation": "peer_classification", "objects": ["A", "B", "C"]}
+            ],
+            "render_topology": {"primary_topology": "peer_set"},
+            "expression_constraints": expression_constraints("parallel_classification_3_6"),
+        }
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [
+                {"key": key, "summary": key, "text_ids": [f"P01-T{index:02d}"]}
+                for index, key in enumerate(("a", "b", "c"), start=1)
+            ],
+            "candidates": [{
+                "id": "c1",
+                "semantic_focus": {"kind": "relationship", "evidence_key": "a"},
+                "reading_sequence": ["a", "b", "c"],
+                "spatial_grammar": ["peer"],
+                "topology": "parallel_set",
+                "direction": "spatial",
+                "visual_intent_type": "parallel_classification",
+                "expression_fit": {
+                    "form": "parallel_classification_3_6",
+                    "constraint_status": "default_profile",
+                    "satisfied_constraints": ["parallel_relation"],
+                    "reading_relation": "A, B and C are parallel categories",
+                    "balance_strategy": "equal peer weight",
+                    "changed_constraints": [],
+                    "deviation_reason": "",
+                },
+            }],
+            "selected_candidate": "c1",
+        }
+
+        page = _build_executable_page(source, decision)
+
+        self.assertEqual([], page["connectors"])
+        self.assertEqual(
+            {"peer"},
+            {item["relation"] for item in page["semantic_graph"]["edges"]},
+        )
+
     def test_structural_decision_cannot_carry_a_second_topology_authority(self) -> None:
         """semantic_graph is the only page topology/relation authority.
 
@@ -198,6 +251,14 @@ class VisualStructureStageTests(unittest.TestCase):
                 for index in range(1, 4)
             ],
             "selected_candidate": "c1",
+            "relationship_coverage": [
+                {
+                    "relation": "supports",
+                    "visual_status": "primary",
+                    "from_evidence_refs": ["input"],
+                    "to_evidence_refs": ["result"],
+                }
+            ],
         }
         page = _build_executable_page(source, decision)
         schema_path = _skill_root() / "assets" / "page-visual-spec.schema.json"
@@ -208,6 +269,11 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual(
             "semantic_graph",
             page["generation_handoff"]["structural_guidance"]["source"],
+        )
+        self.assertEqual("relationship_coverage", page["semantic_graph"]["edge_source"])
+        self.assertEqual(
+            [("E1", "E2", "support")],
+            [(edge["from"], edge["to"], edge["relation"]) for edge in page["semantic_graph"]["edges"]],
         )
 
         for leaking_field, value in (

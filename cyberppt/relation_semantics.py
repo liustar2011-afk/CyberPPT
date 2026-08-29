@@ -197,7 +197,9 @@ def resolve_relation_expression(
         )
 
     if "transforms_to" in names and 3 <= module_count <= 6:
-        return "flow_3_5", ("semantic:transformation", *evidence)
+        if _has_dependency_chain(edges):
+            return "flow_3_5", ("semantic:transformation_chain", *evidence)
+        return "mapping_2_6", ("semantic:independent_transformation", *evidence)
 
     # Explicit arrows that could not be typed more narrowly still carry real
     # direction. Use graph shape to retain that information without inventing
@@ -208,8 +210,13 @@ def resolve_relation_expression(
                 "semantic:directed_convergence",
                 *evidence,
             )
-        return "directed_dependency_2_6", (
-            "semantic:directed_relation",
+        if _has_dependency_chain(edges):
+            return "directed_dependency_2_6", (
+                "semantic:directed_relation_chain",
+                *evidence,
+            )
+        return "mapping_2_6", (
+            "semantic:independent_directed_relation",
             *evidence,
         )
 

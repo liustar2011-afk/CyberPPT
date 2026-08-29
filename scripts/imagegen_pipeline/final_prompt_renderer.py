@@ -143,7 +143,7 @@ def render_final_prompt(
 
     runtime = None
     runtime_style_contract = ir.runtime_lock.style_contract
-    if style_id in (9, 10):
+    if style_id == 9:
         if style_lock is None:
             raise ValueError("live runtime style final prompt requires its style lock")
         runtime = load_runtime_style_contract(style_lock)

@@ -329,12 +329,42 @@ def test_audit_rejects_candidate_topology_incompatible_with_render_topology() ->
     assert "SELECTED_CANDIDATE_TOPOLOGY_INCOMPATIBLE" in codes
 
 
-def test_audit_accepts_directed_flow_for_mapping_topology() -> None:
+def test_audit_rejects_flow_on_a_verified_parallel_page() -> None:
+    design, decisions, spec = _payloads()
+    design["pages"][0]["render_topology"] = {"primary_topology": "peer_set"}
+    decisions["pages"][0]["candidates"][0]["topology"] = "directed_flow"
+    codes = {item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]}
+    assert "PARALLEL_PAGE_HAS_FLOW_TOPOLOGY" in codes
+
+
+def test_audit_rejects_reading_sequence_as_flow_edge_source() -> None:
+    design, decisions, spec = _payloads()
+    design["pages"][0]["render_topology"] = {"primary_topology": "dependency_chain"}
+    decisions["pages"][0]["candidates"][0]["topology"] = "directed_flow"
+    spec = _with_topology_graph(spec, "directed_flow")
+    spec["pages"][0]["semantic_graph"]["edge_source"] = "reading_sequence_legacy"
+    assert "READING_SEQUENCE_USED_AS_BUSINESS_EDGE" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_connector_outside_semantic_graph() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "directed_flow")
+    spec["pages"][0]["connectors"] = [
+        {"from": "E2", "to": "E1", "type": "flow", "label": "业务先后"}
+    ]
+    assert "CONNECTOR_EDGE_MISMATCH" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_directed_flow_for_mapping_topology() -> None:
     design, decisions, spec = _payloads()
     design["pages"][0]["render_topology"] = {"primary_topology": "mapping"}
     decisions["pages"][0]["candidates"][0]["topology"] = "directed_flow"
     codes = {item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]}
-    assert "SELECTED_CANDIDATE_TOPOLOGY_INCOMPATIBLE" not in codes
+    assert "SELECTED_CANDIDATE_TOPOLOGY_INCOMPATIBLE" in codes
 
 
 def test_audit_rejects_incomplete_execution_design() -> None:

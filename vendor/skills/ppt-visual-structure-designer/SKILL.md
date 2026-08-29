@@ -138,7 +138,7 @@ ImageGen 不得合并或拆分 Region，不得把锁定文字移动到其他 Reg
 
 每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，五项之和形成0–100的可生成性总分；`score`必须等于五项实际得分之和，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 
-每页必须写入`relationship_coverage`，逐项登记`business_relationships`与`stage01_relationship_features.actions`中的关键关系，标记为`primary`、`secondary`或有业务理由的`not_rendered`，并引用当前证据单元和锁定文字ID。页面使命、核心判断或P0证据所必需的关系不得标记为`not_rendered`。
+每页必须写入`relationship_coverage`，逐项登记`business_relationships`与`stage01_relationship_features.actions`中的关键关系，标记为`primary`、`secondary`或有业务理由的`not_rendered`，并引用当前证据单元和锁定文字ID。页面使命、核心判断或P0证据所必需的关系不得标记为`not_rendered`。需要生成语义连接的关系必须补充`from_evidence_refs`与`to_evidence_refs`，明确连接两端；`evidence_refs`只表示关系覆盖范围，不能用来推导端点。
 
 每个候选还必须声明`topology`，取值必须是以下九种之一：`parallel_set`（并列）、`causal_convergence`（多路证据汇聚成一个判断）、`layered_architecture`（分层依赖）、`directed_flow`（有向流程）、`lifecycle_loop`（含回流的生命周期）、`governance_boundary`（边界与管控）、`ecosystem_map`（多方生态关系）、`allocation_flow`（角色到价值去向的分配）、`conclusion_anchor`（收束到单一结论）。`topology`必须与该候选自己的`spatial_grammar`、`reading_sequence`和证据间关系一致——例如声明`lifecycle_loop`就必须存在回流的关系边，声明`causal_convergence`就必须有至少两路证据汇入同一焦点；不得只为了候选比较而随意标注，仓库编译器和审计器会据此校验（缺失或与实际关系边不符会被拒绝，见`references/output-contract.md`）。语义图的`nodes`、`edges`、`focus_node`和`forbidden_structures`由仓库编译器从候选与证据单元推导生成，本Skill不需要、也不应在决策JSON中手写这些字段。
 
