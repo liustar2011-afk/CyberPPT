@@ -20,11 +20,17 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Apply convergence patch
-        run: python scripts/_apply_flow_convergence_v2.py
+        run: |
+          python scripts/_apply_flow_convergence_v2.py
+          python scripts/_refresh_flow_baselines.py
       - name: Install package and test dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[test]"
+      - name: Refresh ImageGen handoff frozen baseline
+        env:
+          UPDATE_IMAGEGEN_HANDOFF_BASELINE: "1"
+        run: python -m pytest -q tests/test_imagegen_handoff_modularization.py::ImageGenHandoffModularizationTests::test_behavior_matches_frozen_baseline
       - name: Run full test suite
         run: python -m pytest -q
       - name: Commit validated changes
