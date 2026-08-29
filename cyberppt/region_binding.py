@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Any, Mapping, Sequence
 
 from cyberppt.region_graph import validate_region_graph
@@ -86,9 +85,10 @@ def region_text_owner_map(region_graph: Mapping[str, object]) -> dict[str, str]:
     owners: dict[str, str] = {}
     for region in graph["regions"]:
         region_id = region["id"]
-        ids = _text_ids(region.get("text_ids"), field=f"region[{region_id}].text_ids")
-        if not ids:
+        raw_ids = region.get("text_ids")
+        if not isinstance(raw_ids, (list, tuple)) or not raw_ids:
             raise ValueError(f"Region Graph region {region_id!r} has no text_ids")
+        ids = _text_ids(raw_ids, field=f"region[{region_id}].text_ids")
         for text_id in ids:
             if text_id in owners:
                 raise ValueError(f"locked text id {text_id!r} belongs to multiple regions")
