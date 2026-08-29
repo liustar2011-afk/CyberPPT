@@ -700,7 +700,17 @@
           "minLength": 5
         },
         "visual_center_count": {
-          "const": 1
+          "const": 1,
+          "description": "Deprecated compatibility field. New visual-structure logic uses focus_policy."
+        },
+        "focus_policy": {
+          "enum": [
+            "single_anchor",
+            "paired_focus",
+            "peer_field",
+            "distributed_focus",
+            "sequence_focus"
+          ]
         },
         "visual_hierarchy": {
           "type": "object",

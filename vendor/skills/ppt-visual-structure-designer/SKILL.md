@@ -152,6 +152,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `visual_thesis`。
 - `decision_relationship`（继承第3步核对的上游关系，不独立创设）。
 - `semantic_focus`。
+- `focus_policy`：取 `single_anchor`、`paired_focus`、`peer_field`、`distributed_focus` 或 `sequence_focus`；它描述整页视觉重心组织方式，不等同于某个固定版式。未显式声明时由仓库编译器按 topology 生成兼容默认值。
 - `spatial_grammar`。
 - `primary_refs`与`secondary_refs`。
 - `text_bindings`：除证据与语义节点外，还要用`text_ids`显式引用精确锁定正文；不复制证据解释文字替代锁定正文。

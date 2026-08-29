@@ -46,6 +46,26 @@ _FORBIDDEN_STRUCTURES_BY_TOPOLOGY = {
 }
 _DEFAULT_FORBIDDEN_STRUCTURES = list(_UNIVERSAL_FORBIDDEN_STRUCTURES)
 
+ALLOWED_FOCUS_POLICIES = {
+    "single_anchor",
+    "paired_focus",
+    "peer_field",
+    "distributed_focus",
+    "sequence_focus",
+}
+
+_FOCUS_POLICY_BY_TOPOLOGY = {
+    "parallel_set": "peer_field",
+    "causal_convergence": "single_anchor",
+    "layered_architecture": "sequence_focus",
+    "directed_flow": "sequence_focus",
+    "lifecycle_loop": "sequence_focus",
+    "governance_boundary": "paired_focus",
+    "ecosystem_map": "distributed_focus",
+    "allocation_flow": "sequence_focus",
+    "conclusion_anchor": "single_anchor",
+}
+
 _CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
     "peer_set": {"parallel_set"},
     "feedback_loop": {"lifecycle_loop"},
@@ -66,6 +86,15 @@ def _page_id(value: object) -> str:
     if raw.lower().startswith("p") and raw[1:].isdigit():
         return f"P{int(raw[1:]):02d}"
     _fail(f"invalid visual page id: {raw!r}")
+
+
+def _resolve_focus_policy(selected: dict[str, Any], topology: str, page_id: str) -> str:
+    requested = str(selected.get("focus_policy") or "").strip()
+    if requested:
+        if requested not in ALLOWED_FOCUS_POLICIES:
+            _fail(f"{page_id}: unsupported focus_policy {requested!r}")
+        return requested
+    return _FOCUS_POLICY_BY_TOPOLOGY[topology]
 
 
 def _render_business_relationships(value: object) -> str:
@@ -234,6 +263,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     topology = str(selected.get("topology") or "")
     if topology not in ALLOWED_TOPOLOGY:
         _fail(f"{page_id}: selected candidate must declare a topology from {sorted(ALLOWED_TOPOLOGY)}")
+    focus_policy = _resolve_focus_policy(selected, topology, page_id)
     stage01_features = source.get("stage01_relationship_features")
     stage01_features = stage01_features if isinstance(stage01_features, dict) else {}
     semantic_topology = stage01_features.get("semantic_topology")
@@ -486,6 +516,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys],
             "text_integration_method": design["text_integration_method"],
             "relationship_encoding": design["relationship_encoding"],
+            "focus_policy": focus_policy,
+            # Deprecated compatibility field. New structure logic must consume focus_policy.
             "visual_center_count": 1,
             "visual_hierarchy": {
                 "primary": design["visual_focus"],
