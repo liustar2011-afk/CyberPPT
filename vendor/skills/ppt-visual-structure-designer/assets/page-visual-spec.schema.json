@@ -1368,6 +1368,54 @@
         }
       },
       "description": "Normalized semantic macro-space between semantic_graph and pixel geometry. Optional during P2.1 compatibility; compiler authority begins in P2.2."
+    },
+    "visual_medium_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preferred",
+        "allowed",
+        "scene_policy",
+        "rationale"
+      ],
+      "properties": {
+        "preferred": {
+          "enum": [
+            "business_scene",
+            "object_illustration",
+            "relationship_diagram",
+            "data_visualization",
+            "mixed"
+          ]
+        },
+        "allowed": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "business_scene",
+              "object_illustration",
+              "relationship_diagram",
+              "data_visualization",
+              "mixed"
+            ]
+          }
+        },
+        "scene_policy": {
+          "enum": [
+            "required",
+            "allowed",
+            "forbidden",
+            "auto"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "Independent page visual-medium policy. Current Region Graph pages emit this field; legacy pages may omit it."
     }
   }
 }

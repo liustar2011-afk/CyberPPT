@@ -73,6 +73,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `assets/visual-intent-registry.yaml`：视觉意图机器注册表。
 - `assets/page-visual-spec.schema.json`：单页JSON合同。
 - `assets/region-graph.schema.json`：Region Graph语义空间合同；记录区域角色、锚点、相对权重与区域关系，不记录像素模板。
+- `assets/visual-medium-policy.schema.json`：独立视觉媒介合同；媒介选择与relationship topology分离。
 - `assets/deck-visual-spec.schema.json`：整套JSON合同。
 - `assets/page-visual-spec-template.md`：Markdown输出模板。
 - `assets/domain-neutral-structure-fixtures.json`：六类跨领域通用结构回归夹具。
@@ -126,6 +127,8 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - 不管写几个候选，凡是写出来的候选都必须结构上真正不同（改变语义焦点、空间语法或阅读路径），不能只更换媒介、载体名称、颜色或模块顺序；未选候选要给出具体的 `rejection_rationale`，不能用"得分更低"这类空话。**候选数量本身不是质量信号，候选是否解决了真实的关系判断分歧才是。**
 
 工作台输入给出`expression_constraints`时，每个候选还必须写入`expression_fit`：保留收到的`form`，说明满足的中性结构约束、阅读关系与信息均衡策略。`constraint_status`只能为`default_profile`或`adapted`；默认档案的`changed_constraints`与`deviation_reason`必须为空，适配档案必须列出改动项并说明业务理由及保留的表达核心。表达档案约束关系与阅读，不得推导为卡片、列、箭头、循环、金字塔或矩阵等固定视觉模板。`expression_constraints.reading_requirement`是权威边界，不是候选参考：为`parallel`时，任何候选都不得把`semantic_focus.kind`设为`outcome`并指向某一并列证据组（仓库审计器`CANDIDATE_PARALLEL_FORM_FALSE_OUTCOME`会拦截这类候选）——正确做法见`references/visual-intent-router.md`的`coordinate_peer_set`。
+
+`visual_medium_policy`可由候选显式声明，包含`preferred / allowed / scene_policy / rationale`；媒介依据页面使命、可画业务对象、业务动作、信息密度和Style lock选择，不得仅因`parallel_set`、`flow`、`convergence`等topology直接决定实景、插图或关系图。
 
 每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，五项之和形成0–100的可生成性总分；`score`必须等于五项实际得分之和，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 

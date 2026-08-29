@@ -125,6 +125,20 @@ class RegionGraphIR:
 
 
 @dataclass(frozen=True)
+class VisualMediumPolicyIR:
+    preferred: str
+    allowed: tuple[str, ...]
+    scene_policy: str
+    rationale: str
+
+    def __post_init__(self) -> None:
+        if not self.preferred.strip() or not self.allowed or not self.scene_policy.strip():
+            raise PromptContractError("visual medium policy IR is incomplete")
+        if self.preferred not in self.allowed:
+            raise PromptContractError("preferred visual medium must be allowed")
+
+
+@dataclass(frozen=True)
 class RuntimeLockIR:
     style_contract: str
     terminal_lock: str = ""
@@ -150,6 +164,7 @@ class FinalPromptIR:
     prompt_mode: str = "semantic_brief"
     text_bindings: tuple[TextBindingIR, ...] = ()
     region_graph: RegionGraphIR | None = None
+    visual_medium_policy: VisualMediumPolicyIR | None = None
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
@@ -213,4 +228,5 @@ __all__ = [
     "RuntimeLockIR",
     "SemanticGroupIR",
     "TextBindingIR",
+    "VisualMediumPolicyIR",
 ]

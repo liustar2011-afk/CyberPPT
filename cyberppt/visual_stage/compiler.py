@@ -587,6 +587,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "forbidden_structures": forbidden_structures,
         },
         "region_graph": region_graph,
+        "visual_medium_policy": medium_policy,
         "structural_decision": {
             "semantic_focus": {"kind": semantic_focus_kind, "ref": focus_id},
             "spatial_grammar": grammar,

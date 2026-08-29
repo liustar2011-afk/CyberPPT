@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
+from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy
 
 
 TEXT_DENSE_ITEM_THRESHOLD = 14
@@ -212,6 +213,7 @@ class PageArtifactSpec:
     prompt_mode: str = "semantic_brief"
     visible_text_bindings: tuple[VisibleTextBindingSpec, ...] = ()
     region_graph: RegionGraphSpec | None = None
+    visual_medium_policy: VisualMediumPolicy | None = None
 
     def __post_init__(self) -> None:
         if self.visible_text_bindings:
@@ -702,6 +704,12 @@ def build_page_artifact_spec(
         if isinstance(raw_region_graph, Mapping)
         else None
     )
+    raw_medium_policy = visual_page.get("visual_medium_policy")
+    visual_medium_policy = (
+        validate_visual_medium_policy(raw_medium_policy)
+        if isinstance(raw_medium_policy, Mapping)
+        else None
+    )
     handoff_relationships = visual_input.get("business_relationships")
     visual_relationships = semantic_graph.get("business_relationships")
     if handoff_relationships == [] and visual_relationships == []:
@@ -860,6 +868,7 @@ def build_page_artifact_spec(
         prompt_mode=prompt_mode,
         visible_text_bindings=visible_text_bindings,
         region_graph=region_graph,
+        visual_medium_policy=visual_medium_policy,
     )
 
 
@@ -932,6 +941,7 @@ __all__ = [
     "TypographySpec",
     "VisibleTextBindingSpec",
     "VisualCarrierSpec",
+    "VisualMediumPolicy",
     "VisualBudgetSpec",
     "is_text_dense",
     "build_page_artifact_spec",

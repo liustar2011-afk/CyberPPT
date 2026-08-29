@@ -23,6 +23,7 @@ from scripts.imagegen_pipeline.final_prompt_ir import (
     RuntimeLockIR,
     SemanticGroupIR,
     TextBindingIR,
+    VisualMediumPolicyIR,
 )
 from scripts.imagegen_pipeline.final_prompt_contract import backend_identifier_leaks
 from scripts.imagegen_pipeline.runtime_style_contract import (
@@ -440,6 +441,18 @@ def _text_binding_ir(spec: PageArtifactSpec) -> tuple[TextBindingIR, ...]:
     return result
 
 
+def _visual_medium_policy_ir(spec: PageArtifactSpec) -> VisualMediumPolicyIR | None:
+    policy = spec.visual_medium_policy
+    if policy is None:
+        return None
+    return VisualMediumPolicyIR(
+        preferred=policy.preferred,
+        allowed=policy.allowed,
+        scene_policy=policy.scene_policy,
+        rationale=policy.rationale,
+    )
+
+
 def _region_graph_ir(spec: PageArtifactSpec) -> RegionGraphIR | None:
     graph = spec.region_graph
     if graph is None:
@@ -541,6 +554,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             prompt_mode=spec.prompt_mode,
             text_bindings=_text_binding_ir(spec),
             region_graph=_region_graph_ir(spec),
+            visual_medium_policy=_visual_medium_policy_ir(spec),
         )
     except PromptContractError as exc:
         raise PromptContractError(f"{spec.page_id}: {exc}") from exc

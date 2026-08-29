@@ -10,6 +10,7 @@ from typing import Any
 
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 from cyberppt.region_graph_audit import audit_region_graph
+from cyberppt.visual_medium_audit import audit_visual_medium_policy
 
 
 def sha256(path: Path) -> str:
@@ -1021,6 +1022,8 @@ def audit_visual_design_package(
         _audit_grouping_decisions(page_spec, issue, page_id)
         for region_issue in audit_region_graph(page_spec):
             issue(region_issue["code"], region_issue["message"], page_id)
+        for medium_issue in audit_visual_medium_policy(page_spec):
+            issue(medium_issue["code"], medium_issue["message"], page_id)
 
         _audit_relationship_coverage(
             source,
