@@ -1,3 +1,4 @@
+# Compatibility retry: legacy _visual_budget(scene_policy-string) remains accepted.
 name: Stage2 refactor P3.2 medium topology decoupling
 
 on:
@@ -35,7 +36,7 @@ jobs:
               text = text.replace(anchor, anchor + addition, 1)
 
           old = '''def _visual_budget(dense_text_page: bool, scene_policy: str) -> dict[str, object]:\n    if dense_text_page:\n        return {\n            "mode": "relationship_field_only",\n            "max_auxiliary_fragments": 0,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    if scene_policy == "forbidden":\n        return {\n            "mode": "shared_field",\n            "max_auxiliary_fragments": 1,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    return {\n        "mode": "integrated_scene",\n        "max_auxiliary_fragments": 4,\n        "scope": "region",\n        "region_local_visuals": True,\n    }\n'''
-          new = '''def _visual_budget(dense_text_page: bool, medium_policy: dict[str, object]) -> dict[str, object]:\n    if dense_text_page:\n        return {\n            "mode": "relationship_field_only",\n            "max_auxiliary_fragments": 0,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    preferred = str(medium_policy.get("preferred") or "")\n    scene_policy = str(medium_policy.get("scene_policy") or "")\n    if scene_policy == "forbidden" and preferred in {"relationship_diagram", "data_visualization"}:\n        return {\n            "mode": "shared_field",\n            "max_auxiliary_fragments": 1,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    return {\n        "mode": "integrated_scene",\n        "max_auxiliary_fragments": 4,\n        "scope": "region",\n        "region_local_visuals": True,\n    }\n'''
+          new = '''def _visual_budget(dense_text_page: bool, medium_policy: dict[str, object] | str) -> dict[str, object]:\n    if isinstance(medium_policy, str):\n        medium_policy = resolve_visual_medium_policy(None, scene_policy=medium_policy).to_dict()\n    if dense_text_page:\n        return {\n            "mode": "relationship_field_only",\n            "max_auxiliary_fragments": 0,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    preferred = str(medium_policy.get("preferred") or "")\n    scene_policy = str(medium_policy.get("scene_policy") or "")\n    if scene_policy == "forbidden" and preferred in {"relationship_diagram", "data_visualization"}:\n        return {\n            "mode": "shared_field",\n            "max_auxiliary_fragments": 1,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    return {\n        "mode": "integrated_scene",\n        "max_auxiliary_fragments": 4,\n        "scope": "region",\n        "region_local_visuals": True,\n    }\n'''
           if old not in text:
               raise SystemExit("P3.2 visual budget block not found")
           text = text.replace(old, new, 1)
@@ -45,9 +46,11 @@ jobs:
           if old not in text:
               raise SystemExit("P3.2 semantic medium anchor not found")
           text = text.replace(old, new, 1)
-          old = '''            "scene_policy": scene_policy,\n            "use_scene": _legacy_use_scene(scene_policy),\n'''
-          new = '''            "scene_policy": scene_policy,\n            "visual_medium_policy": medium_policy.to_dict(),\n            "use_scene": _legacy_use_scene(scene_policy),\n'''
-          text = text.replace(old, new, 1)
+          text = text.replace(
+              '''            "scene_policy": scene_policy,\n            "use_scene": _legacy_use_scene(scene_policy),\n''',
+              '''            "scene_policy": scene_policy,\n            "visual_medium_policy": medium_policy.to_dict(),\n            "use_scene": _legacy_use_scene(scene_policy),\n''',
+              1,
+          )
 
           old = '''    if not missing and not corrupted:\n        scene_policy = _resolve_scene_policy(design, prompt_mode, page_id)\n        return {\n'''
           new = '''    if not missing and not corrupted:\n        scene_policy = _resolve_scene_policy(design, prompt_mode, page_id)\n        medium_policy = resolve_visual_medium_policy(\n            design.get("visual_medium_policy") or selected.get("visual_medium_policy"),\n            scene_policy=scene_policy,\n        )\n        return {\n'''
@@ -86,7 +89,6 @@ jobs:
         run: |
           python - <<'PY'
           from cyberppt.visual_stage.compiler import _decision_execution_design, _visual_budget
-
           source = {"prompt_mode": "semantic_brief", "core_judgment": "J", "business_relationships": []}
           selected = {"visual_medium_policy": {
               "preferred": "object_illustration",
@@ -96,10 +98,8 @@ jobs:
           }}
           design = _decision_execution_design(source, {}, selected, "P01", "peer_field")
           assert design["visual_medium_policy"]["preferred"] == "object_illustration"
-          budget_a = _visual_budget(False, design["visual_medium_policy"])
-          budget_b = _visual_budget(False, dict(design["visual_medium_policy"]))
-          assert budget_a == budget_b
-          assert budget_a["mode"] == "integrated_scene"
+          assert _visual_budget(False, design["visual_medium_policy"])["mode"] == "integrated_scene"
+          assert _visual_budget(False, "auto")["mode"] == "integrated_scene"
           PY
       - name: Run targeted regressions
         run: |
