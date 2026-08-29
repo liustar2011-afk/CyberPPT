@@ -8,8 +8,10 @@ from types import SimpleNamespace
 from cyberppt.onscreen_expression import resolve_onscreen_expression
 from cyberppt.script_quality_contract import parse_script_path
 from cyberppt.stage02_handoff import _page_record, build_stage02_handoff
+from cyberppt.stage02_input import input_path, prepare_stage02_input
 from cyberppt.stage02_relationship_adapter import derive_business_relationships
 from cyberppt.script_quality.parsing import parse_semantic_annotations
+from cyberppt.visual_stage.execution import _write_visual_design_input
 
 
 def _write_script(path: Path, pages: str) -> None:
@@ -91,9 +93,7 @@ def test_parses_optional_three_level_stage02_annotations() -> None:
     ]
 
 
-def test_stage02_rejects_noun_headings_when_clause_mode_is_declared() -> None:
-    from cyberppt.stage02_input import build_stage02_input
-
+def test_stage02_forwards_optional_semantic_annotations_to_visual_input() -> None:
     with TemporaryDirectory() as directory:
         root = Path(directory)
         script = root / "final-script.md"
@@ -105,17 +105,24 @@ def test_stage02_rejects_noun_headings_when_clause_mode_is_declared() -> None:
 - 页面使命：展示体系
 - 核心结论：形成标准体系
 ### 上屏文字
-- 建设框架：四大方向、八项能力
-### 文字表达规则
-- 小标题必须使用完整判断句。
+- 国家建设指引明确四大方向和八项能力：覆盖数据基础设施全生命周期
+  - 适用对象：电力企业及其数据基础设施项目
+### 关系标注
+- 一级：标准体系
+  - 二级：基础通用
+### 视觉约束
+- 保留层级关系，不表达先后关系。
 """,
         )
-        try:
-            build_stage02_input(root / "project", script=script)
-        except ValueError as exc:
-            assert "semantic heading contract failed" in str(exc)
-        else:
-            raise AssertionError("noun heading should fail clause mode")
+        project = root / "project"
+        prepare_stage02_input(project, script=script)
+        visual_input = _write_visual_design_input(project, input_path(project))
+
+        payload = json.loads(visual_input.read_text(encoding="utf-8"))
+        annotations = payload["pages"][0]["semantic_annotations"]
+        assert annotations["topology"] == "hierarchy"
+        assert annotations["nodes"][1]["parent"] == "标准体系"
+        assert annotations["visual_constraints_markdown"] == "- 保留层级关系，不表达先后关系。"
 
 
 def test_p04_many_to_one_support_uses_convergent_reading_not_framework() -> None:

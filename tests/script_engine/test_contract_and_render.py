@@ -285,6 +285,17 @@ def test_lint_final_script_flags_semantically_incomplete_onscreen_headings() -> 
     assert sum("ONSCREEN_HEADING_INCOMPLETE" in issue for issue in issues) == 3
 
 
+def test_lint_final_script_flags_noun_heading_with_colon_detail() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "建设框架：四大方向、八项能力", "text": "覆盖数据基础设施全生命周期"},
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert any("ONSCREEN_HEADING_INCOMPLETE" in issue for issue in issues)
+
+
 def test_lint_final_script_flags_multilevel_colon_chain_in_one_detail() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [

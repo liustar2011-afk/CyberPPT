@@ -26,7 +26,7 @@ from cyberppt.script_quality.parsing import (
     PAGE_HEADING_RE, SOURCE_RANGE_RE, SOURCE_RE, SPEAKER_SECTION_RE, _line_indent,
     _source_refs, audience_facing_group_label, extract_page_contract_receipt,
     extract_speaker_notes, load_page_contract_sidecar, parse_script_markdown,
-    parse_script_path, parse_semantic_annotations, strip_authoring_group_marker,
+    parse_script_path, strip_authoring_group_marker,
 )
 
 from cyberppt.script_quality.text_rules import (
@@ -194,8 +194,7 @@ __all__ = (
     "extract_page_contract_receipt", "extract_speaker_notes", "is_final_script_path",
     "load_page_contract_sidecar", "meaningful_char_count", "normalized_tokens",
     "onscreen_effective_char_target", "onscreen_semantic_coverage", "onscreen_story_roles",
-    "parse_script_markdown", "parse_script_path", "parse_selection_notes",
-    "parse_semantic_annotations", "re",
+    "parse_script_markdown", "parse_script_path", "parse_selection_notes", "re",
     "resolve_judgment_mode", "script_retry_directive", "selection_notes_are_structured",
     "strip_authoring_group_marker", "text_similarity",
 )

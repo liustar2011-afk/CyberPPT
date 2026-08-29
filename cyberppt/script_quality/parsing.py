@@ -51,7 +51,6 @@ HEADING_FIELD_ALIASES = {
     "关系标注": "关系标注",
     "层级关系": "关系标注",
     "视觉约束": "视觉约束",
-    "文字表达规则": "文字表达规则",
 }
 
 # Peer-level page-contract fields.  A ``- label: value`` line inside the
@@ -94,7 +93,6 @@ PAGE_CONTRACT_FIELDS = {
     "关系标注",
     "层级关系",
     "视觉约束",
-    "文字表达规则",
 }
 
 
@@ -136,6 +134,22 @@ def parse_semantic_annotations(
         "relation_markdown": str(relation_markdown or "").strip(),
         "visual_constraints_markdown": str(visual_constraints or "").strip(),
     }
+
+
+def parse_stage02_semantic_annotations(text: str) -> dict[str, dict[str, object]]:
+    """Extract optional visual hierarchy annotations without extending ScriptPage."""
+
+    annotations: dict[str, dict[str, object]] = {}
+    for sequence, _heading, body in _page_sections(text):
+        fields = _field_blocks(body)
+        relation_markdown = fields.get("关系标注", "")
+        visual_constraints = fields.get("视觉约束", "")
+        if relation_markdown.strip() or visual_constraints.strip():
+            annotations[f"p{sequence:02d}"] = parse_semantic_annotations(
+                relation_markdown,
+                visual_constraints,
+            )
+    return annotations
 
 
 MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
@@ -568,9 +582,6 @@ def parse_script_markdown(
                 ),
                 speaker_notes=extract_speaker_notes(body),
                 anchor_coverage_notes=fields.get("锚点覆盖说明", "").strip(),
-                semantic_relations=fields.get("关系标注", "").strip(),
-                visual_constraints=fields.get("视觉约束", "").strip(),
-                expression_rules=fields.get("文字表达规则", "").strip(),
                 contract_receipt=(page_contracts or {}).get(f"p{sequence:02d}")
                 or extract_page_contract_receipt(body),
             )
@@ -599,5 +610,6 @@ __all__ = [
     "parse_script_markdown",
     "parse_script_path",
     "parse_semantic_annotations",
+    "parse_stage02_semantic_annotations",
     "strip_authoring_group_marker",
 ]
