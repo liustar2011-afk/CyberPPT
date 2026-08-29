@@ -38,8 +38,10 @@ Run these steps in order for every content page:
    adjacent-page boundary and approved evidence scope. Reuse this brief in Critic
    and Rewrite; do not rerun whole-document UNDERSTAND.
 2. **Lock source meaning.** Record the strongest explicit conclusion and protected
-   payload: actor, action or status, formal document or task, number, date,
-   responsibility, condition, boundary and claim strength.
+   payload: actor, source predicate, action or status, formal document or task and
+   its document type, number, date and owning matter, responsibility, condition,
+   boundary and claim strength. Separate source-explicit relationships from
+   source-supported editorial inference before drafting.
 3. **Author the page conclusion.** `core_message` states what the page means and
    organizes the entire page. It contains no planning label, author self-talk,
    review language or relationship-construction note.
@@ -133,6 +135,28 @@ Avoid umbrella objects such as `电力行业能力建设`, `项目相关能力` 
 `后续有关工作` when the source names the actual capabilities, tasks or work
 items. An author-created umbrella term may summarize only after the exact source
 objects are stated; it cannot expand an actor's responsibility.
+
+Preserve the identity of formal instruments. A policy guideline, action plan,
+management measure, trial technical document, national or industry standard,
+group standard, initiative and task statement remain distinct document types.
+Do not normalize them into an official-sounding collective term such as
+`国家规则`, `统一规范` or `政策标准` merely because they all inform the page.
+When grouping is useful, use a descriptive proposition that names the covered
+types and keep each instrument's actual action: for example, the guideline sets
+the deployment, trial technical documents specify technical requirements, and
+GB/T 13016 provides the standard-system construction method.
+
+Bind every predicate to the source object that owns it. A maturity statement,
+evaluation result, implementation status or allowed action for one enterprise,
+domain or standard cannot become a group-wide predicate. In particular, a
+source instruction to inherit and extend one information-model standard does not
+mean that all existing industry standards can be directly inherited.
+
+Analytical enhancement remains allowed inside the evidence boundary. Preserve
+its origin in audience language: use forms such as `由此表明`, `本研究据此形成`
+or `可形成` when the relation is inferred rather than directly stated. An
+inferred mapping, loop, conversion path or consequence cannot be phrased as a
+source-defined term, an operating mechanism or an achieved result.
 
 ### 2.3 Full-copy hierarchy
 
@@ -269,6 +293,21 @@ Do not upgrade `一定基础` to `具备条件`, `承担项目` to `进入实施
 to `已经建立`, or `可衔接` to `直接继承`. Do not weaken `亟需` to `承接需求`.
 Do not move evidence across page boundaries without repairing the approved scope.
 
+Classify each material statement before rewriting it as one of four states:
+existing fact, stated target, recommended action, or proposed standard direction.
+Keep that state visible in its predicate. Source-table verbs such as `制定` and
+`完善` describe work to be done; render them as `拟制定`, `拟完善` or
+`研制方向`, not as if the standard already unifies, regulates or safeguards its
+object. Likewise, `提出`, `明确构建`, `具备条件`, `提供依据`, `建议`, `推动`
+and `配合` retain their own force and are not interchangeable with `已形成`,
+`已进入`, `确保完成`, `已建立`, `已实现` or `直接支撑完成`.
+
+Keep responsibility syntax explicit. After compression, the grammatical subject
+of a gap, task or recommendation must still be the actor responsible for the
+action. For example, when the source says the power sector has not developed
+supporting implementation rules, do not recast the national technical
+requirements themselves as having failed to develop those rules.
+
 ### 3.6 Relationship, time and density
 
 If a page claims mapping, alignment, coordination, conversion, support or a closed
@@ -278,6 +317,12 @@ Proximity or parallel placement on the canvas does not establish a relationship.
 When a page claims alignment with national milestones, project cadence or a
 maturity path, show the applicable year or trigger and the new state reached at
 each stage. `近期、中期、远期` alone does not establish alignment.
+
+A date remains attached to the source matter that owns it. National construction
+milestones, industry standard-system stages, project cadence and individual
+standard schedules are not interchangeable. A cross-paragraph date mapping may
+be expressed as `参照`, `衔接` or `对应国家目标` when supported; it must not turn
+a national milestone into an unstated hard deadline for an industry or project.
 
 For a page with many categories or semantic units, distinguish the conclusion,
 primary structure, decisive visible evidence and lower-priority complete list.
@@ -330,6 +375,11 @@ After all pages are drafted, review the complete deck:
     siblings share one dimension; each child adds a fact,
     action, relationship, object or condition; every non-parallel relationship
     has a visible direction or landing.
+12. Audit formal terms and predicates across all four audience layers. Every
+    policy or technical term must resolve to a source-defined term or a clearly
+    descriptive grouping; every `directly`, `ensures`, `completes`, `forms`,
+    `achieves`, `inherits` or `converts` claim must retain its source-supported
+    actor, object, status, scope and relation basis.
 
 ### 4.2 Revision and deterministic boundary
 
