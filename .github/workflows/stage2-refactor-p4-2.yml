@@ -1,0 +1,185 @@
+name: Stage2 refactor P4.2 ImageGen micro freedom
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p4-2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Add structured micro-visual freedom boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new, label):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'{label} target not found')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          ir = Path('scripts/imagegen_pipeline/final_prompt_ir.py')
+          replace_once(
+              ir,
+              '''@dataclass(frozen=True)\nclass RuntimeLockIR:\n''',
+              '''@dataclass(frozen=True)\nclass MicroVisualFreedomIR:\n    allowed: tuple[str, ...]\n    forbidden: tuple[str, ...]\n\n    def __post_init__(self) -> None:\n        if not self.allowed or not self.forbidden:\n            raise PromptContractError("micro visual freedom requires allowed and forbidden boundaries")\n        if any(not item.strip() for item in (*self.allowed, *self.forbidden)):\n            raise PromptContractError("micro visual freedom entries must be non-empty")\n        if len(self.allowed) != len(set(self.allowed)) or len(self.forbidden) != len(set(self.forbidden)):\n            raise PromptContractError("micro visual freedom entries must be unique")\n\n\n@dataclass(frozen=True)\nclass RuntimeLockIR:\n''',
+              'micro freedom IR class',
+          )
+          replace_once(
+              ir,
+              '    visual_medium_policy: VisualMediumPolicyIR | None = None\n\n    def __post_init__',
+              '    visual_medium_policy: VisualMediumPolicyIR | None = None\n    micro_visual_freedom: MicroVisualFreedomIR | None = None\n\n    def __post_init__',
+              'micro freedom IR field',
+          )
+          replace_once(
+              ir,
+              '    "FinalPromptIR",\n',
+              '    "FinalPromptIR",\n    "MicroVisualFreedomIR",\n',
+              'micro freedom export',
+          )
+
+          prompt = Path('scripts/imagegen_pipeline/artifact_prompt.py')
+          replace_once(
+              prompt,
+              '    FinalPromptIR,\n    PromptContractError,\n',
+              '    FinalPromptIR,\n    MicroVisualFreedomIR,\n    PromptContractError,\n',
+              'micro freedom import',
+          )
+          helper_anchor = '''def _region_graph_ir(spec: PageArtifactSpec) -> RegionGraphIR | None:\n'''
+          helper = '''def _micro_visual_freedom_ir(spec: PageArtifactSpec) -> MicroVisualFreedomIR | None:\n    if spec.region_graph is None and spec.visual_medium_policy is None:\n        return None\n    return MicroVisualFreedomIR(\n        allowed=(\n            "Choose the exact business-object depiction inside each macro region.",\n            "Adjust region-internal micro-positioning, local hierarchy and local reading implementation.",\n            "Choose lighting, material, texture, depth and subordinate supporting detail within the selected visual language.",\n            "Use subordinate supporting fragments only within the audited visual budget and allowed visual media.",\n            "Add local background or decorative detail only when it does not alter semantic roles, text ownership or reading relationships.",\n        ),\n        forbidden=(\n            "Do not merge or split macro regions.",\n            "Do not change macro region roles, anchors, relative emphasis or semantic order in a way that changes meaning.",\n            "Do not move exact visible text from its assigned macro region to another region.",\n            "Do not change the focus policy or promote a peer item into a result or judgment.",\n            "Do not change relationship type or direction, or invent stronger causality, hierarchy or sequence than the source supports.",\n            "Do not leave the allowed visual media or violate the scene policy.",\n            "Do not create an independent second narrative chain alongside the authoritative macro structure.",\n        ),\n    )\n\n\n'''
+          text = prompt.read_text(encoding='utf-8')
+          if 'def _micro_visual_freedom_ir(' not in text:
+              if helper_anchor not in text:
+                  raise SystemExit('micro freedom helper anchor not found')
+              text = text.replace(helper_anchor, helper + helper_anchor, 1)
+          prompt.write_text(text, encoding='utf-8')
+          replace_once(
+              prompt,
+              '            visual_medium_policy=_visual_medium_policy_ir(spec),\n        )',
+              '            visual_medium_policy=_visual_medium_policy_ir(spec),\n            micro_visual_freedom=_micro_visual_freedom_ir(spec),\n        )',
+              'micro freedom projection',
+          )
+
+          renderer = Path('scripts/imagegen_pipeline/final_prompt_renderer.py')
+          text = renderer.read_text(encoding='utf-8')
+          anchor = '''def render_final_prompt(\n'''
+          helper = '''def _micro_visual_freedom_lines(ir: FinalPromptIR) -> tuple[str, ...]:\n    freedom = ir.micro_visual_freedom\n    if freedom is None:\n        return ()\n    return (\n        "ImageGen region-internal freedom:",\n        *(f"- Allowed: {item}" for item in freedom.allowed),\n        "Macro visual authority remains locked:",\n        *(f"- Forbidden: {item}" for item in freedom.forbidden),\n    )\n\n\n'''
+          if 'def _micro_visual_freedom_lines(' not in text:
+              if anchor not in text:
+                  raise SystemExit('micro freedom renderer anchor not found')
+              text = text.replace(anchor, helper + anchor, 1)
+          old = '''                *_macro_structure_lines(ir),\n                *ir.composition.visual_responsibility,\n'''
+          new = '''                *_macro_structure_lines(ir),\n                *_micro_visual_freedom_lines(ir),\n                *ir.composition.visual_responsibility,\n'''
+          if old not in text:
+              raise SystemExit('micro freedom render insertion target not found')
+          text = text.replace(old, new, 1)
+          old = '''        "visual_medium_policy": (\n'''
+          new = '''        "micro_visual_freedom": (\n            {\n                "allowed": list(ir.micro_visual_freedom.allowed),\n                "forbidden": list(ir.micro_visual_freedom.forbidden),\n            }\n            if ir.micro_visual_freedom is not None\n            else None\n        ),\n        "visual_medium_policy": (\n'''
+          if old not in text:
+              raise SystemExit('micro freedom receipt target not found')
+          renderer.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          skill = Path('vendor/skills/ppt-visual-structure-designer/SKILL.md')
+          text = skill.read_text(encoding='utf-8')
+          marker = '## 工作流程\n'
+          boundary = '''## ImageGen 微观视觉自由边界\n\n当页面已形成 `Region Graph + focus_policy + visual_medium_policy + scene_policy` 时，这些字段共同构成宏观生成约束权威。ImageGen 只在每个 Region 内部拥有微观实现自由：可决定具体业务对象如何绘制、局部构件如何排列、光影材质和景深、从属辅助碎片及不改变语义的局部装饰。\n\nImageGen 不得合并或拆分 Region，不得把锁定文字移动到其他 Region，不得改变 focus policy、区域语义角色和业务关系类型/方向，不得超出 allowed medium 或违反 scene policy，也不得生成独立于 Region Graph 的第二条叙事链。\n\n'''
+          if '## ImageGen 微观视觉自由边界' not in text:
+              if marker not in text:
+                  raise SystemExit('Skill micro freedom marker not found')
+              text = text.replace(marker, boundary + marker, 1)
+          skill.write_text(text, encoding='utf-8')
+
+          ref = Path('vendor/skills/ppt-visual-structure-designer/references/prompt-assembly.md')
+          text = ref.read_text(encoding='utf-8')
+          old = '`semantic_brief`为默认模式，正式Prompt消费页面使命、核心判断、完整文字稿语义、主论证链、真实业务关系和精确上屏文字；ImageGen决定场景或结构、视觉载体、空间组织、阅读实现和辅助细节。\n'
+          new = '`semantic_brief`为默认模式。页面存在 Region Graph 时，正式Prompt必须消费宏观区域、阅读轴、focus policy、媒介策略和精确文字归属；ImageGen只决定 Region 内部的对象表现、局部排布、光影材质和从属细节。旧项目缺少 Region Graph 时继续走兼容语义 brief。\n'
+          if old in text:
+              text = text.replace(old, new, 1)
+          ref.write_text(text, encoding='utf-8')
+          PY
+      - name: Add P4.2 regression tests
+        run: |
+          cat > tests/test_imagegen_micro_freedom.py <<'PY'
+          from dataclasses import replace
+
+          from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir
+          from scripts.imagegen_pipeline.final_prompt_renderer import render_debug_receipt, render_final_prompt
+          from tests.test_final_prompt_ir import _artifact_spec
+          from tests.test_prompt_macro_structure import _current_spec
+
+
+          def test_region_page_gets_structured_micro_visual_freedom():
+              ir = build_final_prompt_ir(_current_spec())
+              assert ir.micro_visual_freedom is not None
+              assert any("business-object depiction" in item for item in ir.micro_visual_freedom.allowed)
+              assert any("merge or split macro regions" in item for item in ir.micro_visual_freedom.forbidden)
+
+
+          def test_prompt_locks_macro_mutation_and_allows_region_internal_design():
+              prompt = render_final_prompt(build_final_prompt_ir(_current_spec()))
+              assert "ImageGen region-internal freedom:" in prompt
+              assert "Choose the exact business-object depiction inside each macro region." in prompt
+              assert "Do not merge or split macro regions." in prompt
+              assert "Do not move exact visible text from its assigned macro region to another region." in prompt
+              assert "Do not change the focus policy" in prompt
+              assert "Do not leave the allowed visual media or violate the scene policy." in prompt
+
+
+          def test_directed_composition_keeps_same_micro_freedom_boundary():
+              spec = replace(_current_spec(), prompt_mode="directed_composition")
+              prompt = render_final_prompt(build_final_prompt_ir(spec))
+              assert "ImageGen region-internal freedom:" in prompt
+              assert "Macro visual authority remains locked:" in prompt
+
+
+          def test_legacy_spec_without_region_or_medium_policy_remains_compatible():
+              ir = build_final_prompt_ir(_artifact_spec())
+              assert ir.micro_visual_freedom is None
+              prompt = render_final_prompt(ir)
+              assert "ImageGen region-internal freedom:" not in prompt
+
+
+          def test_debug_receipt_persists_micro_visual_freedom():
+              ir = build_final_prompt_ir(_current_spec())
+              receipt = render_debug_receipt(ir, page_id="P01", compiler="artifact-spec-v2", prompt_ir_version="v3")
+              freedom = receipt["micro_visual_freedom"]
+              assert freedom is not None
+              assert freedom["allowed"]
+              assert freedom["forbidden"]
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run P4.2 regressions
+        run: |
+          python -m pytest -q tests/test_imagegen_micro_freedom.py tests/test_prompt_macro_structure.py tests/test_final_prompt_ir.py tests/test_final_prompt_renderer.py tests/test_artifact_prompt.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit, self-clean, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add scripts/imagegen_pipeline/final_prompt_ir.py scripts/imagegen_pipeline/artifact_prompt.py scripts/imagegen_pipeline/final_prompt_renderer.py vendor/skills/ppt-visual-structure-designer/SKILL.md vendor/skills/ppt-visual-structure-designer/references/prompt-assembly.md tests/test_imagegen_micro_freedom.py
+          git rm .github/workflows/stage2-refactor-p4-2.yml
+          git commit -m "feat(stage2): define ImageGen micro visual freedom"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
