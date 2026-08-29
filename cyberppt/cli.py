@@ -29,7 +29,7 @@ from cyberppt.commands.visual_structure_stage import (
     record_visual_structure_execution,
     run_visual_structure_audit,
 )
-from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
+from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, WORKFLOW_FILE
 from cyberppt.project_status import build_project_status
 from cyberppt.semantic_understanding import (
     prepare_semantic_understanding,
@@ -62,7 +62,7 @@ def _doctor() -> int:
         for style_id in range(1, 9)
     ]
     checks = {
-        "skill": SKILL_FILE.exists(),
+        "workflow": WORKFLOW_FILE.exists(),
         "references": REFERENCES_DIR.exists() and any(REFERENCES_DIR.glob("*.md")),
         "palette_samples": all(sample.exists() for sample in required_palette_samples),
         "scripts": all((SCRIPTS_DIR / name).exists() for name in SCRIPT_ALIASES.values()),

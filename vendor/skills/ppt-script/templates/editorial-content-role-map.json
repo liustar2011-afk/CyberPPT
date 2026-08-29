@@ -1,9 +1,0 @@
-{
-  "schema": "ppt-script.editorial-content-role-map.v2",
-  "items": [],
-  "provenance": {
-    "inputs": {
-      "analysis/01-source-truth-map.md": "待填写SHA256"
-    }
-  }
-}

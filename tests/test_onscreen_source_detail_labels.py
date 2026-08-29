@@ -56,6 +56,14 @@ def test_page_lint_blocks_source_detail_collapsed_to_label() -> None:
     assert "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" in codes
 
 
+def test_page_lint_blocks_label_enumeration_that_hides_item_detail() -> None:
+    page = _page("重点验证场景\n  绿色低碳、科技创新")
+
+    codes = {issue.code for issue in _presentation_issues(page, _contract())}
+
+    assert "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" in codes
+
+
 def test_page_lint_accepts_label_with_explanation_and_no_terminal_punctuation() -> None:
     page = _page(
         "重点验证场景\n"

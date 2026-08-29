@@ -1094,7 +1094,8 @@ def main() -> int:
     pages = parse_pages(args.pages, set(blocks))
     output = compile_page_blocks(blocks, pages, style_lock_path=args.style_lock)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(output, encoding="utf-8", newline="\n")
+    with args.out.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(output)
     if args.manifest:
         payload = {
             "schema": "cyberppt.deliverable_image_prompt_manifest.v1",
@@ -1114,7 +1115,8 @@ def main() -> int:
             },
         }
         args.manifest.parent.mkdir(parents=True, exist_ok=True)
-        args.manifest.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+        with args.manifest.open("w", encoding="utf-8", newline="\n") as handle:
+            handle.write(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
     print(args.out)
     return 0
 

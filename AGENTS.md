@@ -35,6 +35,17 @@ Stage 01 分两段，各有唯一权威路线，之间用一次机械投影衔�
 
 **规划与写作段（PLAN/AUTHOR）**：两种 profile 均从 `script/foundation.json` 进入 `.agents/skills/cyberppt-script-workflow/SKILL.md` 编排的 `PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER`，产出 `script/deck-plan.json` 和 `script/dist/final-script.md`。strict/legacy 的 `project-foundation` 只做字段搬运，不重新分析。
 
+- PLAN 和 AUTHOR 的唯一执行者是当前主 Agent。调用 `cyberppt-script-workflow` 意味着当前主 Agent 必须读取 Foundation、完整来源正文、整份 Deck Plan 和相邻页面合同并实际完成规划或写作；不得只引用 Skill、运行审计或调用确定性脚本后声称完成作者化。
+- 仓库不设置独立 AUTHOR Skill、AUTHOR CLI、规则式作者生成器或项目硬编码作者脚本。确定性代码仅在生成式写作完成后校验来源、关系、边界和交付格式。
+- 新项目的 Deck Plan 使用 v2 lean，只承担章节归并、页数分配、暂定标题、页面问题/使命和来源边界。核心判断、内容模块、证据取舍、上屏合同、视觉关系与讲述线索属于 AUTHOR 和 Final Script；Stage 02 不读取 v2 Deck Plan 文案。
+
+来源章节与汇报章节必须分层。Foundation 保留来源章节身份、边界和顺序；
+Deck Plan 默认把相邻来源章节按共同受众问题、论证角色和承接关系归并为汇报
+章节，映射展开后必须覆盖全部来源章节且顺序一致。正式汇报优先控制在 4 个
+汇报章节以内，默认不得超过 6 个；超过 6 个必须记录具体例外理由。多章节
+汇报中每个汇报章节设置一页过渡页，页面序列为封面、目录、逐章过渡页与
+内容页、封底。单章节规则继续适用。
+
 Stage 01 的脚本规划与写作段只有三个权威内容产物（vendored engine's own AGENTS.md: "Only these are authoritative content artifacts"）：
 
 1. `foundation.json`

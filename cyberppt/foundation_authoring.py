@@ -27,6 +27,16 @@ heading in `source_structure`, retain source identity and SHA-256 in `sources`,
 and bind authored facts, constraints, numbers, argument nodes, and inferred
 relations to stable `SU-*` source-unit references.
 
+Set `source_consumption_policy: required` and
+`source_consumption_contract_version: 2`. When one fact or constraint cites a
+compound paragraph, several table rows, or several list items, populate
+`semantic_units` before summarizing it: preserve each independently meaningful
+sentence or row as its own unit, give it a stable ID and `text`, and bind it with
+`source_unit_ref` or `source_unit_refs`. A short source unit carrying one atomic
+fact may remain a single fact without `semantic_units`. Do not replace row-level
+objects, actions, responsibilities, conditions, outputs, or boundaries with a
+category label.
+
 Review `Source asset candidates` as derived routing hints. Promote only useful
 caption, table, formula, image or chart candidates into `source_assets`; retain
 the candidate ID, kind, locator and complete source-unit refs unchanged. Author

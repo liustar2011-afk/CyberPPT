@@ -1,5 +1,13 @@
 # Onscreen Copy Authoring
 
+For a reading deck, detail items retain the source-backed object, action, role,
+responsibility, condition, result, or boundary. A label row such as
+`术语概念、参考架构、标识目录` is an index of concepts, not explanatory detail.
+Write an independently readable unit such as
+`参考架构：明确与国家总体架构的映射关系`. Declare
+`detail_policy.label_only_allowed: true` only when the approved source itself is
+an intentionally label-only taxonomy.
+
 ## Purpose
 
 Translate a complete page argument into presentation language without losing the page's judgment, proof logic, distinctions, or source boundaries.
@@ -241,6 +249,14 @@ Overload and low density are different failure modes — do not fix one by silen
 The compact-detail threshold remains 30 meaningful (Chinese/Latin/numeric) characters for items and unstructured fragments. A single source-grounded module lead in the `text` field may exceed that threshold up to 90 meaningful characters when it carries one business claim. This distinction keeps natural sentence-led copy available while blocking paragraph-like detail.
 
 A page has no universal character-count or module-count target. Review density through the evidence and business meaning that the page must carry: source-grounded facts, numbers, roles, conditions, boundaries, and an earned internal implication when the page route declares one. Add a line only when it carries a missing source-grounded point. Do not add filler, duplicate a claim, or create a relationship-narration module to satisfy a numerical target.
+
+When the approved Deck Plan declares `delivery_mode: self_read`, every
+`standard` or `dense` content page must carry enough visible semantic payload to
+be understood without speaker notes. The deterministic audit scales the floor
+with the number of approved modules and counts compact parallel taxonomy details
+as separate semantic units. Cover, agenda, chapter transition and ending pages
+remain exempt. This mode changes the visible explanation duty; it does not
+authorize invented evidence, repeated judgments or a fixed card layout.
 
 ## 5a. Density is earned by new facts, never by restating one
 

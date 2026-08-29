@@ -1,0 +1,33 @@
+name: electric-power-data-infrastructure-standards-20260829
+workflow: cyberppt
+schema: cyberppt.project.v1
+mode: lightweight
+authority_mode: authoritative
+directories:
+  source: source
+  workbench: workbench
+  stages: workbench/stages
+  stage_source_map: workbench/stages/00-source-map
+  source_registry: workbench/stages/00-source-map/source-registry.json
+  source_units: workbench/stages/00-source-map/source-units.jsonl
+  source_heading_tree: workbench/stages/00-source-map/source-heading-tree.json
+  source_map: workbench/stages/00-source-map/source-map.md
+  source_map_audit: workbench/stages/00-source-map/source-map-audit.json
+  stage_semantic_understanding: workbench/stages/00-semantic-understanding
+  semantic_understanding: workbench/stages/00-semantic-understanding/semantic-understanding.md
+  semantic_argument_model: workbench/stages/00-semantic-understanding/semantic-argument-model.json
+  stage_analysis: workbench/stages/01-analysis
+  source_truth: workbench/stages/01-analysis/source-truth.json
+  outline: workbench/stages/01-analysis/outline.json
+  scripts: workbench/scripts
+  script_drafts: workbench/scripts/drafts
+  final_scripts: workbench/scripts/final
+  script_engine_project: script
+  foundation: script/foundation.json
+  deck_plan: script/deck-plan.json
+  final_script_md: script/dist/final-script.md
+  final_script_json: script/dist/final-script.json
+status:
+  stage: initialized
+  live: false
+  notes: "Initialization metadata only. Run `python -m cyberppt status <project>` for live Stage 01 and Stage 02 status."

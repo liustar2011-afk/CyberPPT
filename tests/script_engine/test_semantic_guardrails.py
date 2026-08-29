@@ -4,9 +4,18 @@ from pathlib import Path
 
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script, audit_foundation_analysis
 from script_engine.analysis_audits.composed_trace import critic_priorities, trace_composed
+from script_engine.analysis_audits.final_script import _status_strength_preserved
 from script_engine.contracts import validate_deck_plan
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_status_strength_uses_business_modality_instead_of_internal_labels() -> None:
+    assert _status_strength_preserved("规划", "后续应制定接口标准并开展场景验证")
+    assert _status_strength_preserved("建议", "建议优先启动参考架构标准立项")
+    assert _status_strength_preserved("待确认", "统一框架仍需完善，新场景标准供给滞后")
+    assert _status_strength_preserved("现状", "企业已形成数据架构和管理实践")
+    assert not _status_strength_preserved("规划", "相关标准已经发布实施")
 
 
 def _foundation() -> dict:
@@ -572,6 +581,18 @@ def test_onscreen_contract_expression_mode_warns_when_mixed_copy_has_no_proposit
     assert issues == []
     assert any("expression_mode='mixed'" in warning for warning in warnings)
 
+
+def test_onscreen_proposition_does_not_require_terminal_punctuation() -> None:
+    foundation, plan, _ = _contracted_gap_fixture()
+    final = _contracted_final()
+    plan["pages"][0]["onscreen_contract"]["expression_mode"] = "mixed"
+    final["slides"][0]["onscreen"][0]["text"] = "政策要求已经形成标准建设的直接依据"
+
+    issues, warnings = audit_final_script(final, plan, foundation)
+
+    assert issues == []
+    assert not any("expression_mode='mixed'" in warning for warning in warnings)
+
 def test_onscreen_contract_rejects_unknown_expression_mode() -> None:
     foundation, plan, _ = _contracted_gap_fixture()
     plan["pages"][0]["onscreen_contract"]["expression_mode"] = "paragraph_led"
@@ -732,6 +753,24 @@ def test_composed_trace_stably_separates_quote_paraphrase_number_and_identifier(
     identifier_drift = trace_composed(_trace_final("平台采用NeoGraph处理资源"), foundation)
     assert identifier_drift["hard_findings"]
     assert identifier_drift["hard_findings"][0]["absent_identifiers"] == ["NeoGraph"]
+
+
+def test_composed_trace_accepts_numbers_and_identifiers_from_semantic_units() -> None:
+    foundation = _trace_foundation()
+    foundation["facts"][0]["semantic_units"] = [
+        {
+            "id": "F14#0",
+            "text": "2024年采用T/CSAS 0012标准并通过DCMM评价",
+            "source_unit_refs": ["S1.4"],
+        }
+    ]
+
+    report = trace_composed(
+        _trace_final("2024年采用T/CSAS 0012标准并通过DCMM评价"),
+        foundation,
+    )
+
+    assert report["status"] == "passed"
 
 
 def test_composed_trace_does_not_harden_source_supported_inferred_analysis() -> None:

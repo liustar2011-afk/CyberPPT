@@ -216,3 +216,68 @@ def test_contract_v2_requires_unit_dispositions_on_strict_pages() -> None:
     issues, _ = audit_deck_plan(_plan(page), foundation)
 
     assert any("SOURCE_CONSUMPTION_UNIT_CONTRACT_MISSING" in issue for issue in issues)
+
+
+def test_contract_v2_rejects_source_record_without_semantic_units() -> None:
+    page = _page()
+    page["source_consumption"]["unit_dispositions"] = []
+    foundation = _foundation()
+    foundation["source_consumption_contract_version"] = 2
+    foundation["facts"][0]["semantic_units"] = []
+
+    issues, _ = audit_deck_plan(_plan(page), foundation)
+
+    assert any("SOURCE_CONSUMPTION_FOUNDATION_UNITS_MISSING" in issue for issue in issues)
+
+
+def test_author_rejects_label_enumeration_when_source_units_carry_detail() -> None:
+    page = _page()
+    page["onscreen_contract"]["modules"][0]["heading"] = "标准明细"
+    foundation = _foundation()
+    foundation["facts"][0]["semantic_units"] = [
+        {
+            "id": "ST0001#0",
+            "text": "参考架构明确与国家数据基础设施总体架构的映射关系",
+            "claim_role": "fact",
+        },
+        {
+            "id": "ST0001#1",
+            "text": "标识目录规定电力数据标识管理和目录描述要求",
+            "claim_role": "fact",
+        },
+    ]
+    final = _final(onscreen_items=["参考架构、标识目录"])
+    final["slides"][0]["onscreen"][0]["heading"] = "标准明细"
+
+    issues, _ = audit_final_script(final, _plan(page), foundation)
+
+    assert any("collapses source-backed" in issue for issue in issues)
+
+
+def test_author_accepts_explanatory_items_for_source_backed_labels() -> None:
+    page = _page()
+    page["onscreen_contract"]["modules"][0]["heading"] = "标准明细"
+    foundation = _foundation()
+    foundation["facts"][0]["semantic_units"] = [
+        {
+            "id": "ST0001#0",
+            "text": "参考架构明确与国家数据基础设施总体架构的映射关系",
+            "claim_role": "fact",
+        },
+        {
+            "id": "ST0001#1",
+            "text": "标识目录规定电力数据标识管理和目录描述要求",
+            "claim_role": "fact",
+        },
+    ]
+    final = _final(
+        onscreen_items=[
+            "参考架构：明确与国家总体架构的映射关系",
+            "标识目录：规定电力数据标识和目录描述要求",
+        ]
+    )
+    final["slides"][0]["onscreen"][0]["heading"] = "标准明细"
+
+    issues, _ = audit_final_script(final, _plan(page), foundation)
+
+    assert not any("collapses source-backed" in issue for issue in issues)

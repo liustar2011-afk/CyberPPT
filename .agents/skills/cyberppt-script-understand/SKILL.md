@@ -90,6 +90,13 @@ Preserve:
 
 Use `group_id` to associate related atomic facts instead of merging several materially different claims into one oversized fact.
 
+For `source_consumption_contract_version: 2`, a fact or constraint that cites a
+compound paragraph, multiple table rows, or multiple list items must expose one
+`semantic_units[]` entry for every independently preservable payload. Each unit
+must retain its text and exact `source_unit_ref(s)`. Short, genuinely atomic
+facts may remain lightweight. A category label cannot replace source-backed
+objects, actions, responsibilities, conditions, outputs, or boundaries.
+
 Assign `visibility` when the source clearly distinguishes internal-only, restricted or external-safe material.
 
 ## Pass 3 — Explicit relations

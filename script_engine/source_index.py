@@ -548,10 +548,104 @@ def validate_foundation_source_bindings(
     return issues
 
 
+_DETAIL_SENTENCE_SPLIT_RE = re.compile(r"[。！？!?；;]+")
+_DETAIL_MEANINGFUL_RE = re.compile(r"[一-鿿A-Za-z0-9]")
+
+
+def _detail_obligation_count(unit: dict[str, Any]) -> int:
+    """Estimate how many independently preservable payloads a source unit carries."""
+
+    if str(unit.get("kind") or "") == "heading":
+        return 0
+    text = str(unit.get("text") or "").strip()
+    if not text:
+        return 0
+    clauses = [
+        clause.strip()
+        for clause in _DETAIL_SENTENCE_SPLIT_RE.split(text)
+        if len(_DETAIL_MEANINGFUL_RE.findall(clause)) >= 12
+    ]
+    if str(unit.get("kind") or "") in {"table_row", "list_item"}:
+        return max(1, len(clauses))
+    meaningful = len(_DETAIL_MEANINGFUL_RE.findall(text))
+    return max(len(clauses), 2 if meaningful >= 160 else 1)
+
+
+def validate_foundation_detail_atomicity(
+    foundation: dict[str, Any], source_index: dict[str, Any]
+) -> list[str]:
+    """Reject strict v2 Foundations that collapse rich source material into one label.
+
+    The gate is intentionally limited to the current source-consumption contract. Short,
+    genuinely atomic facts remain valid without ``semantic_units``; compound paragraphs,
+    table rows and multi-unit citations must expose traceable units for PLAN and AUTHOR.
+    """
+
+    if (
+        source_index.get("schema") != "cyberppt.source_index.v2"
+        or foundation.get("source_consumption_policy") != "required"
+        or foundation.get("source_consumption_contract_version") != 2
+    ):
+        return []
+
+    indexed_units = {
+        str(unit.get("unit_id")): unit
+        for unit in source_index.get("units") or []
+        if isinstance(unit, dict) and unit.get("unit_id")
+    }
+    issues: list[str] = []
+    for collection in ("facts", "constraints"):
+        for index, item in enumerate(foundation.get(collection) or []):
+            if not isinstance(item, dict):
+                continue
+            item_id = str(item.get("id") or f"{collection}.{index}")
+            cited = [
+                ref
+                for ref in _source_unit_refs(item)
+                if ref in indexed_units and str(indexed_units[ref].get("kind") or "") != "heading"
+            ]
+            obligations = sum(_detail_obligation_count(indexed_units[ref]) for ref in cited)
+            if obligations <= 1:
+                continue
+            semantic_units = [
+                unit for unit in item.get("semantic_units") or [] if isinstance(unit, dict)
+            ]
+            if len(semantic_units) < obligations:
+                issues.append(
+                    "FOUNDATION_SOURCE_DETAIL_ATOMICITY_GAP: "
+                    f"{item_id} cites {len(cited)} source units carrying at least {obligations} "
+                    f"detail obligations but exposes {len(semantic_units)} semantic_units"
+                )
+            covered_refs: set[str] = set()
+            for unit_index, unit in enumerate(semantic_units):
+                unit_refs = {
+                    str(value)
+                    for value in unit.get("source_unit_refs") or []
+                    if isinstance(value, str) and value.startswith("SU-")
+                }
+                direct_ref = unit.get("source_unit_ref")
+                if isinstance(direct_ref, str) and direct_ref.startswith("SU-"):
+                    unit_refs.add(direct_ref)
+                if not unit_refs:
+                    issues.append(
+                        "FOUNDATION_SEMANTIC_UNIT_SOURCE_REF_MISSING: "
+                        f"{item_id}.semantic_units[{unit_index}] must declare source_unit_ref(s)"
+                    )
+                covered_refs.update(unit_refs)
+            uncovered = sorted(set(cited) - covered_refs)
+            if semantic_units and uncovered:
+                issues.append(
+                    "FOUNDATION_SEMANTIC_UNIT_SOURCE_COVERAGE_GAP: "
+                    f"{item_id}.semantic_units do not cover cited source units {uncovered}"
+                )
+    return issues
+
+
 def validate_script_foundation_against_index(
     foundation: dict[str, Any], source_index: dict[str, Any]
 ) -> list[str]:
     issues = validate_foundation_source_bindings(foundation, source_index)
+    issues.extend(validate_foundation_detail_atomicity(foundation, source_index))
     issues.extend(
         validate_reading_strategy(
             foundation,

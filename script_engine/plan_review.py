@@ -5,8 +5,6 @@ import json
 from collections import defaultdict
 from typing import Any
 
-from script_engine.plan_quality import plan_critic_priorities
-
 from .analysis_audit import foundation_items_by_id
 
 
@@ -25,13 +23,20 @@ _PAGE_ROLE_LABELS = {
 
 _STRUCTURE_MODE_LABELS = {
     "preserve": "保持来源章节结构",
+    "presentation_grouping": "来源顺序保持、汇报章节归并",
     "user_authorized_restructure": "用户授权重组",
+}
+
+_PRESENTATION_STRUCTURE_MODE_LABELS = {
+    "formal_chaptered": "正式分章节汇报",
+    "continuous": "连续式短汇报",
 }
 
 _STRUCTURAL_OPERATION_LABELS = {
     "preserve": "保持",
     "split": "拆页",
     "merge_within_chapter": "章内合并",
+    "group_adjacent_source_chapters": "相邻来源章节归并为汇报章节",
     "user_authorized_cross_chapter": "用户授权跨章调整",
 }
 
@@ -259,24 +264,24 @@ def render_plan_review(
         f"- 汇报对象：{_text(plan.get('audience'))}",
         f"- 受众范围：{_text(plan.get('audience_scope'))}",
         f"- 来源结构：{_label(plan.get('source_structure_mode'), _STRUCTURE_MODE_LABELS)}",
-        "- 来源适配门禁："
-        + (
-            "来源引用、论点绑定与边界底线（v2 lean）"
-            if lean_plan
-            else (
-                "严格质询"
-                if plan.get("evidence_fit_review_mode") == "strict"
-                else "缺失，阻断 AUTHOR"
-            )
+        f"- 汇报结构：{_label(plan.get('presentation_structure_mode'), _PRESENTATION_STRUCTURE_MODE_LABELS)}",
+        f"- 汇报章节数：{len(chapters)}",
+        "- 规划边界：章节、页序、页面问题、页面使命和来源范围" if lean_plan else (
+            "- 来源适配门禁：严格质询"
+            if plan.get("evidence_fit_review_mode") == "strict"
+            else "- 来源适配门禁：缺失，阻断 AUTHOR"
         ),
-        f"- 来源总论点：{_text(plan.get('source_thesis'))}",
-        "- 来源论证顺序：" + " → ".join(_ids(plan.get("source_argument_method"))),
-        f"- 全稿主旨：{_text(plan.get('thesis'))}",
-        f"- 叙事弧：{_text(plan.get('narrative_arc'))}",
-        f"- 受众起点：{_text(plan.get('audience_start'))}",
-        f"- 受众终点：{_text(plan.get('audience_end'))}",
         "",
     ]
+    if not lean_plan:
+        lines[-1:-1] = [
+            f"- 来源总论点：{_text(plan.get('source_thesis'))}",
+            "- 来源论证顺序：" + " → ".join(_ids(plan.get("source_argument_method"))),
+            f"- 全稿主旨：{_text(plan.get('thesis'))}",
+            f"- 叙事弧：{_text(plan.get('narrative_arc'))}",
+            f"- 受众起点：{_text(plan.get('audience_start'))}",
+            f"- 受众终点：{_text(plan.get('audience_end'))}",
+        ]
 
     if narrative_design:
         lines.extend(
@@ -317,6 +322,37 @@ def render_plan_review(
         chapter_pages: list[dict[str, Any]],
         chapter: dict[str, Any] | None = None,
     ) -> None:
+        if lean_plan:
+            lines.extend(
+                [
+                    f"## {title}",
+                    "",
+                    *([f"- 章节使命：{_text(chapter.get('purpose'))}",
+                       f"- 来源章节映射：{'、'.join(_ids(chapter.get('source_chapter_ids'))) or '—'}", ""]
+                      if chapter is not None else []),
+                    "| 页面 | 类型 | 暂定标题 | 页面问题 | 页面使命 | 来源范围 |",
+                    "|---|---|---|---|---|---|",
+                ]
+            )
+            if chapter is not None and chapter.get("structural_operation"):
+                lines.insert(
+                    len(lines) - 3,
+                    f"- 章节结构操作：{_label(chapter.get('structural_operation'), _STRUCTURAL_OPERATION_LABELS)}",
+                )
+            for page in chapter_pages:
+                lines.append(
+                    "| {id} | {role} | {title} | {question} | {mission} | {sources} |".format(
+                        id=_cell(page.get("id")),
+                        role=_cell(_label(page.get("page_role"), _PAGE_ROLE_LABELS)),
+                        title=_cell(page.get("title")),
+                        question=_cell(page.get("question")),
+                        mission=_cell(page.get("logic")),
+                        sources=_cell("、".join(_ids(page.get("source_refs"))) or "—"),
+                    )
+                )
+            lines.append("")
+            return
+
         lines.extend(
             [
                 f"## {title}",
@@ -326,6 +362,8 @@ def render_plan_review(
                     f"- 章节问题：{_text(chapter.get('question'))}",
                     f"- 章节结论：{_text(chapter.get('message'))}",
                     f"- 章节承接：{_text(chapter.get('relationship_to_previous'))}",
+                    f"- 来源章节映射：{'、'.join(_ids(chapter.get('source_chapter_ids'))) or '—'}",
+                    f"- 章节结构操作：{_label(chapter.get('structural_operation'), _STRUCTURAL_OPERATION_LABELS)}",
                     "- 承担源论点：" + "、".join(_ids(chapter.get("source_argument_node_ids"))),
                     "",
                 ] if chapter is not None else []),
@@ -415,7 +453,7 @@ def render_plan_review(
     if unassigned:
         append_chapter("未分配章节", unassigned)
 
-    priorities = plan_critic_priorities(plan) if lean_plan else []
+    priorities: list[dict[str, Any]] = []
     if priorities:
         lines.extend(["## Plan Critic 重点", ""])
         lines.extend(

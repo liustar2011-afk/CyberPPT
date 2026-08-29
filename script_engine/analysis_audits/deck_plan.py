@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 from .common import *
-from script_engine.narrative_arc import review_narrative_design
-from script_engine.plan_quality import plan_critic_priorities
 from script_engine.contracts import is_lean_deck_plan
 from script_engine.source_arguments import (
     argument_source_refs,
@@ -13,8 +11,36 @@ from script_engine.source_arguments import (
 
 
 _STRUCTURAL_PAGE_ROLES = frozenset(
-    {"cover", "agenda", "contents", "chapter", "transition", "ending", "closing"}
+    {"cover", "agenda", "contents", "chapter", "chapter_divider", "transition", "ending", "closing"}
 )
+_CHAPTER_TRANSITION_ROLES = frozenset({"chapter", "chapter_divider", "transition"})
+_LEAN_ROOT_AUTHOR_FIELDS = frozenset(
+    {
+        "delivery_mode", "narrative_design", "source_thesis",
+        "source_argument_method", "thesis", "narrative_arc", "storyline",
+        "content_load_curve", "audience_start", "audience_end",
+        "evidence_fit_review_mode",
+    }
+)
+_LEAN_CHAPTER_AUTHOR_FIELDS = frozenset(
+    {"question", "message", "relationship_to_previous", "source_argument_node_ids", "source_scope"}
+)
+_LEAN_PAGE_AUTHOR_FIELDS = frozenset(
+    {
+        "subtitle", "message", "beat", "spoken_thread", "content", "receives", "next",
+        "source_argument_node_ids", "source_scope", "content_load", "must_include",
+        "reserved_for_later", "analysis_basis", "visual_evidence", "content_route",
+        "stage02_readiness", "onscreen_contract", "onscreen_composition",
+        "source_consumption", "evidence_fit_review", "primary_relation",
+        "secondary_relations", "content_relations", "proof",
+    }
+)
+
+_TITLE_CLAIM_MARKERS_RE = re.compile(
+    r"(正在|已经|仍将|仍需|必须|需要|应当|同步推进|协同推进|持续推进|"
+    r"形成|实现|建立|完成|提升|促进|支撑|保障|决定|成为|推动|加快)"
+)
+_TITLE_SENTENCE_PUNCT_RE = re.compile(r"[，,；;。！？!?：:]")
 
 
 def _is_lean_plan(plan: dict[str, Any]) -> bool:
@@ -30,6 +56,130 @@ def _narrative_terms(value: object) -> set[str]:
     return {text[index : index + 2] for index in range(max(0, len(text) - 1))}
 
 
+def _page_subject_terms(page: dict[str, Any]) -> set[str]:
+    """Return the page-wide subject vocabulary, not only the core message."""
+
+    values: list[object] = [
+        page.get("subtitle"),
+        page.get("question"),
+        page.get("message"),
+        page.get("logic"),
+    ]
+    values.extend(page.get("content") or [])
+    terms: set[str] = set()
+    for value in values:
+        terms.update(_narrative_terms(value))
+    return terms
+
+
+def _title_is_claim_like(title: str) -> bool:
+    """Detect long sentence-like titles without policing short topic phrases."""
+
+    compact = re.sub(r"\s+", "", title)
+    if len(compact) < 18:
+        return False
+    return bool(_TITLE_SENTENCE_PUNCT_RE.search(title) or _TITLE_CLAIM_MARKERS_RE.search(compact))
+
+
+def _presentation_structure_diagnostics(
+    plan: dict[str, Any], source_chapters: list[str]
+) -> tuple[list[str], list[str]]:
+    """Audit source-to-presentation chapter projection and formal page rhythm."""
+
+    issues: list[str] = []
+    warnings: list[str] = []
+    chapters = [item for item in plan.get("chapters") or [] if isinstance(item, dict)]
+    pages = [item for item in plan.get("pages") or [] if isinstance(item, dict)]
+    source_mode = str(plan.get("source_structure_mode") or "").strip()
+
+    if source_mode == "presentation_grouping":
+        planned: list[str] = []
+        for index, chapter in enumerate(chapters):
+            source_ids = [
+                str(value).strip()
+                for value in chapter.get("source_chapter_ids") or []
+                if str(value).strip()
+            ]
+            if not source_ids:
+                issues.append(
+                    f"PRESENTATION_CHAPTER_SOURCE_MAPPING_MISSING: chapters.{index} must map to one or more source chapters"
+                )
+                continue
+            planned.extend(source_ids)
+            operation = str(chapter.get("structural_operation") or "").strip()
+            if len(source_ids) > 1 and operation != "group_adjacent_source_chapters":
+                issues.append(
+                    "PRESENTATION_CHAPTER_GROUP_OPERATION_MISSING: "
+                    f"chapters.{index} groups {source_ids} without group_adjacent_source_chapters"
+                )
+        if source_chapters and planned != source_chapters:
+            issues.append(
+                "PRESENTATION_SOURCE_CHAPTER_MAPPING_CONFLICT: presentation chapter groups must cover each source chapter once in source order; "
+                f"expected {source_chapters}, got {planned}"
+            )
+
+    if str(plan.get("presentation_structure_mode") or "").strip() != "formal_chaptered":
+        return issues, warnings
+
+    chapter_count = len(chapters)
+    exception_reason = str(plan.get("chapter_count_exception") or "").strip()
+    if chapter_count > 6 and not exception_reason:
+        issues.append(
+            "PRESENTATION_CHAPTER_COUNT_EXCESSIVE: formal decks may use at most six presentation chapters unless chapter_count_exception is documented"
+        )
+    elif chapter_count > 4:
+        warnings.append(
+            "PRESENTATION_CHAPTER_COUNT_HIGH: formal decks should normally target no more than four presentation chapters"
+        )
+
+    roles = [str(page.get("page_role") or page.get("page_type") or "").strip() for page in pages]
+    if not roles or roles[0] != "cover":
+        issues.append("PRESENTATION_COVER_MISSING: formal deck sequence must start with a cover page")
+    if len(roles) < 2 or roles[1] not in {"agenda", "contents"}:
+        issues.append("PRESENTATION_AGENDA_MISSING: formal deck sequence must place an agenda after the cover")
+    if not roles or roles[-1] not in {"ending", "closing"}:
+        issues.append("PRESENTATION_ENDING_MISSING: formal deck sequence must end with an ending page")
+
+    page_index = {id(page): index for index, page in enumerate(pages)}
+    for chapter in chapters:
+        chapter_id = str(chapter.get("id") or "?").strip()
+        owned = [page for page in pages if str(page.get("chapter_id") or "").strip() == chapter_id]
+        transition_indices = [
+            page_index[id(page)]
+            for page in owned
+            if str(page.get("page_role") or page.get("page_type") or "").strip()
+            in _CHAPTER_TRANSITION_ROLES
+        ]
+        content_indices = [
+            page_index[id(page)]
+            for page in owned
+            if str(page.get("page_role") or page.get("page_type") or "").strip()
+            not in _STRUCTURAL_PAGE_ROLES
+        ]
+        if chapter_count > 1:
+            if len(transition_indices) != 1:
+                issues.append(
+                    f"PRESENTATION_CHAPTER_TRANSITION_COUNT: chapter {chapter_id} requires exactly one transition page"
+                )
+            elif content_indices and transition_indices[0] > min(content_indices):
+                issues.append(
+                    f"PRESENTATION_CHAPTER_TRANSITION_ORDER: chapter {chapter_id} transition must precede its content pages"
+                )
+        elif transition_indices:
+            issues.append(
+                "PRESENTATION_SINGLE_CHAPTER_TRANSITION_FORBIDDEN: a single-chapter deck must enter content directly after the agenda"
+            )
+        if len(content_indices) == 1:
+            warnings.append(
+                f"PRESENTATION_CHAPTER_THIN: chapter {chapter_id} has only one content page; merge it with an adjacent presentation chapter unless it has a distinct decision role"
+            )
+        elif chapter_count > 4 and len(content_indices) == 2:
+            warnings.append(
+                f"PRESENTATION_CHAPTER_FRAGMENTED: chapter {chapter_id} has only two content pages while the deck exceeds four chapters; review adjacent chapter grouping"
+            )
+    return issues, warnings
+
+
 def _narrative_contract_diagnostics(
     plan: dict[str, Any],
 ) -> tuple[list[str], list[str]]:
@@ -42,6 +192,7 @@ def _narrative_contract_diagnostics(
 
     issues: list[str] = []
     warnings: list[str] = []
+    lean_plan = _is_lean_plan(plan)
     narrative_keys = ("thesis", "narrative_arc", "storyline", "audience_start", "audience_end")
     has_narrative_fields = any(key in plan for key in narrative_keys)
     chapters = [item for item in plan.get("chapters") or [] if isinstance(item, dict)]
@@ -53,7 +204,7 @@ def _narrative_contract_diagnostics(
         key for key in ("thesis", "narrative_arc", "storyline")
         if not plan.get(key)
     ]
-    if missing_deck_fields:
+    if missing_deck_fields and not lean_plan:
         warnings.append(
             "NARRATIVE_PLAN_FIELDS_INCOMPLETE: missing deck narrative field(s) "
             f"{missing_deck_fields}; evidence=plan; suggested_action=fill the fields from the approved source-constrained planning decision"
@@ -78,7 +229,7 @@ def _narrative_contract_diagnostics(
         ]
         if missing:
             missing_chapter_fields.append(f"{chapter_id}: {','.join(missing)}")
-    if missing_chapter_fields:
+    if missing_chapter_fields and not lean_plan:
         warnings.append(
             "NARRATIVE_CHAPTER_FIELDS_INCOMPLETE: "
             f"{missing_chapter_fields}; evidence=chapters; suggested_action=state each chapter's purpose, question, message and handoff"
@@ -111,27 +262,35 @@ def _narrative_contract_diagnostics(
     for index, page in enumerate(content_pages):
         page_id = str(page.get("id") or "?")
         title = _narrative_text(page.get("title"))
-        message = _narrative_text(page.get("message"))
-        if title and message and len(_normalized_review_text(title)) >= 4 and len(_normalized_review_text(message)) >= 8:
+        if title and _title_is_claim_like(title):
+            warnings.append(
+                "NARRATIVE_TITLE_CLAIM_LIKE: "
+                f"page {page_id} uses a long sentence-like title; evidence={page_id}.title; "
+                "suggested_action=use a concise formal topic title and move the bounded judgment to subtitle/message"
+            )
+        if title and len(_normalized_review_text(title)) >= 4:
             title_terms = _narrative_terms(title)
-            message_terms = _narrative_terms(message)
-            if title_terms and message_terms and not (title_terms & message_terms):
+            subject_terms = _page_subject_terms(page)
+            if title_terms and subject_terms and not (title_terms & subject_terms):
                 warnings.append(
-                    "NARRATIVE_TITLE_MESSAGE_OBJECT_MISMATCH: "
-                    f"page {page_id} title and core message have no identifiable object overlap; evidence={page_id}.title,{page_id}.message; "
-                    "suggested_action=check that the title names the object or judgment actually developed by the page"
+                    "NARRATIVE_TITLE_PAGE_SUBJECT_MISMATCH: "
+                    f"page {page_id} title has no identifiable overlap with the page-wide subject; "
+                    f"evidence={page_id}.title,{page_id}.subtitle,{page_id}.question,{page_id}.message,{page_id}.logic,{page_id}.content; "
+                    "suggested_action=use a concise formal title that names the page's overall topic without restating one judgment"
                 )
-        if index > 0 and not _narrative_text(page.get("receives")):
+        if not lean_plan and index > 0 and not _narrative_text(page.get("receives")):
             warnings.append(
                 "NARRATIVE_PAGE_HANDOFF_MISSING: "
                 f"page {page_id} has no receives field; evidence={page_id}; suggested_action=state the prior question or recognition this page takes forward"
             )
-        if index < len(content_pages) - 1 and not _narrative_text(page.get("next")):
+        if not lean_plan and index < len(content_pages) - 1 and not _narrative_text(page.get("next")):
             warnings.append(
                 "NARRATIVE_PAGE_HANDOFF_MISSING: "
                 f"page {page_id} has no next field; evidence={page_id}; suggested_action=state the recognition or question handed to the next content page"
             )
 
+        if lean_plan:
+            continue
         next_text = _narrative_text(page.get("next"))
         if not next_text or index >= len(content_pages) - 1:
             continue
@@ -145,6 +304,9 @@ def _narrative_contract_diagnostics(
                 f"page {page_id}.next has no identifiable subject overlap with {next_page.get('id') or '?'} question; "
                 f"evidence={page_id}.next,{next_page.get('id') or '?'}.question; suggested_action=align the handoff wording with the next page's question"
             )
+
+    if lean_plan:
+        return issues, warnings
 
     page_messages_by_chapter: dict[str, list[str]] = {}
     for page in pages:
@@ -181,6 +343,25 @@ def _source_argument_binding_issues(
     projected semantic foundation, however, must not be reduced back to a bag
     of facts when pages are planned.
     """
+
+    if _is_lean_plan(plan):
+        items = foundation_items_by_id(foundation)
+        issues: list[str] = []
+        for index, page in enumerate(plan.get("pages") or []):
+            if not isinstance(page, dict):
+                continue
+            role = _narrative_text(page.get("page_role")) or _narrative_text(page.get("page_type"))
+            if role in _STRUCTURAL_PAGE_ROLES:
+                continue
+            page_id = _narrative_text(page.get("id")) or f"#{index}"
+            refs = [str(ref).strip() for ref in page.get("source_refs") or [] if str(ref).strip()]
+            if not refs:
+                issues.append(f"pages.{index} ({page_id}): LEAN_SOURCE_BOUNDARY_MISSING")
+                continue
+            unknown = sorted(set(refs) - set(items))
+            if unknown:
+                issues.append(f"pages.{index} ({page_id}): LEAN_SOURCE_REF_UNKNOWN: {unknown}")
+        return issues
 
     thesis = foundation.get("document_thesis") or {}
     nodes = [item for item in foundation.get("argument_nodes") or [] if isinstance(item, dict)]
@@ -435,12 +616,21 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
     issues.extend(_source_argument_binding_issues(plan, foundation))
     lean_plan = _is_lean_plan(plan)
     if lean_plan:
-        narrative_review = review_narrative_design(plan.get("narrative_design"))
-        issues.extend(narrative_review["issues"])
-        warnings.extend(
-            f"{finding['code']}: {finding['page_id']}: {finding['reason']}"
-            for finding in plan_critic_priorities(plan)
-        )
+        present = sorted(_LEAN_ROOT_AUTHOR_FIELDS.intersection(plan))
+        if present:
+            issues.append(f"LEAN_PLAN_ROOT_TOO_DETAILED: move AUTHOR fields out of Deck Plan: {present}")
+        for index, chapter in enumerate(plan.get("chapters") or []):
+            if not isinstance(chapter, dict):
+                continue
+            present = sorted(_LEAN_CHAPTER_AUTHOR_FIELDS.intersection(chapter))
+            if present:
+                issues.append(f"chapters.{index}: LEAN_PLAN_CHAPTER_TOO_DETAILED: {present}")
+        for index, page in enumerate(plan.get("pages") or []):
+            if not isinstance(page, dict):
+                continue
+            present = sorted(_LEAN_PAGE_AUTHOR_FIELDS.intersection(page))
+            if present:
+                issues.append(f"pages.{index} ({page.get('id') or '?'}): LEAN_PLAN_PAGE_TOO_DETAILED: {present}")
     items = foundation_items_by_id(foundation)
     source_assets = {
         str(asset.get("id")): asset
@@ -453,55 +643,6 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
         if isinstance(node, dict) and node.get("id")
     }
     peak_page_id = str((plan.get("narrative_design") or {}).get("peak_page_id") or "")
-    if lean_plan:
-        design = plan.get("narrative_design") or {}
-        node_index = source_argument_index(foundation)
-        method_nodes = set(source_argument_method(foundation))
-        if isinstance(design, dict):
-            for candidate in design.get("candidates") or []:
-                if not isinstance(candidate, dict):
-                    continue
-                candidate_id = str(candidate.get("id") or "?")
-                focus = {
-                    str(value).strip()
-                    for value in candidate.get("argument_focus_node_ids") or []
-                    if str(value).strip()
-                }
-                evidence_refs = {
-                    str(value).strip()
-                    for value in candidate.get("evidence_refs") or []
-                    if str(value).strip()
-                }
-                unknown_focus = sorted(focus - method_nodes)
-                if unknown_focus:
-                    issues.append(
-                        f"NARRATIVE_ARGUMENT_FOCUS_UNKNOWN: {candidate_id} uses {unknown_focus} outside source_argument_method"
-                    )
-                expected_refs = argument_source_refs(focus, node_index)
-                if expected_refs and evidence_refs.isdisjoint(expected_refs):
-                    issues.append(
-                        f"NARRATIVE_EVIDENCE_DISCONNECTED: {candidate_id} evidence does not intersect its argument focus"
-                    )
-                unknown_evidence = sorted(evidence_refs - set(items))
-                if unknown_evidence:
-                    issues.append(
-                        f"NARRATIVE_EVIDENCE_UNKNOWN: {candidate_id} uses {unknown_evidence}"
-                    )
-            peak_page_id = str(design.get("peak_page_id") or "").strip()
-            no_peak_reason = str(design.get("no_single_peak_reason") or "").strip()
-            page_index = {
-                str(page.get("id") or "").strip(): page
-                for page in plan.get("pages") or []
-                if isinstance(page, dict) and str(page.get("id") or "").strip()
-            }
-            if peak_page_id:
-                peak = page_index.get(peak_page_id)
-                if peak is None:
-                    issues.append(f"NARRATIVE_PEAK_PAGE_UNKNOWN: {peak_page_id}")
-                elif not (_page_evidence_ids(peak) or peak.get("source_refs")):
-                    issues.append(f"NARRATIVE_PEAK_PAGE_WITHOUT_EVIDENCE: {peak_page_id}")
-            elif not no_peak_reason:
-                issues.append("NARRATIVE_PEAK_UNRESOLVED: provide peak_page_id or no_single_peak_reason")
     structure = [x for x in (foundation.get("source_structure") or []) if isinstance(x, dict)]
     source_chapters = [
         x.get("id")
@@ -512,7 +653,7 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
     ]
     mode = plan.get("source_structure_mode")
     if source_chapters and not mode:
-        warnings.append("source_structure_mode: missing; source-driven plans should declare 'preserve' unless user authorized restructuring")
+        warnings.append("source_structure_mode: missing; ordinary source-driven plans should declare 'presentation_grouping'")
     if mode == "preserve":
         planned: list[str] = []
         missing = False
@@ -530,6 +671,12 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
         elif planned != source_chapters:
             issues.append(f"chapters: source chapter order/content differs from source_structure; expected {source_chapters}, got {planned}")
 
+    presentation_issues, presentation_warnings = _presentation_structure_diagnostics(
+        plan, source_chapters
+    )
+    issues.extend(presentation_issues)
+    warnings.extend(presentation_warnings)
+
     audience_scope = plan.get("audience_scope", "unspecified")
     strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
     if not lean_plan and not strict_evidence_fit:
@@ -540,38 +687,27 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
         if not isinstance(page, dict):
             continue
         page_id = page.get("id") or f"#{index}"
-        for route_issue in audit_content_route(page):
-            issues.append(f"pages.{index} ({page_id}): {route_issue}")
-        for coverage_issue in _audit_content_coverage_definition(page):
-            issues.append(f"pages.{index} ({page_id}): {coverage_issue}")
         if not lean_plan:
+            for route_issue in audit_content_route(page):
+                issues.append(f"pages.{index} ({page_id}): {route_issue}")
+            for coverage_issue in _audit_content_coverage_definition(page):
+                issues.append(f"pages.{index} ({page_id}): {coverage_issue}")
             for readiness_issue in audit_stage02_readiness(page):
                 issues.append(f"pages.{index} ({page_id}): {readiness_issue}")
-        for composition_issue in _audit_onscreen_composition_definition(page):
-            issues.append(f"pages.{index} ({page_id}): {composition_issue}")
-        for contract_issue in _audit_onscreen_contract_definition(page, items):
-            issues.append(f"pages.{index} ({page_id}): {contract_issue}")
-        for relation_issue in _primary_relation_issues(page):
-            issues.append(f"pages.{index} ({page_id}): {relation_issue}")
-        if not lean_plan:
+            for composition_issue in _audit_onscreen_composition_definition(page):
+                issues.append(f"pages.{index} ({page_id}): {composition_issue}")
+            for contract_issue in _audit_onscreen_contract_definition(page, items):
+                issues.append(f"pages.{index} ({page_id}): {contract_issue}")
+            for relation_issue in _primary_relation_issues(page):
+                issues.append(f"pages.{index} ({page_id}): {relation_issue}")
             for consumption_issue in _audit_source_consumption_definition(page, items, foundation):
                 issues.append(f"pages.{index} ({page_id}): {consumption_issue}")
             for unit_issue in _audit_unit_consumption_definition(page, items, foundation):
                 issues.append(f"pages.{index} ({page_id}): {unit_issue}")
             for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
                 issues.append(f"pages.{index} ({page_id}): {review_issue}")
-        elif isinstance(page.get("source_consumption"), dict):
-            omissions = page["source_consumption"].get("intentional_omissions") or []
-            for omission_index, omission in enumerate(omissions):
-                if not isinstance(omission, dict) or not str(omission.get("reason") or "").strip():
-                    issues.append(
-                        f"pages.{index} ({page_id}).source_consumption.intentional_omissions[{omission_index}]: reason is required"
-                    )
-
         structural_role = str(page.get("page_role") or page.get("page_type") or "").strip()
-        if lean_plan and structural_role not in _STRUCTURAL_PAGE_ROLES:
-            if plan.get("delivery_mode") == "presented" and not str(page.get("spoken_thread") or "").strip():
-                issues.append(f"pages.{index} ({page_id}): LEAN_SPOKEN_THREAD_MISSING")
+        if not lean_plan and structural_role not in _STRUCTURAL_PAGE_ROLES:
             visual = page.get("visual_evidence")
             if isinstance(visual, dict) and visual.get("kind") != "none":
                 ref = str(visual.get("ref") or "").strip()
@@ -620,6 +756,15 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
                             issues.append(message)
                         else:
                             warnings.append(message)
+        if lean_plan:
+            evidence = _support_items(sorted(_page_evidence_ids(page)), items)
+            internal = [item.get("id", "?") for item in evidence if effective_visibility(item) == "internal_only"]
+            if audience_scope == "external" and internal and page.get("visibility_decision") not in (
+                "internal_only_used_as_hidden_support", "user_approved_exposure"
+            ):
+                issues.append(f"pages.{index} ({page_id}): external audience uses internal-only evidence {sorted(internal)} without an explicit visibility_decision")
+            continue
+
         scope = page.get("source_scope") or []
         chapters = _scope_chapters(scope)
         operation = page.get("structural_operation")

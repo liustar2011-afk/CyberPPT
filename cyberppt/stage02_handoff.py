@@ -534,11 +534,10 @@ def _deck_plan_page_map(
     requested_script: Path,
     document: ScriptDocument,
 ) -> dict[str, dict[str, Any]]:
-    """Load the authoritative Deck Plan only for a project-owned final script.
+    """Load only legacy strict planning data for a project-owned script.
 
-    External scripts remain self-contained.  A present project Deck Plan must
-    match the final script's page title and core judgment before its planning
-    boundaries can be projected into Stage 02.
+    Lean Deck Plans are transitional outlines.  Stage 02 consumes the locked
+    Final Script directly and must not freeze tentative PLAN wording.
     """
 
     try:
@@ -549,10 +548,11 @@ def _deck_plan_page_map(
     if not plan_path.is_file():
         return {}
     payload = _read_json(plan_path)
-    lean_plan = payload.get("plan_contract_version") == 2 and payload.get("planning_profile") == "lean"
+    if payload.get("plan_contract_version") == 2 and payload.get("planning_profile") == "lean":
+        return {}
     pages = {
         normalize_page_id(item.get("id") or item.get("page_id")):
-        (_lean_stage02_plan_projection(item) if lean_plan else item)
+        item
         for item in payload.get("pages") or []
         if isinstance(item, dict) and (item.get("id") or item.get("page_id"))
     }
@@ -570,31 +570,6 @@ def _deck_plan_page_map(
                 f"DECK_PLAN_SCRIPT_DRIFT: {page_id} title or core judgment differs from final-script.md"
             )
     return pages
-
-
-def _lean_stage02_plan_projection(page: dict[str, Any]) -> dict[str, Any]:
-    """Project only Stage 02's semantic inputs from a v2 lean page.
-
-    Visual readiness, onscreen composition and per-source dispositions are
-    intentionally absent from the lean authoring contract. Stage 02 derives its
-    text locks and visual semantics from the final script and consumes only the
-    approved title/message/source boundary from PLAN.
-    """
-
-    return {
-        key: page.get(key)
-        for key in (
-            "id",
-            "page_id",
-            "title",
-            "message",
-            "logic",
-            "source_refs",
-            "must_not_include",
-            "content_relations",
-        )
-        if key in page
-    }
 
 
 def build_stage02_handoff(

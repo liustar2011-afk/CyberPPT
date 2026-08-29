@@ -53,6 +53,9 @@ def collect_foundation_source_codes(foundation: dict[str, Any]) -> set[str]:
         for item in foundation.get(key) or []:
             if not isinstance(item, dict):
                 continue
+            item_id = item.get("id")
+            if isinstance(item_id, str) and item_id:
+                codes.add(item_id)
             for ref in item.get("source_refs") or []:
                 if isinstance(ref, str) and ref:
                     codes.add(ref)

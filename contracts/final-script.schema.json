@@ -34,6 +34,10 @@
         "audience": {
           "type": "string"
         },
+        "delivery_mode": {
+          "type": "string",
+          "enum": ["presented", "self_read"]
+        },
         "narrative": {
           "type": "string"
         }
@@ -160,7 +164,7 @@
           "speaker_notes": {
             "type": "string"
           },
-          "source_refs": {
+      "source_refs": {
             "type": "array",
             "items": {
               "type": "string"
@@ -200,6 +204,11 @@
           }
         ],
         "additionalProperties": true
+      }
+      ,
+      "content_load": {
+        "type": "string",
+        "enum": ["light", "standard", "dense"]
       }
     }
   },

@@ -10,12 +10,12 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_root_entry_supports_one_sentence_usage() -> None:
-    text = _read("SKILL.md")
-    assert "根据这个 Word 生成 PPT 脚本" in text
-    assert "继续" in text
-    assert "第 8 页" in text or "第8页" in text
-    assert "不得要求用户先选择" in text
+def test_repository_uses_local_workflow_router_instead_of_a_root_skill() -> None:
+    assert not (ROOT / "SKILL.md").exists()
+    router = _read(".agents/skills/cyberppt-workflow/SKILL.md")
+    workflow = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
+    assert "load and execute `cyberppt-script-workflow`" in router
+    assert "Do not reply by asking the user to choose an internal stage" in workflow
 
 
 def test_workflow_routes_common_intents_without_stage_selection() -> None:
@@ -29,6 +29,18 @@ def test_workflow_routes_common_intents_without_stage_selection() -> None:
     ):
         assert phrase in text
     assert "Do not reply by asking the user to choose an internal stage" in text
+
+
+def test_current_main_agent_executes_author_instead_of_delegating_to_dead_code() -> None:
+    workflow = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
+    router = _read(".agents/skills/cyberppt-workflow/SKILL.md")
+    agents = _read("AGENTS.md")
+
+    assert "The current main agent is the AUTHOR executor" in workflow
+    assert "There is no separate AUTHOR" in workflow
+    assert "load and execute `cyberppt-script-workflow`" in router
+    assert "PLAN 和 AUTHOR 的唯一执行者是当前主 Agent" in agents
+    assert not (ROOT / "scripts" / "author_v16_outline.py").exists()
 
 
 def test_user_facing_states_are_limited_to_plan_and_final() -> None:

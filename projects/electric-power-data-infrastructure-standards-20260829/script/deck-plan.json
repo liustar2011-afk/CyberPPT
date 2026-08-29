@@ -1,0 +1,3752 @@
+{
+  "plan_contract_version": 1,
+  "planning_profile": "strict",
+  "delivery_mode": "self_read",
+  "communication_goal": "帮助行业主管部门、标准化技术组织和电力企业相关负责人形成共同认识：电力领域数据基础设施标准体系已有明确上位依据和项目实践牵引，应围绕七类框架、三级优先级和三阶段路径协同推进立项、验证、实施与动态优化。",
+  "audience": "行业主管部门、标准化技术组织、电网企业、发电企业、售电企业及相关科研机构的专业负责人",
+  "audience_scope": "mixed",
+  "source_structure_mode": "presentation_grouping",
+  "presentation_structure_mode": "formal_chaptered",
+  "evidence_fit_review_mode": "strict",
+  "source_thesis": "电力领域需要以国家数据基础设施总体架构和能源行业制度为上位依据，以中电联先行先试项目为实践牵引，构建七类标准协同配套、三类优先级有序研制、三阶段与项目建设同步推进的标准体系。",
+  "source_argument_method": [
+    "AN-01",
+    "AN-02",
+    "AN-03",
+    "AN-04",
+    "AN-05",
+    "AN-06",
+    "AN-07",
+    "AN-08"
+  ],
+  "thesis": "电力领域数据基础设施标准体系的实施抓手已经清晰：以国家要求定边界、以七类框架定供给、以先行先试场景做验证、以优先级和三阶段路径组织协同推进。",
+  "narrative_arc": "先回答为何此时必须系统建设，再辨明已有基础与关键差距，随后说明体系如何构成、重点标准如何排序、实施如何分阶段推进，最终落到中电联牵头的持续治理与近期工作共识。",
+  "audience_start": "受众掌握部分政策、项目或企业实践，但对标准体系的统一框架、任务映射、研制次序和实施协同缺少完整认识。",
+  "audience_end": "受众能够据七类框架识别标准供给范围，据三级优先级安排研制次序，据三阶段路径组织试点验证、覆盖推广和动态评估。",
+  "storyline": [
+    "国家制度和先行先试任务把标准体系建设推入实施窗口",
+    "现有基础可直接继承，五类差距要求系统整合",
+    "四大方向、八大能力和电力专业链条投影为七类框架",
+    "七类框架同时承载共性支撑、行业核心、场景应用和持续治理",
+    "优先级将上位依据、建设基础性和场景成熟度转化为研制次序",
+    "三阶段路径把研制、试点、覆盖、评估和成熟转化串联起来",
+    "组织、机制、资源和国际衔接保障体系持续运行"
+  ],
+  "content_load_curve": "开篇标准—诊断升高—体系框架达到峰值—优先级与路线保持高密度—保障与结论收束",
+  "narrative_design": {
+    "mode": "direct",
+    "selection_reason": "来源本身具有完整的研究报告论证顺序，采用源结构内的诊断—设计—实施路径可以最大限度保留政策强度、行业边界和任务责任。",
+    "emotional_curve": "实施窗口形成共识—差距带来紧迫感—七类框架形成确定性—优先级与路线转化为可行动安排—保障机制促成协同",
+    "peak_page_id": "p09",
+    "staged_reveal": "在诊断差距后揭示七类框架，随后再展开框架与项目能力映射、优先级和阶段路径。"
+  },
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "一、建设背景与现状研判",
+      "purpose": "建立标准体系建设的现实窗口，明确可继承基础和需要系统解决的关键差距。",
+      "question": "为什么当前需要推进标准体系建设，现有基础与主要差距是什么？",
+      "message": "国家部署、项目牵引和行业需求形成建设窗口，国家规范与行业实践构成起点，五类差距明确了系统建设任务。",
+      "relationship_to_previous": "承接封面与目录，先建立建设必要性和问题边界。",
+      "source_argument_node_ids": [
+        "AN-01",
+        "AN-02"
+      ],
+      "source_chapter_ids": [
+        "H-B56DFFEECD-B954BD907A60-01",
+        "H-B56DFFEECD-027954DD8D75-01"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-B954BD907A60-01",
+        "H-B56DFFEECD-027954DD8D75-01"
+      ],
+      "structural_operation": "group_adjacent_source_chapters"
+    },
+    {
+      "id": "ch02",
+      "title": "二、体系构建与框架设计",
+      "purpose": "说明体系设计方法，展示七类标准供给结构及其与先行先试能力的对应关系。",
+      "question": "如何将国家要求、项目任务和行业特点转化为完整标准体系？",
+      "message": "六项原则与多维坐标形成七类标准框架，七类标准覆盖全生命周期并承担四类功能职责。",
+      "relationship_to_previous": "把前述建设任务转化为体系设计约束、生成方法和标准供给结构。",
+      "source_argument_node_ids": [
+        "AN-03",
+        "AN-04"
+      ],
+      "source_chapter_ids": [
+        "H-B56DFFEECD-974A6230312C-01",
+        "H-B56DFFEECD-99CC8FDA5469-01"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-974A6230312C-01",
+        "H-B56DFFEECD-99CC8FDA5469-01"
+      ],
+      "structural_operation": "group_adjacent_source_chapters"
+    },
+    {
+      "id": "ch03",
+      "title": "三、研制重点与实施路径",
+      "purpose": "把体系框架转化为分级研制任务和近期、中期、远期实施安排。",
+      "question": "重点标准如何排序，标准供给如何分阶段形成并接受场景反馈？",
+      "message": "三级优先级形成差异化研制次序，三阶段路径同步组织标准供给、项目建设、场景验证和动态评估。",
+      "relationship_to_previous": "在七类框架基础上进一步明确标准研制次序和实施节奏。",
+      "source_argument_node_ids": [
+        "AN-05",
+        "AN-06"
+      ],
+      "source_chapter_ids": [
+        "H-B56DFFEECD-AA89D2D43247-01",
+        "H-B56DFFEECD-C5C1A4D6F33F-01"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-AA89D2D43247-01",
+        "H-B56DFFEECD-C5C1A4D6F33F-01"
+      ],
+      "structural_operation": "group_adjacent_source_chapters"
+    },
+    {
+      "id": "ch04",
+      "title": "四、保障措施与后续安排",
+      "purpose": "明确持续推进所需的组织、机制、资源和国际衔接，收束研究成果和后续工作。",
+      "question": "依靠什么保障体系持续推进，研究成果如何转化为后续行动？",
+      "message": "中电联牵头的协作、评估、资源和国际衔接构成持续治理保障，后续围绕框架完善、标准研制和项目统筹推进。",
+      "relationship_to_previous": "为研制重点和三阶段路径补充实施保障，并形成后续推进共识。",
+      "source_argument_node_ids": [
+        "AN-07",
+        "AN-08"
+      ],
+      "source_chapter_ids": [
+        "H-B56DFFEECD-2DA7BD3D204D-01",
+        "H-B56DFFEECD-7A5C653C8F08-01"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-2DA7BD3D204D-01",
+        "H-B56DFFEECD-7A5C653C8F08-01"
+      ],
+      "structural_operation": "group_adjacent_source_chapters"
+    }
+  ],
+  "pages": [
+    {
+      "id": "p01",
+      "title": "电力领域数据基础设施标准体系建设研究",
+      "chapter_id": "ch01",
+      "page_role": "cover",
+      "question": "本次汇报研究什么？",
+      "message": "国家数据基础设施建设先行先试项目配套研究",
+      "logic": "研究主题、编制单位和时间定位",
+      "content": [
+        "研究报告",
+        "中国电力企业联合会",
+        "2026年8月"
+      ],
+      "primary_relation": {
+        "type": "parallel",
+        "scope": [
+          "研究报告",
+          "中国电力企业联合会",
+          "2026年8月"
+        ],
+        "authority": "hard"
+      },
+      "next": "先看四个汇报章节的整体安排。",
+      "content_load": "light",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p02",
+      "title": "汇报目录",
+      "chapter_id": "ch01",
+      "page_role": "agenda",
+      "question": "研究报告如何展开？",
+      "message": "四个汇报章节依次完成现状研判、框架设计、实施安排和保障收束。",
+      "logic": "汇报章节顺序导航",
+      "content": [
+        "建设背景与现状研判",
+        "体系构建与框架设计",
+        "研制重点与实施路径",
+        "保障措施与后续安排"
+      ],
+      "primary_relation": {
+        "type": "sequence",
+        "scope": [
+          "建设背景与现状研判",
+          "体系构建与框架设计",
+          "研制重点与实施路径",
+          "保障措施与后续安排"
+        ],
+        "authority": "hard"
+      },
+      "receives": "研究主题已经明确。",
+      "next": "进入第一章，先看建设窗口、现有基础和主要差距。",
+      "content_load": "standard",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p03",
+      "chapter_id": "ch01",
+      "title": "一、建设背景与现状研判",
+      "page_role": "chapter",
+      "question": "第一章回答什么？",
+      "message": "进入建设背景与现状研判",
+      "logic": "章节导航",
+      "content": [],
+      "receives": "目录已经展示四个汇报章节。",
+      "next": "从政策、项目和行业需求共同形成的建设窗口开始。",
+      "content_load": "light",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p04",
+      "chapter_id": "ch01",
+      "title": "建设背景与实施窗口",
+      "page_role": "content",
+      "question": "为什么电力领域需要在当前阶段系统构建数据基础设施标准体系？",
+      "message": "国家部署给出统一边界，先行先试提供验证载体，行业数字化需求形成应用压力，三股力量共同把标准体系建设推入实施窗口。",
+      "logic": "情况—张力—响应需要：三类牵引共同形成建设必要性",
+      "beat": "开篇建立紧迫性和正当性",
+      "spoken_thread": "先说明国家制度和技术文件已经把建设任务具体化，再落到中电联先行先试项目和电力企业数字化实践，形成标准体系建设的现实窗口。",
+      "content": [
+        "国家部署",
+        "项目牵引",
+        "行业需求"
+      ],
+      "primary_relation": {
+        "type": "parallel",
+        "scope": [
+          "国家部署",
+          "项目牵引",
+          "行业需求"
+        ],
+        "authority": "hard"
+      },
+      "receives": "目录已展示研究从必要性走向实施的完整路径。",
+      "next": "既然建设窗口已经形成，需要进一步辨明行业已有基础和主要缺口。",
+      "source_argument_node_ids": [
+        "AN-01"
+      ],
+      "source_refs": [
+        "F-01",
+        "F-02",
+        "F-03",
+        "F-04",
+        "F-05"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-9B2CA0A6D9B9-01",
+        "H-B56DFFEECD-FE3E2A41927F-01",
+        "H-B56DFFEECD-91AB01B38716-01",
+        "H-B56DFFEECD-433D146C85E3-01"
+      ],
+      "structural_operation": "merge_within_chapter",
+      "content_load": "dense",
+      "content_route": {
+        "primary": "state",
+        "facets": [
+          "background",
+          "current"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-01",
+          "F-02",
+          "F-03",
+          "F-04",
+          "F-05"
+        ],
+        "rationale": "页面承担建设窗口识别职责，三类来源共同回答为何现在推进。"
+      },
+      "analysis_basis": {
+        "model": "situation-tension-response",
+        "relation_basis": "inferred",
+        "confidence": "high",
+        "supports": [
+          "F-01",
+          "F-02",
+          "F-03",
+          "F-04",
+          "F-05"
+        ],
+        "notes": "三类事实共同支撑实施窗口判断，未增加外部前提。"
+      },
+      "proof": {
+        "method": "evidence_synthesis",
+        "claims": [
+          "国家部署给出边界",
+          "项目提供验证载体",
+          "行业需求形成应用压力"
+        ],
+        "evidence_refs": [
+          "F-01",
+          "F-02",
+          "F-03",
+          "F-04",
+          "F-05"
+        ],
+        "relation_basis": "inferred"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 3
+      },
+      "onscreen_contract": {
+        "relation": "parallel",
+        "detail_axis": "推动标准体系建设进入实施窗口的直接牵引",
+        "expression_mode": "mixed",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "国家部署",
+            "evidence_refs": [
+              "F-01",
+              "F-02"
+            ],
+            "required_signals": [
+              "四大方向与八大能力",
+              "六项技术文件与能源制度"
+            ],
+            "evidence_fit_review": {
+              "question": "国家层面给出了哪些直接建设依据？",
+              "items": [
+                {
+                  "evidence_ref": "F-01",
+                  "fit": "direct",
+                  "role": "policy_requirement",
+                  "reason": "事实直接给出四大方向、八大能力、三阶段目标和技术文件。"
+                },
+                {
+                  "evidence_ref": "F-02",
+                  "fit": "direct",
+                  "role": "institutional_basis",
+                  "reason": "事实直接列出应用、分类分级、安全和可信流通制度依据。"
+                }
+              ],
+              "counter_case": "把F-02并入行业需求会混淆制度依据与企业应用压力。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "项目牵引",
+            "evidence_refs": [
+              "F-03"
+            ],
+            "required_signals": [
+              "三统一、主体接入、流通利用和安全保障",
+              "标准验证任务"
+            ],
+            "evidence_fit_review": {
+              "question": "先行先试项目如何直接牵引标准体系建设？",
+              "items": [
+                {
+                  "evidence_ref": "F-03",
+                  "fit": "direct",
+                  "role": "project_task",
+                  "reason": "事实直接说明项目能力建设范围和标准验证任务。"
+                }
+              ],
+              "counter_case": "项目事实不宜放入国家制度模块，项目承担的是实践验证职责。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "行业需求",
+            "evidence_refs": [
+              "F-04",
+              "F-05"
+            ],
+            "required_signals": [
+              "企业实践先行、标准分散",
+              "形成统一体系和实施参考"
+            ],
+            "evidence_fit_review": {
+              "question": "电力行业实践为何要求形成系统标准体系？",
+              "items": [
+                {
+                  "evidence_ref": "F-04",
+                  "fit": "direct",
+                  "role": "industry_state",
+                  "reason": "事实直接说明企业实践基础、标准分散和新场景要求。"
+                },
+                {
+                  "evidence_ref": "F-05",
+                  "fit": "direct",
+                  "role": "research_purpose",
+                  "reason": "事实直接说明研究要形成统一框架、研制方向和实施路径。"
+                }
+              ],
+              "counter_case": "研究目的单列成第四模块会割裂行业需求与响应目标，可在同一问题下形成需求—目标闭环。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-01",
+            "anchors": [
+              "四大方向",
+              "八大能力"
+            ]
+          },
+          {
+            "source_ref": "F-02",
+            "anchors": [
+              "应用、分类分级、安全管理和可信流通"
+            ]
+          },
+          {
+            "source_ref": "F-03",
+            "anchors": [
+              "三统一、主体接入、数据流通利用和安全保障"
+            ]
+          },
+          {
+            "source_ref": "F-04",
+            "anchors": [
+              "企业自主推进、标准分散制定"
+            ]
+          },
+          {
+            "source_ref": "F-05",
+            "anchors": [
+              "梳理现状与差距、构建电力行业特点鲜明且覆盖完整的标准体系"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-01",
+          "F-03",
+          "F-04"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-01",
+            "unit_id": "F-01#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-01",
+            "unit_id": "F-01#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-01",
+            "unit_id": "F-01#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-01",
+            "unit_id": "F-01#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-02",
+            "unit_id": "F-02#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-02",
+            "unit_id": "F-02#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-02",
+            "unit_id": "F-02#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-02",
+            "unit_id": "F-02#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-03",
+            "unit_id": "F-03#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-03",
+            "unit_id": "F-03#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-03",
+            "unit_id": "F-03#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-03",
+            "unit_id": "F-03#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-03",
+            "unit_id": "F-03#4",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-03",
+            "unit_id": "F-03#5",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-04",
+            "unit_id": "F-04#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-04",
+            "unit_id": "F-04#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-04",
+            "unit_id": "F-04#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-04",
+            "unit_id": "F-04#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-04",
+            "unit_id": "F-04#4",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-04",
+            "unit_id": "F-04#5",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-04",
+            "unit_id": "F-04#6",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-05",
+            "unit_id": "F-05#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-05",
+            "unit_id": "F-05#1",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "为什么电力领域需要在当前阶段系统构建数据基础设施标准体系？",
+        "items": [
+          {
+            "evidence_ref": "F-01",
+            "fit": "direct",
+            "role": "policy_requirement",
+            "reason": "直接证明国家建设任务已进入有目标、有文件的实施阶段。"
+          },
+          {
+            "evidence_ref": "F-02",
+            "fit": "direct",
+            "role": "institutional_basis",
+            "reason": "直接证明能源和数据制度已经形成多维上位依据。"
+          },
+          {
+            "evidence_ref": "F-03",
+            "fit": "direct",
+            "role": "project_task",
+            "reason": "直接证明中电联承担标准验证和能力建设任务。"
+          },
+          {
+            "evidence_ref": "F-04",
+            "fit": "direct",
+            "role": "industry_state",
+            "reason": "直接证明实践积累与标准分散并存。"
+          },
+          {
+            "evidence_ref": "F-05",
+            "fit": "direct",
+            "role": "research_purpose",
+            "reason": "直接界定研究对上述需求的响应。"
+          }
+        ],
+        "counter_case": "仅用政策依据会弱化项目和行业实践的直接牵引，三类证据均需保留。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p05",
+      "chapter_id": "ch01",
+      "title": "标准体系建设基础",
+      "page_role": "content",
+      "question": "电力领域数据基础设施标准体系可以继承哪些现有基础？",
+      "message": "国家层面已有顶层指引、技术文件和构建方法，行业层面已有信息模型、安全、编码、交换和治理实践，体系建设具备可继承的规范与实践起点。",
+      "logic": "证据综合：国家规范与行业实践两类基础并列构成起点",
+      "beat": "先确认已有基础，避免把后续建设描述为从零开始",
+      "spoken_thread": "从国家规范和行业实践两侧盘点可直接继承的基础，再为差距诊断建立清晰基线。",
+      "content": [
+        "国家规范基础",
+        "行业标准与实践"
+      ],
+      "primary_relation": {
+        "type": "parallel",
+        "scope": [
+          "国家规范基础",
+          "行业标准与实践"
+        ],
+        "authority": "hard"
+      },
+      "receives": "建设窗口已经由政策、项目和行业需求共同形成。",
+      "next": "基础已经存在，下一步要定位统一体系需要补齐的五类差距。",
+      "source_argument_node_ids": [
+        "AN-02"
+      ],
+      "source_refs": [
+        "F-06",
+        "F-07"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-810422EBE37C-01",
+        "H-B56DFFEECD-F454002A617C-01"
+      ],
+      "structural_operation": "merge_within_chapter",
+      "content_load": "standard",
+      "content_route": {
+        "primary": "state",
+        "facets": [
+          "current"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-06",
+          "F-07"
+        ],
+        "rationale": "页面用于确认可继承基础，采用国家与行业两侧证据并列呈现。"
+      },
+      "analysis_basis": {
+        "model": "evidence_synthesis",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-06",
+          "F-07"
+        ]
+      },
+      "proof": {
+        "method": "evidence_synthesis",
+        "claims": [
+          "国家规范形成通用依据",
+          "行业标准和实践形成专业起点"
+        ],
+        "evidence_refs": [
+          "F-06",
+          "F-07"
+        ],
+        "relation_basis": "explicit"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 2
+      },
+      "onscreen_contract": {
+        "relation": "parallel",
+        "detail_axis": "可直接继承的标准与实践基础",
+        "expression_mode": "mixed",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "国家规范基础",
+            "evidence_refs": [
+              "F-06"
+            ],
+            "required_signals": [
+              "顶层指引与六项技术文件",
+              "GB/T 13016与分类分级指南"
+            ],
+            "evidence_fit_review": {
+              "question": "国家层面已有何种可继承基础？",
+              "items": [
+                {
+                  "evidence_ref": "F-06",
+                  "fit": "direct",
+                  "role": "national_standard_basis",
+                  "reason": "事实直接列出顶层指引、技术文件、构建方法和分类分级指南。"
+                }
+              ],
+              "counter_case": "该证据不承担行业实践证明职责。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "行业标准与实践",
+            "evidence_refs": [
+              "F-07"
+            ],
+            "required_signals": [
+              "信息模型、安全、编码与交换",
+              "可靠性治理和归口管理"
+            ],
+            "evidence_fit_review": {
+              "question": "电力行业已有何种可继承基础？",
+              "items": [
+                {
+                  "evidence_ref": "F-07",
+                  "fit": "direct",
+                  "role": "industry_practice_basis",
+                  "reason": "事实直接列出行业标准、治理实践和组织渠道。"
+                }
+              ],
+              "counter_case": "该证据不宜与国家规范混成单一清单，二者权威层级与作用不同。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-06",
+            "anchors": [
+              "顶层指引、六项技术文件、GB/T 13016方法"
+            ]
+          },
+          {
+            "source_ref": "F-07",
+            "anchors": [
+              "DL/T 890、数据安全、交易数据分类分级、统计编码、共享交换接口和可靠性数据治理"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-06",
+          "F-07"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-06",
+            "unit_id": "F-06#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-06",
+            "unit_id": "F-06#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-06",
+            "unit_id": "F-06#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-06",
+            "unit_id": "F-06#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#4",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#5",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#6",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-07",
+            "unit_id": "F-07#7",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "电力领域数据基础设施标准体系可以继承哪些现有基础？",
+        "items": [
+          {
+            "evidence_ref": "F-06",
+            "fit": "direct",
+            "role": "national_standard_basis",
+            "reason": "直接回答国家规范基础。"
+          },
+          {
+            "evidence_ref": "F-07",
+            "fit": "direct",
+            "role": "industry_practice_basis",
+            "reason": "直接回答行业专业基础。"
+          }
+        ],
+        "counter_case": "把两类基础合成一组会削弱国家通用依据与行业专业积累的差异。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p06",
+      "chapter_id": "ch01",
+      "title": "标准体系建设差距",
+      "page_role": "content",
+      "question": "现有标准化工作与国家要求和行业需求之间存在哪些关键差距？",
+      "message": "统一框架缺位、共性标准不足、资源标准不均、新场景标准滞后和协同机制薄弱，构成当前标准供给的五类结构性差距。",
+      "logic": "问题诊断：五类差距沿体系、共性、资源、场景、机制同一轴并列展开",
+      "beat": "形成全稿的主要问题张力",
+      "spoken_thread": "在已有基础上逐项识别体系、共性、资源、场景和协同五类缺口，明确后续设计必须解决的任务边界。",
+      "content": [
+        "统一框架",
+        "共性标准",
+        "资源标准",
+        "场景标准",
+        "协同机制"
+      ],
+      "primary_relation": {
+        "type": "parallel",
+        "scope": [
+          "统一框架",
+          "共性标准",
+          "资源标准",
+          "场景标准",
+          "协同机制"
+        ],
+        "authority": "hard"
+      },
+      "receives": "国家规范和行业实践已经提供建设起点。",
+      "next": "五类差距需要通过明确原则、方法和结构坐标转化为体系设计。",
+      "source_argument_node_ids": [
+        "AN-02"
+      ],
+      "source_refs": [
+        "F-08",
+        "F-09",
+        "F-10",
+        "F-11",
+        "F-12"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-8934D9C9E4CF-01"
+      ],
+      "structural_operation": "split",
+      "content_load": "dense",
+      "content_route": {
+        "primary": "diagnosis",
+        "facets": [
+          "current",
+          "risk"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-08",
+          "F-09",
+          "F-10",
+          "F-11",
+          "F-12"
+        ],
+        "rationale": "五条来源事实均直接回答现状差距，适合沿同一诊断轴并列。",
+        "meaning_signals": [
+          "五类差距共同限定后续体系设计职责"
+        ]
+      },
+      "analysis_basis": {
+        "model": "problem_diagnosis",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-08",
+          "F-09",
+          "F-10",
+          "F-11",
+          "F-12"
+        ]
+      },
+      "proof": {
+        "method": "diagnostic_taxonomy",
+        "claims": [
+          "五类差距覆盖结构、基础、资源、应用和运行机制"
+        ],
+        "evidence_refs": [
+          "F-08",
+          "F-09",
+          "F-10",
+          "F-11",
+          "F-12"
+        ],
+        "relation_basis": "explicit"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 5
+      },
+      "onscreen_contract": {
+        "relation": "parallel",
+        "detail_axis": "现有标准化工作的差距表现",
+        "expression_mode": "mixed",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "统一框架",
+            "evidence_refs": [
+              "F-08"
+            ],
+            "required_signals": [
+              "标准分散、层级与衔接关系不清"
+            ],
+            "evidence_fit_review": {
+              "question": "统一框架层面的差距是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-08",
+                  "fit": "direct",
+                  "role": "gap",
+                  "reason": "事实直接说明统一系统框架尚未形成。"
+                }
+              ],
+              "counter_case": "该事实不涉及单项共性标准缺口。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "共性标准",
+            "evidence_refs": [
+              "F-09"
+            ],
+            "required_signals": [
+              "目录、标识、身份、接口缺少行业细则"
+            ],
+            "evidence_fit_review": {
+              "question": "基础共性标准层面的差距是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-09",
+                  "fit": "direct",
+                  "role": "gap",
+                  "reason": "事实直接列出四类共性标准缺口。"
+                }
+              ],
+              "counter_case": "该事实不承担资源标准证明。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "资源标准",
+            "evidence_refs": [
+              "F-10"
+            ],
+            "required_signals": [
+              "目录、元数据、质量、字典不健全"
+            ],
+            "evidence_fit_review": {
+              "question": "数据资源标准层面的差距是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-10",
+                  "fit": "direct",
+                  "role": "gap",
+                  "reason": "事实直接说明资源标准覆盖不健全。"
+                }
+              ],
+              "counter_case": "资源标准与共性接入标准对象不同，应独立呈现。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "场景标准",
+            "evidence_refs": [
+              "F-11"
+            ],
+            "required_signals": [
+              "新兴场景标准研制滞后于业务"
+            ],
+            "evidence_fit_review": {
+              "question": "新兴场景标准层面的差距是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-11",
+                  "fit": "direct",
+                  "role": "gap",
+                  "reason": "事实直接说明五类新兴场景标准研制滞后。"
+                }
+              ],
+              "counter_case": "该事实属于应用侧差距。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "协同机制",
+            "evidence_refs": [
+              "F-12"
+            ],
+            "required_signals": [
+              "企业实践先行、行业标准需双向衔接"
+            ],
+            "evidence_fit_review": {
+              "question": "实施协同层面的差距是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-12",
+                  "fit": "direct",
+                  "role": "gap",
+                  "reason": "事实直接说明企业实践与行业标准之间的协同问题。"
+                }
+              ],
+              "counter_case": "该事实属于运行机制差距，无法并入单项标准缺口。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-08",
+            "anchors": [
+              "尚未形成统一系统框架"
+            ]
+          },
+          {
+            "source_ref": "F-09",
+            "anchors": [
+              "目录、标识、身份认证和接口协议"
+            ]
+          },
+          {
+            "source_ref": "F-10",
+            "anchors": [
+              "资源目录、元数据、数据质量和数据字典"
+            ]
+          },
+          {
+            "source_ref": "F-11",
+            "anchors": [
+              "研制滞后于业务发展"
+            ]
+          },
+          {
+            "source_ref": "F-12",
+            "anchors": [
+              "建立双向衔接"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-08",
+          "F-09",
+          "F-10",
+          "F-11",
+          "F-12"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-08",
+            "unit_id": "F-08#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-08",
+            "unit_id": "F-08#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-09",
+            "unit_id": "F-09#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-10",
+            "unit_id": "F-10#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-11",
+            "unit_id": "F-11#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-11",
+            "unit_id": "F-11#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-12",
+            "unit_id": "F-12#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-12",
+            "unit_id": "F-12#1",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "现有标准化工作与国家要求和行业需求之间存在哪些关键差距？",
+        "items": [
+          {
+            "evidence_ref": "F-08",
+            "fit": "direct",
+            "role": "gap",
+            "reason": "直接回答体系层差距。"
+          },
+          {
+            "evidence_ref": "F-09",
+            "fit": "direct",
+            "role": "gap",
+            "reason": "直接回答共性标准差距。"
+          },
+          {
+            "evidence_ref": "F-10",
+            "fit": "direct",
+            "role": "gap",
+            "reason": "直接回答资源标准差距。"
+          },
+          {
+            "evidence_ref": "F-11",
+            "fit": "direct",
+            "role": "gap",
+            "reason": "直接回答场景标准差距。"
+          },
+          {
+            "evidence_ref": "F-12",
+            "fit": "direct",
+            "role": "gap",
+            "reason": "直接回答协同机制差距。"
+          }
+        ],
+        "counter_case": "按标准层级分组会掩盖场景与机制问题，五类差距更能对应后续体系职责。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p07",
+      "chapter_id": "ch02",
+      "title": "二、体系构建与框架设计",
+      "page_role": "chapter",
+      "question": "第二章回答什么？",
+      "message": "进入体系构建与框架设计",
+      "logic": "章节导航",
+      "content": [],
+      "receives": "建设窗口、现有基础和主要差距已经明确。",
+      "next": "先看七类标准框架的设计原则和生成方法。",
+      "content_load": "light",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p08",
+      "chapter_id": "ch02",
+      "title": "标准体系构建思路",
+      "page_role": "content",
+      "question": "如何将国家要求、项目任务和电力行业特点转化为统一体系设计？",
+      "message": "六项构建原则控制边界与取舍，GB/T 13016方法将四大方向、八大能力、项目任务和电力专业链条投影为七类标准框架。",
+      "logic": "设计机制：原则约束—方法坐标—框架输出",
+      "beat": "把问题诊断转化为体系生成逻辑",
+      "spoken_thread": "先用六项原则说明设计边界，再解释多维坐标如何共同生成七类标准框架，避免把七类分类理解为简单经验罗列。",
+      "content": [
+        "原则约束",
+        "方法坐标",
+        "框架输出"
+      ],
+      "primary_relation": {
+        "type": "sequence",
+        "scope": [
+          "原则约束",
+          "方法坐标",
+          "框架输出"
+        ],
+        "authority": "hard"
+      },
+      "receives": "五类差距已经界定体系设计需要解决的职责。",
+      "next": "接下来展开七类标准的完整供给版图。",
+      "source_argument_node_ids": [
+        "AN-03"
+      ],
+      "source_refs": [
+        "F-13",
+        "F-14",
+        "F-15",
+        "K-01"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-D38D78244F92-01",
+        "H-B56DFFEECD-7FD68B377398-01",
+        "H-B56DFFEECD-8A7FD3C9ABE5-01"
+      ],
+      "structural_operation": "merge_within_chapter",
+      "content_load": "dense",
+      "content_route": {
+        "primary": "system",
+        "facets": [
+          "boundary"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-13",
+          "F-14",
+          "F-15",
+          "K-01"
+        ],
+        "rationale": "页面解释体系如何从原则和坐标生成，属于设计机制表达。"
+      },
+      "analysis_basis": {
+        "model": "capability_layering",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-13",
+          "F-14",
+          "F-15",
+          "K-01"
+        ]
+      },
+      "proof": {
+        "method": "design_chain",
+        "claims": [
+          "原则控制边界",
+          "方法整合坐标",
+          "七类框架形成输出"
+        ],
+        "evidence_refs": [
+          "F-13",
+          "F-14",
+          "F-15"
+        ],
+        "boundary_refs": [
+          "K-01"
+        ],
+        "relation_basis": "explicit"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 3
+      },
+      "onscreen_contract": {
+        "relation": "sequence",
+        "detail_axis": "体系设计的生成环节",
+        "expression_mode": "mixed",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "原则约束",
+            "evidence_refs": [
+              "F-13",
+              "K-01"
+            ],
+            "required_signals": [
+              "顶层对接、任务牵引、行业适配、体系完整、急用先行、开放协同",
+              "概念架构术语协调"
+            ],
+            "evidence_fit_review": {
+              "question": "体系设计由哪些原则和边界控制？",
+              "items": [
+                {
+                  "evidence_ref": "F-13",
+                  "fit": "direct",
+                  "role": "design_principle",
+                  "reason": "事实直接列出六项构建原则。"
+                },
+                {
+                  "evidence_ref": "K-01",
+                  "fit": "direct",
+                  "role": "boundary",
+                  "reason": "约束直接要求与国家体系协调一致。"
+                }
+              ],
+              "counter_case": "将原则与方法混成一组会削弱边界控制职责。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "方法坐标",
+            "evidence_refs": [
+              "F-14"
+            ],
+            "required_signals": [
+              "GB/T 13016：规定标准体系表编制方法",
+              "四大方向与八大能力形成基本坐标",
+              "先行先试项目任务形成直接依据",
+              "能源分类分级制度与电力专业链条纳入设计"
+            ],
+            "evidence_fit_review": {
+              "question": "体系设计采用哪些方法和坐标？",
+              "items": [
+                {
+                  "evidence_ref": "F-14",
+                  "fit": "direct",
+                  "role": "design_method",
+                  "reason": "事实直接说明方法和多维设计坐标。"
+                }
+              ],
+              "counter_case": "该证据解释生成方法，独立于最终框架形态。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "框架输出",
+            "evidence_refs": [
+              "F-15"
+            ],
+            "required_signals": [
+              "四梁八柱、上下衔接",
+              "七个一级类目"
+            ],
+            "evidence_fit_review": {
+              "question": "方法最终形成什么框架结构？",
+              "items": [
+                {
+                  "evidence_ref": "F-15",
+                  "fit": "direct",
+                  "role": "framework_output",
+                  "reason": "事实直接说明四梁八柱和七类输出。"
+                }
+              ],
+              "counter_case": "框架输出不承担原则说明职责。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-13",
+            "anchors": [
+              "顶层对接、任务牵引、行业适配、体系完整、急用先行、开放协同"
+            ]
+          },
+          {
+            "source_ref": "F-14",
+            "anchors": [
+              "GB/T 13016、四大方向、八大能力、先行先试任务、能源数据分类分级制度和电力专业链条"
+            ]
+          },
+          {
+            "source_ref": "F-15",
+            "anchors": [
+              "四梁",
+              "八柱",
+              "七个一级类目"
+            ]
+          },
+          {
+            "source_ref": "K-01",
+            "anchors": [
+              "概念、架构和术语应与国家数据基础设施标准体系协调一致"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-13",
+          "F-14",
+          "F-15"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-13",
+            "unit_id": "F-13#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-13",
+            "unit_id": "F-13#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-13",
+            "unit_id": "F-13#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-13",
+            "unit_id": "F-13#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-13",
+            "unit_id": "F-13#4",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-13",
+            "unit_id": "F-13#5",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-13",
+            "unit_id": "F-13#6",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-14",
+            "unit_id": "F-14#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-14",
+            "unit_id": "F-14#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-15",
+            "unit_id": "F-15#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-15",
+            "unit_id": "F-15#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-15",
+            "unit_id": "F-15#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-15",
+            "unit_id": "F-15#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-01",
+            "unit_id": "K-01#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-01",
+            "unit_id": "K-01#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-01",
+            "unit_id": "K-01#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-01",
+            "unit_id": "K-01#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-01",
+            "unit_id": "K-01#4",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-01",
+            "unit_id": "K-01#5",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-01",
+            "unit_id": "K-01#6",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "如何将国家要求、项目任务和电力行业特点转化为统一体系设计？",
+        "items": [
+          {
+            "evidence_ref": "F-13",
+            "fit": "direct",
+            "role": "design_principle",
+            "reason": "直接回答设计原则。"
+          },
+          {
+            "evidence_ref": "F-14",
+            "fit": "direct",
+            "role": "design_method",
+            "reason": "直接回答方法与坐标。"
+          },
+          {
+            "evidence_ref": "F-15",
+            "fit": "direct",
+            "role": "framework_output",
+            "reason": "直接回答框架输出。"
+          },
+          {
+            "evidence_ref": "K-01",
+            "fit": "direct",
+            "role": "boundary",
+            "reason": "直接限定国家体系对接边界。"
+          }
+        ],
+        "counter_case": "把七类框架直接视为经验分类会失去来源明确给出的生成方法。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p09",
+      "chapter_id": "ch02",
+      "title": "七类标准体系框架",
+      "subtitle": "覆盖电力数据基础设施全生命周期",
+      "page_role": "content",
+      "question": "七类一级标准及二级子体系如何覆盖电力数据基础设施的标准供给范围？",
+      "message": "基础通用、数据资源、技术设施、互联互通、应用服务、安全保障和管理规范七类标准共同覆盖电力数据基础设施全生命周期。",
+      "logic": "分类体系：七类并列、各含二级子体系与重点标准方向",
+      "beat": "全稿峰值页，完整展示体系版图",
+      "spoken_thread": "围绕七个并列一级类目逐项说明二级子体系和重点标准方向，强调这是一套覆盖范围和功能职责的分类版图。",
+      "content": [
+        "基础通用",
+        "数据资源",
+        "技术设施",
+        "互联互通",
+        "应用服务",
+        "安全保障",
+        "管理规范"
+      ],
+      "primary_relation": {
+        "type": "parallel",
+        "scope": [
+          "基础通用",
+          "数据资源",
+          "技术设施",
+          "互联互通",
+          "应用服务",
+          "安全保障",
+          "管理规范"
+        ],
+        "authority": "hard"
+      },
+      "receives": "体系生成逻辑已经说明七类框架如何形成。",
+      "next": "在完整版图基础上，需要进一步看七类标准的功能分工和项目能力映射。",
+      "source_argument_node_ids": [
+        "AN-04"
+      ],
+      "source_refs": [
+        "F-16",
+        "F-17",
+        "F-18",
+        "F-19",
+        "F-20",
+        "F-21",
+        "F-22",
+        "K-05"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-99CC8FDA5469-01"
+      ],
+      "structural_operation": "split",
+      "content_load": "dense",
+      "content_route": {
+        "primary": "system",
+        "facets": [
+          "current",
+          "boundary"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-16",
+          "F-17",
+          "F-18",
+          "F-19",
+          "F-20",
+          "F-21",
+          "F-22",
+          "K-05"
+        ],
+        "rationale": "页面承担体系分类全景展示职责。"
+      },
+      "analysis_basis": {
+        "model": "classification_taxonomy",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-16",
+          "F-17",
+          "F-18",
+          "F-19",
+          "F-20",
+          "F-21",
+          "F-22",
+          "K-05"
+        ]
+      },
+      "proof": {
+        "method": "source_table",
+        "claims": [
+          "七类一级标准与二级子体系共同形成完整供给版图"
+        ],
+        "evidence_refs": [
+          "F-16",
+          "F-17",
+          "F-18",
+          "F-19",
+          "F-20",
+          "F-21",
+          "F-22"
+        ],
+        "boundary_refs": [
+          "K-05"
+        ],
+        "relation_basis": "explicit"
+      },
+      "visual_evidence": {
+        "kind": "asset",
+        "ref": "ASSET-A07E2F6871E6F1E7",
+        "locator": "source table 1",
+        "carrying_element": "七类标准体系全景矩阵",
+        "answers": "what"
+      },
+      "onscreen_composition": {
+        "mode": "evidence_first",
+        "lead_budget": 0
+      },
+      "onscreen_contract": {
+        "relation": "parallel",
+        "detail_axis": "一级标准类目及其二级子体系",
+        "expression_mode": "phrase_led",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "基础通用",
+            "evidence_refs": [
+              "F-16"
+            ],
+            "required_signals": [
+              "术语概念：衔接国家术语体系",
+              "参考架构：明确与国家总体架构的映射关系",
+              "标识目录：制定标识管理和目录描述规范"
+            ],
+            "evidence_fit_review": {
+              "question": "基础通用类包含哪些二级子体系？",
+              "items": [
+                {
+                  "evidence_ref": "F-16",
+                  "fit": "direct",
+                  "role": "taxonomy_member",
+                  "reason": "事实直接列出A类三个二级子体系。"
+                }
+              ],
+              "counter_case": "该证据只属于A类。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "数据资源",
+            "evidence_refs": [
+              "F-17"
+            ],
+            "required_signals": [
+              "分类分级：细化电力各环节规则",
+              "字典元数据：规范设备拓扑量测等对象定义",
+              "数据质量：覆盖生成采集存储使用全过程",
+              "数据资产：规范登记评估入表"
+            ],
+            "evidence_fit_review": {
+              "question": "数据资源类包含哪些二级子体系？",
+              "items": [
+                {
+                  "evidence_ref": "F-17",
+                  "fit": "direct",
+                  "role": "taxonomy_member",
+                  "reason": "事实直接列出B类四个二级子体系。"
+                }
+              ],
+              "counter_case": "该证据只属于B类。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "技术设施",
+            "evidence_refs": [
+              "F-18"
+            ],
+            "required_signals": [
+              "感知终端：规范物联网终端和传感装置接入",
+              "存储计算：规范数据存储与算力资源调度",
+              "平台中台：制定平台技术导则和功能规范"
+            ],
+            "evidence_fit_review": {
+              "question": "技术设施类包含哪些二级子体系？",
+              "items": [
+                {
+                  "evidence_ref": "F-18",
+                  "fit": "direct",
+                  "role": "taxonomy_member",
+                  "reason": "事实直接列出C类三个二级子体系。"
+                }
+              ],
+              "counter_case": "该证据只属于C类。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "互联互通",
+            "evidence_refs": [
+              "F-19"
+            ],
+            "required_signals": [
+              "接口协议：衔接国家连接器技术要求",
+              "信息模型：继承扩展DL/T 890公共信息模型",
+              "身份接入：制定用户身份和接入实施细则"
+            ],
+            "evidence_fit_review": {
+              "question": "互联互通类包含哪些二级子体系？",
+              "items": [
+                {
+                  "evidence_ref": "F-19",
+                  "fit": "direct",
+                  "role": "taxonomy_member",
+                  "reason": "事实直接列出D类三个二级子体系。"
+                }
+              ],
+              "counter_case": "该证据只属于D类。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "应用服务",
+            "evidence_refs": [
+              "F-20"
+            ],
+            "required_signals": [
+              "流通交易：规范数据流通共享交易",
+              "新兴场景：制定虚拟电厂等接口服务标准",
+              "公共服务：规范可靠性和统计数据发布共享"
+            ],
+            "evidence_fit_review": {
+              "question": "应用服务类包含哪些二级子体系？",
+              "items": [
+                {
+                  "evidence_ref": "F-20",
+                  "fit": "direct",
+                  "role": "taxonomy_member",
+                  "reason": "事实直接列出E类三个二级子体系。"
+                }
+              ],
+              "counter_case": "该证据只属于E类。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "安全保障",
+            "evidence_refs": [
+              "F-21"
+            ],
+            "required_signals": [
+              "总体要求：完善行业数据安全标准体系",
+              "生命周期：规范采集传输存储使用销毁安全",
+              "跨域安全：规范跨企业跨行业跨境流通"
+            ],
+            "evidence_fit_review": {
+              "question": "安全保障类包含哪些二级子体系？",
+              "items": [
+                {
+                  "evidence_ref": "F-21",
+                  "fit": "direct",
+                  "role": "taxonomy_member",
+                  "reason": "事实直接列出F类三个二级子体系。"
+                }
+              ],
+              "counter_case": "该证据只属于F类。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "管理规范",
+            "evidence_refs": [
+              "F-22",
+              "K-05"
+            ],
+            "required_signals": [
+              "治理机制：规范组织职责流程",
+              "协同管理：规范立项归口实施评估职责",
+              "分类边界：七类并列且无建设阶段含义"
+            ],
+            "evidence_fit_review": {
+              "question": "管理规范类包含哪些二级子体系，并需保留什么分类边界？",
+              "items": [
+                {
+                  "evidence_ref": "F-22",
+                  "fit": "direct",
+                  "role": "taxonomy_member",
+                  "reason": "事实直接列出G类两个二级子体系。"
+                },
+                {
+                  "evidence_ref": "K-05",
+                  "fit": "direct",
+                  "role": "classification_boundary",
+                  "reason": "约束直接说明七类属于并列分类。"
+                }
+              ],
+              "counter_case": "把字母顺序画成阶段路线会改变来源关系。",
+              "verdict": "keep"
+            }
+          }
+        ],
+        "detail_policy": {
+          "allowed_roles": [
+            "taxonomy_member"
+          ],
+          "forbidden_roles": [
+            "stage"
+          ],
+          "role_markers": {
+            "taxonomy_member": [
+              "包含",
+              "标准"
+            ],
+            "stage": [
+              "第一阶段",
+              "随后",
+              "最终"
+            ]
+          },
+          "label_only_allowed": false
+        }
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-16",
+            "anchors": [
+              "术语与概念、参考架构、标识与目录"
+            ]
+          },
+          {
+            "source_ref": "F-17",
+            "anchors": [
+              "数据分类分级、数据字典与元数据、数据质量、数据资产管理"
+            ]
+          },
+          {
+            "source_ref": "F-18",
+            "anchors": [
+              "感知与终端、存储与计算、平台与中台"
+            ]
+          },
+          {
+            "source_ref": "F-19",
+            "anchors": [
+              "接口协议、信息模型、身份与接入管理"
+            ]
+          },
+          {
+            "source_ref": "F-20",
+            "anchors": [
+              "数据流通交易、新兴场景应用、公共服务"
+            ]
+          },
+          {
+            "source_ref": "F-21",
+            "anchors": [
+              "数据安全总体要求、全生命周期安全、跨域安全"
+            ]
+          },
+          {
+            "source_ref": "F-22",
+            "anchors": [
+              "治理机制、标准化协同管理"
+            ]
+          },
+          {
+            "source_ref": "K-05",
+            "anchors": [
+              "七个一级类目是并列分类"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-16",
+          "F-17",
+          "F-18",
+          "F-19",
+          "F-20",
+          "F-21",
+          "F-22",
+          "K-05"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-16",
+            "unit_id": "F-16#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-16",
+            "unit_id": "F-16#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-16",
+            "unit_id": "F-16#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-17",
+            "unit_id": "F-17#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-17",
+            "unit_id": "F-17#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-17",
+            "unit_id": "F-17#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-17",
+            "unit_id": "F-17#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-18",
+            "unit_id": "F-18#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-18",
+            "unit_id": "F-18#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-18",
+            "unit_id": "F-18#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-19",
+            "unit_id": "F-19#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-19",
+            "unit_id": "F-19#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-19",
+            "unit_id": "F-19#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-20",
+            "unit_id": "F-20#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-20",
+            "unit_id": "F-20#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-20",
+            "unit_id": "F-20#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-21",
+            "unit_id": "F-21#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-21",
+            "unit_id": "F-21#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-21",
+            "unit_id": "F-21#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-22",
+            "unit_id": "F-22#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-22",
+            "unit_id": "F-22#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-05",
+            "unit_id": "K-05#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-05",
+            "unit_id": "K-05#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-05",
+            "unit_id": "K-05#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-05",
+            "unit_id": "K-05#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-05",
+            "unit_id": "K-05#4",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "七类一级标准及二级子体系如何覆盖电力数据基础设施的标准供给范围？",
+        "items": [
+          {
+            "evidence_ref": "F-16",
+            "fit": "direct",
+            "role": "taxonomy_member",
+            "reason": "直接回答A类范围。"
+          },
+          {
+            "evidence_ref": "F-17",
+            "fit": "direct",
+            "role": "taxonomy_member",
+            "reason": "直接回答B类范围。"
+          },
+          {
+            "evidence_ref": "F-18",
+            "fit": "direct",
+            "role": "taxonomy_member",
+            "reason": "直接回答C类范围。"
+          },
+          {
+            "evidence_ref": "F-19",
+            "fit": "direct",
+            "role": "taxonomy_member",
+            "reason": "直接回答D类范围。"
+          },
+          {
+            "evidence_ref": "F-20",
+            "fit": "direct",
+            "role": "taxonomy_member",
+            "reason": "直接回答E类范围。"
+          },
+          {
+            "evidence_ref": "F-21",
+            "fit": "direct",
+            "role": "taxonomy_member",
+            "reason": "直接回答F类范围。"
+          },
+          {
+            "evidence_ref": "F-22",
+            "fit": "direct",
+            "role": "taxonomy_member",
+            "reason": "直接回答G类范围。"
+          },
+          {
+            "evidence_ref": "K-05",
+            "fit": "direct",
+            "role": "classification_boundary",
+            "reason": "直接保留并列分类边界。"
+          }
+        ],
+        "counter_case": "按建设先后串联七类会制造来源未支持的依赖关系，保留并列分类。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p10",
+      "chapter_id": "ch02",
+      "title": "标准功能与能力映射",
+      "subtitle": "支撑先行先试核心能力",
+      "page_role": "content",
+      "question": "七类标准在体系中承担什么功能，并如何对应先行先试核心能力？",
+      "message": "A与F提供共性支撑，B与D承载行业核心，C与E服务场景应用，G保障持续治理；相关子体系与三统一、主体接入、数据流通利用和安全保障能力直接对应。",
+      "logic": "功能分组与能力映射：七类标准从分类版图转化为项目支撑关系",
+      "beat": "解释框架的业务职责和项目价值",
+      "spoken_thread": "在七类全景基础上先解释各类标准的功能分工，再把关键子体系映射到先行先试项目四项核心能力。",
+      "content": [
+        "共性支撑",
+        "行业核心",
+        "场景应用",
+        "持续治理",
+        "项目能力映射"
+      ],
+      "primary_relation": {
+        "type": "mixed",
+        "scope": [
+          "共性支撑",
+          "行业核心",
+          "场景应用",
+          "持续治理",
+          "项目能力映射"
+        ],
+        "authority": "hard"
+      },
+      "secondary_relations": [
+        {
+          "from": "共性支撑",
+          "to": "项目能力映射",
+          "type": "reference",
+          "authority": "soft",
+          "basis": "explicit",
+          "evidence_ref": "F-23"
+        },
+        {
+          "from": "行业核心",
+          "to": "项目能力映射",
+          "type": "reference",
+          "authority": "soft",
+          "basis": "explicit",
+          "evidence_ref": "F-23"
+        },
+        {
+          "from": "场景应用",
+          "to": "项目能力映射",
+          "type": "reference",
+          "authority": "soft",
+          "basis": "explicit",
+          "evidence_ref": "F-23"
+        }
+      ],
+      "receives": "七类标准及二级子体系已经形成完整供给版图。",
+      "next": "明确功能与项目能力映射后，可以据上位依据和成熟度安排标准研制优先级。",
+      "source_argument_node_ids": [
+        "AN-04"
+      ],
+      "source_refs": [
+        "F-23",
+        "K-02"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-99CC8FDA5469-01"
+      ],
+      "structural_operation": "split",
+      "content_load": "standard",
+      "content_route": {
+        "primary": "system",
+        "facets": [
+          "coordination",
+          "boundary"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-23",
+          "K-02"
+        ],
+        "rationale": "页面解释七类标准的功能分工和项目能力映射。",
+        "meaning_signals": [
+          "标准体系建设与项目标准验证同步推进"
+        ]
+      },
+      "analysis_basis": {
+        "model": "problem_to_response_mapping",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-23",
+          "K-02"
+        ]
+      },
+      "proof": {
+        "method": "functional_mapping",
+        "claims": [
+          "七类标准形成四类功能分工",
+          "关键子体系映射项目核心能力"
+        ],
+        "evidence_refs": [
+          "F-23"
+        ],
+        "boundary_refs": [
+          "K-02"
+        ],
+        "relation_basis": "explicit"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 3
+      },
+      "onscreen_contract": {
+        "relation": "mixed",
+        "detail_axis": "七类标准的功能职责及项目支撑对象",
+        "expression_mode": "mixed",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "共性支撑",
+            "evidence_refs": [
+              "F-23"
+            ],
+            "required_signals": [
+              "A基础通用与F安全保障优先对接国家文件"
+            ],
+            "evidence_fit_review": {
+              "question": "哪些标准承担共性支撑职责？",
+              "items": [
+                {
+                  "evidence_ref": "F-23",
+                  "fit": "direct",
+                  "role": "functional_role",
+                  "reason": "事实直接说明A与F的共性支撑定位。"
+                }
+              ],
+              "counter_case": "该模块只提取F-23中的共性支撑职责。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "行业核心",
+            "evidence_refs": [
+              "F-23",
+              "K-02"
+            ],
+            "required_signals": [
+              "B数据资源与D互联互通体现电力专业性",
+              "分类分级与信息模型继承边界"
+            ],
+            "evidence_fit_review": {
+              "question": "哪些标准承担行业核心职责并需遵循什么边界？",
+              "items": [
+                {
+                  "evidence_ref": "F-23",
+                  "fit": "direct",
+                  "role": "functional_role",
+                  "reason": "事实直接说明B与D的行业核心定位。"
+                },
+                {
+                  "evidence_ref": "K-02",
+                  "fit": "direct",
+                  "role": "boundary",
+                  "reason": "约束直接限定分类分级和信息模型的衔接要求。"
+                }
+              ],
+              "counter_case": "边界与行业核心职责直接相关，应共同保留。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "场景应用",
+            "evidence_refs": [
+              "F-23"
+            ],
+            "required_signals": [
+              "C技术设施与E应用服务动态衔接企业实践"
+            ],
+            "evidence_fit_review": {
+              "question": "哪些标准承担场景应用职责？",
+              "items": [
+                {
+                  "evidence_ref": "F-23",
+                  "fit": "direct",
+                  "role": "functional_role",
+                  "reason": "事实直接说明C与E的场景应用定位。"
+                }
+              ],
+              "counter_case": "该模块只提取F-23中的场景应用职责。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "持续治理",
+            "evidence_refs": [
+              "F-23"
+            ],
+            "required_signals": [
+              "G管理规范保障体系持续运行"
+            ],
+            "evidence_fit_review": {
+              "question": "哪些标准承担持续治理职责？",
+              "items": [
+                {
+                  "evidence_ref": "F-23",
+                  "fit": "direct",
+                  "role": "functional_role",
+                  "reason": "事实直接说明G类的持续治理定位。"
+                }
+              ],
+              "counter_case": "该模块只提取F-23中的治理职责。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "项目能力映射",
+            "evidence_refs": [
+              "F-23"
+            ],
+            "required_signals": [
+              "三统一、主体接入、流通利用、安全保障"
+            ],
+            "evidence_fit_review": {
+              "question": "关键子体系如何支撑先行先试核心能力？",
+              "items": [
+                {
+                  "evidence_ref": "F-23",
+                  "fit": "direct",
+                  "role": "capability_mapping",
+                  "reason": "事实直接给出A3、D3、D1、E1、E2、F类与项目能力的对应关系。"
+                }
+              ],
+              "counter_case": "能力映射独立于四类功能分组，需要单独可见。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-23",
+            "anchors": [
+              "共性支撑",
+              "行业专业核心",
+              "数字化场景",
+              "持续运行",
+              "三统一、主体接入、数据流通利用和安全保障能力"
+            ]
+          },
+          {
+            "source_ref": "K-02",
+            "anchors": [
+              "数据分类分级标准应直接衔接",
+              "信息模型标准应继承并扩展DL/T 890"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-23",
+          "K-02"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#4",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#5",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#6",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#7",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#8",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-23",
+            "unit_id": "F-23#9",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-02",
+            "unit_id": "K-02#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-02",
+            "unit_id": "K-02#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-02",
+            "unit_id": "K-02#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-02",
+            "unit_id": "K-02#3",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "七类标准在体系中承担什么功能，并如何对应先行先试核心能力？",
+        "items": [
+          {
+            "evidence_ref": "F-23",
+            "fit": "direct",
+            "role": "functional_mapping",
+            "reason": "直接回答功能分工和项目能力对应。"
+          },
+          {
+            "evidence_ref": "K-02",
+            "fit": "direct",
+            "role": "boundary",
+            "reason": "直接限定行业核心标准的继承与衔接边界。"
+          }
+        ],
+        "counter_case": "若只展示七类名称，受众无法识别各类标准的功能职责和项目支撑对象。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p11",
+      "chapter_id": "ch03",
+      "title": "三、研制重点与实施路径",
+      "page_role": "chapter",
+      "question": "第三章回答什么？",
+      "message": "进入研制重点与实施路径",
+      "logic": "章节导航",
+      "content": [],
+      "receives": "七类标准框架及其功能职责已经明确。",
+      "next": "先按上位依据、建设基础性和场景成熟度安排研制优先级。",
+      "content_load": "light",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p12",
+      "chapter_id": "ch03",
+      "title": "重点标准研制优先级",
+      "page_role": "content",
+      "question": "重点标准应如何排序并与场景验证协同？",
+      "message": "第一优先级先对接明确上位要求，第二优先级形成规模化建设基础，第三优先级以团体标准验证新兴场景，八类重点场景贯穿研制与验证。",
+      "logic": "决策与分层：三个优先级按不同成熟度和作用定位形成研制安排",
+      "beat": "把体系版图转化为可执行的研制次序",
+      "spoken_thread": "逐级解释为何这些标准进入第一、第二、第三优先级，并说明八类场景如何承担同步验证职责。",
+      "content": [
+        "第一优先级",
+        "第二优先级",
+        "第三优先级",
+        "场景验证"
+      ],
+      "primary_relation": {
+        "type": "mixed",
+        "scope": [
+          "第一优先级",
+          "第二优先级",
+          "第三优先级",
+          "场景验证"
+        ],
+        "authority": "hard"
+      },
+      "secondary_relations": [
+        {
+          "from": "场景验证",
+          "to": "第一优先级",
+          "type": "feedback",
+          "authority": "soft",
+          "basis": "explicit",
+          "evidence_ref": "F-25"
+        },
+        {
+          "from": "场景验证",
+          "to": "第二优先级",
+          "type": "feedback",
+          "authority": "soft",
+          "basis": "explicit",
+          "evidence_ref": "F-25"
+        },
+        {
+          "from": "场景验证",
+          "to": "第三优先级",
+          "type": "feedback",
+          "authority": "soft",
+          "basis": "explicit",
+          "evidence_ref": "F-25"
+        }
+      ],
+      "receives": "七类框架的功能分工和项目映射已经明确。",
+      "next": "标准体系如何分阶段形成并持续接受项目与场景反馈？",
+      "source_argument_node_ids": [
+        "AN-05"
+      ],
+      "source_refs": [
+        "F-24",
+        "F-25",
+        "K-03"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-AA89D2D43247-01"
+      ],
+      "structural_operation": "preserve",
+      "content_load": "dense",
+      "content_route": {
+        "primary": "action",
+        "facets": [
+          "progress",
+          "boundary",
+          "coordination"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-24",
+          "F-25",
+          "K-03"
+        ],
+        "rationale": "页面承担研制排序与场景验证安排职责。",
+        "meaning_signals": [
+          "优先级是差异化研制安排，第三优先级保留成熟转化条件"
+        ]
+      },
+      "analysis_basis": {
+        "model": "decision",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-24",
+          "F-25",
+          "K-03"
+        ]
+      },
+      "proof": {
+        "method": "priority_decision",
+        "claims": [
+          "三个优先级对应不同上位依据、基础性和成熟度",
+          "场景验证与研制同步推进"
+        ],
+        "evidence_refs": [
+          "F-24",
+          "F-25"
+        ],
+        "boundary_refs": [
+          "K-03"
+        ],
+        "relation_basis": "explicit"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 3
+      },
+      "onscreen_contract": {
+        "relation": "mixed",
+        "detail_axis": "标准研制优先级的任务对象、依据和验证条件",
+        "expression_mode": "mixed",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "第一优先级",
+            "evidence_refs": [
+              "F-24"
+            ],
+            "required_signals": [
+              "参考架构、分类分级、标识、目录",
+              "尽快启动立项"
+            ],
+            "evidence_fit_review": {
+              "question": "第一优先级包含什么及其依据是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-24",
+                  "fit": "direct",
+                  "role": "priority_task",
+                  "reason": "事实直接列出第一优先级标准和上位依据。"
+                }
+              ],
+              "counter_case": "该模块只提取第一优先级内容。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "第二优先级",
+            "evidence_refs": [
+              "F-24"
+            ],
+            "required_signals": [
+              "字典元数据、质量、连接器、全生命周期安全",
+              "支撑规模化建设"
+            ],
+            "evidence_fit_review": {
+              "question": "第二优先级包含什么及其作用是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-24",
+                  "fit": "direct",
+                  "role": "priority_task",
+                  "reason": "事实直接列出第二优先级标准和基础性作用。"
+                }
+              ],
+              "counter_case": "该模块只提取第二优先级内容。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "第三优先级",
+            "evidence_refs": [
+              "F-24",
+              "K-03"
+            ],
+            "required_signals": [
+              "新兴场景与数据资产",
+              "团体标准先行、成熟后转化"
+            ],
+            "evidence_fit_review": {
+              "question": "第三优先级包含什么及其成熟边界是什么？",
+              "items": [
+                {
+                  "evidence_ref": "F-24",
+                  "fit": "direct",
+                  "role": "priority_task",
+                  "reason": "事实直接列出第三优先级标准和团体标准先行建议。"
+                },
+                {
+                  "evidence_ref": "K-03",
+                  "fit": "direct",
+                  "role": "boundary",
+                  "reason": "约束直接保留建议性和成熟度边界。"
+                }
+              ],
+              "counter_case": "第三优先级不能表述为已确定的行业标准发布任务。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "场景验证",
+            "evidence_refs": [
+              "F-25"
+            ],
+            "required_signals": [
+              "八类重点场景",
+              "研制与验证同步推进"
+            ],
+            "evidence_fit_review": {
+              "question": "场景验证如何贯穿标准研制？",
+              "items": [
+                {
+                  "evidence_ref": "F-25",
+                  "fit": "direct",
+                  "role": "validation_scene",
+                  "reason": "事实直接列出八类场景和同步验证要求。"
+                }
+              ],
+              "counter_case": "场景验证跨越三个优先级，适合作为共同反馈模块。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-24",
+            "anchors": [
+              "第一优先级",
+              "第二优先级",
+              "第三优先级",
+              "团体标准先行、成熟后转化"
+            ]
+          },
+          {
+            "source_ref": "F-25",
+            "anchors": [
+              "行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购、数据产品服务"
+            ]
+          },
+          {
+            "source_ref": "K-03",
+            "anchors": [
+              "建议性研制安排",
+              "仍在演进"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-24",
+          "F-25",
+          "K-03"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-24",
+            "unit_id": "F-24#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-24",
+            "unit_id": "F-24#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-24",
+            "unit_id": "F-24#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-24",
+            "unit_id": "F-24#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-25",
+            "unit_id": "F-25#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-03",
+            "unit_id": "K-03#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-03",
+            "unit_id": "K-03#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-03",
+            "unit_id": "K-03#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-03",
+            "unit_id": "K-03#3",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "重点标准应如何排序并与场景验证协同？",
+        "items": [
+          {
+            "evidence_ref": "F-24",
+            "fit": "direct",
+            "role": "priority_plan",
+            "reason": "直接回答三个优先级的对象和安排。"
+          },
+          {
+            "evidence_ref": "F-25",
+            "fit": "direct",
+            "role": "validation_scene",
+            "reason": "直接回答场景验证的覆盖与同步要求。"
+          },
+          {
+            "evidence_ref": "K-03",
+            "fit": "direct",
+            "role": "boundary",
+            "reason": "直接保留建议强度和成熟条件。"
+          }
+        ],
+        "counter_case": "只按标准名称列清单无法解释排序依据和场景验证责任。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p13",
+      "chapter_id": "ch03",
+      "title": "三阶段实施路径",
+      "subtitle": "标准供给、项目建设与场景验证同步推进",
+      "page_role": "content",
+      "question": "标准体系如何分阶段形成并持续接受项目与场景反馈？",
+      "message": "近期完成顶层设计与第一优先级研制，中期形成规模化供给并建立评估，远期完成成熟转化和七类协同主体结构，全过程与项目建设和场景验证同步。",
+      "logic": "实施路径：近期—中期—远期按任务、产出、覆盖和反馈条件递进",
+      "beat": "把优先级转化为阶段任务和结果",
+      "spoken_thread": "按近期、中期、远期说明每一阶段的目标、标准任务、项目支撑和验证反馈，明确阶段名称保持来源边界。",
+      "content": [
+        "近期：顶层设计",
+        "中期：规模供给",
+        "远期：主体结构"
+      ],
+      "primary_relation": {
+        "type": "sequence",
+        "scope": [
+          "近期：顶层设计",
+          "中期：规模供给",
+          "远期：主体结构"
+        ],
+        "authority": "hard"
+      },
+      "receives": "三个优先级已经明确标准研制的差异化次序。",
+      "next": "持续推进三阶段任务还需要组织、机制、资源和国际衔接保障。",
+      "source_argument_node_ids": [
+        "AN-06"
+      ],
+      "source_refs": [
+        "F-26",
+        "F-27",
+        "F-28",
+        "K-04",
+        "K-06"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-C5C1A4D6F33F-01"
+      ],
+      "structural_operation": "preserve",
+      "content_load": "dense",
+      "content_route": {
+        "primary": "action",
+        "facets": [
+          "progress",
+          "coordination",
+          "boundary"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-26",
+          "F-27",
+          "F-28",
+          "K-04",
+          "K-06"
+        ],
+        "rationale": "页面承担三阶段实施安排职责。",
+        "meaning_signals": [
+          "标准供给、项目建设和场景验证同步推进",
+          "阶段不自行映射具体年份"
+        ]
+      },
+      "analysis_basis": {
+        "model": "implementation",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-26",
+          "F-27",
+          "F-28",
+          "K-04",
+          "K-06"
+        ]
+      },
+      "proof": {
+        "method": "phase_task_output",
+        "claims": [
+          "三阶段各有明确目标和标准任务",
+          "全过程保持项目与场景同步"
+        ],
+        "evidence_refs": [
+          "F-26",
+          "F-27",
+          "F-28"
+        ],
+        "boundary_refs": [
+          "K-04",
+          "K-06"
+        ],
+        "relation_basis": "explicit"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 3
+      },
+      "onscreen_contract": {
+        "relation": "sequence",
+        "detail_axis": "实施阶段的目标、标准任务和项目支撑",
+        "expression_mode": "sentence_led",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "近期：顶层设计",
+            "evidence_refs": [
+              "F-26"
+            ],
+            "required_signals": [
+              "体系发布：正式发布标准体系框架",
+              "标准研制：完成第一优先级立项和研制",
+              "项目支撑：对接国家文件并支撑三统一",
+              "应用验证：选择具备条件的企业和区域试点"
+            ],
+            "evidence_fit_review": {
+              "question": "近期阶段要形成什么结果？",
+              "items": [
+                {
+                  "evidence_ref": "F-26",
+                  "fit": "direct",
+                  "role": "phase_task",
+                  "reason": "事实直接说明近期目标、标准任务和试点安排。"
+                }
+              ],
+              "counter_case": "近期任务需保持顶层设计和试点并重。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "中期：规模供给",
+            "evidence_refs": [
+              "F-27"
+            ],
+            "required_signals": [
+              "标准供给：完成第二优先级发布实施",
+              "覆盖范围：主要电网发电售电企业基本覆盖",
+              "评估机制：跟踪实施并吸收场景运营反馈",
+              "动态优化：依据试点经验调整体系框架"
+            ],
+            "evidence_fit_review": {
+              "question": "中期阶段要形成什么结果？",
+              "items": [
+                {
+                  "evidence_ref": "F-27",
+                  "fit": "direct",
+                  "role": "phase_task",
+                  "reason": "事实直接说明中期规模化供给、覆盖和评估任务。"
+                }
+              ],
+              "counter_case": "中期重点是供给与反馈机制。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "远期：主体结构",
+            "evidence_refs": [
+              "F-28",
+              "K-04",
+              "K-06"
+            ],
+            "required_signals": [
+              "成熟转化：完成第三优先级标准成熟转化",
+              "体系结构：形成七类协同配套主体结构",
+              "国家衔接：实现与国家标准体系全面衔接",
+              "阶段边界：近期中期远期不自行映射具体年份",
+              "同步要求：标准供给项目建设场景验证同步推进"
+            ],
+            "evidence_fit_review": {
+              "question": "远期阶段要形成什么结果并保留什么边界？",
+              "items": [
+                {
+                  "evidence_ref": "F-28",
+                  "fit": "direct",
+                  "role": "phase_task",
+                  "reason": "事实直接说明远期成熟转化和主体结构目标。"
+                },
+                {
+                  "evidence_ref": "K-04",
+                  "fit": "direct",
+                  "role": "boundary",
+                  "reason": "约束直接说明来源未给出阶段年份映射。"
+                },
+                {
+                  "evidence_ref": "K-06",
+                  "fit": "direct",
+                  "role": "coordination_requirement",
+                  "reason": "约束直接要求标准、项目和验证同步。"
+                }
+              ],
+              "counter_case": "将国家2026、2028、2029目标直接等同于行业近期、中期、远期会越过来源边界。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-26",
+            "anchors": [
+              "完成体系顶层设计",
+              "第一优先级",
+              "开展标准应用试点"
+            ]
+          },
+          {
+            "source_ref": "F-27",
+            "anchors": [
+              "形成规模化流通标准供给",
+              "建立评估机制",
+              "动态优化框架"
+            ]
+          },
+          {
+            "source_ref": "F-28",
+            "anchors": [
+              "完成第三优先级标准成熟转化",
+              "七类协同配套体系主体结构"
+            ]
+          },
+          {
+            "source_ref": "K-04",
+            "anchors": [
+              "未给出具体年份映射"
+            ]
+          },
+          {
+            "source_ref": "K-06",
+            "anchors": [
+              "与先行先试项目实施、场景验证和标准验证同步推进"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-26",
+          "F-27",
+          "F-28",
+          "K-04",
+          "K-06"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-26",
+            "unit_id": "F-26#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-26",
+            "unit_id": "F-26#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-27",
+            "unit_id": "F-27#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-27",
+            "unit_id": "F-27#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-28",
+            "unit_id": "F-28#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-28",
+            "unit_id": "F-28#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-04",
+            "unit_id": "K-04#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-04",
+            "unit_id": "K-04#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-04",
+            "unit_id": "K-04#2",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-04",
+            "unit_id": "K-04#3",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-04",
+            "unit_id": "K-04#4",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-04",
+            "unit_id": "K-04#5",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-06",
+            "unit_id": "K-06#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-06",
+            "unit_id": "K-06#1",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "标准体系如何分阶段形成并持续接受项目与场景反馈？",
+        "items": [
+          {
+            "evidence_ref": "F-26",
+            "fit": "direct",
+            "role": "phase_task",
+            "reason": "直接回答近期目标和任务。"
+          },
+          {
+            "evidence_ref": "F-27",
+            "fit": "direct",
+            "role": "phase_task",
+            "reason": "直接回答中期目标和任务。"
+          },
+          {
+            "evidence_ref": "F-28",
+            "fit": "direct",
+            "role": "phase_task",
+            "reason": "直接回答远期目标和任务。"
+          },
+          {
+            "evidence_ref": "K-04",
+            "fit": "direct",
+            "role": "boundary",
+            "reason": "直接限制阶段年份表达。"
+          },
+          {
+            "evidence_ref": "K-06",
+            "fit": "direct",
+            "role": "coordination_requirement",
+            "reason": "直接回答全过程同步要求。"
+          }
+        ],
+        "counter_case": "若仅展示三阶段名称，会丢失每阶段标准任务、项目支撑和反馈机制。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p14",
+      "chapter_id": "ch04",
+      "title": "四、保障措施与后续安排",
+      "page_role": "chapter",
+      "question": "第四章回答什么？",
+      "message": "进入保障措施与后续安排",
+      "logic": "章节导航",
+      "content": [],
+      "receives": "研制优先级和三阶段实施路径已经明确。",
+      "next": "从组织、机制、资源和国际衔接四方面完善实施保障。",
+      "content_load": "light",
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p15",
+      "chapter_id": "ch04",
+      "title": "标准体系建设保障",
+      "page_role": "content",
+      "question": "谁来组织、依靠什么机制和资源保障三阶段任务持续推进？",
+      "message": "中电联牵头全流程协作，动态调整与评估机制保持体系适配，专项资源支撑研制转化，国际对标提升衔接水平，四类保障共同形成持续治理能力。",
+      "logic": "治理责任：组织、机制、资源、国际衔接四个保障维度并列",
+      "beat": "为实施路径补齐责任和运行条件",
+      "spoken_thread": "从牵头组织、动态机制、资源投入和国际衔接四方面说明体系如何持续运行，并保留建议事项的状态边界。",
+      "content": [
+        "组织保障",
+        "机制保障",
+        "资源保障",
+        "国际衔接"
+      ],
+      "primary_relation": {
+        "type": "parallel",
+        "scope": [
+          "组织保障",
+          "机制保障",
+          "资源保障",
+          "国际衔接"
+        ],
+        "authority": "hard"
+      },
+      "receives": "三阶段路径已经明确标准供给和项目验证的推进节奏。",
+      "next": "最后汇总研究成果和后续推进重点。",
+      "source_argument_node_ids": [
+        "AN-07"
+      ],
+      "source_refs": [
+        "F-29",
+        "F-30",
+        "F-31",
+        "F-32",
+        "K-07"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-7952461136A7-01",
+        "H-B56DFFEECD-0F92CC9807DA-01",
+        "H-B56DFFEECD-24911549FC43-01",
+        "H-B56DFFEECD-0C6BB57C4936-01"
+      ],
+      "structural_operation": "merge_within_chapter",
+      "content_load": "standard",
+      "content_route": {
+        "primary": "action",
+        "facets": [
+          "coordination",
+          "next_step",
+          "boundary"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-29",
+          "F-30",
+          "F-31",
+          "F-32",
+          "K-07"
+        ],
+        "rationale": "页面承担持续治理的责任、机制和资源条件说明。",
+        "meaning_signals": [
+          "中电联牵头多方协作",
+          "建议事项保持未完成状态"
+        ]
+      },
+      "analysis_basis": {
+        "model": "governance_responsibility",
+        "relation_basis": "inferred",
+        "confidence": "high",
+        "supports": [
+          "F-29",
+          "F-30",
+          "F-31",
+          "F-32",
+          "K-07"
+        ]
+      },
+      "proof": {
+        "method": "governance_dimensions",
+        "claims": [
+          "四类保障共同支撑持续运行"
+        ],
+        "evidence_refs": [
+          "F-29",
+          "F-30",
+          "F-31",
+          "F-32"
+        ],
+        "boundary_refs": [
+          "K-07"
+        ],
+        "relation_basis": "inferred"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 4
+      },
+      "onscreen_contract": {
+        "relation": "parallel",
+        "detail_axis": "标准体系持续推进所需的保障职责",
+        "expression_mode": "mixed",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "组织保障",
+            "evidence_refs": [
+              "F-29"
+            ],
+            "required_signals": [
+              "责任主体：中电联牵头统筹项目参与单位",
+              "协作流程：贯通立项起草审查发布复审"
+            ],
+            "evidence_fit_review": {
+              "question": "组织保障明确了谁承担什么职责？",
+              "items": [
+                {
+                  "evidence_ref": "F-29",
+                  "fit": "direct",
+                  "role": "governance_responsibility",
+                  "reason": "事实直接说明中电联牵头和全流程协作机制。"
+                }
+              ],
+              "counter_case": "组织职责与机制建议的状态强度不同，应分开。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "机制保障",
+            "evidence_refs": [
+              "F-30",
+              "K-07"
+            ],
+            "required_signals": [
+              "计划支持：建议纳入年度能源行业标准计划",
+              "动态机制：衔接建设进度和分类分级要求",
+              "实施评估：建立跟踪评估和问题反馈机制",
+              "研究边界：计划支持、资源投入、国际对标均为建议"
+            ],
+            "evidence_fit_review": {
+              "question": "机制保障包含哪些建议并需保留什么状态？",
+              "items": [
+                {
+                  "evidence_ref": "F-30",
+                  "fit": "direct",
+                  "role": "governance_measure",
+                  "reason": "事实直接列出计划、调整、评估和反馈建议。"
+                },
+                {
+                  "evidence_ref": "K-07",
+                  "fit": "direct",
+                  "role": "status_boundary",
+                  "reason": "约束直接要求保障建议不写成已完成部署。"
+                }
+              ],
+              "counter_case": "机制建议必须保留建议强度。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "资源保障",
+            "evidence_refs": [
+              "F-31",
+              "K-07"
+            ],
+            "required_signals": [
+              "力量统筹：整合企业和科研机构标准化力量",
+              "投入保障：加大专项经费和人才队伍投入",
+              "成果转化：推动企业实践转为行业或团体标准"
+            ],
+            "evidence_fit_review": {
+              "question": "资源保障包含哪些建议并需保留什么状态？",
+              "items": [
+                {
+                  "evidence_ref": "F-31",
+                  "fit": "direct",
+                  "role": "resource_measure",
+                  "reason": "事实直接列出力量、经费、人才和成果转化建议。"
+                },
+                {
+                  "evidence_ref": "K-07",
+                  "fit": "direct",
+                  "role": "status_boundary",
+                  "reason": "约束直接要求资源建议不写成已完成部署。"
+                }
+              ],
+              "counter_case": "资源保障独立回答投入条件。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "国际衔接",
+            "evidence_refs": [
+              "F-32",
+              "K-07"
+            ],
+            "required_signals": [
+              "标准跟踪：持续跟踪IEC 61970与IEC 61968",
+              "对标参与：开展对标分析并参与国际标准化",
+              "重点领域：聚焦信息模型和互联互通"
+            ],
+            "evidence_fit_review": {
+              "question": "国际衔接包含哪些建议并需保留什么状态？",
+              "items": [
+                {
+                  "evidence_ref": "F-32",
+                  "fit": "direct",
+                  "role": "international_alignment",
+                  "reason": "事实直接列出跟踪、对标和参与国际标准化建议。"
+                },
+                {
+                  "evidence_ref": "K-07",
+                  "fit": "direct",
+                  "role": "status_boundary",
+                  "reason": "约束直接要求国际衔接建议不写成已完成。"
+                }
+              ],
+              "counter_case": "国际衔接对象和责任独立于国内资源投入。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-29",
+            "anchors": [
+              "中电联",
+              "标准立项、起草、审查、发布、复审全流程协作机制"
+            ]
+          },
+          {
+            "source_ref": "F-30",
+            "anchors": [
+              "动态调整机制、实施跟踪评估和问题反馈"
+            ]
+          },
+          {
+            "source_ref": "F-31",
+            "anchors": [
+              "专项经费与人才投入",
+              "实践成果转化"
+            ]
+          },
+          {
+            "source_ref": "F-32",
+            "anchors": [
+              "IEC 61970、IEC 61968",
+              "参与国际标准化"
+            ]
+          },
+          {
+            "source_ref": "K-07",
+            "anchors": [
+              "属于研究建议，不应表述为已完成部署"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-29",
+          "F-30",
+          "F-31",
+          "F-32",
+          "K-07"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-29",
+            "unit_id": "F-29#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-29",
+            "unit_id": "F-29#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-30",
+            "unit_id": "F-30#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-31",
+            "unit_id": "F-31#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-32",
+            "unit_id": "F-32#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-07",
+            "unit_id": "K-07#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-07",
+            "unit_id": "K-07#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "K-07",
+            "unit_id": "K-07#2",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "谁来组织、依靠什么机制和资源保障三阶段任务持续推进？",
+        "items": [
+          {
+            "evidence_ref": "F-29",
+            "fit": "direct",
+            "role": "governance_responsibility",
+            "reason": "直接回答牵头主体和协作职责。"
+          },
+          {
+            "evidence_ref": "F-30",
+            "fit": "direct",
+            "role": "governance_measure",
+            "reason": "直接回答动态机制。"
+          },
+          {
+            "evidence_ref": "F-31",
+            "fit": "direct",
+            "role": "resource_measure",
+            "reason": "直接回答资源条件。"
+          },
+          {
+            "evidence_ref": "F-32",
+            "fit": "direct",
+            "role": "international_alignment",
+            "reason": "直接回答国际衔接。"
+          },
+          {
+            "evidence_ref": "K-07",
+            "fit": "direct",
+            "role": "status_boundary",
+            "reason": "直接保留建议状态边界。"
+          }
+        ],
+        "counter_case": "四类保障回答不同治理职责，合并为泛化保障会丢失责任和状态。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p16",
+      "chapter_id": "ch04",
+      "title": "研究结论与后续安排",
+      "subtitle": "体系成果与持续推进安排",
+      "page_role": "content",
+      "question": "研究形成了什么，后续工作应围绕哪些方向持续推进？",
+      "message": "七类标准体系框架、三级研制优先级和三阶段实施路径已经形成，后续由中电联持续完善框架、加快研制、强化评估并纳入先行先试项目统筹。",
+      "logic": "结论—成果—后续安排",
+      "beat": "收束全稿并形成后续推进共识",
+      "spoken_thread": "回顾研究形成的三项核心成果，再明确中电联后续持续完善、研制、评估和统筹推进的工作方向。",
+      "content": [
+        "七类体系",
+        "三级次序",
+        "三阶段路径",
+        "持续推进"
+      ],
+      "primary_relation": {
+        "type": "mixed",
+        "scope": [
+          "七类体系",
+          "三级次序",
+          "三阶段路径",
+          "持续推进"
+        ],
+        "authority": "hard"
+      },
+      "receives": "实施路径和四类保障已经形成完整推进机制。",
+      "next": "以协同推进标准体系建设的共识收束本次汇报。",
+      "source_argument_node_ids": [
+        "AN-08"
+      ],
+      "source_refs": [
+        "F-33"
+      ],
+      "source_scope": [
+        "H-B56DFFEECD-7A5C653C8F08-01"
+      ],
+      "structural_operation": "preserve",
+      "content_load": "standard",
+      "content_route": {
+        "primary": "action",
+        "facets": [
+          "progress",
+          "next_step"
+        ],
+        "confidence": "high",
+        "basis": [
+          "F-33"
+        ],
+        "rationale": "页面收束已形成成果与后续工作方向。",
+        "meaning_signals": [
+          "后续持续完善、研制、评估和项目统筹"
+        ]
+      },
+      "analysis_basis": {
+        "model": "evidence_synthesis",
+        "relation_basis": "explicit",
+        "confidence": "high",
+        "supports": [
+          "F-33"
+        ]
+      },
+      "proof": {
+        "method": "conclusion_synthesis",
+        "claims": [
+          "三项核心成果已经形成",
+          "后续工作方向明确"
+        ],
+        "evidence_refs": [
+          "F-33"
+        ],
+        "relation_basis": "explicit"
+      },
+      "onscreen_composition": {
+        "mode": "selective_lead",
+        "lead_budget": 4
+      },
+      "onscreen_contract": {
+        "relation": "mixed",
+        "detail_axis": "研究成果与后续工作方向",
+        "expression_mode": "sentence_led",
+        "scope_mode": "exclusive",
+        "modules": [
+          {
+            "heading": "七类体系",
+            "evidence_refs": [
+              "F-33"
+            ],
+            "required_signals": [
+              "七类标准体系框架已形成"
+            ],
+            "evidence_fit_review": {
+              "question": "研究形成了什么体系成果？",
+              "items": [
+                {
+                  "evidence_ref": "F-33",
+                  "fit": "direct",
+                  "role": "research_output",
+                  "reason": "事实直接说明已构建七类标准体系框架。"
+                }
+              ],
+              "counter_case": "该模块只提取体系成果。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "三级次序",
+            "evidence_refs": [
+              "F-33"
+            ],
+            "required_signals": [
+              "重点标准优先级已明确"
+            ],
+            "evidence_fit_review": {
+              "question": "研究形成了什么研制次序成果？",
+              "items": [
+                {
+                  "evidence_ref": "F-33",
+                  "fit": "direct",
+                  "role": "research_output",
+                  "reason": "事实直接说明已明确优先级。"
+                }
+              ],
+              "counter_case": "该模块只提取优先级成果。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "三阶段路径",
+            "evidence_refs": [
+              "F-33"
+            ],
+            "required_signals": [
+              "三阶段实施路径已明确"
+            ],
+            "evidence_fit_review": {
+              "question": "研究形成了什么实施路径成果？",
+              "items": [
+                {
+                  "evidence_ref": "F-33",
+                  "fit": "direct",
+                  "role": "research_output",
+                  "reason": "事实直接说明已明确三阶段路径。"
+                }
+              ],
+              "counter_case": "该模块只提取实施路径成果。",
+              "verdict": "keep"
+            }
+          },
+          {
+            "heading": "持续推进",
+            "evidence_refs": [
+              "F-33"
+            ],
+            "required_signals": [
+              "框架完善：跟踪国家建设进展动态调整",
+              "标准研制：加快重点标准立项和成果转化",
+              "实施评估：吸收企业实践与场景验证反馈",
+              "项目统筹：纳入先行先试整体建设进度"
+            ],
+            "evidence_fit_review": {
+              "question": "后续工作围绕哪些方向推进？",
+              "items": [
+                {
+                  "evidence_ref": "F-33",
+                  "fit": "direct",
+                  "role": "next_action",
+                  "reason": "事实直接列出后续四项工作方向。"
+                }
+              ],
+              "counter_case": "后续工作与已形成成果状态不同，需要独立呈现。",
+              "verdict": "keep"
+            }
+          }
+        ]
+      },
+      "source_consumption": {
+        "mode": "strict",
+        "detail_refs": [],
+        "intentional_omissions": [],
+        "full_prose_anchors": [
+          {
+            "source_ref": "F-33",
+            "anchors": [
+              "七类标准体系框架",
+              "优先级和三阶段路径",
+              "动态完善、加快研制、强化评估并纳入先行先试项目统筹推进"
+            ]
+          }
+        ],
+        "onscreen_refs": [
+          "F-33"
+        ],
+        "unit_dispositions": [
+          {
+            "source_ref": "F-33",
+            "unit_id": "F-33#0",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-33",
+            "unit_id": "F-33#1",
+            "disposition": "full_copy"
+          },
+          {
+            "source_ref": "F-33",
+            "unit_id": "F-33#2",
+            "disposition": "full_copy"
+          }
+        ]
+      },
+      "evidence_fit_review": {
+        "question": "研究形成了什么，后续工作应围绕哪些方向持续推进？",
+        "items": [
+          {
+            "evidence_ref": "F-33",
+            "fit": "direct",
+            "role": "conclusion_and_next_action",
+            "reason": "事实直接概括研究成果和后续工作方向。"
+          }
+        ],
+        "counter_case": "把结论页仅写成价值口号会丢失已形成成果和责任主体。",
+        "verdict": "keep"
+      },
+      "visibility_decision": "not_applicable"
+    },
+    {
+      "id": "p17",
+      "chapter_id": "ch04",
+      "title": "感谢聆听",
+      "page_role": "ending",
+      "question": "如何结束本次汇报？",
+      "message": "凝聚共识，协同推进电力领域数据基础设施标准体系建设",
+      "logic": "结束与交流",
+      "content": [],
+      "receives": "研究成果、实施保障和后续安排已经形成完整认识。",
+      "content_load": "light",
+      "visibility_decision": "not_applicable"
+    }
+  ]
+}

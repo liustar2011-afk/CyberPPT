@@ -22,35 +22,9 @@ def test_v04_examples_validate() -> None:
     assert plan["pages"][0]["source_scope"]
     assert plan["pages"][0]["analysis_basis"]["supports"]
 
-def test_plan_skill_is_source_constrained_and_analysis_aware() -> None:
-    text = _read(".agents/skills/cyberppt-script-plan/SKILL.md")
-    for token in (
-        "Lock structural mode",
-        "Source section to page projection",
-        "Analytical deepening",
-        "Relation-basis test",
-        "Audience-exposure test",
-        "Analysis-depth test",
-    ):
-        assert token in text
-    assert "user_authorized_restructure" in text
-
 def test_understand_skill_contains_latent_logic_pass() -> None:
     text = _read(".agents/skills/cyberppt-script-understand/SKILL.md")
     for token in ("Source structure", "Atomic facts", "Latent Logic Mining", "basis: inferred", "support", "confidence"):
-        assert token in text
-
-def test_author_skill_enforces_inference_boundary_and_analysis_depth() -> None:
-    text = _read(".agents/skills/cyberppt-script-author/SKILL.md")
-    for token in (
-        "Inferred relation rule",
-        "Group-strength rule",
-        "Classification/progression rule",
-        "Optionality rule",
-        "Audience visibility",
-        "Analysis-depth requirement",
-        "Inference ceiling",
-    ):
         assert token in text
 
 def test_core_references_exist_without_new_authorities() -> None:

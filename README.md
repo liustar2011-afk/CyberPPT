@@ -72,77 +72,57 @@ CyberPPT 内置多层门禁，防止“文件生成了，但证据、密度、�
 
 ## 安装
 
-使用 Git 将 CyberPPT 安装到 Codex skills 目录，并保持目录名为 `cyber-ppt`。文件夹根目录必须包含 `SKILL.md`。
+克隆仓库后，从仓库根目录启动 Codex。仓库级 Skills 位于 `.agents/skills/`，无需复制或安装根目录 Skill。
 
 ```powershell
-git clone https://github.com/crazyykhllc-bit/CyberPPT.git "$env:USERPROFILE\.codex\skills\cyber-ppt"
+git clone https://github.com/crazyykhllc-bit/CyberPPT.git CyberPPT
 ```
 
 ## 更新
 
 ```powershell
-cd "$env:USERPROFILE\.codex\skills\cyber-ppt"
+cd CyberPPT
 git pull
 ```
 
 ## PPTX 校验
 
 ```bash
-python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manifest.json --visual-qa path/to/visual_qa_gate.json --strict --json-out path/to/report.json
+.venv/bin/python3 scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manifest.json --visual-qa path/to/visual_qa_gate.json --strict --json-out path/to/report.json
 ```
 
 ## 本地工程入口
 
-仓库同时提供 Python CLI、npm scripts 和 Makefile。`SKILL.md` 仍是工作流契约；CLI 只负责项目初始化、脚本确认门和仓库脚本的稳定入口。
+仓库同时提供 Python CLI、npm scripts 和 Makefile。`docs/CYBERPPT_WORKFLOW.md` 是主流程总览和检索入口；`.agents/skills/` 保存各阶段唯一权威细则，CLI 负责确定性准备、校验和生产编排。
 
-Stage 01 只保留精简控制层，不改底稿：用户交互在对话中完成，意见直接修改现有 Outline 和页面脚本；不写审批、哈希、回执、重试或升级状态文件，也不重复运行无关的全量审计。`workbench/scripts/drafts/` 和 `workbench/scripts/final/script-final.md` 是唯一权威写作产物。
+Stage 01 的权威内容产物为 `script/foundation.json`、`script/deck-plan.json` 和 `script/dist/final-script.md`。用户交互在对话中完成，不新增确认文件、状态 JSON 或平行运行目录。
 
 目录归整规则见 [docs/repository-layout.md](docs/repository-layout.md)。正式项目优先放在 `projects/<project-name>/`，临时运行可放在 `image2pptx_runs/`；根目录 `images/` 只作为历史 scratch 位置，不再作为新流程默认输出目标。
 
 ```bash
-python3 -m cyberppt doctor
-python3 -m cyberppt init projects/example
-python3 -m cyberppt prepare-source-map projects/example
-python3 -m cyberppt source-map-check projects/example
-python3 -m cyberppt prepare-semantic-understanding projects/example
-python3 -m cyberppt semantic-check projects/example
-python3 -m cyberppt prepare-communication-strategy projects/example
-python3 -m cyberppt compile-source-truth projects/example
-python3 -m cyberppt source-truth-audit projects/example --input projects/example/workbench/stages/01-analysis/source-truth.json
-python3 -m cyberppt prepare-outline-input projects/example --communication-goal "<selected goal>"
-python3 -m cyberppt outline-audit projects/example --input projects/example/workbench/stages/01-analysis/outline.json
-python3 -m cyberppt prepare-page-script-input projects/example
-python3 -m cyberppt assemble-final-script projects/example
-python3 -m cyberppt script-audit projects/example --input projects/example/workbench/scripts/final/script-final.md
-python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
-python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
-python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen
-python3 -m cyberppt prepare-stage02-handoff projects/example --script workbench/scripts/final/script-final.md
-python3 -m cyberppt prepare-visual-structure projects/example --script workbench/scripts/final/script-final.md
-python3 -m cyberppt final-script-pages projects/example --script workbench/scripts/final/script-final.md --pages 7-8 --assembly-mode editable
+.venv/bin/python3 -m cyberppt doctor
+.venv/bin/python3 -m cyberppt init projects/example
+.venv/bin/python3 -m cyberppt prepare-source-context projects/example
+.venv/bin/python3 -m cyberppt prepare-script-foundation projects/example --profile script
+.venv/bin/python3 -m script_engine.cli validate plan projects/example/script/deck-plan.json
+.venv/bin/python3 -m script_engine.cli audit-plan projects/example/script/deck-plan.json projects/example/script/foundation.json
+.venv/bin/python3 -m script_engine.cli audit-final projects/example/script/dist/final-script.json projects/example/script/deck-plan.json projects/example/script/foundation.json
+.venv/bin/python3 -m script_engine.cli lint projects/example/script/dist/final-script.json
+.venv/bin/python3 -m script_engine.cli check-sync projects/example/script/dist/final-script.json projects/example/script/dist/final-script.md
+.venv/bin/python3 -m cyberppt final-script-pages projects/example --script projects/example/script/dist/final-script.md --production-build --assembly-mode editable
 ```
 
 若脚本来自仓库外部、另一个项目或人工编辑，可在 Stage 02 直接接收：
 
 ```bash
-python3 -m cyberppt final-script-pages projects/example --script /path/to/external-script.md --pages 1-8 --style-id 4 --external-script
+.venv/bin/python3 -m cyberppt final-script-pages projects/example --script /path/to/external-script.md --pages 1-8 --style-id 4 --external-script --production-build
 ```
 
-正式项目的最终全稿只要当前 `script-audit` 通过，即可进入 Stage 02；不再依赖 Stage 01 的交互确认。无论脚本来源如何，均须先通过当前 `script-audit`，再具备通过的 Stage 02 handoff 和视觉结构审计，`final-script-pages` 才会继续。`--external-script` 和 `--lightweight-stage01-confirmed` 均保留为兼容参数：前者只记录 `source_mode=external_script`，后者不再影响授权；两者都不能跳过任何正式门，也不会为不存在的项目自动建项目。
+正式项目的最终全稿经当前主 Agent 完成 AUTHOR，并通过 `audit-final`、`lint` 及必要的 `check-sync` 后，才进入 Stage 02。`final-script-pages --production-build` 是后续唯一正式编排入口。
 
 `final-script-pages` 默认按 `build_id` 创建新的构建目录，不覆盖既有版本；`workbench/artifact-ledger.json` 以追加方式记录每次产物，并用 `supersedes` 连接同一路径的历史版本。Stage 02 默认走 `image-to-editable-svg` 的可编辑分支：审计 full 图后准备无文字底图，将文字回写为原生 SVG，再组装 PPTX。PPTX 导出必须使用本次运行的明确输出路径，导出工程同时写入 `analysis/export_artifact.json`，续跑不会按文件修改时间猜测旧 PPTX。提示词发送默认 `--prompt-enrich off`，即消费已批准 Prompt 原文；只有明确指定 `deterministic` 或 `send` 才会进行发送时增强。
 
-`source-truth.json` 是第一阶段证据底稿的结构化事实源。`source-truth-audit` 在大纲设计之前检查原子证据、精确定位、P0/P1/P2语义梯度、数字、表格、状态边界和双向追溯，生成 `00-source-analysis.md`；长材料若只有P0/P1、没有足够P2细节层，会以 `SOURCE_PRIORITY_HIERARCHY_FLAT` 阻断。完整保留不等于等权上屏：Outline仅把P0/P1组织为少量主辅模块，P2进入 `detail_refs` 供完整文字稿、备注和追溯使用。
-
-在此之前，语义理解阶段必须产出 `semantic-argument-model.json`（嵌入 `semantic-understanding.md` 的 `cyberppt.semantic_argument_model.v1`）。它固化 `document_semantics`、源材料主论点、章节论点、`argument_weight`（核心/支撑/细节/约束）、论证关系、主体、状态、MECE 分区和 `source_gaps`；论证关系的 `weight_effect` 固定为 `none`，不能把“支持关系”误读成“支撑层”。提纲只消费它，不得从 `S###` 证据清单重新猜论点；源材料单列的“行业优势与合作价值”必须保持为“中电联有什么能力、有何优势及合作价值”的核心论点。模型出现问号编码损坏、空证据或文档语义漂移时，Stage 00 直接阻断。严格提纲页必须声明 `primary_argument_node_id`、`source_argument_node_ids`、`source_argument_node_roles`、`source_argument_node_weights` 和 `core_message_derivation.argument_node_ids`，`outline-audit` 会检查节点的主消费者、角色/权重复制、无依据合并和论点反向追溯。
-
-`prepare-communication-strategy` 是语义理解与提纲之间的人工确认点，在对话中完成，不写审批文件。命令读取已登记的源单元，输出 2-3 个由源材料支持、方向实质不同的交流目标建议（含推荐项），由用户在对话中选择或修改；选定目标随后逐字传入 `prepare-outline-input --communication-goal`。
-
-`outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，输入错误返回 `2`。轻量审计不持久化任何审计、尝试或升级文件，只把结构化报告打印到标准输出；CLI 不代替生成代理重写大纲。
-
-正式方案提纲启用 `editorial_control_mode: required`：每个内容页除来源语义合同外，还必须声明真实的 `audience_question`、非空的 `must_not_include` 和 `split_risk`。`audience_question` 不能复述页面使命，`must_not_include` 用于隔离相邻页面内容；中高拆页风险必须解释，高风险未通过拆分或重构消除时不得批准。
-
-Stage 01 脚本经轻量确认审计通过后，主流程自动调用仓库注册的 `vendor/skills/ppt-visual-structure-designer`。先运行 `prepare-visual-structure`，由 Agent 按 Skill 的 `workbench-handoff` 合同生成 `visual/` 四项产物，再运行 `visual-structure-audit` 绑定当前脚本哈希。该闸门通过前，`final-script-pages` 会阻断风格选择、生图和 PPT 生产。
+默认 `script` profile 与合同/监管等 `strict/legacy` profile 的选择、AUTHOR 写作要求和 Stage 02 门禁，以 [主流程总览](docs/CYBERPPT_WORKFLOW.md) 及其路由到的仓库级 Skill 为准；README 不复制阶段细则。
 
 常用开发检查：
 

@@ -87,6 +87,21 @@ def source_has_richer_item_detail(label: object, statements: Iterable[str]) -> b
     return False
 
 
+def label_enumeration_collapses_richer_detail(
+    value: object, statements: Iterable[str]
+) -> bool:
+    """Detect a comma-delimited label row that hides source-backed item payloads."""
+
+    text = clean_visible_line(value)
+    if not text or "：" in text or ":" in text:
+        return False
+    labels = [part.strip() for part in re.split(r"[、，,；;]", text) if part.strip()]
+    if len(labels) < 2 or any(not is_bare_business_label(label) for label in labels):
+        return False
+    source_values = tuple(statements)
+    return any(source_has_richer_item_detail(label, source_values) for label in labels)
+
+
 def functional_group_needs_item_explanations(
     heading: object,
     items: Iterable[object],

@@ -524,7 +524,7 @@ def render_fixed_prompt(module: object, case_name: str) -> str:
 def _repository_handoff_imports() -> set[str]:
     imported: set[str] = set()
     for path in ROOT.rglob("*.py"):
-        if any(part in {".git", "__pycache__"} for part in path.relative_to(ROOT).parts):
+        if any(part in {".git", ".claude", ".venv", "__pycache__"} for part in path.relative_to(ROOT).parts):
             continue
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         for node in ast.walk(tree):
@@ -1119,7 +1119,7 @@ def audit(event, args):
     flag_writes = isinstance(flags, int) and bool(
         flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND)
     )
-    reads_rules = normalized.endswith("vendor/skills/ppt-script/config/rules.yaml")
+    reads_rules = normalized.endswith("cyberppt/script_quality/rules.yaml")
     writes_output = (mode_writes or flag_writes) and any(
         marker in f"/{normalized.lstrip('/')}"
         for marker in ("/workbench/prompts/", "/workbench/stages/")

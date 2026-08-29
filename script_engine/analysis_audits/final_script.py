@@ -5,6 +5,21 @@ from .common import *
 from .composed_trace import hard_finding_messages, trace_composed
 from .deck_plan import _is_lean_plan
 
+_STATUS_PRESERVATION_MARKERS = {
+    "规划": ("拟", "将", "应", "计划", "推动", "制定", "形成", "完成", "开展", "目标", "后续", "需"),
+    "建议": ("建议", "应", "可", "宜", "鼓励"),
+    "待确认": ("亟需", "需要", "仍需", "尚未", "有待", "不足", "差距", "滞后", "要求"),
+}
+
+
+def _status_strength_preserved(status: str, text: str) -> bool:
+    """Preserve modality without leaking internal status labels into prose."""
+
+    if not status or status == "现状":
+        return True
+    markers = _STATUS_PRESERVATION_MARKERS.get(status)
+    return status in text if markers is None else any(marker in text for marker in markers)
+
 def _onscreen_module_lines(module: dict[str, Any]) -> list[str]:
     lines: list[str] = []
     text = module.get("text")
@@ -51,10 +66,21 @@ def _evidence_first_item_hierarchy_issues(
 def _is_readable_proposition(line: str) -> bool:
     """Return whether a visible line carries a compact, sentence-like proposition."""
     value = str(line or "").strip()
-    if not value or re.search(r"[：:]", value) or not _PROPOSITION_END_RE.search(value):
+    if not value or re.search(r"[：:]", value):
         return False
     chars = len(_VISIBLE_CHAR_RE.findall(value))
-    return _COMPLETE_PROPOSITION_MIN_CHARS <= chars <= _COMPLETE_PROPOSITION_MAX_CHARS
+    has_predicate = bool(
+        _LEAD_LIKE_EVIDENCE_ITEM_RE.search(value)
+        or re.search(
+            r"(已有|已形成|已明确|缺少|不清|不健全|滞后|并存|负责|承担|"
+            r"体现|保障|贯穿|统筹|纳入|建立|扩大|持续|具备|属于|仍需)",
+            value,
+        )
+    )
+    return (
+        has_predicate
+        and _COMPLETE_PROPOSITION_MIN_CHARS <= chars <= _COMPLETE_PROPOSITION_MAX_CHARS
+    )
 
 def _onscreen_expression_warnings(
     page: dict[str, Any], slide: dict[str, Any],
@@ -132,8 +158,11 @@ def _authored_bare_label_detail_issues(
         collapsed = [
             value
             for value in visible_items
-            if is_bare_business_label(value)
-            and source_has_richer_item_detail(value, source_statements)
+            if (
+                is_bare_business_label(value)
+                and source_has_richer_item_detail(value, source_statements)
+            )
+            or label_enumeration_collapses_richer_detail(value, source_statements)
         ]
         role_only = functional_group_needs_item_explanations(
             heading,
@@ -276,11 +305,19 @@ def _audit_authored_source_consumption(
                     if not isinstance(number, dict):
                         continue
                     raw_value = number.get("value")
-                    value = "" if raw_value is None else str(raw_value).strip()
                     unit = str(number.get("unit") or "").strip()
-                    if value:
-                        protected_numbers.add(f"{value}{unit}")
+                    raw_values = raw_value if isinstance(raw_value, list) else [raw_value]
+                    for raw_entry in raw_values:
+                        value = "" if raw_entry is None else str(raw_entry).strip()
+                        if not value:
+                            continue
                         protected_numbers.add(value)
+                        if (
+                            not isinstance(raw_value, list)
+                            and unit
+                            and unit not in {"时间", "年份", "生效日期"}
+                        ):
+                            protected_numbers.add(f"{value}{unit}")
                 missing_numbers = sorted(
                     value for value in protected_numbers
                     if value and re.sub(r"\s+", "", value) not in compact_full_copy
@@ -313,7 +350,7 @@ def _audit_authored_source_consumption(
                     )
 
                 status = str(item.get("status") or "").strip()
-                if status and re.sub(r"\s+", "", status) not in compact_full_copy:
+                if not _status_strength_preserved(status, full_copy):
                     issues.append(
                         f"FULL_COPY_STATUS_STRENGTH_LOST: {ref} lost source status '{status}'"
                     )
@@ -401,6 +438,70 @@ def _audit_authored_onscreen_composition(
                 f"{slide_id}: onscreen_composition='selective_lead' permits at most {lead_budget} "
                 f"module lead(s), got {len(lead_modules)}"
             )
+    return issues
+
+
+def _semantic_payload_units(module: dict[str, Any]) -> int:
+    """Estimate distinct reader-facing information units in one module.
+
+    A line is one unit.  Parallel details separated by Chinese list punctuation
+    contribute additional units, so a compact taxonomy can remain dense without
+    being expanded into artificial cards or repeated explanatory sentences.
+    """
+
+    units = 0
+    for line in _onscreen_module_lines(module):
+        fragments = [
+            fragment.strip()
+            for fragment in re.split(r"[、，,；;]", line)
+            if fragment.strip()
+        ]
+        units += max(1, len(fragments))
+    return units
+
+
+def _audit_self_reading_density(
+    delivery_mode: str | dict[str, Any], page: dict[str, Any], slide: dict[str, Any]
+) -> list[str]:
+    """Require content pages in self-read decks to explain themselves on screen.
+
+    The threshold scales with the approved module count and ``content_load``.
+    Structural pages are intentionally excluded.  This guards independent
+    readability without imposing one universal word, line, or card count.
+    """
+
+    mode = str(delivery_mode.get("delivery_mode") if isinstance(delivery_mode, dict) else delivery_mode)
+    page_type = str(slide.get("page_type") or page.get("page_role") or "")
+    if mode != "self_read" or page_type != "content":
+        return []
+    load = str(slide.get("content_load") or page.get("content_load") or "standard")
+    if load == "light":
+        return []
+    modules = [module for module in slide.get("onscreen") or [] if isinstance(module, dict)]
+    slide_id = str(slide.get("id") or page.get("id") or "?")
+    if not modules:
+        return [f"ONSCREEN_SELF_READ_PAYLOAD_MISSING: {slide_id} has no reader-facing modules"]
+    issues: list[str] = []
+    empty_headings = [
+        str(module.get("heading") or "?").strip()
+        for module in modules
+        if not _onscreen_module_lines(module)
+    ]
+    if empty_headings:
+        issues.append(
+            f"ONSCREEN_SELF_READ_MODULE_THIN: {slide_id} modules {empty_headings} have headings "
+            "without explanatory payload"
+        )
+    units = sum(_semantic_payload_units(module) for module in modules)
+    module_count = len(modules)
+    minimum = 2 * module_count if load == "dense" else (3 * module_count + 1) // 2
+    if units < minimum:
+        issues.append(
+            f"ONSCREEN_SELF_READ_DENSITY_LOW: {slide_id} {load} content provides {units} "
+            f"semantic payload units across {module_count} modules; at least {minimum} are "
+            "required for independent reading at the approved load. Add distinct source-backed "
+            "facts, roles, conditions, boundaries or results; do not repeat the page judgment"
+        )
     return issues
 
 def _audit_authored_onscreen_contract(
@@ -641,6 +742,7 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
     audience_scope = plan.get("audience_scope", "unspecified")
     preserve_structure = plan.get("source_structure_mode") == "preserve"
     lean_plan = _is_lean_plan(plan)
+    delivery_mode = str((final_script.get("deck") or {}).get("delivery_mode") or plan.get("delivery_mode") or "presented")
     strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
     if not lean_plan and not strict_evidence_fit:
         issues.append(
@@ -709,10 +811,13 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
 
         for composition_issue in _audit_authored_onscreen_composition(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {composition_issue}")
+        for density_issue in _audit_self_reading_density(delivery_mode, page, slide):
+            issues.append(f"slides.{index} ({slide_id}): {density_issue}")
         for contract_issue in _audit_authored_onscreen_contract(page, slide, items):
             issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
-        for relation_issue in _authored_relationships_issues(page, slide):
-            issues.append(f"slides.{index} ({slide_id}): {relation_issue}")
+        if not lean_plan:
+            for relation_issue in _authored_relationships_issues(page, slide):
+                issues.append(f"slides.{index} ({slide_id}): {relation_issue}")
         if not lean_plan:
             for consumption_issue in _audit_authored_source_consumption(
                 page, slide, items, foundation
@@ -749,4 +854,4 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
 
     return issues, warnings
 
-__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_authored_source_consumption', '_audit_authored_unit_consumption', '_audit_authored_onscreen_composition', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', 'audit_final_script']
+__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_authored_source_consumption', '_audit_authored_unit_consumption', '_audit_authored_onscreen_composition', '_semantic_payload_units', '_audit_self_reading_density', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', 'audit_final_script']

@@ -1,14 +1,15 @@
 # CyberPPT Repository Layout
 
-This repository is both a Codex skill and a runnable project toolchain. The
-layout below is the placement contract for code, workflow references, reusable
-assets, project workspaces, and generated artifacts.
+This repository is a runnable project toolchain with repository-local stage
+Skills. The layout below is the placement contract for code, workflow
+references, reusable assets, project workspaces, and generated artifacts.
 
 ## Top-Level Contract
 
 | Path | Role | Rules |
 |---|---|---|
-| `SKILL.md` | Canonical workflow contract | Keep phase gates, reference gates, and delivery rules here. Do not replace it with CLI-only behavior. |
+| `docs/CYBERPPT_WORKFLOW.md` | Canonical workflow overview and route index | Keep the main sequence and route selection here; stage details belong in `.agents/skills/`. |
+| `.agents/skills/` | Repository-local authoritative stage Skills | Keep only Skills used by the current workflow; do not add a second root-level workflow Skill. |
 | `cyberppt/` | Installable Python package and CLI | Keep stable command routing, project scaffolding, and package helpers here. Do not put generated project artifacts here. |
 | `scripts/` | Repo-owned workflow tools | Keep runnable helper scripts here when docs and tests call them directly. Avoid storing one-off outputs under this tree. |
 | `scripts/imagegen_pipeline/` | Stage 02 ImageGen production chain | Keep artifact prompt compilation, approval, manifest, provider, style, and send-record logic here. |
@@ -20,7 +21,6 @@ assets, project workspaces, and generated artifacts.
 | `docs/` | Repository documentation, specs, and plans | Keep repo layout docs, design specs, and implementation plans here. |
 | `tests/` | Regression tests | Keep pytest/unittest tests here. Test-only helper modules may stay in `scripts/` only when existing entrypoints rely on that path. |
 | `vendor/` | Local vendored upstream resources | Keep only upstream resources still consumed by the current workflow. Do not mix project outputs into vendor trees. |
-| `vendor/word-to-ppt-script/` | Vendored word-to-ppt-script skill | One-time copy from the `business-semantic-content-pipeline-v0.2.0` repo's `skills/word-to-ppt-script/`. CyberPPT owns and maintains this copy going forward; it does not auto-sync with upstream. Project generation scripts import `scripts/assemble_full_prose.py` and invoke `scripts/validate_script.py` from here — never from a sibling-repo path. |
 | `examples/` | Minimal examples | Keep small, durable examples here. Large generated decks and runs belong in project workspaces. |
 | `projects/` | Named CyberPPT project workspaces | Preferred home for user-facing projects created by `python3 -m cyberppt init`. Source files, stage work, approvals, outputs, and delivery files live under each project. |
 | `assets/presentation-templates/` | Reusable native presentation templates | Store only curated templates used by the current template-page generator. |

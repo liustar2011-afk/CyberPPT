@@ -133,7 +133,19 @@ def test_render_passes_through_blank_line_paragraph_breaks_in_full_copy() -> Non
 
 def test_collect_foundation_source_codes_gathers_all_citable_sections() -> None:
     codes = collect_foundation_source_codes(_foundation_example())
-    assert codes == {"ST001", "ST002", "ST003", "ST004"}
+    assert codes == {
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "C1",
+        "R1",
+        "A1",
+        "ST001",
+        "ST002",
+        "ST003",
+        "ST004",
+    }
 
 def test_validate_source_refs_coverage_passes_when_all_known() -> None:
     assert validate_source_refs_coverage(_example(), _foundation_example()) == []

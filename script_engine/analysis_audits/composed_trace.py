@@ -18,7 +18,7 @@ _SOURCE_TEXT_KEYS = {
     "title", "statement", "claim", "definition", "context", "strength",
     "term", "relation", "value", "unit", "name", "role", "from", "to",
     "primary_thesis", "author_purpose", "decision_boundary", "scope",
-    "decision_intent", "source_heading", "meaning", "label",
+    "decision_intent", "source_heading", "meaning", "label", "text",
 }
 _FINAL_SCALAR_FIELDS = (
     "title", "subtitle", "core_message", "full_copy", "visual_thesis", "speaker_notes"

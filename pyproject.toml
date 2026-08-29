@@ -35,5 +35,8 @@ cyberppt-script = "script_engine.cli:main"
 [tool.setuptools.packages.find]
 include = ["cyberppt*", "script_engine*"]
 
+[tool.setuptools.package-data]
+cyberppt = ["script_quality/*.yaml"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests", "scripts"]

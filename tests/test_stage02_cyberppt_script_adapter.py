@@ -252,6 +252,60 @@ def test_project_final_script_consumes_matching_deck_plan_boundaries() -> None:
     assert page["must_not_include"] == ["不得扩展到未批准任务"]
 
 
+def test_stage02_ignores_lean_deck_plan_wording_and_uses_locked_script() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory) / "project"
+        script = project / "script" / "dist" / "final-script.md"
+        script.parent.mkdir(parents=True)
+        _write_script(
+            script,
+            """
+## P01 最终脚本标题
+
+- 页面类型：内容页
+- 页面标题：最终脚本标题
+- 页面使命：以最终脚本确定页面任务。
+- 核心结论：AUTHOR完成后形成最终判断。
+- 主论证链：任务回应｜来源依据 → 最终判断
+
+### 完整文字稿
+
+最终脚本是Stage 02的内容输入。
+
+### 上屏文字
+
+- 来源依据：保留事实边界
+- 最终判断：由AUTHOR形成
+
+### 视觉结构
+
+来源依据 → 最终判断：支撑
+
+### 内容来源
+
+- SU-FINAL-PARAGRAPH-01
+""",
+        )
+        (project / "script" / "deck-plan.json").write_text(
+            json.dumps(
+                {
+                    "plan_contract_version": 2,
+                    "planning_profile": "lean",
+                    "pages": [{"id": "P01", "title": "暂定标题", "logic": "暂定使命", "source_refs": ["ST0001"]}],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        page = build_stage02_handoff(project, script=script)["pages"][0]
+
+    assert page["title"] == "最终脚本标题"
+    assert page["page_mission"] == "以最终脚本确定页面任务。"
+    assert page["source_refs"] == []
+    assert page["provenance_refs"] == ["SU-FINAL-PARAGRAPH-01"]
+
+
 def test_legacy_page_contract_relations_keep_priority_over_derived_visual_structure() -> None:
     with TemporaryDirectory() as directory:
         root = Path(directory)

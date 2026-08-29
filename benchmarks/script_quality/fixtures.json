@@ -82,10 +82,17 @@
     "expected": {"issues": [], "warnings": ["NARRATIVE_CHAPTER_MESSAGE_UNSUPPORTED"]}
   },
   {
-    "id": "title-message-object-mismatch",
+    "id": "title-page-subject-mismatch",
     "deck_type": "business-proposal",
     "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "thesis": "形成可持续服务", "narrative_arc": "从组织进入服务", "storyline": ["组织", "服务"], "pages": [{"id": "P01", "title": "组织职责", "question": "平台形成什么能力", "message": "数据服务按需求形成产品", "logic": "能力说明", "content": ["产品"]}]},
     "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
-    "expected": {"issues": [], "warnings": ["NARRATIVE_TITLE_MESSAGE_OBJECT_MISMATCH"]}
+    "expected": {"issues": [], "warnings": ["NARRATIVE_TITLE_PAGE_SUBJECT_MISMATCH"]}
+  },
+  {
+    "id": "title-claim-like",
+    "deck_type": "implementation-plan",
+    "plan": {"audience_scope": "internal", "evidence_fit_review_mode": "strict", "thesis": "形成三阶段实施路径", "narrative_arc": "从近期进入远期", "storyline": ["近期", "中期", "远期"], "pages": [{"id": "P01", "title": "三阶段路径同步推进标准供给、项目建设与场景验证", "question": "如何分阶段实施", "message": "近期、中期和远期分别形成阶段性成果", "logic": "三阶段实施路径", "content": ["近期", "中期", "远期"], "primary_relation": {"type": "sequence", "scope": ["近期", "中期", "远期"], "authority": "hard"}}]},
+    "foundation": {"source_structure": [], "facts": [], "concepts": [], "entities": [], "relations": [], "arguments": [], "constraints": [], "numbers": []},
+    "expected": {"issues": [], "warnings": ["NARRATIVE_TITLE_CLAIM_LIKE"]}
   }
 ]

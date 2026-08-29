@@ -11,8 +11,18 @@
 | `NARRATIVE_CHAPTER_FIELDS_INCOMPLETE` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | warning | 否 | purpose/question/message/handoff | 完成章节使命、问题、结论和承接 |
 | `NARRATIVE_PAGE_HANDOFF_MISSING` | `script_engine.analysis_audits.deck_plan` | PLAN | 页/跨页 | warning | 否 | 缺失 receives/next | 补充页面接收点和后续去向 |
 | `NARRATIVE_NEXT_RECEIVES_CONFLICT` | `script_engine.analysis_audits.deck_plan` | PLAN | 跨页 | warning | 否 | `next` 与下一页 question 的显式文本 | 对齐承接表达与下一页问题 |
-| `NARRATIVE_TITLE_MESSAGE_OBJECT_MISMATCH` | `script_engine.analysis_audits.deck_plan` | PLAN | 页内 | warning | 否 | 标题与核心判断无共同对象词 | 检查标题是否覆盖页面实际判断 |
+| `NARRATIVE_TITLE_CLAIM_LIKE` | `script_engine.analysis_audits.deck_plan` | PLAN | 页内 | warning | 否 | 长标题包含句式标点或判断谓词 | 改为简洁正式的主题标题，将压缩判断放入副标题或 message |
+| `NARRATIVE_TITLE_PAGE_SUBJECT_MISMATCH` | `script_engine.analysis_audits.deck_plan` | PLAN | 页内 | warning | 否 | 标题与副标题、问题、判断、逻辑和内容集合均无共同对象词 | 让标题覆盖整页主题，同时避免复述单一判断 |
 | `NARRATIVE_CHAPTER_MESSAGE_UNSUPPORTED` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | warning | 否 | 章节 message 与所属页 message 集合 | 收窄章节结论或补足页面支撑 |
+| `PRESENTATION_CHAPTER_SOURCE_MAPPING_MISSING` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | error | 是 | 汇报章节缺少 `source_chapter_ids` | 补齐来源章节映射 |
+| `PRESENTATION_CHAPTER_GROUP_OPERATION_MISSING` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | error | 是 | 一个汇报章节映射多个来源章节但未声明归并操作 | 使用 `group_adjacent_source_chapters` |
+| `PRESENTATION_SOURCE_CHAPTER_MAPPING_CONFLICT` | `script_engine.analysis_audits.deck_plan` | PLAN | 整稿 | error | 是 | 展开的来源章节映射与 Foundation 顺序不一致 | 恢复完整、唯一、顺序一致的来源映射 |
+| `PRESENTATION_CHAPTER_COUNT_HIGH` | `script_engine.analysis_audits.deck_plan` | PLAN | 整稿 | warning | 否 | 正式汇报超过 4 个汇报章节 | 检查相邻章节是否可按共同使命归并 |
+| `PRESENTATION_CHAPTER_COUNT_EXCESSIVE` | `script_engine.analysis_audits.deck_plan` | PLAN | 整稿 | error | 是 | 正式汇报超过 6 个汇报章节且无例外理由 | 归并章节或记录具体例外理由 |
+| `PRESENTATION_CHAPTER_TRANSITION_COUNT` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | error | 是 | 多章节汇报缺少或重复设置过渡页 | 每章保留一个过渡页 |
+| `PRESENTATION_CHAPTER_TRANSITION_ORDER` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | error | 是 | 过渡页位于本章内容之后 | 将过渡页移至本章内容之前 |
+| `PRESENTATION_CHAPTER_THIN` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | warning | 否 | 汇报章节仅有一页内容 | 并入相邻章节或说明独立决策职责 |
+| `PRESENTATION_CHAPTER_FRAGMENTED` | `script_engine.analysis_audits.deck_plan` | PLAN | 章节 | warning | 否 | 超过 4 章时仍存在两页小章节 | 复核相邻章节归并 |
 | `ADJACENT_PLAN_MESSAGE_DUPLICATE` | `script_engine.analysis_audits.deck_plan` | PLAN | 跨页 | warning | 否 | 相邻页 message 相似度 | 保留一个判断并让相邻页推进不同问题 |
 | `ADJACENT_PAGE_RESPONSIBILITY_DUPLICATE` | `cyberppt.script_quality.relationships` | AUTHOR | 跨页 | error | 是 | 页面关系摘要与职责相似度 | 合并职责或改写相邻页推进关系 |
 | `ADJACENT_MAIN_MESSAGE_DUPLICATE` | `cyberppt.script_quality.audit` | AUTHOR | 跨页 | error | 是 | 相邻页主判断相似度 | 让后页推进新的业务问题 |

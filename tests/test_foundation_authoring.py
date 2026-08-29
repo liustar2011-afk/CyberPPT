@@ -10,7 +10,7 @@ from cyberppt.source_document_map import prepare_source_context
 from script_engine.analysis_audit import audit_foundation_analysis
 from script_engine.cli import main as script_engine_main
 from script_engine.contracts import validate_foundation
-from script_engine.source_index import validate_reading_strategy
+from script_engine.source_index import validate_foundation_detail_atomicity, validate_reading_strategy
 from script_engine.source_index import validate_foundation_source_bindings
 
 
@@ -219,6 +219,66 @@ def test_source_files_to_authored_foundation_passes_schema_and_sibling_index_aud
         "sha256 differs" in issue
         for issue in validate_foundation_source_bindings(drifted, index)
     )
+
+
+def _strict_v2_index(texts: list[str]) -> dict:
+    return {
+        "schema": "cyberppt.source_index.v2",
+        "units": [
+            {"unit_id": f"SU-{index}", "kind": "paragraph", "text": text}
+            for index, text in enumerate(texts, start=1)
+        ],
+    }
+
+
+def test_strict_v2_foundation_requires_atomic_units_for_compound_source_detail() -> None:
+    foundation = _foundation({}, statement="形成标准建设安排")
+    foundation.update(
+        {"source_consumption_policy": "required", "source_consumption_contract_version": 2}
+    )
+    index = _strict_v2_index([
+        "参考架构明确与国家数据基础设施总体架构的映射关系。"
+        "标识目录规定电力数据标识管理和目录描述要求。"
+    ])
+
+    issues = validate_foundation_detail_atomicity(foundation, index)
+
+    assert any("FOUNDATION_SOURCE_DETAIL_ATOMICITY_GAP" in issue for issue in issues)
+
+
+def test_strict_v2_foundation_accepts_traceable_atomic_units() -> None:
+    foundation = _foundation({}, statement="形成标准建设安排")
+    foundation.update(
+        {"source_consumption_policy": "required", "source_consumption_contract_version": 2}
+    )
+    foundation["facts"][0]["semantic_units"] = [
+        {
+            "id": "F-1#0",
+            "text": "参考架构明确与国家数据基础设施总体架构的映射关系",
+            "source_unit_refs": ["SU-1"],
+        },
+        {
+            "id": "F-1#1",
+            "text": "标识目录规定电力数据标识管理和目录描述要求",
+            "source_unit_refs": ["SU-1"],
+        },
+    ]
+    index = _strict_v2_index([
+        "参考架构明确与国家数据基础设施总体架构的映射关系。"
+        "标识目录规定电力数据标识管理和目录描述要求。"
+    ])
+
+    assert validate_foundation_detail_atomicity(foundation, index) == []
+
+
+def test_strict_v2_foundation_keeps_short_atomic_fact_lightweight() -> None:
+    foundation = _foundation({}, statement="标准体系分为四类")
+    foundation.update(
+        {"source_consumption_policy": "required", "source_consumption_contract_version": 2}
+    )
+    index = _strict_v2_index(["标准体系分为四类。"])
+
+    assert validate_foundation_detail_atomicity(foundation, index) == []
 
 
 def test_source_asset_validation_warns_for_wrong_reading_and_blocks_money_slide() -> None:

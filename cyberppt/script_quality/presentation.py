@@ -472,10 +472,8 @@ def _presentation_issues(
                     )
                     break
         issues.extend(_visual_structure_judgment_issues(page))
-    # "阅读路径" (reading path/order) is one of the five elements the
-    # canonical 视觉结构 template explicitly asks every page to describe
-    # (vendor/word-to-ppt-script/templates/10-script-final.md) — it is a
-    # layout-reading-order note, not a business/process path claim, so its
+    # "阅读路径" (reading path/order) is a canonical visual-structure field.
+    # It is a layout-reading-order note, not a business/process path claim, so its
     # mere presence must not trigger the same "path visual" requirement as
     # an actual "业务路径"/"贯穿主链" claim would.
     path_like = (

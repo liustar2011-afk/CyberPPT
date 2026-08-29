@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Convert the source document's existing chapter structure into a coherent PPT page chain while making latent logic visible inside each chapter. PLAN improves presentation logic without silently rewriting the source's content strategy.
+Convert the source document's existing chapter structure into a coherent PPT
+page chain. Preserve source chapter identity, coverage and order while grouping
+adjacent source chapters into audience-readable presentation chapters.
 
 Read `docs/SOURCE_FIDELITY_AND_ANALYSIS.md` first.
 
@@ -16,9 +18,12 @@ Before allocating pages, read `foundation.json.source_structure` and identify:
 - explicit sequences, classifications and boundaries;
 - sections that are too dense or too small for one PPT page.
 
-Default mode is `preserve`.
+Default mode is `presentation_grouping`.
 
-Do not reorder chapters, front-load a later topic, delete a source chapter, or move material across chapters unless the user explicitly authorizes restructuring.
+Map every presentation chapter to one or more adjacent source chapters. The
+flattened mapping must reproduce the source chapter sequence exactly. Do not
+reorder, front-load, delete or duplicate source chapters unless the user
+explicitly authorizes restructuring.
 
 ## 2. Recover the source's narrative continuity
 
@@ -30,7 +35,8 @@ A formal Word document may express its logic implicitly. PLAN should identify th
 
 This recovered continuity explains the source order. It does not authorize a new order.
 
-Audience start/end and a deck thesis may still be recorded as diagnostic context, but they cannot override source chapter structure unless restructuring was explicitly requested.
+Audience start/end and a deck thesis guide how adjacent source chapters are
+grouped for oral comprehension. They do not authorize source reordering or loss.
 
 ## 3. Use analysis models inside structural boundaries
 
@@ -49,7 +55,15 @@ Within each chapter, test whether the source supports a deeper analytical struct
 
 The goal is analytical depth, not a new content strategy.
 
-## 4. Build the page chain
+## 4. Build presentation chapters and the page chain
+
+Target no more than four presentation chapters for a normal formal deck and no
+more than six without a documented exception. Group by adjacent argument roles,
+audience questions and handoffs; lexical similarity alone is insufficient.
+
+For multi-chapter formal decks, use cover, agenda, one transition page before
+each presentation chapter, content pages and ending. Single-chapter decks omit
+the transition page.
 
 For every page, answer:
 
@@ -72,13 +86,17 @@ Split when one source section contains:
 - incompatible dominant relationships;
 - too much information to preserve distinctions on one page.
 
-Merge only within the same source chapter when:
+Merge source material into one content page only within the same source chapter when:
 
 - adjacent or closely related sections answer the same page question;
 - distinctions and boundaries remain intact;
 - source order remains legible.
 
 Cross-chapter merge or movement requires explicit user authorization.
+
+Grouping adjacent source chapters under one presentation chapter is a navigation
+operation and does not merge their facts into one page. Record it with
+`group_adjacent_source_chapters` and retain each page's source scope.
 
 ## 6. One page, one primary question
 
@@ -104,7 +122,8 @@ Use `light / standard / dense` only as a content-planning signal. Do not use den
 
 ### Source-structure test
 
-Does the deck preserve the source chapter set, chapter order and chapter themes unless the user authorized restructuring?
+Does the presentation-chapter mapping cover every source chapter exactly once
+and preserve source order unless the user authorized restructuring?
 
 ### Section-coverage test
 

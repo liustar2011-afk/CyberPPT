@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "description": "Single source of truth for mechanically-enforced banned phrasing in final-script.json. `script_engine.contracts.lint_final_script` reads this file. `.agents/skills/cyberppt-script-author/SKILL.md` documents the same rules in prose for the author/Critic passes — keep both in sync when a rule changes.",
+  "description": "Single source of truth for mechanically-enforced banned phrasing in final-script.json. `script_engine.contracts.lint_final_script` reads this file. `.agents/skills/cyberppt-script-workflow/SKILL.md` governs the author/Critic passes — keep both in sync when a rule changes.",
   "rules": [
     {
       "id": "contrastive-reveal",

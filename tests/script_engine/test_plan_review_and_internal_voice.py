@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script
+from script_engine.analysis_audits.final_script import _audit_self_reading_density
 from script_engine.cli import main
 from script_engine.internal_report_voice import (
     audit_plan_internal_expert_voice,
@@ -46,6 +47,185 @@ def test_plan_review_renders_optional_subtitle_in_summary_and_detail() -> None:
 
     assert "数据服务形成机制<br>副标题：核心观点摘要" in markdown
     assert "- 页面副标题：核心观点摘要" in markdown
+
+
+def test_plan_audit_accepts_short_title_that_covers_the_page_wide_subject() -> None:
+    plan, foundation = _example()
+    page = plan["pages"][0]
+    page.update(
+        {
+            "title": "三阶段实施路径",
+            "subtitle": "标准供给、项目建设与场景验证同步推进",
+            "question": "标准体系如何分阶段形成并持续接受项目与场景反馈？",
+            "message": "近期完成顶层设计，中期形成规模化供给，远期完成成熟转化。",
+            "logic": "实施路径：近期—中期—远期递进",
+            "content": ["近期", "中期", "远期"],
+        }
+    )
+
+    _, warnings = audit_deck_plan(plan, foundation)
+
+    assert not any("NARRATIVE_TITLE_CLAIM_LIKE" in warning for warning in warnings)
+    assert not any("NARRATIVE_TITLE_PAGE_SUBJECT_MISMATCH" in warning for warning in warnings)
+
+
+def test_plan_audit_flags_long_claim_like_title() -> None:
+    plan, foundation = _example()
+    page = plan["pages"][0]
+    page.update(
+        {
+            "title": "三阶段路径同步推进标准供给、项目建设与场景验证",
+            "question": "标准体系如何分阶段实施？",
+            "message": "近期、中期和远期分别形成阶段性成果。",
+            "logic": "三阶段实施路径",
+            "content": ["近期", "中期", "远期"],
+        }
+    )
+
+    _, warnings = audit_deck_plan(plan, foundation)
+
+    assert any("NARRATIVE_TITLE_CLAIM_LIKE" in warning for warning in warnings)
+
+
+def test_plan_audit_checks_title_against_whole_page_subject() -> None:
+    plan, foundation = _example()
+    page = plan["pages"][0]
+    page.update(
+        {
+            "title": "组织职责",
+            "subtitle": "需求牵引产品形成",
+            "question": "平台形成什么能力？",
+            "message": "数据服务按需求形成产品。",
+            "logic": "能力形成机制",
+            "content": ["数据服务", "产品能力"],
+        }
+    )
+
+    _, warnings = audit_deck_plan(plan, foundation)
+
+    assert any("NARRATIVE_TITLE_PAGE_SUBJECT_MISMATCH" in warning for warning in warnings)
+
+
+def _presentation_grouping_fixture(
+    groups: list[list[str]], *, content_pages_per_chapter: int = 2
+) -> tuple[dict, dict]:
+    chapters = []
+    pages = [
+        {"id": "P01", "chapter_id": "C01", "title": "封面", "page_role": "cover", "question": "封面", "message": "封面", "logic": "封面", "content": []},
+        {"id": "P02", "chapter_id": "C01", "title": "目录", "page_role": "agenda", "question": "目录", "message": "目录", "logic": "目录", "content": []},
+    ]
+    sequence = 3
+    for chapter_no, source_ids in enumerate(groups, start=1):
+        chapter_id = f"C{chapter_no:02d}"
+        chapters.append(
+            {
+                "id": chapter_id,
+                "title": f"第{chapter_no}章",
+                "purpose": "形成连续汇报任务",
+                "question": "本章回答什么",
+                "message": "本章形成完整认识",
+                "relationship_to_previous": "承接上一章",
+                "source_chapter_ids": source_ids,
+                "structural_operation": (
+                    "group_adjacent_source_chapters" if len(source_ids) > 1 else "preserve"
+                ),
+            }
+        )
+        pages.append(
+            {
+                "id": f"P{sequence:02d}",
+                "chapter_id": chapter_id,
+                "title": f"第{chapter_no}章",
+                "page_role": "chapter",
+                "question": "章节导航",
+                "message": "章节导航",
+                "logic": "章节导航",
+                "content": [],
+            }
+        )
+        sequence += 1
+        for content_no in range(content_pages_per_chapter):
+            pages.append(
+                {
+                    "id": f"P{sequence:02d}",
+                    "chapter_id": chapter_id,
+                    "title": f"主题{chapter_no}-{content_no + 1}",
+                    "page_role": "content",
+                    "question": "本页回答什么",
+                    "message": "本页形成完整认识",
+                    "logic": "说明关系",
+                    "content": [f"内容{content_no + 1}"],
+                }
+            )
+            sequence += 1
+    pages.append(
+        {"id": f"P{sequence:02d}", "chapter_id": chapters[-1]["id"], "title": "结束页", "page_role": "ending", "question": "结束", "message": "结束", "logic": "结束", "content": []}
+    )
+    plan = {
+        "plan_contract_version": 2,
+        "planning_profile": "lean",
+        "communication_goal": "形成汇报共识",
+        "source_structure_mode": "presentation_grouping",
+        "presentation_structure_mode": "formal_chaptered",
+        "thesis": "形成汇报共识",
+        "narrative_arc": "从背景进入行动",
+        "storyline": ["背景", "行动"],
+        "narrative_design": {"mode": "direct"},
+        "chapters": chapters,
+        "pages": pages,
+    }
+    foundation = {
+        "source_structure": [
+            {"id": source_id, "level": "chapter", "order": index}
+            for index, source_id in enumerate(
+                [source_id for group in groups for source_id in group], start=1
+            )
+        ]
+    }
+    return plan, foundation
+
+
+def test_presentation_grouping_preserves_source_order_with_four_chapters() -> None:
+    plan, foundation = _presentation_grouping_fixture(
+        [["S01", "S02"], ["S03", "S04"], ["S05", "S06"], ["S07", "S08"]]
+    )
+
+    issues, warnings = audit_deck_plan(plan, foundation)
+
+    assert not any("PRESENTATION_" in issue for issue in issues)
+    assert not any("PRESENTATION_" in warning for warning in warnings)
+
+    markdown = render_plan_review(plan, foundation)
+    assert "- 汇报结构：正式分章节汇报" in markdown
+    assert "- 汇报章节数：4" in markdown
+    assert "- 来源章节映射：S01、S02" in markdown
+    assert "- 章节结构操作：相邻来源章节归并为汇报章节" in markdown
+
+
+def test_presentation_grouping_rejects_more_than_six_chapters_without_exception() -> None:
+    plan, foundation = _presentation_grouping_fixture([[f"S{index:02d}"] for index in range(1, 8)])
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("PRESENTATION_CHAPTER_COUNT_EXCESSIVE" in issue for issue in issues)
+
+
+def test_formal_chaptered_deck_requires_transition_before_each_chapter() -> None:
+    plan, foundation = _presentation_grouping_fixture([["S01", "S02"], ["S03", "S04"]])
+    plan["pages"] = [page for page in plan["pages"] if not (page["chapter_id"] == "C02" and page["page_role"] == "chapter")]
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("PRESENTATION_CHAPTER_TRANSITION_COUNT: chapter C02" in issue for issue in issues)
+
+
+def test_presentation_grouping_rejects_source_reordering() -> None:
+    plan, foundation = _presentation_grouping_fixture([["S01", "S02"], ["S03", "S04"]])
+    plan["chapters"][0]["source_chapter_ids"] = ["S02", "S01"]
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("PRESENTATION_SOURCE_CHAPTER_MAPPING_CONFLICT" in issue for issue in issues)
 
 
 def test_plan_review_renders_deck_and_chapter_narrative_fields() -> None:
@@ -424,3 +604,38 @@ def test_final_audit_allows_explicit_label_only_taxonomy_for_thin_source() -> No
     issues, _ = audit_final_script(final, plan, foundation)
 
     assert not any("ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL" in issue for issue in issues)
+
+
+def test_self_read_dense_page_rejects_heading_plus_one_thin_line() -> None:
+    plan = {"delivery_mode": "self_read"}
+    page = {"id": "P01", "page_role": "content", "content_load": "dense"}
+    slide = {
+        "id": "P01",
+        "onscreen": [{"heading": "事项", "items": ["简要信息"]}],
+    }
+
+    issues = _audit_self_reading_density(plan, page, slide)
+
+    assert any("ONSCREEN_SELF_READ_DENSITY_LOW" in issue for issue in issues)
+
+
+def test_self_read_dense_taxonomy_counts_compact_parallel_details() -> None:
+    plan = {"delivery_mode": "self_read"}
+    page = {"id": "P01", "page_role": "content", "content_load": "dense"}
+    slide = {
+        "id": "P01",
+        "onscreen": [
+            {"heading": "基础通用", "items": ["术语概念、参考架构、标识目录"]},
+            {"heading": "数据资源", "items": ["分类分级、元数据、质量、资产"]},
+        ],
+    }
+
+    assert _audit_self_reading_density(plan, page, slide) == []
+
+
+def test_self_read_density_exempts_structural_pages() -> None:
+    plan = {"delivery_mode": "self_read"}
+    page = {"id": "P01", "page_role": "chapter", "content_load": "dense"}
+    slide = {"id": "P01", "onscreen": [{"heading": "第一章"}]}
+
+    assert _audit_self_reading_density(plan, page, slide) == []

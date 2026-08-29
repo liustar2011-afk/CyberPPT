@@ -187,7 +187,7 @@ def test_cli_status_progresses_as_artifacts_are_added(tmp_path, capsys) -> None:
     (project_dir / "dist" / "final-script.json").write_text(json.dumps(final_payload), encoding="utf-8")
     exit_code = main(["status", str(project_dir)])
     out = json.loads(capsys.readouterr().out)
-    assert out["stage"] == "最终脚本已生成"
+    assert out["stage"] == "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"
     assert out["final_script"]["page_count"] == len(final_payload["slides"])
 
 
@@ -240,7 +240,7 @@ def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, caps
     out = json.loads(capsys.readouterr().out)
 
     assert exit_code == 0
-    assert out["stage"] == "最终脚本已生成"
+    assert out["stage"] == "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"
     assert out["final_script"]["lint"] == "passed"
     assert out["final_script"].get("lint_warnings", []) == []
 

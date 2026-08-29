@@ -11,7 +11,7 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 
 1. Read [docs/CYBERPPT_WORKFLOW.md](../../../docs/CYBERPPT_WORKFLOW.md) completely enough to identify the task stage, required human stop, authoritative inputs and completion gate.
 2. Read the repository root [AGENTS.md](../../../AGENTS.md) before acting.
-3. For ordinary new source-to-script work, use `cyberppt-script-understand` after deterministic source indexing. Invoke `cyberppt-source-foundation` for strict/legacy work involving contracts, regulation, fact-by-fact verification, Source Truth, full semantic models, or old-project migration. For deck planning or page writing/rewriting, invoke `cyberppt-script-workflow` after a validated `script/foundation.json` exists.
+3. For ordinary new source-to-script work, use `cyberppt-script-understand` after deterministic source indexing. Invoke `cyberppt-source-foundation` for strict/legacy work involving contracts, regulation, fact-by-fact verification, Source Truth, full semantic models, or old-project migration. For deck planning or page writing/rewriting, load and execute `cyberppt-script-workflow` after a validated `script/foundation.json` exists. Loading is not completion: the current main agent must perform the generative PLAN/AUTHOR work in the same task, not merely cite the Skill or run its deterministic audits.
 4. For a request to convert an image, screenshot, or rendered visual into an editable PPTX, invoke `cyberppt-stage02-editable-pptx`. It owns the Stage 02 route and forbids direct adapter invocation. For other pure visual, image, SVG or PPTX QA tasks, route to the corresponding Stage 02 or page Skill identified by the overview.
    The aliases “高保真+Quick”, “高保真 Quick”, “无字底图+文字 SVG”,
    “authored SVG”, and “图片转可编辑 PPT” always resolve to
@@ -39,4 +39,4 @@ The two human stops in the plan/author segment are **脚本规划待确认** (de
 
 ## Boundary
 
-This Skill does not parse source materials, author semantic outputs, plan pages, write scripts, generate images or assemble PPTX files. After routing, load the relevant stage Skill and follow its detailed contract.
+This Skill does not parse source materials, author semantic outputs, plan pages, write scripts, generate images or assemble PPTX files. After routing, load and execute the relevant stage Skill. Do not stop after naming it.

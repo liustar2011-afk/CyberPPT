@@ -297,11 +297,11 @@ def _status(project_dir: Path) -> int:
     elif not final.get("valid"):
         stage = "final-script.json 校验未通过，需要修复"
     elif final.get("lint") == "failed":
-        stage = "最终脚本已生成，但语言风格/结构/交付清洁度检查未通过，需要修复"
+        stage = "最终脚本文件已就绪，但语言风格/结构/交付清洁度检查未通过，需要修复"
     elif analysis.get("final", {}).get("status") == "failed":
-        stage = "最终脚本已生成，但 PLAN→AUTHOR 语义继承审计未通过，需要修复"
+        stage = "最终脚本文件已就绪，但 PLAN→AUTHOR 语义继承审计未通过，需要修复"
     else:
-        stage = "最终脚本已生成"
+        stage = "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"
 
     _print_report({"project": str(project_dir.resolve()), "stage": stage, "sources": sources, "source_index": {"path": str(source_index_path), "exists": source_index_path.exists(), "updated": _mtime(source_index_path)}, "foundation": foundation, "deck_plan": plan, "analysis_audit": analysis, "final_script": final})
     return 0

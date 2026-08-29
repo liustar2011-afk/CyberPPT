@@ -26,7 +26,7 @@
 
 ### 全流程
 
-源材料 → Source Foundation → 业务语义理解 → 交流目标 → Outline 与页面计划 → Handoff → 逐页脚本 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
+源材料 → Source Foundation → 交流目标 → 轻量 Deck Plan → AUTHOR 逐页写作 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
 
 旧版 Outline/Handoff 命令仅用于历史项目迁移的内部兼容，不是新项目或已验证 Source Truth 项目的第二条路线。
 
@@ -102,32 +102,37 @@
 - `script/deck-plan.json`
 - `script/dist/final-script.md`
 
-规划阶段的每个内容页至少明确：
+Deck Plan 是 AUTHOR 之前的轻量过渡产物，只负责确定：
 
-- 一个受众问题
-- 一个页面使命
-- 一个核心判断
-- 一个不可替代价值
-- 一条主论证链
-- 证据职责
-- 不上屏内容
-- 后续保留内容
-- 拆页风险
-- 前后页衔接
+- 汇报对象与交流目标；
+- 汇报章节、章节使命、源章节映射和内容页预算；
+- 页面顺序、页面类型、暂定标题、受众问题和页面使命；
+- 每个内容页允许使用的来源范围；
+- 确有必要时，相邻页面不得重复或越界的内容。
 
-生产默认暂时保留 Deck Plan v1 strict。受控验证项目可显式使用 Deck Plan
-v2 lean；复杂汇报在同一 `deck-plan.json` 内生成 2–3 个来源约束的叙事候选，
-短稿、目录型材料和用户已锁定结构使用 direct 模式。PLAN 先写全稿论证
-脊柱和页面必要性，再写页面内容简报，随后由 Plan Critic 读取整份计划并
-重写弱页及受影响承接。
+核心判断、完整论证链、内容模块、证据取舍、上屏结构、视觉关系、讲述线索和
+阅读密度均由 AUTHOR 在完整读取来源后形成，不得在 Deck Plan 中提前编写。
 
-v2 生产默认切换由 `benchmarks/run.py` 统一报告。五类合成/合同 fixture 只
-证明尺寸路由和能力边界；三个独立真实项目、同材料 script/strict 双跑、
-15%–30% long 深读选区人工认可和四维独立盲评均须提供实际证据。任一条件
-缺失时保持 v1 默认，v2 继续作为受控验证路径。验证报告为派生 QA 文档，
-不构成新的内容权威。
+来源章节与汇报章节分层处理。Foundation 保留全部来源章节身份、边界与顺序；
+Deck Plan 默认将相邻来源章节按受众问题、论证角色和承接关系归并为汇报章节，
+展开全部 `source_chapter_ids` 后必须与来源顺序完全一致。正式汇报通常控制在
+4 个以内，6 个为默认上限；超过 6 个必须记录无法继续归并的具体理由。
+多章节汇报采用“封面—目录—逐章过渡页—内容页—封底”序列，每个汇报章节
+恰有一个过渡页并位于该章内容之前；单章节汇报仍不设置章节页。
+
+内容页标题在 PLAN 阶段只是简洁正式的主题占位，AUTHOR 可以在完整写作后调整。
+副标题和核心判断属于最终脚本内容，不由 PLAN 锁定。标题覆盖检查只判断暂定标题
+能否标识页面讨论对象，不把判断句回灌到标题。
+
+新项目默认使用 Deck Plan v2 lean。v1 strict 仅用于合同、监管逐事实核验和旧项目
+兼容；不得把 strict 的来源消费、上屏合同或证据质询复制到普通脚本项目。
 
 主责 Skill：`cyberppt-script-workflow`。
+
+该 Skill 由当前主 Agent 直接执行。仓库不另设 AUTHOR CLI 或规则式作者生成器；
+“调用 Skill”要求主 Agent 实际读取 Foundation、来源正文、整份 Deck Plan 与相邻
+页面合同，完成生成式写作、Critic 和整页重写。仅生成合法字段、运行审计或引用
+Skill 名称均不构成 AUTHOR 执行。
 
 规划确认是对话中的人工停点；审核稿必须以 Markdown 等可读格式展示，不直接把 JSON 作为审核材料。
 
@@ -150,46 +155,42 @@ v2 生产默认切换由 `benchmarks/run.py` 统一报告。五类合成/合同 
 证据主导两个内部候选，只保留胜出结果。候选和评审理由不形成新增权威
 产物、checkpoint、gate 或 receipt。
 
-写作前运行 `page-preflight --page <page_id>`，读取本页的锚点策略、短语上限和语义拓扑。required 模式必须达到 `contract_status: ready`；门禁依据显式主链、卫星、边界、分组、同级集合、禁止合并边和可见性预算生成写作约束。每页完成后运行 `page-lint --page <page_id>`；状态分为 `passed`、`passed_with_warnings` 和 `rewrite_required`，后者阻断提交。`page-lint` 复用 `script-audit` 的页面规则，跨页关系和最终全稿格式继续在第 8 步统一确认。
+AUTHOR 写作前直接读取 Foundation、轻量 Deck Plan 和对应来源证据，理解本页的来源边界与页面使命。论证关系、完整稿、上屏结构和讲述方式由 AUTHOR 在写作中形成。逐页完成作者化写作后，再运行确定性审计；审计只负责发现问题，不代替 AUTHOR 生成或改写页面。
 
-上屏文字的分组与结构化压缩由 Stage 01 完成。内部汇报的内容页可在 Deck Plan 中声明可选 `content_route`：`state`、`diagnosis`、`system`、`action` 或 `source_native`，并以 `background`、`current`、`progress`、`comparison`、`risk`、`boundary`、`coordination`、`next_step` 等侧面细化。它只提供作者化组织提示，不增加页面类型，不替代 `argument_role` 的论证权限，也不替代 `page_logic_contract` 的命题、节点和关系约束。作者按“结论 → 证据 → 解读 → 含义 → 来源”组织页面：含义必须表现为有来源依据的内部影响、关注点、工作要求、协同事项、风险提示或后续安排；来源保留在可追溯字段中，不写成上屏模块。路由不明确时使用 `source_native`，不得仅凭标题关键词猜测。
+上屏文字的分组与结构化压缩由 AUTHOR 完成。作者按页面使命和来源证据组织“结论、证据、解读与含义”，并在 Final Script 中保留来源追溯；Deck Plan 不声明 `content_route`、`onscreen_contract`、`onscreen_composition` 或视觉准备字段。
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
-v1 strict Deck Plan 声明 `evidence_fit_review_mode: strict`，并在原
-`deck-plan.json` 内保留结构化 `evidence_fit_review`。v2 lean 对常规直接
-证据执行引用解析与来源论点相交检查；间接证据、推断关系和例外风险
-才要求人工说明。两种合同均不新增第四个权威产物。
+v1 strict 兼容路线可以继续声明结构化证据合同。v2 lean 只保留页面来源范围和必要的暴露边界，完整证据取舍由 AUTHOR 完成，最终审计直接对照 Foundation 与 Final Script。
 
-Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成只读 Markdown 页面判断带，连续展示标题、核心判断、页面职责、证据状态、来源适配质询和前后页承接。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
+Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成简洁 Markdown 审阅稿，只展示章节、页面分配、暂定标题、页面问题、页面使命和来源范围。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
 
-v1 strict Foundation 的 `source_consumption_policy: required` 继续要求
-逐记录/逐单元来源消费合同。v2 lean 只记录有理由省略、留后、仅追溯、
-推断或外部补充等例外；完整稿与上屏选择由 AUTHOR 在批准来源边界内
-完成，机器审计继续检查引用、数字、责任、状态、条件与边界。
+v1 strict Foundation 的 `source_consumption_policy: required` 继续服务严格兼容路线。v2 lean 不在 Deck Plan 逐记录声明消费方式；完整稿与上屏选择由 AUTHOR 在来源边界内完成，机器审计直接检查引用、数字、责任、状态、条件与边界。
 
 AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态和分类层级。上屏审计验证代表来源的模块映射和可见特征。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
-页面信息密度不使用固定字数或固定模块数门槛。Stage 01 审计依据页面已声明的来源证据、页面命题、`onscreen_contract` 与 `content_route.meaning_signals` 检查应保留的业务信息；来源本身较薄且没有额外业务职责时可标记 `content_load: light`。需要为后续视觉生产预先锁定的完整判断句、业务容器或表格文字角色，写入可选 `stage02_readiness`。该字段只定义 Stage 02 必须保留的语义预期；实际换行、越界、碰撞和字号仍由 Stage 02 对生成结果核验。
+页面信息密度不使用固定字数或固定模块数门槛。Final Script 在 `deck.delivery_mode` 声明 `presented` 或 `self_read`，内容页可在自身声明 `content_load`；最终审计依据实际上屏模块和语义信息单元检查阅读自洽性。Plan 不承担信息密度设计。
 
-页面可按 `onscreen_contract.expression_mode` 选择 `phrase_led`、`sentence_led` 或默认的 `mixed` 表达方式；完整判断句用于承载模块命题，短语或短分句用于承载具体证据。数字编号只表达来源支持的流程、阶段、时间、优先级、门控或其他真实顺序；普通并列分类使用无编号业务标题。共享标题、谓词、对象、限定语或结果只在父级表达一次，子项分别承载差异信息，避免为追求短语形式制造同义重复。
+页面关系由 AUTHOR 基于来源和完整稿形成，并写入 Final Script。`audit-final` 直接对照 Foundation 检查无来源关系、数字、责任、状态和边界，不再要求关系先在轻量 Plan 中获批。
 
-页面含 2 个及以上 `content` 条目，或声明了 `onscreen_contract` 时，必须同时声明顶层 `primary_relation`（`type`/`scope`/`authority: hard`）——这是页面主关系的唯一强约束声明，独立于是否需要完整的 `onscreen_contract` 模块契约，因此不会因为作者省略 `onscreen_contract` 而漏掉主关系声明。页面若存在真实的局部/辅助关系（不改变主关系拓扑的影响、依赖、反馈或引用），必须写入 `secondary_relations`（`authority: soft`），而不是留给 AUTHOR 在 `relationships[]` 里自行发明。`audit-plan` 阻断两类问题：缺少必填 `primary_relation`；`parallel` 页面的 `secondary_relations` 把全部 scope 条目串成一条链，变相塞入被禁止的隐藏顺序。`audit-final` 阻断 AUTHOR 写出的、未经 PLAN 在 `primary_relation`/`secondary_relations` 中批准的 `relationships[]` 边。
+项目定位、能力、任务、职责和验证场景等明细项，来源提供对象、作用、任务或边界时，应采用“业务标签：细化说明”；来源只列分类名称且没有细节时可以保留标签式列举。`audit-final` 与 `lint` 继续检查明细退化、同段误分组和来源边界问题。
 
-项目定位、能力、任务、职责和验证场景等功能性模块的明细项，来源或已批准页面关系提供了对象、作用、任务或边界时，应采用“业务标签：细化说明”，如“绿色低碳：检验标准在该类业务中的适用性”，末尾不加句号。来源只列分类名称且没有项目级细节时，可以在 Plan 的 `onscreen_contract.detail_policy` 中声明 `label_only_allowed: true`，保留标签式列举；不得为满足形式补写无来源说明。`page-lint`、`script-audit` 和 Script Engine 的 PLAN→AUTHOR 审计共同检查 `ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL`。
+将已完成页面汇总为最终脚本后，执行真实存在的全稿检查，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约：
 
-PLAN 与 AUTHOR Critic 还应执行来源适配质询：页面和模块分别提出什么问题、每条来源是否直接回答、同级项是否共享语义轴和角色、分组是否仅由同段出现造成。质询必须绑定具体 `evidence_ref`，同一模型的自由说明不能替代结构化门禁。回答为否或不确定时必须修复，不得自行解释后放行。确定性审计同时保留高置信的 `ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY` 检查。
+```bash
+.venv/bin/python3 -m script_engine.cli audit-final <final-script.json> <deck-plan.json> <foundation.json>
+.venv/bin/python3 -m script_engine.cli lint <final-script.json>
+.venv/bin/python3 -m script_engine.cli check-sync <final-script.json> <final-script.md>
+```
 
-将已完成页面汇总为最终脚本，执行全稿审计，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约。
-
-`script-audit` 是 Stage 01 的编辑质量门。Stage 02 以已确认脚本为唯一内容输入；项目内脚本和外部脚本均可通过 `prepare-stage02-handoff --script <path>` 进入独立的视觉生产链。
+`audit-final` 与 `lint` 是 Stage 01 的确定性编辑质量检查；存在 JSON 镜像时再用 `check-sync` 校验 Markdown 同步。Stage 02 以已确认脚本为唯一内容输入；项目内脚本和外部脚本均通过正式编排入口进入独立视觉生产链。
 
 ## 四、Stage 01 的四个人工停点
 
 | 停点 | 必须展示 | 用户反馈后的动作 |
 |---|---|---|
 | 交流目标 | 基于源材料提出的一个方向 | 修改现有权威方向后继续 |
-| 章节和页面提纲 | 章节结构、页面顺序、页面使命和核心判断 | 修改现有权威 Outline 后继续 |
+| 章节和页面提纲 | 章节结构、页面顺序、暂定标题、页面问题/使命和来源范围 | 修改现有 Deck Plan 后继续 |
 | 页面详细内容 | 目标页完整稿、上屏文字和视觉结构 | 只修改目标页及必要上游契约 |
 | 最终全稿 | 全套页面脚本和全稿审计结果 | 等待最终确认，不自行跳过 |
 
@@ -330,7 +331,7 @@ strict/legacy 下游兼容投影，不得反向成为第二套语义权威。
 只有同时满足以下条件，才能对外称为完成：
 
 1. 当前 profile 的 Foundation 和语义验证通过；strict/legacy 另需 Source Truth 验证通过。
-2. Deck Plan 已完成两次 PLAN 写作、Critic 重写、确定性审计和人工规划停点。
+2. 轻量 Deck Plan 已完成章节、页数、页面使命和来源边界检查，并经过人工规划停点。
 3. AUTHOR 已完成整页上屏重写闭环并通过 Final Script 审计。
 4. Stage 02 已建立当前脚本绑定的 handoff，脚本可以来自本项目或外部路径。
 5. 风格已由用户确认，并生成有效的 JSON 风格锁。

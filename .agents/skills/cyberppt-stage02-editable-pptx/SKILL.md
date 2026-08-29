@@ -75,9 +75,9 @@ box; do not let a page-level visual-review receipt override that failure.
 Before export, every page needs a complete `clean_base` contract and
 `graphic_text_policy`. Ordinary readable text uses `native_text`. Use
 `preserved_in_image` only for text integral to an identity graphic, with
-`identity_integral: true` and a verified local asset. Read
-[`docs/CYBERPPT_WORKFLOW.md`](../../../docs/CYBERPPT_WORKFLOW.md) and the repository
-[`SKILL.md`](../../../SKILL.md) before production.
+`identity_integral: true` and a verified local asset. Read the canonical
+[`docs/CYBERPPT_WORKFLOW.md`](../../../docs/CYBERPPT_WORKFLOW.md)
+before production.
 
 ## Authored SVG continuation
 

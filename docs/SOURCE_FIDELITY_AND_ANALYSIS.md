@@ -14,14 +14,17 @@ The governing principle is:
 
 ### Layer A — structure fidelity
 
-By default preserve:
+By default preserve at the source-mapping layer:
 
-- chapter count and chapter order;
+- source chapter identity, coverage and order;
 - chapter themes and explicit section hierarchy;
 - source-defined emphasis and required sections;
 - explicit sequences, stages, dependencies, classifications and boundaries.
 
-Cross-chapter reordering, front-loading, deletion, or restructuring requires explicit user authorization. If the user wants the deck to emphasize a different business topic, that preference should normally be reflected in the source material before script generation, or explicitly requested as a restructuring task.
+Presentation chapters may group adjacent source chapters to improve oral
+comprehension, provided the mapping covers every source chapter exactly once and
+keeps source order. Cross-source reordering, front-loading, deletion or content
+strategy change requires explicit user authorization.
 
 ### Layer B — semantic fidelity
 
@@ -66,13 +69,21 @@ An `inferred` relation should record support fact IDs and a confidence level. In
 
 ## 3. Source structure authority
 
-`foundation.json.source_structure` records the source hierarchy. PLAN uses it as the default structural boundary.
+`foundation.json.source_structure` records the source hierarchy. PLAN preserves
+it as the traceability boundary and projects it into fewer presentation chapters
+when the formal deck benefits from grouping.
 
 Allowed page-level transformations without separate user permission:
 
 - `preserve` — keep the source section as one presentation unit;
 - `split` — split one source section into several pages;
 - `merge_within_chapter` — merge closely related material within the same source chapter when distinctions remain intact.
+
+Allowed presentation-level transformation without separate user permission:
+
+- `group_adjacent_source_chapters` — place adjacent source chapters under one
+  presentation chapter while retaining source order, page scopes and argument
+  bindings.
 
 `user_authorized_cross_chapter` is allowed only when the user explicitly requests a structural re-plan.
 

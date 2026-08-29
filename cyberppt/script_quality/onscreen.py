@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 from cyberppt.onscreen_expression import (
     expression_requires_action_headings,
     resolve_onscreen_expression,
 )
-from cyberppt.paths import repo_path
 from cyberppt.source_detail_visibility import (
     clean_visible_line,
     functional_group_needs_item_explanations,
     is_bare_business_label,
+    label_enumeration_collapses_richer_detail,
     source_has_richer_item_detail,
 )
 from cyberppt.semantic_group_review import source_colocation_grouping_mismatch
@@ -26,7 +27,7 @@ from .parsing import (
 )
 _MODULE_CEILING_FALLBACK = 5
 
-_RULES_YAML_PATH = repo_path("vendor", "skills", "ppt-script", "config", "rules.yaml")
+_RULES_YAML_PATH = Path(__file__).with_name("rules.yaml")
 
 NUMBERED_EVIDENCE_BULLET_RE = re.compile(
     r"^\s*-\s*依据(?P<number>\d+)[：:]\s*(?P<body>.*?)\s*$"
@@ -470,7 +471,7 @@ def _load_module_ceiling() -> int:
     """Read page_composition.onscreen_zones.modules.max from rules.yaml.
 
     This threshold used to be duplicated as a bare literal (``> 5``) at each
-    check site, disconnected from vendor/skills/ppt-script/config/rules.yaml's
+    check site, disconnected from cyberppt/script_quality/rules.yaml's
     documented ``modules.max`` — editing the YAML had no runtime effect, so
     the two could silently drift. Load it once at import time instead.
     """
@@ -1791,8 +1792,11 @@ def _onscreen_source_detail_collapsed_to_label_issues(
         collapsed = [
             value
             for value in visible_items
-            if is_bare_business_label(value)
-            and source_has_richer_item_detail(value, source_statements)
+            if (
+                is_bare_business_label(value)
+                and source_has_richer_item_detail(value, source_statements)
+            )
+            or label_enumeration_collapses_richer_detail(value, source_statements)
         ]
         role_only = functional_group_needs_item_explanations(
             heading,

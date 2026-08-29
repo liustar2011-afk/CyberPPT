@@ -34,9 +34,11 @@ Automatically:
 7. run Critic, rewrite, deterministic audits and delivery validation;
 8. report **最终脚本已生成**.
 
-For new planning work, PLAN writes `deck-plan.json` v2 lean in two passes,
-optionally compares 2–3 source-constrained narrative candidates, and performs a
-whole-plan Critic rewrite before the planning stop. AUTHOR writes the complete
+For new planning work, PLAN writes a genuinely lightweight `deck-plan.json`
+v2 lean containing only deck purpose, chapter grouping, page allocation,
+tentative topic titles, page questions/missions and source boundaries. It must
+not pre-author page judgments, content modules, evidence dispositions, onscreen
+contracts, visual relations or speaking threads. AUTHOR writes the complete
 page argument before selecting onscreen information; high-risk pages compare
 judgment-led and evidence-led candidates and keep only the rewritten winner.
 These are authoring passes inside the existing three authority artifacts. They
@@ -48,9 +50,17 @@ do not create a Content Plan, checkpoint, gate receipt or review manifest.
 from `deck-plan.json` fields to Markdown, and it is not completed by passing a
 schema, lint or source-coverage audit.
 
+The current main agent is the AUTHOR executor. There is no separate AUTHOR
+Skill, CLI command, deterministic author generator or project-specific author
+script to invoke. After the planning gate is approved, the current main agent
+must perform the reading, judgment, candidate comparison, writing, Critic and
+rewrite itself before it runs deterministic checks. Merely loading this Skill,
+creating a schema-valid file, copying PLAN fields, or reporting audit success
+does not execute AUTHOR.
+
 The author agent must read the document thesis and table of contents first,
-then the target page's argument node, complete source prose, adjacent-page
-contracts and approved evidence boundary. It independently decides what a
+then the target page mission, complete source prose, adjacent-page scope and
+approved evidence boundary. It independently decides what a
 silent reader must understand, which facts deserve visible weight, how related
 facts should be merged, how the page should be written, which business
 relationship must become visually legible, and how the presenter should explain
@@ -70,6 +80,10 @@ contract; it does not prove authorship or reading quality.
 For revisions, the author agent rewrites the page from its semantic brief. It
 does not patch the previous onscreen copy line by line unless the user has
 explicitly requested a literal wording correction.
+
+The agent may report **最终脚本已生成** only after this generative pass has
+actually rewritten the complete requested scope and the resulting authoritative
+`dist/final-script.md` has passed the required deterministic checks.
 
 ## 3. Re-plan
 
@@ -126,7 +140,7 @@ Show a readable **脚本规划待确认** containing:
 
 - source chapter structure to be preserved;
 - planned page allocation by chapter;
-- each page's question, core message and dominant analysis/logic when useful;
+- each page's tentative title, question, mission and source boundary;
 - split/merge decisions that materially change Word-to-PPT projection;
 - inferred relationships or source conflicts that merit user attention;
 - any restricted/internal material requiring an exposure decision.

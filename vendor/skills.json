@@ -2,11 +2,6 @@
   "schema": "cyberppt.vendor_skills.v1",
   "skills": [
     {
-      "name": "ppt-script",
-      "path": "vendor/skills/ppt-script",
-      "stage": "stage01"
-    },
-    {
       "name": "ppt-visual-structure-designer",
       "path": "vendor/skills/ppt-visual-structure-designer",
       "stage": "stage01-to-stage02"
