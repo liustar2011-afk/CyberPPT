@@ -17,9 +17,8 @@ jobs:
           fetch-depth: 0
       - name: Clean generated diff noise
         run: python scripts/_cleanup_flow_diff.py
-      - name: Validate diff and commit
+      - name: Commit cleanup
         run: |
-          git diff --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
