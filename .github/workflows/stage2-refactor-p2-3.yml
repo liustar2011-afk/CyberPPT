@@ -1,0 +1,63 @@
+name: Stage2 refactor P2.3 region text binding
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p2-3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Integrate exact region text ownership
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("cyberppt/visual_stage/compiler.py")
+          text = path.read_text(encoding="utf-8")
+          old = "from cyberppt.region_graph import build_region_graph\n"
+          new = old + "from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map\n"
+          if "from cyberppt.region_binding import" not in text:
+              if old not in text:
+                  raise SystemExit("P2.3 compiler import anchor not found")
+              text = text.replace(old, new, 1)
+
+          old = '''    region_graph = build_region_graph(\n        topology=topology,\n        evidence_ids=[eid[key] for key in evidence_keys],\n        focus_id=focus_id,\n        reading_sequence=[eid[key] for key in reading_keys],\n        semantic_edges=graph_edges,\n        focus_policy=focus_policy,\n    )\n    quality_contract = _quality_contract(decision, selected, focus_id)\n    final_text = [\n        {"id": item_id, "role": "body", "text": text, "region_id": "R_RELATION"}\n        for item_id, text in zip(expected_ids, expected_text)\n    ]\n'''
+          new = '''    region_graph = bind_region_graph_text(\n        build_region_graph(\n            topology=topology,\n            evidence_ids=[eid[key] for key in evidence_keys],\n            focus_id=focus_id,\n            reading_sequence=[eid[key] for key in reading_keys],\n            semantic_edges=graph_edges,\n            focus_policy=focus_policy,\n        ),\n        evidence_text_ids={eid[key]: text_ids_by_evidence[key] for key in evidence_keys},\n        required_text_ids=expected_ids,\n    )\n    text_region_ids = region_text_owner_map(region_graph)\n    quality_contract = _quality_contract(decision, selected, focus_id)\n    final_text = [\n        {"id": item_id, "role": "body", "text": text, "region_id": text_region_ids[item_id]}\n        for item_id, text in zip(expected_ids, expected_text)\n    ]\n'''
+          if old not in text:
+              raise SystemExit("P2.3 compiler binding block not found")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run targeted regressions
+        run: |
+          python -m pytest -q tests/test_region_binding.py tests/test_region_graph_contract.py tests/test_region_graph_compiler.py tests/test_visual_structure_stage.py tests/test_visual_structure_contract.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit, self-clean, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/visual_stage/compiler.py
+          git rm .github/workflows/stage2-refactor-p2-3.yml
+          git commit -m "feat(stage2): bind locked text to Region Graph"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
