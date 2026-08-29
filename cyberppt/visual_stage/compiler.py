@@ -10,6 +10,7 @@ from cyberppt.region_graph import build_region_graph
 from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map
 from cyberppt.visual_medium_policy import resolve_visual_medium_policy
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
+from cyberppt.topology_resolver import CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY
 
 from .persistence import VISUAL_FILES, _read_json, _sha256, write_json
 
@@ -76,15 +77,7 @@ _FOCUS_POLICY_BY_TOPOLOGY = {
     "conclusion_anchor": "single_anchor",
 }
 
-_CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
-    "peer_set": {"parallel_set"},
-    "feedback_loop": {"lifecycle_loop"},
-    "support_convergence": {"causal_convergence", "conclusion_anchor"},
-    "sequence": {"directed_flow"},
-    "dependency_chain": {"directed_flow"},
-    "causal_chain": {"directed_flow", "causal_convergence"},
-    "layered_structure": {"layered_architecture"},
-}
+_CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY
 
 
 def _fail(message: str) -> None:

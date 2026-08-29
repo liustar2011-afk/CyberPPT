@@ -10,6 +10,7 @@ from typing import Any
 
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 from cyberppt.region_graph_audit import audit_region_graph
+from cyberppt.topology_resolver import CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY
 from cyberppt.visual_medium_audit import audit_visual_medium_policy
 
 
@@ -859,6 +860,18 @@ def audit_visual_design_package(
 
         if selected in candidate_records:
             selected_candidate = candidate_records[selected]
+            render_topology = source.get("render_topology")
+            render_topology = render_topology if isinstance(render_topology, dict) else {}
+            verified_topology = str(render_topology.get("primary_topology") or "").strip()
+            compatible_topologies = CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY.get(verified_topology)
+            selected_topology = str(selected_candidate.get("topology") or "").strip()
+            if compatible_topologies and selected_topology not in compatible_topologies:
+                issue(
+                    "SELECTED_CANDIDATE_TOPOLOGY_INCOMPATIBLE",
+                    f"Selected candidate topology {selected_topology!r} is incompatible with "
+                    f"verified semantic topology {verified_topology!r}.",
+                    page_id,
+                )
             visual_decision = page_spec.get("visual_decision")
             actual_thesis = (
                 str(visual_decision.get("visual_thesis") or "").strip()

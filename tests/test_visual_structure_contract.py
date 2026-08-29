@@ -321,6 +321,22 @@ def test_audit_rejects_selected_visual_thesis_or_scene_drift() -> None:
     assert "SPEC_SCENE_POLICY_DRIFTED" in codes
 
 
+def test_audit_rejects_candidate_topology_incompatible_with_render_topology() -> None:
+    design, decisions, spec = _payloads()
+    design["pages"][0]["render_topology"] = {"primary_topology": "dependency_chain"}
+    decisions["pages"][0]["candidates"][0]["topology"] = "causal_convergence"
+    codes = {item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]}
+    assert "SELECTED_CANDIDATE_TOPOLOGY_INCOMPATIBLE" in codes
+
+
+def test_audit_accepts_directed_flow_for_mapping_topology() -> None:
+    design, decisions, spec = _payloads()
+    design["pages"][0]["render_topology"] = {"primary_topology": "mapping"}
+    decisions["pages"][0]["candidates"][0]["topology"] = "directed_flow"
+    codes = {item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]}
+    assert "SELECTED_CANDIDATE_TOPOLOGY_INCOMPATIBLE" not in codes
+
+
 def test_audit_rejects_incomplete_execution_design() -> None:
     design, decisions, spec = _payloads()
     del decisions["pages"][0]["execution_design"]["semantic_role"]

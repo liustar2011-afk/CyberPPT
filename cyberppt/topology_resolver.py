@@ -24,6 +24,19 @@ _DIRECTED_RELATIONS = {
     "directed_dependency", "directed_relation", "causes", "transforms_to",
     *_SUPPORT_RELATIONS, *_SEQUENCE_RELATIONS, *_FEEDBACK_RELATIONS,
 }
+
+# Candidate topologies are render carriers; this map is the boundary between
+# verified semantic topology and the visual decision vocabulary.
+CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
+    "peer_set": {"parallel_set"},
+    "feedback_loop": {"lifecycle_loop"},
+    "support_convergence": {"causal_convergence", "conclusion_anchor"},
+    "sequence": {"directed_flow"},
+    "dependency_chain": {"directed_flow"},
+    "mapping": {"directed_flow"},
+    "causal_chain": {"directed_flow", "causal_convergence"},
+    "layered_structure": {"layered_architecture"},
+}
 _DIRECTIONAL_VALUES = {
     "subject_to_objects", "left_to_right", "right_to_left", "top_to_bottom", "bottom_to_top"
 }
@@ -231,4 +244,4 @@ def resolve_semantic_topology(
     }
 
 
-__all__ = ["resolve_semantic_topology"]
+__all__ = ["CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY", "resolve_semantic_topology"]
