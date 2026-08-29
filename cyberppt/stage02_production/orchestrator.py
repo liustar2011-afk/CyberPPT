@@ -8,6 +8,7 @@ from .manifest_stage import prepare_manifest
 from .models import Stage02ProductionResult, Stage02RunOptions
 from .preflight import prepare_preflight, write_json
 from .reconstruction_stage import run_reconstruction_stage
+from .rhythm_stage import run_full_image_rhythm_stage
 
 
 def run_production(options: Stage02RunOptions) -> Stage02ProductionResult:
@@ -17,6 +18,19 @@ def run_production(options: Stage02RunOptions) -> Stage02ProductionResult:
     if options.require_images or (options.production_build and not options.dry_run_images):
         normalize_audited_manifest_images(images.manifest)
         require_generated(images.manifest)
+        rhythm_qa = run_full_image_rhythm_stage(
+            images.manifest,
+            build_dir=context.build_dir,
+        )
+        # Persist the deck-level QA result before any reconstruction authority is
+        # frozen so a blocked run remains recoverable and inspectable.
+        write_json(manifest.manifest_path, images.manifest)
+        if rhythm_qa.get("status") == "blocked":
+            raise RuntimeError(
+                "FULL_IMAGE_DECK_RHYTHM_BLOCKED: audited full images repeat the same "
+                "composition pattern across consecutive pages; review the rhythm receipt "
+                f"before reconstruction: {rhythm_qa.get('receipt_path', '')}"
+            )
         if context.assembly_mode in {"editable", "both"}:
             bind_reconstruction_visual_sources(images.manifest)
         write_json(manifest.manifest_path, images.manifest)
