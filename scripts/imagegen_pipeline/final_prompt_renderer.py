@@ -121,6 +121,18 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def _micro_visual_freedom_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    freedom = ir.micro_visual_freedom
+    if freedom is None:
+        return ()
+    return (
+        "ImageGen region-internal freedom:",
+        *(f"- Allowed: {item}" for item in freedom.allowed),
+        "Macro visual authority remains locked:",
+        *(f"- Forbidden: {item}" for item in freedom.forbidden),
+    )
+
+
 def render_final_prompt(
     ir: FinalPromptIR,
     *,
@@ -192,6 +204,7 @@ def render_final_prompt(
                 f"Spatial organization: {ir.composition.spatial_organization}",
                 f"Primary focus: {ir.composition.primary_focus}",
                 *_macro_structure_lines(ir),
+                *_micro_visual_freedom_lines(ir),
                 *ir.composition.visual_responsibility,
             )
         ),
@@ -296,6 +309,14 @@ def render_debug_receipt(
                 ],
             }
             if ir.region_graph is not None
+            else None
+        ),
+        "micro_visual_freedom": (
+            {
+                "allowed": list(ir.micro_visual_freedom.allowed),
+                "forbidden": list(ir.micro_visual_freedom.forbidden),
+            }
+            if ir.micro_visual_freedom is not None
             else None
         ),
         "visual_medium_policy": (

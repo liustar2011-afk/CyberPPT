@@ -79,6 +79,12 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `assets/domain-neutral-structure-fixtures.json`：六类跨领域通用结构回归夹具。
 - `scripts/test_domain_neutral_fixtures.py`：验证正例、故障变体和外部风格切换不改变结构。
 
+## ImageGen 微观视觉自由边界
+
+当页面已形成 `Region Graph + focus_policy + visual_medium_policy + scene_policy` 时，这些字段共同构成宏观生成约束权威。ImageGen 只在每个 Region 内部拥有微观实现自由：可决定具体业务对象如何绘制、局部构件如何排列、光影材质和景深、从属辅助碎片及不改变语义的局部装饰。
+
+ImageGen 不得合并或拆分 Region，不得把锁定文字移动到其他 Region，不得改变 focus policy、区域语义角色和业务关系类型/方向，不得超出 allowed medium 或违反 scene policy，也不得生成独立于 Region Graph 的第二条叙事链。
+
 ## 工作流程
 
 ### 1. 锁定内容与约束

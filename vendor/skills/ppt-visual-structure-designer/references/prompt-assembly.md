@@ -12,7 +12,7 @@ Skill不得自行拼接正式提示词，也不得把候选理由、作者版式
 
 ## 两级Prompt强度
 
-`semantic_brief`为默认模式，正式Prompt消费页面使命、核心判断、完整文字稿语义、主论证链、真实业务关系和精确上屏文字；ImageGen决定场景或结构、视觉载体、空间组织、阅读实现和辅助细节。
+`semantic_brief`为默认模式。页面存在 Region Graph 时，正式Prompt必须消费宏观区域、阅读轴、focus policy、媒介策略和精确文字归属；ImageGen只决定 Region 内部的对象表现、局部排布、光影材质和从属细节。旧项目缺少 Region Graph 时继续走兼容语义 brief。
 
 `directed_composition`仅用于来源明确支持且需要保真的方向流、生命周期闭环、分层架构或因果汇聚关系，同时要求至少一条`basis=explicit`关系。该模式消费完整执行设计。
 
