@@ -161,6 +161,13 @@ def _artifact(graph, focus_policy):
         visual_medium_policy=medium,
         visible_text_bindings=bindings,
         composition=replace(base.composition, focus_policy=focus_policy),
+        art_direction=replace(
+            base.art_direction,
+            style_id=4,
+            style_name="Regression Style",
+            style_slug="regression-style",
+            contract="Neutral regression visual language.",
+        ),
     )
 
 
@@ -183,7 +190,10 @@ def test_stage2_visual_design_end_to_end(topology, focus_id, focus_policy, edges
     assert ir.region_graph is not None
     assert ir.visual_medium_policy is not None
     assert ir.micro_visual_freedom is not None
-    assert "Macro region structure:" in prompt
+    assert "Macro reading axis:" in prompt
+    assert "Region 1:" in prompt
+    assert "The Region structure is the macro composition authority;" in prompt
+    assert "Preferred visual medium:" in prompt
     assert "ImageGen region-internal freedom:" in prompt
     assert "Macro visual authority remains locked:" in prompt
     for visible_text in ir.visible_text:
