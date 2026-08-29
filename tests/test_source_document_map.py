@@ -13,6 +13,7 @@ from cyberppt.source_document_map import (
     SOURCE_UNITS,
     load_source_units,
     prepare_source_map,
+    prepare_source_context,
     render_units_for_model,
 )
 
@@ -21,11 +22,14 @@ DOCUMENT_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
  xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
- xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+ xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+ xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">
  <w:body>
   <w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>第一章 总体主张</w:t></w:r></w:p>
   <w:p><w:r><w:t>这是用于论证主张的正文。</w:t></w:r></w:p>
-  <w:tbl><w:tr><w:tc><w:p><w:r><w:t>能力</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>说明</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+  <w:p><w:pPr><w:pStyle w:val="Caption"/></w:pPr><w:r><w:t>表1 能力说明</w:t></w:r></w:p>
+  <w:tbl><w:tr><w:tc><w:p><w:r><w:t>能力</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>说明</w:t></w:r></w:p></w:tc></w:tr><w:tr><w:tc><w:p><w:r><w:t>治理</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>统一规则</w:t></w:r></w:p></w:tc></w:tr></w:tbl>
+  <w:p><m:oMath><m:r><m:t>x+y=1</m:t></m:r></m:oMath></w:p>
   <w:p><w:r><w:drawing><wp:inline><wp:docPr id="1" name="Picture 1"/><a:graphic><a:graphicData><a:blip r:embed="rId1"/></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>
  </w:body>
 </w:document>
@@ -34,6 +38,7 @@ DOCUMENT_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 STYLES_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
  <w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="标题 1"/><w:pPr><w:outlineLvl w:val="0"/></w:pPr></w:style>
+ <w:style w:type="paragraph" w:styleId="Caption"><w:name w:val="题注"/></w:style>
 </w:styles>
 """
 
@@ -127,7 +132,7 @@ class SourceDocumentMapTests(unittest.TestCase):
         warning_codes = {str(item["code"]) for item in report["warnings"]}
 
         self.assertEqual("passed", report["status"])
-        self.assertTrue({"heading", "paragraph", "table_row", "image"}.issubset(kinds))
+        self.assertTrue({"heading", "paragraph", "caption", "table_row", "formula", "image"}.issubset(kinds))
         self.assertEqual("第一章 总体主张", report["headings"][0]["title"])
         self.assertIn("SOURCE_IMAGE_SEMANTICS_PENDING", warning_codes)
         image = next(item for item in units if item["kind"] == "image")
@@ -135,6 +140,21 @@ class SourceDocumentMapTests(unittest.TestCase):
         self.assertEqual("word/media/image1.png", image["metadata"]["media_path"])
         paragraph = next(item for item in units if item["kind"] == "paragraph")
         self.assertEqual(1, paragraph["locator"]["section_paragraph"])
+
+    def test_script_source_context_groups_asset_candidates_with_stable_ids_and_locators(self) -> None:
+        _write_minimal_docx(self.project / "source" / "material.docx")
+
+        first = prepare_source_context(self.project)
+        second = prepare_source_context(self.project)
+        candidates = first["asset_candidates"]
+
+        self.assertEqual(candidates, second["asset_candidates"])
+        self.assertTrue(all(item["id"].startswith("ASSET-") for item in candidates))
+        self.assertTrue(all(item["locator"] for item in candidates))
+        by_kind = {item["kind"]: item for item in candidates}
+        self.assertEqual(2, len(by_kind["table"]["source_unit_refs"]))
+        self.assertIn("paragraph", by_kind["caption"]["locator"])
+        self.assertIn("formula_index", by_kind["formula"]["locator"])
 
     def test_docx_without_heading_styles_is_flagged_instead_of_passing_silently(self) -> None:
         _write_headingless_docx(self.project / "source" / "material.docx")

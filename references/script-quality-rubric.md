@@ -126,11 +126,12 @@ year ranges and number ranges fail when the page expects them to explain a
 task, milestone, positioning, capability or responsibility. Dates must bind to
 tasks, checkpoints or results; numbers must identify what they measure.
 
-### Ten-second and deletion tests
+### Ten-second comprehension and information necessity
 
 After a short scan, a reader should be able to restate the page's principal
 content. If removing a line changes neither that understanding nor the page's
-proof, remove the line or replace it with missing evidence.
+proof, remove the line or replace it with missing evidence. These are
+qualitative Critic dimensions and must not be reported as mechanically passed.
 
 ### Continuity test
 

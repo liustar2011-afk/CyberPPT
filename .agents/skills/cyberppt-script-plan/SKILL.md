@@ -11,6 +11,30 @@ Design the strongest PPT expression that can be produced from the source without
 
 Output one authoritative `deck-plan.json`.
 
+## Contract and writing mode
+
+Production planning remains on the v1 strict contract until the Task 6
+graduation benchmark passes every real-project, dual-profile and independent
+review condition. Controlled v2 validation work explicitly uses
+`plan_contract_version: 2` with `planning_profile: lean`. Historical plans
+without version 2 remain on the v1 strict contract. Version 2 preserves `source_thesis`,
+`source_argument_method`, and chapter/page `source_argument_node_ids`; it drops
+routine Stage 02 preparation, per-unit dispositions and evidence-fit prose from
+the authoring burden. Deterministic audit still owns source identity, argument
+binding, evidence references, visibility and inference boundaries.
+
+Write PLAN twice:
+
+1. establish the whole-deck argument spine, page necessity, money slide and
+   page-to-page advancement;
+2. write each page question, disputable message, selected evidence, content
+   units, beat and spoken thread.
+
+Then read the complete plan once as Plan Critic. Rewrite weak messages, summary
+pages, duplicates and the smallest affected neighboring handoffs in the same
+`deck-plan.json`. Critic notes remain internal and never become a fourth
+authority artifact.
+
 Read:
 
 - `docs/SOURCE_FIDELITY_AND_ANALYSIS.md`;
@@ -85,6 +109,21 @@ plan authority:
 - `storyline[]`: ordered recognition nodes, without copying page prose;
 - `audience_start` and `audience_end` when the communication decision defines
   both endpoints.
+
+Version 2 also declares `narrative_design.mode`:
+
+- `direct` for fewer than six content pages, source-native catalogues, or an
+  explicitly fixed narrative;
+- `competitive` for decision, proposal, defense, teaching or other material
+  with several defensible audience paths.
+
+Competitive mode develops two or three candidates over the same source thesis
+and argument method. Each candidate records `shape`, `opening_roles`, audience
+question, objection, closing ask, `argument_focus_node_ids` and
+`evidence_refs`. A candidate carrying less than half the evidence of the best
+developed candidate is a strawman until expanded or removed. Candidates that
+match on three of shape/order/ask/stance must be rediverged. These checks do not
+authorize source-thesis or source-order changes.
 
 Each chapter must state `purpose`, `question`, `message` and
 `relationship_to_previous`. Each page must carry its owning `chapter_id` and,
@@ -210,9 +249,7 @@ business dimensions, or absorb a page-level conclusion, add an optional
 - `expression_mode`: use `mixed` as the normal choice for explanatory content;
   use `sentence_led` when each module must carry a complete judgment, mechanism,
   boundary or stage result; use `phrase_led` only for a genuine taxonomy,
-  metric set, object inventory, exact source-label set or short sequence, and
-  declare the matching `phrase_led_basis` (`taxonomy`, `metric_set`,
-  `object_inventory`, `exact_labels` or `short_sequence`);
+  metric set, object inventory, exact source-label set or short sequence;
 - `modules`: the approved module headings, each with `evidence_refs` and at least
   one visible `required_signals`, plus `forbidden_signals` when useful;
 - `scope_mode: exclusive` when a module must not carry another module's issue;
@@ -232,11 +269,10 @@ may coexist when the page's declared composition policy permits them.
 Do not select one expression mode deck-wide for visual consistency. Diagnosis,
 mechanism, implementation, responsibility, comparison and conclusion pages
 normally require `mixed` or `sentence_led`; a sequence relation alone does not
-justify `phrase_led`. PLAN audit blocks `phrase_led` without a narrow declared
-basis so AUTHOR cannot be pre-compressed into field labels before writing.
+justify `phrase_led`. This remains an editorial decision for PLAN Critic and is
+not promoted into a regular-expression quality gate.
 
-Set top-level `evidence_fit_review_mode: strict` for every source-grounded Deck
-Plan. There is no legacy compatibility path. Before accepting a page judgment or visible module,
+For v1 strict plans, set top-level `evidence_fit_review_mode: strict`. Before accepting a page judgment or visible module,
 write its structured `evidence_fit_review` inside the same `deck-plan.json`.
 This is an internal contract field, not a fourth authority or a separate review
 artifact. Answer these questions from Foundation evidence, not from paragraph
@@ -298,7 +334,7 @@ Do not invent differentiation when the source supplies names only; use the
 explicit `label_only_allowed` exception and keep the shared relationship at the
 parent level.
 
-When `foundation.source_consumption_policy` is `required`, every sourced content
+For v1 strict plans, when `foundation.source_consumption_policy` is `required`, every sourced content
 page must declare `source_consumption` with `mode: strict`. Cover, contents,
 chapter and closing pages are exempt, including the compiler aliases `agenda`
 and `ending`. A historical Foundation without the policy field keeps the legacy
@@ -398,6 +434,12 @@ Run:
     for each omission, and at least one module-mapped representative onscreen ref.
 
 Repair the same plan. Reordering across chapters is not a default repair for weak continuity.
+
+For v2 lean, replace Critic items 14 and 16 with a qualitative whole-plan pass:
+page necessity, message strength, evidence selection, adjacent duplication,
+narrative continuity and peak-page strength. Machine findings may prioritize a
+page for review; only the rewritten plan and human-readable review demonstrate
+content improvement.
 
 Then run:
 

@@ -12,6 +12,7 @@ from cyberppt import __version__
 from cyberppt.commands.assemble_final_script import assemble_final_script
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.foundation_projection import project_source_truth_to_foundation
+from cyberppt.foundation_authoring import prepare_script_foundation
 from script_engine.contracts import validate_foundation
 from scripts.image_to_pptx_runtime.quick_page_review import record_quick_page_review
 from cyberppt.commands.init_project import init_project
@@ -34,7 +35,11 @@ from cyberppt.semantic_understanding import (
     prepare_semantic_understanding,
     run_semantic_understanding_audit,
 )
-from cyberppt.source_document_map import prepare_source_map, run_source_map_audit
+from cyberppt.source_document_map import (
+    prepare_source_context,
+    prepare_source_map,
+    run_source_map_audit,
+)
 from cyberppt.source_foundation_projection import project_source_foundation_truth
 from cyberppt.stage02_handoff import (
     HANDOFF_AUDIT,
@@ -187,6 +192,39 @@ def _prepare_source_map_command(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _prepare_source_context_command(args: argparse.Namespace) -> int:
+    try:
+        payload = prepare_source_context(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    report = {
+        "schema": payload.get("schema"),
+        "profile": payload.get("profile"),
+        "status": payload.get("status"),
+        "source_index": payload.get("source_index"),
+        "source_count": len(payload.get("sources") or []),
+        "heading_count": len(payload.get("source_structure") or []),
+        "unit_count": len(payload.get("units") or []),
+        "reading_load": payload.get("reading_load"),
+        "reading_recommendation": payload.get("reading_recommendation"),
+        "issues": payload.get("issues") or [],
+        "warnings": payload.get("warnings") or [],
+    }
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0 if payload.get("status") == "passed" else 4
+
+
+def _prepare_script_foundation_command(args: argparse.Namespace) -> int:
+    try:
+        payload = prepare_script_foundation(Path(args.project), profile=args.profile)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(payload["authoring_task"], end="")
     return 0
 
 
@@ -544,6 +582,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prepare_source_map_parser.add_argument("project", help="CyberPPT project directory.")
     prepare_source_map_parser.set_defaults(func=_prepare_source_map_command)
+
+    prepare_source_context_parser = subparsers.add_parser(
+        "prepare-source-context",
+        help="Build the script profile's single deterministic source index.",
+    )
+    prepare_source_context_parser.add_argument("project", help="CyberPPT project directory.")
+    prepare_source_context_parser.set_defaults(func=_prepare_source_context_command)
+
+    prepare_script_foundation_parser = subparsers.add_parser(
+        "prepare-script-foundation",
+        help="Prepare direct Foundation authoring from the script source index.",
+    )
+    prepare_script_foundation_parser.add_argument("project", help="CyberPPT project directory.")
+    prepare_script_foundation_parser.add_argument(
+        "--profile",
+        choices=("script", "strict", "legacy"),
+        default="script",
+        help="script uses direct Foundation authoring; strict/legacy retain the Source Truth route.",
+    )
+    prepare_script_foundation_parser.set_defaults(func=_prepare_script_foundation_command)
 
     source_map_check = subparsers.add_parser(
         "source-map-check",

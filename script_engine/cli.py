@@ -14,6 +14,7 @@ from .analysis_audit import (
     audit_foundation_analysis,
     validate_source_index_coverage,
 )
+from .analysis_audits.composed_trace import critic_priorities, trace_composed
 from .contracts import (
     check_declared_count,
     check_onscreen_detail_length,
@@ -32,7 +33,10 @@ from .contracts import (
 from .delivery_cleanliness import check_delivery_cleanliness
 from .plan_review import render_plan_review
 from .render import render_stage02_markdown
-from .source_index import build_source_index_file
+from .source_index import (
+    build_source_index_file,
+    validate_script_foundation_against_index,
+)
 from .text_io import write_text_lf
 
 VALIDATORS = {"foundation": validate_foundation, "plan": validate_deck_plan, "final": validate_final_script}
@@ -54,6 +58,12 @@ def _audit_foundation(path: Path) -> int:
     issues = validate_foundation(payload)
     audit_issues, warnings = audit_foundation_analysis(payload)
     issues += audit_issues
+    source_index_path = path.parent / ".cache" / "source-index.json"
+    if source_index_path.is_file():
+        source_index = load_json(source_index_path)
+        if source_index.get("schema") == "cyberppt.source_index.v2":
+            issues += validate_script_foundation_against_index(payload, source_index)
+    issues = list(dict.fromkeys(issues))
     _print_report({"kind": "foundation-analysis", "path": str(path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
     return 0 if not issues else 1
 
@@ -85,6 +95,7 @@ def _audit_final(final_path: Path, plan_path: Path, foundation_path: Path) -> in
     issues = validate_final_script(final_payload) + validate_deck_plan(plan) + validate_foundation(foundation)
     audit_issues, warnings = audit_final_script(final_payload, plan, foundation)
     issues += audit_issues
+    trace = trace_composed(final_payload, foundation)
     _print_report({
         "kind": "final-semantic-inheritance",
         "final": str(final_path.resolve()),
@@ -93,8 +104,28 @@ def _audit_final(final_path: Path, plan_path: Path, foundation_path: Path) -> in
         "status": "passed" if not issues else "failed",
         "issues": issues,
         "warnings": warnings,
+        "critic_priorities": critic_priorities(
+            final_payload, plan, foundation, trace=trace
+        ),
     })
     return 0 if not issues else 1
+
+
+def _trace_composed(final_path: Path, foundation_path: Path, n: int = 3) -> int:
+    final_payload = load_json(final_path)
+    foundation = load_json(foundation_path)
+    report = trace_composed(final_payload, foundation, n=n)
+    report.update(
+        {
+            "final": str(final_path.resolve()),
+            "foundation": str(foundation_path.resolve()),
+            "critic_priorities": critic_priorities(
+                final_payload, {}, foundation, trace=report
+            ),
+        }
+    )
+    _print_report(report)
+    return 0 if report["status"] == "passed" else 1
 
 
 def _check_refs(final_path: Path, foundation_path: Path, source_index_path: Path | None = None) -> int:
@@ -211,7 +242,15 @@ def _status(project_dir: Path) -> int:
     analysis: dict = {}
 
     if foundation.get("valid"):
-        f_issues, f_warnings = audit_foundation_analysis(load_json(foundation_path))
+        foundation_payload = load_json(foundation_path)
+        f_issues, f_warnings = audit_foundation_analysis(foundation_payload)
+        if source_index_path.exists():
+            source_index = load_json(source_index_path)
+            if source_index.get("schema") == "cyberppt.source_index.v2":
+                f_issues.extend(
+                    validate_script_foundation_against_index(foundation_payload, source_index)
+                )
+                f_issues = list(dict.fromkeys(f_issues))
         analysis["foundation"] = {"status": "passed" if not f_issues else "failed", "issues": f_issues, "warnings": f_warnings}
     if foundation.get("valid") and plan.get("valid"):
         p_issues, p_warnings = audit_deck_plan(load_json(plan_path), load_json(foundation_path))
@@ -312,6 +351,7 @@ def build_parser() -> argparse.ArgumentParser:
     audit_plan = sub.add_parser("audit-plan", help="Audit source-structure fidelity, inference support, optionality and audience visibility in deck-plan.json"); audit_plan.add_argument("plan"); audit_plan.add_argument("foundation")
     review_plan = sub.add_parser("review-plan", help="Render a human-readable, non-authoritative Markdown review of deck-plan.json"); review_plan.add_argument("plan"); review_plan.add_argument("foundation")
     audit_final = sub.add_parser("audit-final", help="Audit PLAN-to-AUTHOR semantic inheritance and high-risk source-boundary rules"); audit_final.add_argument("final"); audit_final.add_argument("plan"); audit_final.add_argument("foundation")
+    trace = sub.add_parser("trace-composed", help="Triage near-source vs composed Final Script lines and block source-absent numbers or identifiers"); trace.add_argument("final"); trace.add_argument("foundation"); trace.add_argument("--n", type=int, default=3)
     build_index = sub.add_parser("build-source-index", help="Build non-authoritative .cache/source-index.json from source_extract.txt"); build_index.add_argument("source_extract"); build_index.add_argument("--output", required=True); build_index.add_argument("--source-file")
     render = sub.add_parser("render-stage02", help="Render a delivery-clean Stage 02-compatible Markdown boundary"); render.add_argument("input"); render.add_argument("--output", default="dist/final-script.md")
     check_refs = sub.add_parser("check-refs", help="Verify final-script source_refs trace to foundation and optional source index"); check_refs.add_argument("final"); check_refs.add_argument("foundation"); check_refs.add_argument("--source-index")
@@ -330,6 +370,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "audit-plan": return _audit_plan(Path(args.plan), Path(args.foundation))
     if args.command == "review-plan": return _review_plan(Path(args.plan), Path(args.foundation))
     if args.command == "audit-final": return _audit_final(Path(args.final), Path(args.plan), Path(args.foundation))
+    if args.command == "trace-composed": return _trace_composed(Path(args.final), Path(args.foundation), args.n)
     if args.command == "build-source-index": return _build_source_index(Path(args.source_extract), Path(args.output), args.source_file)
     if args.command == "render-stage02": return _render(Path(args.input), Path(args.output))
     if args.command == "check-refs": return _check_refs(Path(args.final), Path(args.foundation), Path(args.source_index) if args.source_index else None)

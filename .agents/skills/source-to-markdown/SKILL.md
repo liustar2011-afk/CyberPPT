@@ -7,7 +7,14 @@ description: Use when Word, PDF, PowerPoint, Excel, HTML, image, archive, or tex
 
 ## Overview
 
-Use Microsoft MarkItDown as the conversion engine, then apply deterministic normalization and provenance metadata. Conversion is a **source-preservation step**, not a writing or interpretation step.
+Use the repository's native parsers first for DOCX, text formats, PPTX and
+simple XLSX. Use Microsoft MarkItDown as a format-specific fallback, then apply
+deterministic normalization and provenance metadata. Conversion is a
+**source-preservation step**, not a writing or interpretation step.
+
+For a CyberPPT project, `prepare-source-context` already performs native DOCX,
+text and PPTX extraction and uses optional `openpyxl` for XLSX. Invoke this
+conversion Skill only when the native result is missing, sparse or unsupported.
 
 ## Core Rule
 
@@ -18,10 +25,11 @@ Use Microsoft MarkItDown as the conversion engine, then apply deterministic norm
 Run the commands below from this Skill directory with the repository interpreter at `../../../.venv/bin/python3`.
 
 1. Identify whether the input is one local file or a directory of local files.
-2. Run `../../../.venv/bin/python3 scripts/convert.py <input>` from this skill directory, or invoke the script by its absolute skill path with the same interpreter.
-3. For a directory, add `--recursive` only when nested folders should be included.
-4. Inspect stderr warnings. If a PDF or Office file yields empty or unusually sparse text and is image-heavy/scanned, retry with OCR only when credentials are available or the user explicitly wants OCR.
-5. Pass the generated Markdown to downstream structure/semantic skills. Treat YAML front matter as provenance metadata, not source assertions.
+2. Use this wrapper only when the native parser is unavailable or produced sparse/failed extraction. Install the base package or the one required extra; never install `markitdown[all]` for the normal script path.
+3. Run `../../../.venv/bin/python3 scripts/convert.py <input>` from this skill directory, or invoke the script by its absolute skill path with the same interpreter.
+4. For a directory, add `--recursive` only when nested folders should be included.
+5. Inspect stderr warnings. If a PDF or Office file yields empty or unusually sparse text and is image-heavy/scanned, retry with OCR only when credentials are available or the user explicitly wants OCR.
+6. Pass the generated Markdown to downstream structure/semantic skills. Treat YAML front matter as provenance metadata, not source assertions.
 
 Run `../../../.venv/bin/python3 scripts/convert.py --help` for all flags. Detailed output invariants are in `references/markdown-contract.md`; installation and platform examples are in `references/usage.md`.
 

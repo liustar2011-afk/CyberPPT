@@ -11,7 +11,7 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 
 1. Read [docs/CYBERPPT_WORKFLOW.md](../../../docs/CYBERPPT_WORKFLOW.md) completely enough to identify the task stage, required human stop, authoritative inputs and completion gate.
 2. Read the repository root [AGENTS.md](../../../AGENTS.md) before acting.
-3. For any task involving source materials, Source Truth, or the semantic argument model, invoke `cyberppt-source-foundation` as the mandatory first Stage 01 Skill. For deck planning or page writing/rewriting, invoke `cyberppt-script-workflow` after `project-foundation` has projected a validated Source Truth into `script/foundation.json`.
+3. For ordinary new source-to-script work, use `cyberppt-script-understand` after deterministic source indexing. Invoke `cyberppt-source-foundation` for strict/legacy work involving contracts, regulation, fact-by-fact verification, Source Truth, full semantic models, or old-project migration. For deck planning or page writing/rewriting, invoke `cyberppt-script-workflow` after a validated `script/foundation.json` exists.
 4. For a request to convert an image, screenshot, or rendered visual into an editable PPTX, invoke `cyberppt-stage02-editable-pptx`. It owns the Stage 02 route and forbids direct adapter invocation. For other pure visual, image, SVG or PPTX QA tasks, route to the corresponding Stage 02 or page Skill identified by the overview.
    The aliases “高保真+Quick”, “高保真 Quick”, “无字底图+文字 SVG”,
    “authored SVG”, and “图片转可编辑 PPT” always resolve to
@@ -21,7 +21,9 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 
 ## Route at a glance
 
-`source -> Source Foundation -> business semantics -> project-foundation -> deck plan -> author -> final script -> Stage 02 visual production -> PPTX QA`
+Default: `source index -> foundation -> deck plan -> author -> final script -> Stage 02 visual production -> PPTX QA`
+
+Strict/legacy: `source -> Source Foundation -> business semantics -> project-foundation -> deck plan -> author -> final script -> Stage 02 visual production -> PPTX QA`
 
 Registered Stage 02 assembly routes:
 
@@ -29,7 +31,7 @@ Registered Stage 02 assembly routes:
 - `stage02.picture_ppt` -> `--assembly-mode image`
 - `stage02.dual_delivery` -> `--assembly-mode both`
 
-Formal Stage 01 sequence:
+Strict/legacy Stage 01 sequence:
 
 `cyberppt-source-foundation` -> `business-semantic-understanding` -> `project-foundation` -> `cyberppt-script-workflow` (PLAN/AUTHOR)
 

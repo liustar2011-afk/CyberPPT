@@ -1,0 +1,23 @@
+{
+  "scale": {
+    "1": "fails the page's communication duty",
+    "2": "material weakness; reader must reconstruct intent",
+    "3": "usable with visible editorial weakness",
+    "4": "clear, selective, and defensible",
+    "5": "exceptionally strong for the source and audience"
+  },
+  "deck_plan": [
+    "page_necessity",
+    "core_judgment_strength",
+    "evidence_selection",
+    "narrative_advancement"
+  ],
+  "onscreen": [
+    "silent_reading",
+    "ten_second_comprehension",
+    "density",
+    "repetition",
+    "semantic_completeness"
+  ],
+  "rule": "Content quality requires readable evidence and qualitative scoring; deterministic audit results are reported separately."
+}

@@ -1,13 +1,17 @@
 ---
 name: cyberppt-source-foundation
-description: Mandatory first skill for any CyberPPT task involving source materials, Source Truth, semantic models, Outlines, page plans, source-faithful regeneration, or Outline audit; also use it to validate and reuse an existing project's foundation before compatibility compilation.
+description: Strict/legacy source-foundation route for contracts, regulation, fact-by-fact verification, Source Truth work, full semantic models, and old-project compatibility.
 ---
 
 # CyberPPT Source Foundation
 
 ## Purpose
 
-Use this skill before any CyberPPT task involving source materials, Source Truth, semantic models, Outlines, page plans, or their regeneration/audit. Invocation is mandatory for new and existing projects, including requests phrased as "rerun OUTLINE", "repair Stage 01", or "use legacy Stage 01". For an existing project, first determine whether approved source-foundation outputs can be reused; reuse is valid, but skipping this Skill is not. The compatibility projection is a downstream runtime artifact and never a reason to bypass the source foundation contract.
+Use this Skill for `strict/legacy` projects: contracts, regulation, explicit
+fact-by-fact verification, Source Truth or full semantic-model work, and old
+project migration. New ordinary script projects use `cyberppt-script-understand`
+after deterministic source indexing. For an existing strict project, first
+determine whether approved source-foundation outputs can be reused.
 
 Authoritative chain:
 
@@ -21,7 +25,11 @@ Before acting, read the repository-wide [CyberPPT workflow overview](../../../do
 
 ## Canonical route
 
-The only formal route is `cyberppt-source-foundation` → `business-semantic-understanding` → `project-foundation` → `cyberppt-script-workflow` (PLAN/AUTHOR). Legacy Outline/Handoff implementations are internal compatibility code for old-project migration only; they are not a second user-facing route and must not run over current Source Truth outputs.
+The strict/legacy route is `cyberppt-source-foundation` →
+`business-semantic-understanding` → `project-foundation` →
+`cyberppt-script-workflow` (PLAN/AUTHOR). Legacy Outline/Handoff implementations
+remain internal compatibility code and must not run over current Source Truth
+outputs.
 
 ## Required sequence
 

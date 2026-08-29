@@ -34,6 +34,14 @@ Automatically:
 7. run Critic, rewrite, deterministic audits and delivery validation;
 8. report **最终脚本已生成**.
 
+For new planning work, PLAN writes `deck-plan.json` v2 lean in two passes,
+optionally compares 2–3 source-constrained narrative candidates, and performs a
+whole-plan Critic rewrite before the planning stop. AUTHOR writes the complete
+page argument before selecting onscreen information; high-risk pages compare
+judgment-led and evidence-led candidates and keep only the rewritten winner.
+These are authoring passes inside the existing three authority artifacts. They
+do not create a Content Plan, checkpoint, gate receipt or review manifest.
+
 ### AUTHOR execution model
 
 `AUTHOR` is a generative agent stage. It is not a deterministic transformation

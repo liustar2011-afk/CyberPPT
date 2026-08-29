@@ -163,22 +163,6 @@ def test_author_passes_when_every_full_copy_unit_is_expressed() -> None:
     assert not any("FULL_COPY_SEMANTIC_UNIT_GAP" in issue for issue in issues)
 
 
-def test_author_requires_authored_protected_terms_without_copying_internal_status_labels() -> None:
-    foundation = _foundation()
-    foundation["facts"][0]["status"] = "现状"
-    foundation["facts"][0]["semantic_units"][0]["protected_terms"] = ["全面实施阶段"]
-    page = _page()
-    final = _final(
-        "国家数据基础设施建设已经推进。明确总体架构和数据全生命周期要求。"
-        "形成六项配套技术文件为行业建设提供统一依据。"
-    )
-
-    issues, _ = audit_final_script(final, _plan(page), foundation)
-
-    assert not any("FULL_COPY_STATUS_STRENGTH_LOST" in issue for issue in issues)
-    assert any("FULL_COPY_PROTECTED_TERM_LOST" in issue for issue in issues)
-
-
 def test_author_flags_onscreen_detail_insufficient_for_declared_onscreen_unit() -> None:
     page = _page()
     page["source_consumption"]["unit_dispositions"][0]["disposition"] = "onscreen"

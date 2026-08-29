@@ -35,6 +35,42 @@ def test_cli_validate_final_fails_on_broken_payload(tmp_path, capsys) -> None:
     assert out["issues"]
 
 
+def test_cli_trace_composed_reports_priorities_and_blocks_source_absent_number(
+    tmp_path, capsys
+) -> None:
+    foundation = {
+        "facts": [{"id": "F1", "statement": "平台覆盖600家主体", "source_refs": ["S1"]}],
+        "concepts": [],
+        "relations": [],
+        "arguments": [],
+    }
+    final = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "title": "平台覆盖700家主体",
+                "mission": "说明覆盖目标",
+                "core_message": "平台覆盖700家主体",
+                "onscreen": [{"heading": "平台覆盖700家主体"}],
+                "source_refs": ["S1"],
+            }
+        ]
+    }
+    final_path = tmp_path / "final.json"
+    foundation_path = tmp_path / "foundation.json"
+    final_path.write_text(json.dumps(final, ensure_ascii=False), encoding="utf-8")
+    foundation_path.write_text(json.dumps(foundation, ensure_ascii=False), encoding="utf-8")
+
+    exit_code = main(["trace-composed", str(final_path), str(foundation_path)])
+    out = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 1
+    assert out["status"] == "failed"
+    assert out["hard_findings"][0]["absent_numbers"] == ["700"]
+    assert out["critic_priorities"][0]["page_id"] == "P01"
+
+
 def test_cli_render_stage02_writes_output_file(tmp_path, capsys) -> None:
     input_path = ROOT / "examples" / "final-script.example.json"
     output_path = tmp_path / "nested" / "final-script.md"

@@ -2,11 +2,23 @@
 from __future__ import annotations
 
 from .common import *
+from script_engine.narrative_arc import review_narrative_design
+from script_engine.plan_quality import plan_critic_priorities
+from script_engine.contracts import is_lean_deck_plan
+from script_engine.source_arguments import (
+    argument_source_refs,
+    source_argument_index,
+    source_argument_method,
+)
 
 
 _STRUCTURAL_PAGE_ROLES = frozenset(
     {"cover", "agenda", "contents", "chapter", "transition", "ending", "closing"}
 )
+
+
+def _is_lean_plan(plan: dict[str, Any]) -> bool:
+    return is_lean_deck_plan(plan)
 
 
 def _narrative_text(value: object) -> str:
@@ -183,16 +195,8 @@ def _source_argument_binding_issues(
             "SOURCE_ARGUMENT_THESIS_DRIFT: plan.source_thesis must exactly copy foundation.document_thesis.statement"
         )
 
-    node_index = {
-        _narrative_text(node.get("id")): node
-        for node in nodes
-        if _narrative_text(node.get("id"))
-    }
-    expected_method = [
-        _narrative_text(node_id)
-        for node_id in semantics.get("argument_method") or []
-        if _narrative_text(node_id)
-    ]
+    node_index = source_argument_index(foundation)
+    expected_method = source_argument_method(foundation)
     actual_method = [
         _narrative_text(node_id)
         for node_id in plan.get("source_argument_method") or []
@@ -231,15 +235,17 @@ def _source_argument_binding_issues(
         chapter_id = _narrative_text(page.get("chapter_id"))
         page_nodes_by_chapter.setdefault(chapter_id, set()).update(selected)
         page_refs = set(_page_evidence_ids(page))
+        if _is_lean_plan(plan):
+            page_refs.update(
+                _narrative_text(ref)
+                for ref in page.get("source_refs") or []
+                if _narrative_text(ref)
+            )
         for node_id in selected:
             node = node_index.get(node_id)
             if node is None:
                 continue
-            node_refs = {
-                _narrative_text(ref)
-                for ref in node.get("source_refs") or []
-                if _narrative_text(ref)
-            }
+            node_refs = argument_source_refs([node_id], node_index)
             if node_refs and page_refs.isdisjoint(node_refs):
                 issues.append(
                     f"pages.{index} ({page_id}): SOURCE_ARGUMENT_EVIDENCE_DISCONNECTED: {node_id} has no evidence overlap with the page"
@@ -427,7 +433,75 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
     issues.extend(narrative_issues)
     warnings.extend(narrative_warnings)
     issues.extend(_source_argument_binding_issues(plan, foundation))
+    lean_plan = _is_lean_plan(plan)
+    if lean_plan:
+        narrative_review = review_narrative_design(plan.get("narrative_design"))
+        issues.extend(narrative_review["issues"])
+        warnings.extend(
+            f"{finding['code']}: {finding['page_id']}: {finding['reason']}"
+            for finding in plan_critic_priorities(plan)
+        )
     items = foundation_items_by_id(foundation)
+    source_assets = {
+        str(asset.get("id")): asset
+        for asset in foundation.get("source_assets") or []
+        if isinstance(asset, dict) and asset.get("id")
+    }
+    argument_nodes = {
+        str(node.get("id")): node
+        for node in foundation.get("argument_nodes") or []
+        if isinstance(node, dict) and node.get("id")
+    }
+    peak_page_id = str((plan.get("narrative_design") or {}).get("peak_page_id") or "")
+    if lean_plan:
+        design = plan.get("narrative_design") or {}
+        node_index = source_argument_index(foundation)
+        method_nodes = set(source_argument_method(foundation))
+        if isinstance(design, dict):
+            for candidate in design.get("candidates") or []:
+                if not isinstance(candidate, dict):
+                    continue
+                candidate_id = str(candidate.get("id") or "?")
+                focus = {
+                    str(value).strip()
+                    for value in candidate.get("argument_focus_node_ids") or []
+                    if str(value).strip()
+                }
+                evidence_refs = {
+                    str(value).strip()
+                    for value in candidate.get("evidence_refs") or []
+                    if str(value).strip()
+                }
+                unknown_focus = sorted(focus - method_nodes)
+                if unknown_focus:
+                    issues.append(
+                        f"NARRATIVE_ARGUMENT_FOCUS_UNKNOWN: {candidate_id} uses {unknown_focus} outside source_argument_method"
+                    )
+                expected_refs = argument_source_refs(focus, node_index)
+                if expected_refs and evidence_refs.isdisjoint(expected_refs):
+                    issues.append(
+                        f"NARRATIVE_EVIDENCE_DISCONNECTED: {candidate_id} evidence does not intersect its argument focus"
+                    )
+                unknown_evidence = sorted(evidence_refs - set(items))
+                if unknown_evidence:
+                    issues.append(
+                        f"NARRATIVE_EVIDENCE_UNKNOWN: {candidate_id} uses {unknown_evidence}"
+                    )
+            peak_page_id = str(design.get("peak_page_id") or "").strip()
+            no_peak_reason = str(design.get("no_single_peak_reason") or "").strip()
+            page_index = {
+                str(page.get("id") or "").strip(): page
+                for page in plan.get("pages") or []
+                if isinstance(page, dict) and str(page.get("id") or "").strip()
+            }
+            if peak_page_id:
+                peak = page_index.get(peak_page_id)
+                if peak is None:
+                    issues.append(f"NARRATIVE_PEAK_PAGE_UNKNOWN: {peak_page_id}")
+                elif not (_page_evidence_ids(peak) or peak.get("source_refs")):
+                    issues.append(f"NARRATIVE_PEAK_PAGE_WITHOUT_EVIDENCE: {peak_page_id}")
+            elif not no_peak_reason:
+                issues.append("NARRATIVE_PEAK_UNRESOLVED: provide peak_page_id or no_single_peak_reason")
     structure = [x for x in (foundation.get("source_structure") or []) if isinstance(x, dict)]
     source_chapters = [
         x.get("id")
@@ -458,7 +532,7 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
 
     audience_scope = plan.get("audience_scope", "unspecified")
     strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
-    if not strict_evidence_fit:
+    if not lean_plan and not strict_evidence_fit:
         issues.append(
             "evidence_fit_review_mode: strict is required before PLAN can enter AUTHOR"
         )
@@ -470,20 +544,82 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
             issues.append(f"pages.{index} ({page_id}): {route_issue}")
         for coverage_issue in _audit_content_coverage_definition(page):
             issues.append(f"pages.{index} ({page_id}): {coverage_issue}")
-        for readiness_issue in audit_stage02_readiness(page):
-            issues.append(f"pages.{index} ({page_id}): {readiness_issue}")
+        if not lean_plan:
+            for readiness_issue in audit_stage02_readiness(page):
+                issues.append(f"pages.{index} ({page_id}): {readiness_issue}")
         for composition_issue in _audit_onscreen_composition_definition(page):
             issues.append(f"pages.{index} ({page_id}): {composition_issue}")
         for contract_issue in _audit_onscreen_contract_definition(page, items):
             issues.append(f"pages.{index} ({page_id}): {contract_issue}")
         for relation_issue in _primary_relation_issues(page):
             issues.append(f"pages.{index} ({page_id}): {relation_issue}")
-        for consumption_issue in _audit_source_consumption_definition(page, items, foundation):
-            issues.append(f"pages.{index} ({page_id}): {consumption_issue}")
-        for unit_issue in _audit_unit_consumption_definition(page, items, foundation):
-            issues.append(f"pages.{index} ({page_id}): {unit_issue}")
-        for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
-            issues.append(f"pages.{index} ({page_id}): {review_issue}")
+        if not lean_plan:
+            for consumption_issue in _audit_source_consumption_definition(page, items, foundation):
+                issues.append(f"pages.{index} ({page_id}): {consumption_issue}")
+            for unit_issue in _audit_unit_consumption_definition(page, items, foundation):
+                issues.append(f"pages.{index} ({page_id}): {unit_issue}")
+            for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
+                issues.append(f"pages.{index} ({page_id}): {review_issue}")
+        elif isinstance(page.get("source_consumption"), dict):
+            omissions = page["source_consumption"].get("intentional_omissions") or []
+            for omission_index, omission in enumerate(omissions):
+                if not isinstance(omission, dict) or not str(omission.get("reason") or "").strip():
+                    issues.append(
+                        f"pages.{index} ({page_id}).source_consumption.intentional_omissions[{omission_index}]: reason is required"
+                    )
+
+        structural_role = str(page.get("page_role") or page.get("page_type") or "").strip()
+        if lean_plan and structural_role not in _STRUCTURAL_PAGE_ROLES:
+            if plan.get("delivery_mode") == "presented" and not str(page.get("spoken_thread") or "").strip():
+                issues.append(f"pages.{index} ({page_id}): LEAN_SPOKEN_THREAD_MISSING")
+            visual = page.get("visual_evidence")
+            if isinstance(visual, dict) and visual.get("kind") != "none":
+                ref = str(visual.get("ref") or "").strip()
+                if not ref or (ref not in items and ref not in source_assets):
+                    issues.append(
+                        f"pages.{index} ({page_id}): LEAN_VISUAL_EVIDENCE_REF_UNKNOWN: {ref or '<missing>'}"
+                    )
+                if visual.get("kind") == "asset" and ref in source_assets:
+                    asset = source_assets[ref]
+                    if not str(visual.get("carrying_element") or "").strip():
+                        issues.append(
+                            f"pages.{index} ({page_id}): SOURCE_ASSET_CARRYING_ELEMENT_MISSING: {ref}"
+                        )
+                    node_ids = {
+                        str(value) for value in asset.get("argument_node_ids") or [] if str(value)
+                    }
+                    if not node_ids:
+                        issues.append(
+                            f"pages.{index} ({page_id}): SOURCE_ASSET_ARGUMENT_BINDING_MISSING: {ref}"
+                        )
+                    unknown_nodes = sorted(node_ids - set(argument_nodes))
+                    if unknown_nodes:
+                        issues.append(
+                            f"pages.{index} ({page_id}): SOURCE_ASSET_ARGUMENT_NODE_UNKNOWN: {ref} uses {unknown_nodes}"
+                        )
+                    asset_refs = {
+                        str(value) for value in asset.get("source_unit_refs") or [] if str(value)
+                    }
+                    if node_ids and not any(
+                        asset_refs
+                        & {
+                            str(value)
+                            for value in (argument_nodes.get(node_id) or {}).get("source_refs") or []
+                            if str(value)
+                        }
+                        for node_id in node_ids
+                    ):
+                        issues.append(
+                            f"pages.{index} ({page_id}): SOURCE_ASSET_ARGUMENT_EVIDENCE_DISCONNECTED: {ref}"
+                        )
+                    if not str(asset.get("wrong_reading") or "").strip():
+                        message = (
+                            f"pages.{index} ({page_id}): SOURCE_ASSET_WRONG_READING_MISSING: {ref}"
+                        )
+                        if str(page_id) == peak_page_id or asset.get("presentation_role") == "money_slide":
+                            issues.append(message)
+                        else:
+                            warnings.append(message)
         scope = page.get("source_scope") or []
         chapters = _scope_chapters(scope)
         operation = page.get("structural_operation")
@@ -517,4 +653,4 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
 
     return issues, warnings
 
-__all__ = ['_adjacent_plan_duplication_warnings', '_narrative_contract_diagnostics', '_source_argument_binding_issues', '_scope_chapters', '_audit_content_coverage_definition', '_audit_onscreen_contract_definition', '_primary_relation_issues', 'audit_deck_plan']
+__all__ = ['_adjacent_plan_duplication_warnings', '_is_lean_plan', '_narrative_contract_diagnostics', '_source_argument_binding_issues', '_scope_chapters', '_audit_content_coverage_definition', '_audit_onscreen_contract_definition', '_primary_relation_issues', 'audit_deck_plan']

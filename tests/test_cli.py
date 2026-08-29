@@ -44,6 +44,8 @@ class CliTests(unittest.TestCase):
         self.assertIn("source-truth-audit", help_text)
         self.assertIn("project-foundation", help_text)
         self.assertIn("prepare-source-map", help_text)
+        self.assertIn("prepare-source-context", help_text)
+        self.assertIn("prepare-script-foundation", help_text)
         self.assertIn("source-map-check", help_text)
         self.assertIn("prepare-semantic-understanding", help_text)
         self.assertIn("semantic-check", help_text)
@@ -179,6 +181,31 @@ class CliTests(unittest.TestCase):
                 (project / "workbench/stages/00-source-map/source-units.jsonl").is_file()
             )
             self.assertIn('"status": "passed"', buffer.getvalue())
+
+    def test_script_profile_commands_build_one_cache_then_print_foundation_task(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "project"
+            (project / "source").mkdir(parents=True)
+            (project / "source/material.md").write_text(
+                "# 总体判断\n来源证据。\n", encoding="utf-8"
+            )
+            context_output = io.StringIO()
+            with redirect_stdout(context_output):
+                context_code = main(["prepare-source-context", str(project)])
+
+            report = json.loads(context_output.getvalue())
+            self.assertEqual(0, context_code)
+            self.assertEqual("cyberppt.source_index.v2", report["schema"])
+            self.assertTrue((project / "script/.cache/source-index.json").is_file())
+            self.assertFalse((project / "workbench/stages/00-source-map").exists())
+
+            task_output = io.StringIO()
+            with redirect_stdout(task_output):
+                task_code = main(["prepare-script-foundation", str(project)])
+
+            self.assertEqual(0, task_code)
+            self.assertIn("Foundation authoring task", task_output.getvalue())
+            self.assertIn("来源证据", task_output.getvalue())
 
     def test_final_script_pages_requires_stage02_handoff_before_generation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

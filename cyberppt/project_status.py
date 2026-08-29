@@ -20,6 +20,7 @@ from script_engine.contracts import (
 )
 from script_engine.delivery_cleanliness import check_delivery_cleanliness
 from script_engine.render import render_stage02_markdown
+from script_engine.source_index import validate_script_foundation_against_index
 
 
 STYLE_LOCK = Path("workbench/locks/visual_style_lock.json")
@@ -71,6 +72,7 @@ def _stage01(project: Path) -> list[dict[str, Any]]:
     foundation_path = project / "script/foundation.json"
     plan_path = project / "script/deck-plan.json"
     final_path = project / "script/dist/final-script.json"
+    source_index_path = project / "script/.cache/source-index.json"
 
     if not foundation_path.is_file():
         return stages + [_stage("foundation", "pending", path=str(foundation_path))]
@@ -79,6 +81,11 @@ def _stage01(project: Path) -> list[dict[str, Any]]:
         issues = validate_foundation(foundation)
         semantic_issues, semantic_warnings = audit_foundation_analysis(foundation)
         issues = [*issues, *semantic_issues]
+        if source_index_path.is_file():
+            source_index = _read_json(source_index_path)
+            if source_index.get("schema") == "cyberppt.source_index.v2":
+                issues.extend(validate_script_foundation_against_index(foundation, source_index))
+                issues = list(dict.fromkeys(issues))
         stages.append(_stage("foundation", "failed" if issues else "passed", path=str(foundation_path), issues=issues, warnings=semantic_warnings))
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         return stages + [_stage("foundation", "failed", path=str(foundation_path), issues=[str(exc)])]

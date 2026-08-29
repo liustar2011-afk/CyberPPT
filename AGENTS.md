@@ -15,7 +15,7 @@
 
 - 处理任何 CyberPPT 源材料、Source Truth、语义模型、脚本规划、页面脚本或视觉生产任务，先阅读 [docs/CYBERPPT_WORKFLOW.md](docs/CYBERPPT_WORKFLOW.md)。该文件是全流程总览和检索入口。
 - `AGENTS.md` 负责仓库级硬约束；各 `.agents/skills/*/SKILL.md` 负责阶段细则。不要通过拼接多个 Skill 的局部说明自行重建主流程。
-- 源材料理解（Word/OCR 解析、章节结构、语义论点模型）第一入口固定为 `.agents/skills/cyberppt-source-foundation/SKILL.md`，产出 `source-truth.json`；脚本规划与写作（Foundation 投影、Deck Plan、整份脚本写作、Critic、交付）第一入口固定为 `.agents/skills/cyberppt-script-workflow/SKILL.md`；纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
+- 新脚本项目默认使用 `script` profile：`prepare-source-context` → `prepare-script-foundation --profile script` → `.agents/skills/cyberppt-script-understand/SKILL.md` → `foundation.json` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。合同、监管、逐事实核验、用户明确要求完整知识建模或旧项目迁移使用 `strict/legacy` profile，并从 `.agents/skills/cyberppt-source-foundation/SKILL.md` 进入完整 Source Truth 路线；纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
 - 对任何“图转可编辑 PPT”“按图复刻 PPT”“图片/截图转 PPTX”请求，必须调用 `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md`，并通过 `python -m cyberppt final-script-pages --production-build` 进入生产。禁止手写最终脚本或 `page_image_pairs.json` 后直调 `scripts.image_to_pptx_runtime.stage02_adapter.run_stage02_reconstruction`；该 adapter 只消费正式编排产生且仍有效的 build context。
 
 ## 独立技术判断（硬规则）
@@ -31,9 +31,9 @@
 
 Stage 01 分两段，各有唯一权威路线，之间用一次机械投影衔接：
 
-**理解段（UNDERSTAND，保留原有能力）**：源材料读取、OCR、章节结构解析、语义论点建模仍由 `cyberppt-source-foundation` → `business-semantic-understanding` 负责，产出仓库既有的 `source-truth.json`。这条链路解析准确、已经过实测验证，不因为下游写作流程调整而更换或重写。
+**理解段（UNDERSTAND）**：默认 `script` profile 保留来源身份、哈希、标题结构、稳定 source units、来源主论点、论证顺序、关键事实、数字、责任、状态、条件和边界，直接写入 `script/foundation.json`。`strict/legacy` profile 继续由 `cyberppt-source-foundation` → `business-semantic-understanding` 产出 `source-truth.json`，随后机械投影 Foundation。
 
-**规划与写作段（PLAN/AUTHOR，vendored from CyberPPT-Script）**：`source-truth.json` 通过 `python -m cyberppt project-foundation <project>` 机械投影为 `script/foundation.json`（只做字段搬运，不重新分析），随后走 `.agents/skills/cyberppt-script-workflow/SKILL.md` 编排的 `UNDERSTAND -> PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER` 流程，产出 `script/deck-plan.json` 和 `script/dist/final-script.md`。
+**规划与写作段（PLAN/AUTHOR）**：两种 profile 均从 `script/foundation.json` 进入 `.agents/skills/cyberppt-script-workflow/SKILL.md` 编排的 `PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER`，产出 `script/deck-plan.json` 和 `script/dist/final-script.md`。strict/legacy 的 `project-foundation` 只做字段搬运，不重新分析。
 
 Stage 01 的脚本规划与写作段只有三个权威内容产物（vendored engine's own AGENTS.md: "Only these are authoritative content artifacts"）：
 

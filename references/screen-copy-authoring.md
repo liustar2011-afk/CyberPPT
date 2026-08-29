@@ -15,30 +15,28 @@ Use this order:
 
 Do not start by compressing source paragraphs into short labels. Premature compression is a major cause of generic, repetitive PPT copy.
 
-### Mandatory author pass
+### Page rewrite loop
 
-Onscreen copy is an editorial selection from the complete page argument. Before
-writing any visible line, perform these five actions in order:
+Onscreen copy is an editorial selection from the complete page argument. Use
+this loop:
 
-1. **Understand** — read the page question, approved message, argument chain,
-   full copy, selected `onscreen_refs`, module questions and source boundaries.
-2. **Select** — state internally what a silent reader must understand after the
-   page, then retain only the facts, distinctions, conditions and results that
-   directly establish that understanding. Source details that are fully
-   consumed in `full_copy` do not gain equal visual weight by default.
-3. **Organize** — choose modules from the real relationship among the retained
-   meanings: sequence, causality, hierarchy, comparison, actor responsibility,
-   transformation, taxonomy, boundary, or evidence-to-conclusion. Source
-   paragraph adjacency and bullet count do not establish a visible group.
-4. **Write** — make every visible module or detail communicate a self-contained
-   semantic payload in its parent context. Preserve the business object or
-   actor, action or state, and the material result, role, condition or boundary.
-5. **Read silently** — assume that the presenter says nothing. Rewrite when the
-   reader must recover a missing subject, action, result, relationship or
-   qualification from the manuscript or speaker notes.
+1. finish the page argument and proof chain;
+2. select the minimum sufficient visible propositions and evidence;
+3. for dense, money, conclusion or Critic-priority pages, write one
+   judgment-led candidate and one evidence-led candidate;
+4. compare main-judgment visibility, ten-second comprehension, density,
+   repetition, relation visibility and semantic completeness;
+5. rewrite the whole information organization when the preferred candidate is
+   still weak.
 
-This pass is an AUTHOR responsibility, not a new artifact or authority. Keep
-the selection reasoning internal and deliver only the repaired script.
+Choose modules from the real relationship among retained meanings. Preserve the
+business object or actor, action or state, and the material result, role,
+condition or boundary. Source paragraph adjacency and bullet count do not
+establish a visible group.
+
+This loop is an AUTHOR responsibility, not a new artifact or authority. Keep
+candidate copy and selection reasoning internal and deliver only the repaired
+script.
 
 ### Visible-payload test
 
@@ -210,8 +208,8 @@ When a page has an `onscreen_contract`, declare `expression_mode` as:
   propositions with compact supporting evidence;
 - `sentence_led` for judgments, problem responses, mechanisms, and boundary explanations;
 - `phrase_led` only for a genuine taxonomy, metric set, object inventory, exact
-  source-label set or short sequence. Declare the matching `phrase_led_basis`;
-  a sequence relation by itself does not justify phrase-only writing.
+  source-label set or short sequence; a sequence relation by itself does not
+  justify phrase-only writing.
 
 Under `mixed`, use a complete source-grounded proposition for a permitted module
 lead when it improves independent reading, then use compact clauses or phrases for

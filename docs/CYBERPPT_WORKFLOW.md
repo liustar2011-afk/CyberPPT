@@ -8,10 +8,11 @@
 
 收到任务后，先按任务类型选择入口：
 
-1. 涉及源材料、Source Truth、语义模型、Outline、page plan、源材料重跑或 Outline 审计：先阅读并调用 `cyberppt-source-foundation`。
-2. 只涉及已锁定最终脚本的单页写作：进入 `cyberppt-write-single-page`。
-3. 只涉及视觉结构、图片、SVG、ImageGen 或 PPTX QA：可以从对应 Stage 02 Skill 开始，不重复建立 Source Foundation。
-4. 涉及旧项目但已有已验证 Foundation 产物：先核对产物状态，再复用；不得因为项目已存在而跳过 `cyberppt-source-foundation`。
+1. 新脚本项目涉及源材料、页面规划或脚本写作：使用 `script` profile，先建立确定性来源索引，再调用 `cyberppt-script-understand` 生成 `foundation.json`。
+2. 涉及合同/监管逐事实核验、Source Truth、完整语义模型或旧项目迁移：使用 `strict/legacy` profile，先调用 `cyberppt-source-foundation`。
+3. 只涉及已锁定最终脚本的单页写作：进入 `cyberppt-write-single-page`。
+4. 只涉及视觉结构、图片、SVG、ImageGen 或 PPTX QA：可以从对应 Stage 02 Skill 开始，不重复建立 Source Foundation。
+5. 涉及旧项目但已有已验证 Foundation 产物：先核对产物状态，再复用；不得因项目已存在而跳过 profile 与产物有效性检查。
 
 正式项目默认使用单人轻量流程。除非用户明确提供 `autonomous_lightweight` 任务合同，不使用自主运行例外。
 
@@ -19,7 +20,9 @@
 
 ### Stage 01
 
-`cyberppt-source-foundation` → `business-semantic-understanding` → `project-foundation` → `cyberppt-script-workflow`（PLAN/AUTHOR）
+默认：`来源索引 → cyberppt-script-understand → cyberppt-script-workflow（PLAN/AUTHOR）`
+
+严格/兼容：`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow（PLAN/AUTHOR）`
 
 ### 全流程
 
@@ -29,7 +32,33 @@
 
 ## 三、Stage 01 详细步骤
 
-### 1. 建立 Source Foundation
+### 1. 建立脚本 Foundation
+
+默认 `script` profile 只建立 `script/.cache/source-index.json` 和
+`script/foundation.json`。来源转换采用直接解析优先、按格式回退；OCR 显式启用。
+
+执行入口：
+
+```bash
+.venv/bin/python3 -m cyberppt prepare-source-context <project>
+.venv/bin/python3 -m cyberppt prepare-script-foundation <project> --profile script
+```
+
+`prepare-source-context` 原生提取 DOCX、文本、PPTX 及安装了可选
+`openpyxl` 时的 XLSX，统一保留来源哈希、标题结构和稳定 source units。
+需要原生 XLSX 提取时安装 `openpyxl>=3.1,<4`；未安装时保留二进制来源登记并
+给出明确警告，不静默丢弃工作表。
+读取规模不超过 45 页且估算不超过 60,000 tokens 时使用 direct；超过任一
+阈值时进入 long。long 保留全部标题和 source units，模型上下文先展示完整
+论点骨架、mapped 预览与关键单元 deep read；精确数字、日期、责任、状态、
+条件和边界只能由 deep-read 单元支撑。
+
+`prepare-script-foundation` 输出 authoring task，由 UNDERSTAND 直接写入现有
+`script/foundation.json`。任务不会生成 Source Truth、完整语义 sidecar 或新增
+内容权威。Foundation 完成后，`audit-foundation` 会将 `reading_strategy` 与同级
+`.cache/source-index.json` 交叉校验。
+
+`strict/legacy` profile 保留以下完整 Source Foundation 产物：
 
 输入源材料，运行源材料解析和语义准备，建立：
 
@@ -41,7 +70,8 @@
 - `argument-chain.json`
 - `semantic-report.json`
 
-主责 Skill：`cyberppt-source-foundation`、`business-semantic-understanding`。
+主责 Skill：默认 `cyberppt-script-understand`；严格/兼容为
+`cyberppt-source-foundation`、`business-semantic-understanding`。
 
 ### 2. 形成业务语义理解
 
@@ -55,7 +85,7 @@
 
 交流目标中的受众、场景和行动要求，只有得到源材料直接支持时，才可以升级为源事实、源判断或页面结论。
 
-### 4. 投影 Script Foundation
+### 4. 投影 strict/legacy Script Foundation
 
 语义模型验证通过后，运行 `.venv/bin/python3 -m cyberppt project-foundation <project>`，将 Source Truth 机械投影到脚本引擎的 `script/foundation.json`。该步骤只搬运已确认字段，不重新分析源材料。
 
@@ -67,7 +97,7 @@
 
 ### 5. 规划与编写脚本
 
-依据已确认的交流目标和 `script/foundation.json`，按 `cyberppt-script-workflow` 的 `UNDERSTAND → PLAN → AUTHOR → CRITIQUE → REWRITE → DELIVER` 路线形成：
+依据已确认的交流目标和 `script/foundation.json`，按 `cyberppt-script-workflow` 的 `PLAN → AUTHOR → CRITIQUE → REWRITE → DELIVER` 路线形成：
 
 - `script/deck-plan.json`
 - `script/dist/final-script.md`
@@ -84,6 +114,18 @@
 - 后续保留内容
 - 拆页风险
 - 前后页衔接
+
+生产默认暂时保留 Deck Plan v1 strict。受控验证项目可显式使用 Deck Plan
+v2 lean；复杂汇报在同一 `deck-plan.json` 内生成 2–3 个来源约束的叙事候选，
+短稿、目录型材料和用户已锁定结构使用 direct 模式。PLAN 先写全稿论证
+脊柱和页面必要性，再写页面内容简报，随后由 Plan Critic 读取整份计划并
+重写弱页及受影响承接。
+
+v2 生产默认切换由 `benchmarks/run.py` 统一报告。五类合成/合同 fixture 只
+证明尺寸路由和能力边界；三个独立真实项目、同材料 script/strict 双跑、
+15%–30% long 深读选区人工认可和四维独立盲评均须提供实际证据。任一条件
+缺失时保持 v1 默认，v2 继续作为受控验证路径。验证报告为派生 QA 文档，
+不构成新的内容权威。
 
 主责 Skill：`cyberppt-script-workflow`。
 
@@ -103,17 +145,28 @@
 6. 视觉语法
 7. 演讲者备注
 
+上屏写作执行“完整页面论证 → 上屏信息选择 → 候选表达 → 定性评审 →
+整页重写”。高密度页、高潮页、结论页和 Critic 重点页生成判断主导与
+证据主导两个内部候选，只保留胜出结果。候选和评审理由不形成新增权威
+产物、checkpoint、gate 或 receipt。
+
 写作前运行 `page-preflight --page <page_id>`，读取本页的锚点策略、短语上限和语义拓扑。required 模式必须达到 `contract_status: ready`；门禁依据显式主链、卫星、边界、分组、同级集合、禁止合并边和可见性预算生成写作约束。每页完成后运行 `page-lint --page <page_id>`；状态分为 `passed`、`passed_with_warnings` 和 `rewrite_required`，后者阻断提交。`page-lint` 复用 `script-audit` 的页面规则，跨页关系和最终全稿格式继续在第 8 步统一确认。
 
 上屏文字的分组与结构化压缩由 Stage 01 完成。内部汇报的内容页可在 Deck Plan 中声明可选 `content_route`：`state`、`diagnosis`、`system`、`action` 或 `source_native`，并以 `background`、`current`、`progress`、`comparison`、`risk`、`boundary`、`coordination`、`next_step` 等侧面细化。它只提供作者化组织提示，不增加页面类型，不替代 `argument_role` 的论证权限，也不替代 `page_logic_contract` 的命题、节点和关系约束。作者按“结论 → 证据 → 解读 → 含义 → 来源”组织页面：含义必须表现为有来源依据的内部影响、关注点、工作要求、协同事项、风险提示或后续安排；来源保留在可追溯字段中，不写成上屏模块。路由不明确时使用 `source_native`，不得仅凭标题关键词猜测。
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
-所有 Deck Plan 必须声明 `evidence_fit_review_mode: strict`，仓库不保留旧计划兼容通道。每个有证据支撑的页面判断和每个有 `evidence_refs` 的上屏模块，都在原 `deck-plan.json` 内填写结构化 `evidence_fit_review`：逐条记录来源适配关系、来源角色、判断理由和当前结论。页面级间接支撑仅在 `relation_basis: inferred` 时允许；模块子项必须直接回答模块问题。缺少严格模式、出现 `topic_only`、`no`、`uncertain`，或仍处于待改名、移动、拆分、剔除状态时，均阻断 AUTHOR。该字段属于 Deck Plan 内部契约，不新增第四个权威产物。`counter_case`（最强反例）为可选字段，不参与机器校验——自由文本的"反例强度"本来就无法被脚本验证，强制要求只增加撰写成本，不增加实际质检能力；判断改变时可以写，不写也不阻断。
+v1 strict Deck Plan 声明 `evidence_fit_review_mode: strict`，并在原
+`deck-plan.json` 内保留结构化 `evidence_fit_review`。v2 lean 对常规直接
+证据执行引用解析与来源论点相交检查；间接证据、推断关系和例外风险
+才要求人工说明。两种合同均不新增第四个权威产物。
 
 Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成只读 Markdown 页面判断带，连续展示标题、核心判断、页面职责、证据状态、来源适配质询和前后页承接。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
 
-当 Foundation 声明 `source_consumption_policy: required` 时，每个带 `source_refs` 的内容页必须在原 `deck-plan.json` 内声明 `source_consumption.mode: strict`。封面、目录、章节和结束页豁免，`agenda/contents`、`ending/closing` 使用同一公共角色归一化判定。每条未归入 `detail_refs` 或具体理由删减项的来源，都要从对应 Foundation 的 `statement`、`semantic_units[].text` 或 `coverage_anchors` 中选择 `full_prose_anchors`；严格内容页还要选择至少一条 `onscreen_refs` 并映射到上屏模块。完整稿消费全部应保留来源，上屏层只消费 PLAN 选定的代表性子集。`review-plan` 同步展示完整稿来源、追溯详情、删减理由、代表性上屏来源和保护锚点。
+v1 strict Foundation 的 `source_consumption_policy: required` 继续要求
+逐记录/逐单元来源消费合同。v2 lean 只记录有理由省略、留后、仅追溯、
+推断或外部补充等例外；完整稿与上屏选择由 AUTHOR 在批准来源边界内
+完成，机器审计继续检查引用、数字、责任、状态、条件与边界。
 
 AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态和分类层级。上屏审计验证代表来源的模块映射和可见特征。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
@@ -245,13 +298,19 @@ PPTX 组装支持三个正式分支：`editable` 为默认输出，`image` 输�
 
 ## 六、权威产物与边界
 
-### Source Foundation 权威产物
+### 默认 script profile
+
+`script/foundation.json` 是统一语义 Foundation；
+`script/.cache/source-index.json` 是唯一来源派生索引。
+
+### Strict/legacy Source Foundation 权威产物
 
 `normalized-facts.json`、`concept-base.json`、`relation-graph.json`、`argument-chain.json`、`deck-brief.json` 和 `page-plan.json` 是上游权威输入。
 
 ### CyberPPT 投影产物
 
-`semantic-argument-model.json`、`source-truth.json` 和 `outline.json` 是下游兼容投影，不得反向成为第二套语义权威。
+`semantic-argument-model.json`、`source-truth.json` 和 `outline.json` 是
+strict/legacy 下游兼容投影，不得反向成为第二套语义权威。
 
 ### 页面脚本权威
 
@@ -270,9 +329,9 @@ PPTX 组装支持三个正式分支：`editable` 为默认输出，`image` 输�
 
 只有同时满足以下条件，才能对外称为完成：
 
-1. Source Foundation 和语义验证通过。
-2. Outline 已完成作者化、审计和人工提纲停点。
-3. Handoff 投影验证通过。
+1. 当前 profile 的 Foundation 和语义验证通过；strict/legacy 另需 Source Truth 验证通过。
+2. Deck Plan 已完成两次 PLAN 写作、Critic 重写、确定性审计和人工规划停点。
+3. AUTHOR 已完成整页上屏重写闭环并通过 Final Script 审计。
 4. Stage 02 已建立当前脚本绑定的 handoff，脚本可以来自本项目或外部路径。
 5. 风格已由用户确认，并生成有效的 JSON 风格锁。
 6. 视觉结构审计和实际提示词检查通过。

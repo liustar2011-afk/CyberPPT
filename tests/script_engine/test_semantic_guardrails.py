@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script, audit_foundation_analysis
+from script_engine.analysis_audits.composed_trace import critic_priorities, trace_composed
 from script_engine.contracts import validate_deck_plan
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -296,22 +297,6 @@ def test_strict_evidence_fit_review_accepts_source_bound_page_and_module_reviews
     assert issues == []
 
 
-def test_strict_evidence_fit_review_rejects_tautological_reasons() -> None:
-    foundation, plan = _strict_evidence_fit_fixture()
-    page = plan["pages"][0]
-    page["evidence_fit_review"]["items"][0]["reason"] = (
-        "E1直接回答当前页面问题并支撑页面判断"
-    )
-    page["onscreen_contract"]["modules"][0]["evidence_fit_review"]["items"][0]["reason"] = (
-        "E2直接说明“绿色低碳”所承载的来源事实或要求"
-    )
-
-    issues, _ = audit_deck_plan(plan, foundation)
-    joined = "\n".join(issues)
-
-    assert joined.count("EVIDENCE_FIT_REASON_GENERIC") == 2
-
-
 def test_strict_evidence_fit_review_requires_page_and_module_reviews() -> None:
     foundation, plan = _strict_evidence_fit_fixture()
     plan["pages"][0].pop("evidence_fit_review")
@@ -587,51 +572,12 @@ def test_onscreen_contract_expression_mode_warns_when_mixed_copy_has_no_proposit
     assert issues == []
     assert any("expression_mode='mixed'" in warning for warning in warnings)
 
-
-def test_onscreen_contract_accepts_readable_proposition_without_terminal_punctuation() -> None:
-    foundation, plan, _ = _contracted_gap_fixture()
-    plan["pages"][0]["onscreen_contract"]["expression_mode"] = "mixed"
-    final = _contracted_final()
-    final["slides"][0]["onscreen"][0]["text"] = (
-        "基础通用标准供给仍存在跨领域衔接不足"
-    )
-
-    issues, warnings = audit_final_script(final, plan, foundation)
-
-    assert issues == []
-    assert not any("expression_mode='mixed'" in warning for warning in warnings)
-
 def test_onscreen_contract_rejects_unknown_expression_mode() -> None:
     foundation, plan, _ = _contracted_gap_fixture()
     plan["pages"][0]["onscreen_contract"]["expression_mode"] = "paragraph_led"
     assert validate_deck_plan(plan)
     issues, _ = audit_deck_plan(plan, foundation)
     assert any("expression_mode" in issue for issue in issues)
-
-
-def test_phrase_led_requires_a_narrow_declared_basis() -> None:
-    foundation, plan, _ = _contracted_gap_fixture()
-    contract = plan["pages"][0]["onscreen_contract"]
-    contract["expression_mode"] = "phrase_led"
-
-    issues, _ = audit_deck_plan(plan, foundation)
-
-    assert any("ONSCREEN_PHRASE_LED_BASIS_MISSING" in issue for issue in issues)
-
-    contract["phrase_led_basis"] = "taxonomy"
-    issues, _ = audit_deck_plan(plan, foundation)
-    assert not any("ONSCREEN_PHRASE_LED_BASIS_MISSING" in issue for issue in issues)
-
-
-def test_phrase_led_basis_is_rejected_for_mixed_copy() -> None:
-    foundation, plan, _ = _contracted_gap_fixture()
-    contract = plan["pages"][0]["onscreen_contract"]
-    contract["expression_mode"] = "mixed"
-    contract["phrase_led_basis"] = "taxonomy"
-
-    issues, _ = audit_deck_plan(plan, foundation)
-
-    assert any("only valid when expression_mode='phrase_led'" in issue for issue in issues)
 
 
 def test_real_source_contains_the_semantic_boundaries_that_drive_v041() -> None:
@@ -726,3 +672,122 @@ def test_narrative_audit_preserves_source_native_and_parallel_page_exceptions() 
 
     assert issues == []
     assert warnings == []
+
+
+def _trace_foundation() -> dict:
+    return {
+        "facts": [
+            {
+                "id": "F1",
+                "statement": "平台覆盖600家主体并采用DataHub处理资源。",
+                "source_refs": ["S1"],
+            }
+        ],
+        "relations": [
+            {
+                "id": "R1",
+                "relation": "资源治理与授权控制共同支撑可信服务",
+                "basis": "inferred",
+                "support": ["F1"],
+                "source_refs": ["S1"],
+            }
+        ],
+        "concepts": [],
+        "entities": [],
+        "arguments": [],
+        "constraints": [],
+        "numbers": [],
+    }
+
+
+def _trace_final(text: str, *, slide_id: str = "P01") -> dict:
+    return {
+        "slides": [
+            {
+                "id": slide_id,
+                "page_type": "content",
+                "title": text,
+                "core_message": text,
+                "onscreen": [{"heading": text}],
+                "source_refs": ["S1"],
+            }
+        ]
+    }
+
+
+def test_composed_trace_stably_separates_quote_paraphrase_number_and_identifier() -> None:
+    foundation = _trace_foundation()
+    quoted = trace_composed(_trace_final("平台覆盖600家主体并采用DataHub处理资源。"), foundation)
+    assert quoted["composed"] == []
+    assert quoted["hard_findings"] == []
+
+    paraphrase = trace_composed(_trace_final("资源处理能力已经覆盖既定主体范围"), foundation)
+    assert paraphrase["composed"]
+    assert paraphrase["hard_findings"] == []
+
+    number_drift = trace_composed(_trace_final("平台覆盖700家主体"), foundation)
+    assert number_drift["hard_findings"]
+    assert number_drift["hard_findings"][0]["absent_numbers"] == ["700"]
+
+    identifier_drift = trace_composed(_trace_final("平台采用NeoGraph处理资源"), foundation)
+    assert identifier_drift["hard_findings"]
+    assert identifier_drift["hard_findings"][0]["absent_identifiers"] == ["NeoGraph"]
+
+
+def test_composed_trace_does_not_harden_source_supported_inferred_analysis() -> None:
+    report = trace_composed(
+        _trace_final("治理和授权协同形成可信服务基础"),
+        _trace_foundation(),
+    )
+
+    assert report["composed"]
+    assert report["hard_findings"] == []
+
+
+def test_final_audit_blocks_composed_trace_hard_source_boundary() -> None:
+    issues, _ = audit_final_script(
+        _trace_final("平台覆盖700家主体"),
+        {"pages": []},
+        _trace_foundation(),
+    )
+
+    assert any("COMPOSED_TRACE_SOURCE_BOUNDARY" in issue for issue in issues)
+
+
+def test_focused_critic_prioritizes_peak_composition_external_checks_and_asset_risk() -> None:
+    foundation = _trace_foundation()
+    foundation["facts"][0]["claim_origin"] = "external_research"
+    foundation["source_assets"] = [
+        {
+            "id": "ASSET-0123456789ABCDEF",
+            "kind": "chart",
+            "source_unit_refs": ["SU-1"],
+            "locator": {"slide": 1, "shape": 2},
+            "argument_node_ids": ["A1"],
+            "wrong_reading": "相关关系代表已经形成因果机制",
+        }
+    ]
+    final = _trace_final("资源处理能力已经覆盖既定主体范围", slide_id="P02")
+    plan = {
+        "narrative_design": {"peak_page_id": "P02"},
+        "pages": [
+            {
+                "id": "P02",
+                "visual_evidence": {
+                    "kind": "asset",
+                    "ref": "ASSET-0123456789ABCDEF",
+                    "carrying_element": "主体覆盖关系图",
+                },
+            }
+        ],
+    }
+    report = trace_composed(final, foundation)
+    priorities = critic_priorities(final, plan, foundation, trace=report)
+
+    assert priorities[0]["page_id"] == "P02"
+    assert set(priorities[0]["reasons"]) == {
+        "composed_lines",
+        "external_claim_checks",
+        "peak_page",
+        "source_asset_wrong_reading",
+    }

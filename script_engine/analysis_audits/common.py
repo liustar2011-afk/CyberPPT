@@ -55,14 +55,6 @@ _PROPOSITION_END_RE = re.compile(r"[。！？!?]\s*$")
 
 _EXPRESSION_MODES = {"phrase_led", "sentence_led", "mixed"}
 
-_PHRASE_LED_BASES = {
-    "taxonomy",
-    "metric_set",
-    "object_inventory",
-    "exact_labels",
-    "short_sequence",
-}
-
 _ONSCREEN_COMPOSITION_MODES = {"evidence_first", "selective_lead"}
 
 _GENERIC_OMISSION_REASON_PHRASES = {"后续再说", "不重要", "暂不展开", "以后再说", "后续处理"}
@@ -74,11 +66,6 @@ _UNIT_REASON_REQUIRED_DISPOSITIONS = {"reserved_for_later", "intentional_omissio
 _EVIDENCE_FIT_VALUES = {"direct", "indirect", "topic_only", "no", "uncertain"}
 
 _EVIDENCE_FIT_VERDICTS = {"keep", "rename", "move", "split", "reject"}
-
-_GENERIC_EVIDENCE_FIT_REASON_RE = re.compile(
-    r"(?:直接回答当前页面问题并支撑页面判断|"
-    r"直接说明[‘’“\"]?.+?[’’”\"]?所承载的来源事实或要求)"
-)
 
 _LEAD_LIKE_EVIDENCE_ITEM_RE = re.compile(
     r"(?:需要|应当|应|须|用于|构成|提供|支撑|形成|明确|保持|覆盖|衔接|检验|"
@@ -242,12 +229,6 @@ def _evidence_fit_review_issues(
             issues.append(f"{item_context}: role is required")
         if not reason:
             issues.append(f"{item_context}: reason is required")
-        elif _GENERIC_EVIDENCE_FIT_REASON_RE.search(reason):
-            issues.append(
-                f"{item_context}: EVIDENCE_FIT_REASON_GENERIC: reason merely restates the "
-                "declared fit; identify the source-specific fact and explain why it answers "
-                "the page or module question"
-            )
     return issues
 
 def _audit_evidence_fit_reviews(
@@ -318,18 +299,6 @@ def _onscreen_contract_definition_issues(
     ):
         issues.append(
             "onscreen_contract.expression_mode must be one of: phrase_led, sentence_led, mixed"
-        )
-    phrase_led_basis = contract.get("phrase_led_basis")
-    if expression_mode == "phrase_led" and phrase_led_basis not in _PHRASE_LED_BASES:
-        issues.append(
-            "ONSCREEN_PHRASE_LED_BASIS_MISSING: expression_mode='phrase_led' is an "
-            "exception for taxonomy, metric sets, object inventories, exact source labels, "
-            "or a genuinely short sequence; declare phrase_led_basis or use 'mixed' / "
-            "'sentence_led' for normal explanatory writing"
-        )
-    elif expression_mode != "phrase_led" and phrase_led_basis is not None:
-        issues.append(
-            "onscreen_contract.phrase_led_basis is only valid when expression_mode='phrase_led'"
         )
 
     modules = [module for module in contract.get("modules") or [] if isinstance(module, dict)]
@@ -774,4 +743,4 @@ def _page_text(page: dict[str, Any]) -> str:
                 parts.append(value)
     return " ".join(parts)
 
-__all__ = ['annotations', 're', 'SequenceMatcher', 'Any', 'audit_content_route', '_source_statement_overlap', 'functional_group_needs_item_explanations', 'is_bare_business_label', 'source_has_richer_item_detail', 'source_colocation_grouping_mismatch', 'audit_authored_stage02_readiness', 'audit_stage02_readiness', 'audit_final_internal_expert_voice', 'audit_plan_internal_expert_voice', 'CITABLE_KEYS', 'SOURCE_CHAPTER_RE', 'INTERNAL_MARKERS', 'OPTIONALITY_RE', 'INDEPENDENCE_RE', 'DEEPENING_RE', 'UNIVERSAL_RE', 'CRITICAL_GROUP_TERMS', 'PROGRESSION_RE', 'GAP_RE', 'CHAPTER_PREFIX_RE', '_VISIBLE_CHAR_RE', '_PROPOSITION_END_RE', '_EXPRESSION_MODES', '_PHRASE_LED_BASES', '_ONSCREEN_COMPOSITION_MODES', '_EVIDENCE_FIT_VALUES', '_EVIDENCE_FIT_VERDICTS', '_LEAD_LIKE_EVIDENCE_ITEM_RE', '_COMPLETE_PROPOSITION_MIN_CHARS', '_COMPLETE_PROPOSITION_MAX_CHARS', '_SECONDARY_RELATION_TYPES', '_normalized_review_text', 'foundation_items_by_id', '_item_text', 'effective_visibility', '_support_items', '_has_optionality', '_preserves_optionality', '_group_strength_issue', '_page_evidence_ids', '_page_claim_evidence_ids', '_evidence_fit_review_issues', '_audit_evidence_fit_reviews', '_onscreen_contract_definition_issues', '_source_consumption_sets', 'requires_source_consumption', '_source_surface_values', '_anchor_is_source_grounded', '_audit_source_consumption_definition', '_record_unit_ids', '_audit_unit_consumption_definition', '_audit_onscreen_composition_definition', '_page_text']
+__all__ = ['annotations', 're', 'SequenceMatcher', 'Any', 'audit_content_route', '_source_statement_overlap', 'functional_group_needs_item_explanations', 'is_bare_business_label', 'source_has_richer_item_detail', 'source_colocation_grouping_mismatch', 'audit_authored_stage02_readiness', 'audit_stage02_readiness', 'audit_final_internal_expert_voice', 'audit_plan_internal_expert_voice', 'CITABLE_KEYS', 'SOURCE_CHAPTER_RE', 'INTERNAL_MARKERS', 'OPTIONALITY_RE', 'INDEPENDENCE_RE', 'DEEPENING_RE', 'UNIVERSAL_RE', 'CRITICAL_GROUP_TERMS', 'PROGRESSION_RE', 'GAP_RE', 'CHAPTER_PREFIX_RE', '_VISIBLE_CHAR_RE', '_PROPOSITION_END_RE', '_EXPRESSION_MODES', '_ONSCREEN_COMPOSITION_MODES', '_EVIDENCE_FIT_VALUES', '_EVIDENCE_FIT_VERDICTS', '_LEAD_LIKE_EVIDENCE_ITEM_RE', '_COMPLETE_PROPOSITION_MIN_CHARS', '_COMPLETE_PROPOSITION_MAX_CHARS', '_SECONDARY_RELATION_TYPES', '_normalized_review_text', 'foundation_items_by_id', '_item_text', 'effective_visibility', '_support_items', '_has_optionality', '_preserves_optionality', '_group_strength_issue', '_page_evidence_ids', '_page_claim_evidence_ids', '_evidence_fit_review_issues', '_audit_evidence_fit_reviews', '_onscreen_contract_definition_issues', '_source_consumption_sets', 'requires_source_consumption', '_source_surface_values', '_anchor_is_source_grounded', '_audit_source_consumption_definition', '_record_unit_ids', '_audit_unit_consumption_definition', '_audit_onscreen_composition_definition', '_page_text']

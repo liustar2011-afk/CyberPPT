@@ -2,18 +2,7 @@
 
 from __future__ import annotations
 
-import re
 import unicodedata
-
-
-_VISIBLE_CHAR_RE = re.compile(r"[一-鿿A-Za-z0-9]")
-
-_PROPOSITION_PREDICATE_RE = re.compile(
-    r"(?:是|为|由|包括|包含|涵盖|覆盖|形成|完成|建立|实现|支撑|用于|"
-    r"承担|负责|明确|开展|推进|达到|进入|保持|具备|面向|聚焦|构成|"
-    r"衔接|检验|转化|提供|解决|适用|存在|不足|滞后|确定|规定|承载|"
-    r"组织|分工|映射|参与|协调|连接|规范|统一|促进|满足|对应|形成)"
-)
 
 
 def strip_terminal_punctuation(value: str) -> str:
@@ -22,27 +11,6 @@ def strip_terminal_punctuation(value: str) -> str:
     while result and unicodedata.category(result[-1])[0] in {"P", "S"}:
         result = result[:-1].rstrip()
     return result
-
-
-def is_readable_onscreen_proposition(
-    value: str,
-    *,
-    min_chars: int = 16,
-    max_chars: int = 90,
-) -> bool:
-    """Recognize one compact business proposition independently of punctuation.
-
-    The check is deliberately narrow and advisory. It distinguishes normal
-    sentence-like copy from labelled detail fragments while leaving final
-    reading quality to AUTHOR/Critic judgment.
-    """
-    text = str(value or "").strip()
-    if not text or re.search(r"[：:]", text):
-        return False
-    chars = len(_VISIBLE_CHAR_RE.findall(text))
-    return min_chars <= chars <= max_chars and bool(
-        _PROPOSITION_PREDICATE_RE.search(text)
-    )
 
 
 def normalize_detail_lines(text: str) -> str:

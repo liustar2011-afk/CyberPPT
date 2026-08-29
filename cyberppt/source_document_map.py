@@ -26,6 +26,7 @@ SOURCE_UNITS = SOURCE_MAP_STAGE / "source-units.jsonl"
 SOURCE_HEADING_TREE = SOURCE_MAP_STAGE / "source-heading-tree.json"
 SOURCE_MAP_MD = SOURCE_MAP_STAGE / "source-map.md"
 SOURCE_MAP_AUDIT = SOURCE_MAP_STAGE / "source-map-audit.json"
+SCRIPT_SOURCE_INDEX = Path("script/.cache/source-index.json")
 
 REGISTRY_SCHEMA = "cyberppt.source_registry.v1"
 UNIT_SCHEMA = "cyberppt.source_unit.v1"
@@ -70,6 +71,7 @@ _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 _A = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
 _R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
 _WP = "{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}"
+_M = "{http://schemas.openxmlformats.org/officeDocument/2006/math}"
 _REL = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 
 
@@ -405,6 +407,35 @@ def _extract_docx(
                                 "message": f"Image {media_path or rel_id} has no usable alt text and needs visual/OCR interpretation.",
                             }
                         )
+                for formula_index, formula in enumerate(child.iter(f"{_M}oMath"), 1):
+                    formula_text = "".join(
+                        node.text or "" for node in formula.iter(f"{_M}t")
+                    ).strip()
+                    if not formula_text:
+                        formula_text = "[native Word formula]"
+                    unit_id = _stable_id(
+                        source_id,
+                        "formula",
+                        f"{'/'.join(heading_path)}\0{paragraph_number}\0{formula_index}\0{formula_text}",
+                        duplicate_counts,
+                    )
+                    units.append(
+                        _unit(
+                            unit_id=unit_id,
+                            source_id=source_id,
+                            source_path=source_path,
+                            kind="formula",
+                            source_order=source_order,
+                            text=formula_text,
+                            heading_id=heading_id,
+                            heading_path=heading_path,
+                            locator={
+                                "paragraph": paragraph_number,
+                                "formula_index": formula_index,
+                            },
+                            metadata={"format": "office_math_ml"},
+                        )
+                    )
             elif child.tag == f"{_W}tbl":
                 table_number += 1
                 heading_id = str(heading_stack[-1]["heading_id"]) if heading_stack else None
@@ -553,12 +584,11 @@ def _extract_source(
     source_id: str,
     source_path: str,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, str]]]:
-    suffix = path.suffix.casefold()
-    if suffix == ".docx":
-        return _extract_docx(path, source_id=source_id, source_path=source_path)
-    if suffix in _TEXT_SUFFIXES:
-        return _extract_text(path, source_id=source_id, source_path=source_path)
-    return _extract_binary(path, source_id=source_id, source_path=source_path)
+    # Local import avoids a module cycle while allowing the new public
+    # extractor facade to reuse the mature DOCX/text primitives above.
+    from .source_extractors import extract_source_file
+
+    return extract_source_file(path, source_id=source_id, source_path=source_path)
 
 
 def _render_source_map(
@@ -668,16 +698,25 @@ def _promote_heuristic_headings(
     return rewritten, headings, promoted
 
 
-def prepare_source_map(project: Path) -> dict[str, Any]:
+def collect_source_bundle(project: Path) -> dict[str, Any]:
+    """Collect one deterministic in-memory bundle without writing artifacts."""
+
     project = project.expanduser().resolve()
-    source_dir = project / "source"
+    candidates = (project / "source", project / "sources")
+    source_dir = next(
+        (
+            candidate
+            for candidate in candidates
+            if candidate.is_dir()
+            and any(path.is_file() and path.name != ".gitkeep" for path in candidate.rglob("*"))
+        ),
+        next((candidate for candidate in candidates if candidate.is_dir()), project / "source"),
+    )
     if not source_dir.is_dir():
         raise FileNotFoundError(f"source directory does not exist: {source_dir}")
     files = sorted(path for path in source_dir.rglob("*") if path.is_file() and path.name != ".gitkeep")
     if not files:
         raise FileNotFoundError(f"no source files found: {source_dir}")
-    stage = project / SOURCE_MAP_STAGE
-    stage.mkdir(parents=True, exist_ok=True)
     registry_sources: list[dict[str, Any]] = []
     units: list[dict[str, Any]] = []
     headings: list[dict[str, Any]] = []
@@ -781,6 +820,57 @@ def prepare_source_map(project: Path) -> dict[str, Any]:
                     "message": f"Heading {heading['heading_id']} references missing parent {parent}.",
                 }
             )
+    return {
+        "status": "passed" if not issues else "rewrite_required",
+        "sources": registry_sources,
+        "headings": headings,
+        "units": units,
+        "unit_ids": unit_ids,
+        "warnings": warnings,
+        "issues": issues,
+    }
+
+
+def prepare_source_context(project: Path) -> dict[str, Any]:
+    """Write the script profile's single derived source index."""
+
+    from script_engine.source_index import build_source_index_v2, write_source_index_v2
+
+    project = project.expanduser().resolve()
+    bundle = collect_source_bundle(project)
+    payload = build_source_index_v2(
+        sources=bundle["sources"],
+        headings=bundle["headings"],
+        units=bundle["units"],
+        warnings=bundle["warnings"],
+        issues=bundle["issues"],
+    )
+    output = project / SCRIPT_SOURCE_INDEX
+    write_source_index_v2(payload, output)
+    return {**payload, "source_index": str(output)}
+
+
+def load_source_context(project: Path) -> dict[str, Any]:
+    path = project.expanduser().resolve() / SCRIPT_SOURCE_INDEX
+    if not path.is_file():
+        return prepare_source_context(project)
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(payload, dict) or payload.get("schema") != "cyberppt.source_index.v2":
+        raise ValueError(f"invalid script source index: {path}")
+    return {**payload, "source_index": str(path)}
+
+
+def prepare_source_map(project: Path) -> dict[str, Any]:
+    project = project.expanduser().resolve()
+    bundle = collect_source_bundle(project)
+    stage = project / SOURCE_MAP_STAGE
+    stage.mkdir(parents=True, exist_ok=True)
+    registry_sources = bundle["sources"]
+    headings = bundle["headings"]
+    units = bundle["units"]
+    unit_ids = bundle["unit_ids"]
+    warnings = bundle["warnings"]
+    issues = bundle["issues"]
     registry = {"schema": REGISTRY_SCHEMA, "sources": registry_sources}
     heading_tree = {"schema": HEADING_TREE_SCHEMA, "headings": headings}
     registry_path = project / SOURCE_REGISTRY
