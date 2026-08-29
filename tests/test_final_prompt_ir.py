@@ -205,7 +205,8 @@ def _artifact_spec(*, evidence_kinds: tuple[str, ...] = ("process", "result")) -
 class BuildFinalPromptIRTests(unittest.TestCase):
     def test_style09_routes_page_grammar_from_visual_medium_policy(self) -> None:
         routes = (
-            ("mixed", ("mixed",), "auto", "document-and-publishing"),
+            ("business_scene", ("business_scene",), "required", "semantic-business-scene"),
+            ("mixed", ("mixed",), "auto", "document-and-publishing hybrid"),
             ("relationship_diagram", ("relationship_diagram",), "forbidden", "infographic-engine"),
             ("data_visualization", ("data_visualization",), "forbidden", "infographic-engine"),
             ("object_illustration", ("object_illustration",), "forbidden", "concept-product-breakdown"),
@@ -230,6 +231,27 @@ class BuildFinalPromptIRTests(unittest.TestCase):
 
                 guidance = " ".join(build_final_prompt_ir(spec).composition.visual_responsibility)
                 self.assertIn(expected, guidance)
+
+    def test_style09_mixed_medium_requires_a_semantic_visual_anchor(self) -> None:
+        spec = replace(
+            _artifact_spec(),
+            art_direction=ArtDirectionSpec(
+                style_id=9,
+                style_name="Style09",
+                style_slug="ivory_deep_blue_scene",
+                contract="Pure white editorial direction.",
+            ),
+            visual_medium_policy=VisualMediumPolicy(
+                preferred="mixed",
+                allowed=("object_illustration", "relationship_diagram", "mixed"),
+                scene_policy="forbidden",
+                rationale="Audited hybrid medium without a scene.",
+            ),
+        )
+
+        guidance = " ".join(build_final_prompt_ir(spec).composition.visual_responsibility)
+        self.assertIn("semantic visual anchor", guidance)
+        self.assertNotIn("localized, source-grounded business setting", guidance)
 
     def test_style10_does_not_receive_style09_page_grammar(self) -> None:
         guidance = " ".join(build_final_prompt_ir(_artifact_spec()).composition.visual_responsibility)

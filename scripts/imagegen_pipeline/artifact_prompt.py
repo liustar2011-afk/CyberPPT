@@ -483,6 +483,12 @@ def _style09_template_guidance(spec: PageArtifactSpec) -> str:
     """Select one Style 09 page grammar from the audited visual medium."""
 
     preferred = spec.visual_medium_policy.preferred if spec.visual_medium_policy else "mixed"
+    if preferred == "business_scene":
+        return (
+            "Use a semantic-business-scene page system: build one localized, source-grounded "
+            "business setting around the declared object, actor, action and outcome; keep approved "
+            "copy in clear editorial regions and reject generic office ambience."
+        )
     if preferred in {"relationship_diagram", "data_visualization"}:
         return (
             "Use an infographic-engine page system: make the declared relationship or data "
@@ -496,8 +502,9 @@ def _style09_template_guidance(spec: PageArtifactSpec) -> str:
             "invent exploded parts."
         )
     return (
-        "Use a document-and-publishing page system: report-page typography, disciplined columns "
-        "or open editorial regions, aligned charts or captions when declared, and a calm reading rhythm."
+        "Use a document-and-publishing hybrid page system: preserve report-page typography and "
+        "open editorial regions while assigning one source-grounded business object, action, state "
+        "or evidence fragment as the semantic visual anchor; avoid plain equal-weight text panels."
     )
 
 

@@ -77,7 +77,7 @@ For dense content, enlarge the reading field and simplify or remove imagery. Nev
 
 ### 4. Semantic carrier and relationships — hard
 
-Follow the page-specific presentation-template guidance. Use only objects, actions, states, content/data assets, evidence fragments, boundaries and outcomes declared in the page prompt. When useful, use one dominant object or localized scene. For abstract, enumerative, policy, data or evidence-heavy pages, a flat structured relationship field or publication-like layout is valid and may contain no scene.
+Follow the page-specific presentation-template guidance. Use only objects, actions, states, content/data assets, evidence fragments, boundaries and outcomes declared in the page prompt. When useful, use one dominant object or localized scene. When scene or hybrid guidance applies, reserve meaningful visual space for one source-grounded setting, action, object or evidence fragment while keeping approved copy readable. For abstract, enumerative, policy, data or evidence-heavy pages, a flat structured relationship field or publication-like layout is valid and may contain no scene.
 
 Auxiliary imagery stays text-free. Place approved labels as normal page text beside the related object or region, never inside a screen, photo, device or perspective surface.
 
