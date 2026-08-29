@@ -8,6 +8,7 @@ from typing import Any
 from cyberppt.page_artifact_spec import is_text_dense
 from cyberppt.region_graph import build_region_graph
 from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map
+from cyberppt.visual_medium_policy import resolve_visual_medium_policy
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 
 from .persistence import VISUAL_FILES, _read_json, _sha256, write_json
@@ -123,7 +124,9 @@ def _legacy_use_scene(scene_policy: str) -> bool:
     return scene_policy in {"required", "allowed"}
 
 
-def _visual_budget(dense_text_page: bool, scene_policy: str) -> dict[str, object]:
+def _visual_budget(dense_text_page: bool, medium_policy: dict[str, object] | str) -> dict[str, object]:
+    if isinstance(medium_policy, str):
+        medium_policy = resolve_visual_medium_policy(None, scene_policy=medium_policy).to_dict()
     if dense_text_page:
         return {
             "mode": "relationship_field_only",
@@ -131,7 +134,9 @@ def _visual_budget(dense_text_page: bool, scene_policy: str) -> dict[str, object
             "scope": "page",
             "region_local_visuals": False,
         }
-    if scene_policy == "forbidden":
+    preferred = str(medium_policy.get("preferred") or "")
+    scene_policy = str(medium_policy.get("scene_policy") or "")
+    if scene_policy == "forbidden" and preferred in {"relationship_diagram", "data_visualization"}:
         return {
             "mode": "shared_field",
             "max_auxiliary_fragments": 1,
@@ -188,6 +193,10 @@ def _decision_execution_design(
         relationships = _render_business_relationships(source.get("business_relationships"))
         focus = str(source.get("core_judgment") or "本页核心判断").strip()
         scene_policy = "auto"
+        medium_policy = resolve_visual_medium_policy(
+            selected.get("visual_medium_policy"),
+            scene_policy=scene_policy,
+        )
         return {
             "business_object": relationships,
             "visual_focus": focus,
@@ -196,6 +205,7 @@ def _decision_execution_design(
             "relationship_encoding": "仅表达已声明的业务关系，不新增顺序、层级或因果",
             "semantic_role": "承载已声明业务对象、动作、条件与结果",
             "scene_policy": scene_policy,
+            "visual_medium_policy": medium_policy.to_dict(),
             "use_scene": _legacy_use_scene(scene_policy),
             "scene_type": "依据页面语义、视觉媒介策略和Style lock选择业务场景、对象插图或结构表达",
         }
@@ -214,10 +224,15 @@ def _decision_execution_design(
     corrupted = [key for key, value in normalized.items() if "?" in value]
     if not missing and not corrupted:
         scene_policy = _resolve_scene_policy(design, prompt_mode, page_id)
+        medium_policy = resolve_visual_medium_policy(
+            design.get("visual_medium_policy") or selected.get("visual_medium_policy"),
+            scene_policy=scene_policy,
+        )
         return {
             **normalized,
             "semantic_role": str(design.get("semantic_role") or normalized["relationship_encoding"]).strip(),
             "scene_policy": scene_policy,
+            "visual_medium_policy": medium_policy.to_dict(),
             "use_scene": _legacy_use_scene(scene_policy),
             "scene_type": str(
                 design.get("scene_type")
@@ -250,6 +265,10 @@ def _decision_execution_design(
     if len(focus_label) > 28:
         focus_label = focus_label[:28].rstrip("，。；：")
     scene_policy = "forbidden"
+    medium_policy = resolve_visual_medium_policy(
+        selected.get("visual_medium_policy"),
+        scene_policy=scene_policy,
+    )
     return {
         "business_object": f"{subject}中围绕“{focus_label}”形成的业务关系场",
         "visual_focus": f"“{focus_label}”所承接的业务对象、动作与结果",
@@ -258,6 +277,7 @@ def _decision_execution_design(
         "relationship_encoding": f"通过{subject}中对象、动作、条件与结果的承接关系表达本页判断；不以逐条文字或装饰对象代替业务关系",
         "semantic_role": f"以{subject}的对象、动作和结果关系证明本页判断",
         "scene_policy": scene_policy,
+        "visual_medium_policy": medium_policy.to_dict(),
         "use_scene": _legacy_use_scene(scene_policy),
         "scene_type": "不使用实景，由选定业务关系场承载",
     }
@@ -529,7 +549,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     )
     dense_text_page = is_text_dense(expected_text)
     scene_policy = str(design["scene_policy"])
-    visual_budget = _visual_budget(dense_text_page, scene_policy)
+    medium_policy = dict(design["visual_medium_policy"])
+    visual_budget = _visual_budget(dense_text_page, medium_policy)
     return {
         "schema_version": "1.1",
         "page_id": page_id,
