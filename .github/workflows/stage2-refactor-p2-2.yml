@@ -1,0 +1,103 @@
+name: Stage2 refactor P2.2 Region Graph compiler
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p2-2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Integrate Region Graph compiler
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("cyberppt/visual_stage/compiler.py")
+          text = path.read_text(encoding="utf-8")
+          old = "from cyberppt.page_artifact_spec import is_text_dense\n"
+          new = old + "from cyberppt.region_graph import build_region_graph\n"
+          if "from cyberppt.region_graph import build_region_graph" not in text:
+              if old not in text:
+                  raise SystemExit("compiler import anchor not found")
+              text = text.replace(old, new, 1)
+
+          old = '''    quality_contract = _quality_contract(decision, selected, focus_id)\n    final_text = [\n'''
+          new = '''    region_graph = build_region_graph(\n        topology=topology,\n        evidence_ids=[eid[key] for key in evidence_keys],\n        focus_id=focus_id,\n        reading_sequence=[eid[key] for key in reading_keys],\n        semantic_edges=graph_edges,\n        focus_policy=focus_policy,\n    )\n    quality_contract = _quality_contract(decision, selected, focus_id)\n    final_text = [\n'''
+          if old not in text:
+              raise SystemExit("compiler Region Graph build anchor not found")
+          text = text.replace(old, new, 1)
+
+          old = '''            "forbidden_structures": forbidden_structures,\n        },\n        "structural_decision": {\n'''
+          new = '''            "forbidden_structures": forbidden_structures,\n        },\n        "region_graph": region_graph,\n        "structural_decision": {\n'''
+          if old not in text:
+              raise SystemExit("compiler Region Graph output anchor not found")
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run Region Graph smoke checks
+        run: |
+          python - <<'PY'
+          from cyberppt.region_graph import build_region_graph
+          parallel = build_region_graph(
+              topology="parallel_set",
+              evidence_ids=["E1", "E2", "E3"],
+              focus_id="E1",
+              reading_sequence=["E1", "E2", "E3"],
+              semantic_edges=[
+                  {"from": "E1", "to": "E2", "relation": "peer", "direction": "none"},
+                  {"from": "E2", "to": "E3", "relation": "peer", "direction": "none"},
+              ],
+              focus_policy="peer_field",
+          )
+          assert parallel["primary_axis"] == "free_spatial"
+          assert all(item["priority"] == "primary" for item in parallel["regions"])
+          assert {item["type"] for item in parallel["relations"]} == {"peer"}
+
+          convergence = build_region_graph(
+              topology="causal_convergence",
+              evidence_ids=["E1", "E2", "E3"],
+              focus_id="E3",
+              reading_sequence=["E1", "E2", "E3"],
+              semantic_edges=[
+                  {"from": "E1", "to": "E3", "relation": "converge", "direction": "forward"},
+                  {"from": "E2", "to": "E3", "relation": "converge", "direction": "forward"},
+              ],
+              focus_policy="single_anchor",
+          )
+          focus_region = next(item for item in convergence["regions"] if item["semantic_refs"] == ["E3"])
+          assert focus_region["anchor"] == "center"
+          assert focus_region["weight"] == 0.4
+          PY
+      - name: Run Stage2 regressions
+        run: |
+          python -m pytest -q tests/test_region_graph_contract.py tests/test_visual_structure_stage.py tests/test_visual_structure_contract.py tests/test_page_artifact_spec.py
+          python -m pytest -q
+      - name: Commit, self-clean, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/visual_stage/compiler.py
+          git rm .github/workflows/stage2-refactor-p2-2.yml
+          git commit -m "feat(stage2): emit topology-aware Region Graph"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
