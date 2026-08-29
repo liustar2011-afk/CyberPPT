@@ -1,0 +1,71 @@
+name: Stage2 refactor P4.1 final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p4-1-final.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Reapply verified P4.1 patch and publicize semantic roles
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          # Reuse the previous retry patch so P4.1 implementation remains identical.
+          source = Path('.github/workflows/stage2-refactor-p4-1-retry.yml').read_text(encoding='utf-8')
+          start = "          python - <<'PY'\n"
+          end = "\n          PY\n"
+          body = source.split(start, 1)[1].split(end, 1)[0]
+          exec(compile(textwrap.dedent(body), 'p4_1_retry_patch.py', 'exec'), {})
+
+          renderer = Path('scripts/imagegen_pipeline/final_prompt_renderer.py')
+          text = renderer.read_text(encoding='utf-8')
+          anchor = '''def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:\n'''
+          helper = '''_PUBLIC_SEMANTIC_ROLE_LABELS = {\n    "root_module": "content group",\n    "root_subgroup": "supporting content group",\n    "evidence": "evidence",\n    "fact": "evidence",\n    "process": "process",\n    "result": "result",\n    "judgment": "judgment",\n    "content": "content",\n}\n\n\ndef _public_semantic_role(value: str) -> str:\n    role = str(value or "").strip()\n    return _PUBLIC_SEMANTIC_ROLE_LABELS.get(role, role.replace("_", " ") or "content")\n\n\n'''
+          if 'def _public_semantic_role(' not in text:
+              if anchor not in text:
+                  raise SystemExit('P4.1 public role helper anchor not found')
+              text = text.replace(anchor, helper + anchor, 1)
+          old = '        responsibility = f"- semantic responsibility: [{group.role} / {group.emphasis}]"\n'
+          new = '        responsibility = f"- semantic responsibility: [{_public_semantic_role(group.role)} / {group.emphasis}]"\n'
+          if old not in text:
+              raise SystemExit('P4.1 semantic role render target not found')
+          renderer.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run targeted regressions
+        run: |
+          python -m pytest -q tests/test_prompt_macro_structure.py tests/test_final_prompt_ir.py tests/test_final_prompt_renderer.py tests/test_page_artifact_spec.py tests/test_visual_medium_policy.py tests/test_region_graph_contract.py tests/test_region_binding.py tests/test_region_graph_audit.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit, clean P4.1 runners, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/page_artifact_spec.py scripts/imagegen_pipeline/final_prompt_ir.py scripts/imagegen_pipeline/artifact_prompt.py scripts/imagegen_pipeline/final_prompt_renderer.py scripts/imagegen_pipeline/final_prompt_contract.py tests/test_prompt_macro_structure.py
+          git rm .github/workflows/stage2-refactor-p4-1.yml .github/workflows/stage2-refactor-p4-1-retry.yml .github/workflows/stage2-refactor-p4-1-final.yml
+          git commit -m "feat(stage2): render macro visual authority in final prompt"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
