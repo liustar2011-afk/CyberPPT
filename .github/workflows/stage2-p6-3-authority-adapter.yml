@@ -1,0 +1,114 @@
+name: Stage2 P6.3 reconstruction authority adapter guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-p6-3-authority-adapter.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Add adapter authority guard
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/image_to_pptx_runtime/stage02_adapter.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'from cyberppt.script_quality.parsing import parse_script_path\n'
+          new = 'from cyberppt.reconstruction_visual_authority import validate_reconstruction_visual_authority\n' + old
+          if 'from cyberppt.reconstruction_visual_authority import' not in text:
+              if old not in text:
+                  raise SystemExit('P6.3 adapter import anchor not found')
+              text = text.replace(old, new, 1)
+
+          old = '        "full_image_sha256": _sha256(full),\n'
+          new = old + '        "reconstruction_visual_source_sha256": str((((pair.get("full") or {}).get("reconstruction_visual_source") or {}).get("sha256") or "")),\n'
+          if '"reconstruction_visual_source_sha256"' not in text:
+              if old not in text:
+                  raise SystemExit('P6.3 checkpoint anchor not found')
+              text = text.replace(old, new, 1)
+
+          old = '''    needs_editable = assembly_mode in {"editable", "both"}\n    needs_image = assembly_mode in {"image", "both"}\n    quick = None\n    if needs_editable:\n'''
+          new = '''    needs_editable = assembly_mode in {"editable", "both"}\n    needs_image = assembly_mode in {"image", "both"}\n    quick = None\n    if needs_editable:\n        validate_reconstruction_visual_authority(manifest, require_clean_base=True)\n'''
+          if old not in text:
+              raise SystemExit('P6.3 adapter editable anchor not found')
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Add adapter authority checkpoint test
+        run: |
+          cat > tests/test_stage02_adapter_visual_authority.py <<'PY'
+          from hashlib import sha256
+          from pathlib import Path
+
+          from scripts.image_to_pptx_runtime.stage02_adapter import _quick_page_binding
+
+
+          def _sha(path: Path) -> str:
+              return sha256(path.read_bytes()).hexdigest()
+
+
+          def test_quick_page_checkpoint_binds_reconstruction_visual_authority_sha(tmp_path):
+              full = tmp_path / "full.png"
+              clean = tmp_path / "clean.png"
+              authored = tmp_path / "page.svg"
+              full.write_bytes(b"full-authority")
+              clean.write_bytes(b"clean-base")
+              authored.write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", encoding="utf-8")
+              pair = {
+                  "full": {
+                      "path": str(full),
+                      "text_audit": {"valid": True},
+                      "reconstruction_visual_source": {
+                          "authority": "audited_full_image",
+                          "path": str(full),
+                          "sha256": _sha(full),
+                          "immutable_visual_composition": True,
+                      },
+                  },
+                  "clean_base": {"path": str(clean)},
+                  "graphic_text_policy": {},
+              }
+              binding = _quick_page_binding(
+                  pair,
+                  authored,
+                  template_contract={"rules": {}},
+                  style_lock=None,
+              )
+              assert binding["full_image_sha256"] == _sha(full)
+              assert binding["reconstruction_visual_source_sha256"] == _sha(full)
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run P6.3 regressions
+        run: |
+          python -m pytest -q tests/test_reconstruction_visual_authority.py tests/test_stage02_adapter_visual_authority.py tests/test_stage02_rhythm_gate_order.py tests/test_full_image_rhythm_stage.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit and self-clean
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add scripts/image_to_pptx_runtime/stage02_adapter.py tests/test_stage02_adapter_visual_authority.py
+          git rm .github/workflows/stage2-p6-3-authority-adapter.yml
+          git commit -m "feat(stage2): enforce reconstruction visual authority in adapter"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
