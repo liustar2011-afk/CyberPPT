@@ -372,6 +372,13 @@ def _audit_text_capacity(candidate: dict[str, Any], expected_text_ids: list[str]
     return budget
 
 
+def _page_focus_policy(page_spec: dict[str, Any]) -> str:
+    visual = page_spec.get("visual_decision") if isinstance(page_spec.get("visual_decision"), dict) else {}
+    policy = str(visual.get("focus_policy") or "").strip()
+    # Legacy specs predate focus_policy and keep the former single-anchor semantics.
+    return policy or "single_anchor"
+
+
 def _audit_focus_competition(page_spec: dict[str, Any], issue: Any, page_id: str) -> dict[str, Any]:
     structural = page_spec.get("structural_decision") if isinstance(page_spec.get("structural_decision"), dict) else {}
     focus = structural.get("semantic_focus") if isinstance(structural.get("semantic_focus"), dict) else {}
@@ -386,6 +393,17 @@ def _audit_focus_competition(page_spec: dict[str, Any], issue: Any, page_id: str
         if isinstance(binding, dict) and binding.get("binding") == "result"
     ]
     result_refs = [str(binding.get("target_ref") or binding.get("evidence_id") or "") for binding in result_bindings]
+    primary_refs = [str(value) for value in structural.get("primary_refs") or []]
+    focus_policy = _page_focus_policy(page_spec)
+    if focus_policy == "peer_field":
+        if result_refs or set(primary_refs) != p0_ids or len(primary_refs) != len(p0_ids):
+            issue(
+                "FOCUS_COMPETITION_DETECTED",
+                "peer_field must expose every P0 peer as co-primary and must not create a result binding.",
+                page_id,
+            )
+            return {"status": "failed", "primary_refs": primary_refs}
+        return {"status": "passed", "primary_refs": primary_refs}
     if not focus_ref or focus_ref not in p0_ids or focus_ref not in result_refs or len(result_refs) != 1:
         issue("FOCUS_COMPETITION_DETECTED", "The selected focus must be the sole P0 result-binding target.", page_id)
         return {"status": "failed", "primary_ref": focus_ref}
@@ -466,7 +484,7 @@ def _audit_topology_consistency(page_spec: dict[str, Any], issue: Any, page_id: 
     nodes = [item for item in graph.get("nodes") or [] if isinstance(item, dict)]
     node_role_by_id = {str(item.get("id") or ""): str(item.get("role") or "") for item in nodes}
     focus_role = node_role_by_id.get(graph_focus_node, "")
-    if graph_focus_node and focus_role and focus_role != "judgment":
+    if graph_focus_node and focus_role and focus_role != "judgment" and _page_focus_policy(page_spec) != "peer_field":
         override_reason = str(page_spec.get("quality_contract", {}).get("focus_override_reason") or "").strip()
         if not override_reason:
             issue(

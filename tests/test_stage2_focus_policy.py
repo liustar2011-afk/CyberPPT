@@ -55,7 +55,7 @@ def _page(topology: str, grammar: list[str], form: str):
 def test_parallel_set_compiles_peer_field_focus_policy():
     page = _page("parallel_set", ["peer"], "framework_4")
     assert page["visual_decision"]["focus_policy"] == "peer_field"
-    assert page["visual_decision"]["visual_center_count"] == 1
+    assert page["visual_decision"]["visual_center_count"] == 2
 
 
 def test_convergence_compiles_single_anchor_focus_policy():
@@ -67,3 +67,37 @@ def test_candidate_can_explicitly_select_supported_focus_policy():
     page = _page("governance_boundary", ["boundary"], "flow_3_5")
     # topology default is paired_focus
     assert page["visual_decision"]["focus_policy"] == "paired_focus"
+
+
+def test_parallel_set_keeps_all_peers_co_primary_without_result_binding():
+    page = _page("parallel_set", ["peer"], "framework_4")
+    assert {item["role"] for item in page["semantic_graph"]["nodes"]} == {"evidence"}
+    assert {item["kind"] for item in page["evidence_units"]} == {"fact"}
+    assert set(page["structural_decision"]["primary_refs"]) == {"E1", "E2"}
+    assert page["structural_decision"]["secondary_refs"] == []
+    assert all(item["binding"] == "embedded" for item in page["structural_decision"]["text_bindings"])
+
+
+def test_peer_field_focus_audit_accepts_co_primary_peers():
+    from cyberppt.visual_structure_contract import _audit_focus_competition
+
+    page = _page("parallel_set", ["peer"], "framework_4")
+    issues = []
+    def issue(code, message, page_id=None):
+        issues.append((code, message, page_id))
+    result = _audit_focus_competition(page, issue, "p01")
+    assert result["status"] == "passed"
+    assert issues == []
+
+
+def test_peer_field_focus_audit_rejects_invented_result_binding():
+    from cyberppt.visual_structure_contract import _audit_focus_competition
+
+    page = _page("parallel_set", ["peer"], "framework_4")
+    page["structural_decision"]["text_bindings"][0]["binding"] = "result"
+    issues = []
+    def issue(code, message, page_id=None):
+        issues.append((code, message, page_id))
+    result = _audit_focus_competition(page, issue, "p01")
+    assert result["status"] == "failed"
+    assert issues[0][0] == "FOCUS_COMPETITION_DETECTED"

@@ -112,8 +112,15 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     n = page.get("page_number")
     schema_version = str(page.get("schema_version") or "")
     vd = page.get("visual_decision", {})
-    if vd.get("visual_center_count") != 1:
-        add(issues, "error", "visual_center", "Page must have exactly one visual center", n)
+    explicit_focus_policy = str(vd.get("focus_policy") or "").strip()
+    visual_center_count = vd.get("visual_center_count")
+    if explicit_focus_policy == "peer_field":
+        if not isinstance(visual_center_count, int) or visual_center_count < 2:
+            add(issues, "error", "visual_center", "peer_field requires multiple co-primary visual centers", n)
+    elif explicit_focus_policy and visual_center_count != 1:
+        add(issues, "error", "visual_center", f"{explicit_focus_policy} currently requires one compatibility visual center", n)
+    elif not explicit_focus_policy and visual_center_count != 1:
+        add(issues, "error", "visual_center", "Legacy page must have exactly one visual center", n)
     if schema_version == "1.0" and not vd.get("dominant_visual_carrier"):
         add(issues, "error", "dominant_carrier", "Dominant visual carrier is required", n)
     if schema_version == "1.0":

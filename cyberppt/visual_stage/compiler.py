@@ -371,7 +371,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         {
             "id": eid[key],
             "text": str(evidence_by_key[key].get("summary") or expected_text[0]),
-            "kind": "result" if key == focus_key else "process",
+            "kind": "fact" if focus_policy == "peer_field" else ("result" if key == focus_key else "process"),
             "priority": "P0",
             "source_ref": source_ref,
             "status": "locked",
@@ -380,7 +380,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     ]
     focus_id = eid[focus_key]
     graph_nodes = [
-        {"id": eid[key], "role": "judgment" if key == focus_key else "evidence", "source_refs": text_ids_by_evidence[key]}
+        {"id": eid[key], "role": "evidence" if focus_policy == "peer_field" else ("judgment" if key == focus_key else "evidence"), "source_refs": text_ids_by_evidence[key]}
         for key in evidence_keys
     ]
     grouping_decisions = []
@@ -491,14 +491,14 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "semantic_focus": {"kind": semantic_focus_kind, "ref": focus_id},
             "spatial_grammar": grammar,
             "semantic_tags": [str(selected.get("visual_intent_type") or "relationship")],
-            "primary_refs": [focus_id],
-            "secondary_refs": [eid[key] for key in evidence_keys if key != focus_key],
+            "primary_refs": [eid[key] for key in evidence_keys] if focus_policy == "peer_field" else [focus_id],
+            "secondary_refs": [] if focus_policy == "peer_field" else [eid[key] for key in evidence_keys if key != focus_key],
             "reading_sequence": [eid[key] for key in reading_keys],
             "text_bindings": [
                 {
                     "evidence_id": eid[key],
                     "target_ref": eid[key],
-                    "binding": "result" if key == focus_key else "embedded",
+                    "binding": "embedded" if focus_policy == "peer_field" else ("result" if key == focus_key else "embedded"),
                     "text_ids": text_ids_by_evidence[key],
                 }
                 for key in evidence_keys
@@ -518,10 +518,10 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "relationship_encoding": design["relationship_encoding"],
             "focus_policy": focus_policy,
             # Deprecated compatibility field. New structure logic must consume focus_policy.
-            "visual_center_count": 1,
+            "visual_center_count": len(evidence_keys) if focus_policy == "peer_field" else 1,
             "visual_hierarchy": {
                 "primary": design["visual_focus"],
-                "secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if key != focus_key],
+                "secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if focus_policy == "peer_field" or key != focus_key],
                 "tertiary": [],
             },
         },
