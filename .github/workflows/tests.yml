@@ -1,19 +1,20 @@
 name: CyberPPT file-boundary finalizer
 
 on:
-  pull_request:
+  push:
+    branches:
+      - agent/stage-file-boundary
 
 permissions:
   contents: write
 
 jobs:
   finalize:
-    if: github.head_ref == 'agent/stage-file-boundary'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: agent/stage-file-boundary
           fetch-depth: 0
       - name: Apply final file-boundary fixes
         run: |
@@ -27,7 +28,6 @@ jobs:
           def write(path: str, text: str) -> None:
               Path(path).write_text(text, encoding='utf-8', newline='\n')
 
-          # Execution receipt: audit and writer bind to the same raw input-file SHA.
           path = 'cyberppt/visual_stage/execution.py'
           text = read(path)
           old = '''            "approved_script": str(script),
@@ -40,7 +40,6 @@ jobs:
           text = text.replace(old, new, 1)
           write(path, text)
 
-          # Stage2 production core uses script-input terminology only.
           path = 'cyberppt/stage02_production/models.py'
           text = read(path)
           if '    handoff_sha256: str\n' not in text:
@@ -56,7 +55,6 @@ jobs:
           text = text.replace(old, 'script_input_sha256=sha256_file(script_input_path) or ""', 1)
           write(path, text)
 
-          # ImageGen compact-blueprint test consumes canonical Stage2 intake.
           path = 'tests/test_imagegen_page_manifest.py'
           text = read(path)
           text = text.replace(
@@ -88,7 +86,6 @@ jobs:
           text = text.replace(old, new, 1)
           write(path, text)
 
-          # Artifact-spec loader test creates the canonical intake file it hashes.
           path = 'tests/test_page_artifact_spec.py'
           text = read(path)
           old = '''            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"
@@ -102,7 +99,6 @@ jobs:
           text = text.replace(old, new, 1)
           write(path, text)
 
-          # Visual-structure freshness test prepares Stage2 intake directly.
           path = 'tests/test_visual_structure_stage.py'
           text = read(path)
           pattern = re.compile(
@@ -125,7 +121,6 @@ jobs:
           text = text.replace(old_hash, 'json.dumps({"source_sha256": _sha256(script_input)})', 1)
           write(path, text)
 
-          # Architecture regression also forbids the retired core field name.
           path = 'tests/test_stage_file_boundary.py'
           text = read(path)
           marker = '    for token in ("deck-plan.json","foundation.json","source-truth.json","outline.json"): assert token not in text\n'
@@ -143,4 +138,4 @@ jobs:
           git add -A
           git status --short
           git commit -m 'refactor: finalize Stage2 file-only boundary'
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git push origin HEAD:agent/stage-file-boundary
