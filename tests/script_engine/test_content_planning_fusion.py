@@ -118,6 +118,17 @@ def test_v2_lean_schema_and_audit_keep_only_outline_and_source_boundaries() -> N
     assert any("LEAN_SOURCE_REF_UNKNOWN" in issue for issue in issues)
 
 
+def test_v2_lean_plan_accepts_promoted_source_asset_boundary() -> None:
+    plan = _lean_plan()
+    foundation = _foundation()
+    foundation["source_assets"] = [{"id": "ASSET-0123456789ABCDEF"}]
+    plan["pages"][0]["source_refs"] = ["ASSET-0123456789ABCDEF"]
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert not any("LEAN_SOURCE_REF_UNKNOWN" in issue for issue in issues)
+
+
 def test_v2_lean_plan_rejects_author_and_visual_fields() -> None:
     plan = _lean_plan()
     plan["narrative_design"] = {"mode": "direct"}

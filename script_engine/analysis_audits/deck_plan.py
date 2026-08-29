@@ -346,6 +346,11 @@ def _source_argument_binding_issues(
 
     if _is_lean_plan(plan):
         items = foundation_items_by_id(foundation)
+        known_refs = set(items).union(
+            str(asset.get("id"))
+            for asset in foundation.get("source_assets") or []
+            if isinstance(asset, dict) and asset.get("id")
+        )
         issues: list[str] = []
         for index, page in enumerate(plan.get("pages") or []):
             if not isinstance(page, dict):
@@ -358,7 +363,7 @@ def _source_argument_binding_issues(
             if not refs:
                 issues.append(f"pages.{index} ({page_id}): LEAN_SOURCE_BOUNDARY_MISSING")
                 continue
-            unknown = sorted(set(refs) - set(items))
+            unknown = sorted(set(refs) - known_refs)
             if unknown:
                 issues.append(f"pages.{index} ({page_id}): LEAN_SOURCE_REF_UNKNOWN: {unknown}")
         return issues
