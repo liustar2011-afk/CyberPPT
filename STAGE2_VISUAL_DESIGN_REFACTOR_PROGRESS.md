@@ -26,7 +26,7 @@
 - [x] P1.1 修正 Generation Feasibility 评分：允许真实 0–100 分，`score == sum(dimensions)`，取消候选必须 100 分。
 - [x] P1.2 引入 `focus_policy`，保留旧 `visual_center_count` 兼容读取。
 - [x] P1.3 修复 `parallel_set` 与唯一 result / 唯一视觉中心冲突。
-- [ ] P1.4 将 scene 布尔值升级为 scene policy，支持 `required / allowed / forbidden / auto`，消除 `semantic_brief -> use_scene=False` 的硬绑定。
+- [x] P1.4 将 scene 布尔值升级为 scene policy，支持 `required / allowed / forbidden / auto`，消除 `semantic_brief -> use_scene=False` 的硬绑定。
 
 ### Phase 2｜Region Graph
 - [ ] P2.1 定义 Region Graph 数据合同与 Schema。
@@ -133,3 +133,28 @@ Commit：`ec9566f7cd69aff5f1abdaca3810132cbc01a953`
 代码 Commit：`4acb15b16af65fe84ff2323284c879c770e7e0a2`
 
 临时 runner 清理 Commit：`80373fc8ea1f828c9dd979be5325460d2bb7bdc5`
+
+### P1.4｜Scene Policy 合同闭环
+状态：完成。
+
+变更：
+- 场景合同升级为 `scene_policy`，支持 `required`、`allowed`、`forbidden`、`auto`；新 Stage2 逻辑以该字段为权威。
+- `semantic_brief` 默认写入 `scene_policy: auto`，不再因为 prompt mode 预先排除业务场景、对象插图或混合视觉。
+- `image_plan.scene_policy` 成为 page visual schema 1.1 的正式字段；旧 `use_scene` 继续保留为 deprecated 兼容字段。
+- `PageArtifactSpec.VisualCarrierSpec`、visual budget、`VisualDesignIR`、视觉结构审计、独立 validator、Skill、quality gates 和 output contract 全部消费或校验 scene policy。
+- visual budget 与 relationship topology 解开原有硬绑定；`parallel_set` 在 scene policy 允许时可以采用 integrated scene。
+- 保留旧项目兼容读取：旧规格只有 `use_scene` 时仍可映射为兼容 policy，不要求历史项目一次性迁移。
+- 通用 domain-neutral Skill fixture 同步升级为 scene policy 合同。
+
+验证：
+- Domain-neutral fixtures：`6 valid / 78 invalid / 18 style variants` 全部通过。
+- P1.4 定向回归：`135 passed`。
+- runner 全量回归：`1647 passed / 9 skipped / 53 subtests passed`。
+- 清理临时 runner 后，标准 `CyberPPT tests` 在 Python 3.10 / 3.12 双版本均通过。
+
+代码 Commit：`0e715752ff3dfc111f625e880a2857d5621dea73`
+
+临时 runner 最终清理 Commit：`a7740e26fd2298ad77c76d2ea58e4526c3ce4aad`
+
+### Phase 1｜合同修正
+状态：完成。P1.1–P1.4 已全部落地并通过标准双版本 CI；下一断点为 P2.1 Region Graph 数据合同与 Schema。
