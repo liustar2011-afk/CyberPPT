@@ -22,6 +22,7 @@ jobs:
       - name: Refine standalone file-boundary patch
         run: |
           python scripts/_fix_stage_file_boundary_v4.py
+          python scripts/_repair_stage_file_boundary_v5.py
           python scripts/_fix_stage_file_boundary_v5.py
       - name: Apply standalone file-boundary refactor
         run: python scripts/_apply_stage_file_boundary_v2.py
@@ -33,6 +34,7 @@ jobs:
           rm -f scripts/_fix_stage_file_boundary_v3.py
           rm -f scripts/_fix_stage_file_boundary_v4.py
           rm -f scripts/_fix_stage_file_boundary_v5.py
+          rm -f scripts/_repair_stage_file_boundary_v5.py
           rm -f .github/workflows/stage-file-boundary.yml
       - name: Install test dependencies
         run: |
