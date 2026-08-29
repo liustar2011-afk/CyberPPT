@@ -164,6 +164,8 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     issues.extend(check_full_copy_structure(final_script))
     issues.extend(check_full_copy_topic_semantics(final_script))
     issues.extend(check_onscreen_heading_semantics(final_script))
+    issues.extend(check_onscreen_detail_semantics(final_script))
+    issues.extend(check_onscreen_code_context(final_script))
     issues.extend(check_onscreen_core_alignment(final_script))
     return issues
 
@@ -264,6 +266,7 @@ _SEMANTIC_PREDICATES = (
     "衔接", "承接", "服务", "完成", "保持", "安排", "界定", "匹配", "促进",
     "实现", "贯通", "增加", "提出", "转化", "构成", "支撑", "保障",
     "导致", "滞后", "已有", "校准", "承载", "对应", "建成", "推进",
+    "确立", "体现", "规定", "检验", "固化", "纳入", "发布", "启动",
 )
 _ABSTRACT_TOPIC_SENTENCE_RE = re.compile(
     r"(?:任务|要求|工作|建设|内容).{0,8}(?:具体化|更加明确|进一步明确|更为清晰|具有重要意义|意义重大)"
@@ -275,6 +278,15 @@ _FORMAL_TAXONOMY_HEADING_RE = re.compile(r"^(?:[A-Z]\s+|\d{1,2}[.、．\s]+)\S+"
 _CONTEXT_DEPENDENT_HEADING_RE = re.compile(
     r"^(?:国家|行业|项目|研究|体系)(?:已|将|需|应|可|形成|明确|推进|承担|负责|提供|支撑)"
     r"|^后续(?:推进|开展|落实)"
+)
+_DANGLING_MODIFIER_RE = re.compile(r"^(?:以|基于|围绕|结合|按照|通过|面向|依托|针对)")
+_PASS_RESULT_RE = re.compile(r"^通过.{2,}(?:评价|认证|验收|审核|审查)$")
+_GENERIC_DETAIL_TAIL_RE = re.compile(
+    r"^(?:国家政策|行业特点|协同实施|形成支撑|相关要求|有关工作|持续推进)$"
+)
+_CODE_ONLY_MAPPING_RE = re.compile(
+    r"^[A-G](?:\d+|类)(?:\s*(?:\+|＋|、|/|／)\s*[A-G](?:\d+|类))*$",
+    re.IGNORECASE,
 )
 
 
@@ -368,6 +380,78 @@ def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
                     f"ONSCREEN_HEADING_INCOMPLETE: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
                     f"'{heading}' is only a category label; state the object and its action, status, role or judgment"
                 )
+    return issues
+
+
+def check_onscreen_detail_semantics(final_script: dict[str, Any]) -> list[str]:
+    """Reject detail lines that stop at a basis, condition, method or scope.
+
+    A detail may inherit the module's subject, and a semantic label may establish the
+    relation. It may not leave an introductory modifier such as ``以…`` or ``围绕…``
+    without the action or result that completes the business meaning.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        for module_index, module in enumerate(slide.get("onscreen") or []):
+            if not isinstance(module, dict):
+                continue
+            lines: list[tuple[str, str]] = []
+            text = module.get("text")
+            if isinstance(text, str) and text.strip():
+                lines.append(("text", text.strip()))
+            lines.extend(
+                (f"items[{item_index}]", item.strip())
+                for item_index, item in enumerate(module.get("items") or [])
+                if isinstance(item, str) and item.strip()
+            )
+            for field, line in lines:
+                parts = _LABEL_SPLIT_RE.split(line, maxsplit=1)
+                body = parts[1].strip() if len(parts) == 2 else line
+                if (
+                    _DANGLING_MODIFIER_RE.search(body)
+                    and not _has_complete_semantic_predicate(body)
+                    and not _PASS_RESULT_RE.search(body)
+                ):
+                    issues.append(
+                        f"ONSCREEN_DANGLING_MODIFIER: slides.{index} ({slide_id}).onscreen[{module_index}].{field}: "
+                        f"'{line}' states only a basis, condition, method or scope; add the business action or result"
+                    )
+                elif len(parts) == 2 and _GENERIC_DETAIL_TAIL_RE.fullmatch(_normalize_item_text(body)):
+                    issues.append(
+                        f"ONSCREEN_DETAIL_GENERIC: slides.{index} ({slide_id}).onscreen[{module_index}].{field}: "
+                        f"'{line}' uses a semantic label but leaves the business matter abstract"
+                    )
+    return issues
+
+
+def check_onscreen_code_context(final_script: dict[str, Any]) -> list[str]:
+    """Reject taxonomy-code mappings that require the previous page to decode.
+
+    The check is deliberately narrow: it only fires when the complete detail body is
+    one or more codes such as ``A3 + D3`` or ``F类``. Codes accompanied by their
+    business names remain valid, and richer semantic judgment stays with AUTHOR.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        for module_index, module in enumerate(slide.get("onscreen") or []):
+            if not isinstance(module, dict):
+                continue
+            for item_index, item in enumerate(module.get("items") or []):
+                if not isinstance(item, str) or not item.strip():
+                    continue
+                parts = _LABEL_SPLIT_RE.split(item.strip(), maxsplit=1)
+                body = parts[1].strip() if len(parts) == 2 else item.strip()
+                if _CODE_ONLY_MAPPING_RE.fullmatch(body):
+                    issues.append(
+                        f"ONSCREEN_CODE_WITHOUT_NAME: slides.{index} ({slide_id}).onscreen[{module_index}].items[{item_index}]: "
+                        f"'{item}' exposes only taxonomy codes; add each code's business name or role so the page is self-readable"
+                    )
     return issues
 
 def check_full_copy_structure(final_script: dict[str, Any]) -> list[str]:

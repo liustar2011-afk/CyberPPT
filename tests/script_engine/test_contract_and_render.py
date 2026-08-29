@@ -346,6 +346,82 @@ def test_lint_final_script_allows_onscreen_projection_without_verbatim_repetitio
     issues = lint_final_script(payload)
     assert not any("ONSCREEN_CORE_MISALIGNED" in issue for issue in issues)
 
+
+def test_lint_final_script_flags_dangling_onscreen_modifier() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {
+            "heading": "电力行业亟需构建覆盖全生命周期的标准体系",
+            "text": "以《国家数据基础设施建设指引》为总纲，结合电力行业专业特点",
+            "items": ["建设依据：以国家数据基础设施建设指引为总纲"],
+        }
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert sum("ONSCREEN_DANGLING_MODIFIER" in issue for issue in issues) == 2
+
+
+def test_lint_final_script_allows_complete_label_relation_and_modifier_clause() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {
+            "heading": "电力行业亟需构建覆盖全生命周期的标准体系",
+            "text": "本项研究以国家指引为依据构建电力行业标准体系",
+            "items": [
+                "覆盖范围：电力数据全生命周期和全产业链",
+                "通过标准验证检验标准适用性",
+                "数据资产管理：通过DCMM最高等级评价",
+            ],
+        }
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_DANGLING_MODIFIER" in issue for issue in issues)
+
+
+def test_lint_final_script_flags_generic_label_tail() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "标准体系建设需要明确依据", "items": ["建设依据：国家政策"]}
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert any("ONSCREEN_DETAIL_GENERIC" in issue for issue in issues)
+
+
+def test_lint_final_script_flags_taxonomy_codes_without_business_names() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {
+            "heading": "关键子体系对应先行先试项目四类能力",
+            "items": ["三统一：A3 + D3", "安全保障：F类"],
+        }
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert sum("ONSCREEN_CODE_WITHOUT_NAME" in issue for issue in issues) == 2
+
+
+def test_lint_final_script_allows_taxonomy_codes_with_business_names() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {
+            "heading": "关键子体系对应先行先试项目四类能力",
+            "items": [
+                "三统一：A3标识与目录 + D3身份与接入",
+                "安全保障：F类安全保障标准",
+            ],
+        }
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_CODE_WITHOUT_NAME" in issue for issue in issues)
+
 def test_lint_final_script_flags_restating_aside_in_speaker_notes() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["speaker_notes"] = "也就是说，这一页的结论是可以直接复用的。"

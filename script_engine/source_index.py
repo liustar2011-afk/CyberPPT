@@ -548,7 +548,9 @@ def validate_foundation_source_bindings(
     return issues
 
 
-_DETAIL_SENTENCE_SPLIT_RE = re.compile(r"[。！？!?；;]+")
+_DETAIL_SENTENCE_SPLIT_RE = re.compile(
+    r"[。！？!?；;\n]+|(?=(?:一|二|三|四|五|六|七|八|九|十)是)"
+)
 _DETAIL_MEANINGFUL_RE = re.compile(r"[一-鿿A-Za-z0-9]")
 
 
@@ -569,6 +571,19 @@ def _detail_obligation_count(unit: dict[str, Any]) -> int:
         return max(1, len(clauses))
     meaningful = len(_DETAIL_MEANINGFUL_RE.findall(text))
     return max(len(clauses), 2 if meaningful >= 160 else 1)
+
+
+def _detail_overlap(source: str, authored: str) -> float:
+    """Return source bigram recall so generic labels cannot masquerade as detail."""
+
+    def bigrams(text: str) -> set[str]:
+        chars = "".join(_DETAIL_MEANINGFUL_RE.findall(text.lower()))
+        return {chars[index : index + 2] for index in range(max(0, len(chars) - 1))}
+
+    source_bigrams = bigrams(source)
+    if not source_bigrams:
+        return 1.0
+    return len(source_bigrams & bigrams(authored)) / len(source_bigrams)
 
 
 def validate_foundation_detail_atomicity(
@@ -617,6 +632,7 @@ def validate_foundation_detail_atomicity(
                     f"detail obligations but exposes {len(semantic_units)} semantic_units"
                 )
             covered_refs: set[str] = set()
+            authored_by_ref: dict[str, list[str]] = {}
             for unit_index, unit in enumerate(semantic_units):
                 unit_refs = {
                     str(value)
@@ -632,12 +648,21 @@ def validate_foundation_detail_atomicity(
                         f"{item_id}.semantic_units[{unit_index}] must declare source_unit_ref(s)"
                     )
                 covered_refs.update(unit_refs)
+                for ref in unit_refs:
+                    authored_by_ref.setdefault(ref, []).append(str(unit.get("text") or ""))
             uncovered = sorted(set(cited) - covered_refs)
             if semantic_units and uncovered:
                 issues.append(
                     "FOUNDATION_SEMANTIC_UNIT_SOURCE_COVERAGE_GAP: "
                     f"{item_id}.semantic_units do not cover cited source units {uncovered}"
                 )
+            for ref in cited:
+                authored_text = "\n".join(authored_by_ref.get(ref) or [])
+                if _detail_overlap(str(indexed_units[ref].get("text") or ""), authored_text) < 0.35:
+                    issues.append(
+                        "FOUNDATION_SEMANTIC_UNIT_DETAIL_LOSS: "
+                        f"{item_id}.semantic_units abstract away source-specific content from {ref}"
+                    )
     return issues
 
 

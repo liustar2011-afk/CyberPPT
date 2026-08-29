@@ -136,6 +136,11 @@ Deck Plan 默认将相邻来源章节按受众问题、论证角色和承接关�
 页面合同，完成生成式写作、Critic 和整页重写。仅生成合法字段、运行审计或引用
 Skill 名称均不构成 AUTHOR 执行。
 
+进入 AUTHOR、CRITIQUE、REWRITE、单页修订或全稿审核前，主 Agent 必须完整读取
+`.agents/skills/cyberppt-script-workflow/references/authoring-contract.md`。该文件是
+操作性作者规则的唯一权威；`cyberppt-script-workflow/SKILL.md` 只负责路由和阶段边界，
+不得在两处维护重复作者规则。
+
 规划确认是对话中的人工停点；审核稿必须以 Markdown 等可读格式展示，不直接把 JSON 作为审核材料。
 
 ### 6. 汇总与交付最终全稿

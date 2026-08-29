@@ -1181,7 +1181,7 @@ DETAIL_TERMINAL_PUNCTUATION_CHARS = "。；，、：？！.!?;,:"
 
 
 def _onscreen_detail_terminal_punctuation_hits(text: str) -> tuple[str, ...]:
-    """Find label-prefixed detail lines (``标签：短语``) ending with punctuation.
+    """Find label-prefixed compact detail lines ending with punctuation.
 
     On-screen detail lines are bullet-style phrases, not manuscript
     sentences; a trailing period/comma/dunhao/etc. reads as an accidental
@@ -1346,7 +1346,7 @@ def _onscreen_parallel_structure_issues(page: ScriptPage) -> list[ScriptQualityI
                     "ONSCREEN_PARALLEL_STRUCTURE_INCONSISTENT",
                     page,
                     f"Module {title} mixes label-value items with free phrases instead of a parallel syntax.",
-                    "Use one peer syntax within the module (prefer 标签：短语); preserve each item's distinct business object, responsibility, or action.",
+            "Use one peer syntax within the module (标签：短语 is valid when the short value completely fills the declared semantic slot); preserve each item's distinct business object, responsibility, action, and material qualifier.",
                     evidence=tuple(child_lines[:6]),
                     severity="warning",
                 )

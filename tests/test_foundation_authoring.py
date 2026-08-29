@@ -271,6 +271,59 @@ def test_strict_v2_foundation_accepts_traceable_atomic_units() -> None:
     assert validate_foundation_detail_atomicity(foundation, index) == []
 
 
+def test_strict_v2_foundation_rejects_generic_semantic_units_with_valid_refs() -> None:
+    foundation = _foundation({}, statement="形成标准建设安排")
+    foundation.update(
+        {"source_consumption_policy": "required", "source_consumption_contract_version": 2}
+    )
+    foundation["facts"][0]["semantic_units"] = [
+        {"id": "F-1#0", "text": "形成标准建设安排", "source_unit_refs": ["SU-1"]},
+        {"id": "F-1#1", "text": "完善相关制度要求", "source_unit_refs": ["SU-1"]},
+    ]
+    index = _strict_v2_index([
+        "参考架构明确与国家数据基础设施总体架构的映射关系。"
+        "标识目录规定电力数据标识管理和目录描述要求。"
+    ])
+
+    issues = validate_foundation_detail_atomicity(foundation, index)
+
+    assert any("FOUNDATION_SEMANTIC_UNIT_DETAIL_LOSS" in issue for issue in issues)
+
+
+def test_strict_v2_foundation_rejects_generic_units_for_multiple_atomic_sources() -> None:
+    foundation = _foundation({}, statement="形成标准建设安排")
+    foundation.update(
+        {"source_consumption_policy": "required", "source_consumption_contract_version": 2}
+    )
+    foundation["facts"][0]["source_refs"] = ["SU-1", "SU-2"]
+    foundation["facts"][0]["semantic_units"] = [
+        {"id": "F-1#0", "text": "形成架构安排", "source_unit_refs": ["SU-1"]},
+        {"id": "F-1#1", "text": "完善目录要求", "source_unit_refs": ["SU-2"]},
+    ]
+    index = _strict_v2_index([
+        "参考架构明确与国家数据基础设施总体架构的映射关系。",
+        "标识目录规定电力数据标识管理和目录描述要求。",
+    ])
+
+    issues = validate_foundation_detail_atomicity(foundation, index)
+
+    assert sum("FOUNDATION_SEMANTIC_UNIT_DETAIL_LOSS" in issue for issue in issues) == 2
+
+
+def test_strict_v2_foundation_detects_enumerated_compound_paragraph() -> None:
+    foundation = _foundation({}, statement="形成两项建设安排")
+    foundation.update(
+        {"source_consumption_policy": "required", "source_consumption_contract_version": 2}
+    )
+    index = _strict_v2_index([
+        "一是建立跨部门数据共享责任清单，二是明确数据申请审核与授权边界"
+    ])
+
+    issues = validate_foundation_detail_atomicity(foundation, index)
+
+    assert any("FOUNDATION_SOURCE_DETAIL_ATOMICITY_GAP" in issue for issue in issues)
+
+
 def test_strict_v2_foundation_keeps_short_atomic_fact_lightweight() -> None:
     foundation = _foundation({}, statement="标准体系分为四类")
     foundation.update(
