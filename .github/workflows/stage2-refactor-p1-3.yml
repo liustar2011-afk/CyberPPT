@@ -1,0 +1,112 @@
+name: Stage2 refactor P1.3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p1-3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Apply P1.3 patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          compiler = Path("cyberppt/visual_stage/compiler.py")
+          text = compiler.read_text(encoding="utf-8")
+          replacements = {
+              '"kind": "result" if key == focus_key else "process",': '"kind": "fact" if focus_policy == "peer_field" else ("result" if key == focus_key else "process"),',
+              '"role": "judgment" if key == focus_key else "evidence"': '"role": "evidence" if focus_policy == "peer_field" else ("judgment" if key == focus_key else "evidence")',
+              '"binding": "result" if key == focus_key else "embedded",': '"binding": "embedded" if focus_policy == "peer_field" else ("result" if key == focus_key else "embedded"),',
+              '"primary_refs": [focus_id],': '"primary_refs": [eid[key] for key in evidence_keys] if focus_policy == "peer_field" else [focus_id],',
+              '"secondary_refs": [eid[key] for key in evidence_keys if key != focus_key],': '"secondary_refs": [] if focus_policy == "peer_field" else [eid[key] for key in evidence_keys if key != focus_key],',
+              '"visual_center_count": 1,': '"visual_center_count": len(evidence_keys) if focus_policy == "peer_field" else 1,',
+              '"secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if key != focus_key],': '"secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if focus_policy == "peer_field" or key != focus_key],',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f"P1.3 compiler target not found: {old}")
+              text = text.replace(old, new, 1)
+          compiler.write_text(text, encoding="utf-8")
+
+          contract = Path("cyberppt/visual_structure_contract.py")
+          text = contract.read_text(encoding="utf-8")
+          pattern = re.compile(r'def _audit_focus_competition\(page_spec: dict\[str, Any\], issue: Any, page_id: str\) -> dict\[str, Any\]:\n.*?\n\ndef _audit_content_integrity_alignment', re.S)
+          replacement = '''def _page_focus_policy(page_spec: dict[str, Any]) -> str:\n    visual = page_spec.get("visual_decision") if isinstance(page_spec.get("visual_decision"), dict) else {}\n    policy = str(visual.get("focus_policy") or "").strip()\n    # Legacy specs predate focus_policy and keep the former single-anchor semantics.\n    return policy or "single_anchor"\n\n\ndef _audit_focus_competition(page_spec: dict[str, Any], issue: Any, page_id: str) -> dict[str, Any]:\n    structural = page_spec.get("structural_decision") if isinstance(page_spec.get("structural_decision"), dict) else {}\n    focus = structural.get("semantic_focus") if isinstance(structural.get("semantic_focus"), dict) else {}\n    focus_ref = str(focus.get("ref") or "")\n    p0_ids = {\n        str(item.get("id") or "")\n        for item in page_spec.get("evidence_units") or []\n        if isinstance(item, dict) and item.get("priority") == "P0"\n    }\n    result_bindings = [\n        binding for binding in structural.get("text_bindings") or []\n        if isinstance(binding, dict) and binding.get("binding") == "result"\n    ]\n    result_refs = [str(binding.get("target_ref") or binding.get("evidence_id") or "") for binding in result_bindings]\n    primary_refs = [str(value) for value in structural.get("primary_refs") or []]\n    focus_policy = _page_focus_policy(page_spec)\n    if focus_policy == "peer_field":\n        if result_refs or set(primary_refs) != p0_ids or len(primary_refs) != len(p0_ids):\n            issue(\n                "FOCUS_COMPETITION_DETECTED",\n                "peer_field must expose every P0 peer as co-primary and must not create a result binding.",\n                page_id,\n            )\n            return {"status": "failed", "primary_refs": primary_refs}\n        return {"status": "passed", "primary_refs": primary_refs}\n    if not focus_ref or focus_ref not in p0_ids or focus_ref not in result_refs or len(result_refs) != 1:\n        issue("FOCUS_COMPETITION_DETECTED", "The selected focus must be the sole P0 result-binding target.", page_id)\n        return {"status": "failed", "primary_ref": focus_ref}\n    return {"status": "passed", "primary_ref": focus_ref}\n\n\ndef _audit_content_integrity_alignment'''
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit("P1.3 focus audit function not replaced")
+          old = 'if graph_focus_node and focus_role and focus_role != "judgment":\n'
+          new = 'if graph_focus_node and focus_role and focus_role != "judgment" and _page_focus_policy(page_spec) != "peer_field":\n'
+          if old not in text:
+              raise SystemExit("P1.3 focus role guard not found")
+          contract.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          schema = Path("vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json")
+          schema_text = schema.read_text(encoding="utf-8")
+          old = '''        "visual_center_count": {\n          "const": 1,\n          "description": "Deprecated compatibility field. New visual-structure logic uses focus_policy."\n        },'''
+          new = '''        "visual_center_count": {\n          "type": "integer",\n          "minimum": 1,\n          "maximum": 7,\n          "description": "Deprecated compatibility count. focus_policy is authoritative; peer_field may expose multiple co-primary centers."\n        },'''
+          if old not in schema_text:
+              raise SystemExit("P1.3 schema center field not found")
+          schema.write_text(schema_text.replace(old, new, 1), encoding="utf-8")
+
+          validator = Path("vendor/skills/ppt-visual-structure-designer/scripts/validate_visual_spec.py")
+          validator_text = validator.read_text(encoding="utf-8")
+          old = '''    vd = page.get("visual_decision", {})\n    if vd.get("visual_center_count") != 1:\n        add(issues, "error", "visual_center", "Page must have exactly one visual center", n)\n'''
+          new = '''    vd = page.get("visual_decision", {})\n    explicit_focus_policy = str(vd.get("focus_policy") or "").strip()\n    visual_center_count = vd.get("visual_center_count")\n    if explicit_focus_policy == "peer_field":\n        if not isinstance(visual_center_count, int) or visual_center_count < 2:\n            add(issues, "error", "visual_center", "peer_field requires multiple co-primary visual centers", n)\n    elif explicit_focus_policy and visual_center_count != 1:\n        add(issues, "error", "visual_center", f"{explicit_focus_policy} currently requires one compatibility visual center", n)\n    elif not explicit_focus_policy and visual_center_count != 1:\n        add(issues, "error", "visual_center", "Legacy page must have exactly one visual center", n)\n'''
+          if old not in validator_text:
+              raise SystemExit("P1.3 validator center block not found")
+          validator.write_text(validator_text.replace(old, new, 1), encoding="utf-8")
+
+          skill = Path("vendor/skills/ppt-visual-structure-designer/SKILL.md")
+          skill_text = skill.read_text(encoding="utf-8")
+          old = "- 每页只有一个语义焦点和一种主关系，次级关系必须从属。"
+          new = "- 每页保持一种主关系和一个整体主结构；视觉重心数量由 `focus_policy` 决定。`single_anchor` 保持单一锚点，`peer_field` 保持同权节点共同主表达，不得人为制造唯一结果或最大节点。"
+          if old not in skill_text:
+              raise SystemExit("P1.3 Skill single-focus rule not found")
+          skill.write_text(skill_text.replace(old, new, 1), encoding="utf-8")
+
+          gates = Path("vendor/skills/ppt-visual-structure-designer/references/quality-gates.md")
+          gate_text = gates.read_text(encoding="utf-8")
+          old = "- 两个以上元素同时具有最大体量、最强对比或最亮色彩。"
+          new = "- `single_anchor` 页面出现两个以上相互竞争的最大体量、最强对比或最亮元素。\n- `peer_field` 页面把任一同权证据强制升格为唯一结果、最大节点或唯一视觉中心。"
+          if old not in gate_text:
+              raise SystemExit("P1.3 quality gate focus rule not found")
+          gates.write_text(gate_text.replace(old, new, 1), encoding="utf-8")
+
+          test = Path("tests/test_stage2_focus_policy.py")
+          test_text = test.read_text(encoding="utf-8")
+          test_text = test_text.replace('assert page["visual_decision"]["visual_center_count"] == 1', 'assert page["visual_decision"]["visual_center_count"] == 2', 1)
+          test_text += '''\n\ndef test_parallel_set_keeps_all_peers_co_primary_without_result_binding():\n    page = _page("parallel_set", ["peer"], "framework_4")\n    assert {item["role"] for item in page["semantic_graph"]["nodes"]} == {"evidence"}\n    assert {item["kind"] for item in page["evidence_units"]} == {"fact"}\n    assert set(page["structural_decision"]["primary_refs"]) == {"E1", "E2"}\n    assert page["structural_decision"]["secondary_refs"] == []\n    assert all(item["binding"] == "embedded" for item in page["structural_decision"]["text_bindings"])\n\n\ndef test_peer_field_focus_audit_accepts_co_primary_peers():\n    from cyberppt.visual_structure_contract import _audit_focus_competition\n\n    page = _page("parallel_set", ["peer"], "framework_4")\n    issues = []\n    def issue(code, message, page_id=None):\n        issues.append((code, message, page_id))\n    result = _audit_focus_competition(page, issue, "p01")\n    assert result["status"] == "passed"\n    assert issues == []\n\n\ndef test_peer_field_focus_audit_rejects_invented_result_binding():\n    from cyberppt.visual_structure_contract import _audit_focus_competition\n\n    page = _page("parallel_set", ["peer"], "framework_4")\n    page["structural_decision"]["text_bindings"][0]["binding"] = "result"\n    issues = []\n    def issue(code, message, page_id=None):\n        issues.append((code, message, page_id))\n    result = _audit_focus_competition(page, issue, "p01")\n    assert result["status"] == "failed"\n    assert issues[0][0] == "FOCUS_COMPETITION_DETECTED"\n'''
+          test.write_text(test_text, encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run targeted regression
+        run: |
+          python -m pytest -q tests/test_stage2_focus_policy.py tests/test_visual_structure_stage.py tests/test_visual_structure_contract.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit P1.3
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/visual_stage/compiler.py cyberppt/visual_structure_contract.py vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json vendor/skills/ppt-visual-structure-designer/scripts/validate_visual_spec.py vendor/skills/ppt-visual-structure-designer/SKILL.md vendor/skills/ppt-visual-structure-designer/references/quality-gates.md tests/test_stage2_focus_policy.py
+          git commit -m "fix(stage2): preserve true peer focus for parallel pages"
+          git push origin HEAD:main
