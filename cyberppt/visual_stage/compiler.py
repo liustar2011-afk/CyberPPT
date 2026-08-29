@@ -566,9 +566,9 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
                 for key in evidence_keys
             ],
             "representation_freedom": {
-                "carrier": "bounded",
-                "medium": "bounded",
-                "reason": "视觉媒介须服从scene_policy与已声明业务关系；区域内部具体实现由ImageGen完成" if prompt_mode == "semantic_brief" else "定向构图模式锁定来源支持的业务关系场与文字贴附方式",
+                "carrier": "constrained",
+                "medium": "free",
+                "reason": "视觉媒介须服从scene policy与已声明业务关系；区域内部具体实现由ImageGen完成" if prompt_mode == "semantic_brief" else "定向构图模式锁定来源支持的业务关系场与文字贴附方式",
             },
         },
         "visual_decision": {
@@ -599,8 +599,6 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "regions": [{"id": "R_RELATION", "role": "relation-bearing business field", "x": 80, "y": 120, "w": 1888, "h": 800, "priority": "primary"}],
         },
         "image_plan": {
-            "scene_policy": scene_policy,
-            # Deprecated compatibility field. `scene_policy` is authoritative.
             "use_scene": _legacy_use_scene(scene_policy),
             "scene_type": str(design["scene_type"]),
             "business_object": design["business_object"],
@@ -612,7 +610,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         },
         "visual_budget": visual_budget,
         "expression_contract": expression_contract,
-        "quality_contract": quality_contract,
+        "quality_contract": quality_contract | {"scene_policy": scene_policy},
         "connectors": connectors,
         "final_text": final_text,
         "generation_handoff": {
@@ -670,6 +668,7 @@ def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
         node_summary = ", ".join(f"{node['id']}({node['role']})" for node in sg["nodes"])
         edge_summary = "; ".join(f"{edge['from']} -> {edge['to']}（{edge['relation']}，{edge['direction']}）" for edge in sg["edges"]) or "无"
         forbidden_summary = ", ".join(sg["forbidden_structures"]) or "无"
+        scene_policy = str(page.get("quality_contract", {}).get("scene_policy") or "legacy")
         lines += [
             f"## 第{page['page_number']}页｜{page['page_title']}", "", "### 页面角色", page["page_role"], "",
             "### 页面使命", page["page_mission"], "", "### 核心结论", page["core_judgment"], "",
@@ -683,7 +682,7 @@ def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
             f"- 空间语法：{', '.join(structural['spatial_grammar'])}",
             f"- 主结构：{', '.join(structural['primary_refs'])}", f"- 文字归属：{vd['text_integration_method']}", "",
             "### 页面草图", f"- 页面业务关系场：{page['image_plan']['business_object']}",
-            f"- 场景策略：{page['image_plan'].get('scene_policy', 'legacy')}；配图预算：{visual_budget.get('mode', 'integrated_scene')}；最多辅助片段 {visual_budget.get('max_auxiliary_fragments', 4)} 个；作用域 {visual_budget.get('scope', 'region')}；区域局部配图 {visual_budget.get('region_local_visuals', True)}", "",
+            f"- 场景策略：{scene_policy}；配图预算：{visual_budget.get('mode', 'integrated_scene')}；最多辅助片段 {visual_budget.get('max_auxiliary_fragments', 4)} 个；作用域 {visual_budget.get('scope', 'region')}；区域局部配图 {visual_budget.get('region_local_visuals', True)}", "",
             "### 页面构图", vd['spatial_organization'], "", "### 实景锚点与图文融合", vd['relationship_encoding'], "",
             "### 元素与空间关系", page['image_plan']['placement'], "", "### 箭头与连接关系",
             *[f"- {item['from']} -> {item['to']}：{item['label']}" for item in page['connectors']], "",
