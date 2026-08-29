@@ -466,9 +466,9 @@ def _style_contract_from_payload(
     # to live as separate JSON fields (people_rule/factuality_rule/
     # semantic_image_text_rule/component_rule) are now authored directly
     # inside references/visual-system.md's "扩展风格9"/"扩展风格10" sections
-    # and arrive here already folded into prompt_contract. Style 10 is
-    # currently a byte-identical copy of Style 09's rules under its own
-    # numbered section, kept separate for independent future tuning.
+    # and arrive here already folded into prompt_contract. Style 09 and Style
+    # 10 keep independently authored live contracts under their own numbered
+    # sections so either surface can evolve without lock-snapshot drift.
     # The final prompt must carry this entire contract verbatim under its
     # formal style lock, rather than letting a downstream compiler select
     # clauses or recreate a terminal fragment. Page layout belongs to Stage 02.

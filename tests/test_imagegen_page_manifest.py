@@ -156,7 +156,9 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertNotIn("E1 -> E2", prompt)
         self.assertNotIn("【视觉组织原则】", prompt)
         self.assertEqual(1, prompt.count("【视觉风格｜不上屏】"))
-        self.assertIn("### 2. Anchor selection and composition — hard", prompt)
+        self.assertIn("### 1. Content authority and priority — hard", prompt)
+        self.assertIn("### 2. Visual identity — hard", prompt)
+        self.assertIn("### 6. Compact exclusion set — hard", prompt)
         # The source contract's own "### Final ImageGen execution lock" section is
         # removed from its mid-document position and reasserted once, verbatim, at
         # the true end of the prompt under the Chinese terminal-lock header -- see

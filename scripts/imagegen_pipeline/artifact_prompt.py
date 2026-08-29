@@ -479,6 +479,28 @@ def _region_graph_ir(spec: PageArtifactSpec) -> RegionGraphIR | None:
     )
 
 
+def _style09_template_guidance(spec: PageArtifactSpec) -> str:
+    """Select one Style 09 page grammar from the audited visual medium."""
+
+    preferred = spec.visual_medium_policy.preferred if spec.visual_medium_policy else "mixed"
+    if preferred in {"relationship_diagram", "data_visualization"}:
+        return (
+            "Use an infographic-engine page system: make the declared relationship or data "
+            "structure legible through a small number of semantic regions; use only authorized "
+            "connectors and keep all approved copy readable."
+        )
+    if preferred == "object_illustration":
+        return (
+            "Use a concept-product-breakdown page system: keep one declared business object "
+            "dominant and attach only source-supported components, roles or outcomes; do not "
+            "invent exploded parts."
+        )
+    return (
+        "Use a document-and-publishing page system: report-page typography, disciplined columns "
+        "or open editorial regions, aligned charts or captions when declared, and a calm reading rhythm."
+    )
+
+
 def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
     """Project the audited ``PageArtifactSpec`` into the final prompt IR."""
 
@@ -494,7 +516,9 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                 "CONTENT_STRUCTURE_CAPACITY_EXCEEDED: semantic groups "
                 f"({len(semantic_groups)}) exceed the page's {spec.content_root_count} authoritative root modules"
             )
-        live_style_surface = int(spec.art_direction.style_id or 0) in (9, 10)
+        style_id = int(spec.art_direction.style_id or 0)
+        live_style_surface = style_id in (9, 10)
+        style09_guidance = (_style09_template_guidance(spec),) if style_id == 9 else ()
         if spec.prompt_mode == "semantic_brief":
             composition = CompositionIR(
                 spatial_organization=(
@@ -509,7 +533,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                     "spatial implementation and supporting detail.",
                     "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; "
                     "do not invent a stronger relationship than the semantic context supports.",
-                ),
+                ) + style09_guidance,
             )
         else:
             spatial_organization = _prompt_safe_visual_text(spec.composition.spatial_organization)
@@ -520,7 +544,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             )
             visual_responsibility = (
                 "Use the named business objects, actors, actions and outcomes from the semantic sections as the page-specific visual anchor.",
-            ) + page_visual_responsibility
+            ) + page_visual_responsibility + style09_guidance
             composition = CompositionIR(
                 spatial_organization=spatial_organization,
                 primary_focus=spec.composition.primary_focus,

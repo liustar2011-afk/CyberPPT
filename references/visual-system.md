@@ -43,132 +43,73 @@
 
 ## 确认输出
 
-## 扩展风格9：纯白 + 深蓝领导汇报（压缩版）
+## 扩展风格9：纯白 + 深蓝领导汇报（Image 2 优化版）
 
 默认8种风格仍保持1—8不变。风格9仅供显式选择，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用。
 
-Palette: pure white background #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+Palette: pure white background #FFFFFF, deep blue #12355B, strongest text #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create an executive briefing page in a semantic scene-led editorial business-report style: authoritative, calm, refined and highly readable. Canvas 2048x1024; render only the PowerPoint body visual. Reserve title, subtitle, logo, page number, footer, template frame, source references, evidence ids and execution metadata for external layers.
+Create one finished 2048×1024 PowerPoint body visual in a semantic editorial executive-report style: authoritative, calm, matte and highly readable. Keep title, subtitle, logo, page number, footer, template frame and production metadata in external PowerPoint layers.
 
-### 1. Style identity — hard
+### 1. Content authority and priority — hard
 
-Build the page from page-specific business meaning: recognizable objects, actions, states, data/content assets, evidence, controlled boundaries and outcomes.
+The page prompt already declares the exact visible text, core judgment, business objects, relationship, semantic groups and reading boundary. Treat those declarations as the only content truth. Do not infer a second proposition, category, process, center hub or conclusion.
 
-Use pure white #FFFFFF as the page background. Deep blue carries hierarchy, relationships and conclusions; pale blue-grey supports local grouping; warm color marks risk, restriction or abnormal status.
+Priority: exact visible text and factual boundaries → declared relationship → page composition and presentation-template guidance → this style → decoration.
 
-Keep the visual language editorial, matte and restrained. Exclude generic office ambience, icon-led infographic layouts, glossy SaaS cards and decorative 3D.
+Render approved visible text only. Preserve every character, named entity, number, date, unit, scope, responsibility, condition, order and conclusion strength. Show each approved text unit once. Adapt line breaks, grouping and emphasis only inside that unit.
 
-### 2. Primary proposition and composition — hard
+### 2. Visual identity — hard
 
-Identify one primary semantic proposition and one primary business relationship. The proposition may be a judgment, explanation, definition, mechanism, process, comparison, requirement, proposal, pathway or outcome.
+Use #FFFFFF as background; #12355B for hierarchy and emphasis; #101820 for strongest text; #303030 for body; #6F7275 for secondary text; #C9CDD1 for dividers. Use #B45A3C only for a declared risk, restriction, abnormal status or pending action.
 
-Create one clear reading start, one coherent reading path and one final landing point.
+Keep the page editorial, matte and flat: crisp edges, disciplined whitespace, pale blue-grey fields, shallow overlap and restrained tonal separation. Create one dominant reading structure. Let genuinely parallel content receive equal visual treatment through a shared heading, baseline or field. Use unequal scale only for declared role differences.
 
-Use a page-specific business anchor only when it improves comprehension. Valid anchors include an operating scene, business object, data/content asset, action, evidence fragment, controlled field or outcome. Abstract pages may use a flat structured relationship field.
+Prefer open grouping, alignment, whitespace and short dividers. Use a complete container only for a declared boundary, comparison or necessary local group.
 
-Text space is allocated first. Approved text must remain at comfortable executive reading scale. The visual anchor has no fixed area target; crop, simplify, shrink or remove it when reading space is needed.
+### 3. Reading mode — hard
 
-Create semantic regions by meaning, not item count. Do not automatically turn several items into equal cards, columns, rows or stages. Equal treatment is valid only for genuinely parallel content.
+Allocate text regions before imagery. Use a modern Chinese sans-serif appearance with stable glyphs, high contrast and comfortable spacing. Headings locate meaning; complete concise statements explain it.
 
-Prefer open grouping, alignment, whitespace, tonal contrast and thin dividers before complete containers.
+Keep each semantic unit together. Do not reduce statements to keywords, slogans or noun stacks. Keep metrics in their unit unless assigned a separate role.
 
-### 3. Content fidelity and reading-mode typography — hard
+For dense content, enlarge the reading field and simplify or remove imagery. Never reduce approved text to microcopy to preserve decoration.
 
-Treat supplied approved on-slide Chinese copy as final presentation copy.
+### 4. Semantic carrier and relationships — hard
 
-Preserve wording, facts, named entities, numbers, dates, units, scope, responsibilities, sequence, causal/conditional/comparison relationships and conclusion strength.
+Follow the page-specific presentation-template guidance. Use only objects, actions, states, content/data assets, evidence fragments, boundaries and outcomes declared in the page prompt. When useful, use one dominant object or localized scene. For abstract, enumerative, policy, data or evidence-heavy pages, a flat structured relationship field or publication-like layout is valid and may contain no scene.
 
-Do not summarize, paraphrase, retitle, rename, merge, omit, expand or invent approved copy. Verbatim/locked text, formal names, numbers, units, dates and policy clauses remain exact.
+Auxiliary imagery stays text-free. Place approved labels as normal page text beside the related object or region, never inside a screen, photo, device or perspective surface.
 
-Only layout may adapt: line breaks, grouping, placement, alignment, font size, weight and emphasis. Do not change wording, reading order or logic.
+Express relationships first through proximity, alignment, containment, scale, whitespace, color fields and numbering. For an ambiguous declared direction, use a short local deep-blue arrow from one source to one target, clear of text. Use restrained sequences for true processes, opposing fields for comparisons and equal peers for parallel content.
 
-Design for silent, self-contained reading. Each primary text unit must express one complete semantic unit. Short headings locate meaning; complete concise statements explain it. Do not reduce complete statements to keywords, slogan fragments or noun stacks merely to create whitespace.
+People are absent by default. If a human role is required, use a distant figure, back view or cropped hands, without a recognizable face or staged meeting scene. Do not depict real organization logos, seals, signage, headquarters or landmarks.
 
-Preserve subjects, actions, objects, conditions, responsibility boundaries, scope and outcomes whenever needed for comprehension. Visual structure may reinforce relationships but must not replace required wording.
+### 5. Shape, material and icon discipline — hard
 
-If content is dense, simplify imagery or enlarge the reading field. Never solve space pressure by shrinking text into microcopy.
+Use open color fields, right-angle panels, thin borders and short dividers on one quiet grid. Keep line weight consistent and corners precise; create shallow depth by overlap or tone.
 
-Use Microsoft YaHei where available, otherwise a close modern Chinese sans-serif. Headings are visibly stronger than supporting text. Keep key metrics inside their original semantic unit rather than duplicating them as separate KPI tiles.
+Icon count is zero by default. Allow one small flat deep-blue icon only to resolve immediate semantic ambiguity. Never map an icon, badge, card or image to every item.
 
-### 4. Reusable composition grammars
+Avoid pills, thick frames, container stacks, glossy or exaggerated 3D, isometric toys, glassmorphism, neon, holograms, hero objects, platforms and cinematic lighting.
 
-Choose one primary grammar; add a second only when a separate essential relationship requires it.
+### 6. Compact exclusion set — hard
 
-- **Continuous transformation**: one object/state changes through a sequence; use state and spatial progression, not equal step cards.
-- **Core object with attached actions**: one object or environment anchors the page; supporting capabilities, conditions or outcomes attach through proximity, alignment and containment.
-- **Dual-field comparison**: two states or approaches share one comparison basis and one decisive difference or outcome.
-- **Multi-source convergence**: several sources, actors or assets converge toward one shared capability, decision or result.
-- **Controlled containment**: one protected object or state sits inside a controlled field; access and approved output appear through boundaries and checkpoints.
-- **Parallel-direction shared evidence**: parallel directions or dimensions share one evidence/evaluation field; do not assign one icon or scene mechanically to every direction.
+No extra text, pseudo-Chinese, fabricated data, watermark, logo or organization mark. No office or meeting tableau, dashboard wall, control room or generic technology panorama. No icon wall, badge grid, automatic equal-card wall, unsupported radial hub, duplicate process chain, second conclusion structure or decorative summary band.
 
-### 5. Scene, evidence and people — hard
-
-Use scenes, illustrations, evidence fragments or business objects only when they strengthen a page-supported concept, action, asset, condition, boundary or outcome. Every visible element must have a semantic reason to exist.
-
-Use page-specific semantic scenes. Exclude generic meeting rooms, desks, anonymous office workers, staged workplace scenes, decorative control rooms, dashboard walls and generic technology panoramas.
-
-Auxiliary imagery is text-free by default: no embedded labels, numbers, captions, UI copy, signage, pseudo-Chinese or factual data. Essential approved labels appear as normal page text beside the related object.
-
-People are absent by default. Avoid visible faces and staged meeting scenes. Do not depict real organization logos, seals, signage, recognizable headquarters or landmarks inside auxiliary imagery.
-
-### 6. Relationship, depth, icon and shape discipline — hard
-
-Express relationships first through position, grouping, containment, alignment, scale, color and numbering.
-
-Use arrows only when an explicit directional relationship cannot be understood through spatial organization alone. Keep arrows short, local, deep blue, single-source-to-single-target and clear of text.
-
-Maintain a flat editorial foundation with shallow natural depth through overlap, crop, scale contrast and tonal separation. Use matte surfaces and crisp edges.
-
-Exclude glossy/decorative 3D, exaggerated isometric perspective, cinematic lighting, glassmorphism, neon, holographic effects, floating hero objects, thick platforms and toy-like miniature models.
-
-Icon count is zero by default. Use one small flat deep-blue icon only when immediate semantic clarity would otherwise be lost. Never create icon rows, grids, walls, badges or pictogram sequences.
-
-Use right-angle flat panels, open color fields, thin borders and short dividers. Avoid pill shapes, thick frames and decorative container systems.
-
-### 7. Semantic economy and priority — hard
-
-Represent each source-supported concept once. Supporting visuals may add evidence, condition, boundary, state or outcome, but must not repeat the same label, sequence, hierarchy or conclusion.
-
-Use one primary visual metaphor or relationship field per page. Do not add duplicate process chains, summary bands or second result structures merely to fill space.
-
-Priority:
-approved on-slide copy and semantic completeness
-→ primary proposition and business relationship
-→ reading hierarchy
-→ page-specific business anchor
-→ evidence and outcomes
-→ indispensable auxiliary symbols.
-
-### 8. Hard constraints
-
-Do not invent business facts, numbers, organizations, actors, categories or conclusions.
-
-Do not rewrite, summarize, rename, omit or add approved copy; do not change facts, dates, units, responsibilities, scope or logical strength.
-
-Do not convert complete semantic statements into keyword lists.
-
-Do not map each body item to an isolated icon, image, card or badge.
-
-Do not create equal-weight peer cards when relationships differ, and do not invent unsupported hubs, radial mechanisms or process chains.
-
-Keep title and subtitle in the external PowerPoint layer.
+Do not copy a reference image's words, subject, card count, dashboard, arrow motif or layout. Reference images define finish, palette, edge precision and whitespace rhythm only.
 
 【风格09最终执行锁｜最高优先级】
 
-保持纯白 #FFFFFF 背景、深蓝主层级和克制的领导汇报编辑式构图。围绕一个页面主命题和一条清楚的阅读路径组织文字、业务对象、动作、状态、证据与结果；按实际语义组织页面，不根据条目数量自动生成等权卡片、列、步骤或图标模块。
+以页面已声明的精确上屏文字、事实边界和业务关系为最高优先级。保持纯白 #FFFFFF、深蓝 #12355B、克制哑光的编辑式领导汇报气质；全部锁定文字完整、清晰、只出现一次。
 
-上游上屏文字视为已经定稿，必须完整、清晰呈现；不得再次概括、改写、缩写、重新命名、删除或新增。允许调整断行、分组、位置、字号、字重和重点强调，但不得改变文字、阅读顺序和逻辑关系。页面必须能够脱离讲解独立阅读，不能把完整语义压缩成关键词、口号或名词堆叠。
+直接实现上游声明的对象、角色、关系、边界和结果。真实并列项可以等权处理；已声明角色存在差异时方可使用不等权尺度。辅助图像保持无文字，页面 chrome 保留给外部 PowerPoint 图层。
 
-先保证文字达到正常领导阅读尺度，再分配场景空间；文字较多时缩小、裁切、简化或取消非必要场景。视觉结构可以强化关系，但不得替代理解因果、条件、比较、顺序、责任、边界和结果所必需的文字。
+不新增类别、中心节点、流程、结论或可读文字；不使用通用办公场景、Dashboard 墙、图标墙、卡片墙、炫技 3D、玻璃拟态和无业务含义的科技装饰。参考图只提供色板、线条工艺、留白节奏和整体克制度。
 
-优先使用与本页语义直接相关的业务对象、动作、状态、数据/内容资产、受控边界、证据和结果。辅助配图默认无文字；不生成通用办公场景、Dashboard 墙、图标墙、炫技 3D、玻璃拟态和无业务含义的科技装饰。人物默认不出现，图标默认数量为 0。
+## 扩展风格10：纯白 + 深蓝领导汇报（独立保留版）
 
-关系优先通过位置、分组、包含、对齐、尺度、颜色和编号表达；仅在明确方向性关系无法通过空间结构表达时使用短小、局部、精确的深蓝箭头。最终页面应业务语义完整、阅读顺序明确、视觉主次清楚，并适合后续转换为可编辑 PowerPoint。
-
-## 扩展风格10：纯白 + 深蓝领导汇报（与风格9相同，仅编号不同）
-
-默认8种风格仍保持1—8不变。风格10是仅供显式选择的扩展风格，可通过 ID `10` 调用，不进入默认候选。
+默认8种风格仍保持1—8不变。风格10是独立维护、仅供显式选择的扩展风格，可通过 ID `10` 调用，不进入默认候选。
 
 Palette: pure white background #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 

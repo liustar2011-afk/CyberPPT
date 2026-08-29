@@ -36,9 +36,7 @@ def test_style_ten_is_style_nine_rule_replacement_explicit_extension() -> None:
     assert style_ten["extension_only"] is True
     assert resolve_default_style(style_name=style_ten["slug"])["id"] == 10
     assert resolve_default_style(style_name="ivory_deep_blue_semantic_scene")["id"] == 10
-    # Style 10 is now a byte-identical copy of Style 09's rules (including
-    # palette) under its own numbered slot -- see
-    # references/visual-system.md's "扩展风格10" section.
+    # Style 10 remains independently authored under its own numbered slot.
     assert style_ten["colors"]["background"] == "#FFFFFF"
     assert style_ten["colors"]["accent"] == "#12355B"
     assert "高级编辑式气质" in style_ten["scope_rule"]
@@ -129,7 +127,7 @@ def test_pair_manifest_accepts_style_ten() -> None:
 def test_style_ten_sample_and_reference_exist() -> None:
     assert (ROOT / "assets" / "palette-samples" / "palette-10.png").exists()
     reference = (ROOT / "references" / "visual-system.md").read_text(encoding="utf-8")
-    assert "扩展风格10：纯白 + 深蓝领导汇报（与风格9相同，仅编号不同）" in reference
+    assert "扩展风格10：纯白 + 深蓝领导汇报（独立保留版）" in reference
     style10_start = reference.index("## 扩展风格10：")
     style10_section = reference[style10_start:]
     assert "### 1. Style identity and semantic principle — hard" in style10_section
