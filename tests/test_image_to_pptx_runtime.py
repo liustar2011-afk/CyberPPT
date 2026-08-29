@@ -406,13 +406,30 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
         json.dumps(
             {
                 "production_mode": "image-to-editable-svg",
+                "visual_truth_policy": {
+                    "authority": "audited_full_image",
+                    "scope": "editable_reconstruction",
+                    "rule": "preserve accepted visual composition",
+                },
                 "output_variants": ["full"],
                 "source_script": str(script),
                 "content_page_numbers": [1],
                 "pairs": [
                     {
                         "page_number": 1,
-                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["登记编目"]}},
+                        "full": {
+                            "path": str(source),
+                            "canvas": "400x200",
+                            "status": "Generated",
+                            "text_audit": {"valid": True},
+                            "debug_receipt": {"visible_text": ["登记编目"]},
+                            "reconstruction_visual_source": {
+                                "authority": "audited_full_image",
+                                "path": str(source),
+                                "sha256": _hash(source),
+                                "immutable_visual_composition": True,
+                            },
+                        },
                         "authoring_svg": str(authored),
                         "clean_base": _clean_base_contract(source, clean),
                         "graphic_text_policy": _graphic_text_policy(
@@ -544,20 +561,47 @@ def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: P
         json.dumps(
             {
                 "production_mode": "image-to-editable-svg",
+                "visual_truth_policy": {
+                    "authority": "audited_full_image",
+                    "scope": "editable_reconstruction",
+                    "rule": "preserve accepted visual composition",
+                },
                 "output_variants": ["full"],
                 "source_script": str(script),
                 "content_page_numbers": [1, 2],
                 "pairs": [
                     {
                         "page_number": 1,
-                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}},
+                        "full": {
+                            "path": str(source),
+                            "canvas": "400x200",
+                            "status": "Generated",
+                            "text_audit": {"valid": True},
+                            "reconstruction_visual_source": {
+                                "authority": "audited_full_image",
+                                "path": str(source),
+                                "sha256": _hash(source),
+                                "immutable_visual_composition": True,
+                            },
+                        },
                         "authoring_svg": str(tmp_path / "missing.svg"),
                         "clean_base": _clean_base_contract(source, clean),
                         "graphic_text_policy": policy,
                     },
                     {
                         "page_number": 2,
-                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}},
+                        "full": {
+                            "path": str(source),
+                            "canvas": "400x200",
+                            "status": "Generated",
+                            "text_audit": {"valid": True},
+                            "reconstruction_visual_source": {
+                                "authority": "audited_full_image",
+                                "path": str(source),
+                                "sha256": _hash(source),
+                                "immutable_visual_composition": True,
+                            },
+                        },
                         "authoring_svg": str(authored),
                         "clean_base": _clean_base_contract(source, clean),
                         "graphic_text_policy": policy,
