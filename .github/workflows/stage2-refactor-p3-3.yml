@@ -1,0 +1,191 @@
+name: Stage2 refactor P3.3 medium policy contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p3-3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Expose and project Visual Medium Policy
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace_once(path, old, new, label):
+              path = Path(path)
+              text = path.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"{label} target not found")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          # Compiler: publish the already-resolved policy as page authority.
+          compiler = Path("cyberppt/visual_stage/compiler.py")
+          replace_once(
+              compiler,
+              '''        "region_graph": region_graph,\n        "structural_decision": {\n''',
+              '''        "region_graph": region_graph,\n        "visual_medium_policy": medium_policy,\n        "structural_decision": {\n''',
+              "compiler medium output",
+          )
+
+          # Page schema: embed the standalone medium-policy schema as an optional compatibility field.
+          policy_schema_path = Path("vendor/skills/ppt-visual-structure-designer/assets/visual-medium-policy.schema.json")
+          page_schema_path = Path("vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json")
+          policy_schema = json.loads(policy_schema_path.read_text(encoding="utf-8"))
+          page_schema = json.loads(page_schema_path.read_text(encoding="utf-8"))
+          embedded = {key: value for key, value in policy_schema.items() if key not in {"$schema", "$id", "title"}}
+          embedded["description"] = "Independent page visual-medium policy. Current Region Graph pages emit this field; legacy pages may omit it."
+          page_schema["properties"]["visual_medium_policy"] = embedded
+          page_schema_path.write_text(json.dumps(page_schema, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          # PageArtifactSpec projection.
+          artifact = Path("cyberppt/page_artifact_spec.py")
+          text = artifact.read_text(encoding="utf-8")
+          anchor = "from cyberppt.region_graph import RegionGraphSpec, validate_region_graph\n"
+          addition = "from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy\n"
+          if addition not in text:
+              if anchor not in text:
+                  raise SystemExit("artifact medium import anchor not found")
+              text = text.replace(anchor, anchor + addition, 1)
+          artifact.write_text(text, encoding="utf-8")
+          replace_once(
+              artifact,
+              "    region_graph: RegionGraphSpec | None = None\n\n    def __post_init__",
+              "    region_graph: RegionGraphSpec | None = None\n    visual_medium_policy: VisualMediumPolicy | None = None\n\n    def __post_init__",
+              "artifact medium field",
+          )
+          replace_once(
+              artifact,
+              '''    raw_region_graph = visual_page.get("region_graph")\n    region_graph = (\n        validate_region_graph(raw_region_graph)\n        if isinstance(raw_region_graph, Mapping)\n        else None\n    )\n''',
+              '''    raw_region_graph = visual_page.get("region_graph")\n    region_graph = (\n        validate_region_graph(raw_region_graph)\n        if isinstance(raw_region_graph, Mapping)\n        else None\n    )\n    raw_medium_policy = visual_page.get("visual_medium_policy")\n    visual_medium_policy = (\n        validate_visual_medium_policy(raw_medium_policy)\n        if isinstance(raw_medium_policy, Mapping)\n        else None\n    )\n''',
+              "artifact medium read",
+          )
+          replace_once(
+              artifact,
+              "        region_graph=region_graph,\n    )",
+              "        region_graph=region_graph,\n        visual_medium_policy=visual_medium_policy,\n    )",
+              "artifact medium output",
+          )
+          replace_once(
+              artifact,
+              '    "VisualCarrierSpec",\n',
+              '    "VisualCarrierSpec",\n    "VisualMediumPolicy",\n',
+              "artifact medium export",
+          )
+
+          # FinalPromptIR structured projection.
+          ir = Path("scripts/imagegen_pipeline/final_prompt_ir.py")
+          replace_once(
+              ir,
+              '''@dataclass(frozen=True)\nclass RuntimeLockIR:\n''',
+              '''@dataclass(frozen=True)\nclass VisualMediumPolicyIR:\n    preferred: str\n    allowed: tuple[str, ...]\n    scene_policy: str\n    rationale: str\n\n    def __post_init__(self) -> None:\n        if not self.preferred.strip() or not self.allowed or not self.scene_policy.strip():\n            raise PromptContractError("visual medium policy IR is incomplete")\n        if self.preferred not in self.allowed:\n            raise PromptContractError("preferred visual medium must be allowed")\n\n\n@dataclass(frozen=True)\nclass RuntimeLockIR:\n''',
+              "IR medium class",
+          )
+          replace_once(
+              ir,
+              "    region_graph: RegionGraphIR | None = None\n\n    def __post_init__",
+              "    region_graph: RegionGraphIR | None = None\n    visual_medium_policy: VisualMediumPolicyIR | None = None\n\n    def __post_init__",
+              "IR medium field",
+          )
+          replace_once(
+              ir,
+              '    "TextBindingIR",\n',
+              '    "TextBindingIR",\n    "VisualMediumPolicyIR",\n',
+              "IR medium export",
+          )
+
+          prompt = Path("scripts/imagegen_pipeline/artifact_prompt.py")
+          replace_once(
+              prompt,
+              '''    TextBindingIR,\n)\n''',
+              '''    TextBindingIR,\n    VisualMediumPolicyIR,\n)\n''',
+              "prompt medium import",
+          )
+          anchor = '''def _region_graph_ir(spec: PageArtifactSpec) -> RegionGraphIR | None:\n'''
+          helper = '''def _visual_medium_policy_ir(spec: PageArtifactSpec) -> VisualMediumPolicyIR | None:\n    policy = spec.visual_medium_policy\n    if policy is None:\n        return None\n    return VisualMediumPolicyIR(\n        preferred=policy.preferred,\n        allowed=policy.allowed,\n        scene_policy=policy.scene_policy,\n        rationale=policy.rationale,\n    )\n\n\n'''
+          text = prompt.read_text(encoding="utf-8")
+          if "def _visual_medium_policy_ir(" not in text:
+              if anchor not in text:
+                  raise SystemExit("prompt medium helper anchor not found")
+              text = text.replace(anchor, helper + anchor, 1)
+          prompt.write_text(text, encoding="utf-8")
+          replace_once(
+              prompt,
+              "            region_graph=_region_graph_ir(spec),\n        )",
+              "            region_graph=_region_graph_ir(spec),\n            visual_medium_policy=_visual_medium_policy_ir(spec),\n        )",
+              "prompt medium projection",
+          )
+
+          # Audit integration.
+          contract = Path("cyberppt/visual_structure_contract.py")
+          text = contract.read_text(encoding="utf-8")
+          anchor = "from cyberppt.region_graph_audit import audit_region_graph\n"
+          addition = "from cyberppt.visual_medium_audit import audit_visual_medium_policy\n"
+          if addition not in text:
+              if anchor not in text:
+                  raise SystemExit("medium audit import anchor not found")
+              text = text.replace(anchor, anchor + addition, 1)
+          contract.write_text(text, encoding="utf-8")
+          replace_once(
+              contract,
+              '''        for region_issue in audit_region_graph(page_spec):\n            issue(region_issue["code"], region_issue["message"], page_id)\n\n        _audit_relationship_coverage(\n''',
+              '''        for region_issue in audit_region_graph(page_spec):\n            issue(region_issue["code"], region_issue["message"], page_id)\n        for medium_issue in audit_visual_medium_policy(page_spec):\n            issue(medium_issue["code"], medium_issue["message"], page_id)\n\n        _audit_relationship_coverage(\n''',
+              "medium audit call",
+          )
+
+          # Skill / workbench authoring contract.
+          skill = Path("vendor/skills/ppt-visual-structure-designer/SKILL.md")
+          text = skill.read_text(encoding="utf-8")
+          anchor = "- `assets/region-graph.schema.json`：Region Graph语义空间合同；记录区域角色、锚点、相对权重与区域关系，不记录像素模板。\n"
+          addition = "- `assets/visual-medium-policy.schema.json`：独立视觉媒介合同；媒介选择与relationship topology分离。\n"
+          if addition not in text and anchor in text:
+              text = text.replace(anchor, anchor + addition, 1)
+          marker = "每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`"
+          if marker in text and "visual_medium_policy`可由候选显式声明" not in text:
+              text = text.replace(marker, "`visual_medium_policy`可由候选显式声明，包含`preferred / allowed / scene_policy / rationale`；媒介依据页面使命、可画业务对象、业务动作、信息密度和Style lock选择，不得仅因`parallel_set`、`flow`、`convergence`等topology直接决定实景、插图或关系图。\n\n" + marker, 1)
+          skill.write_text(text, encoding="utf-8")
+
+          execution = Path("cyberppt/visual_stage/execution.py")
+          text = execution.read_text(encoding="utf-8")
+          old = "For semantic_brief, preserve semantic focus, source-supported relationship boundary, evidence grouping and exact-text binding; omit execution_design or treat it as non-authoritative advice. The compiler writes scene_policy=auto and a focus-policy-aware macro relationship field, while ImageGen retains region-internal implementation freedom."
+          new = "For semantic_brief, preserve semantic focus, source-supported relationship boundary, evidence grouping and exact-text binding; omit execution_design or treat it as non-authoritative advice. A candidate may declare visual_medium_policy; medium choice must be based on page mission, drawable business objects/actions, density and Style lock, never relationship topology alone. The compiler writes scene_policy=auto and a focus-policy-aware macro relationship field, while ImageGen retains region-internal implementation freedom."
+          if old in text:
+              text = text.replace(old, new, 1)
+          execution.write_text(text, encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run targeted regressions
+        run: |
+          python -m pytest -q tests/test_visual_medium_policy.py tests/test_visual_medium_audit.py tests/test_page_artifact_spec.py tests/test_final_prompt_ir.py tests/test_final_prompt_renderer.py tests/test_visual_structure_contract.py tests/test_visual_structure_stage.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit, self-clean, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/visual_stage/compiler.py cyberppt/page_artifact_spec.py cyberppt/visual_structure_contract.py cyberppt/visual_stage/execution.py scripts/imagegen_pipeline/final_prompt_ir.py scripts/imagegen_pipeline/artifact_prompt.py vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json vendor/skills/ppt-visual-structure-designer/SKILL.md
+          git rm .github/workflows/stage2-refactor-p3-3.yml
+          git commit -m "feat(stage2): publish Visual Medium Policy authority"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
