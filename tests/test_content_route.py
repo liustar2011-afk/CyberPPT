@@ -194,6 +194,7 @@ def test_stage02_readiness_validates_stage01_preservation_without_running_stage0
         },
     )
     final = {
+        "deck": {"delivery_mode": "presented"},
         "slides": [{
             "id": "P06",
             "page_type": "content",

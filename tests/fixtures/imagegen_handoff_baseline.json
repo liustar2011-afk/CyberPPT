@@ -127,6 +127,7 @@
             "S002"
           ],
           "coaching_tip": "",
+          "content_load": "",
           "contract_receipt": null,
           "evidence_map": "统一治理→S001；权限边界→S002",
           "evidence_map_refs": [
@@ -325,6 +326,7 @@
             "S002"
           ],
           "coaching_tip": "",
+          "content_load": "",
           "contract_receipt": null,
           "evidence_map": "统一治理→S001；权限边界→S002",
           "evidence_map_refs": [
@@ -527,6 +529,7 @@
             "S002"
           ],
           "coaching_tip": "",
+          "content_load": "",
           "contract_receipt": null,
           "evidence_map": "统一治理→S001；权限边界→S002",
           "evidence_map_refs": [
@@ -729,6 +732,7 @@
             "S002"
           ],
           "coaching_tip": "",
+          "content_load": "",
           "contract_receipt": null,
           "evidence_map": "统一治理→S001；权限边界→S002",
           "evidence_map_refs": [

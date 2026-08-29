@@ -36,7 +36,10 @@
         },
         "delivery_mode": {
           "type": "string",
-          "enum": ["presented", "self_read"],
+          "enum": [
+            "presented",
+            "self_read"
+          ],
           "default": "self_read"
         },
         "narrative": {
@@ -135,7 +138,12 @@
           },
           "content_load": {
             "type": "string",
-            "enum": ["light", "standard", "dense"]
+            "enum": [
+              "light",
+              "standard",
+              "dense"
+            ],
+            "default": "standard"
           },
           "visual_thesis": {
             "type": "string"

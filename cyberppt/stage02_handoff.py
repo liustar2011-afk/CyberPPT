@@ -274,30 +274,38 @@ def _visual_relationship_contract(
     verification: dict[str, Any],
     verified_relationships: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], str]:
-    """Choose the relationship collection exposed to the legacy visual interface.
+    """Expose Stage01 relationships unchanged to the visual stage.
 
-    Source/author/structured relations that the verifier accepts unchanged stay
-    byte-compatible with the existing workbench contract.  Model/script/adapter
-    inference, or anything refined/rejected/unresolved, is replaced by the
-    verifier-canonical relationship set so the visual stage cannot re-promote a
-    bad upstream proposal simply because an older consumer reads the legacy
-    ``business_relationships`` field.
+    Stage02 verification may validate proposals and derive a render topology,
+    but semantic nodes and edges remain owned by the approved Stage01 script.
+    Verified relationships stay available as separate diagnostic and
+    render-guidance data.
     """
 
-    verdicts = [
-        item for item in verification.get("verdicts") or [] if isinstance(item, dict)
-    ]
-    changed = any(
-        str(item.get("verdict") or "") in {"refined", "rejected", "unresolved"}
-        for item in verdicts
-    )
-    soft = any(
-        str(item.get("constraint_authority") or "soft") == "soft"
-        for item in proposals
-    )
-    if changed or soft:
-        return [dict(item) for item in verified_relationships], "stage02_semantic_verifier"
+    _ = proposals, verification, verified_relationships
     return [dict(item) for item in raw_relationships], "stage01_authoritative"
+
+
+def _assert_no_authoritative_semantic_rejection(
+    page_id: str, verification: dict[str, Any]
+) -> None:
+    blockers = [
+        item
+        for item in verification.get("verdicts") or []
+        if isinstance(item, dict)
+        and str(item.get("verdict") or "") in {"rejected", "unresolved"}
+        and str(item.get("constraint_authority") or "soft") in {"hard", "strong"}
+    ]
+    if not blockers:
+        return
+    detail = "; ".join(
+        f"{item.get('proposal_id') or '?'}:{item.get('verdict')}:{','.join(item.get('conflict_codes') or [])}"
+        for item in blockers
+    )
+    raise ValueError(
+        f"Stage 02 semantic verification rejected or could not resolve authoritative Stage 01 "
+        f"relationships for {page_id}; return to Stage 01 and repair the relationship contract: {detail}"
+    )
 
 
 def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, Any]:
@@ -334,6 +342,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         )
     )
     render_role = _render_role(page.page_type)
+    content_load = page.content_load or "standard"
     business_relationships = [
         dict(item)
         for item in ((outline or {}).get("content_relations") or page.content_relations)
@@ -358,12 +367,17 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         for item in verification.get("verified_relationships") or []
         if isinstance(item, dict)
     ]
+    _assert_no_authoritative_semantic_rejection(page.page_id, verification)
     verified_features = _verified_relationship_features(verified_relationships, page.visual_structure)
-    semantic_topology = resolve_semantic_topology(
+    render_topology = resolve_semantic_topology(
         verified_relationships,
         module_count=len(page.top_level_module_titles),
         page_text="\n".join((page_mission, page.main_message, page.full_prose, page.onscreen_text)),
     )
+    # Compatibility alias: existing consumers may still read semantic_topology.
+    # Its meaning at this boundary is a Stage02 render projection, not a new
+    # semantic authority.
+    semantic_topology = render_topology
     explicit_prompt_mode = str(
         receipt.get("stage02_prompt_mode")
         or outline.get("stage02_prompt_mode")
@@ -418,13 +432,13 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
 
     action_text = tuple(
         " ".join(str(item.get(field) or "") for field in ("subject", "relation", "object")).strip()
-        for item in verified_features["actions"]
+        for item in upstream_features["actions"]
         if isinstance(item, dict)
     )
     expression = resolve_onscreen_expression(
         page,
         page_mission=page_mission,
-        business_relationships=verified_relationships,
+        business_relationships=business_relationships,
         actions=action_text,
         topic_category=str(outline.get("topic_category") or ""),
         semantic_topology=semantic_topology,
@@ -439,6 +453,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "argument_role": str(outline.get("argument_role") or outline.get("page_role") or ""),
         "title": page.title,
         "subtitle": page.subtitle,
+        "content_load": content_load,
         "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
@@ -460,6 +475,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "semantic_verification": verification,
         "verified_business_relationships": verified_relationships,
         "semantic_topology": semantic_topology,
+        "render_topology": render_topology,
         "onscreen_expression": expression,
         "onscreen_expression_ir": expression_ir,
         "expression_constraints": constraints,
@@ -476,7 +492,9 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
             "provenance_refs": "script-final.md",
             "business_relationships": "stage01-proposal",
             "verified_business_relationships": "stage02-semantic-verifier",
-            "semantic_topology": "stage02-topology-resolver",
+            "semantic_topology": "stage02-topology-resolver-compatibility-alias",
+            "render_topology": "stage02-topology-resolver",
+            "content_load": "script-final.md-or-standard-default",
             "onscreen_expression_ir": "stage01-author-declared",
             "visual_structure": "stage02-generated",
             "style": "stage02-style-lock",
@@ -495,6 +513,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
+        "content_load": content_load,
         "argument_chain": page.argument_chain or str(outline.get("argument_chain") or ""),
         "prompt_mode": prompt_mode,
         "onscreen_text": page.onscreen_text,
@@ -502,11 +521,10 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "content_integrity": content_integrity,
         "module_titles": list(page.module_titles),
         "top_level_module_titles": list(page.top_level_module_titles),
-        # Compatibility-facing fields contain verified semantics whenever the
-        # upstream relation was inferred or the verifier changed it.
+        # Stage01 relationships remain semantic authority. Stage02 verifier
+        # output is separate render guidance and diagnostic evidence.
         "business_relationships": visual_relationships,
         "stage01_relationship_features": visual_features,
-        # Raw upstream material remains separately auditable.
         "upstream_business_relationships": business_relationships,
         "upstream_relationship_features": upstream_features,
         "semantic_proposals": proposals,
@@ -514,6 +532,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "verified_business_relationships": verified_relationships,
         "verified_relationship_features": verified_features,
         "semantic_topology": semantic_topology,
+        "render_topology": render_topology,
         "relationship_authority": visual_relationship_source,
         "onscreen_expression": expression,
         "onscreen_expression_ir": expression_ir,

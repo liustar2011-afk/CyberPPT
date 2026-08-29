@@ -61,6 +61,7 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "page_mission": page.get("page_mission"),
                 "core_judgment": page.get("core_message"),
                 "semantic_context": page.get("full_prose"),
+                "content_load": visual.get("content_load") or page.get("content_load") or "standard",
                 "argument_chain": page.get("argument_chain"),
                 "prompt_mode": page.get("prompt_mode") or "semantic_brief",
                 "locked_on_screen_text": page.get("onscreen_text"),
@@ -76,6 +77,8 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "expression_constraints": constraints,
                 "business_relationships": business_relationships,
                 "stage01_relationship_features": visual.get("stage01_relationship_features") or {},
+                "render_topology": visual.get("render_topology") or visual.get("semantic_topology") or {},
+                "semantic_verification": visual.get("semantic_verification") or {},
                 "relationship_authority": "business_relationships",
                 "author_visual_notes": visual.get("author_visual_notes") or "",
                 "author_visual_notes_authority": "advisory_only",
@@ -103,8 +106,9 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
             "content_lock": "strict",
             "style_policy": "visual structure must not select or embed a visual style",
             "relationship_policy": (
-                "business_relationships is authoritative; author_visual_notes is advisory only "
-                "and must never be copied into decision_relationship"
+                "business_relationships is Stage 01 semantic authority; render_topology is Stage 02-derived "
+                "layout guidance only and must not rewrite business nodes or edges; author_visual_notes is "
+                "advisory only and must never be copied into decision_relationship"
             ),
             "decision_policy": (
                 "ppt-visual-structure-designer writes one candidate when the page's business "
@@ -183,11 +187,11 @@ def prepare_visual_structure_stage(
 
     script = ensure_project_script(project, script)
     handoff = project / HANDOFF_JSON
+    from cyberppt.stage02_handoff import audit_stage02_handoff
+
     if reuse_current_handoff:
         if not handoff.is_file():
             raise FileNotFoundError("reuse_current_handoff requires an existing Stage 02 handoff")
-        from cyberppt.stage02_handoff import audit_stage02_handoff
-
         report = audit_stage02_handoff(project)
         if report.get("status") != "passed":
             codes = ", ".join(
@@ -196,9 +200,11 @@ def prepare_visual_structure_stage(
             )
             raise ValueError(f"reuse_current_handoff requires a current Stage 02 handoff: {codes}")
     else:
-        report = prepare_stage02_handoff(project, script=script)
+        report = audit_stage02_handoff(project) if handoff.is_file() else {"status": "missing"}
         if report.get("status") != "passed":
-            raise ValueError("Stage 01 to Stage 02 handoff is not passed")
+            report = prepare_stage02_handoff(project, script=script)
+            if report.get("status") != "passed":
+                raise ValueError("Stage 01 to Stage 02 handoff is not passed")
     design_input = _write_visual_design_input(project, handoff)
     skill_root = _skill_root()
     skill = skill_root / "SKILL.md"

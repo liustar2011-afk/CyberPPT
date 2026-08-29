@@ -29,8 +29,11 @@ The only production route is `.venv/bin/python3 -m cyberppt final-script-pages` 
 `--production-build`; do not construct a final script or `page_image_pairs.json`
 by hand and do not call `run_stage02_reconstruction` directly.
 
-Default chain: audited full image → text-free base → high-fidelity authored SVG →
-vendored Quick assembly → render and final-visible-text QA.
+Default chain: audited full image → immutable reconstruction visual-source binding →
+text-free base → high-fidelity authored SVG reconstruction → vendored Quick assembly →
+render and final-visible-text QA. The audited full image is the visual source for the
+editable reconstruction; authored SVG may reconstruct and decompose it but must not
+introduce a second visual design.
 
 ## Per-page Quick checkpoint loop
 
@@ -94,10 +97,12 @@ location evidence only; it does not authorize a production-time OCR-box SVG
 generator. The vendored Quick runtime consumes the authored SVG and preserves
 its explicit coordinates, font size, weight, and color.
 
-The current Codex main agent owns this authoring step, matching the source Quick
-workflow: inspect the normalized full image, clean base, locked onscreen text and
-registered local assets, then write the complete page SVG directly on that same
-canvas. `final-script-pages` prepares and validates the workspace; if an
+The current Codex main agent owns this reconstruction step, matching the source Quick
+workflow: inspect the normalized audited full image, clean base, locked onscreen text
+and registered local assets, then reproduce the accepted visual composition as the
+complete page SVG on the same canvas. The authored SVG preserves the bound full
+image's spatial composition and visual hierarchy; it does not reopen visual design.
+`final-script-pages` prepares and validates the workspace; if an
 `authoring_svg` is absent it must stop for authoring, then resume the same build.
 Do not replace this step with an OCR-to-SVG generator or redraw an already-audited
 full image merely because its recognized wording differs from the locked text

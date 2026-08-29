@@ -218,7 +218,7 @@ AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日�
 
 ### 2. Stage 02 handoff
 
-运行 `prepare-stage02-handoff`，核对当前最终脚本、项目绑定、脚本版本和页面范围。脚本发生变化后，必须重新生成 handoff，不得沿用旧绑定。
+运行 `prepare-stage02-handoff`，核对当前最终脚本、项目绑定、脚本版本和页面范围。脚本发生变化后，必须重新生成 handoff，不得沿用旧绑定。`business_relationships` 由 Stage 01 锁定并保持语义权威；Stage 02 semantic verifier 只负责校验，并生成独立的 `render_topology` 作为视觉布局推导。对于 hard/strong 权威关系，出现 rejected 或 unresolved 时 handoff 直接阻断并返回 Stage 01 修复，Stage 02 不改写关系后继续。`content_load` 从 Final Script 原样进入 handoff 和视觉设计输入，未显式声明时按 `standard` 处理。
 
 ### 3. 视觉结构
 
@@ -265,9 +265,9 @@ Stage 02 采用逐页检查点和同批次恢复：
 
 `image-to-editable-svg` 是 Stage 02 唯一生产模式，`editable` 是默认 PPTX 组装分支。高保真 Quick 路线使用 `final-script-pages --production-build --assembly-mode editable`；它与图片型 PPT 的 `--assembly-mode image` 是两条独立组装分支。对每个内容页按以下固定顺序执行：
 
-1. 生成并审计 full 图，作为可见表面与文字对照证据；
+1. 生成并审计 full 图；可编辑重建分支将通过文字审计的 full 图写入 `reconstruction_visual_source` SHA-256 绑定，作为后续重建的视觉来源。后续阶段可以拆层、清字和重建原生文字，不重新设计已接受的视觉构图；
 2. 从 full 图准备无文字底图，清除计划以 SVG 原生文字重建的区域；
-3. 当前 Codex 主 Agent 直接查看归一化 full 图、无字底图、锁定上屏文字和已注册局部图层，在同一画布坐标系中编写完整 authored SVG；缺少 authored SVG 时生产编排停在该页，完成编写后用同一 build 续跑；
+3. 当前 Codex 主 Agent 直接查看已绑定的归一化 full 图、无字底图、锁定上屏文字和已注册局部图层，在同一画布坐标系中编写完整 authored SVG；该步骤承担高保真重建，不承担第二轮视觉设计。缺少 authored SVG 时生产编排停在该页，完成编写后用同一 build 续跑；
 4. 仅对当前页运行可编辑页策略、原生文字坐标、文字样式和 SVG 质量检查，生成该页包装 SVG、单页 Quick PPTX、OfficeCLI PNG 与几何报告；
 5. 渲染前检查 `<text>` 及其全部 `<tspan>` 的坐标连续性；同一文字节点跨列或跨视觉区域跳转时直接阻断。渲染后立即以 `rendered_pending_visual_review` 写回检查点；主 Agent 必须查看该页实际 OfficeCLI PNG，逐项核对布局、字号字重、颜色、换行、中文残留和可读性，机器几何检查不得自动代替看图；
 6. 使用 `.venv/bin/python3 -m cyberppt review-quick-page ...` 把审核结论写入同一个检查点；回执绑定预览 PNG 哈希，预览变化后自动失效。续跑只复用输入未变化、预览仍存在且视觉审核通过的页面；
