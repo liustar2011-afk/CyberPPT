@@ -1,0 +1,120 @@
+name: Stage2 refactor P3.2 medium topology decoupling
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p3-2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Integrate Visual Medium Policy into execution decisions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("cyberppt/visual_stage/compiler.py")
+          text = path.read_text(encoding="utf-8")
+          anchor = "from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map\n"
+          addition = "from cyberppt.visual_medium_policy import resolve_visual_medium_policy\n"
+          if addition not in text:
+              if anchor not in text:
+                  raise SystemExit("P3.2 import anchor not found")
+              text = text.replace(anchor, anchor + addition, 1)
+
+          old = '''def _visual_budget(dense_text_page: bool, scene_policy: str) -> dict[str, object]:\n    if dense_text_page:\n        return {\n            "mode": "relationship_field_only",\n            "max_auxiliary_fragments": 0,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    if scene_policy == "forbidden":\n        return {\n            "mode": "shared_field",\n            "max_auxiliary_fragments": 1,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    return {\n        "mode": "integrated_scene",\n        "max_auxiliary_fragments": 4,\n        "scope": "region",\n        "region_local_visuals": True,\n    }\n'''
+          new = '''def _visual_budget(dense_text_page: bool, medium_policy: dict[str, object]) -> dict[str, object]:\n    if dense_text_page:\n        return {\n            "mode": "relationship_field_only",\n            "max_auxiliary_fragments": 0,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    preferred = str(medium_policy.get("preferred") or "")\n    scene_policy = str(medium_policy.get("scene_policy") or "")\n    if scene_policy == "forbidden" and preferred in {"relationship_diagram", "data_visualization"}:\n        return {\n            "mode": "shared_field",\n            "max_auxiliary_fragments": 1,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    return {\n        "mode": "integrated_scene",\n        "max_auxiliary_fragments": 4,\n        "scope": "region",\n        "region_local_visuals": True,\n    }\n'''
+          if old not in text:
+              raise SystemExit("P3.2 visual budget block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''        scene_policy = "auto"\n        return {\n            "business_object": relationships,\n'''
+          new = '''        scene_policy = "auto"\n        medium_policy = resolve_visual_medium_policy(\n            selected.get("visual_medium_policy"),\n            scene_policy=scene_policy,\n        )\n        return {\n            "business_object": relationships,\n'''
+          if old not in text:
+              raise SystemExit("P3.2 semantic medium anchor not found")
+          text = text.replace(old, new, 1)
+          old = '''            "scene_policy": scene_policy,\n            "use_scene": _legacy_use_scene(scene_policy),\n'''
+          new = '''            "scene_policy": scene_policy,\n            "visual_medium_policy": medium_policy.to_dict(),\n            "use_scene": _legacy_use_scene(scene_policy),\n'''
+          text = text.replace(old, new, 1)
+
+          old = '''    if not missing and not corrupted:\n        scene_policy = _resolve_scene_policy(design, prompt_mode, page_id)\n        return {\n'''
+          new = '''    if not missing and not corrupted:\n        scene_policy = _resolve_scene_policy(design, prompt_mode, page_id)\n        medium_policy = resolve_visual_medium_policy(\n            design.get("visual_medium_policy") or selected.get("visual_medium_policy"),\n            scene_policy=scene_policy,\n        )\n        return {\n'''
+          if old not in text:
+              raise SystemExit("P3.2 directed medium anchor not found")
+          text = text.replace(old, new, 1)
+          old = '''            "scene_policy": scene_policy,\n            "use_scene": _legacy_use_scene(scene_policy),\n            "scene_type": str(\n'''
+          new = '''            "scene_policy": scene_policy,\n            "visual_medium_policy": medium_policy.to_dict(),\n            "use_scene": _legacy_use_scene(scene_policy),\n            "scene_type": str(\n'''
+          if old not in text:
+              raise SystemExit("P3.2 directed medium output anchor not found")
+          text = text.replace(old, new, 1)
+
+          old = '''    scene_policy = "forbidden"\n    return {\n'''
+          new = '''    scene_policy = "forbidden"\n    medium_policy = resolve_visual_medium_policy(\n        selected.get("visual_medium_policy"),\n        scene_policy=scene_policy,\n    )\n    return {\n'''
+          if old not in text:
+              raise SystemExit("P3.2 fallback medium anchor not found")
+          text = text.replace(old, new, 1)
+          old = '''        "scene_policy": scene_policy,\n        "use_scene": _legacy_use_scene(scene_policy),\n        "scene_type": "不使用实景，由选定业务关系场承载",\n'''
+          new = '''        "scene_policy": scene_policy,\n        "visual_medium_policy": medium_policy.to_dict(),\n        "use_scene": _legacy_use_scene(scene_policy),\n        "scene_type": "不使用实景，由选定业务关系场承载",\n'''
+          if old not in text:
+              raise SystemExit("P3.2 fallback medium output anchor not found")
+          text = text.replace(old, new, 1)
+
+          old = '''    scene_policy = str(design["scene_policy"])\n    visual_budget = _visual_budget(dense_text_page, scene_policy)\n'''
+          new = '''    scene_policy = str(design["scene_policy"])\n    medium_policy = dict(design["visual_medium_policy"])\n    visual_budget = _visual_budget(dense_text_page, medium_policy)\n'''
+          if old not in text:
+              raise SystemExit("P3.2 budget call anchor not found")
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Verify medium policy is independent from topology
+        run: |
+          python - <<'PY'
+          from cyberppt.visual_stage.compiler import _decision_execution_design, _visual_budget
+
+          source = {"prompt_mode": "semantic_brief", "core_judgment": "J", "business_relationships": []}
+          selected = {"visual_medium_policy": {
+              "preferred": "object_illustration",
+              "allowed": ["object_illustration", "mixed"],
+              "scene_policy": "auto",
+              "rationale": "Use drawable business objects regardless of relationship topology."
+          }}
+          design = _decision_execution_design(source, {}, selected, "P01", "peer_field")
+          assert design["visual_medium_policy"]["preferred"] == "object_illustration"
+          budget_a = _visual_budget(False, design["visual_medium_policy"])
+          budget_b = _visual_budget(False, dict(design["visual_medium_policy"]))
+          assert budget_a == budget_b
+          assert budget_a["mode"] == "integrated_scene"
+          PY
+      - name: Run targeted regressions
+        run: |
+          python -m pytest -q tests/test_visual_medium_policy.py tests/test_visual_structure_stage.py tests/test_stage2_scene_policy.py tests/test_page_artifact_spec.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit, self-clean, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/visual_stage/compiler.py
+          git rm .github/workflows/stage2-refactor-p3-2.yml
+          git commit -m "feat(stage2): decouple visual medium from topology"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
