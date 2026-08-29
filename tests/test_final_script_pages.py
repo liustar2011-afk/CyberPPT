@@ -923,6 +923,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             with (
                 patch("cyberppt.commands.final_script_pages.require_generated"),
                 patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build", return_value=expected) as build,
+                patch("cyberppt.stage02_production.orchestrator.run_full_image_rhythm_stage", return_value={"status": "passed"}),
                 patch(
                     "cyberppt.commands.final_script_pages.run_officecli_render_qa",
                     return_value={"passed": True, "report_path": str(root / "qa.json")},
@@ -965,6 +966,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     "cyberppt.commands.final_script_pages._run_image_to_editable_svg_build",
                     side_effect=ValueError("authoring_svg must be a real authored SVG"),
                 ) as build,
+                patch("cyberppt.stage02_production.orchestrator.run_full_image_rhythm_stage", return_value={"status": "passed"}),
                 self.assertRaisesRegex(ValueError, "real authored SVG"),
             ):
                 run_final_script_pages(
@@ -1040,6 +1042,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             with (
                 patch("cyberppt.commands.final_script_pages.require_generated"),
                 patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build", return_value=expected),
+                patch("cyberppt.stage02_production.orchestrator.run_full_image_rhythm_stage", return_value={"status": "passed"}),
                 patch(
                     "cyberppt.commands.final_script_pages.run_officecli_render_qa",
                     return_value={"passed": False, "report_path": str(root / "qa.json")},
