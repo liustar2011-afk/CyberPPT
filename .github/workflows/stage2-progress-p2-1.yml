@@ -1,0 +1,67 @@
+name: Stage2 progress P2.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-progress-p2-1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Record P2.1 completion
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("STAGE2_VISUAL_DESIGN_REFACTOR_PROGRESS.md")
+          text = path.read_text(encoding="utf-8")
+          old = "- [ ] P2.1 定义 Region Graph 数据合同与 Schema。"
+          if old not in text:
+              raise SystemExit("P2.1 checklist target not found")
+          text = text.replace(old, "- [x] P2.1 定义 Region Graph 数据合同与 Schema。", 1)
+          section = '''
+
+### P2.1｜Region Graph 数据合同与 Schema
+状态：完成。
+
+变更：
+- 新增 `cyberppt/region_graph.py`，定义 Region Graph 的独立语义空间合同与 Python 校验器。
+- Region 记录 `semantic_refs / role / anchor / weight / span / priority`；可选 `text_ids` 先进入合同，P2.3 再成为强制文字归属权威。
+- Region relation 记录 `from / to / type`，支持 peer、flow、converge、dependency、feedback、boundary、interface、allocation、support、containment。
+- 新增 `assets/region-graph.schema.json`，并将同一合同作为 `page-visual-spec.schema.json.region_graph` 可选字段嵌入。
+- P2.1 暂不要求现有页面必须输出 Region Graph，避免在合同定义步骤破坏旧项目；P2.2 开始由 compiler 稳定生成。
+- Region Graph 只表达归一化宏观语义空间，不记录具体像素坐标，不把 Stage2 退化为固定模板系统。
+- 新增 `tests/test_region_graph_contract.py`，覆盖合法图、重复 Region ID、未知 relation endpoint、非法权重/semantic ref、独立 Schema 与 page schema 暴露。
+
+验证：新增合同测试及标准 `CyberPPT tests` 均通过；Python 3.10 / 3.12 双版本全量 CI 通过。
+
+主要代码 Commit：`3bcf58e65272abaa1efab802f073fa7ba461bb47`
+
+Schema Commit：`b34bfc35e66e1ffbf079a605ddade61facb4e471`
+
+Page Schema 集成 Commit：`4953e9be9cf7a7432617f15e694d1e7cc915829e`
+
+测试 Commit：`d2c677c7d58f9e3db3a3cfaf0ca503c271978c1f`
+
+临时 runner 清理 Commit：`a5a279bdc298eb2e527f54baf7f867f730e401d8`
+'''
+          if "### P2.1｜Region Graph 数据合同与 Schema" not in text:
+              text = text.rstrip() + section + "\n"
+          path.write_text(text, encoding="utf-8")
+          PY
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add STAGE2_VISUAL_DESIGN_REFACTOR_PROGRESS.md
+          git rm .github/workflows/stage2-progress-p2-1.yml
+          git commit -m "docs: record P2.1 completion"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
