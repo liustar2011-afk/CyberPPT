@@ -165,6 +165,7 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     issues.extend(check_full_copy_topic_semantics(final_script))
     issues.extend(check_onscreen_heading_semantics(final_script))
     issues.extend(check_onscreen_detail_semantics(final_script))
+    issues.extend(check_onscreen_hierarchy_punctuation(final_script))
     issues.extend(check_onscreen_code_context(final_script))
     issues.extend(check_onscreen_core_alignment(final_script))
     return issues
@@ -423,6 +424,37 @@ def check_onscreen_detail_semantics(final_script: dict[str, Any]) -> list[str]:
                     issues.append(
                         f"ONSCREEN_DETAIL_GENERIC: slides.{index} ({slide_id}).onscreen[{module_index}].{field}: "
                         f"'{line}' uses a semantic label but leaves the business matter abstract"
+                    )
+    return issues
+
+
+def check_onscreen_hierarchy_punctuation(final_script: dict[str, Any]) -> list[str]:
+    """Reject one visible detail line that encodes multiple hierarchy levels with colons."""
+
+    issues: list[str] = []
+    nested_colon_re = re.compile(r"^[^：:\n]{1,24}[：:][^：:\n]+[：:]")
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        for module_index, module in enumerate(slide.get("onscreen") or []):
+            if not isinstance(module, dict):
+                continue
+            lines: list[tuple[str, str]] = []
+            text = module.get("text")
+            if isinstance(text, str) and text.strip():
+                lines.append(("text", text.strip()))
+            lines.extend(
+                (f"items[{item_index}]", item.strip())
+                for item_index, item in enumerate(module.get("items") or [])
+                if isinstance(item, str) and item.strip()
+            )
+            for field, line in lines:
+                if nested_colon_re.search(line):
+                    issues.append(
+                        f"ONSCREEN_MULTILEVEL_COLON_CHAIN: slides.{index} ({slide_id}).onscreen"
+                        f"[{module_index}].{field}: '{line}' encodes multiple hierarchy levels in one line; "
+                        "keep one label-content relation per line and express parent-child structure with nesting"
                     )
     return issues
 

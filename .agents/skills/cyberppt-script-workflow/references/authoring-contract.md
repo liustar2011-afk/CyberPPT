@@ -212,6 +212,23 @@ Use one universal hierarchy rule:
 
 `one page, one conclusion → one level, one question → peers, one dimension → children, added evidence → different levels, visible relationships`
 
+Apply it through one shared semantic, syntactic and visual hierarchy. The three
+content levels are stable even when the visual design changes:
+
+1. **Page conclusion.** `core_message` answers what the page means. It is one
+   complete judgment with the exact business matter, actor and source-supported
+   state or action.
+2. **Module judgment.** Each top-level onscreen module answers which part proves,
+   explains or implements the page conclusion. Normal modules are independently
+   intelligible sub-judgments; the taxonomy exception below remains available.
+3. **Evidence detail.** A module's `text` or `items` answers what fact, scope,
+   action, object, condition or result establishes that module. It may be a
+   complete proposition or `语义标签：完整内容`.
+
+Cause, progression, mapping, conversion and closed loops form a relationship
+layer across these content levels; they are not a fourth list of equal peers.
+Show both business endpoints and the action, trigger or landing between them.
+
 - **One page, one conclusion.** Every visible element explains, proves, expands
   or implements `core_message`.
 - **One level, one question.** `core_message` answers what the page means; module
@@ -235,6 +252,27 @@ Use one universal hierarchy rule:
 - **Material conditions stay visible.** A condition that changes claim strength,
   timing, responsibility or applicability appears in the module judgment or
   detail; full copy or notes alone cannot carry it.
+
+Use structural indentation and line breaks as the primary hierarchy markers.
+Reserve the colon for a detail's `label：content` relation; do not use it to
+simulate several levels in one line. A module with one unlabeled explanation may
+render compactly as `module judgment：complete proposition`. When the explanation
+already contains a semantic label, preserve it as a nested child:
+
+```text
+- 电力领域数据基础设施标准体系尚未形成统一框架
+  - 专业分布：相关标准分散在多个专业领域
+  - 层级衔接：国家、行业、团体和企业标准之间关系不明确
+```
+
+Never emit `parent：generic label：content`. A visible line carries at most one
+hierarchy-bearing colon. Prefer specific roles such as `专业分布`, `层级衔接`,
+`适用范围`, `推进条件` and `研制对象`; generic labels such as `具体表现`,
+`主要内容`, `相关情况` and `直接影响` are allowed only when they add a real,
+non-redundant semantic role that a more specific business label cannot express.
+Flatten the page to plain text during Critic: if the reader cannot distinguish
+the page conclusion, module judgments, evidence details and relationship layer
+without color, cards or narration, the hierarchy fails.
 
 ### 3.3 Peer dimension and supplementary evidence
 

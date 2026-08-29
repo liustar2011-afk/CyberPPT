@@ -1,10 +1,12 @@
 """Render the versioned Script Engine JSON contract to host-compatible Markdown."""
 from __future__ import annotations
+import re
 from typing import Any
 
 from .delivery_cleanliness import argument_pattern_label, sanitize_delivery_prose, sanitize_relation_text
 
 PAGE_TYPE_LABELS = {"cover": "封面", "contents": "目录", "chapter": "章节页", "content": "内容页", "closing": "封底"}
+DETAIL_LABEL_RE = re.compile(r"^[^\s：:，,。；;、]{2,24}[：:]")
 
 def _text(value: object) -> str:
     return str(value or "").strip()
@@ -20,7 +22,9 @@ def _render_onscreen(sections: list[dict[str, Any]]) -> list[str]:
         heading = _single_line(section.get("heading")).rstrip("：:")
         body = _single_line(section.get("text"))
         items = [_single_line(item) for item in (section.get("items") or []) if _text(item)]
-        if heading and body: lines.append(f"- {heading}：{body}")
+        if heading and body and DETAIL_LABEL_RE.match(body):
+            lines.extend([f"- {heading}", f"  - {body}"])
+        elif heading and body: lines.append(f"- {heading}：{body}")
         elif heading: lines.append(f"- {heading}")
         elif body: lines.append(f"- {body}")
         for item in items: lines.append(f"  - {item}")

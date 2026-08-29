@@ -1,6 +1,7 @@
 from __future__ import annotations
 import copy, json, re
 from pathlib import Path
+from cyberppt.script_quality.parsing import parse_script_markdown
 from script_engine.contracts import validate_deck_plan, validate_final_script, collect_foundation_source_codes, validate_source_refs_coverage, lint_final_script, check_onscreen_structure, check_full_copy_duplication, outline_final_script, check_speaker_notes_length, check_declared_count, check_onscreen_detail_length, check_onscreen_terminal_punctuation
 from script_engine.render import render_stage02_markdown
 ROOT = Path(__file__).resolve().parents[2]
@@ -210,6 +211,25 @@ def test_render_avoids_double_colon_when_heading_already_ends_with_colon() -> No
     assert "- 小结：正文" in markdown
     assert "：：" not in markdown
 
+
+def test_render_preserves_nested_hierarchy_when_body_has_semantic_label() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "标准体系尚未形成统一框架", "text": "专业分布：现有标准分散在多个领域"}
+    ]
+
+    markdown = render_stage02_markdown(payload)
+
+    assert "- 标准体系尚未形成统一框架\n  - 专业分布：现有标准分散在多个领域" in markdown
+    assert "标准体系尚未形成统一框架：专业分布：" not in markdown
+
+    page = parse_script_markdown(markdown).pages[0]
+    assert page.module_titles == (
+        "标准体系尚未形成统一框架",
+        "专业分布",
+    )
+    assert page.top_level_module_titles == ("标准体系尚未形成统一框架",)
+
 def test_render_source_refs_omitted_when_absent() -> None:
     payload = {"deck": {"title": "T", "communication_goal": "G"}, "slides": [{"id": "P01", "page_type": "content", "title": "标题", "mission": "m", "core_message": "c", "onscreen": [{"heading": "h"}]}]}
     markdown = render_stage02_markdown(payload)
@@ -263,6 +283,17 @@ def test_lint_final_script_flags_semantically_incomplete_onscreen_headings() -> 
     issues = lint_final_script(payload)
 
     assert sum("ONSCREEN_HEADING_INCOMPLETE" in issue for issue in issues) == 3
+
+
+def test_lint_final_script_flags_multilevel_colon_chain_in_one_detail() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "标准体系尚未形成统一框架", "text": "具体表现：专业分布：现有标准分散"}
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert any("ONSCREEN_MULTILEVEL_COLON_CHAIN" in issue for issue in issues)
 
 
 def test_lint_final_script_allows_claim_and_formal_taxonomy_headings() -> None:
