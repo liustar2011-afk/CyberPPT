@@ -1,15 +1,16 @@
 # Slides Maker 内容规划能力融合开发方案
 
-> 结论：`SUPPORT WITH CONDITIONS`。融合目标成立，默认 Source Foundation 同步收缩为“确定性来源索引 + 一次语义 Foundation”；实施时选择性移植参考仓库的长材料分流、叙事候选差异检查、页面内容协议和成稿追踪算法，不引入第二套 Content Plan、checkpoint 或 gate 文件。
+> 结论：`SUPPORT WITH CONDITIONS`。融合目标成立。当前首要任务调整为 Deck Plan 内容质量和上屏文字质量；默认 Source Foundation 同步收缩为“确定性来源索引 + 一次语义 Foundation”。实施时选择性移植参考仓库的叙事候选、页面内容规划和成稿追踪算法，不引入第二套 Content Plan、checkpoint 或 gate 文件。
 
 ## 1. 目标与判断
 
 本方案基于以下代码基线：
 
-- CyberPPT commit `8726f23e97241efbf11bc59029bab55a92a2692b`（`feat(stage01): preserve source argument structure in planning`）。
+- CyberPPT 可依赖基线为 commit `8726f23e97241efbf11bc59029bab55a92a2692b`（`feat(stage01): preserve source argument structure in planning`）。
+- commit `f6a3745bbb08c27e35c8b6d92acf6e7c7eda826e`（`wip: checkpoint authoring workflow and power data project`）是一次未成功的试验，只作失败样本和反例证据，不作为能力、合同、代码或测试基线。
 - `addsumtech/slides_maker` commit [`0b38732543f62920f094a18c1621992068a18f57`](https://github.com/addsumtech/slides_maker/tree/0b38732543f62920f094a18c1621992068a18f57)，2026-08-27。
 
-### 1.1 新提交带来的方案调整
+### 1.1 可依赖基线与失败试验边界
 
 commit `8726f23e` 已经完成以下基础能力：
 
@@ -27,6 +28,17 @@ commit `8726f23e` 已经完成以下基础能力：
 3. 叙事候选只描述对既有来源论点链的受众化编排；候选不能改写来源主论点或覆盖来源论证顺序。
 4. long 模式必须先建立完整来源论点骨架，再决定事实证据的深读层级；mapped 章节仍保留论点节点和章节责任。
 5. Source Foundation 相关任务聚焦 `reading_strategy` 和 `source_assets`，不再扩建第二套论点模型。
+
+commit `f6a3745` 增加的五步上屏写作法、silent-reader/ten-second/deletion 测试、`phrase_led_basis`、可读命题启发式检查、演讲者备注规则及其配套 schema/audit 不进入本方案的依赖集。实施时以 `8726f23e` 为语义基准逐项审查 `f6a3745` 的增量：未由独立测试和真实质量收益证明的改动不复用，与新闭环冲突的改动应移除或替换。
+
+对该失败试验附带的 21 页真实项目复核后，得到以下反例结论：
+
+- Deck Plan 平均每页约 23 个字段，规划工作被来源消费、表达模式、Stage 02 准备和审计说明分散。
+- 18 个内容页中，多数核心判断采用“A 明确……，B 构成……，C 提供……”的来源覆盖摘要，页面完整却缺少取舍、张力和不可替代的认知收益。
+- 上屏页面普遍使用 3–6 个模块和大量“标签：说明”条目；P03 的可见文字约 432 个非空白字符，P04 约 385，实际上更接近结构化文稿。
+- `final-script-qa.md` 报告 0 错误、0 警告和 160 项测试通过，与实际阅读质量不一致。现有测试主要证明 schema、绑定、禁词和启发式条件有效，尚未证明页面值得存在、核心判断有力或文字可以快速阅读。
+
+根因判断：该试验用更多提示词、字段和启发式检查代替了真正执行的“候选内容生成→定性评审→整页/整稿重写”闭环，并将平庸 Plan message 锁定为下游的质量上限。本方案用该结果定义反例和验收下限，不继承其实现路线。
 
 ### 1.2 Source Foundation 重量审计与新结论
 
@@ -112,10 +124,13 @@ script/deck-plan.json v2 lean
   - 原样继承 source_thesis / source_argument_method
   - 章节与页面绑定 source_argument_node_ids
   - 叙事候选与选择结论
-  - 页面核心判断、问题、beat、证据、spoken thread
+  - 页面存在理由、核心判断、问题、beat、证据取舍、spoken thread
   - 少量例外型来源声明
+  ↓ Plan Critic（全稿定性评审与重写）
   ↓
 script/dist/final-script.md
+  ↑ 先写完整页面论证，再选择上屏信息
+  ↓ Onscreen Critic（页内候选、静默阅读、整页重写）
   ↓
 现有 lint/audit + composed trace 重点检查
 ```
@@ -287,6 +302,34 @@ Foundation 增加 `source_assets`：
 | Visual source | 新增 `visual_evidence` |
 | Spoken Thread | 新增 `spoken_thread`，仅 presented 模式要求 |
 
+每页规划先完成一个内容决策，然后填写机器字段。必须回答：
+
+1. 这页解决听众的哪一个问题？
+2. 这页希望听众记住的唯一判断是什么？
+3. 删除这页后，整个论证会缺失什么？
+4. 哪些证据直接证明该判断，哪些来源内容需要主动不上屏？
+5. 这页相对前后页推进了哪一步？
+
+`message` 写有争辩价值的结论，避免把页内模块逐项串联成摘要。`content` 只收纳建立判断所需的信息单元，不承担来源全覆盖。
+
+PLAN 采用两次生成：
+
+- 第一次只生成全稿论证脊柱、页面必要性、money slide 和页间推进；
+- 第二次再写页面问题、`message`、证据选择、内容单元和口头讲述线索。
+
+完成后执行一次全稿 Plan Critic，至少评判页面必要性、核心判断力度、相邻重复、证据充分性、叙事连续性和高潮页。Critic 产出内部问题清单并直接重写 `deck-plan.json`，不新增权威文件。
+
+### 4.3.1 上屏内容生成闭环
+
+AUTHOR 先根据已批准 Plan 写完整页面论证，再做语义压缩。上屏内容只保留两类单元：可独立理解的命题、直接支撑命题的证据。
+
+对高密度页、money slide、结论页和 Critic 评为弱的页面，内部生成两个上屏候选：
+
+- 判断主导：用少量完整命题承担主要认知；
+- 证据主导：用数字、分类、对比、流程或关系作为主视觉载体。
+
+Onscreen Critic 使用页面任务、完整文字稿和候选文案做定性选择，评分主判断可见性、10 秒理解、文字密度、信息重复、关系可见性和语义完整性。失败时重写整页的信息组织，避免逐句打补丁。现有 deterministic lint 只阻断明显泄漏、虚假层级、来源越界和极端密度问题。
+
 `visual_evidence` 采用紧凑合同：
 
 ```json
@@ -307,7 +350,7 @@ Deck Plan v2 lean 的作者必填字段限定为：
 - Chapter：使命、问题、结论、`source_argument_node_ids`。
 - Page：标题、问题、核心判断、角色、beat、内容单元、`source_argument_node_ids`、来源/证据、承接、可选视觉证据、可选 spoken thread。
 
-新提交形成的四项来源论点字段属于 lean 核心，不允许自动省略：
+commit `8726f23e` 形成的四项来源论点字段属于 lean 核心，不允许自动省略：
 
 | 层级 | 必保留字段 | 作用 |
 |---|---|---|
@@ -359,6 +402,9 @@ Files:
 - Modify: `.agents/skills/source-to-markdown/scripts/install.sh`
 - Modify: `.agents/skills/source-to-markdown/scripts/install.ps1`
 - Modify: `.agents/skills/source-to-markdown/references/usage.md`
+- Create: `benchmarks/stage01_content_quality/README.md`
+- Create: `benchmarks/stage01_content_quality/rubric.json`
+- Create: `benchmarks/stage01_content_quality/cases/`
 
 工作：
 
@@ -368,9 +414,12 @@ Files:
 - 删除 `markitdown[all]` 默认安装，改为基础包和 `pdf/pptx/xlsx` 等格式级按需安装；OCR 继续保持显式启用。
 - 在 Skill 中写清 direct/competitive 触发条件和 lean 合同边界。
 - 将 commit `8726f23e` 作为来源论点结构基线；任何后续 schema 和 audit 修改都必须保留其测试语义。
+- 对 `8726f23e..f6a3745` 的代码、Skill、schema 和测试差异建立一次性处置清单：`remove`、`replace`、`independently_revalidate`。默认处置为 `remove`，只有脱离该项目后仍能证明价值的增量才能进入 `independently_revalidate`。
+- 将 commit `f6a3745` 的真实项目作为首个失败反例，抽取不含敏感信息的页面级 fixture；当前 Plan/Final Script 只是 before 样本，不是期望输出。
+- 建立人工可读评分表：Deck Plan 评页面必要性、核心判断、证据选择、叙事推进；上屏文字评静默阅读、10 秒理解、密度、重复和语义完整。
 - 实施前检查未跟踪的真实项目目录，只修改代码、合同、Skill、测试和明确的 fixture。
 
-验收：默认新项目不生成 normalized facts、concept base、relation graph、argument chain、semantic model 或 Source Truth；strict/legacy 项目仍可完整运行；文档没有新增 Content Plan、gate receipt、checkpoint 或平行项目目录。
+验收：默认新项目不生成 normalized facts、concept base、relation graph、argument chain、semantic model 或 Source Truth；strict/legacy 项目仍可完整运行；文档没有新增 Content Plan、gate receipt、checkpoint 或平行项目目录；`f6a3745` 的增量完成处置分类，新能力测试不引用该提交的期望值；现有电力项目完成一次盲评基线记录，不再使用“lint 全通过”代表内容质量通过。
 
 ### Task 1：实现来源规模画像与长材料分流
 
@@ -448,7 +497,7 @@ Files:
 - 每个进入页面规划的 source asset 至少绑定一个 `argument_node_id`，其 source refs 与论点节点证据相交。
 - `wrong_reading` 缺失时给 warning；承担 money slide 的 asset 缺失该字段时阻断。
 
-### Task 3：移植叙事候选差异算法
+### Task 3：建立叙事候选和 Plan Critic 重写闭环
 
 Files:
 
@@ -458,6 +507,8 @@ Files:
 - Modify: `script_engine/analysis_audits/deck_plan.py`
 - Modify: `script_engine/plan_review.py`
 - Modify: `.agents/skills/cyberppt-script-plan/SKILL.md`
+- Create: `script_engine/plan_quality.py`
+- Modify: `.agents/skills/chapter-structure-review/SKILL.md`
 - Test: `tests/script_engine/test_plan_review_and_internal_voice.py`
 - Test: `tests/script_engine/test_semantic_guardrails.py`
 
@@ -469,6 +520,9 @@ Files:
 - 将候选的内容责任拆成 `argument_focus_node_ids` 与 `evidence_refs`；前者比较论点重心，后者检查实际证据投入。
 - 取消脚本独立 JSON 输入，直接接收 `narrative_design.candidates`。
 - 从当前 `_source_argument_binding_issues()` 提取共享的节点索引与证据相交 helper；原审计和叙事候选检查共同调用，避免新增第二套节点解析器。
+- PLAN Skill 改为两次写作：先论证脊柱和页面必要性，再页面内容简报。
+- Plan Critic 一次读取整份计划，对弱判断、“覆盖 A/B/C”型摘要、重复页、无证据页、无高潮页和断裂承接做定性评审。
+- Critic 必须重写失败页和受影响的前后页，完成后再运行确定性 audit。内部评论不落盘为第四个权威产物。
 
 验收：
 
@@ -478,8 +532,9 @@ Files:
 - direct 模式不承担多候选税。
 - plan review 同屏展示候选、选择理由、落选理由、情绪曲线和 peak page。
 - 修改任一候选都不能改变 `source_thesis` 或 `source_argument_method`；相应漂移测试必须继续阻断。
+- 内容质量 fixture 中的摘要型 message 必须触发 Critic 重写，改写后页面必要性和核心判断的人工盲评中位数至少提升 1 档。
 
-### Task 4：落地 Deck Plan v2 lean 与页面内容协议
+### Task 4：落地 Deck Plan v2 lean 和上屏内容重写闭环
 
 Files:
 
@@ -491,6 +546,9 @@ Files:
 - Modify: `cyberppt/stage02_handoff.py`
 - Modify: `.agents/skills/cyberppt-script-plan/SKILL.md`
 - Modify: `.agents/skills/cyberppt-script-author/SKILL.md`
+- Modify: `references/screen-copy-authoring.md`
+- Modify: `references/script-quality-rubric.md`
+- Create: `script_engine/onscreen_quality.py`
 - Test: `tests/script_engine/test_contract_and_render.py`
 - Test: `tests/script_engine/test_plan_review_and_internal_voice.py`
 - Test: `tests/script_engine/test_semantic_unit_consumption.py`
@@ -505,6 +563,10 @@ Files:
 - presented 模式要求内容页有 `spoken_thread`；self_read 模式省略。
 - `peak_page_id` 指向的页面必须承载 deck thesis 和具体证据；无单一高潮的材料允许填写 `no_single_peak_reason`。
 - Stage 02 继续校验 title/message 与 Deck Plan 一致，视觉准备字段改为消费时派生。
+- AUTHOR 严格执行“完整页面论证→上屏信息选择→候选表达→定性评审→整页重写”。
+- 对高密度、money slide、结论和评审失败页内部生成“判断主导/证据主导”两个候选，只保留胜出结果。
+- `onscreen_quality.py` 只负责组装评审上下文、计算密度/重复度和记录评分；它不用正则生成上屏文案。
+- Plan message 仍是批准边界。AUTHOR 发现 Plan message 无法形成强页面时，回到 PLAN 重写该页和相关承接，再重新确认，避免在平庸判断上继续压缩。
 
 验收：
 
@@ -513,6 +575,7 @@ Files:
 - 删除 v2 的 `stage02_readiness` 和逐 unit disposition 后，Final Script 与 Stage 02 仍能完成现有消费路径。
 - plan review 可以直接支持人工判断，无需查看 JSON。
 - 现有 `test_semantic_foundation_requires_deck_plan_argument_bindings`、`test_semantic_foundation_accepts_connected_deck_plan_argument_bindings` 和 Final Script proposition drift 测试在 v2 下同样成立。
+- 电力样本 P03/P04 的上屏非空白字符显著下降，同时关键任务、责任、数字和边界无丢失；盲评中 10 秒理解和语义完整性中位数至少提升 1 档。
 
 ### Task 5：加入 composed trace 和聚焦型 Critic
 
@@ -605,17 +668,17 @@ git diff --check
 
 推荐顺序：
 
-1. Task 0 默认路线收缩与 strict/legacy 分流。
-2. Task 1 直接 Foundation authoring 与长材料分流。
-3. Task 3 叙事候选差异算法。
-4. Task 4 Deck Plan v2 lean 与页面协议。
+1. Task 0 建立真实内容质量基线，同时明确默认路线与 strict/legacy 分流。
+2. Task 3 叙事候选、两次 PLAN 写作和 Plan Critic 重写闭环。
+3. Task 4 Deck Plan v2 lean 和上屏内容重写闭环。
+4. Task 1 直接 Foundation authoring 与长材料分流。
 5. Task 5 composed trace。
 6. Task 2 图表传播语义。
 7. Task 6 默认切换。
 
-这个顺序先移除当前最显著的上游重复建模，再改善用户直接感知的叙事和页面规划质量。图表能力最后接入，避免同时修改来源解析、Foundation、Deck Plan 和 Final Script 四个边界。
+这个顺序先修复用户直接看到的内容质量，并用真实样本防止“增加规则即改善质量”的错误归因。Source Foundation 减重仍是确定方向，放在第一轮质量改造之后实施，降低同时修改上下游时的归因难度。
 
-首个可交付里程碑由 Task 0 + Task 1 组成：新项目从 source map 直接生成一份可审计 Foundation，旧全量链路只在 strict/legacy profile 运行。第二个里程碑由 Task 3 + Task 4 组成，交付真实叙事候选和更轻的逐页内容计划。
+首个可交付里程碑由 Task 0 + Task 3 + Task 4 组成：用电力项目完成 Deck Plan 和上屏文字 before/after 盲评，交付真实叙事候选、更轻的逐页内容计划和可执行的重写闭环。第二个里程碑由 Task 1 组成：新项目从 source map 直接生成可审计 Foundation，旧全量链路只在 strict/legacy profile 运行。
 
 ## 7. 明确不做的事项
 
@@ -640,8 +703,12 @@ git diff --check
 | 移除 MarkItDown 默认调用后少数复杂文件解析退化 | 原始文件始终保留；直接提取稀疏或失败时按格式启用 MarkItDown extra，并在 source index 记录 converter 和 warning |
 | strict/legacy 代码长期形成维护负担 | 首阶段仅降级路由并冻结功能；收集实际 strict 使用率后再决定保留期限，不在本轮直接删除 |
 | long 模式因选区错误遗漏关键论点 | 全量结构映射、每节 disposition、选区与交流目标合并确认、mapped 内容不得支撑强事实 |
-| long 模式裁剪了新提交保留的来源论点链 | 完整构建 `document_thesis` 和 `argument_method` 后再分配阅读层级；mapped 节点保留结构责任，页面判断只使用 deep-read 证据 |
+| long 模式裁剪了 `8726f23e` 保留的来源论点链 | 完整构建 `document_thesis` 和 `argument_method` 后再分配阅读层级；mapped 节点保留结构责任，页面判断只使用 deep-read 证据 |
+| 新实现无意中继承 `f6a3745` 的失败假设 | 开发和测试均以 `8726f23e` 和参考仓库固定 commit 为依据；`f6a3745` 仅作反例 fixture，差异增量逐项移除、替换或独立复验 |
 | 多候选退化成同一讲法换名字 | 四轴差异检查、证据量 strawman 检查、落选理由必填 |
+| Critic 只重复 Skill 规则，没有改善文案 | 强制输出重写结果，用真实项目 before/after 盲评验收；定向测试只作回归底线 |
+| 压缩字数导致关键语义丢失 | 先完成页面论证，再在命题/证据两类单元中选择；密度与关键事实召回同时验收 |
+| 弱 Plan message 被 proposition drift 审计锁定 | AUTHOR 评审失败时回到 PLAN 重写并重新确认；审计继续阻止未批准漂移 |
 | 叙事候选覆盖来源主论点或论证顺序 | 所有候选共享只读 `source_thesis/source_argument_method`，仅允许改变受众问题、强调节点和页面角色 |
 | lean 合同削弱来源约束 | 保留 source refs、论点绑定、数字/标识符硬检查；省略型和推断型内容保留例外合同 |
 | 新旧 schema 同时存在造成分支复杂 | 只以 `plan_contract_version` 分支，禁止另建新文件格式和新目录 |
@@ -657,7 +724,9 @@ git diff --check
 - 常规脚本项目不再生成四份 business-semantic 权威、semantic model 和 Source Truth。
 - Foundation 本身即可人工审核全文主旨、论点结构、关键事实、边界和来源引用。
 - 复杂汇报能看到 2–3 个有实质差异的叙事候选和明确选择理由。
-- 每页计划一眼可读：讲什么、回答什么、承担什么角色、处于什么节奏、由什么证据承载、现场如何讲、如何承接下一页。
+- 每页计划一眼可读：为何需要这页、回答什么、希望听众记住什么、由什么证据建立、主动舍弃什么、如何推进到下一页。
+- 上屏文字能在无讲解时传达主判断和证据关系，高密度页经过候选比较和整页重写。
 - 作者无需填写视觉生产和逐原子事实处置的大量机械字段。
 - 成稿审计把注意力集中到来源外数字、标识符、关键改写、高潮页和图表误读风险。
 - 默认流程沿用 CyberPPT 的项目目录、source index、Foundation、Deck Plan、Final Script 和 Stage 02 消费链；strict/legacy 流程继续兼容 Source Truth 投影。
+- 机器审计通过代表可追溯、合同和边界底线通过；内容质量通过由真实样本盲评和定性 Critic 的重写结果共同证明。

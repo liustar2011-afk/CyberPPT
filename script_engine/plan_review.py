@@ -1,8 +1,11 @@
 """Human-readable, non-authoritative review projection for deck-plan.json."""
 from __future__ import annotations
 
+import json
 from collections import defaultdict
 from typing import Any
+
+from script_engine.plan_quality import plan_critic_priorities
 
 from .analysis_audit import foundation_items_by_id
 
@@ -69,11 +72,19 @@ def _label(value: object, labels: dict[str, str], fallback: object = None) -> st
     return labels.get(key, _text(fallback if fallback is not None else value))
 
 
-def evidence_status(page: dict[str, Any], foundation: dict[str, Any]) -> str:
+def evidence_status(
+    page: dict[str, Any], foundation: dict[str, Any], *, lean: bool = False
+) -> str:
     items = foundation_items_by_id(foundation)
     proof = page.get("proof") if isinstance(page.get("proof"), dict) else {}
     analysis = page.get("analysis_basis") if isinstance(page.get("analysis_basis"), dict) else {}
-    evidence = list(dict.fromkeys(_ids(proof.get("evidence_refs")) + _ids(analysis.get("supports"))))
+    evidence = list(
+        dict.fromkeys(
+            _ids(proof.get("evidence_refs"))
+            + _ids(analysis.get("supports"))
+            + (_ids(page.get("source_refs")) if lean else [])
+        )
+    )
     boundaries = _ids(proof.get("boundary_refs"))
     unknown = [item_id for item_id in evidence + boundaries if item_id not in items]
     labels: list[str] = []
@@ -233,18 +244,30 @@ def render_plan_review(
         else:
             unassigned.append(page)
 
+    lean_plan = plan.get("plan_contract_version") == 2 and plan.get("planning_profile") == "lean"
+    narrative_design = plan.get("narrative_design") if isinstance(plan.get("narrative_design"), dict) else {}
+    source_assets = {
+        str(item.get("id")): item
+        for item in foundation.get("source_assets") or []
+        if isinstance(item, dict) and item.get("id")
+    }
     lines = [
         "# 脚本规划待确认",
         "",
+        f"- 规划合同：{'v2 lean' if lean_plan else 'v1 strict'}",
         f"- 交流目标：{_text(plan.get('communication_goal'))}",
         f"- 汇报对象：{_text(plan.get('audience'))}",
         f"- 受众范围：{_text(plan.get('audience_scope'))}",
         f"- 来源结构：{_label(plan.get('source_structure_mode'), _STRUCTURE_MODE_LABELS)}",
         "- 来源适配门禁："
         + (
-            "严格质询"
-            if plan.get("evidence_fit_review_mode") == "strict"
-            else "缺失，阻断 AUTHOR"
+            "来源引用、论点绑定与边界底线（v2 lean）"
+            if lean_plan
+            else (
+                "严格质询"
+                if plan.get("evidence_fit_review_mode") == "strict"
+                else "缺失，阻断 AUTHOR"
+            )
         ),
         f"- 来源总论点：{_text(plan.get('source_thesis'))}",
         "- 来源论证顺序：" + " → ".join(_ids(plan.get("source_argument_method"))),
@@ -254,6 +277,40 @@ def render_plan_review(
         f"- 受众终点：{_text(plan.get('audience_end'))}",
         "",
     ]
+
+    if narrative_design:
+        lines.extend(
+            [
+                "## 叙事选择",
+                "",
+                f"- 模式：{_text(narrative_design.get('mode'))}",
+                f"- 入选方案：{_text(narrative_design.get('chosen_id'))}",
+                f"- 选择理由：{_text(narrative_design.get('selection_reason'))}",
+                f"- 情绪曲线：{_text(narrative_design.get('emotional_curve'))}",
+                f"- 高潮页：{_text(narrative_design.get('peak_page_id'))}",
+                f"- 无单一高潮说明：{_text(narrative_design.get('no_single_peak_reason'))}",
+                "",
+            ]
+        )
+        for candidate in narrative_design.get("candidates") or []:
+            if not isinstance(candidate, dict):
+                continue
+            status = "入选" if candidate.get("id") == narrative_design.get("chosen_id") else "落选"
+            lines.extend(
+                [
+                    f"### {candidate.get('id') or '?'} {_text(candidate.get('name'), '')}（{status}）",
+                    "",
+                    f"- 结构：{_text(candidate.get('shape'))}",
+                    f"- 开场角色：{' → '.join(_ids(candidate.get('opening_roles'))) or '—'}",
+                    f"- 受众问题：{_text(candidate.get('audience_question'))}",
+                    f"- 预判异议：{_text(candidate.get('objection'))}",
+                    f"- 收束行动：{_text(candidate.get('closing_ask'))}",
+                    f"- 论点重心：{'、'.join(_ids(candidate.get('argument_focus_node_ids'))) or '—'}",
+                    f"- 证据投入：{'、'.join(_ids(candidate.get('evidence_refs'))) or '—'}",
+                    f"- 落选理由：{_text(candidate.get('loss_reason')) if status == '落选' else '—'}",
+                    "",
+                ]
+            )
 
     def append_chapter(
         title: str,
@@ -292,7 +349,7 @@ def render_plan_review(
                     message=_cell(page.get("message")),
                     argument_nodes=_cell("、".join(_ids(page.get("source_argument_node_ids"))) or "—"),
                     role=_cell(_label(page.get("page_role"), _PAGE_ROLE_LABELS, page.get("logic"))),
-                    evidence=_cell(evidence_status(page, foundation)),
+                    evidence=_cell(evidence_status(page, foundation, lean=lean_plan)),
                     bridge=_cell("；".join(bridge_parts)),
                 )
             )
@@ -306,6 +363,8 @@ def render_plan_review(
                     *([f"- 页面副标题：{_text(page.get('subtitle'))}"] if page.get("subtitle") else []),
                     f"- 页面问题：{_text(page.get('question'))}",
                     f"- 主逻辑：{_text(page.get('logic'))}",
+                    f"- 论证节拍：{_text(page.get('beat'))}",
+                    f"- 口头讲述线索：{_text(page.get('spoken_thread'))}",
                     f"- 承担源论点：{'、'.join(_ids(page.get('source_argument_node_ids'))) or '—'}",
                     f"- 来源范围：{'、'.join(_ids(page.get('source_scope'))) or '—'}",
                     f"- 结构操作：{_label(page.get('structural_operation'), _STRUCTURAL_OPERATION_LABELS)}",
@@ -313,22 +372,41 @@ def render_plan_review(
                     "",
                 ]
             )
-            _append_evidence_fit_review(
-                lines,
-                page.get("evidence_fit_review"),
-                title="页面来源适配质询",
-            )
-            _append_source_consumption_review(lines, page)
+            if not lean_plan:
+                _append_evidence_fit_review(
+                    lines,
+                    page.get("evidence_fit_review"),
+                    title="页面来源适配质询",
+                )
+                _append_source_consumption_review(lines, page)
+            visual = page.get("visual_evidence")
+            if isinstance(visual, dict) and visual.get("kind") == "asset":
+                asset_id = str(visual.get("ref") or "")
+                asset = source_assets.get(asset_id) or {}
+                lines.extend(
+                    [
+                        "#### 来源图表传播说明",
+                        "",
+                        f"- 资产：{asset_id or '—'}（{_text(asset.get('kind'))}）",
+                        f"- 原始位置：{_text(json.dumps(asset.get('locator') or {}, ensure_ascii=False, sort_keys=True))}",
+                        f"- 承载元素：{_text(visual.get('carrying_element'))}",
+                        f"- 图表含义：{_text(asset.get('meaning'))}",
+                        f"- 防误读边界：{_text(asset.get('wrong_reading'))}",
+                        f"- 绑定论点：{'、'.join(_ids(asset.get('argument_node_ids'))) or '—'}",
+                        "",
+                    ]
+                )
             contract = page.get("onscreen_contract")
             if isinstance(contract, dict):
                 for module in contract.get("modules") or []:
                     if not isinstance(module, dict):
                         continue
-                    _append_evidence_fit_review(
-                        lines,
-                        module.get("evidence_fit_review"),
-                        title=f"模块来源适配质询：{_text(module.get('heading'))}",
-                    )
+                    if not lean_plan:
+                        _append_evidence_fit_review(
+                            lines,
+                            module.get("evidence_fit_review"),
+                            title=f"模块来源适配质询：{_text(module.get('heading'))}",
+                        )
 
     for chapter in chapters:
         chapter_id = str(chapter.get("id") or "")
@@ -336,6 +414,15 @@ def render_plan_review(
         append_chapter(_text(chapter.get("title") or chapter_id), chapter_pages, chapter)
     if unassigned:
         append_chapter("未分配章节", unassigned)
+
+    priorities = plan_critic_priorities(plan) if lean_plan else []
+    if priorities:
+        lines.extend(["## Plan Critic 重点", ""])
+        lines.extend(
+            f"- {item['page_id']}｜{item['code']}｜{item['reason']}"
+            for item in priorities
+        )
+        lines.append("")
 
     lines.extend(["## 审计结论", ""])
     if not issues and not warnings:

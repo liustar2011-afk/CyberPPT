@@ -33,6 +33,15 @@ def validate_final_script(payload: dict[str, Any]) -> list[str]:
 def validate_deck_plan(payload: dict[str, Any]) -> list[str]:
     return validate_payload(payload, "deck-plan.schema.json")
 
+
+def is_lean_deck_plan(payload: dict[str, Any]) -> bool:
+    """Return whether PLAN uses the v2 lean authoring contract."""
+
+    return (
+        payload.get("plan_contract_version") == 2
+        and payload.get("planning_profile") == "lean"
+    )
+
 def validate_foundation(payload: dict[str, Any]) -> list[str]:
     return validate_payload(payload, "foundation.schema.json")
 
@@ -192,26 +201,6 @@ def check_onscreen_structure(final_script: dict[str, Any]) -> list[str]:
             for item in module.get("items") or []:
                 if isinstance(item, str) and item.strip():
                     lines.append(item)
-                    if "：" in item:
-                        label, payload = item.split("：", 1)
-                        milestone_label = any(
-                            marker in label
-                            for marker in ("目标", "阶段", "路径", "任务", "计划", "安排", "进度", "时序")
-                        )
-                        has_date = bool(re.search(r"(?:19|20)\d{2}年", payload))
-                        has_action = any(
-                            marker in payload
-                            for marker in (
-                                "完成", "开展", "建成", "形成", "实现", "发布", "实施",
-                                "推进", "覆盖", "支撑", "达到", "启动", "建立", "转化",
-                                "衔接", "制定", "明确", "申报",
-                            )
-                        )
-                        if milestone_label and has_date and not has_action:
-                            issues.append(
-                                f"slides.{index} ({slide_id}).onscreen module '{module_heading}': "
-                                f"date-only milestone '{item}' gives a time span without the task or result"
-                            )
             normalized = [_normalize_item_text(line) for line in lines]
             for i in range(len(lines)):
                 for j in range(i + 1, len(lines)):

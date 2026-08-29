@@ -36,6 +36,21 @@ Keep these decisions internal. If they cannot be made from the approved PLAN,
 repair PLAN first. Passing deterministic checks without this generative pass is
 not AUTHOR completion.
 
+Version 2 lean pages follow one authoring loop:
+
+1. write the complete page argument from the approved message and evidence;
+2. select the minimum sufficient propositions and proof for a silent reader;
+3. for dense, money, conclusion or Critic-priority pages, write a
+   judgment-led candidate and an evidence-led candidate;
+4. compare main-judgment visibility, ten-second comprehension, density,
+   repetition, relation visibility and semantic completeness;
+5. rewrite the whole page organization when the preferred candidate still
+   fails a material dimension.
+
+Only the winning page enters `final-script.md`. Candidate text, scores and
+Critic reasoning are transient authoring context, not a checkpoint, receipt or
+fourth authority artifact.
+
 Read:
 
 - `docs/SOURCE_FIDELITY_AND_ANALYSIS.md`;
@@ -150,7 +165,7 @@ For each content page write:
 
 Analytical writing may reorganize facts and draw supported interpretations. It may not add a new fact, unsupported current state, ranking, forecast, necessary condition or commitment.
 
-When Foundation declares `source_consumption_policy: required`, do not enter
+For v1 strict plans, when Foundation declares `source_consumption_policy: required`, do not enter
 AUTHOR until every sourced content page has passed the strict PLAN contract.
 Treat `source_refs` as the assigned source inventory. Write every ref into
 `full_copy` unless PLAN classifies it under `detail_refs` or a specifically
@@ -162,7 +177,7 @@ a semantic-consumption rule: combine related records into a coherent argument;
 do not paste one sentence per ref mechanically. A historical Foundation without
 the policy field retains the legacy optional audit path.
 
-When PLAN has declared `source_consumption.unit_dispositions` for a page, a
+For v1 strict plans, when PLAN has declared `source_consumption.unit_dispositions` for a page, a
 record-level anchor hit is not enough: every semantic unit tagged `full_copy`
 must independently be traceable in `full_copy`, and every unit tagged
 `onscreen` must be traceable in its mapped module. A record with several
@@ -236,9 +251,9 @@ on any visible module heading, lead line, or item; the module boundary supplies
 the visual pause. Shortening must remove redundancy, not the subject, predicate,
 state, condition or business relationship that makes the claim readable.
 
-Treat `mixed` as the normal explanatory mode. `phrase_led` is valid only when
-PLAN declares `phrase_led_basis` for a taxonomy, metric set, object inventory,
-exact source-label set or genuinely short sequence. It does not authorize
+Treat `mixed` as the normal explanatory mode. `phrase_led` is valid only for a
+taxonomy, metric set, object inventory, exact source-label set or genuinely
+short sequence. It does not authorize
 turning every fact into `标签：短语`; write natural propositions whenever the
 reader needs an action, state, mechanism, result or boundary to understand the
 module. A 30-character detail band applies to compact evidence fragments, not
@@ -272,8 +287,9 @@ whether `onscreen_contract` is present. Its `scope` entries are the canonical
 labels: reuse them verbatim as onscreen headings and as `relationships[].from`/`to`
 (see section 7). Do not relabel, merge or split a `primary_relation.scope` entry.
 
-Before AUTHOR, require the approved Deck Plan to declare
-`evidence_fit_review_mode: strict` and pass `audit-plan`. Do not treat a free-form
+Before AUTHOR on a v1 strict plan, require the approved Deck Plan to declare
+`evidence_fit_review_mode: strict` and pass `audit-plan`. Version 2 lean instead
+requires source-argument bindings and referenced evidence to pass. Do not treat a free-form
 Critic explanation as proof that sources fit: page and module reviews must bind
 every assigned `evidence_ref` and finish with `verdict: keep`. Any `topic_only`,
 `no`, `uncertain`, `rename`, `move`, `split` or `reject` state returns the work
@@ -290,7 +306,7 @@ AUTHOR wording to conceal an invalid parent-child relation. Keep the
 question-and-answer reasoning in Critic; deliver only the repaired script and
 deterministic issue codes.
 
-When `source_consumption.onscreen_refs` is present, compress only those selected
+For v1 strict plans, when `source_consumption.onscreen_refs` is present, compress only those selected
 representative records into the visible modules mapped by
 `onscreen_contract.modules[].evidence_refs`. Their `required_signals` are the
 deterministic visible proof. Other fully consumed records may remain in
@@ -400,6 +416,27 @@ but they must not generate or repair the notes.
 
 ## 9. Whole-deck Critic
 
+Before the qualitative pass, run composed trace against the existing
+Foundation authority:
+
+```bash
+.venv/bin/cyberppt-script trace-composed \
+  script/dist/final-script.json script/foundation.json
+```
+
+Treat `composed` as a review queue. A composed line may be a strong natural
+rewrite or a source-supported inference; its status alone never proves drift.
+Treat `hard_findings` for source-absent numbers, versions, paths, acronyms and
+proper-name identifiers as source-boundary failures. Repair or source-bind
+them before delivery.
+
+Use `audit-final`'s `critic_priorities` to focus the independent Critic on peak
+pages, pages carrying composed lines, external claim checks, and pages whose
+source asset has a recorded `wrong_reading` risk. Review the complete page in
+context, then rewrite the smallest correct scope. The trace and priority list
+are transient diagnostics printed by existing commands; do not save them as a
+checkpoint, receipt, parallel content plan or fourth authoritative artifact.
+
 Run the tests in `script-quality-rubric.md`, especially:
 
 - source-structure fidelity;
@@ -421,21 +458,22 @@ Run the tests in `script-quality-rubric.md`, especially:
 - structural-change stale-reference checks;
 - formal register and speaker-note quality.
 
-For every content page, also run the independent-reading tests:
+For every content page, perform a qualitative independent-reading review:
 
-- **silent-reader test** — with no presenter explanation, can the reader
+- **main-judgment visibility** — with no presenter explanation, can the reader
   understand the page's main content and the role of each module?
-- **ten-second test** — can the reader restate the page's principal content
+- **ten-second comprehension** — can the reader restate the page's principal content
   after a short scan without reconstructing it from fragments?
 - **visible-payload test** — does every line carry a fact, distinction,
   condition, role, action, state or result rather than a bare label or time span?
 - **parent-question test** — does every child directly answer the question its
   heading poses, at compatible granularity with its siblings?
-- **deletion test** — if removing a line changes neither understanding nor
+- **information necessity** — if removing a line changes neither understanding nor
   proof, remove it or replace it with missing source-grounded evidence.
 
-Failure on any of these tests is a rewrite trigger even when deterministic
-coverage and lint pass.
+These dimensions guide candidate selection and whole-page rewrite. They are
+human/agent judgments; deterministic coverage and lint do not claim to score
+them.
 
 ### Analysis-depth requirement
 
@@ -474,6 +512,7 @@ Before delivery run as applicable:
 ```bash
 cyberppt-script validate final <final-script.json>
 cyberppt-script audit-final <final-script.json> <deck-plan.json> <foundation.json>
+cyberppt-script trace-composed <final-script.json> <foundation.json>
 cyberppt-script check-refs <final-script.json> <foundation.json> [--source-index <source-index.json>]
 cyberppt-script lint <final-script.json>
 cyberppt-script render-stage02 <final-script.json> --output dist/final-script.md

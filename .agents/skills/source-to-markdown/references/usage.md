@@ -17,6 +17,12 @@ Optional OCR dependencies:
 .\scripts\install.ps1 -Ocr
 ```
 
+Optional format support:
+
+```powershell
+.\scripts\install.ps1 -Extra pdf   # or pptx / xlsx
+```
+
 ### macOS / Linux
 
 ```bash
@@ -30,12 +36,23 @@ Optional OCR dependencies:
 ./scripts/install.sh --ocr
 ```
 
-The scripts create `.venv`, install Microsoft MarkItDown, and optionally install `markitdown-ocr` plus `openai`. The conversion wrapper automatically reuses the Skill-local environment first, then a `.venv` at the enclosing repository root when available.
+Optional format support:
+
+```bash
+./scripts/install.sh --extra pdf   # or pptx / xlsx
+```
+
+The scripts create `.venv`, install the Microsoft MarkItDown base package, and
+optionally install one format extra or `markitdown-ocr` plus `openai`. They do
+not install `[all]`; audio, YouTube, Outlook and Azure dependencies stay outside
+the default PPT script path. The conversion wrapper automatically reuses the
+Skill-local environment first, then a `.venv` at the enclosing repository root
+when available.
 
 Alternatively, install the runtime into your existing Python environment:
 
 ```bash
-../../../.venv/bin/python3 -m pip install 'markitdown[all]'
+../../../.venv/bin/python3 -m pip install markitdown
 ```
 
 ## Single File

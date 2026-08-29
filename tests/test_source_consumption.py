@@ -325,7 +325,7 @@ def test_p01_compressed_copy_reports_specific_source_losses() -> None:
     assert "FULL_COPY_NUMBER_OR_DATE_LOST" in joined
     assert "FULL_COPY_CONDITION_LOST" in joined
     assert "FULL_COPY_RESPONSIBILITY_LOST" in joined
-    assert "FULL_COPY_STATUS_STRENGTH_LOST" not in joined
+    assert "FULL_COPY_STATUS_STRENGTH_LOST" in joined
     assert "required signal '2026年7月1日' is missing" in joined
 
 

@@ -2,12 +2,33 @@
 from __future__ import annotations
 
 from .common import *
+from cyberppt.source_assets import source_asset_argument_binding_issues, validate_source_assets
+from ..source_index import validate_reading_strategy
 
 def audit_foundation_analysis(foundation: dict[str, Any]) -> tuple[list[str], list[str]]:
     issues: list[str] = []
     warnings: list[str] = []
     items = foundation_items_by_id(foundation)
     known_ids = set(items)
+
+    source_assets = [
+        item for item in foundation.get("source_assets") or [] if isinstance(item, dict)
+    ]
+    asset_unit_ids = {
+        str(value)
+        for asset in source_assets
+        for value in asset.get("source_unit_refs") or []
+        if str(value)
+    }
+    for finding in validate_source_assets(source_assets, asset_unit_ids):
+        rendered = f"{finding['code']}: {finding['asset_id']}: {finding['message']}"
+        (issues if finding["severity"] == "blocking" else warnings).append(rendered)
+    issues.extend(
+        source_asset_argument_binding_issues(
+            source_assets,
+            [item for item in foundation.get("argument_nodes") or [] if isinstance(item, dict)],
+        )
+    )
 
     for key in CITABLE_KEYS:
         for index, item in enumerate(foundation.get(key) or []):
@@ -55,6 +76,26 @@ def audit_foundation_analysis(foundation: dict[str, Any]) -> tuple[list[str], li
     orders = [x.get("order") for x in structure if isinstance(x.get("order"), int)]
     if len(orders) != len(set(orders)):
         warnings.append("source_structure: duplicate order values; verify source hierarchy ordering")
+    if isinstance(foundation.get("reading_strategy"), dict):
+        known_unit_ids: set[str] = set()
+        strategy = foundation["reading_strategy"]
+        known_unit_ids.update(
+            str(value) for value in strategy.get("deep_read_unit_ids") or [] if str(value)
+        )
+        known_unit_ids.update(
+            str(value) for value in strategy.get("excluded_unit_ids") or [] if str(value)
+        )
+        for key in CITABLE_KEYS:
+            for item in foundation.get(key) or []:
+                if not isinstance(item, dict):
+                    continue
+                known_unit_ids.update(
+                    str(value)
+                    for value in item.get("source_refs") or []
+                    if isinstance(value, str) and value.startswith("SU-")
+                )
+        known_unit_ids.update(asset_unit_ids)
+        issues.extend(validate_reading_strategy(foundation, structure, sorted(known_unit_ids)))
     return issues, warnings
 
 __all__ = ['audit_foundation_analysis']

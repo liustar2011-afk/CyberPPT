@@ -1,5 +1,7 @@
 param(
-    [switch]$Ocr
+    [switch]$Ocr,
+    [ValidateSet("pdf", "pptx", "xlsx")]
+    [string]$Extra
 )
 
 $ErrorActionPreference = "Stop"
@@ -16,9 +18,11 @@ if (Get-Command py -ErrorAction SilentlyContinue) {
 
 $VenvPython = Join-Path $Venv "Scripts\python.exe"
 & $VenvPython -m pip install --upgrade pip
-& $VenvPython -m pip install 'markitdown[all]'
+& $VenvPython -m pip install markitdown
 if ($Ocr) {
     & $VenvPython -m pip install markitdown-ocr openai
+} elseif ($Extra) {
+    & $VenvPython -m pip install "markitdown[$Extra]"
 }
 
 & $VenvPython (Join-Path $Root "scripts\convert.py") --help | Out-Null

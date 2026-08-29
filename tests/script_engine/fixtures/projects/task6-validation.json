@@ -1,0 +1,55 @@
+{
+  "schema": "cyberppt.task6_validation.v1",
+  "shape_cases": [
+    {
+      "id": "bounded-formal-12-pages",
+      "kind": "bounded_formal",
+      "source_char_counts": [12000],
+      "expected_reading_mode": "direct",
+      "evidence_scope": "synthetic_boundary_fixture"
+    },
+    {
+      "id": "long-single-65-pages",
+      "kind": "long_single_file",
+      "source_char_counts": [65000],
+      "expected_reading_mode": "long",
+      "deep_read_char_fraction": 0.22,
+      "evidence_scope": "synthetic_boundary_fixture"
+    },
+    {
+      "id": "three-short-files-over-threshold",
+      "kind": "multi_file_over_threshold",
+      "source_char_counts": [22000, 22000, 22000],
+      "expected_reading_mode": "long",
+      "deep_read_char_fraction": 0.24,
+      "evidence_scope": "synthetic_boundary_fixture"
+    },
+    {
+      "id": "proposal-assets-numbers-current-facts",
+      "kind": "proposal_with_assets_and_current_facts",
+      "source_char_counts": [18000],
+      "expected_reading_mode": "direct",
+      "required_capabilities": ["chart", "number", "external_current_fact"],
+      "evidence_scope": "contract_coverage_fixture"
+    },
+    {
+      "id": "review-without-single-peak",
+      "kind": "review_without_single_peak",
+      "source_char_counts": [16000],
+      "expected_reading_mode": "direct",
+      "required_capabilities": ["no_single_peak_reason"],
+      "evidence_scope": "contract_coverage_fixture"
+    }
+  ],
+  "real_projects": [
+    "power-data-infrastructure-standard-system-research-20260828-002",
+    "power-data-infrastructure-standard-system-research-20260828-003"
+  ],
+  "graduation_requirements": {
+    "real_projects_reaching_stage02_handoff": 3,
+    "script_to_strict_max_size_ratio": 0.4,
+    "minimum_field_reduction": 0.4,
+    "long_deep_read_fraction": [0.15, 0.3],
+    "blind_review_dimensions_won": 3
+  }
+}

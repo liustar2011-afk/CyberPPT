@@ -1,104 +1,108 @@
-# Authoring Method v0.4
+# Authoring Method v0.5
 
 ## Goal
 
-Convert mature formal Word material into analytically stronger PPT scripts while preserving the source's content boundary and chapter structure.
-
-The authoritative workflow remains:
+Convert formal source material into a source-faithful, analytically strong PPT
+script with three authoritative content artifacts:
 
 `foundation.json -> deck-plan.json -> final-script.md`
 
-## 1. Source first
+## 1. Foundation from the source
 
-The source document determines what the material covers and, by default, the chapter order in which it is covered. Script Engine does not silently redesign the source's business emphasis.
+The default `script` profile builds one deterministic source index and authors
+one Foundation. Foundation preserves source structure, thesis, argument order,
+facts, numbers, responsibilities, constraints, boundaries, assets and open
+questions with stable source-unit references.
 
-`foundation.json.source_structure` records this hierarchy for PLAN.
+Direct reading covers bounded material. Long reading preserves the complete
+argument skeleton, shows mapped previews, and deep-reads the selected 15%–30%
+of source text before precise claims are authored. Selection and exclusion
+reasons remain visible at the first human review stop.
 
-## 2. Analytical understanding
+Contract, regulation, fact-by-fact verification and legacy migrations route to
+the `strict/legacy` profile and its complete Source Foundation chain.
 
-UNDERSTAND performs two distinct tasks:
+## 2. Source-constrained narrative planning
 
-1. preserve atomic facts, numbers, responsibilities, status, constraints and explicit relations;
-2. run a Latent Logic pass using `references/analysis-models.md` to identify source-supported inferred relationships.
+PLAN writes the argument twice inside the same `deck-plan.json`:
 
-Relations are classified as `explicit` or `inferred`. Speculative relationships are excluded from authoritative relations.
+1. establish the deck thesis, recognition path, page necessity and peak;
+2. write each page question, disputable message, selected evidence, content
+   units, beat and spoken thread.
 
-## 3. Source-constrained planning
+Complex material develops two or three source-constrained narrative candidates.
+The Plan Critic compares their divergence, rejects strawman options, selects one
+path, then rewrites weak messages, duplicate pages and affected handoffs. Review
+notes remain internal working context.
 
-PLAN projects the source hierarchy into PPT pages.
+Source chapter order is preserved by default. A page may preserve or split one
+source section, or merge closely related content inside one source chapter.
+Cross-chapter movement requires explicit user authorization.
 
-Each page keeps the compact planning surface:
+## 3. Deck Plan contracts
 
-- `question`
-- `message`
-- `logic`
-- `content`
-- `next`
+v1 strict remains the production default during Task 6 graduation. It retains
+the existing evidence-fit and source-consumption surfaces.
 
-v0.4 adds source-control fields when useful:
+v2 lean is available for controlled validation. It preserves source thesis,
+source argument order and chapter/page argument-node bindings while reducing
+routine authoring fields. Machine audits continue to enforce source identity,
+reference resolution, argument intersection, visibility and inference
+boundaries.
 
-- `source_scope`
-- `structural_operation`
-- `analysis_basis`
+The production default switches to v2 only after all of these conditions have
+evidence:
 
-Existing optional fields such as `proof`, `content_load`, `must_include` and `reserved_for_later` remain available.
+- three independent real projects reach Foundation, Plan, Author and Stage 02
+  handoff;
+- script/strict dual runs show no loss in numbers, responsibilities, conditions
+  or boundaries, and no increase in source errors;
+- script structured artifacts occupy at most 40% of the strict run;
+- independent review accepts Foundation readability and long-reading selection;
+- v2 wins at least three of four blind-review dimensions;
+- average manually authored planning fields fall by at least 40%.
 
-## 4. Allowed structural transformation
+Run `benchmarks/run.py` for the current evidence ledger. Synthetic shape fixtures
+never count as real projects or human quality evidence.
 
-Without separate user authorization, PLAN may:
+## 4. Page authoring closed loop
 
-- preserve a source section as one page;
-- split a dense source section into multiple pages;
-- merge closely related content within the same source chapter.
+AUTHOR uses this sequence:
 
-Cross-chapter movement or a new chapter strategy requires explicit user authorization.
+`full page argument -> onscreen selection -> expression candidates -> qualitative review -> whole-page rewrite`
 
-## 5. Analytical page construction
+High-density pages, peak pages, conclusions and Critic priorities develop a
+judgment-led candidate and an evidence-led candidate. The selected expression
+must preserve the approved Plan message, decisive evidence, responsibilities,
+numbers, conditions and boundaries. Candidate drafts and review notes do not
+become additional authorities.
 
-AUTHOR follows:
+## 5. Inference and visibility
 
-`source facts -> selected analysis model -> bounded interpretation -> page judgment -> proof chain -> full copy -> onscreen copy`
+Source-supported analysis may explain how several facts fit together. New
+facts, unsupported causal mechanisms, rankings, forecasts and commitments stay
+outside the authoritative script. External current facts require explicit
+verification and provenance.
 
-The engine should expose latent logic when the source supports it. It should also recognize that classification, taxonomy and parallel dimensions are valid analytical structures and do not need artificial process arrows.
+Audience scope controls exposure. Restricted evidence remains available to the
+internal proof process and appears in audience-facing prose only after explicit
+approval.
 
-## 6. Inference discipline
+## 6. Critic priorities
 
-A useful analysis can be stronger than the source's surface wording while remaining inside its semantic evidence.
+The whole-deck Critic prioritizes source structure, section coverage, page
+necessity, narrative advancement, relation basis, inference boundaries,
+compression loss, peak-page strength, composed claims and chart wrong-reading
+risk. Deterministic audits provide provenance and contract baselines; readable
+before/after samples and reviewer scores provide content-quality evidence.
 
-Allowed: explain how several facts fit together.
-
-Disallowed: create a new fact, unsupported causal mechanism, group-wide overgeneralization, necessary condition, current numeric gap, ranking, forecast or commitment.
-
-## 7. Audience visibility
-
-Audience scope controls exposure, not default chapter order. `internal_only` content remains available to the internal proof process but stays out of external-facing script prose unless explicitly approved.
-
-## 8. Critic tests
-
-The v0.4 Critic prioritizes:
-
-- source structure;
-- section coverage;
-- single-question pages;
-- relation basis;
-- inference boundary;
-- group-claim strength;
-- classification vs progression;
-- optionality preservation;
-- audience exposure;
-- analytical depth;
-- compression loss;
-- presentation hierarchy.
-
-## 9. Stable user experience
+## 7. User experience
 
 The natural-language entry remains:
 
 `根据这个 Word 生成 PPT 脚本。`
 
-The user-facing gates remain:
+The user-facing stops remain:
 
 1. `脚本规划待确认`;
 2. `最终脚本已生成`.
-
-The deeper analysis stays inside the existing agent workflow.

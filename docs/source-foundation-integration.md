@@ -1,6 +1,8 @@
-# Source Foundation integration
+# Strict/legacy Source Foundation integration
 
-CyberPPT now includes a higher-quality source-material front end. It replaces the default reasoning path from source material through PPT outline while keeping the mature CyberPPT page-writing and Stage 02 production pipeline.
+This document covers the full Source Truth path for contracts, regulation,
+fact-by-fact verification and old-project compatibility. Ordinary new script
+projects use the lighter `script` profile described in `CYBERPPT_WORKFLOW.md`.
 
 ## Recommended setup
 
@@ -10,10 +12,11 @@ From the repository root:
 python -m pip install -e .
 ```
 
-Install Microsoft MarkItDown for non-Markdown source conversion when needed:
+Install Microsoft MarkItDown only for the required fallback format:
 
 ```bash
-python -m pip install 'markitdown[all]'
+python -m pip install markitdown
+python -m pip install 'markitdown[pdf]'  # only when PDF support is required
 ```
 
 Optional OCR:

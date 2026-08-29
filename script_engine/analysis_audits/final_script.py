@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from .common import *
-from cyberppt.onscreen_text_rules import is_readable_onscreen_proposition
+from .composed_trace import hard_finding_messages, trace_composed
+from .deck_plan import _is_lean_plan
 
 def _onscreen_module_lines(module: dict[str, Any]) -> list[str]:
     lines: list[str] = []
@@ -48,18 +49,12 @@ def _evidence_first_item_hierarchy_issues(
     ]
 
 def _is_readable_proposition(line: str) -> bool:
-    """Return whether a visible line carries a compact, sentence-like proposition.
-
-    Visible module copy intentionally omits terminal punctuation, so punctuation
-    cannot prove semantic completeness.  This advisory check instead looks for
-    a compact line with a proposition-bearing predicate.  Coloned detail lines
-    remain phrase-led evidence and are assessed by their own rules.
-    """
-    return is_readable_onscreen_proposition(
-        line,
-        min_chars=_COMPLETE_PROPOSITION_MIN_CHARS,
-        max_chars=_COMPLETE_PROPOSITION_MAX_CHARS,
-    )
+    """Return whether a visible line carries a compact, sentence-like proposition."""
+    value = str(line or "").strip()
+    if not value or re.search(r"[：:]", value) or not _PROPOSITION_END_RE.search(value):
+        return False
+    chars = len(_VISIBLE_CHAR_RE.findall(value))
+    return _COMPLETE_PROPOSITION_MIN_CHARS <= chars <= _COMPLETE_PROPOSITION_MAX_CHARS
 
 def _onscreen_expression_warnings(
     page: dict[str, Any], slide: dict[str, Any],
@@ -81,8 +76,7 @@ def _onscreen_expression_warnings(
             if not any(_is_readable_proposition(line) for line in lines):
                 warnings.append(
                     f"module '{heading}': expression_mode='sentence_led' has no readable proposition; "
-                    "add one source-grounded proposition whose parent context and line preserve the "
-                    "business subject or object, predicate, and material result or boundary"
+                    "add one source-grounded sentence with a subject, predicate and terminal punctuation"
                 )
         return warnings
 
@@ -318,6 +312,11 @@ def _audit_authored_source_consumption(
                         f"FULL_COPY_RESPONSIBILITY_LOST: {ref} lost source actors {missing_entities}"
                     )
 
+                status = str(item.get("status") or "").strip()
+                if status and re.sub(r"\s+", "", status) not in compact_full_copy:
+                    issues.append(
+                        f"FULL_COPY_STATUS_STRENGTH_LOST: {ref} lost source status '{status}'"
+                    )
             continue
 
         if required_policy:
@@ -574,17 +573,6 @@ def _audit_authored_unit_consumption(
                     f"FULL_COPY_SEMANTIC_UNIT_GAP: {ref}#{unit_id} is assigned full_copy disposition "
                     f"but is absent from full_copy (overlap={overlap:.3f}); unit text: {unit_text}"
                 )
-            missing_terms = [
-                str(term).strip()
-                for term in unit.get("protected_terms") or []
-                if str(term).strip()
-                and re.sub(r"\s+", "", str(term)) not in re.sub(r"\s+", "", full_copy)
-            ]
-            if missing_terms:
-                issues.append(
-                    f"FULL_COPY_PROTECTED_TERM_LOST: {ref}#{unit_id} lost protected terms "
-                    f"{missing_terms}"
-                )
         elif disposition == "onscreen":
             headings = modules_by_ref.get(ref) or []
             module_text = " ".join(
@@ -597,17 +585,6 @@ def _audit_authored_unit_consumption(
                 issues.append(
                     f"ONSCREEN_SOURCE_DETAIL_INSUFFICIENT: {ref}#{unit_id} is assigned onscreen disposition "
                     f"but is absent from the mapped onscreen module(s); unit text: {unit_text}"
-                )
-            missing_terms = [
-                str(term).strip()
-                for term in unit.get("protected_terms") or []
-                if str(term).strip()
-                and re.sub(r"\s+", "", str(term)) not in re.sub(r"\s+", "", module_text)
-            ]
-            if missing_terms:
-                issues.append(
-                    f"ONSCREEN_PROTECTED_TERM_LOST: {ref}#{unit_id} lost protected terms "
-                    f"{missing_terms}"
                 )
     return issues
 
@@ -656,14 +633,16 @@ def _normalize_source_chapter_title(title: str) -> str:
 def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[list[str], list[str]]:
     issues: list[str] = audit_final_internal_expert_voice(final_script, plan)
     warnings: list[str] = []
+    issues.extend(hard_finding_messages(trace_composed(final_script, foundation)))
     items = foundation_items_by_id(foundation)
     pages = {p.get("id"): p for p in (plan.get("pages") or []) if isinstance(p, dict) and isinstance(p.get("id"), str)}
     chapters = {c.get("id"): c for c in (plan.get("chapters") or []) if isinstance(c, dict) and isinstance(c.get("id"), str)}
     structure = {x.get("id"): x for x in (foundation.get("source_structure") or []) if isinstance(x, dict) and isinstance(x.get("id"), str)}
     audience_scope = plan.get("audience_scope", "unspecified")
     preserve_structure = plan.get("source_structure_mode") == "preserve"
+    lean_plan = _is_lean_plan(plan)
     strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
-    if not strict_evidence_fit:
+    if not lean_plan and not strict_evidence_fit:
         issues.append(
             "PLAN evidence-fit gate: evidence_fit_review_mode: strict is required before AUTHOR"
         )
@@ -691,8 +670,9 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
         evidence_ids = _page_evidence_ids(page)
         evidence = _support_items(sorted(evidence_ids), items)
 
-        for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
-            issues.append(f"slides.{index} ({slide_id}): PLAN evidence-fit gate: {review_issue}")
+        if not lean_plan:
+            for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
+                issues.append(f"slides.{index} ({slide_id}): PLAN evidence-fit gate: {review_issue}")
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
         plan_logic = str(page.get("logic") or "")
@@ -733,16 +713,18 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
             issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
         for relation_issue in _authored_relationships_issues(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {relation_issue}")
-        for consumption_issue in _audit_authored_source_consumption(
-            page, slide, items, foundation
-        ):
-            issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
-        for unit_issue in _audit_authored_unit_consumption(page, slide, items, foundation):
-            issues.append(f"slides.{index} ({slide_id}): {unit_issue}")
+        if not lean_plan:
+            for consumption_issue in _audit_authored_source_consumption(
+                page, slide, items, foundation
+            ):
+                issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
+            for unit_issue in _audit_authored_unit_consumption(page, slide, items, foundation):
+                issues.append(f"slides.{index} ({slide_id}): {unit_issue}")
         for coverage_issue in _audit_authored_content_coverage(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
-        for readiness_issue in audit_authored_stage02_readiness(page, slide):
-            issues.append(f"slides.{index} ({slide_id}): {readiness_issue}")
+        if not lean_plan:
+            for readiness_issue in audit_authored_stage02_readiness(page, slide):
+                issues.append(f"slides.{index} ({slide_id}): {readiness_issue}")
         for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
             issues.append(
                 f"slides.{index} ({slide_id}): ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: "

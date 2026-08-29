@@ -11,6 +11,11 @@ Create a compact, complete semantic foundation that preserves what the source sa
 
 Output: `foundation.json`.
 
+This is the default `script` profile for ordinary PPT script work. It consumes
+the deterministic `.cache/source-index.json` plus selected source text and
+writes the semantic result directly into the existing Foundation authority.
+Use the full Source Truth route only for `strict/legacy` projects.
+
 This is the first of the three authoritative Stage 01 script artifacts. The
 following `deck-plan.json` and `dist/final-script.md` are produced by PLAN/AUTHOR
 after the semantic foundation and the planning gate; this Skill does not create
@@ -32,13 +37,46 @@ Recover the document hierarchy before semantic compression:
 - appendices/closing;
 - explicit ordering and section boundaries.
 
-When `source_extract.txt` is available, build `.cache/source-index.json` and use it to seed `source_structure`. The cache is derived; `foundation.json.source_structure` is the downstream semantic authority.
+From the CyberPPT repository root, run:
+
+```bash
+.venv/bin/python3 -m cyberppt prepare-source-context <project>
+.venv/bin/python3 -m cyberppt prepare-script-foundation <project> --profile script
+```
+
+The first command uses native DOCX, text, PPTX and optional XLSX extraction and
+writes only `script/.cache/source-index.json`. The second prints the direct
+Foundation authoring task. The cache is derived;
+`foundation.json.source_structure` is the downstream semantic authority.
+Install `openpyxl>=3.1,<4` when native XLSX row extraction is required.
+
+The derived cache also groups caption, native table, formula, image and chart
+units into stable `asset_candidates`. Treat these as review prompts only. When
+an asset can materially carry an argument, promote it into Foundation
+`source_assets` while preserving its candidate ID, kind, locator and complete
+`source_unit_refs`. Author its meaning, bind one or more `argument_node_ids`
+whose evidence intersects those refs, and record `wrong_reading` so later
+planning cannot turn a chart correlation, table row or formula into a stronger
+claim. Set `presentation_role: money_slide` only for an intended peak argument;
+that role makes a missing `wrong_reading` blocking.
+
+For `reading_recommendation.mode: long`, keep every source heading in the
+argument skeleton, record each section as `deep_read`, `mapped` or `excluded`,
+and give every exclusion a reason. Mapped previews support routing and section
+understanding. Deep-read the cited source units before authoring exact numbers,
+dates, responsibilities, status, conditions, exclusions or strong conclusions.
+Before authoring a long-mode Foundation, show the proposed communication goal,
+mapped/deep-read selection and exclusion reasons in the conversation. Apply the
+user's changes to `reading_strategy`; do not create a confirmation artifact.
 
 Prefer project-relative source paths and retain source identity/hash when available.
 
 ## Pass 2 — Atomic facts
 
-Extract facts at a granularity that allows later recombination without silently upgrading a whole group.
+Extract the facts that carry the document thesis and supporting argument,
+including key numbers, dates, responsibilities, states, conditions, boundaries
+and figure interpretation. Ordinary explanatory paragraphs may remain available
+through source units without becoming one authored fact each.
 
 Preserve:
 
@@ -113,6 +151,9 @@ Run:
 cyberppt-script validate foundation <foundation.json>
 cyberppt-script audit-foundation <foundation.json>
 ```
+
+The audit automatically cross-checks `reading_strategy` against the sibling
+`.cache/source-index.json` when that v2 cache exists.
 
 ## Hard rules
 

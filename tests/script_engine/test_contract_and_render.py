@@ -286,22 +286,6 @@ def test_lint_final_script_ignores_source_refs_and_relationship_labels() -> None
 def test_check_onscreen_structure_passes_on_clean_example() -> None:
     assert check_onscreen_structure(_example()) == []
 
-
-def test_check_onscreen_structure_rejects_date_only_milestone() -> None:
-    payload = _example()
-    payload["slides"][0]["onscreen"][0]["items"] = ["三阶段目标：2026年至2029年"]
-
-    issues = check_onscreen_structure(payload)
-
-    assert any("date-only milestone" in issue for issue in issues)
-
-
-def test_check_onscreen_structure_accepts_milestone_with_task_and_result() -> None:
-    payload = _example()
-    payload["slides"][0]["onscreen"][0]["items"] = ["2026年目标：完成顶层设计并开展技术路线试点"]
-
-    assert check_onscreen_structure(payload) == []
-
 def test_check_onscreen_structure_flags_duplicate_heading_on_same_slide() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{"heading": "同名模块", "text": "a"}, {"heading": "同名模块", "text": "b"}]

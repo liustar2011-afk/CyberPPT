@@ -2,7 +2,8 @@
 
 ## Target
 
-Use this standalone Script Engine for new script-generation work while keeping CyberPPT Stage 02 intact.
+Use the `script` profile for new script-generation work while keeping the
+strict/legacy Source Truth route and CyberPPT Stage 02 intact.
 
 ## Capability mapping
 
@@ -18,6 +19,9 @@ Use this standalone Script Engine for new script-generation work while keeping C
 
 ## Safe migration
 
-1. Side-by-side test with legacy Stage 01.
-2. Make Script Engine the default for new script work.
-3. Retire redundant legacy authorities after representative regression tests.
+1. New work runs `.venv/bin/python3 -m cyberppt prepare-source-context <project>`
+   and `.venv/bin/python3 -m cyberppt prepare-script-foundation <project>
+   --profile script`, then writes one `foundation.json` from the returned task.
+2. Contract, regulation and fact-by-fact verification retain strict Stage 01.
+3. Existing Source Truth projects remain readable and project mechanically to the same Foundation contract.
+4. Retire redundant legacy authorities only after representative script/strict comparison tests.
