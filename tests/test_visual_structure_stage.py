@@ -819,9 +819,10 @@ class VisualStructureStageTests(unittest.TestCase):
             "core_judgment": "统一目录为数据流通利用提供共同基础",
         }
         design = _decision_execution_design(source, {}, {}, "P11")
+        self.assertEqual("auto", design["scene_policy"])
         self.assertEqual(False, design["use_scene"])
-        self.assertIn("ImageGen", design["scene_type"])
-        self.assertIn("ImageGen", design["spatial_organization"])
+        self.assertIn("Style lock", design["scene_type"])
+        self.assertIn("主视觉锚点", design["spatial_organization"])
         self.assertNotIn("card", design["spatial_organization"].lower())
 
     def test_handoff_separates_business_relations_from_author_layout_notes(self) -> None:

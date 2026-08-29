@@ -258,11 +258,12 @@ class PageArtifactSpecTests(unittest.TestCase):
         self.assertEqual("page", spec.visual_budget.scope)
         self.assertFalse(spec.visual_budget.region_local_visuals)
 
-    def test_parallel_set_rejects_integrated_scene_budget(self) -> None:
+    def test_parallel_set_accepts_integrated_scene_budget_when_policy_allows_it(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             handoff_page, visual_page, style_lock = self._inputs(root)
             visual_page["semantic_graph"]["topology"] = "parallel_set"
+            visual_page["image_plan"]["scene_policy"] = "auto"
             visual_page["visual_budget"] = {
                 "mode": "integrated_scene",
                 "max_auxiliary_fragments": 4,
@@ -270,14 +271,16 @@ class PageArtifactSpecTests(unittest.TestCase):
                 "region_local_visuals": True,
             }
 
-            with self.assertRaisesRegex(ValueError, "parallel_set"):
-                build_page_artifact_spec(
-                    handoff_page=handoff_page,
-                    visual_page=visual_page,
-                    style_lock=style_lock,
-                    script_input_sha256="a" * 64,
-                    visual_source_sha256="b" * 64,
-                )
+            spec = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=visual_page,
+                style_lock=style_lock,
+                script_input_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+
+        self.assertEqual("integrated_scene", spec.visual_budget.mode)
+        self.assertTrue(spec.visual_budget.region_local_visuals)
 
     def test_dense_non_scene_page_defaults_to_relationship_field_only(self) -> None:
         budget = _visual_budget(

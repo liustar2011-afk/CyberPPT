@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
+from cyberppt.region_graph_audit import audit_region_graph
+from cyberppt.visual_medium_audit import audit_visual_medium_policy
 
 
 def sha256(path: Path) -> str:
@@ -323,15 +325,24 @@ def _audit_generation_feasibility(candidate: dict[str, Any], issue: Any, page_id
         score = int(feasibility.get("score"))
     except (TypeError, ValueError):
         score = -1
+    valid_dimensions = (
+        isinstance(dimensions, dict)
+        and set(dimensions) == _FEASIBILITY_DIMENSIONS
+        and all(isinstance(value, int) and 0 <= value <= 20 for value in dimensions.values())
+    )
+    total = sum(dimensions.values()) if valid_dimensions else -1
     if (
-        not isinstance(dimensions, dict)
-        or set(dimensions) != _FEASIBILITY_DIMENSIONS
-        or any(not isinstance(value, int) or not 0 <= value <= 20 for value in dimensions.values())
-        or sum(dimensions.values()) != 100
-        or score != 100
+        not valid_dimensions
+        or score != total
+        or not 0 <= score <= 100
         or not isinstance(feasibility.get("risks"), list)
     ):
-        issue("CANDIDATE_GENERATION_SCORE_INVALID", f"{candidate.get('id')!s} must provide five 0–20 generation dimensions totaling 100.", page_id)
+        issue(
+            "CANDIDATE_GENERATION_SCORE_INVALID",
+            f"{candidate.get('id')!s} must provide five 0–20 generation dimensions "
+            "with score equal to their 0–100 sum.",
+            page_id,
+        )
         return None
     return score
 
@@ -363,6 +374,13 @@ def _audit_text_capacity(candidate: dict[str, Any], expected_text_ids: list[str]
     return budget
 
 
+def _page_focus_policy(page_spec: dict[str, Any]) -> str:
+    visual = page_spec.get("visual_decision") if isinstance(page_spec.get("visual_decision"), dict) else {}
+    policy = str(visual.get("focus_policy") or "").strip()
+    # Legacy specs predate focus_policy and keep the former single-anchor semantics.
+    return policy or "single_anchor"
+
+
 def _audit_focus_competition(page_spec: dict[str, Any], issue: Any, page_id: str) -> dict[str, Any]:
     structural = page_spec.get("structural_decision") if isinstance(page_spec.get("structural_decision"), dict) else {}
     focus = structural.get("semantic_focus") if isinstance(structural.get("semantic_focus"), dict) else {}
@@ -377,6 +395,17 @@ def _audit_focus_competition(page_spec: dict[str, Any], issue: Any, page_id: str
         if isinstance(binding, dict) and binding.get("binding") == "result"
     ]
     result_refs = [str(binding.get("target_ref") or binding.get("evidence_id") or "") for binding in result_bindings]
+    primary_refs = [str(value) for value in structural.get("primary_refs") or []]
+    focus_policy = _page_focus_policy(page_spec)
+    if focus_policy == "peer_field":
+        if result_refs or set(primary_refs) != p0_ids or len(primary_refs) != len(p0_ids):
+            issue(
+                "FOCUS_COMPETITION_DETECTED",
+                "peer_field must expose every P0 peer as co-primary and must not create a result binding.",
+                page_id,
+            )
+            return {"status": "failed", "primary_refs": primary_refs}
+        return {"status": "passed", "primary_refs": primary_refs}
     if not focus_ref or focus_ref not in p0_ids or focus_ref not in result_refs or len(result_refs) != 1:
         issue("FOCUS_COMPETITION_DETECTED", "The selected focus must be the sole P0 result-binding target.", page_id)
         return {"status": "failed", "primary_ref": focus_ref}
@@ -457,7 +486,7 @@ def _audit_topology_consistency(page_spec: dict[str, Any], issue: Any, page_id: 
     nodes = [item for item in graph.get("nodes") or [] if isinstance(item, dict)]
     node_role_by_id = {str(item.get("id") or ""): str(item.get("role") or "") for item in nodes}
     focus_role = node_role_by_id.get(graph_focus_node, "")
-    if graph_focus_node and focus_role and focus_role != "judgment":
+    if graph_focus_node and focus_role and focus_role != "judgment" and _page_focus_policy(page_spec) != "peer_field":
         override_reason = str(page_spec.get("quality_contract", {}).get("focus_override_reason") or "").strip()
         if not override_reason:
             issue(
@@ -599,6 +628,20 @@ def audit_visual_deck_rhythm(spec: dict[str, Any], decisions: dict[str, Any]) ->
                 continue
             blocking.append({"code": "DECK_RHYTHM_REPETITION_BLOCKING", "page_ids": [item[0] for item in group], "message": "Three adjacent content pages repeat the same visual structure signature."})
     return {"status": "failed" if blocking else "passed", "blocking_issues": blocking, "warnings": warnings}
+
+
+_ALLOWED_SCENE_POLICIES = {"required", "allowed", "forbidden", "auto"}
+
+
+def _scene_policy_from_execution_design(execution_design: object, *, prompt_mode: str) -> str | None:
+    design = execution_design if isinstance(execution_design, dict) else {}
+    requested = str(design.get("scene_policy") or "").strip()
+    if requested:
+        return requested if requested in _ALLOWED_SCENE_POLICIES else None
+    legacy = design.get("use_scene")
+    if isinstance(legacy, bool):
+        return "allowed" if legacy else "forbidden"
+    return "auto" if prompt_mode == "semantic_brief" else None
 
 
 def audit_visual_design_package(
@@ -803,10 +846,11 @@ def audit_visual_design_package(
             "semantic_role",
             "scene_type",
         )
+        execution_scene_policy = _scene_policy_from_execution_design(execution_design, prompt_mode=prompt_mode)
         if prompt_mode == "directed_composition" and (not isinstance(execution_design, dict) or any(
             not str(execution_design.get(key) or "").strip()
             for key in required_execution_text
-        ) or not isinstance(execution_design.get("use_scene"), bool)):
+        ) or execution_scene_policy is None):
             issue(
                 "EXECUTION_DESIGN_INVALID",
                 "Selected execution design must preserve its carrier, scene policy, semantic role, composition, and text integration.",
@@ -834,11 +878,18 @@ def audit_visual_design_package(
                 expected_scene = {
                     "business_object": execution_design.get("business_object"),
                     "semantic_role": execution_design.get("semantic_role"),
-                    "use_scene": execution_design.get("use_scene"),
                     "scene_type": execution_design.get("scene_type"),
                 }
                 actual_scene = {key: image_plan.get(key) for key in expected_scene}
-                if actual_scene != expected_scene:
+                scene_drift = actual_scene != expected_scene
+                expected_scene_policy = _scene_policy_from_execution_design(execution_design, prompt_mode=prompt_mode)
+                actual_scene_policy = str(image_plan.get("scene_policy") or "").strip()
+                if actual_scene_policy and actual_scene_policy != expected_scene_policy:
+                    scene_drift = True
+                legacy_use_scene = execution_design.get("use_scene")
+                if isinstance(legacy_use_scene, bool) and image_plan.get("use_scene") != legacy_use_scene:
+                    scene_drift = True
+                if scene_drift:
                     issue(
                         "SPEC_SCENE_POLICY_DRIFTED",
                         "Spec image plan must match the selected carrier and scene policy.",
@@ -969,6 +1020,10 @@ def audit_visual_design_package(
         _audit_content_integrity_alignment(page_spec, issue, page_id)
         _audit_topology_consistency(page_spec, issue, page_id)
         _audit_grouping_decisions(page_spec, issue, page_id)
+        for region_issue in audit_region_graph(page_spec):
+            issue(region_issue["code"], region_issue["message"], page_id)
+        for medium_issue in audit_visual_medium_policy(page_spec):
+            issue(medium_issue["code"], medium_issue["message"], page_id)
 
         _audit_relationship_coverage(
             source,

@@ -58,7 +58,8 @@
 
 阻断条件：
 
-- 两个以上元素同时具有最大体量、最强对比或最亮色彩。
+- `single_anchor` 页面出现两个以上相互竞争的最大体量、最强对比或最亮元素。
+- `peer_field` 页面把任一同权证据强制升格为唯一结果、最大节点或唯一视觉中心。
 - 辅助场景、结论框和数据数字相互竞争。
 - 页面被均分为多个同权区域。
 - 语义焦点不在主结构中，或无法回指语义图节点。
@@ -89,6 +90,8 @@
 
 - 使用“简洁、大气、科技感、左文右图”等空泛描述。
 - `directed_composition`没有明确对象、位置、阅读路径和连接方向。
+- `scene_policy`不在`required / allowed / forbidden / auto`中。
+- `semantic_brief`被无来源地强制设为`scene_policy: forbidden`，导致业务场景或插图在进入ImageGen前被提前排除。
 - 标题区未留空但配置要求外部标题层。
 - `schema_version: 1.1`没有`style_source_ref`，或复制了风格正文。
 - CyberPPT工作台的`required_text_ids`与`final_text`、锁定正文集合或顺序不一致。

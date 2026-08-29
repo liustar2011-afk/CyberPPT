@@ -38,6 +38,7 @@ class VisualDesignIR:
     source_sha256: str
     page_block_sha256: str
     source_mode: str
+    scene_policy: str = "auto"
 
 
 @dataclass(frozen=True)
@@ -113,6 +114,11 @@ def _governed_ir(spec: dict[str, object], *, source_path: Path, source: str) -> 
     use_scene = image_plan.get("use_scene")
     if not isinstance(use_scene, bool):
         raise ValueError(f"VisualDesignIR field image_plan.use_scene must be boolean: {source_path}")
+    scene_policy = str(image_plan.get("scene_policy") or "").strip()
+    if not scene_policy:
+        scene_policy = "allowed" if use_scene else "forbidden"
+    if scene_policy not in {"required", "allowed", "forbidden", "auto"}:
+        raise ValueError(f"VisualDesignIR field image_plan.scene_policy is invalid: {source_path}")
     return VisualDesignIR(
         page_number=int(spec["page_number"]),
         visual_thesis=_required_text(decision.get("visual_thesis"), "visual_thesis", path=source_path),
@@ -130,6 +136,7 @@ def _governed_ir(spec: dict[str, object], *, source_path: Path, source: str) -> 
         source_sha256=_sha256_text(source),
         page_block_sha256=_sha256_text(json.dumps(spec, ensure_ascii=False, sort_keys=True)),
         source_mode="governed_json",
+        scene_policy=scene_policy,
     )
 
 
@@ -192,7 +199,12 @@ def load_visual_design(project: Path, page_number: int, allow_legacy: bool = Fal
 def _compile_visual_design(ir: VisualDesignIR) -> str:
     """Render all IR semantics as non-on-screen prompt context for old consumers."""
 
-    scene = "使用场景" if ir.use_scene else "不使用场景"
+    scene = {
+        "required": "必须使用场景",
+        "allowed": "允许使用场景",
+        "forbidden": "不使用场景",
+        "auto": "由页面语义与Style lock判断是否使用场景",
+    }[ir.scene_policy]
     return "\n".join([
         "【页面视觉设计语义｜不上屏，不得作为可读文字渲染】",
         f"- 视觉论题：{ir.visual_thesis}", f"- 业务对象：{ir.business_object}",

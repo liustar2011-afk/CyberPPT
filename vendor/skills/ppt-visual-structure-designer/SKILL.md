@@ -72,6 +72,8 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `assets/default-profile-cec.yaml`：可选的中电联政企外部风格配置示例，不属于通用结构合同。
 - `assets/visual-intent-registry.yaml`：视觉意图机器注册表。
 - `assets/page-visual-spec.schema.json`：单页JSON合同。
+- `assets/region-graph.schema.json`：Region Graph语义空间合同；记录区域角色、锚点、相对权重与区域关系，不记录像素模板。
+- `assets/visual-medium-policy.schema.json`：独立视觉媒介合同；媒介选择与relationship topology分离。
 - `assets/deck-visual-spec.schema.json`：整套JSON合同。
 - `assets/page-visual-spec-template.md`：Markdown输出模板。
 - `assets/domain-neutral-structure-fixtures.json`：六类跨领域通用结构回归夹具。
@@ -126,7 +128,9 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 
 工作台输入给出`expression_constraints`时，每个候选还必须写入`expression_fit`：保留收到的`form`，说明满足的中性结构约束、阅读关系与信息均衡策略。`constraint_status`只能为`default_profile`或`adapted`；默认档案的`changed_constraints`与`deviation_reason`必须为空，适配档案必须列出改动项并说明业务理由及保留的表达核心。表达档案约束关系与阅读，不得推导为卡片、列、箭头、循环、金字塔或矩阵等固定视觉模板。`expression_constraints.reading_requirement`是权威边界，不是候选参考：为`parallel`时，任何候选都不得把`semantic_focus.kind`设为`outcome`并指向某一并列证据组（仓库审计器`CANDIDATE_PARALLEL_FORM_FALSE_OUTCOME`会拦截这类候选）——正确做法见`references/visual-intent-router.md`的`coordinate_peer_set`。
 
-每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，总分必须为100，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
+`visual_medium_policy`可由候选显式声明，包含`preferred / allowed / scene_policy / rationale`；媒介依据页面使命、可画业务对象、业务动作、信息密度和Style lock选择，不得仅因`parallel_set`、`flow`、`convergence`等topology直接决定实景、插图或关系图。
+
+每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，五项之和形成0–100的可生成性总分；`score`必须等于五项实际得分之和，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 
 每页必须写入`relationship_coverage`，逐项登记`business_relationships`与`stage01_relationship_features.actions`中的关键关系，标记为`primary`、`secondary`或有业务理由的`not_rendered`，并引用当前证据单元和锁定文字ID。页面使命、核心判断或P0证据所必需的关系不得标记为`not_rendered`。
 
@@ -152,6 +156,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `visual_thesis`。
 - `decision_relationship`（继承第3步核对的上游关系，不独立创设）。
 - `semantic_focus`。
+- `focus_policy`：取 `single_anchor`、`paired_focus`、`peer_field`、`distributed_focus` 或 `sequence_focus`；它描述整页视觉重心组织方式，不等同于某个固定版式。未显式声明时由仓库编译器按 topology 生成兼容默认值。
 - `spatial_grammar`。
 - `primary_refs`与`secondary_refs`。
 - `text_bindings`：除证据与语义节点外，还要用`text_ids`显式引用精确锁定正文；不复制证据解释文字替代锁定正文。
@@ -165,7 +170,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `visual_hierarchy`。
 - `avoid_on_this_page`。
 
-当页面`prompt_mode`为`semantic_brief`时，本阶段锁定语义焦点、来源支持的关系边界、证据分组和精确文字绑定；场景、载体、空间组织与辅助细节交由ImageGen结合语义和Style lock决定。当页面`prompt_mode`为`directed_composition`时，本阶段进一步选定承载主关系的业务对象或关系场，并写清对象如何通过动作、接口、边界或结果形成画面。
+当页面`prompt_mode`为`semantic_brief`时，本阶段锁定语义焦点、来源支持的关系边界、证据分组、精确文字绑定和由`focus_policy`约束的宏观关系场；编译器写入`scene_policy: auto`，使业务场景、对象插图或结构表达继续由页面语义和Style lock共同判断。ImageGen保留区域内部的对象细节、镜头、光影与微观摆位自由。当页面`prompt_mode`为`directed_composition`时，本阶段进一步选定承载主关系的业务对象或关系场，并写清对象如何通过动作、接口、边界或结果形成画面。
 
 语义焦点必须承载核心结论，辅助关系不得形成第二套主结构。`decision_relationship`只写业务实体、动作、方向、状态和结果，不写页面几何或阅读版式。具体载体和媒介由内容、外部风格与最终执行器共同决定。
 
@@ -177,7 +182,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `<原文件名>_视觉结构设计.json`：机器校验和后续自动化。
 - `<原文件名>_视觉结构校验.json`：校验结果。
 
-CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，schema固定为`cyberppt.visual_design_decisions.v3`，保留每页按"生成并比较构图候选"一节规则确定数量的候选（无争议页 1 个，有争议页 2–3 个）、每项候选自己的`visual_thesis`、完整证据覆盖、候选评分维度、`selection_rationale`、未选候选的`rejection_rationale`、`relationship_coverage`、选中候选、`expression_fit`及输入哈希。`semantic_brief`页的`execution_design`可省略；编译器仅生成不进入正式Prompt的兼容字段。`directed_composition`页必须提供完整`execution_design`，写明`business_object`、`visual_focus`、`semantic_role`、布尔值`use_scene`、`scene_type`、`text_integration_method`、`spatial_organization`和`relationship_encoding`。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。`trace_refs`仅用于审计追溯，不得进入结构提示或上屏文字。随后由仓库`execute-visual-structure`命令唯一生成`deck-visual-spec.json`与`script-visual-structure.md`，并由仓库命令记录执行器、模型、Skill包和编译产物哈希；仅生成调用说明不视为执行完成。
+CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，schema固定为`cyberppt.visual_design_decisions.v3`，保留每页按"生成并比较构图候选"一节规则确定数量的候选（无争议页 1 个，有争议页 2–3 个）、每项候选自己的`visual_thesis`、完整证据覆盖、候选评分维度、`selection_rationale`、未选候选的`rejection_rationale`、`relationship_coverage`、选中候选、`expression_fit`及输入哈希。`semantic_brief`页的`execution_design`可省略；编译器仅生成不进入正式Prompt的兼容字段。`directed_composition`页必须提供完整`execution_design`，写明`business_object`、`visual_focus`、`semantic_role`、`scene_policy`、`scene_type`、`text_integration_method`、`spatial_organization`和`relationship_encoding`。`scene_policy`只允许`required`、`allowed`、`forbidden`、`auto`；`use_scene`仅作为旧项目兼容字段。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。`trace_refs`仅用于审计追溯，不得进入结构提示或上屏文字。随后由仓库`execute-visual-structure`命令唯一生成`deck-visual-spec.json`与`script-visual-structure.md`，并由仓库命令记录执行器、模型、Skill包和编译产物哈希；仅生成调用说明不视为执行完成。
 
 只处理单页时，可输出单页Markdown和单页JSON。
 
@@ -210,7 +215,7 @@ python3 scripts/validate_visual_spec.py <视觉结构设计.json> --strict
 
 - 16:9，参考画布1280×720。
 - 标题和副标题默认由PPT文字层处理，整页生图不绘制标题区文字。
-- 每页只有一个语义焦点和一种主关系，次级关系必须从属。
+- 每页保持一种主关系和一个整体主结构；视觉重心数量由 `focus_policy` 决定。`single_anchor` 保持单一锚点，`peer_field` 保持同权节点共同主表达，不得人为制造唯一结果或最大节点。
 - 每个P0证据必须归属于语义节点、关系、状态或结果。
 - 连接只记录起点、终点、方向和业务含义，不规定外观。
 - 场景、图表、图形或对象均为可选媒介，不设默认优先级。

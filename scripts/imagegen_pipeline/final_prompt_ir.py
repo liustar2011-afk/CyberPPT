@@ -84,6 +84,61 @@ class CompositionIR:
 
 
 @dataclass(frozen=True)
+class RegionIR:
+    id: str
+    semantic_refs: tuple[str, ...]
+    role: str
+    anchor: str
+    weight: float
+    span: str
+    priority: str
+    text_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.id.strip() or not self.semantic_refs:
+            raise PromptContractError("region IR requires id and semantic refs")
+        if not 0 < self.weight <= 1:
+            raise PromptContractError("region IR weight must be >0 and <=1")
+
+
+@dataclass(frozen=True)
+class RegionRelationIR:
+    source: str
+    target: str
+    type: str
+
+
+@dataclass(frozen=True)
+class RegionGraphIR:
+    primary_axis: str
+    regions: tuple[RegionIR, ...]
+    relations: tuple[RegionRelationIR, ...]
+
+    def __post_init__(self) -> None:
+        if not self.primary_axis.strip() or not self.regions:
+            raise PromptContractError("region graph IR requires axis and regions")
+        ids = {item.id for item in self.regions}
+        if len(ids) != len(self.regions):
+            raise PromptContractError("region graph IR region ids must be unique")
+        if any(item.source not in ids or item.target not in ids for item in self.relations):
+            raise PromptContractError("region graph IR relation references unknown region")
+
+
+@dataclass(frozen=True)
+class VisualMediumPolicyIR:
+    preferred: str
+    allowed: tuple[str, ...]
+    scene_policy: str
+    rationale: str
+
+    def __post_init__(self) -> None:
+        if not self.preferred.strip() or not self.allowed or not self.scene_policy.strip():
+            raise PromptContractError("visual medium policy IR is incomplete")
+        if self.preferred not in self.allowed:
+            raise PromptContractError("preferred visual medium must be allowed")
+
+
+@dataclass(frozen=True)
 class RuntimeLockIR:
     style_contract: str
     terminal_lock: str = ""
@@ -108,6 +163,8 @@ class FinalPromptIR:
     semantic_context: str = ""
     prompt_mode: str = "semantic_brief"
     text_bindings: tuple[TextBindingIR, ...] = ()
+    region_graph: RegionGraphIR | None = None
+    visual_medium_policy: VisualMediumPolicyIR | None = None
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
@@ -165,7 +222,11 @@ __all__ = [
     "CompositionIR",
     "FinalPromptIR",
     "PromptContractError",
+    "RegionGraphIR",
+    "RegionIR",
+    "RegionRelationIR",
     "RuntimeLockIR",
     "SemanticGroupIR",
     "TextBindingIR",
+    "VisualMediumPolicyIR",
 ]
