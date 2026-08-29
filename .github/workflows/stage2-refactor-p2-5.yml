@@ -1,0 +1,154 @@
+name: Stage2 refactor P2.5 Region Graph projection
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p2-5.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Project Region Graph through artifact spec and prompt IR
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new, label):
+              path = Path(path)
+              text = path.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"{label} target not found")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          artifact = Path("cyberppt/page_artifact_spec.py")
+          replace_once(
+              artifact,
+              "from typing import Any, Mapping\n\n\nTEXT_DENSE_ITEM_THRESHOLD",
+              "from typing import Any, Mapping\n\nfrom cyberppt.region_graph import RegionGraphSpec, validate_region_graph\n\n\nTEXT_DENSE_ITEM_THRESHOLD",
+              "artifact region import",
+          )
+          replace_once(
+              artifact,
+              "    visible_text_bindings: tuple[VisibleTextBindingSpec, ...] = ()\n\n    def __post_init__",
+              "    visible_text_bindings: tuple[VisibleTextBindingSpec, ...] = ()\n    region_graph: RegionGraphSpec | None = None\n\n    def __post_init__",
+              "artifact region field",
+          )
+          replace_once(
+              artifact,
+              '''    semantic_graph = visual_page.get("semantic_graph")\n    semantic_graph = semantic_graph if isinstance(semantic_graph, dict) else {}\n''',
+              '''    semantic_graph = visual_page.get("semantic_graph")\n    semantic_graph = semantic_graph if isinstance(semantic_graph, dict) else {}\n    raw_region_graph = visual_page.get("region_graph")\n    region_graph = (\n        validate_region_graph(raw_region_graph)\n        if isinstance(raw_region_graph, Mapping)\n        else None\n    )\n''',
+              "artifact region read",
+          )
+          replace_once(
+              artifact,
+              "        visible_text_bindings=visible_text_bindings,\n    )",
+              "        visible_text_bindings=visible_text_bindings,\n        region_graph=region_graph,\n    )",
+              "artifact region output",
+          )
+          replace_once(
+              artifact,
+              '    "PageArtifactSpec",\n',
+              '    "PageArtifactSpec",\n    "RegionGraphSpec",\n',
+              "artifact export",
+          )
+
+          ir = Path("scripts/imagegen_pipeline/final_prompt_ir.py")
+          replace_once(
+              ir,
+              '''@dataclass(frozen=True)\nclass RuntimeLockIR:\n''',
+              '''@dataclass(frozen=True)\nclass RegionIR:\n    id: str\n    semantic_refs: tuple[str, ...]\n    role: str\n    anchor: str\n    weight: float\n    span: str\n    priority: str\n    text_ids: tuple[str, ...] = ()\n\n    def __post_init__(self) -> None:\n        if not self.id.strip() or not self.semantic_refs:\n            raise PromptContractError("region IR requires id and semantic refs")\n        if not 0 < self.weight <= 1:\n            raise PromptContractError("region IR weight must be >0 and <=1")\n\n\n@dataclass(frozen=True)\nclass RegionRelationIR:\n    source: str\n    target: str\n    type: str\n\n\n@dataclass(frozen=True)\nclass RegionGraphIR:\n    primary_axis: str\n    regions: tuple[RegionIR, ...]\n    relations: tuple[RegionRelationIR, ...]\n\n    def __post_init__(self) -> None:\n        if not self.primary_axis.strip() or not self.regions:\n            raise PromptContractError("region graph IR requires axis and regions")\n        ids = {item.id for item in self.regions}\n        if len(ids) != len(self.regions):\n            raise PromptContractError("region graph IR region ids must be unique")\n        if any(item.source not in ids or item.target not in ids for item in self.relations):\n            raise PromptContractError("region graph IR relation references unknown region")\n\n\n@dataclass(frozen=True)\nclass RuntimeLockIR:\n''',
+              "IR region classes",
+          )
+          replace_once(
+              ir,
+              "    text_bindings: tuple[TextBindingIR, ...] = ()\n\n    def __post_init__",
+              "    text_bindings: tuple[TextBindingIR, ...] = ()\n    region_graph: RegionGraphIR | None = None\n\n    def __post_init__",
+              "IR region field",
+          )
+          replace_once(
+              ir,
+              '    "RuntimeLockIR",\n',
+              '    "RegionGraphIR",\n    "RegionIR",\n    "RegionRelationIR",\n    "RuntimeLockIR",\n',
+              "IR region exports",
+          )
+
+          prompt = Path("scripts/imagegen_pipeline/artifact_prompt.py")
+          replace_once(
+              prompt,
+              '''    RuntimeLockIR,\n    SemanticGroupIR,\n    TextBindingIR,\n)\n''',
+              '''    RegionGraphIR,\n    RegionIR,\n    RegionRelationIR,\n    RuntimeLockIR,\n    SemanticGroupIR,\n    TextBindingIR,\n)\n''',
+              "prompt IR imports",
+          )
+          insert_anchor = '''def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:\n'''
+          helper = '''def _region_graph_ir(spec: PageArtifactSpec) -> RegionGraphIR | None:\n    graph = spec.region_graph\n    if graph is None:\n        return None\n    return RegionGraphIR(\n        primary_axis=graph.primary_axis,\n        regions=tuple(\n            RegionIR(\n                id=item.id,\n                semantic_refs=item.semantic_refs,\n                role=item.role,\n                anchor=item.anchor,\n                weight=item.weight,\n                span=item.span,\n                priority=item.priority,\n                text_ids=item.text_ids,\n            )\n            for item in graph.regions\n        ),\n        relations=tuple(\n            RegionRelationIR(source=item.source, target=item.target, type=item.type)\n            for item in graph.relations\n        ),\n    )\n\n\n'''
+          text = prompt.read_text(encoding="utf-8")
+          if "def _region_graph_ir(" not in text:
+              if insert_anchor not in text:
+                  raise SystemExit("prompt helper anchor not found")
+              text = text.replace(insert_anchor, helper + insert_anchor, 1)
+          prompt.write_text(text, encoding="utf-8")
+          replace_once(
+              prompt,
+              "            text_bindings=_text_binding_ir(spec),\n        )",
+              "            text_bindings=_text_binding_ir(spec),\n            region_graph=_region_graph_ir(spec),\n        )",
+              "prompt region projection",
+          )
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run Region Graph projection smoke test
+        run: |
+          python - <<'PY'
+          from dataclasses import replace
+          from cyberppt.region_graph import validate_region_graph
+          from tests.test_final_prompt_ir import _artifact_spec
+          from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir
+
+          graph = validate_region_graph({
+              "canvas_ratio": "2:1",
+              "primary_axis": "horizontal",
+              "regions": [
+                  {"id": "RG01", "semantic_refs": ["E1"], "role": "stage", "anchor": "left", "weight": 0.5, "span": "compact", "priority": "primary", "text_ids": ["T1"]},
+                  {"id": "RG02", "semantic_refs": ["E2"], "role": "result", "anchor": "right", "weight": 0.5, "span": "compact", "priority": "primary", "text_ids": ["T2"]},
+              ],
+              "relations": [{"from": "RG01", "to": "RG02", "type": "flow"}],
+          })
+          spec = replace(_artifact_spec(), region_graph=graph)
+          assert spec.to_dict()["region_graph"]["primary_axis"] == "horizontal"
+          ir = build_final_prompt_ir(spec)
+          assert ir.region_graph is not None
+          assert [item.id for item in ir.region_graph.regions] == ["RG01", "RG02"]
+          assert ir.region_graph.relations[0].type == "flow"
+          PY
+      - name: Run targeted regressions
+        run: |
+          python -m pytest -q tests/test_page_artifact_spec.py tests/test_final_prompt_ir.py tests/test_final_prompt_renderer.py tests/test_region_graph_contract.py tests/test_region_graph_compiler.py tests/test_region_binding.py tests/test_region_graph_audit.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit, self-clean, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/page_artifact_spec.py scripts/imagegen_pipeline/final_prompt_ir.py scripts/imagegen_pipeline/artifact_prompt.py
+          git rm .github/workflows/stage2-refactor-p2-5.yml
+          git commit -m "feat(stage2): project Region Graph into prompt IR"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
