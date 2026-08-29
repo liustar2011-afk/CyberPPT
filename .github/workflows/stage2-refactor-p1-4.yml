@@ -1,0 +1,213 @@
+name: Stage2 refactor P1.4
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p1-4.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Inspect scene-policy references
+        run: |
+          grep -RIn --exclude-dir=.git -E 'use_scene|scene_policy' cyberppt vendor/skills/ppt-visual-structure-designer tests | head -n 240 || true
+      - name: Apply P1.4 patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          # 1) compiler: introduce scene_policy as authority, retain use_scene as compatibility projection.
+          compiler = Path("cyberppt/visual_stage/compiler.py")
+          text = compiler.read_text(encoding="utf-8")
+          anchor = '''ALLOWED_FOCUS_POLICIES = {\n    "single_anchor",\n    "paired_focus",\n    "peer_field",\n    "distributed_focus",\n    "sequence_focus",\n}\n\n_FOCUS_POLICY_BY_TOPOLOGY = {'''
+          replacement = '''ALLOWED_FOCUS_POLICIES = {\n    "single_anchor",\n    "paired_focus",\n    "peer_field",\n    "distributed_focus",\n    "sequence_focus",\n}\n\nALLOWED_SCENE_POLICIES = {\n    "required",\n    "allowed",\n    "forbidden",\n    "auto",\n}\n\n_FOCUS_POLICY_BY_TOPOLOGY = {'''
+          if anchor not in text:
+              raise SystemExit("P1.4 compiler constants anchor not found")
+          text = text.replace(anchor, replacement, 1)
+
+          anchor = '''def _render_business_relationships(value: object) -> str:\n'''
+          replacement = '''def _resolve_scene_policy(design: dict[str, Any] | None, *, prompt_mode: str) -> str:\n    design = design if isinstance(design, dict) else {}\n    requested = str(design.get("scene_policy") or "").strip()\n    if requested:\n        if requested not in ALLOWED_SCENE_POLICIES:\n            _fail(f"unsupported scene_policy {requested!r}")\n        return requested\n    legacy = design.get("use_scene")\n    if isinstance(legacy, bool):\n        return "required" if legacy else "forbidden"\n    return "auto" if prompt_mode == "semantic_brief" else "forbidden"\n\n\ndef _render_business_relationships(value: object) -> str:\n'''
+          if anchor not in text:
+              raise SystemExit("P1.4 compiler helper anchor not found")
+          text = text.replace(anchor, replacement, 1)
+
+          old = '''            "semantic_role": "承载已声明业务对象、动作、条件与结果",\n            "use_scene": False,\n            "scene_type": "由ImageGen依据页面语义和Style lock判断",\n'''
+          new = '''            "semantic_role": "承载已声明业务对象、动作、条件与结果",\n            "scene_policy": "auto",\n            # Deprecated compatibility projection: True means a scene is permitted.\n            "use_scene": True,\n            "scene_type": "由ImageGen依据页面语义和Style lock判断",\n'''
+          if old not in text:
+              raise SystemExit("P1.4 semantic_brief scene block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''    if not missing and not corrupted:\n        return {\n            **normalized,\n            "semantic_role": str(design.get("semantic_role") or normalized["relationship_encoding"]).strip(),\n            "use_scene": design.get("use_scene") if isinstance(design.get("use_scene"), bool) else False,\n            "scene_type": str(design.get("scene_type") or "不使用实景，由选定业务关系场承载").strip(),\n        }\n'''
+          new = '''    if not missing and not corrupted:\n        scene_policy = _resolve_scene_policy(design, prompt_mode=prompt_mode)\n        return {\n            **normalized,\n            "semantic_role": str(design.get("semantic_role") or normalized["relationship_encoding"]).strip(),\n            "scene_policy": scene_policy,\n            # Deprecated compatibility projection. New logic consumes scene_policy.\n            "use_scene": scene_policy != "forbidden",\n            "scene_type": str(design.get("scene_type") or "由场景策略和业务关系场共同决定").strip(),\n        }\n'''
+          if old not in text:
+              raise SystemExit("P1.4 directed scene normalization block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''        "semantic_role": f"以{subject}的对象、动作和结果关系证明本页判断",\n        "use_scene": False,\n        "scene_type": "不使用实景，由选定业务关系场承载",\n'''
+          new = '''        "semantic_role": f"以{subject}的对象、动作和结果关系证明本页判断",\n        "scene_policy": "forbidden",\n        "use_scene": False,\n        "scene_type": "不使用实景，由选定业务关系场承载",\n'''
+          if old not in text:
+              raise SystemExit("P1.4 fallback scene block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''    dense_text_page = is_text_dense(expected_text)\n    visual_budget = (\n        {\n            "mode": "relationship_field_only" if dense_text_page else "shared_field",\n            "max_auxiliary_fragments": 0 if dense_text_page else 1,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n        if prompt_mode == "semantic_brief" or topology == "parallel_set" or not bool(design["use_scene"])\n        else {\n            "mode": "integrated_scene",\n            "max_auxiliary_fragments": 4,\n            "scope": "region",\n            "region_local_visuals": True,\n        }\n    )\n'''
+          new = '''    dense_text_page = is_text_dense(expected_text)\n    scene_policy = str(design["scene_policy"])\n    scene_permitted = scene_policy != "forbidden"\n    if dense_text_page and scene_policy != "required":\n        visual_budget = {\n            "mode": "relationship_field_only",\n            "max_auxiliary_fragments": 0,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    elif topology == "parallel_set" or scene_policy == "forbidden":\n        visual_budget = {\n            "mode": "shared_field",\n            "max_auxiliary_fragments": 1,\n            "scope": "page",\n            "region_local_visuals": False,\n        }\n    else:\n        visual_budget = {\n            "mode": "integrated_scene",\n            "max_auxiliary_fragments": 4,\n            "scope": "region",\n            "region_local_visuals": True,\n        }\n'''
+          if old not in text:
+              raise SystemExit("P1.4 visual budget block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''        "image_plan": {\n            "use_scene": bool(design["use_scene"]),\n            "scene_type": str(design["scene_type"]),\n'''
+          new = '''        "image_plan": {\n            "scene_policy": scene_policy,\n            # Deprecated compatibility field: True means scene use is permitted by policy.\n            "use_scene": scene_permitted,\n            "scene_type": str(design["scene_type"]),\n'''
+          if old not in text:
+              raise SystemExit("P1.4 image_plan block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''            "### 页面草图", f"- 唯一业务关系场：{page['image_plan']['business_object']}",\n            f"- 配图预算：{visual_budget.get('mode', 'integrated_scene')}；最多辅助片段 {visual_budget.get('max_auxiliary_fragments', 4)} 个；作用域 {visual_budget.get('scope', 'region')}；区域局部配图 {visual_budget.get('region_local_visuals', True)}", "",\n'''
+          new = '''            "### 页面草图", f"- 唯一业务关系场：{page['image_plan']['business_object']}",\n            f"- 场景策略：{page['image_plan'].get('scene_policy', 'auto')}",\n            f"- 配图预算：{visual_budget.get('mode', 'integrated_scene')}；最多辅助片段 {visual_budget.get('max_auxiliary_fragments', 4)} 个；作用域 {visual_budget.get('scope', 'region')}；区域局部配图 {visual_budget.get('region_local_visuals', True)}", "",\n'''
+          if old not in text:
+              raise SystemExit("P1.4 markdown scene-policy anchor not found")
+          compiler.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          # 2) page schema: scene_policy is the new authority, use_scene remains optional-compatible metadata.
+          schema_path = Path("vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json")
+          schema = json.loads(schema_path.read_text(encoding="utf-8"))
+          image_schema = schema["properties"]["image_plan"]
+          image_props = image_schema["properties"]
+          image_props["scene_policy"] = {
+              "enum": ["required", "allowed", "forbidden", "auto"],
+              "description": "Authoritative scene-use policy. New Stage2 output always writes this field."
+          }
+          if "use_scene" in image_props:
+              image_props["use_scene"]["description"] = (
+                  "Deprecated compatibility projection. False means scene_policy=forbidden; "
+                  "true means scenes are permitted by scene_policy."
+              )
+          schema_path.write_text(json.dumps(schema, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          # 3) artifact projection: consume scene_policy first, map legacy bool when old specs are loaded.
+          artifact = Path("cyberppt/page_artifact_spec.py")
+          text = artifact.read_text(encoding="utf-8")
+          old = '''class VisualCarrierSpec:\n    business_object: str\n    semantic_role: str\n    use_scene: bool\n    scene_type: str\n'''
+          new = '''class VisualCarrierSpec:\n    business_object: str\n    semantic_role: str\n    use_scene: bool\n    scene_type: str\n    scene_policy: str = "auto"\n\n    def __post_init__(self) -> None:\n        if self.scene_policy not in {"required", "allowed", "forbidden", "auto"}:\n            raise ValueError(f"unsupported scene policy: {self.scene_policy!r}")\n'''
+          if old not in text:
+              raise SystemExit("P1.4 VisualCarrierSpec anchor not found")
+          text = text.replace(old, new, 1)
+
+          old = '''def _visual_budget(\n    visual_page: Mapping[str, object],\n    *,\n    topology: str,\n    use_scene: bool,\n    visible_text: tuple[str, ...] = (),\n) -> VisualBudgetSpec:\n'''
+          new = '''def _visual_budget(\n    visual_page: Mapping[str, object],\n    *,\n    topology: str,\n    scene_policy: str,\n    visible_text: tuple[str, ...] = (),\n) -> VisualBudgetSpec:\n'''
+          if old not in text:
+              raise SystemExit("P1.4 artifact visual-budget signature not found")
+          text = text.replace(old, new, 1)
+
+          old = '''    if is_text_dense(visible_text) and (topology == "parallel_set" or not use_scene):\n        return VisualBudgetSpec(\n            mode="relationship_field_only",\n            max_auxiliary_fragments=0,\n            scope="page",\n            region_local_visuals=False,\n        )\n    if not use_scene:\n        return VisualBudgetSpec(\n            mode="shared_field",\n            max_auxiliary_fragments=1,\n            scope="page",\n            region_local_visuals=False,\n        )\n    return VisualBudgetSpec()\n'''
+          new = '''    if scene_policy not in {"required", "allowed", "forbidden", "auto"}:\n        raise ValueError(f"unsupported scene policy for visual budget: {scene_policy!r}")\n    if is_text_dense(visible_text) and scene_policy != "required":\n        return VisualBudgetSpec(\n            mode="relationship_field_only",\n            max_auxiliary_fragments=0,\n            scope="page",\n            region_local_visuals=False,\n        )\n    if topology == "parallel_set" or scene_policy == "forbidden":\n        return VisualBudgetSpec(\n            mode="shared_field",\n            max_auxiliary_fragments=1,\n            scope="page",\n            region_local_visuals=False,\n        )\n    return VisualBudgetSpec()\n'''
+          if old not in text:
+              raise SystemExit("P1.4 artifact visual-budget fallback not found")
+          text = text.replace(old, new, 1)
+
+          old = '''    image_plan = visual_page.get("image_plan")\n    image_plan = image_plan if isinstance(image_plan, dict) else {}\n    use_scene = image_plan.get("use_scene")\n    if not isinstance(use_scene, bool):\n        raise ValueError("artifact spec image plan use_scene must be boolean")\n'''
+          new = '''    image_plan = visual_page.get("image_plan")\n    image_plan = image_plan if isinstance(image_plan, dict) else {}\n    raw_scene_policy = str(image_plan.get("scene_policy") or "").strip()\n    legacy_use_scene = image_plan.get("use_scene")\n    if raw_scene_policy:\n        if raw_scene_policy not in {"required", "allowed", "forbidden", "auto"}:\n            raise ValueError(f"artifact spec image plan has invalid scene_policy: {raw_scene_policy!r}")\n        scene_policy = raw_scene_policy\n        use_scene = scene_policy != "forbidden"\n        if legacy_use_scene is not None and (not isinstance(legacy_use_scene, bool) or legacy_use_scene != use_scene):\n            raise ValueError("artifact spec image plan use_scene compatibility field conflicts with scene_policy")\n    else:\n        if not isinstance(legacy_use_scene, bool):\n            raise ValueError("artifact spec image plan requires scene_policy or legacy use_scene")\n        use_scene = legacy_use_scene\n        scene_policy = "required" if use_scene else "forbidden"\n'''
+          if old not in text:
+              raise SystemExit("P1.4 artifact image-plan read block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''            semantic_role=_required_text(image_plan.get("semantic_role"), "visual carrier semantic role"),\n            use_scene=use_scene,\n            scene_type=_required_text(image_plan.get("scene_type"), "visual carrier scene type"),\n        ),\n'''
+          new = '''            semantic_role=_required_text(image_plan.get("semantic_role"), "visual carrier semantic role"),\n            use_scene=use_scene,\n            scene_type=_required_text(image_plan.get("scene_type"), "visual carrier scene type"),\n            scene_policy=scene_policy,\n        ),\n'''
+          if old not in text:
+              raise SystemExit("P1.4 artifact VisualCarrierSpec build block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''        visual_budget=_visual_budget(\n            visual_page,\n            topology=str(semantic_graph.get("topology") or ""),\n            use_scene=use_scene,\n            visible_text=visible_text,\n        ),\n'''
+          new = '''        visual_budget=_visual_budget(\n            visual_page,\n            topology=str(semantic_graph.get("topology") or ""),\n            scene_policy=scene_policy,\n            visible_text=visible_text,\n        ),\n'''
+          if old not in text:
+              raise SystemExit("P1.4 artifact visual-budget call not found")
+          artifact.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          # 4) visual design package audit: accept explicit policy or legacy boolean and compare projected policy.
+          contract = Path("cyberppt/visual_structure_contract.py")
+          text = contract.read_text(encoding="utf-8")
+          marker = '''def audit_visual_design_package(\n'''
+          helper = '''_ALLOWED_SCENE_POLICIES = {"required", "allowed", "forbidden", "auto"}\n\n\ndef _scene_policy_from_execution_design(execution_design: object, *, prompt_mode: str) -> str | None:\n    design = execution_design if isinstance(execution_design, dict) else {}\n    requested = str(design.get("scene_policy") or "").strip()\n    if requested:\n        return requested if requested in _ALLOWED_SCENE_POLICIES else None\n    legacy = design.get("use_scene")\n    if isinstance(legacy, bool):\n        return "required" if legacy else "forbidden"\n    return "auto" if prompt_mode == "semantic_brief" else None\n\n\n'''
+          if marker not in text:
+              raise SystemExit("P1.4 contract helper marker not found")
+          text = text.replace(marker, helper + marker, 1)
+
+          old = '''        if prompt_mode == "directed_composition" and (not isinstance(execution_design, dict) or any(\n            not str(execution_design.get(key) or "").strip()\n            for key in required_execution_text\n        ) or not isinstance(execution_design.get("use_scene"), bool)):\n            issue(\n                "EXECUTION_DESIGN_INVALID",\n                "Selected execution design must preserve its carrier, scene policy, semantic role, composition, and text integration.",\n                page_id,\n            )\n'''
+          new = '''        execution_scene_policy = _scene_policy_from_execution_design(\n            execution_design, prompt_mode=prompt_mode\n        )\n        if prompt_mode == "directed_composition" and (not isinstance(execution_design, dict) or any(\n            not str(execution_design.get(key) or "").strip()\n            for key in required_execution_text\n        ) or execution_scene_policy is None):\n            issue(\n                "EXECUTION_DESIGN_INVALID",\n                "Selected execution design must preserve its carrier, scene policy, semantic role, composition, and text integration.",\n                page_id,\n            )\n'''
+          if old not in text:
+              raise SystemExit("P1.4 contract execution-design validation block not found")
+          text = text.replace(old, new, 1)
+
+          old = '''                expected_scene = {\n                    "business_object": execution_design.get("business_object"),\n                    "semantic_role": execution_design.get("semantic_role"),\n                    "use_scene": execution_design.get("use_scene"),\n                    "scene_type": execution_design.get("scene_type"),\n                }\n'''
+          new = '''                expected_scene_policy = _scene_policy_from_execution_design(\n                    execution_design, prompt_mode=prompt_mode\n                )\n                expected_scene = {\n                    "business_object": execution_design.get("business_object"),\n                    "semantic_role": execution_design.get("semantic_role"),\n                    "scene_policy": expected_scene_policy,\n                    "use_scene": expected_scene_policy != "forbidden",\n                    "scene_type": execution_design.get("scene_type"),\n                }\n'''
+          if old not in text:
+              raise SystemExit("P1.4 contract expected-scene block not found")
+          contract.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          # 5) Skill / quality gates: author new decisions with scene_policy; document legacy mapping.
+          skill = Path("vendor/skills/ppt-visual-structure-designer/SKILL.md")
+          text = skill.read_text(encoding="utf-8")
+          old = '''当页面`prompt_mode`为`semantic_brief`时，本阶段锁定语义焦点、来源支持的关系边界、证据分组和精确文字绑定；场景、载体、空间组织与辅助细节交由ImageGen结合语义和Style lock决定。'''
+          new = '''当页面`prompt_mode`为`semantic_brief`时，本阶段锁定语义焦点、来源支持的关系边界、证据分组和精确文字绑定；场景策略固定为`scene_policy: auto`，允许ImageGen结合页面语义和Style lock在场景、对象插图或纯关系表达之间判断，场景不得因`semantic_brief`身份被预先禁用；载体、空间组织与辅助细节仍按当前合同交由ImageGen决定。'''
+          if old not in text:
+              raise SystemExit("P1.4 Skill semantic_brief paragraph not found")
+          text = text.replace(old, new, 1)
+          old = '''`directed_composition`页必须提供完整`execution_design`，写明`business_object`、`visual_focus`、`semantic_role`、布尔值`use_scene`、`scene_type`、`text_integration_method`、`spatial_organization`和`relationship_encoding`。'''
+          new = '''`directed_composition`页必须提供完整`execution_design`，写明`business_object`、`visual_focus`、`semantic_role`、`scene_policy`、`scene_type`、`text_integration_method`、`spatial_organization`和`relationship_encoding`。`scene_policy`只允许`required`、`allowed`、`forbidden`、`auto`；新决策不得继续把布尔值`use_scene`作为权威字段。仓库仅为旧项目保留`use_scene=true → required`、`use_scene=false → forbidden`的兼容映射。'''
+          if old not in text:
+              raise SystemExit("P1.4 Skill directed execution paragraph not found")
+          skill.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          gates = Path("vendor/skills/ppt-visual-structure-designer/references/quality-gates.md")
+          text = gates.read_text(encoding="utf-8")
+          anchor = '''- `directed_composition`没有明确对象、位置、阅读路径和连接方向。\n'''
+          replacement = '''- `directed_composition`没有明确对象、位置、阅读路径和连接方向。\n- `scene_policy`不在`required / allowed / forbidden / auto`中；新决策仍以布尔值`use_scene`作为权威场景合同。\n- `semantic_brief`被无来源地强制设为`scene_policy: forbidden`，导致场景或业务插图在进入ImageGen前被提前排除。\n'''
+          if anchor not in text:
+              raise SystemExit("P1.4 quality gates anchor not found")
+          gates.write_text(text.replace(anchor, replacement, 1), encoding="utf-8")
+
+          # 6) focused regression tests.
+          test = Path("tests/test_stage2_scene_policy.py")
+          test.write_text('''from cyberppt.commands.visual_structure_stage import (\n    _build_executable_page,\n    _decision_execution_design,\n)\nfrom cyberppt.onscreen_expression import expression_constraints\n\n\ndef _expression_fit(form: str):\n    constraints = expression_constraints(form)\n    return {\n        "form": form,\n        "constraint_status": "default_profile",\n        "satisfied_constraints": list(constraints["required_features"]),\n        "reading_relation": str(constraints["relation_pattern"]),\n        "balance_strategy": str(constraints["balance_requirement"]),\n        "changed_constraints": [],\n        "deviation_reason": "",\n    }\n\n\ndef test_semantic_brief_defaults_to_auto_scene_policy():\n    source = {"prompt_mode": "semantic_brief", "core_judgment": "Judgment", "business_relationships": []}\n    design = _decision_execution_design(source, {}, {}, "P01")\n    assert design["scene_policy"] == "auto"\n    assert design["use_scene"] is True\n\n\ndef test_directed_legacy_scene_bool_maps_to_policy():\n    source = {"prompt_mode": "directed_composition", "core_judgment": "Judgment", "business_relationships": []}\n    base = {\n        "business_object": "Business field",\n        "visual_focus": "Result",\n        "text_integration_method": "Attach text to business objects",\n        "spatial_organization": "Inputs converge into the result",\n        "relationship_encoding": "Source-supported relation",\n        "semantic_role": "Prove the relation",\n        "scene_type": "Business operating scene",\n    }\n    forbidden = _decision_execution_design(source, {"execution_design": base | {"use_scene": False}}, {}, "P01")\n    required = _decision_execution_design(source, {"execution_design": base | {"use_scene": True}}, {}, "P01")\n    allowed = _decision_execution_design(source, {"execution_design": base | {"scene_policy": "allowed"}}, {}, "P01")\n    assert forbidden["scene_policy"] == "forbidden"\n    assert forbidden["use_scene"] is False\n    assert required["scene_policy"] == "required"\n    assert required["use_scene"] is True\n    assert allowed["scene_policy"] == "allowed"\n    assert allowed["use_scene"] is True\n\n\ndef test_semantic_brief_no_longer_forces_shared_field_budget():\n    form = "flow_3_5"\n    source = {\n        "page_id": "p01",\n        "page_number": 1,\n        "page_title": "Title",\n        "prompt_mode": "semantic_brief",\n        "page_mission": "Explain how one approved input reaches the approved result.",\n        "core_judgment": "The approved relationship forms one coherent business field.",\n        "locked_text_items": [\n            {"text_id": "P01-T01", "text": "Input"},\n            {"text_id": "P01-T02", "text": "Result"},\n        ],\n        "business_relationships": [{"subject": "Input", "relation": "supports", "objects": ["Result"]}],\n        "expression_constraints": expression_constraints(form),\n    }\n    decision = {\n        "page_id": "p01",\n        "evidence_units": [\n            {"key": "input", "summary": "Input", "text_ids": ["P01-T01"]},\n            {"key": "result", "summary": "Result", "text_ids": ["P01-T02"]},\n        ],\n        "candidates": [{\n            "id": "c1",\n            "visual_thesis": "Input and result remain visibly connected in one business field.",\n            "semantic_focus": {"kind": "entity", "evidence_key": "result"},\n            "reading_sequence": ["input", "result"],\n            "spatial_grammar": ["path"],\n            "topology": "directed_flow",\n            "direction": "left_to_right",\n            "visual_intent_type": "relationship_field",\n            "expression_fit": _expression_fit(form),\n        }],\n        "selected_candidate": "c1",\n    }\n    page = _build_executable_page(source, decision)\n    assert page["image_plan"]["scene_policy"] == "auto"\n    assert page["image_plan"]["use_scene"] is True\n    assert page["visual_budget"]["mode"] == "integrated_scene"\n''', encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run targeted regression
+        run: |
+          python -m pytest -q \
+            tests/test_stage2_scene_policy.py \
+            tests/test_visual_structure_stage.py \
+            tests/test_visual_structure_contract.py \
+            tests/test_page_artifact_spec.py \
+            tests/test_final_prompt_ir.py \
+            tests/test_final_prompt_renderer.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit P1.4
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            cyberppt/visual_stage/compiler.py \
+            cyberppt/visual_structure_contract.py \
+            cyberppt/page_artifact_spec.py \
+            vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json \
+            vendor/skills/ppt-visual-structure-designer/SKILL.md \
+            vendor/skills/ppt-visual-structure-designer/references/quality-gates.md \
+            tests/test_stage2_scene_policy.py
+          git commit -m "feat(stage2): make scene policy explicit and semantic-brief neutral"
+          git push origin HEAD:main
