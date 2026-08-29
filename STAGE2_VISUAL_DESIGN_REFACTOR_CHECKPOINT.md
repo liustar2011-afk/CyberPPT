@@ -9,7 +9,7 @@
 - Phase 2 Region Graph：完成。
 - Phase 3 Visual Medium Policy：完成。
 - Phase 4 Prompt 编译：完成。
-- Phase 5 Full Image Deck Rhythm QA：进行中，P5.1 完成，下一步 P5.2。
+- Phase 5 Full Image Deck Rhythm QA：进行中，P5.1–P5.3 完成，下一步 P5.4。
 - Phase 6 综合回归：未开始。
 
 ## 已完成关键提交
@@ -33,7 +33,9 @@
 
 ### Phase 5
 - P5.1 audited full-image contact sheet：`5414249`
+- P5.2 实际成品图视觉签名：`6a50934`、`51c68d1`；Python 3.10 / 3.12 标准 CI 均通过。
+- P5.3 deck rhythm 审计：`ffcdede`、`d053a88`；Python 3.10 / 3.12 标准 CI 均通过。
 
 ## 当前恢复指令
 
-从 P5.2 开始：建立实际成品图的页面视觉签名，至少记录构图骨架、视觉重心、密度等级、结构哈希和已审计 visual medium；不得使用 OCR 推断视觉结构。随后执行 P5.3 deck rhythm 检查、P5.4 接入 Stage2 manifest / QA receipt，并确保 deck-level QA 位于 `require_generated` 之后、`bind_reconstruction_visual_sources` 之前。
+从 P5.4 开始：把 contact sheet、实际图像视觉签名和 deck rhythm audit 写入 Stage2 manifest / QA receipt；执行顺序必须位于 `require_generated` 之后、`bind_reconstruction_visual_sources` 之前。`blocked` 时必须写出 receipt 和 manifest 状态后阻止视觉权威冻结；warning 不阻断。完成后进入 Phase 6 综合回归。
