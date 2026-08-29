@@ -158,7 +158,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                 handoff_page=handoff_page,
                 visual_page=visual_page,
                 style_lock=style_lock,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
                 planning_policy={
                     "source_structure_mode": "locked",
@@ -232,7 +232,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                 handoff_page=handoff_page,
                 visual_page=visual_page,
                 style_lock=style_lock,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
             )
 
@@ -249,7 +249,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                 handoff_page=handoff_page,
                 visual_page=visual_page,
                 style_lock=style_lock,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
             )
 
@@ -275,7 +275,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_page=handoff_page,
                     visual_page=visual_page,
                     style_lock=style_lock,
-                    handoff_sha256="a" * 64,
+                    script_input_sha256="a" * 64,
                     visual_source_sha256="b" * 64,
                 )
 
@@ -302,7 +302,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_page=handoff_page,
                     visual_page=visual_page,
                     style_lock=style_lock,
-                    handoff_sha256="a" * 64,
+                    script_input_sha256="a" * 64,
                     visual_source_sha256="b" * 64,
                 )
 
@@ -317,7 +317,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_page=handoff_page,
                     visual_page=visual_page,
                     style_lock=style_lock,
-                    handoff_sha256="a" * 64,
+                    script_input_sha256="a" * 64,
                     visual_source_sha256="b" * 64,
                 )
 
@@ -332,7 +332,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_page=handoff_page,
                     visual_page=visual_page,
                     style_lock=style_lock,
-                    handoff_sha256="a" * 64,
+                    script_input_sha256="a" * 64,
                     visual_source_sha256="b" * 64,
                 )
 
@@ -350,7 +350,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_page=handoff_page,
                     visual_page=changed_visual,
                     style_lock=style_lock,
-                    handoff_sha256="a" * 64,
+                    script_input_sha256="a" * 64,
                     visual_source_sha256="b" * 64,
                 )
 
@@ -365,7 +365,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                 handoff_page=handoff_page,
                 visual_page=visual_page,
                 style_lock=style_lock,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
             )
 
@@ -387,7 +387,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_page=handoff_page,
                     visual_page=visual_page,
                     style_lock=style_lock,
-                    handoff_sha256="a" * 64,
+                    script_input_sha256="a" * 64,
                     visual_source_sha256="b" * 64,
                 )
 
@@ -395,9 +395,9 @@ class PageArtifactSpecTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory)
             handoff_page, visual_page, style_lock = self._inputs(project)
-            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"
-            handoff_path.parent.mkdir(parents=True)
-            handoff_path.write_text("{}\n", encoding="utf-8")
+            input_path = project / "workbench/stages/02-input/script-intake.json"
+            input_path.parent.mkdir(parents=True)
+            input_path.write_text("{}\n", encoding="utf-8")
             visual_path = project / "visual/deck-visual-spec.json"
             visual_path.parent.mkdir(parents=True)
             visual_path.write_text(json.dumps({"pages": [visual_page]}), encoding="utf-8")
@@ -421,7 +421,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                 handoff_page=handoff_page,
                 visual_page=visual_page,
                 style_lock=style_lock,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
             )
 
@@ -450,7 +450,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                 handoff_page=handoff_page,
                 visual_page=visual_page,
                 style_lock=style_lock,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
             )
 

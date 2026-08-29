@@ -275,6 +275,7 @@ def record_visual_structure_execution(
             "skill_bundle_sha256": contracts["skill_bundle"],
             "skill_contract_sha256": contracts,
             "approved_script": str(script),
+            "approved_script_sha256": _sha256(script),
             "visual_design_input": str(design_input),
             "visual_design_input_sha256": _sha256(design_input),
             "page_ids": page_ids,

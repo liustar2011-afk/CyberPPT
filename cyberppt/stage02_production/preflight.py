@@ -257,7 +257,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
         build_dir=target_dir,
         style_lock=style_lock,
         source_script_sha256=sha256_file(script) or "",
-        handoff_sha256=sha256_file(script_input_path) or "",
+        script_input_sha256=sha256_file(script_input_path) or "",
         visual_spec_sha256=sha256_file(visual_spec_path) or "",
         style_lock_sha256=sha256_file(style_lock) or "",
         production_mode=options.production_mode,

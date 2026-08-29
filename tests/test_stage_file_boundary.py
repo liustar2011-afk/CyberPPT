@@ -37,3 +37,4 @@ def test_formal_stage2_runtime_has_no_stage1_artifact_dependency():
     text="\n".join(path.read_text(encoding="utf-8") for path in files)
     assert "from cyberppt.stage02_handoff" not in text; assert "parse_script_path" not in (repo/"cyberppt/stage02_input.py").read_text(encoding="utf-8"); assert "script_semantic_digest" not in text
     for token in ("deck-plan.json","foundation.json","source-truth.json","outline.json"): assert token not in text
+    assert "handoff_sha256" not in text

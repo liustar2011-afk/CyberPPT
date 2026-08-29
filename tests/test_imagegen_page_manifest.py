@@ -212,7 +212,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertIn("将锁定文字就近附着于同一连续业务场", prompt)
         self.assertNotIn("Apply this layout guidance", prompt)
 
-    def test_compact_blueprint_uses_handoff_locked_text_without_full_prose(self) -> None:
+    def test_compact_blueprint_uses_script_input_locked_text_without_full_prose(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "project"
@@ -232,8 +232,8 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 "[Negative constraints]\n- no equal card wall\n---\n",
                 encoding="utf-8",
             )
-            handoff = {
-                "schema": "cyberppt.stage02_handoff.v1",
+            script_input = {
+                "schema": "cyberppt.stage02_script_input.v1",
                 "pages": [
                     {
                         "page_id": "p04",
@@ -245,12 +245,12 @@ class CyberpptPairManifestTests(unittest.TestCase):
                     }
                 ],
             }
-            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"
-            handoff_path.parent.mkdir(parents=True, exist_ok=True)
-            handoff_path.write_text(json.dumps(handoff, ensure_ascii=False), encoding="utf-8")
+            input_path = project / "workbench/stages/02-input/script-intake.json"
+            input_path.parent.mkdir(parents=True, exist_ok=True)
+            input_path.write_text(json.dumps(script_input, ensure_ascii=False), encoding="utf-8")
             with patch(
-                "cyberppt.stage02_handoff.load_stage02_handoff",
-                return_value=handoff,
+                "cyberppt.stage02_input.load_stage02_input",
+                return_value=script_input,
             ):
                 manifest, _, compiled, _ = build_manifest(
                     script=script,

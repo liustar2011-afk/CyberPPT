@@ -579,7 +579,7 @@ def build_page_artifact_spec(
     handoff_page: Mapping[str, object],
     visual_page: Mapping[str, object],
     style_lock: Path,
-    handoff_sha256: str,
+    script_input_sha256: str,
     visual_source_sha256: str,
     planning_policy: Mapping[str, object] | None = None,
 ) -> PageArtifactSpec:
@@ -815,7 +815,7 @@ def build_page_artifact_spec(
             page_constraints=page_constraints,
         ),
         source_hashes=tuple(sorted({
-            "handoff": str(handoff_sha256),
+            "script_input": str(script_input_sha256),
             "visual_spec": str(visual_source_sha256),
             "style_lock": hashlib.sha256(style_lock.read_bytes()).hexdigest(),
         }.items())),
@@ -879,14 +879,14 @@ def load_project_page_artifact_specs(
             "visual structure spec is missing Stage 02 pages: "
             + ", ".join(f"P{number:02d}" for number in missing)
         )
-    handoff_sha = hashlib.sha256(script_input_path.read_bytes()).hexdigest()
+    script_input_sha = hashlib.sha256(script_input_path.read_bytes()).hexdigest()
     visual_sha = hashlib.sha256(visual_path.read_bytes()).hexdigest()
     return {
         page_number: build_page_artifact_spec(
             handoff_page=handoff_page,
             visual_page=visual_map[page_number],
             style_lock=style_lock,
-            handoff_sha256=handoff_sha,
+            script_input_sha256=script_input_sha,
             visual_source_sha256=visual_sha,
             planning_policy=None,
         )
