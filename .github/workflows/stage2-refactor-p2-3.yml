@@ -1,3 +1,4 @@
+# Retry after Region Graph binding validation fix.
 name: Stage2 refactor P2.3 region text binding
 
 on:
