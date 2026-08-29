@@ -144,10 +144,24 @@ def _build_source_index(source_extract: Path, output: Path, source_file: str | N
     return 0
 
 
+def _final_lint_issues(payload: dict, markdown: str) -> list[str]:
+    """Return every deterministic lint finding required at the final boundary."""
+
+    return (
+        lint_final_script(payload)
+        + check_onscreen_structure(payload)
+        + check_full_copy_duplication(payload)
+        + check_speaker_notes_length(payload)
+        + check_delivery_cleanliness(markdown)
+        + check_onscreen_terminal_punctuation(payload)
+        + check_onscreen_detail_length(payload)
+    )
+
+
 def _lint(final_path: Path) -> int:
     payload = load_json(final_path)
     markdown = render_stage02_markdown(payload)
-    issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_full_copy_duplication(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
+    issues = _final_lint_issues(payload, markdown)
     warnings = check_declared_count(payload)
     _print_report({"kind": "lint", "path": str(final_path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
     return 0 if not issues else 1
@@ -314,9 +328,9 @@ def _render(input_path: Path, output_path: Path) -> int:
         _print_report({"status": "failed", "issues": issues}, stderr=True)
         return 1
     markdown = render_stage02_markdown(payload)
-    delivery_issues = check_delivery_cleanliness(markdown)
-    if delivery_issues:
-        _print_report({"kind": "delivery-cleanliness", "status": "failed", "issues": delivery_issues}, stderr=True)
+    lint_issues = _final_lint_issues(payload, markdown)
+    if lint_issues:
+        _print_report({"kind": "final-delivery-lint", "status": "failed", "issues": lint_issues}, stderr=True)
         return 1
     output_path.parent.mkdir(parents=True, exist_ok=True)
     write_text_lf(output_path, markdown)
@@ -331,6 +345,10 @@ def _check_sync(final_path: Path, markdown_path: Path) -> int:
         _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "failed", "issues": issues})
         return 1
     expected = render_stage02_markdown(payload)
+    lint_issues = _final_lint_issues(payload, expected)
+    if lint_issues:
+        _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "failed", "issues": lint_issues})
+        return 1
     if not markdown_path.exists():
         issues = [f"{markdown_path} does not exist; run render-stage02 to produce it"]
     else:
@@ -353,7 +371,7 @@ def build_parser() -> argparse.ArgumentParser:
     audit_final = sub.add_parser("audit-final", help="Audit PLAN-to-AUTHOR semantic inheritance and high-risk source-boundary rules"); audit_final.add_argument("final"); audit_final.add_argument("plan"); audit_final.add_argument("foundation")
     trace = sub.add_parser("trace-composed", help="Triage near-source vs composed Final Script lines and block source-absent numbers or identifiers"); trace.add_argument("final"); trace.add_argument("foundation"); trace.add_argument("--n", type=int, default=3)
     build_index = sub.add_parser("build-source-index", help="Build non-authoritative .cache/source-index.json from source_extract.txt"); build_index.add_argument("source_extract"); build_index.add_argument("--output", required=True); build_index.add_argument("--source-file")
-    render = sub.add_parser("render-stage02", help="Render a delivery-clean Stage 02-compatible Markdown boundary"); render.add_argument("input"); render.add_argument("--output", default="dist/final-script.md")
+    render = sub.add_parser("render-stage02", help="Render a lint-passing, Stage 02-compatible Markdown boundary"); render.add_argument("input"); render.add_argument("--output", default="dist/final-script.md")
     check_refs = sub.add_parser("check-refs", help="Verify final-script source_refs trace to foundation and optional source index"); check_refs.add_argument("final"); check_refs.add_argument("foundation"); check_refs.add_argument("--source-index")
     lint = sub.add_parser("lint", help="Scan final-script JSON and rendered Markdown for phrasing, structure and delivery-cleanliness issues"); lint.add_argument("final")
     outline = sub.add_parser("outline", help="Print per-slide id/title/onscreen module headings"); outline.add_argument("final")

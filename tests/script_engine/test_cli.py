@@ -97,6 +97,24 @@ def test_cli_render_stage02_fails_on_invalid_input(tmp_path, capsys) -> None:
     assert not output_path.exists()
 
 
+def test_cli_render_stage02_blocks_semantically_incomplete_heading(tmp_path, capsys) -> None:
+    payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "建设框架：四大方向、八项能力", "text": "覆盖数据基础设施全生命周期"},
+    ]
+    broken = tmp_path / "broken.json"
+    output_path = tmp_path / "final-script.md"
+    broken.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    exit_code = main(["render-stage02", str(broken), "--output", str(output_path)])
+    err = json.loads(capsys.readouterr().err)
+
+    assert exit_code == 1
+    assert err["kind"] == "final-delivery-lint"
+    assert any("ONSCREEN_HEADING_INCOMPLETE" in issue for issue in err["issues"])
+    assert not output_path.exists()
+
+
 def test_cli_check_refs_passes_when_all_citations_known(capsys) -> None:
     final_path = ROOT / "examples" / "final-script.example.json"
     foundation_path = ROOT / "examples" / "foundation.example.json"
@@ -368,6 +386,23 @@ def test_cli_check_sync_fails_when_markdown_is_stale(tmp_path, capsys) -> None:
     assert exit_code == 1
     assert out["status"] == "failed"
     assert "does not match a fresh render" in out["issues"][0]
+
+
+def test_cli_check_sync_blocks_semantically_incomplete_heading(tmp_path, capsys) -> None:
+    payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "建设框架：四大方向、八项能力", "text": "覆盖数据基础设施全生命周期"},
+    ]
+    final_path = tmp_path / "final-script.json"
+    markdown_path = tmp_path / "final-script.md"
+    final_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    markdown_path.write_text("stale markdown\n", encoding="utf-8")
+
+    exit_code = main(["check-sync", str(final_path), str(markdown_path)])
+    out = json.loads(capsys.readouterr().out)
+
+    assert exit_code == 1
+    assert any("ONSCREEN_HEADING_INCOMPLETE" in issue for issue in out["issues"])
 
 
 def test_cli_check_sync_fails_when_markdown_missing(tmp_path, capsys) -> None:
