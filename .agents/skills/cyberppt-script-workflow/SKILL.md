@@ -75,12 +75,82 @@ Every deck defaults to `deck.delivery_mode: self_read`. The author may use
 For `self_read`, each content page must close its own reading loop: identify the
 topic, state the page judgment, explain the evidence or reasoning, and retain the
 facts, scope, conditions or results needed to understand it without narration.
-Organize reader-facing copy as a semantic anchor, a complete core statement and
-necessary details. Module headings locate the topic; explanatory lines carry the
-business meaning. Lists and numbers must state why they are grouped and what
-they establish. Compression must preserve the object, predicate or action, and
-any material qualifier. Do not shorten copy into vague slogans, unexplained
-category labels or presenter cues.
+Treat `core_message` as the page's semantic authority: it states what the page
+means. Treat `onscreen` as the reader-facing expression of that authority: its
+headings, leads and evidence may decompose or paraphrase the judgment, but the
+whole visible composition must stay centered on it. Page-planning labels,
+author self-talk, review language and relationship-construction notes belong in
+neither field.
+
+Use `core_message` to organize `full_copy`, then restructure the bound source
+prose without turning it into a summary. `full_copy` is the semantic-preserving
+layer: it keeps the source's core facts, named actors, formal documents,
+implementation status, task strength, dates and numbers, responsibilities,
+conditions, boundaries and explicit conclusions, while improving their
+hierarchy and reading order. Do not replace stronger source statements with
+author-created dimensions such as “建设内容、阶段进度、技术规则”, or collapse
+an issued policy, fixed milestone, formed technical document or assigned
+responsibility into a generic arrangement. AUTHOR may rewrite, reorder and
+merge repetition inside the page's `source_refs` boundary, and may omit only
+subordinate material that does not support the page conclusion. Those refs
+define available evidence, not a requirement to reproduce every source word.
+
+AUTHOR must make at least one explicit editorial selection either while writing
+`full_copy` or while projecting it into `onscreen`. The onscreen layer is the
+latest mandatory selection point: keep the core conclusion and only the decisive
+evidence needed to express it. Never produce onscreen copy by proportionally
+shortening every full-copy paragraph or retaining one bullet for every cited
+source detail.
+
+When a content page carries a long multi-step argument, write `full_copy` as
+substantive paragraphs that expose the reasoning hierarchy. Each paragraph must
+advance a distinct part of the argument: establish the conclusion, supply its
+necessary basis, explain the relationship, state a material boundary or
+implication, or provide clearly subordinate context. Default to judgment-first
+paragraphs. When the source already states a strong status, requirement,
+responsibility or conclusion, use that source judgment as the paragraph opening;
+do not weaken it into an abstract dimensional summary. Then use “一是、二是、三是”
+for genuinely parallel evidence, or the connector that matches the source's
+actual causal, temporal or conditional relation. A paragraph that only inventories actors, categories, dates or tasks has
+not established a reasoning level. A topic sentence that merely says a task is
+more concrete, a requirement is clearer or a subject is important also fails:
+the opening sentence itself must state what has been established, changed or
+concluded. Short or genuinely simple narrative pages may
+remain a single paragraph; do not manufacture a fixed module count. Organize
+reader-facing copy as a semantic anchor, a complete core statement and necessary
+details. Module headings must carry business meaning by stating the object and
+its action, status, role or judgment; child lines provide evidence, explanation
+and qualifications. Prefer claim headings that state who has established, provides, lacks
+or must do what. Do not coin official-sounding group names by joining an actor
+or scope with an abstract noun, such as `国家统一基础`, `行业专业基础`, `国家坐标`
+or `任务落点`, unless the source explicitly defines that exact term and a silent
+reader can understand it without author explanation. Lists and numbers must state why they are grouped and what they
+establish. Compression must preserve the object, predicate or action, and any
+material qualifier. Do not shorten copy into vague slogans, unexplained category
+labels or presenter cues.
+
+`标签：短语` is a surface grammar for compact onscreen detail lines only. Here,
+"phrase" means removing dispensable function words and terminal punctuation
+while retaining the business object, action, relationship and material
+qualifiers. It never authorizes label-only `full_copy` topic sentences,
+label-only module headings, or semantic fragments that require the reader to
+guess the missing predicate.
+
+Complete semantics also requires the exact business matter. Never rely on the
+page title, a previous paragraph or a generic subject to supply the missing
+object. Headings such as `国家已明确建设内容`, `项目将推进相关工作`,
+`研究形成三项成果` and `后续推进四项工作` remain incomplete until they
+name the national deployment, the project, the actual成果 or the work items.
+Use a specific subject such as `国家数据基础设施建设部署`, `中电联先行先试项目`
+or `本项标准体系研究` and state the corresponding object in the same sentence.
+Avoid umbrella objects such as `电力行业能力建设`, `项目相关能力` or
+`后续有关工作` when the source provides the actual capabilities, tasks or work
+items. Name those objects directly; a broader author-created category must not
+expand the actor's source-stated responsibility.
+When the source defines an official project level, task name, capability name
+or responsibility, retain that exact context in the paragraph's topic sentence
+before any higher-level grouping. An author-created umbrella term may summarize
+only after the exact source objects have been stated; it cannot replace them.
 
 Deterministic code runs only after the generative pass. Its role is to detect
 source loss, proposition drift, unsupported relations, broken boundaries and

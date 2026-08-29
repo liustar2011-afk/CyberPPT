@@ -162,6 +162,33 @@ def test_v2_final_script_owns_authored_message() -> None:
     assert not any("AUTHOR_PAGE_PROPOSITION_DRIFTED" in issue for issue in issues)
 
 
+def test_v2_lean_source_refs_are_evidence_boundary_not_full_copy_checklist() -> None:
+    plan = _lean_plan()
+    plan["pages"] = [plan["pages"][0]]
+    foundation = _foundation()
+    foundation["facts"][0]["semantic_units"] = [
+        {"id": "F1-U1", "text": "国家部署给出总体任务"},
+        {"id": "F1-U2", "text": "配套材料还列出若干非核心技术细节"},
+    ]
+    final = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "title": "建设部署形成统一约束",
+                "core_message": "国家部署已经形成统一建设约束。",
+                "full_copy": "国家部署明确总体建设任务，由此形成项目必须遵循的统一约束。",
+                "onscreen": [{"heading": "统一建设约束", "text": "国家部署明确总体建设任务"}],
+                "source_refs": ["F1"],
+            }
+        ]
+    }
+
+    issues, _ = audit_final_script(final, plan, foundation)
+
+    assert not any("F1-U2" in issue or "source_consumption" in issue for issue in issues)
+
+
 def test_plan_review_shows_compact_outline_without_authoring_details() -> None:
     plan = _lean_plan()
     review = render_plan_review(plan, _foundation())

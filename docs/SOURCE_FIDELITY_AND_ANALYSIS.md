@@ -39,6 +39,20 @@ Protect without semantic drift:
 
 Compression may change wording. It must not change meaning or certainty.
 
+At page level, `source_refs` defines the evidence boundary available to AUTHOR.
+The author uses the page's core conclusion to restructure those source facts
+without abstracting or summarizing away their substance. Full copy preserves
+core facts, source-stated conclusions, actors, formal instruments,
+implementation status, claim strength, dates, numbers, responsibilities,
+conditions and boundaries; it may reorder material, merge repetition and omit
+only subordinate content that does not support the page conclusion. The main
+compression and display selection occurs when full copy is projected into
+onscreen copy. The visible layer keeps the conclusion and decisive evidence
+instead of shrinking every source detail proportionally. Deck-level structure
+and source-declared priorities still require coverage; page-level evidence
+selection does not authorize dropping a source chapter or weakening a material
+boundary.
+
 ### Layer C — analytical enhancement
 
 The engine is expected to improve expression depth by identifying latent relationships supported by the source facts, including:

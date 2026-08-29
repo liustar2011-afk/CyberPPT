@@ -231,7 +231,8 @@ def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, caps
     final_payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     final_payload.setdefault("deck", {})["delivery_mode"] = "presented"
     final_payload["slides"][0]["page_type"] = "content"
-    final_payload["slides"][0]["onscreen"] = [{"heading": "模块", "text": "简短说明"}]
+    final_payload["slides"][0]["core_message"] = "单一模块提供简短说明。"
+    final_payload["slides"][0]["onscreen"] = [{"heading": "单一模块提供简短说明", "text": "简短说明"}]
     (project_dir / "dist" / "final-script.json").write_text(
         json.dumps(final_payload, ensure_ascii=False),
         encoding="utf-8",
@@ -258,7 +259,8 @@ def test_cli_lint_passes_on_example(capsys) -> None:
 def test_cli_lint_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     payload["slides"][0]["page_type"] = "content"
-    payload["slides"][0]["onscreen"] = [{"heading": "模块", "text": "简短说明"}]
+    payload["slides"][0]["core_message"] = "单一模块提供简短说明。"
+    payload["slides"][0]["onscreen"] = [{"heading": "单一模块提供简短说明", "text": "简短说明"}]
     path = tmp_path / "underfilled.json"
     path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
@@ -293,10 +295,11 @@ def test_cli_lint_declared_count_mismatch_is_a_warning_not_a_failure(tmp_path, c
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     payload["slides"][0]["subtitle"] = "五方面基础"
     payload["slides"][0]["onscreen_expected_peer_count"] = 5
+    payload["slides"][0]["core_message"] = "一项说明、二项说明、三项说明和四项说明共同展开。"
     filler = ["甲乙丙丁戊己庚辛壬癸子丑", "寅卯辰巳午未申酉戌亥零一", "二三四五六七八九十百千万", "东西南北春夏秋冬金木水火"]
     payload["slides"][0]["onscreen"] = [
         {"heading": h, "text": f"{h}项说明{filler[i]}", "items": [f"{h}项细节{filler[(i + 1) % 4]}", f"{h}项细节{filler[(i + 2) % 4]}", f"{h}项补充{filler[(i + 3) % 4]}"]}
-        for i, h in enumerate(("一", "二", "三", "四"))
+        for i, h in enumerate(("第一项说明提供甲项依据", "第二项说明提供乙项依据", "第三项说明提供丙项依据", "第四项说明提供丁项依据"))
     ]
     broken = tmp_path / "mismatch.json"
     broken.write_text(json.dumps(payload), encoding="utf-8")

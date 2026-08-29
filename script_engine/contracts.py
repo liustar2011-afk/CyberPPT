@@ -161,6 +161,10 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
             match = regex.search(text)
             if match:
                 issues.append(f"{field_path}: [{rule_id}] {description} — matched '{match.group(0)}'")
+    issues.extend(check_full_copy_structure(final_script))
+    issues.extend(check_full_copy_topic_semantics(final_script))
+    issues.extend(check_onscreen_heading_semantics(final_script))
+    issues.extend(check_onscreen_core_alignment(final_script))
     return issues
 
 _ITEM_SIMILARITY_THRESHOLD = 0.6
@@ -249,6 +253,202 @@ def check_full_copy_duplication(final_script: dict[str, Any]) -> list[str]:
                         f"near-duplicate sentences ({ratio:.0%} similar) — '{sentences[i]}' / '{sentences[j]}' "
                         "restate the same source fact instead of advancing the argument"
                     )
+    return issues
+
+_FULL_COPY_STRUCTURE_MIN_CHARS = 180
+_FULL_COPY_PARAGRAPH_MIN_CHARS = 24
+
+_SEMANTIC_PREDICATES = (
+    "已经", "可以", "需要", "应当", "形成", "明确", "承担", "提供", "覆盖",
+    "缺少", "不足", "制约", "推动", "建立", "落实", "决定", "负责", "规范",
+    "衔接", "承接", "服务", "完成", "保持", "安排", "界定", "匹配", "促进",
+    "实现", "贯通", "增加", "提出", "转化", "构成", "支撑", "保障",
+    "导致", "滞后", "已有", "校准", "承载", "对应", "建成", "推进",
+)
+_ABSTRACT_TOPIC_SENTENCE_RE = re.compile(
+    r"(?:任务|要求|工作|建设|内容).{0,8}(?:具体化|更加明确|进一步明确|更为清晰|具有重要意义|意义重大)"
+)
+_SOURCE_STRENGTH_ABSTRACTION_RE = re.compile(
+    r"(?:形成|建立).{0,40}(?:建设内容|阶段进度|技术规则).{0,40}(?:安排|框架)"
+)
+_FORMAL_TAXONOMY_HEADING_RE = re.compile(r"^(?:[A-Z]\s+|\d{1,2}[.、．\s]+)\S+")
+_CONTEXT_DEPENDENT_HEADING_RE = re.compile(
+    r"^(?:国家|行业|项目|研究|体系)(?:已|将|需|应|可|形成|明确|推进|承担|负责|提供|支撑)"
+    r"|^后续(?:推进|开展|落实)"
+)
+
+
+def _has_complete_semantic_predicate(text: str) -> bool:
+    compact = _normalize_item_text(text)
+    for predicate in _SEMANTIC_PREDICATES:
+        start = compact.find(predicate)
+        if start >= 2 and len(compact) - start - len(predicate) >= 2:
+            return True
+    return False
+
+
+def check_full_copy_topic_semantics(final_script: dict[str, Any]) -> list[str]:
+    """Require each substantive full-copy paragraph to open with a complete point.
+
+    This is intentionally a narrow semantic guardrail. It catches label-only openings and
+    abstract evaluation sentences while leaving longer natural-language judgment to AUTHOR and
+    Critic. Source-defined numbered prose with a substantive clause after a colon remains valid.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", str(slide.get("full_copy") or "")) if p.strip()]
+        for paragraph_index, paragraph in enumerate(paragraphs):
+            topic = re.split(r"(?<=[。！？])", paragraph, maxsplit=1)[0].strip()
+            compact = _normalize_item_text(topic)
+            colon_tail = re.split(r"[：:]", topic, maxsplit=1)
+            has_substantive_colon_tail = len(colon_tail) == 2 and len(_normalize_item_text(colon_tail[1])) >= 8
+            if _SOURCE_STRENGTH_ABSTRACTION_RE.search(topic):
+                issues.append(
+                    f"FULL_COPY_TOPIC_SOURCE_STRENGTH_ABSTRACTED: slides.{index} ({slide_id}).full_copy paragraph "
+                    f"{paragraph_index + 1}: opening '{topic}' replaces source-level actions, status, milestones or "
+                    "formal outputs with author-created summary dimensions; restore the strongest source conclusion "
+                    "and move its complete supporting facts into the paragraph body"
+                )
+                continue
+            if _ABSTRACT_TOPIC_SENTENCE_RE.search(topic) or (
+                len(compact) < 16
+                and not has_substantive_colon_tail
+                and not _has_complete_semantic_predicate(topic)
+            ):
+                issues.append(
+                    f"FULL_COPY_TOPIC_INCOMPLETE: slides.{index} ({slide_id}).full_copy paragraph "
+                    f"{paragraph_index + 1}: opening '{topic}' is a label or abstract evaluation, not a "
+                    "complete audience-facing point with an object and substantive judgment"
+                )
+    return issues
+
+
+def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
+    """Reject short category labels that force readers to infer a module's business meaning.
+
+    Formal taxonomy codes stay valid because the adjacent module body defines the category. A
+    claim heading, a source-defined taxonomy heading, or a heading that states both category and
+    criterion remains valid.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        for module_index, module in enumerate(slide.get("onscreen") or []):
+            if not isinstance(module, dict):
+                continue
+            heading = str(module.get("heading") or "").strip()
+            compact = _normalize_item_text(heading)
+            parts = [part for part in re.split(r"[｜|]", heading) if _normalize_item_text(part)]
+            category_with_criterion = len(parts) >= 2 and all(len(_normalize_item_text(part)) >= 4 for part in parts)
+            source_defined_taxonomy = bool(
+                _FORMAL_TAXONOMY_HEADING_RE.match(heading)
+                or heading.endswith("层")
+                or ("贯穿" in heading and "贯穿" in str(slide.get("core_message") or ""))
+            ) and bool(module.get("text") or module.get("items"))
+            if _CONTEXT_DEPENDENT_HEADING_RE.search(heading):
+                issues.append(
+                    f"ONSCREEN_HEADING_OBJECT_OMITTED: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
+                    f"'{heading}' relies on page context to supply the business matter; name the exact deployment, "
+                    "project, research output or work item in the heading itself"
+                )
+                continue
+            if (
+                heading
+                and len(compact) < 16
+                and not source_defined_taxonomy
+                and not category_with_criterion
+                and not _has_complete_semantic_predicate(heading)
+            ):
+                issues.append(
+                    f"ONSCREEN_HEADING_INCOMPLETE: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
+                    f"'{heading}' is only a category label; state the object and its action, status, role or judgment"
+                )
+    return issues
+
+def check_full_copy_structure(final_script: dict[str, Any]) -> list[str]:
+    """Require long, multi-step arguments to retain visible paragraph structure.
+
+    Short narrative pages and genuinely simple arguments remain valid.  The gate only fires
+    when AUTHOR declares at least three argument steps and then collapses a long full copy into
+    one paragraph; duplicate detection separately guards fake progression by repetition.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        full_copy = slide.get("full_copy")
+        if not isinstance(full_copy, str):
+            continue
+        chain = (slide.get("argument") or {}).get("chain") or []
+        if len(chain) < 3 or len(_normalize_item_text(full_copy)) < _FULL_COPY_STRUCTURE_MIN_CHARS:
+            continue
+        paragraphs = [
+            paragraph.strip()
+            for paragraph in re.split(r"\n\s*\n", full_copy)
+            if len(_normalize_item_text(paragraph)) >= _FULL_COPY_PARAGRAPH_MIN_CHARS
+        ]
+        if len(paragraphs) < 2:
+            slide_id = slide.get("id") or f"#{index}"
+            issues.append(
+                f"FULL_COPY_STRUCTURE_FLAT: slides.{index} ({slide_id}).full_copy: "
+                "a long multi-step argument is collapsed into one paragraph; preserve at least "
+                "two substantive paragraphs so the complete copy exposes its reasoning hierarchy"
+            )
+    return issues
+
+_ONSCREEN_CORE_MIN_BIGRAMS = 4
+_ONSCREEN_CORE_MIN_COVERAGE = 0.25
+_ONSCREEN_BODY_MIN_COVERAGE = 0.15
+
+def _semantic_bigrams(text: object) -> set[str]:
+    compact = _normalize_item_text(str(text or "")).lower()
+    return {compact[index:index + 2] for index in range(len(compact) - 1)}
+
+def _onscreen_text(slide: dict[str, Any]) -> str:
+    values: list[str] = []
+    for module in slide.get("onscreen") or []:
+        if not isinstance(module, dict):
+            continue
+        values.extend(str(module.get(key) or "") for key in ("heading", "text"))
+        values.extend(str(item) for item in module.get("items") or [] if isinstance(item, str))
+    return " ".join(values)
+
+def check_onscreen_core_alignment(final_script: dict[str, Any]) -> list[str]:
+    """Treat ``core_message`` as page meaning and ``onscreen`` as its visible projection.
+
+    The check measures aggregate semantic-character coverage, so onscreen copy may decompose,
+    evidence or paraphrase the conclusion without repeating it verbatim.  Very short conclusions
+    are skipped because lexical coverage is not meaningful at that size.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        core_bigrams = _semantic_bigrams(slide.get("core_message"))
+        if len(core_bigrams) < _ONSCREEN_CORE_MIN_BIGRAMS:
+            continue
+        body_bigrams = _semantic_bigrams(_onscreen_text(slide))
+        projection_bigrams = body_bigrams | _semantic_bigrams(
+            f"{slide.get('title') or ''} {slide.get('subtitle') or ''}"
+        )
+        body_coverage = len(core_bigrams & body_bigrams) / len(core_bigrams)
+        coverage = len(core_bigrams & projection_bigrams) / len(core_bigrams)
+        if (
+            coverage < _ONSCREEN_CORE_MIN_COVERAGE
+            or body_coverage < _ONSCREEN_BODY_MIN_COVERAGE
+        ):
+            slide_id = slide.get("id") or f"#{index}"
+            issues.append(
+                f"ONSCREEN_CORE_MISALIGNED: slides.{index} ({slide_id}).onscreen: "
+                f"title + body cover {coverage:.0%} and body modules cover {body_coverage:.0%} "
+                "of the core conclusion's semantic anchors (minimum 25% / 15%); organize the "
+                "whole onscreen expression around core_message"
+            )
     return issues
 
 SPEAKER_NOTES_MIN_CHARS = 12

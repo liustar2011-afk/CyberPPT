@@ -232,6 +232,120 @@ def test_lint_final_script_flags_self_reference_in_onscreen() -> None:
     assert issues
     assert any("self-reference" in issue for issue in issues)
 
+def test_lint_final_script_flags_audience_facing_meta_in_core_and_onscreen() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["core_message"] = "本页核心结论是形成统一治理体系。"
+    payload["slides"][0]["onscreen"][0]["heading"] = "汇合点"
+    issues = lint_final_script(payload)
+    assert sum("audience-facing-meta" in issue for issue in issues) == 2
+
+
+def test_lint_final_script_flags_underspecified_business_object() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["core_message"] = "中电联承担电力行业能力建设和标准验证。"
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "推进相关工作", "text": "统一目录、身份和标识"}
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert sum("underspecified-business-object" in issue for issue in issues) == 2
+
+
+def test_lint_final_script_flags_semantically_incomplete_onscreen_headings() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "国家统一基础", "text": "四大方向、八项能力和六项技术文件"},
+        {"heading": "方法底座", "text": "采用GB/T 13016组织标准体系"},
+        {"heading": "共同目标", "text": "形成可持续更新的行业标准体系"},
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert sum("ONSCREEN_HEADING_INCOMPLETE" in issue for issue in issues) == 3
+
+
+def test_lint_final_script_allows_claim_and_formal_taxonomy_headings() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "国家规则已明确建设要求", "text": "四大方向、八项能力和六项技术文件"},
+        {"heading": "A 基础通用", "text": "统一术语、架构、标识和目录"},
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_HEADING_INCOMPLETE" in issue for issue in issues)
+
+
+def test_lint_final_script_flags_heading_that_omits_the_business_matter() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "国家已明确建设内容、进度和技术规则", "text": "四大方向、八项能力和三个阶段"},
+        {"heading": "后续推进四项工作", "text": "完善体系、研制标准、实施评估、项目统筹"},
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert sum("ONSCREEN_HEADING_OBJECT_OMITTED" in issue for issue in issues) == 2
+
+
+def test_lint_final_script_allows_heading_with_explicit_business_matter() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {
+            "heading": "国家部署已明确数据基础设施建设内容、进度和技术规则",
+            "text": "四大方向、八项能力和三个阶段",
+        }
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_HEADING_OBJECT_OMITTED" in issue for issue in issues)
+
+
+def test_lint_final_script_flags_incomplete_full_copy_topic_sentence() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = "实践基础。企业已经形成数据治理积累。\n\n国家层面已经把建设任务具体化。"
+
+    issues = lint_final_script(payload)
+
+    assert sum("FULL_COPY_TOPIC_INCOMPLETE" in issue for issue in issues) == 2
+
+
+def test_lint_final_script_flags_source_strength_replaced_by_summary_dimensions() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = (
+        "国家部署已经形成覆盖建设内容、阶段进度和技术规则的数据基础设施建设安排。"
+    )
+
+    issues = lint_final_script(payload)
+
+    assert any("FULL_COPY_TOPIC_SOURCE_STRENGTH_ABSTRACTED" in issue for issue in issues)
+
+def test_lint_final_script_flags_flat_long_multi_step_full_copy() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = payload["slides"][0]["full_copy"].replace("\n\n", "")
+    issues = lint_final_script(payload)
+    assert any("FULL_COPY_STRUCTURE_FLAT" in issue for issue in issues)
+
+def test_lint_final_script_flags_onscreen_unrelated_to_core_message() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "组织保障", "text": "明确牵头单位与协作职责"},
+        {"heading": "资源保障", "text": "落实经费投入与人才配置"},
+    ]
+    issues = lint_final_script(payload)
+    assert any("ONSCREEN_CORE_MISALIGNED" in issue for issue in issues)
+
+def test_lint_final_script_allows_onscreen_projection_without_verbatim_repetition() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["core_message"] = "统一目录和身份管理共同支撑可追溯的数据流通。"
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "目录与身份管理", "text": "共同建立可追溯的数据流通基础"}
+    ]
+    issues = lint_final_script(payload)
+    assert not any("ONSCREEN_CORE_MISALIGNED" in issue for issue in issues)
+
 def test_lint_final_script_flags_restating_aside_in_speaker_notes() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["speaker_notes"] = "也就是说，这一页的结论是可以直接复用的。"
