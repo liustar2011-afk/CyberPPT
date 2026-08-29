@@ -1,0 +1,40 @@
+name: CyberPPT stage file boundary
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-test:
+    if: github.head_ref == 'agent/stage-file-boundary'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Apply file-boundary patch
+        run: python scripts/_apply_stage_file_boundary.py
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[test]'
+      - name: Architecture tests
+        run: python -m pytest -q tests/test_stage_file_boundary.py tests/test_stage02_handoff.py tests/test_content_route.py
+      - name: Full test suite
+        run: python -m pytest -q
+      - name: Commit validated refactor
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm scripts/_apply_stage_file_boundary.py .github/workflows/stage-file-boundary.yml
+          git add -A
+          git status --short
+          git commit -m 'refactor: decouple Stage01 and Stage02 by file boundary'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
