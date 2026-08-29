@@ -1,4 +1,4 @@
-name: Stage2 refactor P2.1 region graph contract
+name: Stage2 refactor P2.1 schema integration
 
 on:
   push:
@@ -21,317 +21,55 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Apply P2.1 Region Graph contract
+      - name: Integrate Region Graph schema
         run: |
           python - <<'PY'
           from pathlib import Path
           import json
 
-          module = Path('cyberppt/region_graph.py')
-          module.write_text('''"""Semantic macro-space contract for Stage 02 Region Graphs.
-
-Region Graph sits between the semantic graph and pixel geometry.  It records
-where semantic evidence belongs at a normalized page-structure level without
-turning Stage 02 into a fixed-layout/template engine.
-"""
-
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any, Mapping
-
-
-REGION_GRAPH_CANVAS_RATIO = "2:1"
-REGION_GRAPH_PRIMARY_AXES = frozenset({
-    "horizontal",
-    "vertical",
-    "radial",
-    "bidirectional",
-    "layered",
-    "free_spatial",
-})
-REGION_GRAPH_ANCHORS = frozenset({
-    "left",
-    "center",
-    "right",
-    "top",
-    "bottom",
-    "top_left",
-    "top_right",
-    "bottom_left",
-    "bottom_right",
-    "free",
-})
-REGION_GRAPH_SPANS = frozenset({"compact", "half", "full", "band", "free"})
-REGION_GRAPH_PRIORITIES = frozenset({"primary", "secondary", "tertiary"})
-REGION_GRAPH_RELATION_TYPES = frozenset({
-    "peer",
-    "flow",
-    "converge",
-    "dependency",
-    "feedback",
-    "boundary",
-    "interface",
-    "allocation",
-    "support",
-    "containment",
-})
-
-
-@dataclass(frozen=True)
-class RegionSpec:
-    id: str
-    semantic_refs: tuple[str, ...]
-    role: str
-    anchor: str
-    weight: float
-    span: str
-    priority: str
-    text_ids: tuple[str, ...] = ()
-
-
-@dataclass(frozen=True)
-class RegionRelationSpec:
-    source: str
-    target: str
-    type: str
-
-
-@dataclass(frozen=True)
-class RegionGraphSpec:
-    canvas_ratio: str
-    primary_axis: str
-    regions: tuple[RegionSpec, ...]
-    relations: tuple[RegionRelationSpec, ...]
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "canvas_ratio": self.canvas_ratio,
-            "primary_axis": self.primary_axis,
-            "regions": [
-                {
-                    "id": item.id,
-                    "semantic_refs": list(item.semantic_refs),
-                    "role": item.role,
-                    "anchor": item.anchor,
-                    "weight": item.weight,
-                    "span": item.span,
-                    "priority": item.priority,
-                    **({"text_ids": list(item.text_ids)} if item.text_ids else {}),
-                }
-                for item in self.regions
-            ],
-            "relations": [
-                {"from": item.source, "to": item.target, "type": item.type}
-                for item in self.relations
-            ],
-        }
-
-
-def _strings(value: object, *, field: str, required: bool = True) -> tuple[str, ...]:
-    if value is None and not required:
-        return ()
-    if not isinstance(value, list):
-        raise ValueError(f"Region Graph {field} must be an array")
-    values = tuple(str(item or "").strip() for item in value)
-    if required and not values:
-        raise ValueError(f"Region Graph {field} must not be empty")
-    if any(not item for item in values) or len(values) != len(set(values)):
-        raise ValueError(f"Region Graph {field} must contain unique non-empty values")
-    return values
-
-
-def _evidence_refs(value: object, *, field: str) -> tuple[str, ...]:
-    refs = _strings(value, field=field)
-    if any(not ref.startswith("E") or not ref[1:].isdigit() for ref in refs):
-        raise ValueError(f"Region Graph {field} must contain E<number> semantic refs")
-    return refs
-
-
-def validate_region_graph(value: Mapping[str, object]) -> RegionGraphSpec:
-    """Validate and normalize a Region Graph without inferring layout or topology.
-
-    Cross-field reference integrity is enforced here because JSON Schema cannot
-    reliably assert that relation endpoints exist in the same region-id set.
-    """
-
-    if not isinstance(value, Mapping):
-        raise ValueError("Region Graph must be an object")
-    canvas_ratio = str(value.get("canvas_ratio") or "").strip()
-    if canvas_ratio != REGION_GRAPH_CANVAS_RATIO:
-        raise ValueError(f"Region Graph canvas_ratio must be {REGION_GRAPH_CANVAS_RATIO}")
-    primary_axis = str(value.get("primary_axis") or "").strip()
-    if primary_axis not in REGION_GRAPH_PRIMARY_AXES:
-        raise ValueError(f"unsupported Region Graph primary_axis: {primary_axis!r}")
-
-    raw_regions = value.get("regions")
-    if not isinstance(raw_regions, list) or not raw_regions:
-        raise ValueError("Region Graph regions must be a non-empty array")
-    regions: list[RegionSpec] = []
-    region_ids: set[str] = set()
-    for index, raw in enumerate(raw_regions, 1):
-        if not isinstance(raw, Mapping):
-            raise ValueError(f"Region Graph regions[{index}] must be an object")
-        region_id = str(raw.get("id") or "").strip()
-        if not region_id.startswith("RG") or not region_id[2:].isdigit():
-            raise ValueError(f"Region Graph regions[{index}].id must match RG<number>")
-        if region_id in region_ids:
-            raise ValueError(f"duplicate Region Graph region id: {region_id}")
-        region_ids.add(region_id)
-        role = str(raw.get("role") or "").strip()
-        if not role:
-            raise ValueError(f"Region Graph regions[{index}].role is required")
-        anchor = str(raw.get("anchor") or "").strip()
-        if anchor not in REGION_GRAPH_ANCHORS:
-            raise ValueError(f"unsupported Region Graph anchor: {anchor!r}")
-        span = str(raw.get("span") or "").strip()
-        if span not in REGION_GRAPH_SPANS:
-            raise ValueError(f"unsupported Region Graph span: {span!r}")
-        priority = str(raw.get("priority") or "").strip()
-        if priority not in REGION_GRAPH_PRIORITIES:
-            raise ValueError(f"unsupported Region Graph priority: {priority!r}")
-        try:
-            weight = float(raw.get("weight"))
-        except (TypeError, ValueError) as exc:
-            raise ValueError(f"Region Graph regions[{index}].weight must be numeric") from exc
-        if not 0 < weight <= 1:
-            raise ValueError(f"Region Graph regions[{index}].weight must be >0 and <=1")
-        regions.append(
-            RegionSpec(
-                id=region_id,
-                semantic_refs=_evidence_refs(raw.get("semantic_refs"), field=f"regions[{index}].semantic_refs"),
-                role=role,
-                anchor=anchor,
-                weight=weight,
-                span=span,
-                priority=priority,
-                text_ids=_strings(raw.get("text_ids"), field=f"regions[{index}].text_ids", required=False),
-            )
-        )
-
-    raw_relations = value.get("relations")
-    if not isinstance(raw_relations, list):
-        raise ValueError("Region Graph relations must be an array")
-    relations: list[RegionRelationSpec] = []
-    seen_relations: set[tuple[str, str, str]] = set()
-    for index, raw in enumerate(raw_relations, 1):
-        if not isinstance(raw, Mapping):
-            raise ValueError(f"Region Graph relations[{index}] must be an object")
-        source = str(raw.get("from") or "").strip()
-        target = str(raw.get("to") or "").strip()
-        relation_type = str(raw.get("type") or "").strip()
-        if source not in region_ids or target not in region_ids:
-            raise ValueError(f"Region Graph relations[{index}] references an unknown region")
-        if source == target:
-            raise ValueError(f"Region Graph relations[{index}] must connect distinct regions")
-        if relation_type not in REGION_GRAPH_RELATION_TYPES:
-            raise ValueError(f"unsupported Region Graph relation type: {relation_type!r}")
-        signature = (source, target, relation_type)
-        if signature in seen_relations:
-            raise ValueError(f"duplicate Region Graph relation: {signature!r}")
-        seen_relations.add(signature)
-        relations.append(RegionRelationSpec(source=source, target=target, type=relation_type))
-
-    return RegionGraphSpec(
-        canvas_ratio=canvas_ratio,
-        primary_axis=primary_axis,
-        regions=tuple(regions),
-        relations=tuple(relations),
-    )
-
-
-__all__ = [
-    "REGION_GRAPH_ANCHORS",
-    "REGION_GRAPH_CANVAS_RATIO",
-    "REGION_GRAPH_PRIMARY_AXES",
-    "REGION_GRAPH_PRIORITIES",
-    "REGION_GRAPH_RELATION_TYPES",
-    "REGION_GRAPH_SPANS",
-    "RegionGraphSpec",
-    "RegionRelationSpec",
-    "RegionSpec",
-    "validate_region_graph",
-]
-''', encoding='utf-8')
-
-          region_schema = {
-              "$schema": "https://json-schema.org/draft/2020-12/schema",
-              "$id": "https://example.local/ppt-visual-structure-designer/region-graph.schema.json",
-              "title": "CyberPPT Stage2 Region Graph",
-              "type": "object",
-              "additionalProperties": False,
-              "required": ["canvas_ratio", "primary_axis", "regions", "relations"],
-              "properties": {
-                  "canvas_ratio": {"const": "2:1"},
-                  "primary_axis": {"enum": ["horizontal", "vertical", "radial", "bidirectional", "layered", "free_spatial"]},
-                  "regions": {
-                      "type": "array", "minItems": 1,
-                      "items": {
-                          "type": "object", "additionalProperties": False,
-                          "required": ["id", "semantic_refs", "role", "anchor", "weight", "span", "priority"],
-                          "properties": {
-                              "id": {"type": "string", "pattern": "^RG[0-9]+$"},
-                              "semantic_refs": {"type": "array", "minItems": 1, "uniqueItems": True, "items": {"type": "string", "pattern": "^E[0-9]+$"}},
-                              "role": {"type": "string", "minLength": 1},
-                              "anchor": {"enum": ["left", "center", "right", "top", "bottom", "top_left", "top_right", "bottom_left", "bottom_right", "free"]},
-                              "weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
-                              "span": {"enum": ["compact", "half", "full", "band", "free"]},
-                              "priority": {"enum": ["primary", "secondary", "tertiary"]},
-                              "text_ids": {"type": "array", "uniqueItems": True, "items": {"type": "string", "minLength": 1}},
-                          },
-                      },
-                  },
-                  "relations": {
-                      "type": "array",
-                      "items": {
-                          "type": "object", "additionalProperties": False,
-                          "required": ["from", "to", "type"],
-                          "properties": {
-                              "from": {"type": "string", "pattern": "^RG[0-9]+$"},
-                              "to": {"type": "string", "pattern": "^RG[0-9]+$"},
-                              "type": {"enum": ["peer", "flow", "converge", "dependency", "feedback", "boundary", "interface", "allocation", "support", "containment"]},
-                          },
-                      },
-                  },
-              },
+          region_schema_path = Path("vendor/skills/ppt-visual-structure-designer/assets/region-graph.schema.json")
+          page_schema_path = Path("vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json")
+          region_schema = json.loads(region_schema_path.read_text(encoding="utf-8"))
+          page_schema = json.loads(page_schema_path.read_text(encoding="utf-8"))
+          embedded = {
+              key: value
+              for key, value in region_schema.items()
+              if key not in {"$schema", "$id", "title"}
           }
-          asset = Path('vendor/skills/ppt-visual-structure-designer/assets/region-graph.schema.json')
-          asset.write_text(json.dumps(region_schema, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          embedded["description"] = (
+              "Normalized semantic macro-space between semantic_graph and pixel geometry. "
+              "Optional during P2.1 compatibility; compiler authority begins in P2.2."
+          )
+          page_schema["properties"]["region_graph"] = embedded
+          page_schema_path.write_text(
+              json.dumps(page_schema, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
 
-          page_schema_path = Path('vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json')
-          page_schema = json.loads(page_schema_path.read_text(encoding='utf-8'))
-          embedded = {key: value for key, value in region_schema.items() if key not in {"$schema", "$id", "title"}}
-          page_schema['properties']['region_graph'] = embedded | {
-              "description": "Normalized semantic macro-space between semantic_graph and pixel geometry. Optional during P2.1 compatibility; compiler authority begins in P2.2."
-          }
-          page_schema_path.write_text(json.dumps(page_schema, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-
-          skill = Path('vendor/skills/ppt-visual-structure-designer/SKILL.md')
-          text = skill.read_text(encoding='utf-8')
-          anchor = '- `assets/page-visual-spec.schema.json`：单页JSON合同。\n'
-          if anchor not in text:
-              raise SystemExit('SKILL resource anchor not found')
-          text = text.replace(anchor, anchor + '- `assets/region-graph.schema.json`：Region Graph语义空间合同；记录区域角色、锚点、相对权重与区域关系，不记录像素模板。\n', 1)
-          skill.write_text(text, encoding='utf-8')
-
-          test = Path('tests/test_region_graph_contract.py')
-          test.write_text('''from pathlib import Path\nimport json\n\nimport jsonschema\nimport pytest\n\nfrom cyberppt.region_graph import validate_region_graph\n\n\nROOT = Path(__file__).resolve().parents[1]\nREGION_SCHEMA = ROOT / "vendor" / "skills" / "ppt-visual-structure-designer" / "assets" / "region-graph.schema.json"\nPAGE_SCHEMA = ROOT / "vendor" / "skills" / "ppt-visual-structure-designer" / "assets" / "page-visual-spec.schema.json"\n\n\ndef _graph():\n    return {\n        "canvas_ratio": "2:1",\n        "primary_axis": "horizontal",\n        "regions": [\n            {\n                "id": "RG01",\n                "semantic_refs": ["E1"],\n                "role": "source",\n                "anchor": "left",\n                "weight": 0.4,\n                "span": "half",\n                "priority": "primary",\n                "text_ids": ["P01-T01"],\n            },\n            {\n                "id": "RG02",\n                "semantic_refs": ["E2"],\n                "role": "result",\n                "anchor": "right",\n                "weight": 0.6,\n                "span": "half",\n                "priority": "primary",\n            },\n        ],\n        "relations": [{"from": "RG01", "to": "RG02", "type": "flow"}],\n    }\n\n\ndef test_region_graph_contract_normalizes_valid_graph():\n    spec = validate_region_graph(_graph())\n    assert spec.canvas_ratio == "2:1"\n    assert spec.primary_axis == "horizontal"\n    assert [item.id for item in spec.regions] == ["RG01", "RG02"]\n    assert spec.relations[0].type == "flow"\n    assert spec.to_dict() == _graph()\n\n\ndef test_region_graph_rejects_duplicate_region_ids():\n    graph = _graph()\n    graph["regions"][1]["id"] = "RG01"\n    with pytest.raises(ValueError, match="duplicate Region Graph region id"):\n        validate_region_graph(graph)\n\n\ndef test_region_graph_rejects_unknown_relation_endpoint():\n    graph = _graph()\n    graph["relations"][0]["to"] = "RG99"\n    with pytest.raises(ValueError, match="unknown region"):\n        validate_region_graph(graph)\n\n\ndef test_region_graph_rejects_invalid_weight_and_semantic_ref():\n    graph = _graph()\n    graph["regions"][0]["weight"] = 1.2\n    with pytest.raises(ValueError, match="weight"):\n        validate_region_graph(graph)\n    graph = _graph()\n    graph["regions"][0]["semantic_refs"] = ["node-a"]\n    with pytest.raises(ValueError, match="E<number>"):\n        validate_region_graph(graph)\n\n\ndef test_standalone_region_graph_schema_accepts_valid_graph():\n    schema = json.loads(REGION_SCHEMA.read_text(encoding="utf-8"))\n    jsonschema.Draft202012Validator(schema).validate(_graph())\n\n\ndef test_page_schema_exposes_optional_region_graph_contract():\n    schema = json.loads(PAGE_SCHEMA.read_text(encoding="utf-8"))\n    assert "region_graph" in schema["properties"]\n    assert "region_graph" not in schema["required"]\n    assert schema["properties"]["region_graph"]["properties"]["canvas_ratio"]["const"] == "2:1"\n''', encoding='utf-8')
+          skill = Path("vendor/skills/ppt-visual-structure-designer/SKILL.md")
+          text = skill.read_text(encoding="utf-8")
+          anchor = "- `assets/page-visual-spec.schema.json`：单页JSON合同。\n"
+          addition = "- `assets/region-graph.schema.json`：Region Graph语义空间合同；记录区域角色、锚点、相对权重与区域关系，不记录像素模板。\n"
+          if addition not in text:
+              if anchor not in text:
+                  raise SystemExit("SKILL resource anchor not found")
+              text = text.replace(anchor, anchor + addition, 1)
+          skill.write_text(text, encoding="utf-8")
           PY
       - name: Install package and test dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[test]"
-      - name: Run targeted regression
+      - name: Run existing Stage2 regressions
         run: |
-          python -m pytest -q tests/test_region_graph_contract.py tests/test_visual_structure_stage.py tests/test_visual_structure_contract.py tests/test_page_artifact_spec.py
-      - name: Run full test suite
-        run: python -m pytest -q
+          python -m pytest -q tests/test_visual_structure_stage.py tests/test_visual_structure_contract.py tests/test_page_artifact_spec.py
+          python -m pytest -q
       - name: Commit, clean artifacts, and safely rebase
         run: |
           git config user.name "CyberPPT Stage2 Refactor"
           git config user.email "actions@users.noreply.github.com"
-          git add cyberppt/region_graph.py vendor/skills/ppt-visual-structure-designer/assets/region-graph.schema.json vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json vendor/skills/ppt-visual-structure-designer/SKILL.md tests/test_region_graph_contract.py
-          git commit -m "feat(stage2): define Region Graph contract"
+          git add vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json vendor/skills/ppt-visual-structure-designer/SKILL.md
+          git commit -m "feat(stage2): expose Region Graph in page schema"
           git reset --hard HEAD
           git clean -fd
           git fetch origin main
