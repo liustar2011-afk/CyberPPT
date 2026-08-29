@@ -1,0 +1,143 @@
+name: Stage2 refactor P4.1 macro prompt
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/stage2-refactor-p4-1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Render macro Region Graph into final prompt
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new, label):
+              path = Path(path)
+              text = path.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"{label} target not found")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          # 1) Carry focus_policy into PageArtifactSpec composition.
+          artifact = Path("cyberppt/page_artifact_spec.py")
+          replace_once(
+              artifact,
+              '''class CompositionSpec:\n    spatial_organization: str\n    reading_path: tuple[str, ...]\n    primary_focus: str\n    secondary_focus: tuple[str, ...]\n    relationship_encoding: str\n    text_integration_method: str\n    spatial_grammar: tuple[str, ...]\n    connectors: tuple[ConnectorSpec, ...]\n    topology: str\n''',
+              '''class CompositionSpec:\n    spatial_organization: str\n    reading_path: tuple[str, ...]\n    primary_focus: str\n    secondary_focus: tuple[str, ...]\n    relationship_encoding: str\n    text_integration_method: str\n    spatial_grammar: tuple[str, ...]\n    connectors: tuple[ConnectorSpec, ...]\n    topology: str\n    focus_policy: str = "single_anchor"\n\n    def __post_init__(self) -> None:\n        if self.focus_policy not in {"single_anchor", "paired_focus", "peer_field", "distributed_focus", "sequence_focus"}:\n            raise ValueError(f"unsupported focus policy: {self.focus_policy!r}")\n''',
+              "CompositionSpec focus policy",
+          )
+          replace_once(
+              artifact,
+              '''            topology=_topology_phrase(semantic_graph.get("topology"), "semantic graph topology"),\n        ),\n''',
+              '''            topology=_topology_phrase(semantic_graph.get("topology"), "semantic graph topology"),\n            focus_policy=str(visual_decision.get("focus_policy") or "single_anchor"),\n        ),\n''',
+              "CompositionSpec focus policy projection",
+          )
+
+          # 2) Carry focus_policy into prompt IR.
+          ir = Path("scripts/imagegen_pipeline/final_prompt_ir.py")
+          replace_once(
+              ir,
+              '''class CompositionIR:\n    spatial_organization: str\n    primary_focus: str\n    visual_responsibility: tuple[str, ...]\n\n    def __post_init__(self) -> None:\n''',
+              '''class CompositionIR:\n    spatial_organization: str\n    primary_focus: str\n    visual_responsibility: tuple[str, ...]\n    focus_policy: str = "single_anchor"\n\n    def __post_init__(self) -> None:\n''',
+              "CompositionIR focus policy field",
+          )
+          replace_once(
+              ir,
+              '''        if not self.primary_focus.strip():\n            raise PromptContractError("composition requires a primary focus")\n''',
+              '''        if not self.primary_focus.strip():\n            raise PromptContractError("composition requires a primary focus")\n        if self.focus_policy not in {"single_anchor", "paired_focus", "peer_field", "distributed_focus", "sequence_focus"}:\n            raise PromptContractError(f"unsupported prompt focus policy: {self.focus_policy!r}")\n''',
+              "CompositionIR focus policy validation",
+          )
+
+          prompt = Path("scripts/imagegen_pipeline/artifact_prompt.py")
+          text = prompt.read_text(encoding="utf-8")
+          old_semantic = '''        if spec.prompt_mode == "semantic_brief":\n            composition = CompositionIR(\n                spatial_organization=(\n                    "Choose the spatial composition from the semantic context, exact visible "\n                    "text and style contract; do not inherit a fixed card, lane, matrix, scene "\n                    "or connector recipe from upstream planning."\n                ),\n                primary_focus=spec.composition.primary_focus or page_judgment,\n                visual_responsibility=(\n                    "Use the declared visual thesis, named business objects, actors, actions, "\n                    "conditions and outcomes as semantic anchors. ImageGen owns the carrier, "\n                    "spatial implementation and supporting detail.",\n                    "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; "\n                    "do not invent a stronger relationship than the semantic context supports.",\n                ),\n            )\n'''
+          new_semantic = '''        if spec.prompt_mode == "semantic_brief":\n            has_region_graph = spec.region_graph is not None\n            composition = CompositionIR(\n                spatial_organization=(\n                    "Follow the authoritative macro region structure: preserve region roles, anchors, relative weights and inter-region relationships; do not replace it with a different macro layout. Region-internal arrangement remains free."\n                    if has_region_graph\n                    else\n                    "Choose the spatial composition from the semantic context, exact visible text and style contract; do not inherit a fixed card, lane, matrix, scene or connector recipe from upstream planning."\n                ),\n                primary_focus=spec.composition.primary_focus or page_judgment,\n                visual_responsibility=(\n                    "Use the declared visual thesis, named business objects, actors, actions, conditions and outcomes as semantic anchors. Keep macro region ownership fixed when provided; ImageGen owns only region-internal implementation and supporting detail.",\n                    "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; do not invent a stronger relationship than the semantic context supports.",\n                ),\n                focus_policy=spec.composition.focus_policy,\n            )\n'''
+          if old_semantic not in text:
+              raise SystemExit("semantic brief composition target not found")
+          text = text.replace(old_semantic, new_semantic, 1)
+          old_directed = '''            composition = CompositionIR(\n                spatial_organization=spatial_organization,\n                primary_focus=spec.composition.primary_focus,\n                visual_responsibility=visual_responsibility,\n            )\n'''
+          new_directed = '''            composition = CompositionIR(\n                spatial_organization=spatial_organization,\n                primary_focus=spec.composition.primary_focus,\n                visual_responsibility=visual_responsibility,\n                focus_policy=spec.composition.focus_policy,\n            )\n'''
+          if old_directed not in text:
+              raise SystemExit("directed composition target not found")
+          prompt.write_text(text.replace(old_directed, new_directed, 1), encoding="utf-8")
+
+          # 3) Render public macro-region labels without backend identifiers or repeated copy.
+          renderer = Path("scripts/imagegen_pipeline/final_prompt_renderer.py")
+          text = renderer.read_text(encoding="utf-8")
+          insert_before = '''def render_final_prompt(\n'''
+          helper = '''_FOCUS_POLICY_LABELS = {\n    "single_anchor": "single anchor",\n    "paired_focus": "paired focus",\n    "peer_field": "peer field",\n    "distributed_focus": "distributed focus",\n    "sequence_focus": "sequence focus",\n}\n\n\ndef _public_text_ordinals(ir: FinalPromptIR) -> dict[str, int]:\n    order: dict[str, int] = {}\n    ordinal = 1\n    for binding in ir.text_bindings:\n        for text_id in binding.text_ids:\n            order[text_id] = ordinal\n            ordinal += 1\n    return order\n\n\ndef _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:\n    graph = ir.region_graph\n    policy = ir.visual_medium_policy\n    lines: list[str] = [\n        f"Focus policy: {_FOCUS_POLICY_LABELS[ir.composition.focus_policy]}.",\n    ]\n    if graph is not None:\n        lines.append(f"Macro reading axis: {graph.primary_axis.replace('_', ' ')}.")\n        text_ordinals = _public_text_ordinals(ir)\n        public_region = {region.id: index for index, region in enumerate(graph.regions, start=1)}\n        for index, region in enumerate(graph.regions, start=1):\n            ownership = [text_ordinals[text_id] for text_id in region.text_ids if text_id in text_ordinals]\n            ownership_text = ", ".join(str(item) for item in ownership) or "none"\n            lines.append(\n                "Region " + str(index) + ": "\n                + f"role {region.role.replace('_', ' ')}; anchor {region.anchor.replace('_', ' ')}; "\n                + f"relative share about {round(region.weight * 100)}%; span {region.span.replace('_', ' ')}; "\n                + f"priority {region.priority.replace('_', ' ')}; owns exact visible-text item(s) {ownership_text}."\n            )\n        for relation in graph.relations:\n            source = public_region[relation.source]\n            target = public_region[relation.target]\n            lines.append(\n                f"Region relationship: Region {source} to Region {target} — {relation.type.replace('_', ' ')}."\n            )\n        lines.append(\n            "The Region structure is the macro composition authority; do not merge, reorder, promote or demote regions in a way that changes their semantic roles."\n        )\n    if policy is not None:\n        allowed = "; ".join(item.replace("_", " ") for item in policy.allowed)\n        lines.extend((\n            f"Preferred visual medium: {policy.preferred.replace('_', ' ')}.",\n            f"Allowed visual media: {allowed}.",\n            f"Scene policy: {policy.scene_policy.replace('_', ' ')}.",\n            f"Medium rationale: {policy.rationale}",\n        ))\n    return tuple(lines)\n\n\n'''
+          if "def _macro_structure_lines(" not in text:
+              if insert_before not in text:
+                  raise SystemExit("renderer helper anchor not found")
+              text = text.replace(insert_before, helper + insert_before, 1)
+
+          old_boundary = '''                    "Reading boundary: preserve only source-supported order and direction; "\n                    "choose the visual reading implementation freely."\n                    if ir.prompt_mode == "semantic_brief"\n'''
+          new_boundary = '''                    (\n                        "Reading boundary: preserve source-supported order and direction and follow the macro reading axis defined in Section 5; choose only region-internal reading implementation freely."\n                        if ir.region_graph is not None\n                        else\n                        "Reading boundary: preserve only source-supported order and direction; choose the visual reading implementation freely."\n                    )\n                    if ir.prompt_mode == "semantic_brief"\n'''
+          if old_boundary not in text:
+              raise SystemExit("renderer reading boundary target not found")
+          text = text.replace(old_boundary, new_boundary, 1)
+
+          old_comp = '''                f"Spatial organization: {ir.composition.spatial_organization}",\n                f"Primary focus: {ir.composition.primary_focus}",\n                *ir.composition.visual_responsibility,\n'''
+          new_comp = '''                f"Spatial organization: {ir.composition.spatial_organization}",\n                f"Primary focus: {ir.composition.primary_focus}",\n                *_macro_structure_lines(ir),\n                *ir.composition.visual_responsibility,\n'''
+          if old_comp not in text:
+              raise SystemExit("renderer composition insertion target not found")
+          renderer.write_text(text.replace(old_comp, new_comp, 1), encoding="utf-8")
+
+          # 4) Debug receipt carries the same structured authority, still hidden from ImageGen.
+          renderer = Path("scripts/imagegen_pipeline/final_prompt_renderer.py")
+          text = renderer.read_text(encoding="utf-8")
+          old_receipt = '''        "composition": {\n            "spatial_organization": ir.composition.spatial_organization,\n            "primary_focus": ir.composition.primary_focus,\n            "visual_responsibility": list(ir.composition.visual_responsibility),\n        },\n'''
+          new_receipt = '''        "composition": {\n            "spatial_organization": ir.composition.spatial_organization,\n            "primary_focus": ir.composition.primary_focus,\n            "focus_policy": ir.composition.focus_policy,\n            "visual_responsibility": list(ir.composition.visual_responsibility),\n        },\n        "region_graph": (\n            {\n                "primary_axis": ir.region_graph.primary_axis,\n                "regions": [\n                    {\n                        "id": region.id,\n                        "semantic_refs": list(region.semantic_refs),\n                        "role": region.role,\n                        "anchor": region.anchor,\n                        "weight": region.weight,\n                        "span": region.span,\n                        "priority": region.priority,\n                        "text_ids": list(region.text_ids),\n                    }\n                    for region in ir.region_graph.regions\n                ],\n                "relations": [\n                    {"from": relation.source, "to": relation.target, "type": relation.type}\n                    for relation in ir.region_graph.relations\n                ],\n            }\n            if ir.region_graph is not None\n            else None\n        ),\n        "visual_medium_policy": (\n            {\n                "preferred": ir.visual_medium_policy.preferred,\n                "allowed": list(ir.visual_medium_policy.allowed),\n                "scene_policy": ir.visual_medium_policy.scene_policy,\n                "rationale": ir.visual_medium_policy.rationale,\n            }\n            if ir.visual_medium_policy is not None\n            else None\n        ),\n'''
+          if old_receipt not in text:
+              raise SystemExit("debug receipt composition target not found")
+          renderer.write_text(text.replace(old_receipt, new_receipt, 1), encoding="utf-8")
+
+          # 5) Treat Region IDs as backend identifiers too.
+          contract = Path("scripts/imagegen_pipeline/final_prompt_contract.py")
+          replace_once(
+              contract,
+              '''r"(?<![A-Za-z0-9])(?:E\\d+|P\\d{2,3}-T(?:ITLE|\\d+)|R_[A-Z0-9_]+|(?:NF|ST)-?\\d+|rel-\\d+)(?![A-Za-z0-9])",''',
+              '''r"(?<![A-Za-z0-9])(?:E\\d+|RG\\d+|P\\d{2,3}-T(?:ITLE|\\d+)|R_[A-Z0-9_]+|(?:NF|ST)-?\\d+|rel-\\d+)(?![A-Za-z0-9])",''',
+              "Region backend identifier gate",
+          )
+
+          # 6) Regression tests created in the same atomic change.
+          test = Path("tests/test_prompt_macro_structure.py")
+          test.write_text('''from dataclasses import replace\n\nfrom cyberppt.region_graph import validate_region_graph\nfrom cyberppt.visual_medium_policy import validate_visual_medium_policy\nfrom scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir\nfrom scripts.imagegen_pipeline.final_prompt_renderer import render_final_prompt\nfrom tests.test_final_prompt_ir import _artifact_spec\n\n\ndef _current_spec():\n    base = _artifact_spec()\n    graph = validate_region_graph({\n        "canvas_ratio": "2:1",\n        "primary_axis": "horizontal",\n        "regions": [\n            {"id": "RG01", "semantic_refs": ["E1"], "role": "stage", "anchor": "left", "weight": 0.5, "span": "compact", "priority": "primary", "text_ids": ["P01-T01"]},\n            {"id": "RG02", "semantic_refs": ["E2"], "role": "result", "anchor": "right", "weight": 0.5, "span": "compact", "priority": "primary", "text_ids": ["P01-T02"]},\n        ],\n        "relations": [{"from": "RG01", "to": "RG02", "type": "flow"}],\n    })\n    policy = validate_visual_medium_policy({\n        "preferred": "mixed",\n        "allowed": ["business_scene", "object_illustration", "relationship_diagram", "mixed"],\n        "scene_policy": "auto",\n        "rationale": "Use page mission and drawable business objects to choose the concrete medium.",\n    })\n    composition = replace(base.composition, focus_policy="sequence_focus")\n    return replace(base, region_graph=graph, visual_medium_policy=policy, composition=composition)\n\n\ndef test_final_prompt_renders_macro_region_authority_without_backend_ids():\n    ir = build_final_prompt_ir(_current_spec())\n    prompt = render_final_prompt(ir)\n    assert "Macro reading axis: horizontal." in prompt\n    assert "Focus policy: sequence focus." in prompt\n    assert "Region 1: role stage; anchor left; relative share about 50%" in prompt\n    assert "Region relationship: Region 1 to Region 2 — flow." in prompt\n    assert "Preferred visual medium: mixed." in prompt\n    assert "Allowed visual media: business scene; object illustration; relationship diagram; mixed." in prompt\n    assert "owns exact visible-text item(s) 1" in prompt\n    assert "RG01" not in prompt\n    assert "RG02" not in prompt\n    assert "E1" not in prompt\n    assert "P01-T01" not in prompt\n\n\ndef test_semantic_brief_no_longer_delegates_macro_spatial_organization():\n    spec = replace(_current_spec(), prompt_mode="semantic_brief")\n    ir = build_final_prompt_ir(spec)\n    prompt = render_final_prompt(ir)\n    assert "follow the macro reading axis defined in Section 5" in prompt\n    assert "choose only region-internal reading implementation freely" in prompt\n    assert "Follow the authoritative macro region structure" in prompt\n    assert "choose the visual reading implementation freely" not in prompt\n\n\ndef test_exact_visible_text_is_not_redeclared_inside_region_lines():\n    ir = build_final_prompt_ir(_current_spec())\n    prompt = render_final_prompt(ir)\n    for text in ir.visible_text:\n        assert prompt.count(f'- Exact visible text: "{text}"') == 1\n    region_lines = [line for line in prompt.splitlines() if line.startswith("Region ")]\n    assert all(text not in "\\n".join(region_lines) for text in ir.visible_text)\n\n\ndef test_legacy_ir_without_region_graph_keeps_compatible_prompt():\n    base = _artifact_spec()\n    ir = build_final_prompt_ir(base)\n    prompt = render_final_prompt(ir)\n    assert "Macro reading axis:" not in prompt\n    assert "Region 1:" not in prompt\n''', encoding="utf-8")
+          PY
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Run targeted regressions
+        run: |
+          python -m pytest -q tests/test_prompt_macro_structure.py tests/test_final_prompt_ir.py tests/test_final_prompt_renderer.py tests/test_page_artifact_spec.py tests/test_visual_medium_policy.py tests/test_region_graph_contract.py
+      - name: Run full test suite
+        run: python -m pytest -q
+      - name: Commit, self-clean, and safely rebase
+        run: |
+          git config user.name "CyberPPT Stage2 Refactor"
+          git config user.email "actions@users.noreply.github.com"
+          git add cyberppt/page_artifact_spec.py scripts/imagegen_pipeline/final_prompt_ir.py scripts/imagegen_pipeline/artifact_prompt.py scripts/imagegen_pipeline/final_prompt_renderer.py scripts/imagegen_pipeline/final_prompt_contract.py tests/test_prompt_macro_structure.py
+          git rm .github/workflows/stage2-refactor-p4-1.yml
+          git commit -m "feat(stage2): render macro visual authority in final prompt"
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
