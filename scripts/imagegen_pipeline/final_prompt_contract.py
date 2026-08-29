@@ -67,7 +67,7 @@ def _validate_text_bindings(prompt: str, ir: FinalPromptIR) -> None:
         raise PromptContractError("final prompt semantic-group labels must be unique")
     for binding in ir.text_bindings:
         for text in binding.exact_text:
-            rendered = f'  - "{text}"'
+            rendered = f'- Exact visible text: "{text}"'
             if prompt.count(rendered) != 1:
                 raise PromptContractError(
                     "final prompt must render every bound exact-text item once inside its semantic group"

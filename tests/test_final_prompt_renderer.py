@@ -10,6 +10,7 @@ from scripts.imagegen_pipeline.final_prompt_ir import (
     FinalPromptIR,
     RuntimeLockIR,
     SemanticGroupIR,
+    TextBindingIR,
 )
 from scripts.imagegen_pipeline.final_prompt_ir import PromptContractError
 from scripts.imagegen_pipeline.final_prompt_renderer import (
@@ -65,6 +66,35 @@ class RenderFinalPromptTests(unittest.TestCase):
         prompt = render_final_prompt(ir)
         for text in ir.visible_text:
             self.assertEqual(1, prompt.count(f'- Exact visible text: "{text}"'))
+
+    def test_bound_visible_text_is_rendered_once_globally(self) -> None:
+        ir = _sample_ir(
+            semantic_groups=(
+                SemanticGroupIR(id="g-process", role="process", summary="Input", emphasis="secondary"),
+                SemanticGroupIR(id="g-result", role="result", summary="Outcome", emphasis="primary"),
+            ),
+            text_bindings=(
+                TextBindingIR(
+                    group_id="g-process",
+                    role="process",
+                    hierarchy_level=1,
+                    exact_text=("①需求侧变化",),
+                    text_ids=("P01-T01",),
+                ),
+                TextBindingIR(
+                    group_id="g-result",
+                    role="result",
+                    hierarchy_level=1,
+                    exact_text=("Traceable result",),
+                    text_ids=("P01-T02",),
+                ),
+            ),
+        )
+
+        prompt = render_final_prompt(ir)
+
+        for text in ir.visible_text:
+            self.assertEqual(1, prompt.count(text))
 
     def test_style09_terminal_lock_ends_up_at_absolute_end(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"

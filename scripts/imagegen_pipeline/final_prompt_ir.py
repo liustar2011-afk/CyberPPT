@@ -10,10 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 MAX_SEMANTIC_GROUPS = 10
-# Text binding is an additive optional field; keep the existing version token so
-# persisted approvals/debug receipts do not become stale solely because of the
-# internal extension.
-FINAL_PROMPT_IR_VERSION = "v2"
+# The rendered contract now binds exact text to semantic groups and renders each
+# visible string once, so persisted debug receipts must record the new version.
+FINAL_PROMPT_IR_VERSION = "v3"
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 

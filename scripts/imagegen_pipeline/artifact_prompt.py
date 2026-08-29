@@ -281,14 +281,18 @@ def _semantic_groups(
             ]
             order.append(root_id)
             kind_by_key[root_id] = role or "content"
+    primary_key = next(
+        (key for key in order if kind_by_key[key] == "result"),
+        order[0] if order else "",
+    )
     return tuple(
         SemanticGroupIR(
             id=key,
             role=kind_by_key[key],
             summary="; ".join(buckets[key]),
-            emphasis="primary" if index == 0 else "secondary",
+            emphasis="primary" if key == primary_key else "secondary",
         )
-        for index, key in enumerate(order)
+        for key in order
     )
 
 
@@ -456,11 +460,11 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                     "text and style contract; do not inherit a fixed card, lane, matrix, scene "
                     "or connector recipe from upstream planning."
                 ),
-                primary_focus=page_judgment,
+                primary_focus=spec.composition.primary_focus or page_judgment,
                 visual_responsibility=(
-                    "Use the named business objects, actors, actions, conditions and outcomes "
-                    "as semantic anchors. ImageGen owns the scene-or-structure choice, carrier, "
-                    "spatial organization, visual reading implementation and supporting detail.",
+                    "Use the declared visual thesis, named business objects, actors, actions, "
+                    "conditions and outcomes as semantic anchors. ImageGen owns the carrier, "
+                    "spatial implementation and supporting detail.",
                     "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; "
                     "do not invent a stronger relationship than the semantic context supports.",
                 ),
@@ -486,8 +490,8 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             *(() if live_style_surface else _bracketed_header_constraints(spec.typography.visible_text)),
         )))
         semantic_relationship = (
-            spec.semantic_context.argument_chain
-            or _prompt_safe_visual_text(_avoid_judgment_repeat(spec.visual_thesis.strip(), page_judgment))
+            _prompt_safe_visual_text(_avoid_judgment_repeat(spec.visual_thesis.strip(), page_judgment))
+            or spec.semantic_context.argument_chain
             or "Preserve the declared business relationships without inventing sequence, causality or hierarchy."
         )
         return FinalPromptIR(

@@ -32,7 +32,7 @@ ALLOWED_TOPOLOGY = {
     "allocation_flow",
     "conclusion_anchor",
 }
-_UNIVERSAL_FORBIDDEN_STRUCTURES = ["equal_peer_cards", "invented_center_hub"]
+_UNIVERSAL_FORBIDDEN_STRUCTURES = ["invented_center_hub"]
 _FORBIDDEN_STRUCTURES_BY_TOPOLOGY = {
     "parallel_set": ["forced_sequential_edge"],
     "causal_convergence": ["missing_result_node"],
@@ -45,6 +45,16 @@ _FORBIDDEN_STRUCTURES_BY_TOPOLOGY = {
     "conclusion_anchor": ["multiple_equal_conclusions"],
 }
 _DEFAULT_FORBIDDEN_STRUCTURES = list(_UNIVERSAL_FORBIDDEN_STRUCTURES)
+
+_CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
+    "peer_set": {"parallel_set"},
+    "feedback_loop": {"lifecycle_loop"},
+    "support_convergence": {"causal_convergence", "conclusion_anchor"},
+    "sequence": {"directed_flow"},
+    "dependency_chain": {"directed_flow"},
+    "causal_chain": {"directed_flow", "causal_convergence"},
+    "layered_structure": {"layered_architecture"},
+}
 
 
 def _fail(message: str) -> None:
@@ -224,6 +234,17 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     topology = str(selected.get("topology") or "")
     if topology not in ALLOWED_TOPOLOGY:
         _fail(f"{page_id}: selected candidate must declare a topology from {sorted(ALLOWED_TOPOLOGY)}")
+    stage01_features = source.get("stage01_relationship_features")
+    stage01_features = stage01_features if isinstance(stage01_features, dict) else {}
+    semantic_topology = stage01_features.get("semantic_topology")
+    semantic_topology = semantic_topology if isinstance(semantic_topology, dict) else {}
+    verified_topology = str(semantic_topology.get("primary_topology") or "").strip()
+    compatible_topologies = _CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY.get(verified_topology)
+    if compatible_topologies and topology not in compatible_topologies:
+        _fail(
+            f"{page_id}: selected candidate topology {topology!r} is incompatible with "
+            f"verified semantic topology {verified_topology!r}"
+        )
     locked = source.get("locked_text_items")
     if not isinstance(locked, list) or not locked:
         _fail(f"{page_id}: visual input has no locked body text")
@@ -351,6 +372,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     )
     forbidden_structures = list(dict.fromkeys((
         *_UNIVERSAL_FORBIDDEN_STRUCTURES,
+        *(("equal_peer_cards",) if topology != "parallel_set" else ()),
         *_FORBIDDEN_STRUCTURES_BY_TOPOLOGY.get(topology, []),
         *(("no_arrows",) if no_arrows else ()),
     )))
@@ -418,7 +440,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
                 "Do not change facts, numbers, dates or units.",
                 "Do not change actors, responsibilities or status.",
                 "Do not add presentation copy that is not part of the approved locked text.",
-                "For a \"label: sentence\" locked text item, render it once as that single label-plus-sentence unit; do not additionally repeat the label alone as a separate heading, card title, or tag.",
+                "For a \"label: sentence\" locked text item, preserve every character and render it once in one semantic region. The label before the colon may use stronger typography or a line break, but must not be duplicated elsewhere as a heading, card title, or tag.",
                 "Do not invent a heading, label, or tag for a locked text item that has no label in the required text (for example a bare boundary sentence); render it as plain text with no invented label.",
             ],
         },

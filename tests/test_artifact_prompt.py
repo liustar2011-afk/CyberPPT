@@ -269,7 +269,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertEqual(expected, compiled.prompt)
         self.assertNotIn("WRONG LEGACY", compiled.prompt)
         self.assertEqual(_spec().to_dict(), compiled.build_metadata()["artifact_spec"])
-        self.assertEqual("v2", compiled.prompt_ir_version)
+        self.assertEqual("v3", compiled.prompt_ir_version)
         self.assertIsNotNone(compiled.debug_receipt)
         self.assertEqual("P07", compiled.debug_receipt["page"])
         # Default production uses a semantic brief. Stage 02 composition
@@ -278,7 +278,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertNotIn("multiple evidence lines converging on one judgment", compiled.prompt)
         self.assertNotIn("Visual carrier:", compiled.prompt)
         self.assertNotIn("Spatial grammar:", compiled.prompt)
-        self.assertIn("ImageGen owns the scene-or-structure choice", compiled.prompt)
+        self.assertIn("ImageGen owns the carrier, spatial implementation and supporting detail", compiled.prompt)
         self.assertEqual("semantic_brief", compiled.debug_receipt["prompt_mode"])
         self.assertNotIn("causal_convergence", compiled.prompt)
 
@@ -308,6 +308,34 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertIn("Source-grounded semantic context (non-visible", prompt)
         self.assertNotIn(f'Exact visible text: "{unique_context}"', prompt)
         self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", prompt)
+
+    def test_verified_visual_thesis_overrides_legacy_argument_chain(self) -> None:
+        spec = replace(
+            _spec(),
+            visual_thesis="Three evidence lines converge on one result.",
+            semantic_context=SemanticContextSpec(
+                text="Source context.",
+                argument_chain="A -> B -> C -> D",
+                source_sha256="d" * 64,
+                source_kind="full_prose",
+            ),
+        )
+
+        ir = build_final_prompt_ir(spec)
+
+        self.assertEqual("Three evidence lines converge on one result.", ir.dominant_relationship)
+
+    def test_result_group_is_primary_even_when_it_is_not_first(self) -> None:
+        groups = _semantic_groups(
+            (
+                EvidenceSpec("Foundation", "process", "P0"),
+                EvidenceSpec("Outcome", "result", "P0"),
+            ),
+            page_judgment="",
+        )
+
+        self.assertEqual("secondary", groups[0].emphasis)
+        self.assertEqual("primary", groups[1].emphasis)
 
     def test_artifact_compiler_requires_projection(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -352,8 +380,8 @@ class SemanticGroupsTests(unittest.TestCase):
         self.assertIn("process", by_id)
         self.assertIn("result", by_id)
         self.assertEqual("process", by_id["process"].role)
-        self.assertEqual("primary", by_id["process"].emphasis)
-        self.assertEqual("secondary", by_id["result"].emphasis)
+        self.assertEqual("secondary", by_id["process"].emphasis)
+        self.assertEqual("primary", by_id["result"].emphasis)
 
 
 if __name__ == "__main__":

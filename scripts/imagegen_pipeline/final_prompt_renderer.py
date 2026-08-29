@@ -32,13 +32,14 @@ def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
     for index, group in enumerate(ir.semantic_groups, start=1):
         label = chr(64 + index) if index <= 26 else str(index)
         lines.append(f"Semantic group {label}:")
-        lines.append(
-            f"- semantic responsibility: [{group.role} / {group.emphasis}] {group.summary}"
-        )
         binding = binding_by_group.get(group.id)
+        responsibility = f"- semantic responsibility: [{group.role} / {group.emphasis}]"
+        if binding is None:
+            responsibility += f" {group.summary}"
+        lines.append(responsibility)
         if binding is not None:
             lines.append("- exact visible text assigned to this group:")
-            lines.extend(f'  - "{text}"' for text in binding.exact_text)
+            lines.extend(f'- Exact visible text: "{text}"' for text in binding.exact_text)
             lines.append(
                 f"- hierarchy: level {binding.hierarchy_level}; keep this group's text together in one coherent visual region."
             )
@@ -117,8 +118,17 @@ def render_final_prompt(
         "\n".join(
             (
                 SECTION_HEADINGS[5],
-                "Only the following business text may be rendered visibly. Preserve every character and the listed order:",
-                *(f'- Exact visible text: "{text}"' for text in ir.visible_text),
+                (
+                    "The exact visible text is declared once inside its semantic group above. "
+                    "Preserve every character and the declared order. Line breaks, grouping, "
+                    "position changes and stronger emphasis before a colon are allowed within "
+                    "the same semantic region; do not duplicate the label elsewhere."
+                ),
+                *(
+                    ()
+                    if ir.text_bindings
+                    else tuple(f'- Exact visible text: "{text}"' for text in ir.visible_text)
+                ),
             )
         ),
     )

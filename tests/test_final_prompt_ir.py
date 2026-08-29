@@ -236,8 +236,8 @@ class BuildFinalPromptIRTests(unittest.TestCase):
         self.assertEqual(2, len(ir.semantic_groups))
         by_id = {group.id: group for group in ir.semantic_groups}
         self.assertIn("Evidence summary for process", by_id["process"].summary)
-        self.assertEqual("primary", by_id["process"].emphasis)
-        self.assertEqual("secondary", by_id["result"].emphasis)
+        self.assertEqual("secondary", by_id["process"].emphasis)
+        self.assertEqual("primary", by_id["result"].emphasis)
 
     def test_semantic_groups_exceeding_declared_root_count_raises_capacity_error(self) -> None:
         spec = replace(
