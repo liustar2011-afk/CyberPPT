@@ -22,15 +22,14 @@ CyberPPT 的核心不是“套模板”，而是把源材料先转成可审计�
 
 完整流程、人工停点、产物权威关系和 Stage 01 / Stage 02 边界统一见 [CyberPPT 主流程总览](docs/CYBERPPT_WORKFLOW.md)。
 
-当前唯一正式路线为：
+普通新项目的 Stage 01 路线为：
 
-源材料 → Source Foundation → 业务语义理解 → 交流目标 → Outline 与页面计划 → Handoff → 逐页脚本 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
+`来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR → CRITIQUE/REWRITE → 最终全稿`
 
-Stage 01 的正式 Skill 顺序为：
+合同、监管、逐事实核验、完整 Source Truth 和旧项目迁移显式使用
+`strict/legacy` 路线：`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow`。
 
-`cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`
-
-旧版 MBB 证据表、故事线脑暴和固定视觉风格说明属于历史或具体生产细则，不替代上述当前主流程。
+默认流程只在“脚本规划待确认”和“最终脚本已生成”两处停下。AUTHOR 按页回读绑定证据，不重复建立全文语义模型。
 
 ## 8 种视觉风格
 

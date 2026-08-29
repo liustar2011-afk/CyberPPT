@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "autoresearch": {
+      "source": "uditgoenka/autoresearch",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/autoresearch/SKILL.md",
+      "computedHash": "d40c4a47adfea1c736f9c191c89d7f813fccd46337d2608307783b5140a51f90"
+    }
+  }
+}

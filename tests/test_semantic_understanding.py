@@ -67,7 +67,7 @@ class SemanticUnderstandingTests(unittest.TestCase):
 
     def test_lightweight_prepare_reads_existing_source_map_without_control_writes(self) -> None:
         lightweight = Path(self.temp.name) / "lightweight"
-        init_project(lightweight)
+        init_project(lightweight, profile="strict")
         (lightweight / "source" / "material.txt").write_text(
             "source-native business relation and operating arrangement",
             encoding="utf-8",
@@ -98,12 +98,13 @@ class SemanticUnderstandingTests(unittest.TestCase):
 
     def test_lightweight_semantic_check_keeps_substantive_rules_without_receipt_files(self) -> None:
         lightweight = Path(self.temp.name) / "lightweight-audit"
-        init_project(lightweight)
+        init_project(lightweight, profile="strict")
         (lightweight / "source" / "material.txt").write_text(
             "structured source material", encoding="utf-8"
         )
         prepare_source_map(lightweight)
         artifact = lightweight / SEMANTIC_ARTIFACT
+        artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_text(VALID_SEMANTIC, encoding="utf-8")
 
         code, report = run_semantic_understanding_audit(lightweight)

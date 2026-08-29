@@ -26,7 +26,9 @@
 
 ### 全流程
 
-源材料 → Source Foundation → 交流目标 → 轻量 Deck Plan → AUTHOR 逐页写作 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
+默认：源材料 → 来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR 逐页写作 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
+
+严格/兼容：源材料 → Source Foundation → 一次业务语义理解 → 机械投影 Foundation → Deck Plan → AUTHOR → Stage 02
 
 旧版 Outline/Handoff 命令仅用于历史项目迁移的内部兼容，不是新项目或已验证 Source Truth 项目的第二条路线。
 
@@ -73,15 +75,15 @@
 主责 Skill：默认 `cyberppt-script-understand`；严格/兼容为
 `cyberppt-source-foundation`、`business-semantic-understanding`。
 
-### 2. 形成业务语义理解
+### 2. 形成 strict/legacy 业务语义理解
 
 围绕业务对象、主体、动作、关系、条件、状态、数字、问题和判断，完成语义归并和论证链整理。事实强度、责任边界和来源归属必须保留。可以使用行业常识或主动联网核实辅助理解材料；非源材料本身给出的内容，`relation-graph.json` 中须标注 `basis: external` 并写明依据，不得升级为 `basis: source`。
 
 语义理解完成后运行验证；`semantic-report.json` 必须达到 `status: ok`，才能进入页面规划。
 
-### 3. 提出交流目标
+### 3. 将交流目标纳入规划停点
 
-先基于语义结果提出一个忠于源材料的交流目标方向，再交给用户修改或确认。
+基于 Foundation 提出一个忠于源材料的交流目标方向，并与章节和页面提纲一并放入 **脚本规划待确认**。普通流程不设置独立的交流目标确认节点。
 
 交流目标中的受众、场景和行动要求，只有得到源材料直接支持时，才可以升级为源事实、源判断或页面结论。
 
@@ -138,7 +140,7 @@ Skill 名称均不构成 AUTHOR 执行。
 
 ### 6. 汇总与交付最终全稿
 
-以当前项目的 Outline、Source Truth、source units、目标页和相邻页契约为依据，一次处理一张内容页。
+以当前项目的 Foundation、轻量 Deck Plan、目标页来源证据和相邻页边界为依据，一次处理一张内容页。全文主旨和目录每套稿只加载一次；逐页仅回读当前页 `source_refs` 对应证据。strict/legacy 项目可以通过 Foundation 追溯 Source Truth，不在 AUTHOR 阶段重新运行语义理解。
 
 页面脚本依次完成：
 
@@ -185,16 +187,14 @@ AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日�
 
 `audit-final` 与 `lint` 是 Stage 01 的确定性编辑质量检查；存在 JSON 镜像时再用 `check-sync` 校验 Markdown 同步。Stage 02 以已确认脚本为唯一内容输入；项目内脚本和外部脚本均通过正式编排入口进入独立视觉生产链。
 
-## 四、Stage 01 的四个人工停点
+## 四、Stage 01 的两个人工停点
 
 | 停点 | 必须展示 | 用户反馈后的动作 |
 |---|---|---|
-| 交流目标 | 基于源材料提出的一个方向 | 修改现有权威方向后继续 |
-| 章节和页面提纲 | 章节结构、页面顺序、暂定标题、页面问题/使命和来源范围 | 修改现有 Deck Plan 后继续 |
-| 页面详细内容 | 目标页完整稿、上屏文字和视觉结构 | 只修改目标页及必要上游契约 |
+| 脚本规划待确认 | 交流目标、章节结构、页面顺序、暂定标题、页面问题/使命和来源范围 | 修改现有 Deck Plan 后继续 |
 | 最终全稿 | 全套页面脚本和全稿审计结果 | 等待最终确认，不自行跳过 |
 
-这四个停点发生在对话中，不新增 approval、receipt、attempt、manifest、哈希绑定或平行审阅目录。
+这两个停点发生在对话中，不新增 approval、receipt、attempt、manifest、哈希绑定或平行审阅目录。单页内容仅在用户主动要求逐页审核时展示，不构成默认流程停点。
 
 ## 五、Stage 02 视觉生产步骤
 

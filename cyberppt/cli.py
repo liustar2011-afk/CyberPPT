@@ -87,7 +87,7 @@ def _officecli_command(args: argparse.Namespace) -> int:
 
 def _init_command(args: argparse.Namespace) -> int:
     try:
-        created = init_project(Path(args.path), force=args.force)
+        created = init_project(Path(args.path), force=args.force, profile=args.profile)
     except FileExistsError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -566,6 +566,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     init = subparsers.add_parser("init", help="Create a CyberPPT project workspace.")
     init.add_argument("path", help="Target project directory.")
+    init.add_argument(
+        "--profile",
+        choices=("script", "strict", "legacy"),
+        default="script",
+        help="script uses one direct Foundation pass; strict/legacy retain Source Truth compatibility.",
+    )
     init.add_argument("--force", action="store_true", help="Overwrite generated project manifest and README.")
     init.set_defaults(func=_init_command)
 

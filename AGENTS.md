@@ -35,7 +35,7 @@ Stage 01 分两段，各有唯一权威路线，之间用一次机械投影衔�
 
 **规划与写作段（PLAN/AUTHOR）**：两种 profile 均从 `script/foundation.json` 进入 `.agents/skills/cyberppt-script-workflow/SKILL.md` 编排的 `PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER`，产出 `script/deck-plan.json` 和 `script/dist/final-script.md`。strict/legacy 的 `project-foundation` 只做字段搬运，不重新分析。
 
-- PLAN 和 AUTHOR 的唯一执行者是当前主 Agent。调用 `cyberppt-script-workflow` 意味着当前主 Agent 必须读取 Foundation、完整来源正文、整份 Deck Plan 和相邻页面合同并实际完成规划或写作；不得只引用 Skill、运行审计或调用确定性脚本后声称完成作者化。
+- PLAN 和 AUTHOR 的唯一执行者是当前主 Agent。UNDERSTAND 对全文只做一次语义建模；PLAN 读取 Foundation 和来源结构，AUTHOR 每套稿只加载一次全文主旨与目录，逐页只回读该页 `source_refs` 对应原文及相邻页面边界。Critic 和 Rewrite 复用同一语义简报与证据范围，不得重新运行全文语义理解。只有源材料变化、Foundation 校验失败或来源边界无法支撑页面使命时，才返回 UNDERSTAND。
 - 仓库不设置独立 AUTHOR Skill、AUTHOR CLI、规则式作者生成器或项目硬编码作者脚本。确定性代码仅在生成式写作完成后校验来源、关系、边界和交付格式。
 - 新项目的 Deck Plan 使用 v2 lean，只承担章节归并、页数分配、暂定标题、页面问题/使命和来源边界。核心判断、内容模块、证据取舍、上屏合同、视觉关系与讲述线索属于 AUTHOR 和 Final Script；Stage 02 不读取 v2 Deck Plan 文案。
 

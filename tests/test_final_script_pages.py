@@ -426,6 +426,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             encoding="utf-8",
         )
         analysis = project / "workbench" / "stages" / "01-analysis"
+        analysis.mkdir(parents=True, exist_ok=True)
         outline = analysis / "outline.json"
         source_truth = analysis / "source-truth.json"
         outline.write_text("{}\n", encoding="utf-8")

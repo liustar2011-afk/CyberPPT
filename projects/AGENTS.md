@@ -4,28 +4,28 @@ This file applies to `projects/**` and describes the current source-material-to-
 
 ## Default source-material route
 
-**Understand** (unchanged, mandatory first step for any task reading source material or creating/regenerating/repairing/auditing Source Truth or the semantic argument model):
+Ordinary new projects use the `script` profile:
 
-1. `cyberppt-source-foundation` — source extraction, chapter structure, `source-truth.json`.
-2. `business-semantic-understanding` — whole-document semantic argument model.
+1. `prepare-source-context` creates the single deterministic source index.
+2. `cyberppt-script-understand` performs one whole-document UNDERSTAND pass and writes `script/foundation.json` directly.
+3. `cyberppt-script-workflow` performs lightweight PLAN followed by AUTHOR, CRITIQUE, REWRITE and DELIVER.
+4. Stage 02 starts from the locked `script/dist/final-script.md`.
 
-This is mandatory even for existing projects or a task described as legacy Stage 01.
+Do not run `prepare-source-map`, `prepare-semantic-understanding`, Source Truth
+compilation or `project-foundation` for a `script` profile project. AUTHOR loads
+the deck thesis and structure once, then reads only the source evidence bound to
+the current page. Critic and Rewrite reuse that evidence boundary.
 
-**Plan and author** (vendored `script_engine`, replaces the old `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page` route):
-
-3. `python -m cyberppt project-foundation <project>` — mechanical projection of the validated Source Truth into `script/foundation.json`; adds nothing the Source Truth did not already establish.
-4. `.agents/skills/cyberppt-script-workflow/SKILL.md` — `UNDERSTAND -> PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER`, producing `script/deck-plan.json` and `script/dist/final-script.md`.
-5. existing Stage 02 pipeline (`prepare-stage02-handoff`, image/SVG/PPTX).
-
-### Canonical route
-
-The only formal route is `cyberppt-source-foundation` → `business-semantic-understanding` → `project-foundation` → `cyberppt-script-workflow` (PLAN/AUTHOR).
+Use `cyberppt-source-foundation` → `business-semantic-understanding` →
+`project-foundation` only for an explicitly selected `strict/legacy` profile:
+contracts, regulation, fact-by-fact verification, full Source Truth work or old
+project migration. Reuse validated strict artifacts when they already exist.
 
 ## Default writing and structure policy
 
-默认采用政府公文式、央企正式交流语体，默认按源材料内容写作并保留章节标题、内容标题和先后顺序。只允许因 PPT 单页容量进行连续拆页，或在不改变主题归属、事实强度、责任、条件、状态和源顺序的前提下合并重复内容。
+默认采用政府公文式、央企正式交流语体。Foundation 保留来源章节身份、边界和顺序；Deck Plan 可以按共同受众问题和论证角色归并相邻来源章节，汇报章节通常控制在 4 个以内、默认不超过 6 个，且来源映射展开后保持原顺序和完整覆盖。
 
-不得自行增加"问题路径""交流路径"、咨询式金句、营销标题或源材料没有的章节逻辑。目录使用源材料目录标题，源材料没有明确目录标题时使用"目录"。只有用户明确要求重构叙事、咨询化、路演化、改名、重排或压缩重组时，才可解除默认锁定；一般的领导汇报、合作交流或高端交流用途不构成重构授权。
+不得增加源材料缺乏支撑的章节逻辑、咨询式金句或营销标题。标题采用简洁、正式的主题表达；核心判断、副标题和完整论证由 AUTHOR 基于页面来源证据形成。跨来源顺序重排仍需用户明确授权。
 
 For an existing project with approved source-foundation outputs, reuse and validate those outputs before downstream work; do not rebuild them merely to satisfy the invocation.
 

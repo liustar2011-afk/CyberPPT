@@ -15,13 +15,13 @@ determine whether approved source-foundation outputs can be reused.
 
 Authoritative chain:
 
-`source -> source.md -> structure/fact base -> semantic outputs -> deck brief/page plan -> CyberPPT projection -> cyberppt-write-single-page`
+`source -> Source Foundation -> business semantics -> project-foundation -> cyberppt-script-workflow`
 
 The projection is a compatibility artifact only. It must never become a second semantic authority.
 
 ## Workflow entry
 
-Before acting, read the repository-wide [CyberPPT workflow overview](../../../docs/CYBERPPT_WORKFLOW.md). This Skill is the mandatory Stage 01 entry and owns the source-to-handoff sequence; the overview is the single place to find the complete route, the four human stops, the Stage 01/Stage 02 boundary, and completion criteria.
+Before acting, read the repository-wide [CyberPPT workflow overview](../../../docs/CYBERPPT_WORKFLOW.md). This Skill is the strict/legacy Stage 01 entry; the overview is the single place to find the complete route, the two human stops, the Stage 01/Stage 02 boundary, and completion criteria.
 
 ## Canonical route
 
@@ -35,7 +35,7 @@ outputs.
 
 1. From the repository root, run `.venv/bin/python3 scripts/source_foundation_pipeline.py <source> -o <project>/workbench/source-foundation --prepare-semantic --report`.
 2. Use `business-semantic-understanding` to author the four semantic outputs in the prepared semantic directory, then run its validator with `--report`.
-3. Before planning pages, derive one source-faithful communication-goal direction from the semantic outputs and present it as the recommendation. Do not offer multiple options. The user's wording may constrain audience, use, or delivery, but must not be promoted into a source fact, source judgment, or page conclusion without direct source support. After the user edits or confirms the direction, continue.
+3. Before planning pages, derive one source-faithful communication-goal direction from the semantic outputs and include it in **脚本规划待确认**. Do not add a separate communication-goal approval stop. The user's wording may constrain audience, use, or delivery, but must not be promoted into a source fact, source judgment, or page conclusion without direct source support.
 4. Run `.venv/bin/python3 -m cyberppt semantic-check <project>` and confirm the semantic report is `ok`.
 5. Run `.venv/bin/python3 -m cyberppt compile-source-truth <project>` and `.venv/bin/python3 -m cyberppt source-truth-audit <project> --input <project>/workbench/stages/01-analysis/source-truth.json`.
 6. Run `.venv/bin/python3 -m cyberppt project-foundation <project>` to mechanically project the validated Source Truth into `script/foundation.json`.

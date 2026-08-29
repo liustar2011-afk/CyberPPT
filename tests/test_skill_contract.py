@@ -7,8 +7,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 AGENTS = ROOT / "AGENTS.md"
+PROJECT_AGENTS = ROOT / "projects" / "AGENTS.md"
 WORKFLOW = ROOT / "docs" / "CYBERPPT_WORKFLOW.md"
 SCRIPT_SKILL = ROOT / ".agents" / "skills" / "cyberppt-script-workflow" / "SKILL.md"
+SOURCE_SKILL = ROOT / ".agents" / "skills" / "cyberppt-source-foundation" / "SKILL.md"
 EDITABLE_PPTX_SKILL = ROOT / ".agents" / "skills" / "cyberppt-stage02-editable-pptx" / "SKILL.md"
 AUTHORED_SVG_CONTINUATION = EDITABLE_PPTX_SKILL.parent / "references" / "authored-svg-continuation.md"
 
@@ -40,6 +42,23 @@ class SkillContractTests(unittest.TestCase):
             self.assertIn(artifact, text)
         self.assertIn("The current main agent is the AUTHOR executor", text)
         self.assertIn("There is no separate AUTHOR", text)
+
+    def test_default_project_route_runs_understand_once(self) -> None:
+        agents = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
+        workflow = WORKFLOW.read_text(encoding="utf-8-sig")
+        script_skill = SCRIPT_SKILL.read_text(encoding="utf-8-sig")
+        self.assertIn("Ordinary new projects use the `script` profile", agents)
+        self.assertIn("Do not run `prepare-source-map`", agents)
+        self.assertIn("一次 UNDERSTAND/Foundation", workflow)
+        self.assertIn("once per deck", script_skill)
+
+    def test_stage01_has_two_default_human_stops(self) -> None:
+        workflow = WORKFLOW.read_text(encoding="utf-8-sig")
+        source_skill = SOURCE_SKILL.read_text(encoding="utf-8-sig")
+        self.assertIn("Stage 01 的两个人工停点", workflow)
+        self.assertNotIn("四个人工停点", workflow)
+        self.assertIn("the two human stops", source_skill)
+        self.assertNotIn("the four human stops", source_skill)
 
     def test_stage01_docs_name_only_real_script_checks(self) -> None:
         text = WORKFLOW.read_text(encoding="utf-8-sig")

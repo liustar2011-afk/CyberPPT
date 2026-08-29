@@ -7,92 +7,88 @@ from pathlib import Path
 
 PROJECT_DIRS = [
     "source",
-    "workbench",
-    "workbench/stages",
-    "workbench/stages/00-source-map",
-    "workbench/stages/00-semantic-understanding",
-    "workbench/stages/01-analysis",
-    "workbench/scripts",
-    "workbench/scripts/drafts",
-    "workbench/scripts/final",
-    # script_engine (vendored CyberPPT-Script) project workspace: PLAN/AUTHOR
-    # consume workbench/stages/01-analysis/source-truth.json (via
-    # `project-foundation`) and produce script/deck-plan.json and
-    # script/dist/final-script.md, which prepare-stage02-handoff can consume
-    # directly with --script.
     "script",
-    "script/sources",
     "script/.cache",
     "script/dist",
 ]
 
 
-def _project_manifest(name: str) -> str:
+def _project_manifest(name: str, profile: str) -> str:
+    strict_directories = "" if profile == "script" else """  source_foundation: workbench/source-foundation
+  semantic_argument_model: workbench/stages/00-semantic-understanding/semantic-argument-model.json
+  source_truth: workbench/stages/01-analysis/source-truth.json
+"""
     return f"""name: {name}
 workflow: cyberppt
 schema: cyberppt.project.v1
 mode: lightweight
+profile: {profile}
 authority_mode: authoritative
 directories:
   source: source
-  workbench: workbench
-  stages: workbench/stages
-  stage_source_map: workbench/stages/00-source-map
-  source_registry: workbench/stages/00-source-map/source-registry.json
-  source_units: workbench/stages/00-source-map/source-units.jsonl
-  source_heading_tree: workbench/stages/00-source-map/source-heading-tree.json
-  source_map: workbench/stages/00-source-map/source-map.md
-  source_map_audit: workbench/stages/00-source-map/source-map-audit.json
-  stage_semantic_understanding: workbench/stages/00-semantic-understanding
-  semantic_understanding: workbench/stages/00-semantic-understanding/semantic-understanding.md
-  semantic_argument_model: workbench/stages/00-semantic-understanding/semantic-argument-model.json
-  stage_analysis: workbench/stages/01-analysis
-  source_truth: workbench/stages/01-analysis/source-truth.json
-  outline: workbench/stages/01-analysis/outline.json
-  scripts: workbench/scripts
-  script_drafts: workbench/scripts/drafts
-  final_scripts: workbench/scripts/final
   script_engine_project: script
+  source_index: script/.cache/source-index.json
   foundation: script/foundation.json
   deck_plan: script/deck-plan.json
   final_script_md: script/dist/final-script.md
   final_script_json: script/dist/final-script.json
-status:
+{strict_directories}status:
   stage: initialized
   live: false
   notes: "Initialization metadata only. Run `python -m cyberppt status <project>` for live Stage 01 and Stage 02 status."
 """
 
 
-def _readme(project_name: str) -> str:
-    return f"""# {project_name}
+def _readme(project_name: str, profile: str) -> str:
+    if profile != "script":
+        return f"""# {project_name}
 
-CyberPPT authoritative Stage 01 workspace (lightweight controls).
+CyberPPT Stage 01 workspace (`{profile}` profile).
 
 ## Flow
 
-**Understand** (source-material parsing, unchanged):
+This profile is reserved for contracts, regulation, fact-by-fact verification,
+full Source Truth work, or legacy migration. Follow
+`.agents/skills/cyberppt-source-foundation/SKILL.md`:
 
-1. Put the only authoritative source materials in `source/`; run `prepare-source-map` and one `source-map-check`.
-2. Run `prepare-semantic-understanding`, complete the canonical semantic understanding, then run one `semantic-check`. Preserve source-native thesis, actors, status, argument roles, weights, relations, concept distinctions and source gaps.
-3. Build canonical `workbench/stages/01-analysis/source-truth.json`; run one `source-truth-audit`. Source Truth remains factual authority and never stores page assignments.
+1. Build and validate Source Foundation once.
+2. Complete business semantic understanding once.
+3. Run `project-foundation` as a mechanical projection into `script/foundation.json`.
+4. Continue with `cyberppt-script-workflow` for the plan and author stages.
 
-**Plan and author** (vendored `script_engine`, see `.agents/skills/cyberppt-script-workflow/SKILL.md`):
+Reuse validated upstream artifacts. Rerun semantic understanding only when the
+source changed or the existing semantic authority failed validation.
+"""
 
-4. Run `project-foundation` to mechanically project the validated Source Truth into `script/foundation.json` (no re-analysis; every fact keeps its source refs).
-5. Follow `cyberppt-script-workflow` to reach `script/deck-plan.json` (stop at **脚本规划待确认** for user confirmation) and then `script/dist/final-script.md` (stop at **最终脚本已生成**). `cyberppt-script lint`/`audit-foundation`/`audit-plan` are diagnostics run after writing, not per-page blocking gates.
+    return f"""# {project_name}
 
-**Hand off to Stage 02**:
+CyberPPT Stage 01 workspace (`script` profile).
 
-6. Run `prepare-stage02-handoff --script script/dist/final-script.md`, then `stage02-handoff-check`.
+## Flow
 
-Use `python -m cyberppt status <project>` for a read-only live view across Stage 01 and Stage 02. The `manifest.yml` status block records initialization metadata only.
+1. Put the only authoritative source materials in `source/`.
+2. Run `.venv/bin/python3 -m cyberppt prepare-source-context <project>` once.
+3. Run `.venv/bin/python3 -m cyberppt prepare-script-foundation <project> --profile script` and complete UNDERSTAND once in `script/foundation.json`.
+4. Follow `cyberppt-script-workflow` to create the lean `script/deck-plan.json`, stop at **脚本规划待确认**, then author `script/dist/final-script.md` and stop at **最终脚本已生成**.
+5. After the final script is locked, run `prepare-stage02-handoff` and continue to Stage 02.
 
-The authoritative lightweight path creates no page-script-authoring JSON, approval JSON, interaction state, generation receipt, retry attempt, escalation, artifact ledger or hash-freshness gate. `script/foundation.json`, `script/deck-plan.json` and `script/dist/final-script.md` are the three authoritative Stage 01 planning/writing artifacts.
+For this profile, do not run `prepare-source-map`, `prepare-semantic-understanding`,
+`semantic-check`, Source Truth compilation, or `project-foundation`. Those commands
+belong to explicit `strict/legacy` work.
+
+AUTHOR loads the document thesis and structure once per deck, then reads only the
+source evidence bound to the current page and its adjacent-page scope. Critic and
+Rewrite operate on that authored page and its bound evidence; they do not rerun
+whole-document semantic understanding.
+
+The three authoritative Stage 01 content artifacts are `script/foundation.json`,
+`script/deck-plan.json`, and `script/dist/final-script.md`.
 """
 
 
-def init_project(path: Path, force: bool = False) -> list[Path]:
+def init_project(path: Path, force: bool = False, *, profile: str = "script") -> list[Path]:
+    if profile not in {"script", "strict", "legacy"}:
+        raise ValueError("profile must be script, strict, or legacy")
     root = path.expanduser().resolve()
     created: list[Path] = []
     manifest = root / "manifest.yml"
@@ -114,7 +110,7 @@ def init_project(path: Path, force: bool = False) -> list[Path]:
             created.append(keep)
 
     project_name = root.name
-    manifest.write_text(_project_manifest(project_name), encoding="utf-8", newline="\n")
-    readme.write_text(_readme(project_name), encoding="utf-8", newline="\n")
+    manifest.write_text(_project_manifest(project_name, profile), encoding="utf-8", newline="\n")
+    readme.write_text(_readme(project_name, profile), encoding="utf-8", newline="\n")
     created.extend([manifest, readme])
     return created

@@ -53,6 +53,17 @@ def _stage(name: str, status: str, **details: Any) -> dict[str, Any]:
     return {"name": name, "status": status, **details}
 
 
+def _project_profile(project: Path) -> str:
+    manifest = project / "manifest.yml"
+    if not manifest.is_file():
+        return "unspecified"
+    for line in manifest.read_text(encoding="utf-8-sig").splitlines():
+        if line.startswith("profile:"):
+            profile = line.partition(":")[2].strip()
+            return profile if profile in {"script", "strict", "legacy"} else "unspecified"
+    return "unspecified"
+
+
 def _production_stage_status(status: str) -> str:
     if status in PRODUCTION_COMPLETE_STATUSES:
         return "passed"
@@ -215,6 +226,7 @@ def build_project_status(project: Path) -> dict[str, Any]:
     return {
         "schema": "cyberppt.project_status.v1",
         "project": str(project),
+        "profile": _project_profile(project),
         "status": status,
         "current_stage": current,
         "stages": stages,

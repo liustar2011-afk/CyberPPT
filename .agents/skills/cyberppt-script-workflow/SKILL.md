@@ -58,9 +58,11 @@ rewrite itself before it runs deterministic checks. Merely loading this Skill,
 creating a schema-valid file, copying PLAN fields, or reporting audit success
 does not execute AUTHOR.
 
-The author agent must read the document thesis and table of contents first,
-then the target page mission, complete source prose, adjacent-page scope and
-approved evidence boundary. It independently decides what a
+The author agent loads the document thesis and table of contents once per deck,
+then reads the target page mission, source prose bound by that page's
+`source_refs`, adjacent-page scope and approved evidence boundary. Critic and
+Rewrite reuse this page semantic brief; they do not rerun UNDERSTAND or reread
+unrelated source sections. The author independently decides what a
 silent reader must understand, which facts deserve visible weight, how related
 facts should be merged, how the page should be written, which business
 relationship must become visually legible, and how the presenter should explain

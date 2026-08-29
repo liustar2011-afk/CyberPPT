@@ -63,14 +63,30 @@ class CliTests(unittest.TestCase):
 
             self.assertEqual(0, code)
             self.assertIn("mode: lightweight", (project / "manifest.yml").read_text(encoding="utf-8"))
-            self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
-            self.assertTrue((project / "workbench/scripts/drafts").is_dir())
+            self.assertIn("profile: script", (project / "manifest.yml").read_text(encoding="utf-8"))
+            self.assertTrue((project / "script/.cache").is_dir())
+            self.assertFalse((project / "workbench").exists())
+            readme = (project / "README.md").read_text(encoding="utf-8")
+            self.assertIn("complete UNDERSTAND once", readme)
+            self.assertIn("do not run `prepare-source-map`", readme)
             self.assertFalse((project / "workbench/artifact-ledger.json").exists())
             self.assertFalse((project / "workbench/approvals").exists())
             self.assertFalse((project / "workbench/decisions").exists())
             self.assertFalse((project / "workbench/runs").exists())
             self.assertFalse((project / "workbench/stages/02-visual").exists())
             self.assertFalse((project / "workbench/stages/01-analysis/outline-attempts").exists())
+
+    def test_strict_init_is_explicit_and_keeps_compatibility_route(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "strict"
+            self.assertEqual(0, main(["init", str(project), "--profile", "strict"]))
+
+            manifest = (project / "manifest.yml").read_text(encoding="utf-8")
+            readme = (project / "README.md").read_text(encoding="utf-8")
+            self.assertIn("profile: strict", manifest)
+            self.assertIn("source_truth:", manifest)
+            self.assertIn("project-foundation", readme)
+            self.assertNotIn("prepare-script-foundation", readme)
 
     def test_lightweight_semantic_prepare_prints_plain_task_without_json_duplication(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

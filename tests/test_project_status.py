@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
+from cyberppt.commands.init_project import init_project
 from cyberppt.project_status import _production_stage_status, build_project_status
 
 
@@ -22,6 +23,15 @@ def test_project_status_reports_missing_source_without_writing(tmp_path: Path) -
     assert report["status"] == "in_progress"
     assert report["current_stage"] == "source"
     assert list(project.iterdir()) == []
+
+
+def test_project_status_reports_initialized_profile(tmp_path: Path) -> None:
+    project = tmp_path / "strict-project"
+    init_project(project, profile="strict")
+
+    report = build_project_status(project)
+
+    assert report["profile"] == "strict"
 
 
 def test_project_status_surfaces_live_handoff_failure(tmp_path: Path) -> None:
