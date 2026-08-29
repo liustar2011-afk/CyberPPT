@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.page_artifact_spec import is_text_dense
+from cyberppt.region_graph import build_region_graph
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 
 from .persistence import VISUAL_FILES, _read_json, _sha256, write_json
@@ -500,6 +501,14 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     semantic_focus_kind = str(focus.get("kind") or "relationship")
     if semantic_focus_kind not in {"entity", "action", "state", "relationship", "outcome"}:
         semantic_focus_kind = "relationship"
+    region_graph = build_region_graph(
+        topology=topology,
+        evidence_ids=[eid[key] for key in evidence_keys],
+        focus_id=focus_id,
+        reading_sequence=[eid[key] for key in reading_keys],
+        semantic_edges=graph_edges,
+        focus_policy=focus_policy,
+    )
     quality_contract = _quality_contract(decision, selected, focus_id)
     final_text = [
         {"id": item_id, "role": "body", "text": text, "region_id": "R_RELATION"}
@@ -550,6 +559,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "grouping_decisions": grouping_decisions,
             "forbidden_structures": forbidden_structures,
         },
+        "region_graph": region_graph,
         "structural_decision": {
             "semantic_focus": {"kind": semantic_focus_kind, "ref": focus_id},
             "spatial_grammar": grammar,
