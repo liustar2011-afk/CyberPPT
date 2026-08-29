@@ -1,4 +1,4 @@
-name: Stage2 P6 final integrated authority guard
+name: Stage2 P6 final authority closeout
 
 on:
   push:
@@ -21,62 +21,52 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Apply final P6 adapter guard and regression-fixture fixes
+      - name: Apply P6.3 authority guard and compatibility fixtures
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          # P6.3: enforce authority again at the direct Quick adapter entry and
-          # persist the exact authority SHA in each page checkpoint.
+          # Enforce reconstruction authority at the direct Quick adapter entry
+          # and bind every Quick checkpoint to the exact authority SHA.
           path = Path('scripts/image_to_pptx_runtime/stage02_adapter.py')
           text = path.read_text(encoding='utf-8')
           old = 'from cyberppt.script_quality.parsing import parse_script_path\n'
           new = 'from cyberppt.reconstruction_visual_authority import validate_reconstruction_visual_authority\n' + old
           if 'from cyberppt.reconstruction_visual_authority import' not in text:
               if old not in text:
-                  raise SystemExit('P6.3 adapter import anchor not found')
+                  raise SystemExit('adapter import anchor not found')
               text = text.replace(old, new, 1)
 
           old = '        "full_image_sha256": _sha256(full),\n'
           new = old + '        "reconstruction_visual_source_sha256": str((((pair.get("full") or {}).get("reconstruction_visual_source") or {}).get("sha256") or "")),\n'
           if '"reconstruction_visual_source_sha256"' not in text:
               if old not in text:
-                  raise SystemExit('P6.3 checkpoint anchor not found')
+                  raise SystemExit('checkpoint anchor not found')
               text = text.replace(old, new, 1)
 
           old = '''    needs_editable = assembly_mode in {"editable", "both"}\n    needs_image = assembly_mode in {"image", "both"}\n    quick = None\n    if needs_editable:\n'''
           new = '''    needs_editable = assembly_mode in {"editable", "both"}\n    needs_image = assembly_mode in {"image", "both"}\n    quick = None\n    if needs_editable:\n        validate_reconstruction_visual_authority(manifest, require_clean_base=True)\n'''
-          if old not in text:
-              raise SystemExit('P6.3 adapter editable anchor not found')
-          text = text.replace(old, new, 1)
+          if 'validate_reconstruction_visual_authority(manifest, require_clean_base=True)' not in text:
+              if old not in text:
+                  raise SystemExit('adapter editable anchor not found')
+              text = text.replace(old, new, 1)
           path.write_text(text, encoding='utf-8')
 
-          # P6.1 fixture: this regression matrix tests the normal final-prompt
-          # contract, not the special live runtime Style 9/10 terminal renderer.
-          matrix = Path('tests/test_stage2_visual_design_end_to_end_matrix.py')
-          text = matrix.read_text(encoding='utf-8')
-          old = '''        visible_text_bindings=bindings,\n        composition=replace(base.composition, focus_policy=focus_policy),\n    )\n'''
-          new = '''        visible_text_bindings=bindings,\n        composition=replace(base.composition, focus_policy=focus_policy),\n        art_direction=replace(\n            base.art_direction,\n            style_id=4,\n            style_name="Regression Style",\n            style_slug="regression-style",\n            contract="Neutral regression visual language.",\n        ),\n    )\n'''
-          if old not in text:
-              raise SystemExit('P6.1 regression style fixture anchor not found')
-          matrix.write_text(text.replace(old, new, 1), encoding='utf-8')
-
-          # Three command-level tests deliberately mock image generation and the
-          # editable builder. They must mock the new authority validator as well;
-          # real production remains fully guarded.
+          # Command-level tests mock generation/build; mock the new authority
+          # validator too. This does not relax production behavior.
           final_tests = Path('tests/test_final_script_pages.py')
           text = final_tests.read_text(encoding='utf-8')
           rhythm_patch = '                patch("cyberppt.stage02_production.orchestrator.run_full_image_rhythm_stage", return_value={"status": "passed"}),\n'
-          authority_patch = rhythm_patch + '                patch("cyberppt.stage02_production.reconstruction_stage.validate_reconstruction_visual_authority", return_value={"authority": "audited_full_image"}),\n'
-          count = text.count(rhythm_patch)
-          if count < 3:
-              raise SystemExit(f'expected at least three command-test rhythm mocks, found {count}')
-          text = text.replace(rhythm_patch, authority_patch)
+          authority_line = '                patch("cyberppt.stage02_production.reconstruction_stage.validate_reconstruction_visual_authority", return_value={"authority": "audited_full_image"}),\n'
+          if authority_line not in text:
+              count = text.count(rhythm_patch)
+              if count < 3:
+                  raise SystemExit(f'expected at least three command-test rhythm mocks, found {count}')
+              text = text.replace(rhythm_patch, rhythm_patch + authority_line)
           final_tests.write_text(text, encoding='utf-8')
 
-          # Two adapter integration tests are not mocks: make their hand-built
-          # manifests production-valid by adding the same authority metadata that
-          # Stage 02 now freezes before reconstruction.
+          # Direct adapter integration fixtures must carry the same authority
+          # metadata that production freezes before editable reconstruction.
           runtime_tests = Path('tests/test_image_to_pptx_runtime.py')
           text = runtime_tests.read_text(encoding='utf-8')
 
@@ -86,21 +76,23 @@ jobs:
               next_def = source.find('\ndef ', start + len(marker))
               end = len(source) if next_def < 0 else next_def
               segment = source[start:end]
-              production = '                "production_mode": "image-to-editable-svg",\n'
-              truth = production + '''                "visual_truth_policy": {\n                    "authority": "audited_full_image",\n                    "scope": "editable_reconstruction",\n                    "rule": "preserve accepted visual composition",\n                },\n'''
-              if production not in segment:
-                  raise SystemExit(f'{name}: production_mode anchor not found')
-              segment = segment.replace(production, truth, 1)
-              if debug:
-                  old_full = '                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["登记编目"]}},\n'
-                  new_full = '''                        "full": {\n                            "path": str(source),\n                            "canvas": "400x200",\n                            "status": "Generated",\n                            "text_audit": {"valid": True},\n                            "debug_receipt": {"visible_text": ["登记编目"]},\n                            "reconstruction_visual_source": {\n                                "authority": "audited_full_image",\n                                "path": str(source),\n                                "sha256": _hash(source),\n                                "immutable_visual_composition": True,\n                            },\n                        },\n'''
-              else:
-                  old_full = '                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}},\n'
-                  new_full = '''                        "full": {\n                            "path": str(source),\n                            "canvas": "400x200",\n                            "status": "Generated",\n                            "text_audit": {"valid": True},\n                            "reconstruction_visual_source": {\n                                "authority": "audited_full_image",\n                                "path": str(source),\n                                "sha256": _hash(source),\n                                "immutable_visual_composition": True,\n                            },\n                        },\n'''
-              actual = segment.count(old_full)
-              if actual != full_count:
-                  raise SystemExit(f'{name}: expected {full_count} full-image fixtures, found {actual}')
-              segment = segment.replace(old_full, new_full)
+              if '"visual_truth_policy"' not in segment:
+                  production = '                "production_mode": "image-to-editable-svg",\n'
+                  truth = production + '''                "visual_truth_policy": {\n                    "authority": "audited_full_image",\n                    "scope": "editable_reconstruction",\n                    "rule": "preserve accepted visual composition",\n                },\n'''
+                  if production not in segment:
+                      raise SystemExit(f'{name}: production_mode anchor not found')
+                  segment = segment.replace(production, truth, 1)
+              if '"reconstruction_visual_source"' not in segment:
+                  if debug:
+                      old_full = '                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["登记编目"]}},\n'
+                      new_full = '''                        "full": {\n                            "path": str(source),\n                            "canvas": "400x200",\n                            "status": "Generated",\n                            "text_audit": {"valid": True},\n                            "debug_receipt": {"visible_text": ["登记编目"]},\n                            "reconstruction_visual_source": {\n                                "authority": "audited_full_image",\n                                "path": str(source),\n                                "sha256": _hash(source),\n                                "immutable_visual_composition": True,\n                            },\n                        },\n'''
+                  else:
+                      old_full = '                        "full": {"path": str(source), "canvas": "400x200", "status": "Generated", "text_audit": {"valid": True}},\n'
+                      new_full = '''                        "full": {\n                            "path": str(source),\n                            "canvas": "400x200",\n                            "status": "Generated",\n                            "text_audit": {"valid": True},\n                            "reconstruction_visual_source": {\n                                "authority": "audited_full_image",\n                                "path": str(source),\n                                "sha256": _hash(source),\n                                "immutable_visual_composition": True,\n                            },\n                        },\n'''
+                  actual = segment.count(old_full)
+                  if actual != full_count:
+                      raise SystemExit(f'{name}: expected {full_count} full-image fixtures, found {actual}')
+                  segment = segment.replace(old_full, new_full)
               return source[:start] + segment + source[end:]
 
           text = patch_function(
@@ -183,7 +175,6 @@ jobs:
           git add \
             scripts/image_to_pptx_runtime/stage02_adapter.py \
             tests/test_stage02_adapter_visual_authority.py \
-            tests/test_stage2_visual_design_end_to_end_matrix.py \
             tests/test_final_script_pages.py \
             tests/test_image_to_pptx_runtime.py
           git rm .github/workflows/stage2-p6-3-authority-adapter.yml
