@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.onscreen_expression import expression_constraints
-from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.visual_structure_contract import prompt_contract_hashes, skill_bundle_sha256
 
 from .compiler import compile_visual_spec, _render_visual_structure_markdown
@@ -24,8 +23,8 @@ def _skill_root() -> Path:
     return (Path(__file__).resolve().parents[2] / SKILL_RELATIVE).resolve()
 
 
-def _write_visual_design_input(project: Path, handoff: Path) -> Path:
-    payload = _read_json(handoff)
+def _write_visual_design_input(project: Path, script_input: Path) -> Path:
+    payload = _read_json(script_input)
     source_pages = payload.get("pages") or []
     content_pages = [page for page in source_pages if page.get("render_role") == "content"]
     pages: list[dict[str, Any]] = []
@@ -76,7 +75,7 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "onscreen_expression": expression,
                 "expression_constraints": constraints,
                 "business_relationships": business_relationships,
-                "stage01_relationship_features": visual.get("stage01_relationship_features") or {},
+                "input_relationship_features": visual.get("input_relationship_features") or visual.get("stage01_relationship_features") or {},
                 "render_topology": visual.get("render_topology") or visual.get("semantic_topology") or {},
                 "semantic_verification": visual.get("semantic_verification") or {},
                 "relationship_authority": "business_relationships",
@@ -101,12 +100,12 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
         output,
         {
             "schema": "cyberppt.visual_design_input.v2",
-            "source": str(handoff),
-            "source_sha256": _sha256(handoff),
+            "source": str(script_input),
+            "source_sha256": _sha256(script_input),
             "content_lock": "strict",
             "style_policy": "visual structure must not select or embed a visual style",
             "relationship_policy": (
-                "business_relationships is Stage 01 semantic authority; render_topology is Stage 02-derived "
+                "business_relationships comes from the input script file; render_topology is Stage 02-derived "
                 "layout guidance only and must not rewrite business nodes or edges; author_visual_notes is "
                 "advisory only and must never be copied into decision_relationship"
             ),
@@ -150,7 +149,6 @@ def _write_skill_request(project: Path, script: Path, design_input: Path) -> Pat
             "skill_contract_sha256": contracts,
             "approved_script": str(script),
             "approved_script_sha256": _sha256(script),
-            "approved_script_semantic_sha256": script_semantic_digest(script),
             "visual_design_input": str(design_input),
             "visual_design_input_sha256": _sha256(design_input),
             "content_lock": "strict",
@@ -180,32 +178,18 @@ def prepare_visual_structure_stage(
     lightweight_stage01_confirmed: bool = False,
     reuse_current_handoff: bool = False,
 ) -> Path:
-    _ = lightweight_stage01_confirmed
+    _ = lightweight_stage01_confirmed, reuse_current_handoff
     project = project.expanduser().resolve()
-    script = script.expanduser().resolve()
-    from cyberppt.stage02_handoff import HANDOFF_JSON, ensure_project_script, prepare_stage02_handoff
+    source_script = script.expanduser().resolve()
+    from cyberppt.stage02_input import INPUT_JSON, prepare_stage02_input, resolve_input_script
 
-    script = ensure_project_script(project, script)
-    handoff = project / HANDOFF_JSON
-    from cyberppt.stage02_handoff import audit_stage02_handoff
-
-    if reuse_current_handoff:
-        if not handoff.is_file():
-            raise FileNotFoundError("reuse_current_handoff requires an existing Stage 02 handoff")
-        report = audit_stage02_handoff(project)
-        if report.get("status") != "passed":
-            codes = ", ".join(
-                item.get("code", "HANDOFF_INVALID")
-                for item in report.get("blocking_issues", [])
-            )
-            raise ValueError(f"reuse_current_handoff requires a current Stage 02 handoff: {codes}")
-    else:
-        report = audit_stage02_handoff(project) if handoff.is_file() else {"status": "missing"}
-        if report.get("status") != "passed":
-            report = prepare_stage02_handoff(project, script=script)
-            if report.get("status") != "passed":
-                raise ValueError("Stage 01 to Stage 02 handoff is not passed")
-    design_input = _write_visual_design_input(project, handoff)
+    report = prepare_stage02_input(project, script=source_script, reuse_current=True)
+    if report.get("status") != "passed":
+        codes = ", ".join(item.get("code", "INPUT_INVALID") for item in report.get("blocking_issues", []))
+        raise ValueError(f"Stage 02 script input is invalid: {codes}")
+    script = resolve_input_script(project, source_script)
+    script_input = project / INPUT_JSON
+    design_input = _write_visual_design_input(project, script_input)
     skill_root = _skill_root()
     skill = skill_root / "SKILL.md"
     if not skill.is_file():
@@ -219,13 +203,12 @@ def prepare_visual_structure_stage(
             f"- skill_path: {skill}", f"- skill_sha256: {_sha256(skill)}",
             f"- skill_bundle_sha256: {skill_bundle_sha256(skill_root)}",
             f"- approved_script: {script}", f"- approved_script_sha256: {_sha256(script)}",
-            f"- approved_script_semantic_sha256: {script_semantic_digest(script)}",
-            f"- stage02_handoff: {handoff}", f"- visual_design_input: {design_input}",
-            f"- skill_request: {skill_request}", "- mode: workbench-handoff", "- content_lock: strict", "",
+            f"- stage02_script_input: {script_input}", f"- visual_design_input: {design_input}",
+            f"- skill_request: {skill_request}", "- mode: stage02-file-input", "- content_lock: strict", "",
             "## Required action", "",
-            "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Write cyberppt.visual_design_decisions.v3. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must provide its own visual_thesis and expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. Respect each page's prompt_mode. For semantic_brief, decide only the semantic focus, source-supported relationship boundary, evidence grouping and exact-text binding; omit execution_design or treat it as non-authoritative advice, leaving scene, carrier, spatial organization and supporting detail to ImageGen. For directed_composition, provide the full authoritative execution_design with business_object, visual_focus, semantic_role, use_scene, scene_type, text_integration_method, spatial_organization and relationship_encoding. For every page, record stage01_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Write one candidate when the page's business relationship type is unambiguous from expression_constraints.reading_requirement and content alone; when it is genuinely contested (for example parallel vs. hierarchical), generate and compare 2-3 materially different candidates and justify the selection. Deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
+            "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from the Stage 02 script input snapshot, as the visual-design interface. Write cyberppt.visual_design_decisions.v3. Treat business_relationships as authoritative, use input_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must provide its own visual_thesis and expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. Respect each page's prompt_mode. For semantic_brief, decide only the semantic focus, source-supported relationship boundary, evidence grouping and exact-text binding; omit execution_design or treat it as non-authoritative advice, leaving scene, carrier, spatial organization and supporting detail to ImageGen. For directed_composition, provide the full authoritative execution_design with business_object, visual_focus, semantic_role, use_scene, scene_type, text_integration_method, spatial_organization and relationship_encoding. For every page, record input_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Write one candidate when the page's business relationship type is unambiguous from expression_constraints.reading_requirement and content alone; when it is genuinely contested (for example parallel vs. hierarchical), generate and compare 2-3 materially different candidates and justify the selection. Deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
             "", "- `visual/visual-design-decisions.json`", "",
-            "After the Skill has actually produced that decision receipt, run `python -m cyberppt execute-visual-structure <project> --script <script>` to compile `deck-visual-spec.json` and `script-visual-structure.md`; then record the execution with `python -m cyberppt record-visual-structure-execution <project> --script <script> --executor <surface> --model <model>`, and run `visual-structure-audit`. The audit, not the Skill, rebuilds generation-prompts.md as a legacy structural preview. Formal ImageGen handoff uses the repository artifact-spec-v2 compiler over the audited Stage 02 handoff, deck visual spec and style lock.",
+            "After the Skill has actually produced that decision receipt, run `python -m cyberppt execute-visual-structure <project> --script <script>` to compile `deck-visual-spec.json` and `script-visual-structure.md`; then record the execution with `python -m cyberppt record-visual-structure-execution <project> --script <script> --executor <surface> --model <model>`, and run `visual-structure-audit`. The audit, not the Skill, rebuilds generation-prompts.md as a legacy structural preview. Formal ImageGen handoff uses the repository artifact-spec-v2 compiler over the audited Stage 02 script input, deck visual spec and style lock.",
             "", "Do not select a visual style, generate images, SVG, HTML, or PPTX in this stage.", "",
         ]),
         encoding="utf-8",
@@ -236,6 +219,8 @@ def prepare_visual_structure_stage(
 
 def execute_visual_structure_stage(project: Path, script: Path) -> dict[str, Path]:
     project, script = project.expanduser().resolve(), script.expanduser().resolve()
+    from cyberppt.stage02_input import resolve_input_script
+    script = resolve_input_script(project, script)
     design_input_path = project / VISUAL_FILES["design_input"]
     decisions_path = project / VISUAL_FILES["decisions"]
     if not script.is_file() or not design_input_path.is_file() or not decisions_path.is_file():
@@ -258,6 +243,8 @@ def record_visual_structure_execution(
 ) -> Path:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
+    from cyberppt.stage02_input import resolve_input_script
+    script = resolve_input_script(project, script)
     if not executor.strip() or not model.strip():
         raise ValueError("executor and model are required for the visual structure execution receipt")
     skill_root = _skill_root()
@@ -288,7 +275,7 @@ def record_visual_structure_execution(
             "skill_bundle_sha256": contracts["skill_bundle"],
             "skill_contract_sha256": contracts,
             "approved_script": str(script),
-            "approved_script_semantic_sha256": script_semantic_digest(script),
+            "approved_script_sha256": _sha256(script),
             "visual_design_input": str(design_input),
             "visual_design_input_sha256": _sha256(design_input),
             "page_ids": page_ids,
@@ -306,6 +293,8 @@ def record_visual_structure_execution(
 
 
 def _audit_execution_receipt(project: Path, script: Path, skill_root: Path) -> dict[str, Any]:
+    from cyberppt.stage02_input import resolve_input_script
+    script = resolve_input_script(project, script)
     issues: list[dict[str, str]] = []
 
     def issue(code: str, message: str) -> None:
@@ -325,13 +314,13 @@ def _audit_execution_receipt(project: Path, script: Path, skill_root: Path) -> d
     expected = {
         "skill_request_sha256": _sha256(request_path),
         "skill_bundle_sha256": contracts["skill_bundle"],
-        "approved_script_semantic_sha256": script_semantic_digest(script),
+        "approved_script_sha256": _sha256(script),
         "visual_design_input_sha256": _sha256(design_input),
     }
     expected_hash_source = {
         "skill_request_sha256": str(request_path),
         "skill_bundle_sha256": f"{skill_root} (vendor Skill bundle)",
-        "approved_script_semantic_sha256": str(script),
+        "approved_script_sha256": str(script),
         "visual_design_input_sha256": str(design_input),
     }
     rerun_command = (

@@ -51,7 +51,7 @@ class Stage02BuildContext:
     build_dir: Path
     style_lock: Path
     source_script_sha256: str
-    handoff_sha256: str
+    script_input_sha256: str
     visual_spec_sha256: str
     style_lock_sha256: str
     production_mode: str

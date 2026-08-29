@@ -562,14 +562,14 @@ class StructureStyleDecouplingTests(unittest.TestCase):
                 handoff_page=handoff_page,
                 visual_page=self._visual_page(),
                 style_lock=lock9,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
             )
             spec10 = build_page_artifact_spec(
                 handoff_page=handoff_page,
                 visual_page=self._visual_page(),
                 style_lock=lock10,
-                handoff_sha256="a" * 64,
+                script_input_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
             )
 

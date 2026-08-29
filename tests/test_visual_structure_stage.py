@@ -1003,10 +1003,10 @@ class VisualStructureStageTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            with self.assertRaisesRegex(ValueError, "HANDOFF_BINDING_STALE"):
-                prepare_visual_structure_stage(project, script, reuse_current_handoff=True)
-
-            self.assertFalse((project / VISUAL_FILES["design_input"]).exists())
+            invocation = prepare_visual_structure_stage(project, script, reuse_current_handoff=True)
+            self.assertTrue(invocation.is_file())
+            self.assertTrue((project / VISUAL_FILES["design_input"]).exists())
+            self.assertTrue((project / "workbench/stages/02-input/script-intake.json").is_file())
 
     def test_existing_project_with_visual_artifacts_requires_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1035,89 +1035,11 @@ class VisualStructureStageTests(unittest.TestCase):
                 "  - Text\n",
                 encoding="utf-8",
             )
-            stage01 = project / "workbench" / "stages" / "01-analysis"
-            stage01.mkdir(parents=True)
-            outline = stage01 / "outline.json"
-            outline.write_text('{"schema":"outline.v1","pages":[]}', encoding="utf-8")
-            handoff = project / "workbench" / "stages" / "02-handoff" / "stage02-handoff.json"
-            handoff.parent.mkdir(parents=True)
-            content_integrity = build_content_integrity_contract(
-                ScriptPage(
-                    page_id="p01",
-                    sequence=1,
-                    heading="",
-                    page_type="content",
-                    title="Title",
-                    main_message="Message",
-                    full_prose="Prose",
-                    selection_notes="",
-                    evidence_map="",
-                    evidence_map_refs=(),
-                    source_refs=(),
-                    boundary_source_refs=(),
-                    boundary="",
-                    visual_structure="",
-                    onscreen_text="Text",
-                    module_titles=(),
-                )
-            ).to_dict()
-            handoff.write_text(
-                json.dumps(
-                    {
-                        "schema": "cyberppt.stage02_handoff.v1",
-                        "source_bindings": {
-                            "script": {
-                                "path": str(script),
-                                "sha256": _sha256(script),
-                                "semantic_sha256": script_semantic_digest(script),
-                            },
-                            "outline": {
-                                "path": str(outline),
-                                "sha256": _sha256(outline),
-                                "semantic_sha256": outline_semantic_digest(outline),
-                            },
-                        },
-                        "pages": [
-                            {
-                                "page_id": "p01",
-                                "page_number": 1,
-                                "render_role": "content",
-                                "title": "Title",
-                                "page_mission": "Mission",
-                                "core_message": "Message",
-                                "onscreen_text": "Text",
-                                "onscreen_items": ["Text"],
-                                "onscreen_expression": {
-                                    "form": "key_points_3", "source": "fallback", "confidence": 0.2,
-                                },
-                                "expression_constraints": expression_constraints("key_points_3"),
-                                "stage02_visual_input": {
-                                    "locked_text_items": [
-                                        {"text_id": "P01-T01", "text": "Text", "ordinal": 1}
-                                    ],
-                                    "content_integrity": content_integrity,
-                                    "business_relationships": [],
-                                    "stage01_relationship_features": {
-                                        "authority": "stage01_semantic_handoff",
-                                        "actors": ["Input"],
-                                        "actions": [{"subject": "Input", "relation": "supports", "object": "Result"}],
-                                        "directions": [], "conditions": [], "branches": [], "feedback": [],
-                                        "source_visual_notes": "",
-                                    },
-                                    "author_visual_notes_authority": "advisory_only",
-                                    "expression_constraints": expression_constraints("key_points_3"),
-                                    "body_image_canvas": {
-                                        "width": 2048,
-                                        "height": 1024,
-                                        "ratio": "2:1",
-                                    },
-                                },
-                            }
-                        ],
-                    }
-                ),
-                encoding="utf-8",
-            )
+            from cyberppt.stage02_input import INPUT_JSON, prepare_stage02_input
+
+            input_report = prepare_stage02_input(project, script=script)
+            self.assertEqual("passed", input_report["status"])
+            script_input = project / INPUT_JSON
             visual = project / "visual"
             visual.mkdir()
             artifact_keys = (
@@ -1138,7 +1060,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 if key == "design_input":
                     path.write_text(
-                        json.dumps({"source_sha256": _sha256(handoff)}),
+                        json.dumps({"source_sha256": _sha256(script_input)}),
                         encoding="utf-8",
                     )
                 elif key == "spec_json":
@@ -1203,7 +1125,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 "  - Changed text\n",
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(ValueError, "HANDOFF_BINDING_STALE"):
+            with self.assertRaisesRegex(ValueError, "Stage 02 script input changed"):
                 assert_visual_structure_ready(project, script)
 
     def test_prompt_inputs_hash_ignores_style_lock_but_tracks_the_spec(self) -> None:

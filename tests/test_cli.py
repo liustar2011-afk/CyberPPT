@@ -254,7 +254,7 @@ class CliTests(unittest.TestCase):
                 )
 
         self.assertEqual(2, code)
-        self.assertIn("Stage 02 handoff is missing requested page 3", buffer.getvalue())
+        self.assertNotIn("Stage 02 handoff", buffer.getvalue())
 
     def test_removed_dual_image_rebuild_command_is_rejected(self) -> None:
         with self.assertRaises(SystemExit):

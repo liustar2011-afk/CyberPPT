@@ -11,7 +11,7 @@ from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks, pars
 from scripts.imagegen_pipeline.page_manifest import PRODUCTION_MODES
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import write_json_atomic
-from cyberppt.stage02_handoff import HANDOFF_JSON, ensure_project_script
+from cyberppt.stage02_input import INPUT_JSON, prepare_stage02_input, resolve_input_script
 
 from .models import Stage02BuildContext, Stage02RunOptions
 
@@ -177,10 +177,12 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     semantic_plan_dir = options.semantic_plan_dir.expanduser().resolve() if options.semantic_plan_dir else None
     _require_ocr_if_needed(options)
 
-    if not script.is_file() and not options.external_script:
-        raise FileNotFoundError(f"final script not found: {script}")
-    if options.external_script:
-        script = ensure_project_script(project, script)
+    source_script = script
+    input_report = prepare_stage02_input(project, script=source_script, reuse_current=True)
+    if input_report.get("status") != "passed":
+        codes = ", ".join(item.get("code", "INPUT_INVALID") for item in input_report.get("blocking_issues", []))
+        raise ValueError(f"Stage 02 script input is invalid: {codes}")
+    script = resolve_input_script(project, source_script)
 
     autonomous_contract_path = options.autonomous_contract.expanduser().resolve() if options.autonomous_contract is not None else None
     autonomous_authority = None
@@ -196,12 +198,9 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
             raise ValueError("autonomous contract production mode does not match the contract")
         validate_source_boundary(autonomous_authority)
 
-    source_mode = "autonomous_contract" if autonomous_authority is not None else "external_script" if options.external_script else "formal_project_script"
+    source_mode = "autonomous_contract" if autonomous_authority is not None else "script_file"
 
     from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
-    from cyberppt.stage02_handoff import load_stage02_handoff
-
-    load_stage02_handoff(project, required=True)
     assert_visual_structure_ready(project, script)
     if options.production_mode not in PRODUCTION_MODES:
         raise ValueError(
@@ -247,7 +246,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     )
     target_dir = explicit_output_dir(options.output_dir, resolved_build_id) if options.output_dir else versioned_output_dir(project, slug, resolved_build_id)
 
-    handoff_path = project / HANDOFF_JSON
+    script_input_path = project / INPUT_JSON
     visual_spec_path = project / VISUAL_SPEC_PATH
     return Stage02BuildContext(
         project=project,
@@ -258,7 +257,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
         build_dir=target_dir,
         style_lock=style_lock,
         source_script_sha256=sha256_file(script) or "",
-        handoff_sha256=sha256_file(handoff_path) or "",
+        script_input_sha256=sha256_file(script_input_path) or "",
         visual_spec_sha256=sha256_file(visual_spec_path) or "",
         style_lock_sha256=sha256_file(style_lock) or "",
         production_mode=options.production_mode,

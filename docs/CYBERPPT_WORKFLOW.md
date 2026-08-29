@@ -212,13 +212,13 @@ AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日�
 
 ### 1. 最终脚本和页面生产入口
 
-使用已确认的项目内或外部脚本，先运行 `prepare-stage02-handoff --script <path>`，再进入视觉结构与 `final-script-pages`。页面生产前必须具备当前脚本绑定的 Stage 02 handoff 和视觉结构审计。
+使用已确认的项目内或外部脚本，Stage 02 直接接收 `--script <path>` 指向的最终脚本文件，并在自身工作区建立输入快照。Stage 02 不读取 Stage 01 的 Foundation、Deck Plan、Source Truth、Outline 或流程状态。
 
-外部脚本进入项目后，仓库会将其保留到项目标准路径 `workbench/scripts/final/script-final.md`；后续 handoff、视觉结构、manifest 和生产续跑均绑定该项目内副本，同时在 handoff 的 `source_bindings.script.external_path` 保留外部来源路径。外部来源暂时不可用时，仅当现有 handoff 能证明路径和副本字节仍匹配，才允许使用项目副本续跑。
+Stage 02 不区分项目内脚本、外部脚本或人工脚本。所有输入均按普通 `script_file` 处理，并复制到 Stage 02 自有路径 `workbench/inputs/final-script.md` 作为运行快照；原始文件路径仅用于来源记录和变更检测，不改变运行分支。原始文件暂时不可用时，仅在 Stage 02 已有快照及其字节哈希仍有效时允许续跑。
 
-### 2. Stage 02 handoff
+### 2. Stage 02 script input
 
-运行 `prepare-stage02-handoff`，核对当前最终脚本、项目绑定、脚本版本和页面范围。脚本发生变化后，必须重新生成 handoff，不得沿用旧绑定。`business_relationships` 由 Stage 01 锁定并保持语义权威；Stage 02 semantic verifier 只负责校验，并生成独立的 `render_topology` 作为视觉布局推导。对于 hard/strong 权威关系，出现 rejected 或 unresolved 时 handoff 直接阻断并返回 Stage 01 修复，Stage 02 不改写关系后继续。`content_load` 从 Final Script 原样进入 handoff 和视觉设计输入，未显式声明时按 `standard` 处理。
+Stage 02 以传入脚本文件为唯一跨阶段输入，并在自身工作区记录脚本快照与 SHA-256。脚本文件发生变化后，Stage 02 自行判定已有视觉产物失效。`business_relationships`、`content_load` 等字段如果出现在输入文件中，Stage 02 将其视为文件合同的一部分；semantic verifier 只校验输入文件内部关系是否自洽，并派生 `render_topology` 供视觉布局使用。对 hard/strong 关系出现 rejected 或 unresolved 时，Stage 02 拒绝当前输入文件，不推测其上游生产过程，也不修改关系后继续。`content_load` 未显式声明时按 `standard` 处理。
 
 ### 3. 视觉结构
 

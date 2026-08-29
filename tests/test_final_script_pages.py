@@ -29,7 +29,7 @@ from scripts.imagegen_pipeline.imagegen_handoff import build_page_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
 from cyberppt.semantic_digest import outline_semantic_digest, source_truth_semantic_digest
 from cyberppt.onscreen_expression import expression_constraints
-from cyberppt.stage02_handoff import SCRIPT_PATH
+from cyberppt.stage02_input import INPUT_SCRIPT_PATH
 from cyberppt.content_integrity_contract import build_content_integrity_contract
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 
@@ -585,30 +585,23 @@ class FinalScriptPagesTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        handoff = project / "workbench" / "stages" / "02-handoff" / "stage02-handoff.json"
+        handoff = project / "workbench" / "stages" / "02-input" / "script-intake.json"
         handoff.parent.mkdir(parents=True, exist_ok=True)
-        bound_script = script
-        if external_script:
-            bound_script = project / SCRIPT_PATH
-            bound_script.parent.mkdir(parents=True, exist_ok=True)
-            bound_script.write_bytes(script.read_bytes())
+        bound_script = project / "workbench" / "inputs" / "final-script.md"
+        bound_script.parent.mkdir(parents=True, exist_ok=True)
+        bound_script.write_bytes(script.read_bytes())
         handoff.write_text(
             json.dumps(
                 {
-                    "schema": "cyberppt.stage02_handoff.v1",
+                    "schema": "cyberppt.stage02_script_input.v1",
                     "source_bindings": {
                         "script": {
                             "path": str(bound_script.resolve()),
                             "sha256": hashlib.sha256(bound_script.read_bytes()).hexdigest(),
                             "semantic_sha256": hashlib.sha256(bound_script.read_bytes()).hexdigest(),
-                            **(
-                                {
-                                    "source_mode": "external_script",
-                                    "external_path": str(script.resolve()),
-                                }
-                                if external_script
-                                else {}
-                            ),
+                            "source_path": str(script.resolve()),
+                            "source_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+                            "source_semantic_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
                         },
                         "outline": {
                             "path": str(outline.resolve()),
@@ -827,7 +820,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            with self.assertRaisesRegex(FileNotFoundError, "Stage 02 handoff"):
+            with self.assertRaisesRegex(FileNotFoundError, "visual structure spec"):
                 run_final_script_pages(
                     project=project,
                     script=script,
@@ -849,16 +842,16 @@ class FinalScriptPagesTests(unittest.TestCase):
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             context = json.loads(Path(summary["artifacts"]["build_context"]).read_text(encoding="utf-8"))
 
-        self.assertEqual("external_script", summary["source_mode"])
+        self.assertEqual("script_file", summary["source_mode"])
         self.assertFalse(summary["project_created"])
-        self.assertEqual("external_script", context["source_mode"])
+        self.assertEqual("script_file", context["source_mode"])
         self.assertFalse(context["project_created"])
         self.assertEqual("stage2-only", Path(summary["project"]).name)
         self.assertEqual(
             summary["source_script"],
-            str((project / SCRIPT_PATH).resolve()),
+            str((project / INPUT_SCRIPT_PATH).resolve()),
         )
-        self.assertEqual("external_script", manifest["source_mode"])
+        self.assertEqual("script_file", manifest["source_mode"])
         self.assertEqual(summary["source_script_sha256"], manifest["source_script_sha256"])
         self.assertFalse(manifest["prompt_contract"]["approved_prompt_is_source"])
         self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
