@@ -76,6 +76,7 @@ def _write_visual_design_input(project: Path, script_input: Path) -> Path:
                 "expression_constraints": constraints,
                 "business_relationships": business_relationships,
                 "input_relationship_features": visual.get("input_relationship_features") or visual.get("stage01_relationship_features") or {},
+                "stage01_relationship_features": visual.get("stage01_relationship_features") or visual.get("input_relationship_features") or {},
                 "render_topology": visual.get("render_topology") or visual.get("semantic_topology") or {},
                 "semantic_verification": visual.get("semantic_verification") or {},
                 "relationship_authority": "business_relationships",
