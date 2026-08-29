@@ -97,6 +97,7 @@ def _plan() -> dict:
 
 def _final() -> dict:
     return {
+        "deck": {"delivery_mode": "presented"},
         "slides": [
             {"id": "P03", "page_type": "chapter", "chapter_id": "C1", "title": "建设背景与总体定位", "core_message": "x", "onscreen": []},
             {"id": "P07", "page_type": "content", "title": "建设目标", "core_message": "600家以上主体接入", "full_copy": "600家以上主体接入意味着当前主体数量距离目标还有很大缺口。", "onscreen": []},

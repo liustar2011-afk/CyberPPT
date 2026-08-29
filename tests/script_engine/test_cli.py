@@ -229,6 +229,7 @@ def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, caps
         encoding="utf-8",
     )
     final_payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
+    final_payload.setdefault("deck", {})["delivery_mode"] = "presented"
     final_payload["slides"][0]["page_type"] = "content"
     final_payload["slides"][0]["onscreen"] = [{"heading": "模块", "text": "简短说明"}]
     (project_dir / "dist" / "final-script.json").write_text(

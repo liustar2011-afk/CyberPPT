@@ -742,7 +742,7 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
     audience_scope = plan.get("audience_scope", "unspecified")
     preserve_structure = plan.get("source_structure_mode") == "preserve"
     lean_plan = _is_lean_plan(plan)
-    delivery_mode = str((final_script.get("deck") or {}).get("delivery_mode") or plan.get("delivery_mode") or "presented")
+    delivery_mode = str((final_script.get("deck") or {}).get("delivery_mode") or plan.get("delivery_mode") or "self_read")
     strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
     if not lean_plan and not strict_evidence_fit:
         issues.append(

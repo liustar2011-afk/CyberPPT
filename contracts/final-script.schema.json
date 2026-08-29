@@ -36,7 +36,8 @@
         },
         "delivery_mode": {
           "type": "string",
-          "enum": ["presented", "self_read"]
+          "enum": ["presented", "self_read"],
+          "default": "self_read"
         },
         "narrative": {
           "type": "string"

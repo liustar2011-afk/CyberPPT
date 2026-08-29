@@ -571,6 +571,15 @@ def test_final_audit_blocks_source_detail_collapsed_to_bare_labels() -> None:
     assert any("绿色低碳" in issue for issue in issues)
 
 
+def test_final_audit_defaults_missing_delivery_mode_to_self_read() -> None:
+    foundation, plan, final = _label_detail_fixture()
+    final["slides"][0]["onscreen"] = [{"heading": "重点验证场景"}]
+
+    issues, _ = audit_final_script(final, plan, foundation)
+
+    assert any("ONSCREEN_SELF_READ_MODULE_THIN" in issue for issue in issues)
+
+
 def test_final_audit_accepts_label_with_source_grounded_explanation() -> None:
     foundation, plan, final = _label_detail_fixture()
     final["slides"][0]["onscreen"][0]["items"] = [

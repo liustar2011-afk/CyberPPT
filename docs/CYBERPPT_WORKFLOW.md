@@ -159,7 +159,9 @@ Skill 名称均不构成 AUTHOR 执行。
 
 AUTHOR 写作前直接读取 Foundation、轻量 Deck Plan 和对应来源证据，理解本页的来源边界与页面使命。论证关系、完整稿、上屏结构和讲述方式由 AUTHOR 在写作中形成。逐页完成作者化写作后，再运行确定性审计；审计只负责发现问题，不代替 AUTHOR 生成或改写页面。
 
-上屏文字的分组与结构化压缩由 AUTHOR 完成。作者按页面使命和来源证据组织“结论、证据、解读与含义”，并在 Final Script 中保留来源追溯；Deck Plan 不声明 `content_route`、`onscreen_contract`、`onscreen_composition` 或视觉准备字段。
+上屏文字的分组与结构化压缩由 AUTHOR 完成。作者按页面使命和来源证据组织“结论、证据、解读与含义”，并在 Final Script 中保留来源追溯；Deck Plan 不声明 `content_route`、`onscreen_contract`、`onscreen_composition` 或视觉准备字段。所有项目默认采用 `deck.delivery_mode: self_read`；只有用户明确要求演讲辅助型、低文字密度稿件时，才使用 `presented`。
+
+`self_read` 内容页必须形成可独立阅读的页面闭环：明确页面主题，给出核心判断，解释判断依据，并保留理解所需的事实、范围、条件或结果。上屏文字按“语义锚点—完整核心语义—必要细项”组织；模块标题用于定位，解释句承载业务含义。数字需要说明所指对象和结论，清单需要说明归组依据和共同作用。压缩过程中保留对象、动作或判断以及必要限定，避免只剩抽象口号、分类名称和依赖讲解的提示词。
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
@@ -171,7 +173,7 @@ v1 strict Foundation 的 `source_consumption_policy: required` 继续服务严�
 
 AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态和分类层级。上屏审计验证代表来源的模块映射和可见特征。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
-页面信息密度不使用固定字数或固定模块数门槛。Final Script 在 `deck.delivery_mode` 声明 `presented` 或 `self_read`，内容页可在自身声明 `content_load`；最终审计依据实际上屏模块和语义信息单元检查阅读自洽性。Plan 不承担信息密度设计。
+页面信息密度不使用固定字数或固定模块数门槛。Final Script 默认声明 `deck.delivery_mode: self_read`，内容页可在自身声明 `content_load`；最终审计依据实际上屏模块和语义信息单元检查阅读自洽性。用户明确选择演讲辅助型稿件时可声明 `presented`。Plan 不承担信息密度设计。
 
 页面关系由 AUTHOR 基于来源和完整稿形成，并写入 Final Script。`audit-final` 直接对照 Foundation 检查无来源关系、数字、责任、状态和边界，不再要求关系先在轻量 Plan 中获批。
 

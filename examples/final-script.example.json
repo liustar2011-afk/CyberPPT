@@ -5,6 +5,7 @@
     "title": "示例脚本",
     "communication_goal": "说明数据从资源治理进入可信使用并形成服务输出的逻辑。",
     "audience": "业务管理人员",
+    "delivery_mode": "self_read",
     "narrative": "问题识别 → 机制说明 → 结果形成"
   },
   "slides": [

@@ -70,6 +70,18 @@ the argument aloud. If the inherited
 module grouping is semantically invalid, it returns to PLAN and repairs the
 smallest affected page contract before writing.
 
+Every deck defaults to `deck.delivery_mode: self_read`. The author may use
+`presented` only when the user explicitly requests a presenter-led, sparse deck.
+For `self_read`, each content page must close its own reading loop: identify the
+topic, state the page judgment, explain the evidence or reasoning, and retain the
+facts, scope, conditions or results needed to understand it without narration.
+Organize reader-facing copy as a semantic anchor, a complete core statement and
+necessary details. Module headings locate the topic; explanatory lines carry the
+business meaning. Lists and numbers must state why they are grouped and what
+they establish. Compression must preserve the object, predicate or action, and
+any material qualifier. Do not shorten copy into vague slogans, unexplained
+category labels or presenter cues.
+
 Deterministic code runs only after the generative pass. Its role is to detect
 source loss, proposition drift, unsupported relations, broken boundaries and
 delivery-format defects. It must never create onscreen copy by abbreviating
