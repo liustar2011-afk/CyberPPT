@@ -20,9 +20,20 @@ jobs:
           python-version: '3.12'
           cache: pip
       - name: Refine standalone file-boundary patch
-        run: python scripts/_fix_stage_file_boundary_v4.py
+        run: |
+          python scripts/_fix_stage_file_boundary_v4.py
+          python scripts/_fix_stage_file_boundary_v5.py
       - name: Apply standalone file-boundary refactor
         run: python scripts/_apply_stage_file_boundary_v2.py
+      - name: Remove temporary patch machinery before repository tests
+        run: |
+          rm -f scripts/_apply_stage_file_boundary.py
+          rm -f scripts/_apply_stage_file_boundary_v2.py
+          rm -f scripts/_fix_stage_file_boundary_helper.py
+          rm -f scripts/_fix_stage_file_boundary_v3.py
+          rm -f scripts/_fix_stage_file_boundary_v4.py
+          rm -f scripts/_fix_stage_file_boundary_v5.py
+          rm -f .github/workflows/stage-file-boundary.yml
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
@@ -35,7 +46,6 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git rm scripts/_apply_stage_file_boundary.py scripts/_apply_stage_file_boundary_v2.py scripts/_fix_stage_file_boundary_helper.py scripts/_fix_stage_file_boundary_v3.py scripts/_fix_stage_file_boundary_v4.py .github/workflows/stage-file-boundary.yml
           git add -A
           git status --short
           git commit -m 'refactor: decouple Stage01 and Stage02 by file boundary'
