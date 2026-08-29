@@ -7,6 +7,7 @@ from typing import Any
 
 from cyberppt.page_artifact_spec import is_text_dense
 from cyberppt.region_graph import build_region_graph
+from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 
 from .persistence import VISUAL_FILES, _read_json, _sha256, write_json
@@ -501,17 +502,22 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     semantic_focus_kind = str(focus.get("kind") or "relationship")
     if semantic_focus_kind not in {"entity", "action", "state", "relationship", "outcome"}:
         semantic_focus_kind = "relationship"
-    region_graph = build_region_graph(
-        topology=topology,
-        evidence_ids=[eid[key] for key in evidence_keys],
-        focus_id=focus_id,
-        reading_sequence=[eid[key] for key in reading_keys],
-        semantic_edges=graph_edges,
-        focus_policy=focus_policy,
+    region_graph = bind_region_graph_text(
+        build_region_graph(
+            topology=topology,
+            evidence_ids=[eid[key] for key in evidence_keys],
+            focus_id=focus_id,
+            reading_sequence=[eid[key] for key in reading_keys],
+            semantic_edges=graph_edges,
+            focus_policy=focus_policy,
+        ),
+        evidence_text_ids={eid[key]: text_ids_by_evidence[key] for key in evidence_keys},
+        required_text_ids=expected_ids,
     )
+    text_region_ids = region_text_owner_map(region_graph)
     quality_contract = _quality_contract(decision, selected, focus_id)
     final_text = [
-        {"id": item_id, "role": "body", "text": text, "region_id": "R_RELATION"}
+        {"id": item_id, "role": "body", "text": text, "region_id": text_region_ids[item_id]}
         for item_id, text in zip(expected_ids, expected_text)
     ]
     locked_items = [
