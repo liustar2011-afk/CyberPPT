@@ -19,6 +19,13 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
+def replace_all(text: str, old: str, new: str, label: str) -> str:
+    count = text.count(old)
+    if count < 1:
+        raise RuntimeError(f"{label}: expected at least one match, got {count}")
+    return text.replace(old, new)
+
+
 # 1. Production context names the Stage2-owned intake artifact directly.
 path = "cyberppt/stage02_production/models.py"
 text = read(path)
@@ -40,7 +47,36 @@ text = replace_once(
 )
 write(path, text)
 
-# 2. Execution receipt binds the Stage2-owned snapshot by raw file SHA.
+# 2. Artifact-spec provenance binds the Stage2 script input, not a Stage1 handoff.
+path = "cyberppt/page_artifact_spec.py"
+text = read(path)
+text = replace_once(
+    text,
+    "    handoff_sha256: str,\n",
+    "    script_input_sha256: str,\n",
+    "artifact spec input hash parameter",
+)
+text = replace_once(
+    text,
+    '        "handoff": str(handoff_sha256),\n',
+    '        "script_input": str(script_input_sha256),\n',
+    "artifact spec source hash key",
+)
+text = replace_once(
+    text,
+    "    handoff_sha = hashlib.sha256(script_input_path.read_bytes()).hexdigest()\n",
+    "    script_input_sha = hashlib.sha256(script_input_path.read_bytes()).hexdigest()\n",
+    "artifact spec local input hash",
+)
+text = replace_once(
+    text,
+    "            handoff_sha256=handoff_sha,\n",
+    "            script_input_sha256=script_input_sha,\n",
+    "artifact spec loader input hash",
+)
+write(path, text)
+
+# 3. Execution receipt binds the Stage2-owned snapshot by raw file SHA.
 path = "cyberppt/visual_stage/execution.py"
 text = read(path)
 needle = '            "approved_script": str(script),\n            "visual_design_input": str(design_input),'
@@ -52,7 +88,7 @@ replacement = (
 text = replace_once(text, needle, replacement, "execution receipt script hash")
 write(path, text)
 
-# 3. Compact-blueprint regression consumes canonical Stage2 script input.
+# 4. Compact-blueprint regression consumes canonical Stage2 script input.
 path = "tests/test_imagegen_page_manifest.py"
 text = read(path)
 text = replace_once(
@@ -88,17 +124,18 @@ replacement = '''            script_input = {
 text, count = pattern.subn(lambda _match: replacement, text, count=1)
 if count != 1:
     raise RuntimeError(f"compact blueprint fixture: expected one match, got {count}")
-text = replace_once(
-    text,
-    'self.assertIn("2048×1024（2:1）", prompt)',
-    'self.assertIn("2048×1024 像素（2:1）", prompt)',
-    "compact blueprint canvas assertion",
-)
+# Keep the existing 2048×1024（2:1） assertion; it matches the actual prompt contract.
 write(path, text)
 
-# 4. Artifact-spec loader fixture creates the canonical Stage2 input file it hashes.
+# 5. Artifact-spec tests use the Stage2-owned script-input hash parameter and fixture.
 path = "tests/test_page_artifact_spec.py"
 text = read(path)
+text = replace_all(
+    text,
+    "handoff_sha256=",
+    "script_input_sha256=",
+    "artifact-spec input hash call sites",
+)
 old = '''            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"
             handoff_path.parent.mkdir(parents=True)
             handoff_path.write_text("{}\\n", encoding="utf-8")'''
@@ -108,7 +145,7 @@ new = '''            input_path = project / "workbench/stages/02-input/script-in
 text = replace_once(text, old, new, "artifact-spec canonical input fixture")
 write(path, text)
 
-# 5. Visual gate regression prepares Stage2 input directly; no Stage1 outline/handoff fixture.
+# 6. Visual gate regression prepares Stage2 input directly; no Stage1 outline/handoff fixture.
 path = "tests/test_visual_structure_stage.py"
 text = read(path)
 pattern = re.compile(
@@ -133,7 +170,7 @@ text = replace_once(
 )
 write(path, text)
 
-# 6. Architecture guard prevents the old cross-stage hash field from returning.
+# 7. Architecture guard prevents the old cross-stage hash field from returning.
 path = "tests/test_stage_file_boundary.py"
 text = read(path)
 marker = '    for token in ("deck-plan.json","foundation.json","source-truth.json","outline.json"): assert token not in text\n'
