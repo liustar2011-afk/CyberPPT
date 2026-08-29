@@ -173,8 +173,8 @@ CyberPPT工作台候选还必须包含：
     "business_object": "承载主关系的具体业务对象或关系场",
     "visual_focus": "唯一视觉焦点及其业务含义",
     "semantic_role": "该对象如何证明页面判断",
-    "use_scene": false,
-    "scene_type": "选中的非场景关系场或真实业务场景",
+    "scene_policy": "allowed",
+    "scene_type": "允许使用的真实业务场景或非场景关系场",
     "text_integration_method": "每组正文如何贴附到对象、动作、接口、边界或结果",
     "spatial_organization": "对象、动作与结果如何形成阅读路径",
     "relationship_encoding": "方向、依赖、转化、边界或反馈如何被看见"
@@ -231,7 +231,7 @@ CyberPPT工作台候选还必须包含：
 - `visual_hierarchy.primary`必须与该对象或关系场一致，并能说明为何它承载核心结论。
 - `spatial_organization`与`relationship_encoding`必须说清对象、动作、接口、边界或结果如何构成主关系，不能只写`path`、`主链`、`聚焦`等关系标签。
 - `text_integration_method`必须说明每组正文贴附到哪个对象、动作、接口、边界或结果；“逐项绑定语义节点”不是可执行设计。
-- 选择`use_scene: false`时，仍须用具体业务对象及其关系构成图义场；选择场景时，场景必须直接解释该关系，不能作为装饰背景。
+- `scene_policy: forbidden`时，仍须用具体业务对象及其关系构成图义场；`required`时场景必须直接解释该关系；`allowed`与`auto`保留媒介选择空间。旧项目中的`use_scene`仅用于兼容读取。
 
 ## 内容锁定
 

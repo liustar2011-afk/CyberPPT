@@ -628,6 +628,20 @@ def audit_visual_deck_rhythm(spec: dict[str, Any], decisions: dict[str, Any]) ->
     return {"status": "failed" if blocking else "passed", "blocking_issues": blocking, "warnings": warnings}
 
 
+_ALLOWED_SCENE_POLICIES = {"required", "allowed", "forbidden", "auto"}
+
+
+def _scene_policy_from_execution_design(execution_design: object, *, prompt_mode: str) -> str | None:
+    design = execution_design if isinstance(execution_design, dict) else {}
+    requested = str(design.get("scene_policy") or "").strip()
+    if requested:
+        return requested if requested in _ALLOWED_SCENE_POLICIES else None
+    legacy = design.get("use_scene")
+    if isinstance(legacy, bool):
+        return "allowed" if legacy else "forbidden"
+    return "auto" if prompt_mode == "semantic_brief" else None
+
+
 def audit_visual_design_package(
     design_input_path: Path,
     decisions_path: Path,
@@ -830,10 +844,11 @@ def audit_visual_design_package(
             "semantic_role",
             "scene_type",
         )
+        execution_scene_policy = _scene_policy_from_execution_design(execution_design, prompt_mode=prompt_mode)
         if prompt_mode == "directed_composition" and (not isinstance(execution_design, dict) or any(
             not str(execution_design.get(key) or "").strip()
             for key in required_execution_text
-        ) or not isinstance(execution_design.get("use_scene"), bool)):
+        ) or execution_scene_policy is None):
             issue(
                 "EXECUTION_DESIGN_INVALID",
                 "Selected execution design must preserve its carrier, scene policy, semantic role, composition, and text integration.",
@@ -861,11 +876,18 @@ def audit_visual_design_package(
                 expected_scene = {
                     "business_object": execution_design.get("business_object"),
                     "semantic_role": execution_design.get("semantic_role"),
-                    "use_scene": execution_design.get("use_scene"),
                     "scene_type": execution_design.get("scene_type"),
                 }
                 actual_scene = {key: image_plan.get(key) for key in expected_scene}
-                if actual_scene != expected_scene:
+                scene_drift = actual_scene != expected_scene
+                expected_scene_policy = _scene_policy_from_execution_design(execution_design, prompt_mode=prompt_mode)
+                actual_scene_policy = str(image_plan.get("scene_policy") or "").strip()
+                if actual_scene_policy and actual_scene_policy != expected_scene_policy:
+                    scene_drift = True
+                legacy_use_scene = execution_design.get("use_scene")
+                if isinstance(legacy_use_scene, bool) and image_plan.get("use_scene") != legacy_use_scene:
+                    scene_drift = True
+                if scene_drift:
                     issue(
                         "SPEC_SCENE_POLICY_DRIFTED",
                         "Spec image plan must match the selected carrier and scene policy.",

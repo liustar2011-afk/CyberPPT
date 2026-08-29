@@ -117,7 +117,8 @@ def _resolve_scene_policy(design: dict[str, Any], prompt_mode: str, page_id: str
 
 
 def _legacy_use_scene(scene_policy: str) -> bool:
-    return scene_policy != "forbidden"
+    # Deprecated projection only; auto does not mean a scene was selected.
+    return scene_policy in {"required", "allowed"}
 
 
 def _visual_budget(dense_text_page: bool, scene_policy: str) -> dict[str, object]:
@@ -178,7 +179,7 @@ def _decision_execution_design(
     decision: dict[str, Any],
     selected: dict[str, Any],
     page_id: str,
-    focus_policy: str,
+    focus_policy: str = "single_anchor",
 ) -> dict[str, object]:
     prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
     if prompt_mode == "semantic_brief":
@@ -599,6 +600,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "regions": [{"id": "R_RELATION", "role": "relation-bearing business field", "x": 80, "y": 120, "w": 1888, "h": 800, "priority": "primary"}],
         },
         "image_plan": {
+            "scene_policy": scene_policy,
+            # Deprecated compatibility field; new logic consumes scene_policy.
             "use_scene": _legacy_use_scene(scene_policy),
             "scene_type": str(design["scene_type"]),
             "business_object": design["business_object"],
@@ -610,7 +613,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         },
         "visual_budget": visual_budget,
         "expression_contract": expression_contract,
-        "quality_contract": quality_contract | {"scene_policy": scene_policy},
+        "quality_contract": quality_contract,
         "connectors": connectors,
         "final_text": final_text,
         "generation_handoff": {
@@ -668,7 +671,7 @@ def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
         node_summary = ", ".join(f"{node['id']}({node['role']})" for node in sg["nodes"])
         edge_summary = "; ".join(f"{edge['from']} -> {edge['to']}（{edge['relation']}，{edge['direction']}）" for edge in sg["edges"]) or "无"
         forbidden_summary = ", ".join(sg["forbidden_structures"]) or "无"
-        scene_policy = str(page.get("quality_contract", {}).get("scene_policy") or "legacy")
+        scene_policy = str(page.get("image_plan", {}).get("scene_policy") or "legacy")
         lines += [
             f"## 第{page['page_number']}页｜{page['page_title']}", "", "### 页面角色", page["page_role"], "",
             "### 页面使命", page["page_mission"], "", "### 核心结论", page["core_judgment"], "",

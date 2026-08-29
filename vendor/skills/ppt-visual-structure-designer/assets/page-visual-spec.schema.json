@@ -87,6 +87,11 @@
               "style_guidance": false,
               "negative_constraints": false
             }
+          },
+          "image_plan": {
+            "required": [
+              "scene_policy"
+            ]
           }
         }
       }
@@ -260,11 +265,11 @@
         "topology",
         "focus_node",
         "nodes",
-      "edges",
-      "decision_relationship",
-      "business_relationships",
-      "grouping_decisions",
-      "forbidden_structures"
+        "edges",
+        "decision_relationship",
+        "business_relationships",
+        "grouping_decisions",
+        "forbidden_structures"
       ],
       "properties": {
         "topology": {
@@ -384,109 +389,109 @@
             }
           }
         },
-      "decision_relationship": {
-        "type": "string",
-        "minLength": 4
-      },
-      "business_relationships": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "subject",
-            "relation",
-            "objects"
-          ],
-          "properties": {
-            "subject": {
-              "type": "string",
-              "minLength": 1
-            },
-            "relation": {
-              "type": "string",
-              "minLength": 1
-            },
-            "objects": {
-              "type": "array",
-              "minItems": 1,
-              "items": {
+        "decision_relationship": {
+          "type": "string",
+          "minLength": 4
+        },
+        "business_relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "subject",
+              "relation",
+              "objects"
+            ],
+            "properties": {
+              "subject": {
                 "type": "string",
                 "minLength": 1
-              }
-            },
-            "direction": {
-              "type": "string"
-            },
-            "condition": {
-              "type": "string"
-            },
-            "modality": {
-              "type": "string"
-            },
-            "basis": {
-              "type": "string"
-            },
-            "confidence": {
-              "type": "string"
-            },
-            "source_refs": {
-              "type": "array",
-              "items": {
+              },
+              "relation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "objects": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "direction": {
+                "type": "string"
+              },
+              "condition": {
+                "type": "string"
+              },
+              "modality": {
+                "type": "string"
+              },
+              "basis": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string"
+              },
+              "source_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "authority_ref": {
                 "type": "string"
               }
-            },
-            "authority_ref": {
-              "type": "string"
             }
           }
-        }
-      },
-      "grouping_decisions": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "source_nodes",
-            "target_node",
-            "reason",
-            "loss_risk"
-          ],
-          "properties": {
-            "source_nodes": {
-              "type": "array",
-              "minItems": 2,
-              "items": {
+        },
+        "grouping_decisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source_nodes",
+              "target_node",
+              "reason",
+              "loss_risk"
+            ],
+            "properties": {
+              "source_nodes": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "target_node": {
                 "type": "string",
                 "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "loss_risk": {
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
               }
-            },
-            "target_node": {
-              "type": "string",
-              "minLength": 1
-            },
-            "reason": {
-              "type": "string",
-              "minLength": 1
-            },
-            "loss_risk": {
-              "enum": [
-                "low",
-                "medium",
-                "high"
-              ]
             }
           }
+        },
+        "forbidden_structures": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
-      },
-      "forbidden_structures": {
-        "type": "array",
-        "items": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
       }
     },
     "structural_decision": {
@@ -914,7 +919,8 @@
       ],
       "properties": {
         "use_scene": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Deprecated compatibility projection; new logic consumes scene_policy."
         },
         "scene_type": {
           "type": "string"
@@ -936,6 +942,15 @@
         },
         "factual_event_implication": {
           "const": false
+        },
+        "scene_policy": {
+          "enum": [
+            "required",
+            "allowed",
+            "forbidden",
+            "auto"
+          ],
+          "description": "Authoritative Stage2 scene-use policy. use_scene is deprecated compatibility metadata."
         }
       }
     },
@@ -961,7 +976,10 @@
           "minimum": 0
         },
         "scope": {
-          "enum": ["page", "region"]
+          "enum": [
+            "page",
+            "region"
+          ]
         },
         "region_local_visuals": {
           "type": "boolean"
@@ -981,13 +999,35 @@
         "deviation_reason"
       ],
       "properties": {
-        "form": {"type": "string", "minLength": 1},
-        "constraints_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "selected_candidate_id": {"type": "string", "minLength": 1},
-        "fit_status": {"enum": ["default_profile", "adapted"]},
-        "reading_relation": {"type": "string", "minLength": 1},
-        "balance_strategy": {"type": "string", "minLength": 1},
-        "deviation_reason": {"type": "string"}
+        "form": {
+          "type": "string",
+          "minLength": 1
+        },
+        "constraints_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "selected_candidate_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fit_status": {
+          "enum": [
+            "default_profile",
+            "adapted"
+          ]
+        },
+        "reading_relation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "balance_strategy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "deviation_reason": {
+          "type": "string"
+        }
       }
     },
     "quality_contract": {
@@ -1160,14 +1200,17 @@
         "status": {
           "enum": [
             "draft",
-          "reviewed",
+            "reviewed",
             "pending_audit",
             "passed",
             "failed"
           ]
         },
         "score": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "minimum": 0,
           "maximum": 100
         },

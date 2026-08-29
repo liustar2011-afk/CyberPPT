@@ -206,6 +206,7 @@ def _page_from_case(
         },
     ]
     page["image_plan"] = {
+        "scene_policy": "forbidden",
         "use_scene": False,
         "scene_type": "No independent scene; the business relationship field carries the page",
         "business_object": execution["carrier"],

@@ -259,6 +259,11 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     if ip.get("identifiable_location") is not False:
         add(issues, "error", "location", "Identifiable location is prohibited by default", n)
     prompt_mode = str(page.get("prompt_mode") or "directed_composition")
+    scene_policy = str(ip.get("scene_policy") or "").strip()
+    if scene_policy and scene_policy not in {"required", "allowed", "forbidden", "auto"}:
+        add(issues, "error", "scene_policy_invalid", "scene_policy must be required, allowed, forbidden, or auto", n)
+    if schema_version == "1.1" and prompt_mode == "semantic_brief" and scene_policy == "forbidden":
+        add(issues, "error", "semantic_brief_scene_forbidden", "semantic_brief must not pre-forbid scene use before page semantics and Style lock are evaluated", n)
     if schema_version == "1.1" and prompt_mode == "directed_composition":
         carrier = str(ip.get("business_object") or "").strip()
         semantic_role = str(ip.get("semantic_role") or "").strip()
@@ -282,7 +287,8 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         if GENERIC_EXECUTION_RE.search(relation_text) or not CONCRETE_RELATION_RE.search(relation_text):
             add(issues, "error", "visual_relationship_not_executable",
                 "visual design must explain how selected business objects/actions form the relationship field; path/focus labels alone are insufficient", n)
-        if ip.get("use_scene") is False and not CONCRETE_RELATION_RE.search("\n".join((carrier, semantic_role, organization, encoding))):
+        resolved_scene_forbidden = scene_policy == "forbidden" or (not scene_policy and ip.get("use_scene") is False)
+        if resolved_scene_forbidden and not CONCRETE_RELATION_RE.search("\n".join((carrier, semantic_role, organization, encoding))):
             add(issues, "error", "carrier_without_scene_not_executable",
                 "a non-scene page still needs a concrete business-object relationship field, not a renderer handoff", n)
     expression_text = "\n".join(

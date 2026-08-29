@@ -65,6 +65,11 @@ class VisualCarrierSpec:
     semantic_role: str
     use_scene: bool
     scene_type: str
+    scene_policy: str = "auto"
+
+    def __post_init__(self) -> None:
+        if self.scene_policy not in {"required", "allowed", "forbidden", "auto"}:
+            raise ValueError(f"unsupported scene policy: {self.scene_policy!r}")
 
 
 @dataclass(frozen=True)
@@ -371,29 +376,32 @@ def _visual_budget(
     visual_page: Mapping[str, object],
     *,
     topology: str,
-    use_scene: bool,
+    use_scene: bool | None = None,
+    scene_policy: str | None = None,
     visible_text: tuple[str, ...] = (),
 ) -> VisualBudgetSpec:
     raw = visual_page.get("visual_budget")
     raw = raw if isinstance(raw, dict) else {}
     if raw:
-        budget = VisualBudgetSpec(
+        return VisualBudgetSpec(
             mode=str(raw.get("mode") or "").strip(),
             max_auxiliary_fragments=int(raw.get("max_auxiliary_fragments")),
             scope=str(raw.get("scope") or "").strip(),
             region_local_visuals=bool(raw.get("region_local_visuals")),
         )
-        if topology == "parallel_set" and budget.mode == "integrated_scene":
-            raise ValueError("parallel_set cannot use an integrated-scene visual budget")
-        return budget
-    if is_text_dense(visible_text) and (topology == "parallel_set" or not use_scene):
+    resolved = str(scene_policy or "").strip()
+    if not resolved:
+        resolved = "allowed" if use_scene is True else "forbidden" if use_scene is False else "auto"
+    if resolved not in {"required", "allowed", "forbidden", "auto"}:
+        raise ValueError(f"unsupported scene policy for visual budget: {resolved!r}")
+    if is_text_dense(visible_text) and resolved != "required":
         return VisualBudgetSpec(
             mode="relationship_field_only",
             max_auxiliary_fragments=0,
             scope="page",
             region_local_visuals=False,
         )
-    if not use_scene:
+    if resolved == "forbidden":
         return VisualBudgetSpec(
             mode="shared_field",
             max_auxiliary_fragments=1,
@@ -724,6 +732,11 @@ def build_page_artifact_spec(
     use_scene = image_plan.get("use_scene")
     if not isinstance(use_scene, bool):
         raise ValueError("artifact spec image plan use_scene must be boolean")
+    scene_policy = str(image_plan.get("scene_policy") or "").strip()
+    if not scene_policy:
+        scene_policy = "allowed" if use_scene else "forbidden"
+    if scene_policy not in {"required", "allowed", "forbidden", "auto"}:
+        raise ValueError(f"artifact spec image plan has invalid scene_policy: {scene_policy!r}")
 
     connector_items = visual_page.get("connectors")
     connectors = tuple(
@@ -785,6 +798,7 @@ def build_page_artifact_spec(
             semantic_role=_required_text(image_plan.get("semantic_role"), "visual carrier semantic role"),
             use_scene=use_scene,
             scene_type=_required_text(image_plan.get("scene_type"), "visual carrier scene type"),
+            scene_policy=scene_policy,
         ),
         composition=CompositionSpec(
             spatial_organization=_required_text(visual_decision.get("spatial_organization"), "spatial organization"),
@@ -823,6 +837,7 @@ def build_page_artifact_spec(
             visual_page,
             topology=str(semantic_graph.get("topology") or ""),
             use_scene=use_scene,
+            scene_policy=scene_policy,
             visible_text=visible_text,
         ),
         content_root_count=content_root_count,

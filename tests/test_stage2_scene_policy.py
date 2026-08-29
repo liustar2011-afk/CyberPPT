@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pytest
 
+from cyberppt.page_artifact_spec import _visual_budget as artifact_visual_budget
+
 from cyberppt.visual_stage.compiler import (
     _decision_execution_design,
     _fallback_spatial_organization,
@@ -31,7 +33,7 @@ def test_semantic_brief_defaults_to_auto_scene_policy() -> None:
     )
 
     assert design["scene_policy"] == "auto"
-    assert design["use_scene"] is True
+    assert design["use_scene"] is False
     assert "同权证据" in str(design["spatial_organization"])
 
 
@@ -78,3 +80,9 @@ def test_fallback_spatial_copy_respects_focus_policy() -> None:
     assert "阶段推进" in sequence
     assert "主视觉锚点" in single
     assert "唯一视觉焦点" not in peer
+
+
+def test_artifact_budget_allows_parallel_auto_scene_policy() -> None:
+    budget = artifact_visual_budget({}, topology="parallel_set", use_scene=False, scene_policy="auto")
+    assert budget.mode == "integrated_scene"
+    assert budget.region_local_visuals is True

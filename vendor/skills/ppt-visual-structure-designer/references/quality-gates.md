@@ -90,6 +90,8 @@
 
 - 使用“简洁、大气、科技感、左文右图”等空泛描述。
 - `directed_composition`没有明确对象、位置、阅读路径和连接方向。
+- `scene_policy`不在`required / allowed / forbidden / auto`中。
+- `semantic_brief`被无来源地强制设为`scene_policy: forbidden`，导致业务场景或插图在进入ImageGen前被提前排除。
 - 标题区未留空但配置要求外部标题层。
 - `schema_version: 1.1`没有`style_source_ref`，或复制了风格正文。
 - CyberPPT工作台的`required_text_ids`与`final_text`、锁定正文集合或顺序不一致。
