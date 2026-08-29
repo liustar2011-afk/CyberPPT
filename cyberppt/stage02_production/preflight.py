@@ -20,6 +20,7 @@ STAGE_DIR = "workbench/stages/02-imagegen"
 TEMPLATE_LOCK_DIR = "workbench/locks/template_text"
 LEDGER_PATH = "workbench/artifact-ledger.json"
 VISUAL_SPEC_PATH = Path("visual/deck-visual-spec.json")
+PRODUCTION_STYLE_ID = 9
 
 
 def utc_now() -> str:
@@ -63,6 +64,11 @@ def read_style_lock(path: Path) -> dict[str, Any]:
         raise ValueError(
             f"--style-lock is not a CyberPPT visual style lock JSON: {path}; "
             "expected schema cyberppt.visual_style_lock.v1"
+        )
+    style_id = (data.get("style") or {}).get("id")
+    if style_id != PRODUCTION_STYLE_ID:
+        raise ValueError(
+            f"Stage 02 main flow only supports visual Style 09; received style id {style_id!r}"
         )
     return data
 
@@ -215,8 +221,8 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     if style_lock is None:
         style_lock = write_project_style_lock(
             project=project,
-            style_id=options.style_id,
-            style_name=options.style_name,
+            style_id=PRODUCTION_STYLE_ID,
+            style_name=None,
             source_script=script,
         )
     style_data = read_style_lock(style_lock)

@@ -231,19 +231,13 @@ Stage 02 以传入脚本文件为唯一跨阶段输入，并在自身工作区�
 
 视觉结构 Skill 只决定视觉承载、关系表达、空间语法和视觉层级，不重新解释源材料事实，不新增页面结论。
 
-### 4. 选择并锁定视觉风格
+### 4. 自动锁定统一视觉风格
 
-风格选择仍然存在，是 Stage 02 的正式前置步骤，发生在脚本合同建立后、`final-script-pages` 和 Prompt/Manifest 编译前。
+Stage 02 主流程统一使用风格 09。运行 `final-script-pages` 时无需人工选择；未提供锁文件时自动创建风格 09 的 `cyberppt.visual_style_lock.v1` JSON。
 
-执行要求：
+如需断点续跑，可通过 `--style-lock` 指定已有风格锁；该锁必须为风格 09，后续页面生产、Prompt 编译和图片生成消费同一份锁。
 
-1. 向用户展示可选风格样张并完成确认。
-2. 从默认风格 1-8 中选择，或在明确使用扩展风格时选择 9-10。
-3. 使用 `--style-id`、`--style-name` 或已有的 JSON `--style-lock` 固化选择。
-4. 风格锁必须是 `cyberppt.visual_style_lock.v1` JSON；Markdown 确认文件不能替代风格锁。
-5. 后续页面生产、Prompt 编译和图片生成必须消费同一份风格锁，不得临时替换外部预设。
-
-`prepare-visual-structure` 只负责视觉关系、承载方式、空间语法和视觉决策，明确不选择视觉风格。风格选择完成后，才能进入最终页面生产和 Prompt 编译。
+`prepare-visual-structure` 只负责视觉关系、承载方式、空间语法和视觉决策。
 
 ### 5. Prompt 和 Manifest
 

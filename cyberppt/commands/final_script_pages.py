@@ -111,8 +111,9 @@ def run_final_script_pages(
             script=script,
             pages_raw=pages_raw,
             style_lock=style_lock,
-            style_id=style_id,
-            style_name=style_name,
+            # Stage 02 uses the repository's single production visual style.
+            style_id=None if style_lock is not None else 9,
+            style_name=None,
             output_dir=output_dir,
             semantic_plan_dir=semantic_plan_dir,
             require_images=require_images,

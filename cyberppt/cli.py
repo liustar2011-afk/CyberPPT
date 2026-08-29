@@ -471,8 +471,6 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             script=Path(args.script),
             pages_raw=args.pages,
             style_lock=Path(args.style_lock) if args.style_lock else None,
-            style_id=args.style_id,
-            style_name=args.style_name,
             output_dir=Path(args.output_dir) if args.output_dir else None,
             require_images=args.require_images,
             production_build=args.production_build,
@@ -942,23 +940,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--style-lock",
         help=(
             "Optional CyberPPT visual style lock JSON (schema cyberppt.visual_style_lock.v1). "
-            "Markdown confirmation files are not accepted; use --style-id/--style-name to generate the JSON lock."
+            "If omitted, the main flow automatically creates the Style 09 lock."
         ),
     )
-    final_script_pages_parser.add_argument(
-        "--style-id",
-        type=int,
-        choices=range(1, 11),
-        metavar="1-10",
-        help=(
-            "Required unless --style-lock or --style-name is provided; "
-            "styles 1-8 are default choices; styles 9-10 are explicit extensions."
-        ),
-    )
-    final_script_pages_parser.add_argument(
-        "--style-name",
-        help="Required unless --style-lock or --style-id is provided; user-selected CyberPPT default style name or slug.",
-    )
+    # Accepted silently for old automation; the main flow ignores selection and uses Style 09.
+    final_script_pages_parser.add_argument("--style-id", type=int, help=argparse.SUPPRESS)
+    final_script_pages_parser.add_argument("--style-name", help=argparse.SUPPRESS)
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
     final_script_pages_parser.add_argument(
         "--build-id",

@@ -783,7 +783,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertEqual(summary["source_script_sha256"], build_context["source_script_sha256"])
             self.assertIn("page_image_pairs", build_context["artifacts"])
             self.assertEqual([7, 8], [pair["page_number"] for pair in manifest["pairs"]])
-            self.assertEqual(4, visual_lock["style"]["id"])
+            self.assertEqual(9, visual_lock["style"]["id"])
             self.assertEqual(manifest["style_lock"], summary["artifacts"]["visual_style_lock"])
             self.assertIn("#12355B", prompt)
             self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
@@ -864,10 +864,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             init_project(project)
             script = root / "script-final.md"
             script.write_text("## 第7页：态势感知能力\n组件A：内容\n", encoding="utf-8")
-            # Approve with the project's configured default style (10) so the
-            # prompt approved here matches what the unqualified build below
-            # actually resolves and validates against.
-            self._approve_inputs_and_prompts(project, script, style_id=10)
+            self._approve_inputs_and_prompts(project, script, style_id=9)
 
             run_final_script_pages(
                 project=project,
@@ -881,7 +878,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
-            self.assertEqual(10, style_lock["style"]["id"])
+            self.assertEqual(9, style_lock["style"]["id"])
 
     def test_rejects_markdown_style_lock_with_actionable_message(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
