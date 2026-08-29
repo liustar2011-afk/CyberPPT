@@ -16,6 +16,7 @@ from cyberppt.page_artifact_spec import (
 from scripts.imagegen_pipeline.final_prompt_ir import (
     CompositionIR,
     FinalPromptIR,
+    MicroVisualFreedomIR,
     PromptContractError,
     RegionGraphIR,
     RegionIR,
@@ -453,6 +454,29 @@ def _visual_medium_policy_ir(spec: PageArtifactSpec) -> VisualMediumPolicyIR | N
     )
 
 
+def _micro_visual_freedom_ir(spec: PageArtifactSpec) -> MicroVisualFreedomIR | None:
+    if spec.region_graph is None and spec.visual_medium_policy is None:
+        return None
+    return MicroVisualFreedomIR(
+        allowed=(
+            "Choose the exact business-object depiction inside each macro region.",
+            "Adjust region-internal micro-positioning, local hierarchy and local reading implementation.",
+            "Choose lighting, material, texture, depth and subordinate supporting detail within the selected visual language.",
+            "Use subordinate supporting fragments only within the audited visual budget and allowed visual media.",
+            "Add local background or decorative detail only when it does not alter semantic roles, text ownership or reading relationships.",
+        ),
+        forbidden=(
+            "Do not merge or split macro regions.",
+            "Do not change macro region roles, anchors, relative emphasis or semantic order in a way that changes meaning.",
+            "Do not move exact visible text from its assigned macro region to another region.",
+            "Do not change the focus policy or promote a peer item into a result or judgment.",
+            "Do not change relationship type or direction, or invent stronger causality, hierarchy or sequence than the source supports.",
+            "Do not leave the allowed visual media or violate the scene policy.",
+            "Do not create an independent second narrative chain alongside the authoritative macro structure.",
+        ),
+    )
+
+
 def _region_graph_ir(spec: PageArtifactSpec) -> RegionGraphIR | None:
     graph = spec.region_graph
     if graph is None:
@@ -527,20 +551,20 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
         live_style_surface = style_id in (9, 10)
         style09_guidance = (_style09_template_guidance(spec),) if style_id == 9 else ()
         if spec.prompt_mode == "semantic_brief":
+            has_region_graph = spec.region_graph is not None
             composition = CompositionIR(
                 spatial_organization=(
-                    "Choose the spatial composition from the semantic context, exact visible "
-                    "text and style contract; do not inherit a fixed card, lane, matrix, scene "
-                    "or connector recipe from upstream planning."
+                    "Follow the authoritative macro region structure: preserve region roles, anchors, relative weights and inter-region relationships; do not replace it with a different macro layout. Region-internal arrangement remains free."
+                    if has_region_graph
+                    else
+                    "Choose the spatial composition from the semantic context, exact visible text and style contract; do not inherit a fixed card, lane, matrix, scene or connector recipe from upstream planning."
                 ),
                 primary_focus=spec.composition.primary_focus or page_judgment,
                 visual_responsibility=(
-                    "Use the declared visual thesis, named business objects, actors, actions, "
-                    "conditions and outcomes as semantic anchors. ImageGen owns the carrier, "
-                    "spatial implementation and supporting detail.",
-                    "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; "
-                    "do not invent a stronger relationship than the semantic context supports.",
+                    "Use the declared visual thesis, named business objects, actors, actions, conditions and outcomes as semantic anchors. Keep macro region ownership fixed when provided; ImageGen owns only region-internal implementation and supporting detail.",
+                    "Preserve declared peer, sequence, causal, feedback and hierarchy boundaries; do not invent a stronger relationship than the semantic context supports.",
                 ) + style09_guidance,
+                focus_policy=spec.composition.focus_policy,
             )
         else:
             spatial_organization = _prompt_safe_visual_text(spec.composition.spatial_organization)
@@ -556,6 +580,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                 spatial_organization=spatial_organization,
                 primary_focus=spec.composition.primary_focus,
                 visual_responsibility=visual_responsibility,
+                focus_policy=spec.composition.focus_policy,
             )
         hard_constraints = tuple(dict.fromkeys((
             *spec.hard_constraints.global_constraints,
@@ -586,6 +611,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             text_bindings=_text_binding_ir(spec),
             region_graph=_region_graph_ir(spec),
             visual_medium_policy=_visual_medium_policy_ir(spec),
+            micro_visual_freedom=_micro_visual_freedom_ir(spec),
         )
     except PromptContractError as exc:
         raise PromptContractError(f"{spec.page_id}: {exc}") from exc

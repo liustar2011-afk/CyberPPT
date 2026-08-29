@@ -278,7 +278,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertNotIn("multiple evidence lines converging on one judgment", compiled.prompt)
         self.assertNotIn("Visual carrier:", compiled.prompt)
         self.assertNotIn("Spatial grammar:", compiled.prompt)
-        self.assertIn("ImageGen owns the carrier, spatial implementation and supporting detail", compiled.prompt)
+        self.assertIn("Keep macro region ownership fixed when provided; ImageGen owns only region-internal implementation and supporting detail", compiled.prompt)
         self.assertEqual("semantic_brief", compiled.debug_receipt["prompt_mode"])
         self.assertNotIn("causal_convergence", compiled.prompt)
 

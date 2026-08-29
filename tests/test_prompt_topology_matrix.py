@@ -1,0 +1,186 @@
+from dataclasses import replace
+
+import pytest
+
+from cyberppt.page_artifact_spec import VisibleTextBindingSpec
+from cyberppt.region_graph import validate_region_graph
+from cyberppt.visual_medium_policy import validate_visual_medium_policy
+from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir
+from scripts.imagegen_pipeline.final_prompt_renderer import render_final_prompt
+from tests.test_final_prompt_ir import _artifact_spec
+
+
+CASES = (
+    {
+        "name": "parallel",
+        "mode": "semantic_brief",
+        "axis": "horizontal",
+        "focus": "peer_field",
+        "roles": ("peer", "peer", "peer"),
+        "anchors": ("left", "center", "right"),
+        "relations": ((1, 2, "peer"), (2, 3, "peer")),
+        "expected_relation": "Region relationship: Region 1 to Region 2 — peer.",
+    },
+    {
+        "name": "convergence",
+        "mode": "directed_composition",
+        "axis": "horizontal",
+        "focus": "single_anchor",
+        "roles": ("evidence", "evidence", "result"),
+        "anchors": ("left", "top", "right"),
+        "relations": ((1, 3, "converge"), (2, 3, "converge")),
+        "expected_relation": "Region relationship: Region 1 to Region 3 — converge.",
+    },
+    {
+        "name": "flow",
+        "mode": "directed_composition",
+        "axis": "horizontal",
+        "focus": "sequence_focus",
+        "roles": ("stage", "stage", "result"),
+        "anchors": ("left", "center", "right"),
+        "relations": ((1, 2, "flow"), (2, 3, "flow")),
+        "expected_relation": "Region relationship: Region 2 to Region 3 — flow.",
+    },
+    {
+        "name": "layered",
+        "mode": "directed_composition",
+        "axis": "layered",
+        "focus": "sequence_focus",
+        "roles": ("layer", "layer", "layer"),
+        "anchors": ("top", "center", "bottom"),
+        "relations": ((1, 2, "dependency"), (2, 3, "dependency")),
+        "expected_relation": "Region relationship: Region 1 to Region 2 — dependency.",
+    },
+    {
+        "name": "boundary",
+        "mode": "semantic_brief",
+        "axis": "bidirectional",
+        "focus": "paired_focus",
+        "roles": ("inside", "interface", "outside"),
+        "anchors": ("left", "center", "right"),
+        "relations": ((1, 2, "interface"), (2, 3, "boundary")),
+        "expected_relation": "Region relationship: Region 2 to Region 3 — boundary.",
+    },
+    {
+        "name": "ecosystem",
+        "mode": "semantic_brief",
+        "axis": "radial",
+        "focus": "distributed_focus",
+        "roles": ("participant", "hub", "participant"),
+        "anchors": ("left", "center", "right"),
+        "relations": ((1, 2, "support"), (3, 2, "support")),
+        "expected_relation": "Region relationship: Region 1 to Region 2 — support.",
+    },
+    {
+        "name": "allocation",
+        "mode": "directed_composition",
+        "axis": "horizontal",
+        "focus": "sequence_focus",
+        "roles": ("source", "branch", "destination"),
+        "anchors": ("left", "center", "right"),
+        "relations": ((1, 2, "allocation"), (2, 3, "allocation")),
+        "expected_relation": "Region relationship: Region 1 to Region 2 — allocation.",
+    },
+    {
+        "name": "conclusion",
+        "mode": "semantic_brief",
+        "axis": "horizontal",
+        "focus": "single_anchor",
+        "roles": ("evidence", "evidence", "conclusion"),
+        "anchors": ("left", "center", "right"),
+        "relations": ((1, 3, "support"), (2, 3, "support")),
+        "expected_relation": "Region relationship: Region 2 to Region 3 — support.",
+    },
+    {
+        "name": "lifecycle",
+        "mode": "directed_composition",
+        "axis": "radial",
+        "focus": "sequence_focus",
+        "roles": ("stage", "stage", "stage"),
+        "anchors": ("left", "top", "right"),
+        "relations": ((1, 2, "flow"), (2, 3, "flow"), (3, 1, "feedback")),
+        "expected_relation": "Region relationship: Region 3 to Region 1 — feedback.",
+    },
+)
+
+
+def _spec(case):
+    base = _artifact_spec()
+    region_payload = []
+    for index, (role, anchor) in enumerate(zip(case["roles"], case["anchors"]), start=1):
+        region_payload.append({
+            "id": f"RG{index:02d}",
+            "semantic_refs": [f"E{index}"],
+            "role": role,
+            "anchor": anchor,
+            "weight": (0.33, 0.34, 0.33)[index - 1],
+            "span": "compact",
+            "priority": "primary",
+            "text_ids": [f"P01-T{index:02d}"],
+        })
+    graph = validate_region_graph({
+        "canvas_ratio": "2:1",
+        "primary_axis": case["axis"],
+        "regions": region_payload,
+        "relations": [
+            {"from": f"RG{source:02d}", "to": f"RG{target:02d}", "type": relation}
+            for source, target, relation in case["relations"]
+        ],
+    })
+    medium = validate_visual_medium_policy({
+        "preferred": "mixed",
+        "allowed": ["business_scene", "object_illustration", "relationship_diagram", "mixed"],
+        "scene_policy": "auto",
+        "rationale": "Select the concrete medium from the page mission and drawable business objects.",
+    })
+    bindings = tuple(
+        VisibleTextBindingSpec(
+            text_id=f"P01-T{index:02d}",
+            text=visible_text,
+            root_id=f"ROOT-{index}",
+            order=index,
+            role="root_module",
+            hierarchy_level=1,
+        )
+        for index, visible_text in enumerate(base.typography.visible_text, start=1)
+    )
+    composition = replace(base.composition, focus_policy=case["focus"])
+    return replace(
+        base,
+        prompt_mode=case["mode"],
+        region_graph=graph,
+        visual_medium_policy=medium,
+        visible_text_bindings=bindings,
+        composition=composition,
+    )
+
+
+@pytest.mark.parametrize("case", CASES, ids=[case["name"] for case in CASES])
+def test_topology_prompt_contract_matrix(case):
+    ir = build_final_prompt_ir(_spec(case))
+    prompt = render_final_prompt(ir)
+
+    assert f"Macro reading axis: {case['axis'].replace('_', ' ')}." in prompt
+    assert f"Focus policy: {case['focus'].replace('_', ' ')}." in prompt
+    assert case["expected_relation"] in prompt
+    assert "Preferred visual medium: mixed." in prompt
+    assert "Allowed visual media: business scene; object illustration; relationship diagram; mixed." in prompt
+    assert "ImageGen region-internal freedom:" in prompt
+    assert "Macro visual authority remains locked:" in prompt
+    assert "Do not merge or split macro regions." in prompt
+
+    for visible_text in ir.visible_text:
+        assert prompt.count(f'- Exact visible text: "{visible_text}"') == 1
+
+    forbidden_backend_tokens = (
+        "RG01", "RG02", "RG03", "E1", "E2", "E3",
+        "P01-T01", "P01-T02", "P01-T03", "root_module",
+        "peer_field", "single_anchor", "paired_focus",
+        "distributed_focus", "sequence_focus",
+    )
+    for token in forbidden_backend_tokens:
+        assert token not in prompt
+
+
+def test_prompt_matrix_covers_both_prompt_modes():
+    assert {case["mode"] for case in CASES} == {"semantic_brief", "directed_composition"}

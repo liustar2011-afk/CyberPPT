@@ -12,6 +12,7 @@ from typing import Any, Mapping
 
 from PIL import Image
 
+from cyberppt.reconstruction_visual_authority import validate_reconstruction_visual_authority
 from cyberppt.script_quality.parsing import parse_script_path
 from scripts.presentation_qa.render_page import check_pptx_geometry, render_to_png
 from scripts.presentation_qa.text_content import build_text_content_qa
@@ -99,6 +100,7 @@ def _quick_page_binding(
     return {
         "authoring_svg_sha256": _sha256(authored),
         "full_image_sha256": _sha256(full),
+        "reconstruction_visual_source_sha256": str((((pair.get("full") or {}).get("reconstruction_visual_source") or {}).get("sha256") or "")),
         "clean_base_sha256": _sha256(clean) if clean.is_file() else "",
         "clean_base_contract_sha256": _json_sha256(pair.get("clean_base") or {}),
         "graphic_text_policy_sha256": _json_sha256(pair.get("graphic_text_policy") or {}),
@@ -285,6 +287,7 @@ def run_stage02_reconstruction(
     needs_image = assembly_mode in {"image", "both"}
     quick = None
     if needs_editable:
+        validate_reconstruction_visual_authority(manifest, require_clean_base=True)
         quick = create_quick_project(
             output / "image_to_pptx_runtime",
             pages=pages,

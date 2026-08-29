@@ -75,12 +75,15 @@ class CompositionIR:
     spatial_organization: str
     primary_focus: str
     visual_responsibility: tuple[str, ...]
+    focus_policy: str = "single_anchor"
 
     def __post_init__(self) -> None:
         if not self.spatial_organization.strip():
             raise PromptContractError("composition requires spatial organization")
         if not self.primary_focus.strip():
             raise PromptContractError("composition requires a primary focus")
+        if self.focus_policy not in {"single_anchor", "paired_focus", "peer_field", "distributed_focus", "sequence_focus"}:
+            raise PromptContractError(f"unsupported prompt focus policy: {self.focus_policy!r}")
 
 
 @dataclass(frozen=True)
@@ -139,6 +142,20 @@ class VisualMediumPolicyIR:
 
 
 @dataclass(frozen=True)
+class MicroVisualFreedomIR:
+    allowed: tuple[str, ...]
+    forbidden: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if not self.allowed or not self.forbidden:
+            raise PromptContractError("micro visual freedom requires allowed and forbidden boundaries")
+        if any(not item.strip() for item in (*self.allowed, *self.forbidden)):
+            raise PromptContractError("micro visual freedom entries must be non-empty")
+        if len(self.allowed) != len(set(self.allowed)) or len(self.forbidden) != len(set(self.forbidden)):
+            raise PromptContractError("micro visual freedom entries must be unique")
+
+
+@dataclass(frozen=True)
 class RuntimeLockIR:
     style_contract: str
     terminal_lock: str = ""
@@ -165,6 +182,7 @@ class FinalPromptIR:
     text_bindings: tuple[TextBindingIR, ...] = ()
     region_graph: RegionGraphIR | None = None
     visual_medium_policy: VisualMediumPolicyIR | None = None
+    micro_visual_freedom: MicroVisualFreedomIR | None = None
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
@@ -221,6 +239,7 @@ __all__ = [
     "MAX_SEMANTIC_GROUPS",
     "CompositionIR",
     "FinalPromptIR",
+    "MicroVisualFreedomIR",
     "PromptContractError",
     "RegionGraphIR",
     "RegionIR",

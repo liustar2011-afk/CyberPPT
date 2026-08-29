@@ -21,7 +21,7 @@ _BACKEND_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
 )
 _ALLOWED_SNAKE_CASE_TOKENS: frozenset[str] = frozenset()
 _BACKEND_ID_RE = re.compile(
-    r"(?<![A-Za-z0-9])(?:E\d+|P\d{2,3}-T(?:ITLE|\d+)|R_[A-Z0-9_]+|(?:NF|ST)-?\d+|rel-\d+)(?![A-Za-z0-9])",
+    r"(?<![A-Za-z0-9])(?:E\d+|RG\d+|P\d{2,3}-T(?:ITLE|\d+)|R_[A-Z0-9_]+|(?:NF|ST)-?\d+|rel-\d+)(?![A-Za-z0-9])",
     flags=re.IGNORECASE,
 )
 _FORBIDDEN_CHROME_TEXT = frozenset({"标题", "副标题", "页码", "logo", "页眉", "页脚"})
