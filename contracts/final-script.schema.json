@@ -133,6 +133,10 @@
             "type": "integer",
             "minimum": 1
           },
+          "content_load": {
+            "type": "string",
+            "enum": ["light", "standard", "dense"]
+          },
           "visual_thesis": {
             "type": "string"
           },
@@ -165,7 +169,7 @@
           "speaker_notes": {
             "type": "string"
           },
-      "source_refs": {
+          "source_refs": {
             "type": "array",
             "items": {
               "type": "string"
@@ -205,11 +209,6 @@
           }
         ],
         "additionalProperties": true
-      }
-      ,
-      "content_load": {
-        "type": "string",
-        "enum": ["light", "standard", "dense"]
       }
     }
   },
