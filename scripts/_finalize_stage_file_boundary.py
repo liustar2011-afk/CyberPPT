@@ -85,7 +85,7 @@ replacement = '''            script_input = {
                 "cyberppt.stage02_input.load_stage02_input",
                 return_value=script_input,
             ):'''
-text, count = pattern.subn(replacement, text, count=1)
+text, count = pattern.subn(lambda _match: replacement, text, count=1)
 if count != 1:
     raise RuntimeError(f"compact blueprint fixture: expected one match, got {count}")
 text = replace_once(
@@ -122,7 +122,7 @@ replacement = '''            from cyberppt.stage02_input import INPUT_JSON, prep
             script_input = project / INPUT_JSON
             visual = project / "visual"
 '''
-text, count = pattern.subn(replacement, text, count=1)
+text, count = pattern.subn(lambda _match: replacement, text, count=1)
 if count != 1:
     raise RuntimeError(f"visual gate fixture: expected one match, got {count}")
 text = replace_once(
