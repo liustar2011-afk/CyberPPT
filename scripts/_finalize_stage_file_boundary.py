@@ -145,7 +145,18 @@ new = '''            input_path = project / "workbench/stages/02-input/script-in
 text = replace_once(text, old, new, "artifact-spec canonical input fixture")
 write(path, text)
 
-# 6. Visual gate regression prepares Stage2 input directly; no Stage1 outline/handoff fixture.
+# 6. Style-decoupling test also calls the artifact-spec interface directly.
+path = "tests/test_imagegen_no_visual_structure.py"
+text = read(path)
+text = replace_all(
+    text,
+    "handoff_sha256=",
+    "script_input_sha256=",
+    "style-decoupling artifact-spec input hash call sites",
+)
+write(path, text)
+
+# 7. Visual gate regression prepares Stage2 input directly; no Stage1 outline/handoff fixture.
 path = "tests/test_visual_structure_stage.py"
 text = read(path)
 pattern = re.compile(
@@ -170,7 +181,7 @@ text = replace_once(
 )
 write(path, text)
 
-# 7. Architecture guard prevents the old cross-stage hash field from returning.
+# 8. Architecture guard prevents the old cross-stage hash field from returning.
 path = "tests/test_stage_file_boundary.py"
 text = read(path)
 marker = '    for token in ("deck-plan.json","foundation.json","source-truth.json","outline.json"): assert token not in text\n'
