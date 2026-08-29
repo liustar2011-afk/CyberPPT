@@ -25,7 +25,7 @@
 ### Phase 1｜合同修正
 - [x] P1.1 修正 Generation Feasibility 评分：允许真实 0–100 分，`score == sum(dimensions)`，取消候选必须 100 分。
 - [x] P1.2 引入 `focus_policy`，保留旧 `visual_center_count` 兼容读取。
-- [ ] P1.3 修复 `parallel_set` 与唯一 result / 唯一视觉中心冲突。
+- [x] P1.3 修复 `parallel_set` 与唯一 result / 唯一视觉中心冲突。
 - [ ] P1.4 将 scene 布尔值升级为 scene policy，支持 `required / allowed / forbidden / auto`，消除 `semantic_brief -> use_scene=False` 的硬绑定。
 
 ### Phase 2｜Region Graph
@@ -115,3 +115,21 @@ Commit：`ec9566f7cd69aff5f1abdaca3810132cbc01a953`
 代码 Commit：`63f6ecf7e108a7232e1116955878b392a7262b9a`
 
 临时 runner 清理 Commit：`e6206303bd8db171fdb502192b3910184fe37430`
+
+### P1.3｜Parallel Set 真并列视觉重心
+状态：完成。
+
+变更：
+- `parallel_set / peer_field` 不再把任一并列证据伪装成 `result` 或 `judgment`；所有 peer 节点保持 `evidence/fact` 语义。
+- `peer_field` 下所有 P0 evidence 共同进入 `primary_refs`，`secondary_refs` 为空，文字绑定统一为 `embedded`，不再制造唯一 result binding。
+- `visual_center_count` 继续作为 deprecated 兼容字段，但 peer field 反映共同主表达节点数量；`focus_policy` 为权威字段。
+- `_audit_focus_competition()` 按 focus policy 审计：`single_anchor` 保持唯一 result 规则，`peer_field` 要求全部 P0 peer 共同 primary 且禁止 result binding。
+- topology consistency 对 `peer_field` 不再要求人为指定 judgment 节点。
+- page visual schema、独立 validator、Skill 和 quality gates 同步放开 peer field 的多共同视觉重心。
+- 扩展 `tests/test_stage2_focus_policy.py`，覆盖真并列输出、合法 peer audit 和错误 result binding 阻断。
+
+验证：P1.3 定向回归、runner 全量测试、清理后标准 `CyberPPT tests` 的 Python 3.10 / 3.12 双版本均通过。
+
+代码 Commit：`4acb15b16af65fe84ff2323284c879c770e7e0a2`
+
+临时 runner 清理 Commit：`80373fc8ea1f828c9dd979be5325460d2bb7bdc5`
