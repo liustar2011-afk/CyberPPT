@@ -27,7 +27,6 @@ jobs:
           from pathlib import Path
           import textwrap
 
-          # Reuse the previous retry patch so P4.1 implementation remains identical.
           source = Path('.github/workflows/stage2-refactor-p4-1-retry.yml').read_text(encoding='utf-8')
           start = "          python - <<'PY'\n"
           end = "\n          PY\n"
@@ -47,6 +46,14 @@ jobs:
           if old not in text:
               raise SystemExit('P4.1 semantic role render target not found')
           renderer.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          compatibility_test = Path('tests/test_artifact_prompt.py')
+          test_text = compatibility_test.read_text(encoding='utf-8')
+          old_assertion = '        self.assertIn("ImageGen owns the carrier, spatial implementation and supporting detail", compiled.prompt)\n'
+          new_assertion = '        self.assertIn("Keep macro region ownership fixed when provided; ImageGen owns only region-internal implementation and supporting detail", compiled.prompt)\n'
+          if old_assertion not in test_text:
+              raise SystemExit('P4.1 compatibility assertion target not found')
+          compatibility_test.write_text(test_text.replace(old_assertion, new_assertion, 1), encoding='utf-8')
           PY
       - name: Install package and test dependencies
         run: |
@@ -54,14 +61,14 @@ jobs:
           python -m pip install -e ".[test]"
       - name: Run targeted regressions
         run: |
-          python -m pytest -q tests/test_prompt_macro_structure.py tests/test_final_prompt_ir.py tests/test_final_prompt_renderer.py tests/test_page_artifact_spec.py tests/test_visual_medium_policy.py tests/test_region_graph_contract.py tests/test_region_binding.py tests/test_region_graph_audit.py
+          python -m pytest -q tests/test_prompt_macro_structure.py tests/test_final_prompt_ir.py tests/test_final_prompt_renderer.py tests/test_artifact_prompt.py tests/test_page_artifact_spec.py tests/test_visual_medium_policy.py tests/test_region_graph_contract.py tests/test_region_binding.py tests/test_region_graph_audit.py
       - name: Run full test suite
         run: python -m pytest -q
       - name: Commit, clean P4.1 runners, and safely rebase
         run: |
           git config user.name "CyberPPT Stage2 Refactor"
           git config user.email "actions@users.noreply.github.com"
-          git add cyberppt/page_artifact_spec.py scripts/imagegen_pipeline/final_prompt_ir.py scripts/imagegen_pipeline/artifact_prompt.py scripts/imagegen_pipeline/final_prompt_renderer.py scripts/imagegen_pipeline/final_prompt_contract.py tests/test_prompt_macro_structure.py
+          git add cyberppt/page_artifact_spec.py scripts/imagegen_pipeline/final_prompt_ir.py scripts/imagegen_pipeline/artifact_prompt.py scripts/imagegen_pipeline/final_prompt_renderer.py scripts/imagegen_pipeline/final_prompt_contract.py tests/test_prompt_macro_structure.py tests/test_artifact_prompt.py
           git rm .github/workflows/stage2-refactor-p4-1.yml .github/workflows/stage2-refactor-p4-1-retry.yml .github/workflows/stage2-refactor-p4-1-final.yml
           git commit -m "feat(stage2): render macro visual authority in final prompt"
           git reset --hard HEAD
