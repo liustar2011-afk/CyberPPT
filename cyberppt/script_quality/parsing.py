@@ -48,6 +48,10 @@ HEADING_FIELD_ALIASES = {
     "视觉意图与生图构图": "视觉结构",
     "演讲者备注": "演讲者备注",
     "内容来源": "内容来源",
+    "关系标注": "关系标注",
+    "层级关系": "关系标注",
+    "视觉约束": "视觉约束",
+    "文字表达规则": "文字表达规则",
 }
 
 # Peer-level page-contract fields.  A ``- label: value`` line inside the
@@ -87,6 +91,10 @@ PAGE_CONTRACT_FIELDS = {
     "讲解提示",
     "演讲者备注",
     "内容来源",
+    "关系标注",
+    "层级关系",
+    "视觉约束",
+    "文字表达规则",
 }
 
 
@@ -95,6 +103,39 @@ def _heading_field_name(raw: str) -> str | None:
 
     name = re.sub(r"[（(].*?[）)]\s*$", "", raw.strip()).strip()
     return HEADING_FIELD_ALIASES.get(name)
+
+
+def parse_semantic_annotations(
+    relation_markdown: str,
+    visual_constraints: str = "",
+) -> dict[str, object]:
+    """Parse optional lightweight Stage 1 hierarchy annotations."""
+
+    nodes: list[dict[str, object]] = []
+    stack: list[tuple[int, str]] = []
+    for raw in str(relation_markdown or "").splitlines():
+        match = re.match(r"^(?P<indent>\s*)[-*]\s*(?P<text>.+?)\s*$", raw)
+        if not match:
+            continue
+        text = match.group("text").strip()
+        level_match = re.match(r"^(一级|二级|三级|四级)\s*[：:]\s*(.+)$", text)
+        if not level_match:
+            continue
+        level = {"一级": 1, "二级": 2, "三级": 3, "四级": 4}[level_match.group(1)]
+        label = level_match.group(2).strip()
+        while stack and stack[-1][0] >= level:
+            stack.pop()
+        parent = stack[-1][1] if stack else ""
+        node_id = label.split("：", 1)[0].split(":", 1)[0].strip()
+        node_id = node_id or f"L{len(nodes) + 1}"
+        nodes.append({"id": node_id, "label": label, "level": level, "parent": parent})
+        stack.append((level, node_id))
+    return {
+        "topology": "hierarchy" if nodes else "",
+        "nodes": nodes,
+        "relation_markdown": str(relation_markdown or "").strip(),
+        "visual_constraints_markdown": str(visual_constraints or "").strip(),
+    }
 
 
 MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
@@ -177,9 +218,9 @@ def _field_blocks(body: str) -> dict[str, str]:
         match = FIELD_RE.match(raw_line)
         if match:
             field_name = match.group(1).strip()
-            if active == "上屏文字" and field_name not in PAGE_CONTRACT_FIELDS:
-                # Module bullets such as ``- 政策牵引：...`` belong to the
-                # drawable text layer; they are not peer-level contract fields.
+            if active in {"上屏文字", "关系标注", "视觉约束"} and field_name not in PAGE_CONTRACT_FIELDS:
+                # Content bullets in these sections belong to the active
+                # authoring block; they are not peer-level contract fields.
                 blocks[active].append(raw_line.rstrip())
                 continue
             active = field_name
@@ -527,6 +568,9 @@ def parse_script_markdown(
                 ),
                 speaker_notes=extract_speaker_notes(body),
                 anchor_coverage_notes=fields.get("锚点覆盖说明", "").strip(),
+                semantic_relations=fields.get("关系标注", "").strip(),
+                visual_constraints=fields.get("视觉约束", "").strip(),
+                expression_rules=fields.get("文字表达规则", "").strip(),
                 contract_receipt=(page_contracts or {}).get(f"p{sequence:02d}")
                 or extract_page_contract_receipt(body),
             )
@@ -554,5 +598,6 @@ __all__ = [
     "load_page_contract_sidecar",
     "parse_script_markdown",
     "parse_script_path",
+    "parse_semantic_annotations",
     "strip_authoring_group_marker",
 ]

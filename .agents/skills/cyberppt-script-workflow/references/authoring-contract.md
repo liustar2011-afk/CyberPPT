@@ -56,7 +56,11 @@ Run these steps in order for every content page:
    heading states a complete judgment; the taxonomy exception in 3.2 applies to
    formally defined categories, stages and actors. Every detail is a complete proposition or
    `语义标签：语义完整的短语或说明`, retaining its action, relation, object and
-   material qualifier.
+   material qualifier. A normal module heading must carry a short complete
+   judgment. In the compact `标题：短句` form, the heading carries the core
+   subject and predicate; the text after the colon only adds scope, condition,
+   result or supporting detail. Noun-only headings such as `建设框架`、`治理目标`
+   and `编制方法` require rewriting when they carry the page's main judgment.
 7. **Check peer logic.** Visible siblings share one comparison dimension and
    comparable explanatory depth. Attach supplementary facts, certifications and
    evaluation results to the actor or main claim they qualify.
@@ -197,8 +201,10 @@ never overrides source meaning, and source availability never requires equal
 visible rank for every fact.
 
 Module headings carry business meaning by stating the object and its action,
-status, role or judgment. Child lines provide evidence, explanation and
-qualification. Do not coin official-sounding group names such as `国家统一基础`,
+status, role or judgment. A normal module heading must be independently
+intelligible in silent reading. Prefer `主语 + 谓词 + 对象/状态`; do not let a
+colon's trailing text supply the only predicate. Child lines provide evidence,
+explanation and qualification. Do not coin official-sounding group names such as `国家统一基础`,
 `行业专业基础`, `国家坐标` or `任务落点` unless the source defines the exact term
 and a silent reader can understand it without author explanation.
 
@@ -316,6 +322,12 @@ shared proposition cannot be stated accurately, keep the name in `full_copy` or
 A label does not authorize a dangling modifier such as
 `建设依据：以《指引》为总纲`. A line beginning with `以、基于、围绕、结合、
 按照、通过、面向、依托、针对` must complete the business action or result.
+
+For self-read pages, prefer `国家建设指引明确四大方向和八项能力：覆盖数据
+基础设施全生命周期` over `建设框架：四大方向、八项能力`. Prefer
+`GB/T 13016规范体系表编制原则、程序和格式：提供统一编制依据` over
+`编制方法：原则、程序和格式`. The heading may wrap visually, but its subject,
+predicate, object and material qualifier remain together.
 
 A standard number, document title, framework name, initiative, institution or
 category list identifies evidence but does not yet explain it. State what the

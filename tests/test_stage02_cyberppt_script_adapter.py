@@ -9,6 +9,7 @@ from cyberppt.onscreen_expression import resolve_onscreen_expression
 from cyberppt.script_quality_contract import parse_script_path
 from cyberppt.stage02_handoff import _page_record, build_stage02_handoff
 from cyberppt.stage02_relationship_adapter import derive_business_relationships
+from cyberppt.script_quality.parsing import parse_semantic_annotations
 
 
 def _write_script(path: Path, pages: str) -> None:
@@ -71,6 +72,50 @@ def test_ambiguous_page_without_script_relation_stays_empty() -> None:
         title="平台能力",
         module_titles=("能力一", "能力二"),
     ) == ()
+
+
+def test_parses_optional_three_level_stage02_annotations() -> None:
+    annotations = parse_semantic_annotations(
+        """
+- 一级：标准体系
+  - 二级：A 基础通用
+    - 三级：A1 术语与概念
+""",
+        "- 推荐结构：三级层级树。\n- 不表达先后关系。",
+    )
+    assert annotations["topology"] == "hierarchy"
+    assert annotations["nodes"] == [
+        {"id": "标准体系", "label": "标准体系", "level": 1, "parent": ""},
+        {"id": "A 基础通用", "label": "A 基础通用", "level": 2, "parent": "标准体系"},
+        {"id": "A1 术语与概念", "label": "A1 术语与概念", "level": 3, "parent": "A 基础通用"},
+    ]
+
+
+def test_stage02_rejects_noun_headings_when_clause_mode_is_declared() -> None:
+    from cyberppt.stage02_input import build_stage02_input
+
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        script = root / "final-script.md"
+        _write_script(
+            script,
+            """
+## P11 体系
+- 页面类型：内容页
+- 页面使命：展示体系
+- 核心结论：形成标准体系
+### 上屏文字
+- 建设框架：四大方向、八项能力
+### 文字表达规则
+- 小标题必须使用完整判断句。
+""",
+        )
+        try:
+            build_stage02_input(root / "project", script=script)
+        except ValueError as exc:
+            assert "semantic heading contract failed" in str(exc)
+        else:
+            raise AssertionError("noun heading should fail clause mode")
 
 
 def test_p04_many_to_one_support_uses_convergent_reading_not_framework() -> None:

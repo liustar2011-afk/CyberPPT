@@ -24,7 +24,11 @@ from cyberppt.content_integrity_contract import (
     extract_onscreen_line_items,
 )
 from cyberppt.onscreen_expression import expression_constraints, resolve_onscreen_expression
-from cyberppt.script_quality_contract import ScriptPage, parse_script_markdown
+from cyberppt.script_quality_contract import (
+    ScriptPage,
+    parse_script_markdown,
+    parse_semantic_annotations,
+)
 from cyberppt.semantic_verifier import verify_semantic_proposals
 from cyberppt.stage02_semantic_intake import normalize_semantic_proposals
 from cyberppt.topology_resolver import resolve_semantic_topology
@@ -37,6 +41,46 @@ INPUT_AUDIT = INPUT_DIR / "script-intake-audit.json"
 INPUT_REVIEW = INPUT_DIR / "script-intake-review.md"
 INPUT_SCRIPT_PATH = Path("workbench/inputs/final-script.md")
 BODY_CANVAS = {"width": 2048, "height": 1024, "ratio": "2:1"}
+
+_SEMANTIC_HEADING_PREDICATES = (
+    "明确", "规定", "形成", "支撑", "覆盖", "构成", "推动", "承担",
+    "实现", "建立", "制定", "完善", "提升", "提供", "衔接", "贯穿",
+    "属于", "包括", "聚焦", "依托", "面向", "进入", "具备", "需要",
+    "应当", "建议", "拟", "将", "已", "正在",
+)
+
+
+def _semantic_heading_contract(page: ScriptPage) -> dict[str, Any]:
+    rules = str(page.expression_rules or "").strip()
+    mode = "clause" if any(
+        marker in rules for marker in ("完整判断句", "判断句小标题", "小标题必须")
+    ) else "paired"
+    return {
+        "mode": mode,
+        "rules_markdown": rules,
+    }
+
+
+def _semantic_heading_issues(page: ScriptPage) -> list[str]:
+    contract = _semantic_heading_contract(page)
+    if contract["mode"] != "clause" or page.page_type != "content":
+        return []
+    issues: list[str] = []
+    for line_number, raw in enumerate(page.onscreen_text.splitlines(), start=1):
+        line = raw.strip()
+        line = re.sub(r"^[-*+•]\s*", "", line)
+        if not line:
+            continue
+        head = re.split(r"[：:]", line, maxsplit=1)[0].strip()
+        if not head:
+            continue
+        if ":" not in line and "：" not in line:
+            if len(head) <= 12 and not any(mark in head for mark in _SEMANTIC_HEADING_PREDICATES):
+                issues.append(f"第{line_number}行：{line}")
+            continue
+        if not any(mark in head for mark in _SEMANTIC_HEADING_PREDICATES):
+            issues.append(f"第{line_number}行：{line}")
+    return issues
 
 
 _DIRECTED_TOPOLOGIES = {
@@ -167,6 +211,12 @@ def _page_record(page: ScriptPage) -> dict[str, Any]:
     source_refs = tuple(page.source_refs)
     render_role = _render_role(page.page_type)
     content_load = page.content_load or "standard"
+    heading_issues = _semantic_heading_issues(page)
+    if heading_issues:
+        raise ValueError(
+            f"semantic heading contract failed for {page.page_id}: "
+            + "; ".join(heading_issues[:5])
+        )
     business_relationships = [
         dict(item) for item in page.content_relations if isinstance(item, dict)
     ]
@@ -269,6 +319,10 @@ def _page_record(page: ScriptPage) -> dict[str, Any]:
         "image_locked_text": page.image_locked_text,
         "editable_body_text": page.onscreen_text,
         "speaker_notes": page.speaker_notes,
+        "semantic_annotations": parse_semantic_annotations(
+            page.semantic_relations, page.visual_constraints
+        ),
+        "semantic_heading_contract": _semantic_heading_contract(page),
         "source_refs": list(source_refs),
         "provenance_refs": list(page.provenance_refs),
         "argument_chain": page.argument_chain,
@@ -319,6 +373,10 @@ def _page_record(page: ScriptPage) -> dict[str, Any]:
         "constraint_authority": expression["constraint_authority"],
         "author_visual_notes": page.visual_structure,
         "author_visual_notes_authority": "advisory_only",
+        "semantic_annotations": parse_semantic_annotations(
+            page.semantic_relations, page.visual_constraints
+        ),
+        "semantic_heading_contract": _semantic_heading_contract(page),
         "must_not_include": [],
         "body_image_canvas": dict(BODY_CANVAS),
         "title_render_mode": "external_text_layer",
