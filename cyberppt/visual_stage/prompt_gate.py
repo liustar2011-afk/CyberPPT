@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.visual_structure_contract import prompt_contract_hashes
 
 from .execution import _skill_root, visual_structure_required
@@ -11,10 +10,7 @@ from .persistence import VISUAL_FILES, _read_json, _sha256
 
 def _prompt_inputs_sha256(project: Path, script: Path, skill_root: Path) -> dict[str, str]:
     contracts = prompt_contract_hashes(skill_root)
-    try:
-        script_digest = script_semantic_digest(script)
-    except ValueError:
-        script_digest = _sha256(script)
+    script_digest = _sha256(script)
     values = {
         "script_semantic": script_digest,
         "design_input": _sha256(project / VISUAL_FILES["design_input"]),
@@ -30,6 +26,8 @@ def _prompt_inputs_sha256(project: Path, script: Path, skill_root: Path) -> dict
 def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
+    from cyberppt.stage02_input import input_path, load_stage02_input, resolve_input_script
+    script = resolve_input_script(project, script)
     if not visual_structure_required(project):
         return None
     report_path = project / VISUAL_FILES["validation"]
@@ -39,17 +37,11 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
             "ppt-visual-structure-designer, record its execution, and run visual-structure-audit before Stage 02"
         )
     report = _read_json(report_path)
-    from cyberppt.stage02_handoff import load_stage02_handoff
-
-    handoff = load_stage02_handoff(project, required=True)
-    script_binding = (handoff.get("source_bindings") or {}).get("script")
-    if not isinstance(script_binding, dict) or not script_binding.get("path"):
-        raise ValueError("Stage 02 handoff is missing its script binding")
-    bound_script = Path(str(script_binding["path"])).expanduser().resolve()
-    if bound_script != script or script_binding.get("sha256") != _sha256(script):
-        raise ValueError(
-            "Stage 02 handoff is bound to a different script; prepare the handoff and visual structure again."
-        )
+    script_input = load_stage02_input(project, required=True)
+    input_file = input_path(project)
+    design_input = _read_json(project / VISUAL_FILES["design_input"])
+    if design_input.get("source_sha256") != _sha256(input_file):
+        raise ValueError("visual structure design input is stale for the current Stage 02 script input")
     for key in (
         "design_input",
         "skill_request",
@@ -64,15 +56,9 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
         if not path.is_file() or report.get("artifact_sha256", {}).get(key) != _sha256(path):
             raise ValueError(f"visual structure artifact is missing or changed: {path}")
 
-    handoff_path = project / Path("workbench/stages/02-handoff/stage02-handoff.json")
-    design_input = _read_json(project / VISUAL_FILES["design_input"])
-    if design_input.get("source_sha256") != _sha256(handoff_path):
-        raise ValueError(
-            "visual structure design input is stale: it was compiled from a different Stage 02 handoff"
-        )
-    handoff_pages = {
+    input_pages = {
         str(page.get("page_id")): page
-        for page in handoff.get("pages") or []
+        for page in script_input.get("pages") or []
         if isinstance(page, dict) and page.get("page_id")
     }
     spec = _read_json(project / VISUAL_FILES["spec_json"])
@@ -80,7 +66,7 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
         if not isinstance(page, dict):
             continue
         page_id = str(page.get("page_id") or "")
-        source_page = handoff_pages.get(page_id.lower()) or handoff_pages.get(page_id.upper())
+        source_page = input_pages.get(page_id.lower()) or input_pages.get(page_id.upper())
         if source_page is None or source_page.get("render_role") != "content":
             continue
         generation_handoff = page.get("generation_handoff")

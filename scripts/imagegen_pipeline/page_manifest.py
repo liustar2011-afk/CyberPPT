@@ -258,12 +258,12 @@ def _relationship_aware_canonical_prompts(
     contexts = _page_visual_contexts(project_path)
     overrides = _page_visual_intent_overrides(project_path)
     try:
-        from cyberppt.stage02_handoff import handoff_page_map, load_stage02_handoff
+        from cyberppt.stage02_input import input_page_map, load_stage02_input
 
-        handoff = load_stage02_handoff(project_path)
+        script_input = load_stage02_input(project_path)
     except (FileNotFoundError, ValueError):
-        handoff = None
-    handoff_pages = handoff_page_map(handoff) if handoff else {}
+        script_input = None
+    input_pages = input_page_map(script_input) if script_input else {}
     # The final compiler owns content, Stage 02 semantics, and the selected
     # style together.  Nothing is appended after approval.
     canonical: dict[int, str] = {}
@@ -273,15 +273,15 @@ def _relationship_aware_canonical_prompts(
         page = pages.get(page_number)
         if page is None:
             continue
-        handoff_page = handoff_pages.get(page_number) or {}
-        handoff_visual = handoff_page.get("visual_structure") or {}
-        page_mission = str(handoff_page.get("page_mission") or missions.get(page.page_id, ""))
+        input_page = input_pages.get(page_number) or {}
+        input_visual = input_page.get("visual_structure") or {}
+        page_mission = str(input_page.get("page_mission") or missions.get(page.page_id, ""))
         visual_context = dict(contexts.get(page.page_id) or {})
-        if isinstance(handoff_visual, dict):
-            if handoff_visual.get("intent_type"):
-                visual_context["visual_intent_type"] = str(handoff_visual["intent_type"])
-            if handoff_visual.get("dominant_carrier"):
-                visual_context["visual_carrier"] = str(handoff_visual["dominant_carrier"])
+        if isinstance(input_visual, dict):
+            if input_visual.get("intent_type"):
+                visual_context["visual_intent_type"] = str(input_visual["intent_type"])
+            if input_visual.get("dominant_carrier"):
+                visual_context["visual_carrier"] = str(input_visual["dominant_carrier"])
         compiled = compile_page_prompt(
             page,
             style_lock,
@@ -373,17 +373,17 @@ def build_manifest(
         )
         for number in page_numbers
     }
-    stage02_handoff: dict[str, Any] | None = None
-    stage02_handoff_path: Path | None = None
-    handoff_pages: dict[int, dict[str, Any]] = {}
+    stage02_input: dict[str, Any] | None = None
+    stage02_input_path: Path | None = None
+    input_pages: dict[int, dict[str, Any]] = {}
     if project_path is not None:
-        from cyberppt.stage02_handoff import HANDOFF_JSON, handoff_page_map, load_stage02_handoff
+        from cyberppt.stage02_input import input_page_map, input_path, load_stage02_input
 
-        stage02_handoff = load_stage02_handoff(project_path)
-        if stage02_handoff is not None:
-            stage02_handoff_path = project_path / HANDOFF_JSON
-            handoff_pages = handoff_page_map(stage02_handoff)
-            role_aliases_from_handoff = {
+        stage02_input = load_stage02_input(project_path)
+        if stage02_input is not None:
+            stage02_input_path = input_path(project_path)
+            input_pages = input_page_map(stage02_input)
+            role_aliases_from_input = {
                 "cover": "cover",
                 "agenda": "agenda",
                 "section": "section",
@@ -391,10 +391,10 @@ def build_manifest(
                 "ending": "ending",
             }
             for number in page_numbers:
-                handoff_page = handoff_pages.get(number)
-                if handoff_page is None:
-                    raise ValueError(f"Stage 02 handoff is missing requested page {number}")
-                page_roles[number] = role_aliases_from_handoff[str(handoff_page["render_role"])]
+                input_page = input_pages.get(number)
+                if input_page is None:
+                    raise ValueError(f"Stage 02 script input is missing requested page {number}")
+                page_roles[number] = role_aliases_from_input[str(input_page["render_role"])]
     content_page_numbers = [
         number for number in page_numbers if page_roles[number] == "content"
     ]
@@ -404,7 +404,7 @@ def build_manifest(
     # page-specific module as the final rendering language.
     style09_source_contract = _is_style09_lock(style_lock)
     effective_compact_blueprint = bool(
-        compact_blueprint and handoff_pages
+        compact_blueprint and input_pages
     )
     if prompt_compiler == ARTIFACT_PROMPT_COMPILER and effective_compact_blueprint:
         raise ValueError("artifact-spec-v2 cannot be combined with compact_blueprint")
@@ -468,7 +468,7 @@ def build_manifest(
                     )
                 relationship_aware_prompts[page_number] = _compact_blueprint_prompt(
                     page_number=page_number,
-                    handoff_page=handoff_pages[page_number],
+                    handoff_page=input_pages[page_number],
                     visual_prompt=module.prompt_text,
                     style_lock=style_lock,
                 )
@@ -525,10 +525,10 @@ def build_manifest(
             else None
         )
         if effective_compact_blueprint:
-            handoff_page = handoff_pages.get(page_number) or {}
-            if not handoff_page:
+            input_page = input_pages.get(page_number) or {}
+            if not input_page:
                 raise ValueError(
-                    f"compact blueprint requires Stage 02 handoff page {page_number}"
+                    f"compact blueprint requires Stage 02 script input page {page_number}"
                 )
             if visual_module is None:
                 raise ValueError(
@@ -536,7 +536,7 @@ def build_manifest(
                 )
             prompt = _compact_blueprint_prompt(
                 page_number=page_number,
-                handoff_page=handoff_page,
+                handoff_page=input_page,
                 visual_prompt=visual_module.prompt_text,
                 style_lock=style_lock,
             )
@@ -699,9 +699,9 @@ def build_manifest(
                 "visual_structure_handoff": visual_handoff_metadata,
                 **(
                     {
-                        "stage02_handoff": str(stage02_handoff_path.resolve()),
+                        "stage02_script_input": str(stage02_input_path.resolve()),
                     }
-                    if stage02_handoff_path is not None
+                    if stage02_input_path is not None
                     else {}
                 ),
                 **({"prompt_approval": str(approval_path.resolve())} if approval_path else {}),
@@ -759,12 +759,12 @@ def build_manifest(
         "source_script": str(compiled_script.resolve()),
         "original_script": str(script.resolve()),
         "style_lock": str(style_lock.resolve()) if style_lock else None,
-        "stage02_handoff": (
+        "stage02_script_input": (
             {
-                "path": str(stage02_handoff_path.resolve()),
-                "schema": stage02_handoff.get("schema"),
+                "path": str(stage02_input_path.resolve()),
+                "schema": stage02_input.get("schema"),
             }
-            if stage02_handoff_path is not None and stage02_handoff is not None
+            if stage02_input_path is not None and stage02_input is not None
             else None
         ),
         "output_dir": str(output_dir.resolve()),

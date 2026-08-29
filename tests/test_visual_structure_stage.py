@@ -1003,10 +1003,10 @@ class VisualStructureStageTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            with self.assertRaisesRegex(ValueError, "HANDOFF_BINDING_STALE"):
-                prepare_visual_structure_stage(project, script, reuse_current_handoff=True)
-
-            self.assertFalse((project / VISUAL_FILES["design_input"]).exists())
+            invocation = prepare_visual_structure_stage(project, script, reuse_current_handoff=True)
+            self.assertTrue(invocation.is_file())
+            self.assertTrue((project / VISUAL_FILES["design_input"]).exists())
+            self.assertTrue((project / "workbench/stages/02-input/script-intake.json").is_file())
 
     def test_existing_project_with_visual_artifacts_requires_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1203,7 +1203,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 "  - Changed text\n",
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(ValueError, "HANDOFF_BINDING_STALE"):
+            with self.assertRaisesRegex(ValueError, "Stage 02 script input changed"):
                 assert_visual_structure_ready(project, script)
 
     def test_prompt_inputs_hash_ignores_style_lock_but_tracks_the_spec(self) -> None:

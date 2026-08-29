@@ -7,7 +7,6 @@ import subprocess
 import sys
 from typing import Any
 
-from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.visual_structure_contract import (
     audit_visual_design_package,
     audit_visual_deck_rhythm,
@@ -71,6 +70,8 @@ def _render_visual_review_summary(
 def run_visual_structure_audit(project: Path, script: Path) -> tuple[int, dict[str, Any]]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
+    from cyberppt.stage02_input import input_path, load_stage02_input, resolve_input_script
+    script = resolve_input_script(project, script)
     skill_root = _skill_root()
     validator = skill_root / "scripts" / "validate_visual_spec.py"
     prompt_builder = skill_root / "scripts" / "build_generation_prompt.py"
@@ -83,10 +84,8 @@ def run_visual_structure_audit(project: Path, script: Path) -> tuple[int, dict[s
     prompts = project / VISUAL_FILES["generation_prompts"]
     report_path = project / VISUAL_FILES["validation"]
     previous_report = _read_json(report_path) if report_path.is_file() else {}
-    from cyberppt.stage02_handoff import HANDOFF_JSON, load_stage02_handoff
-
-    handoff = load_stage02_handoff(project, required=True)
-    handoff_path = project / HANDOFF_JSON
+    script_input = load_stage02_input(project, required=True)
+    script_input_path = input_path(project)
     for path in (
         validator,
         prompt_builder,
@@ -101,8 +100,8 @@ def run_visual_structure_audit(project: Path, script: Path) -> tuple[int, dict[s
         if not path.is_file():
             raise FileNotFoundError(f"visual structure stage artifact is missing: {path}")
     design_payload = _read_json(design_input)
-    if design_payload.get("source_sha256") != _sha256(handoff_path):
-        raise ValueError("visual-design-input.json is stale for the current Stage 02 handoff")
+    if design_payload.get("source_sha256") != _sha256(script_input_path):
+        raise ValueError("visual-design-input.json is stale for the current Stage 02 script input")
 
     results: dict[str, Any] = {}
     for label, path in (("markdown", spec_md), ("json", spec_json)):
@@ -218,9 +217,10 @@ def run_visual_structure_audit(project: Path, script: Path) -> tuple[int, dict[s
         "skill_contract_sha256": contracts,
         "script": str(script),
         "script_sha256": _sha256(script),
-        "script_semantic_sha256": script_semantic_digest(script),
-        "stage02_handoff": str(handoff_path) if handoff is not None else None,
-        "stage02_handoff_sha256": _sha256(handoff_path),
+        "script_input_sha256": _sha256(script),
+        "script_semantic_sha256": _sha256(script),  # deprecated compatibility alias
+        "stage02_script_input": str(script_input_path) if script_input is not None else None,
+        "stage02_script_input_sha256": _sha256(script_input_path),
         "artifacts": {key: str(project / value) for key, value in VISUAL_FILES.items() if key != "validation"},
         "artifact_sha256": {
             key: _sha256(project / relative)

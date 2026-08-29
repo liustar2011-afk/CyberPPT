@@ -407,7 +407,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                     handoff_page,
                 ]
             }
-            with patch("cyberppt.stage02_handoff.load_stage02_handoff", return_value=payload):
+            with patch("cyberppt.stage02_input.load_stage02_input", return_value=payload):
                 specs = load_project_page_artifact_specs(project, style_lock=style_lock)
 
         self.assertEqual([7], sorted(specs))

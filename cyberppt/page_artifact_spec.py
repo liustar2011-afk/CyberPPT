@@ -845,14 +845,14 @@ def load_project_page_artifact_specs(
 ) -> dict[int, PageArtifactSpec]:
     """Load the audited Stage 02 authorities and project every content page."""
 
-    from cyberppt.stage02_handoff import HANDOFF_JSON, handoff_page_map, load_stage02_handoff
+    from cyberppt.stage02_input import input_page_map, input_path, load_stage02_input
 
     project = project.expanduser().resolve()
-    handoff_path = project / HANDOFF_JSON
+    script_input_path = input_path(project)
     visual_path = project / "visual" / "deck-visual-spec.json"
-    handoff = load_stage02_handoff(project, required=True)
+    handoff = load_stage02_input(project, required=True)
     if handoff is None:  # pragma: no cover - required=True is the contract
-        raise FileNotFoundError(f"Stage 02 handoff is missing: {handoff_path}")
+        raise FileNotFoundError(f"Stage 02 script input is missing: {script_input_path}")
     if not visual_path.is_file():
         raise FileNotFoundError(f"visual structure spec is missing: {visual_path}")
     try:
@@ -867,7 +867,7 @@ def load_project_page_artifact_specs(
         for page in pages
         if isinstance(page, dict) and int(page.get("page_number") or 0) > 0
     }
-    handoff_map = handoff_page_map(handoff)
+    handoff_map = input_page_map(handoff)
     content_handoff = {
         page_number: page
         for page_number, page in handoff_map.items()
@@ -879,7 +879,7 @@ def load_project_page_artifact_specs(
             "visual structure spec is missing Stage 02 pages: "
             + ", ".join(f"P{number:02d}" for number in missing)
         )
-    handoff_sha = hashlib.sha256(handoff_path.read_bytes()).hexdigest()
+    handoff_sha = hashlib.sha256(script_input_path.read_bytes()).hexdigest()
     visual_sha = hashlib.sha256(visual_path.read_bytes()).hexdigest()
     return {
         page_number: build_page_artifact_spec(
@@ -888,9 +888,7 @@ def load_project_page_artifact_specs(
             style_lock=style_lock,
             handoff_sha256=handoff_sha,
             visual_source_sha256=visual_sha,
-            planning_policy=handoff.get("planning_policy")
-            if isinstance(handoff.get("planning_policy"), dict)
-            else None,
+            planning_policy=None,
         )
         for page_number, handoff_page in content_handoff.items()
     }
