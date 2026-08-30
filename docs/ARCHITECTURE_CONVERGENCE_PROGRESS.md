@@ -30,6 +30,7 @@
 | 18 | `901196a5976f385f108cbc517f2ae817df3cbe2b` | 消除 Style 09 双权威：可执行合同只从 style registry JSON 解析；`visual-system.md` 降为说明性文档，不再覆盖运行时 Prompt |
 | 19 | `8d474ea59e999d20f8702aab4def816031d55941` | 将已退役 Style10 的主测试合同改为“不可解析、不可锁定、无 palette-10”，防止旧测试驱动生产代码恢复废弃风格 |
 | 20 | `00dc915017243be307ac0388ecd98d47fd857dcc` | Style Lock snapshot 测试迁移到 registry authority：registry 修订产生新锁版本，说明文档修订不改变可执行合同，legacy lock 仅迁移一次 |
+| 21 | `d1c6a6c3a39f2df953062ae06e7865f14bb711b2` | Terminal execution lock 在追加前删除正文中完全相同的硬约束整行，避免重复 Prompt；部分匹配和页面业务句保持不变 |
 
 ## 当前结构性结果
 
@@ -51,6 +52,7 @@
 - registry 合同修订只影响新建锁；已经是 immutable snapshot 的锁保持原字节不变。
 - 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结，此后不再刷新。
 - Style10 不属于当前 executable registry；测试不得再要求恢复 Style10、palette-10 或 Style10 默认选择。
+- Runtime terminal lock 只在 Prompt 绝对末尾保留一份；若同一终端硬约束已作为独立整行出现在正文，会在 reassert 前精确去重，不删除包含额外上下文的页面句子。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
 - 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
@@ -95,4 +97,4 @@
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败。
 - 阶段 17 run `33339954486`：Python 3.12 为 37 failed、1753 passed、8 skipped。
 - 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。Style 09 已实际切换到 registry 中的纯白长合同；新增 3 项失败均为旧 snapshot 测试语义，阶段 20 已迁移。
-- 后续以阶段 20 之后的 CI 作为新的失败清单，继续逐项消除旧 Style10/Style09 测试债务与 legacy facade 回归。
+- 阶段 21 增加 runtime terminal-lock 精确去重与单元测试；后续以其 CI 结果判断 Style09 人物规则重复断言是否随生产修复消失。
