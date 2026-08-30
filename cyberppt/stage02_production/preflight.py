@@ -9,7 +9,7 @@ from typing import Any
 
 from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks, parse_pages
 from scripts.imagegen_pipeline.page_manifest import PRODUCTION_MODES
-from scripts.imagegen_pipeline.style_library import write_project_style_lock
+from scripts.imagegen_pipeline.style_library import load_style_lock, write_project_style_lock
 from cyberppt.artifact_ledger import write_json_atomic
 from cyberppt.stage02_input import INPUT_JSON, prepare_stage02_input, resolve_input_script
 
@@ -37,6 +37,21 @@ def sha256_file(path: Path) -> str | None:
     return digest.hexdigest()
 
 
+def sha256_directory(path: Path | None) -> str:
+    """Hash a directory by relative path and file content in stable order."""
+
+    if path is None or not path.is_dir():
+        return ""
+    digest = sha256()
+    for item in sorted((candidate for candidate in path.rglob("*") if candidate.is_file()), key=lambda value: value.as_posix()):
+        relative = item.relative_to(path).as_posix()
+        digest.update(relative.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update((sha256_file(item) or "").encode("ascii"))
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def read_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {"schema": "cyberppt.artifact_ledger.v1", "artifacts": []}
@@ -54,7 +69,7 @@ def read_style_lock(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"visual style lock JSON not found: {path}")
     try:
-        data = read_json(path)
+        data = load_style_lock(path)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ValueError(
             f"--style-lock must point to a valid JSON visual style lock, not Markdown or plain text: {path}. "
@@ -71,6 +86,16 @@ def read_style_lock(path: Path) -> dict[str, Any]:
             f"Stage 02 main flow only supports visual Style 09; received style id {style_id!r}"
         )
     return data
+
+
+def resolved_style_contract_sha256(style_data: dict[str, Any]) -> str:
+    """Return the frozen contract hash validated by ``load_style_lock``."""
+
+    style = style_data.get("style") if isinstance(style_data.get("style"), dict) else {}
+    value = str(style.get("prompt_contract_sha256") or "").strip().lower()
+    if not value:
+        raise ValueError("production Style 09 lock has no frozen prompt_contract_sha256")
+    return value
 
 
 def ensure_project_dirs(project: Path) -> None:
@@ -98,6 +123,50 @@ def page_range_slug(pages: list[int] | tuple[int, ...]) -> str:
     return f"pages_{pages[0]:03d}_{pages[-1]:03d}_{len(pages):02d}p_{digest}"
 
 
+def input_fingerprint_for(
+    *,
+    source_script_sha256: str,
+    script_input_sha256: str,
+    visual_spec_sha256: str,
+    style_lock_sha256: str,
+    resolved_style_contract_sha256: str,
+    selected_pages: tuple[int, ...],
+    production_mode: str,
+    assembly_mode: str,
+    image_model: str,
+    image_quality: str,
+    prompt_enrich: str,
+    no_style_reference: bool,
+    skip_image_text_audit: bool,
+    allow_prompt_edit: bool,
+    prompt_overrides_sha256: str,
+    autonomous_contract_sha256: str,
+) -> str:
+    """Build a timestamp-free identity for meaningful Stage 02 inputs."""
+
+    payload = {
+        "schema": "cyberppt.stage02_input_fingerprint.v1",
+        "source_script_sha256": source_script_sha256,
+        "script_input_sha256": script_input_sha256,
+        "visual_spec_sha256": visual_spec_sha256,
+        "style_lock_sha256": style_lock_sha256,
+        "resolved_style_contract_sha256": resolved_style_contract_sha256,
+        "selected_pages": list(selected_pages),
+        "production_mode": production_mode,
+        "assembly_mode": assembly_mode,
+        "image_model": image_model,
+        "image_quality": image_quality,
+        "prompt_enrich": prompt_enrich,
+        "no_style_reference": no_style_reference,
+        "skip_image_text_audit": skip_image_text_audit,
+        "allow_prompt_edit": allow_prompt_edit,
+        "prompt_overrides_sha256": prompt_overrides_sha256,
+        "autonomous_contract_sha256": autonomous_contract_sha256,
+    }
+    material = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return sha256(material.encode("utf-8")).hexdigest()
+
+
 def build_id_for(
     *,
     script: Path,
@@ -105,20 +174,27 @@ def build_id_for(
     production_mode: str,
     style_lock: Path | None,
     requested: str | None = None,
+    input_fingerprint: str | None = None,
 ) -> str:
     if requested:
         return requested.strip()
-    material = "|".join(
-        (
-            str(script.resolve()),
-            sha256_file(script) or "",
-            pages_raw,
-            production_mode,
-            str(style_lock.resolve()) if style_lock else "",
-            sha256_file(style_lock) or "" if style_lock else "",
+    if input_fingerprint:
+        digest = input_fingerprint[:10]
+    else:
+        # Compatibility path for callers that still invoke build_id_for
+        # directly. Canonical Stage 02 preflight always supplies the explicit
+        # deterministic input fingerprint.
+        material = "|".join(
+            (
+                str(script.resolve()),
+                sha256_file(script) or "",
+                pages_raw,
+                production_mode,
+                str(style_lock.resolve()) if style_lock else "",
+                sha256_file(style_lock) or "" if style_lock else "",
+            )
         )
-    )
-    digest = sha256(material.encode("utf-8")).hexdigest()[:10]
+        digest = sha256(material.encode("utf-8")).hexdigest()[:10]
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     return f"{stamp}-{digest}"
 
@@ -226,6 +302,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
             source_script=script,
         )
     style_data = read_style_lock(style_lock)
+    frozen_style_contract_sha256 = resolved_style_contract_sha256(style_data)
     full_reference_images: list[Path] = []
     reference_image = None if options.no_style_reference else style_data.get("reference_image")
     if isinstance(reference_image, dict) and reference_image.get("required_for_every_page"):
@@ -243,17 +320,42 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     blocks = parse_page_blocks(script)
     pages = tuple(parse_pages(options.pages_raw, set(blocks)))
     slug = page_range_slug(pages)
+
+    script_input_path = project / INPUT_JSON
+    visual_spec_path = project / VISUAL_SPEC_PATH
+    source_script_sha = sha256_file(script) or ""
+    script_input_sha = sha256_file(script_input_path) or ""
+    visual_spec_sha = sha256_file(visual_spec_path) or ""
+    style_lock_sha = sha256_file(style_lock) or ""
+    prompt_overrides_path = options.prompt_overrides_dir.expanduser().resolve() if options.prompt_overrides_dir else None
+    input_fingerprint = input_fingerprint_for(
+        source_script_sha256=source_script_sha,
+        script_input_sha256=script_input_sha,
+        visual_spec_sha256=visual_spec_sha,
+        style_lock_sha256=style_lock_sha,
+        resolved_style_contract_sha256=frozen_style_contract_sha256,
+        selected_pages=pages,
+        production_mode=options.production_mode,
+        assembly_mode=options.assembly_mode,
+        image_model=options.image_model,
+        image_quality=options.image_quality,
+        prompt_enrich=options.prompt_enrich,
+        no_style_reference=options.no_style_reference,
+        skip_image_text_audit=options.skip_image_text_audit,
+        allow_prompt_edit=options.allow_prompt_edit,
+        prompt_overrides_sha256=sha256_directory(prompt_overrides_path),
+        autonomous_contract_sha256=sha256_file(autonomous_contract_path) or "" if autonomous_contract_path else "",
+    )
     resolved_build_id = build_id_for(
         script=script,
         pages_raw=options.pages_raw,
         production_mode=options.production_mode,
         style_lock=style_lock,
         requested=options.build_id,
+        input_fingerprint=input_fingerprint,
     )
     target_dir = explicit_output_dir(options.output_dir, resolved_build_id) if options.output_dir else versioned_output_dir(project, slug, resolved_build_id)
 
-    script_input_path = project / INPUT_JSON
-    visual_spec_path = project / VISUAL_SPEC_PATH
     return Stage02BuildContext(
         project=project,
         canonical_script=script,
@@ -262,13 +364,15 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
         build_id=resolved_build_id,
         build_dir=target_dir,
         style_lock=style_lock,
-        source_script_sha256=sha256_file(script) or "",
-        script_input_sha256=sha256_file(script_input_path) or "",
-        visual_spec_sha256=sha256_file(visual_spec_path) or "",
-        style_lock_sha256=sha256_file(style_lock) or "",
+        source_script_sha256=source_script_sha,
+        script_input_sha256=script_input_sha,
+        visual_spec_sha256=visual_spec_sha,
+        style_lock_sha256=style_lock_sha,
         production_mode=options.production_mode,
         assembly_mode=options.assembly_mode,
         source_mode=source_mode,
+        input_fingerprint=input_fingerprint,
+        resolved_style_contract_sha256=frozen_style_contract_sha256,
         full_reference_images=tuple(full_reference_images),
         autonomous_contract=autonomous_contract_path,
         project_created=False,
