@@ -9,34 +9,38 @@
 ## 阶段 1：Style Lock 真冻结
 
 状态：已完成。
-
 提交：`b64fed0 fix(stage02): freeze visual style lock contract`
 
 ## 阶段 2：Stage 01 Authority Map
 
 状态：已完成。
-
 提交：`67586a0 docs(stage01): define canonical authority map`
-
 权威定义见 `docs/CYBERPPT_AUTHORITY_MAP.md`。
 
 ## 阶段 3：Stage 02 正式状态模型
+
+状态：已完成。
+提交：`6862598 feat(stage02): add explicit build state model`
+
+可执行 `python -m cyberppt.stage02_production.state <page_image_pairs.json>` 区分正常待办和真实失败。
+
+## 阶段 4：input_fingerprint 与 run_id 分离
 
 状态：已完成，待本次提交落盘。
 
 改动：
 
-- 新增 `cyberppt.stage02_production.state`，对现有 manifest 做确定性状态分类。
-- 明确区分 `needs_image_generation`、`needs_svg_authoring`、`needs_visual_review`、`visual_review_failed`、`page_ready_for_assembly` 与真实 `failed`。
-- 缺 authored SVG 和等待 Quick 视觉审核不再需要由上层根据异常文案猜测业务含义；可直接执行：
-  `python -m cyberppt.stage02_production.state <page_image_pairs.json>`。
-- 新增回归测试，保证“正常待办”不会被分类为 terminal failure。
+- 新增 `cyberppt.stage02_production.identity`。
+- `input_fingerprint` 仅由会影响生产结果的输入构成：脚本/Stage02 intake/visual spec/style lock 哈希、页面集合、production/assembly mode、ImageGen model/quality、prompt enrich 与 prompt edit 策略。
+- `build_id` 继续承担每次执行的 run identity；manifest/build context 同时写入 `run_id` 和稳定的 `input_fingerprint`。
+- 相同输入在不同时间运行可以拥有不同 run id，但得到相同 input fingerprint；为后续缓存、精确失效和跨 run 对比提供稳定键。
 
-说明：本阶段先建立兼容现有 manifest 的一等状态模型，不改写现有生产编排异常行为；下一次 Stage 02 编排收敛可直接消费该状态模型，避免一次性大改 Quick runtime。
+## 暂缓：compatibility facade 单向化
+
+当前 `final_script_pages.py -> compat.sync_legacy_patch_points()` 仍承担旧测试/调用的 monkey-patch seam。在未建立完整调用面回归测试前直接删除风险过高，因此本轮不做破坏性移除。后续先锁定调用者，再迁移为单向参数 adapter。
 
 后续阶段：
 
-1. compatibility facade 单向化，移除内部 monkey patch。
-2. deterministic semantic gate 分级。
-3. Python 安装边界、extras 与 wheel smoke test。
-4. `input_fingerprint` 与 `run_id` 分离。
+1. deterministic semantic gate 分级。
+2. Python 安装边界、extras 与 wheel/repository smoke test。
+3. compatibility facade 调用面测试与单向化。

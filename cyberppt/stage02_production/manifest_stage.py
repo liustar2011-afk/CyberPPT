@@ -13,6 +13,7 @@ from scripts.imagegen_pipeline.imagegen_handoff import (
 from scripts.imagegen_pipeline.page_manifest import build_manifest, output_variants_for_mode
 from cyberppt.script_quality_contract import assert_imagegen_onscreen_readiness, parse_script_path
 
+from .identity import input_fingerprint, input_identity_payload
 from .models import ManifestStageResult, Stage02BuildContext, Stage02RunOptions
 from .preflight import TEMPLATE_LOCK_DIR, page_range_slug, read_json, sha256_file, utc_now, write_json
 
@@ -130,13 +131,7 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
 
 
 def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None) -> None:
-    """Keep audited pages when a same-build recovery targets only failed pages.
-
-    A partial ``--pages`` recovery writes to the same manifest path as the
-    original batch.  Without this merge, the new two-page manifest discards
-    every previously audited page and makes the batch ineligible for a safe
-    full-deck continuation.
-    """
+    """Keep audited pages when a same-build recovery targets only failed pages."""
     if not isinstance(prior_manifest, dict):
         return
     if (
@@ -179,6 +174,8 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
     prior_manifest_path = target_dir / "page_image_pairs.json"
     prior_manifest = read_json(prior_manifest_path) if prior_manifest_path.is_file() else None
     prompt_overrides_dir = options.prompt_overrides_dir.expanduser().resolve() if options.prompt_overrides_dir else None
+    fingerprint = input_fingerprint(context, options)
+    identity_payload = input_identity_payload(context, options)
     manifest, manifest_path, compiled_script, page_numbers = build_manifest(
         script=context.canonical_script,
         pages_raw=context.pages_raw,
@@ -199,6 +196,9 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
     manifest["source_mode"] = context.source_mode
     manifest["source_script"] = str(context.canonical_script)
     manifest["source_script_sha256"] = context.source_script_sha256
+    manifest["run_id"] = context.build_id
+    manifest["input_fingerprint"] = fingerprint
+    manifest["input_identity"] = identity_payload
     _reuse_prior_artifacts(manifest=manifest, prior_manifest=prior_manifest, production_mode=context.production_mode)
     _retain_audited_prior_pairs(manifest=manifest, prior_manifest=prior_manifest)
     write_json(manifest_path, manifest)
@@ -220,6 +220,9 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
         {
             "schema": "cyberppt.build_context.v1",
             "build_id": context.build_id,
+            "run_id": context.build_id,
+            "input_fingerprint": fingerprint,
+            "input_identity": identity_payload,
             "created_at": utc_now(),
             "project": str(context.project),
             "source_script": str(context.canonical_script),
