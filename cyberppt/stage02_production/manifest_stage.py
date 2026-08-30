@@ -89,7 +89,11 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
         return
     same_source = prior_manifest.get("source_script_sha256") == manifest["source_script_sha256"]
     same_mode = prior_manifest.get("production_mode") == manifest.get("production_mode")
-    if not (same_source and same_mode):
+    same_identity = (
+        bool(prior_manifest.get("input_fingerprint"))
+        and prior_manifest.get("input_fingerprint") == manifest.get("input_fingerprint")
+    )
+    if not (same_source and same_mode and same_identity):
         return
     prior_pairs = {
         int(pair.get("page_number")): pair
@@ -120,23 +124,31 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
             current_item = pair.get(variant) or {}
             prior_item = prior_pair.get(variant) or {}
             prior_path = Path(str(prior_item.get("path") or ""))
+            current_prompt_sha = str(current_item.get("prompt_sha256") or "")
+            generated_prompt_sha = str(prior_item.get("generated_prompt_sha256") or "")
+            prior_prompt_sha = str(prior_item.get("prompt_sha256") or "")
+            same_prompt = bool(current_prompt_sha) and current_prompt_sha in {generated_prompt_sha, prior_prompt_sha}
             if (
                 prior_path == Path(str(current_item.get("path") or ""))
                 and prior_path.is_file()
+                and same_prompt
                 and (prior_item.get("text_audit") or {}).get("valid") is True
             ):
                 current_item["status"] = "Generated"
                 current_item["generated_at"] = prior_item.get("generated_at")
+                current_item["generated_prompt_sha256"] = generated_prompt_sha or prior_prompt_sha
                 current_item["text_audit"] = prior_item["text_audit"]
 
 
 def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None) -> None:
-    """Keep audited pages when a same-build recovery targets only failed pages."""
+    """Keep audited pages when a same-input recovery targets only failed pages."""
     if not isinstance(prior_manifest, dict):
         return
     if (
         prior_manifest.get("source_script_sha256") != manifest.get("source_script_sha256")
         or prior_manifest.get("production_mode") != manifest.get("production_mode")
+        or not prior_manifest.get("input_fingerprint")
+        or prior_manifest.get("input_fingerprint") != manifest.get("input_fingerprint")
     ):
         return
 
