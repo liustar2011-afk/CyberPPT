@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "description": "Non-blocking Critic heuristics. Findings improve rhetoric, speaker voice or visual-thesis phrasing but must never by themselves fail deterministic delivery QA.",
+  "rules": [
+    {
+      "id": "restating-aside",
+      "severity": "warning",
+      "pattern": "也就是说|换句话说",
+      "description": "口语化复述可能造成重复，可由 Critic 判断是否直接陈述。"
+    },
+    {
+      "id": "authoring-intent-description",
+      "severity": "warning",
+      "pattern": "让受众.{0,10}意识到|让听众.{0,10}意识到|降低.{0,10}顾虑|降低.{0,10}疑虑",
+      "description": "mission 可能过多描述心理效果，可由 Critic 判断是否改为页面职责。"
+    },
+    {
+      "id": "analysis-process-as-thesis",
+      "severity": "warning",
+      "pattern": "(识别|筛选|评估|诊断|归纳|整理|分析|测算|判断|论证|比对|梳理)(起点|标准|结果|过程|依据|路径|框架|方法|结论|维度)[^。！？]{0,20}(构成|形成|奠定|支撑)[^。！？]{0,20}(依据|基础|方向|判断)",
+      "description": "核心结论或视觉论点可能写成分析过程；这是启发式判断，交给 Critic 结合上下文评审。",
+      "include_fields": ["core_message", "visual_thesis"]
+    },
+    {
+      "id": "third-person-audience-reference",
+      "severity": "warning",
+      "pattern": "听众|受众",
+      "description": "演讲者备注可能出现第三人称旁白，可按具体汇报场景判断是否自然。",
+      "include_fields": ["speaker_notes"]
+    },
+    {
+      "id": "speaker-notes-slide-meta",
+      "severity": "warning",
+      "pattern": "这一页|下一页|上一页|本页我们|本页先|本页把|本页只|看这一页|从这一页",
+      "description": "演讲者备注可能过多谈论页面结构；是否修改由 Critic 根据真实口播语境判断。",
+      "include_fields": ["speaker_notes"]
+    },
+    {
+      "id": "speaker-notes-host-meta",
+      "severity": "warning",
+      "pattern": "各位同事|先说明|先谈|先讲规则|接下来看|到这里收一下|全篇收在|请先记住",
+      "description": "主持式过渡可能偏模板化，但在部分正式场合可以成立，因此只提示不阻断。",
+      "include_fields": ["speaker_notes"]
+    }
+  ]
+}
