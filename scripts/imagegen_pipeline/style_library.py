@@ -17,6 +17,15 @@ VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visua
 # styles. Production resolution no longer reads the documentation file live.
 LIVE_CONTRACT_STYLE_IDS = frozenset({9})
 REFERENCE_IMAGE_STYLE_IDS = frozenset({9})
+# Style 10 previously existed as a separate experimental extension. Keep its
+# numeric entry point as a compatibility alias only; it must resolve to the
+# canonical Style 09 registry snapshot so there is still one executable visual
+# authority and one reference image.
+LEGACY_STYLE_ID_ALIASES = {10: 9}
+LEGACY_STYLE_NAME_ALIASES = {
+    "light_tech_business_dense": 9,
+    "ivory_deep_blue_semantic_scene": 9,
+}
 
 
 def _utc_now() -> str:
@@ -77,6 +86,15 @@ def resolve_default_style(
     path: Path = STYLE_LIBRARY_PATH,
 ) -> dict[str, Any]:
     library = load_style_library(path)
+    requested_style_id = style_id
+    requested_style_name = (style_name or "").strip()
+
+    if style_id in LEGACY_STYLE_ID_ALIASES:
+        style_id = LEGACY_STYLE_ID_ALIASES[int(style_id)]
+    elif requested_style_name in LEGACY_STYLE_NAME_ALIASES:
+        style_id = LEGACY_STYLE_NAME_ALIASES[requested_style_name]
+        style_name = None
+
     if style_id is None and not style_name:
         default_style_id = library.get("default_style_id")
         if not isinstance(default_style_id, int):
@@ -84,23 +102,35 @@ def resolve_default_style(
                 f"style library has no valid default_style_id: {path}"
             )
         style_id = default_style_id
+
     normalized_name = (style_name or "").strip()
     for style in library["styles"]:
+        matched = False
         if style_id is not None and int(style["id"]) == int(style_id):
-            return _resolved_style(style, path)
-        aliases = {
-            str(alias).strip()
-            for alias in style.get("aliases", [])
-            if str(alias).strip()
-        }
-        if normalized_name and normalized_name in {
-            str(style["name"]),
-            str(style["slug"]),
-            *aliases,
-        }:
-            return _resolved_style(style, path)
+            matched = True
+        else:
+            aliases = {
+                str(alias).strip()
+                for alias in style.get("aliases", [])
+                if str(alias).strip()
+            }
+            if normalized_name and normalized_name in {
+                str(style["name"]),
+                str(style["slug"]),
+                *aliases,
+            }:
+                matched = True
+        if not matched:
+            continue
+        resolved = _resolved_style(style, path)
+        if requested_style_id in LEGACY_STYLE_ID_ALIASES:
+            resolved["legacy_alias_from_style_id"] = int(requested_style_id)
+        elif requested_style_name in LEGACY_STYLE_NAME_ALIASES:
+            resolved["legacy_alias_from_style_name"] = requested_style_name
+        return resolved
+
     raise ValueError(
-        f"unknown CyberPPT style selection: id={style_id!r}, name={style_name!r}. "
+        f"unknown CyberPPT style selection: id={requested_style_id!r}, name={requested_style_name!r}. "
         "Available styles:\n" + default_style_choices(path)
     )
 
@@ -127,8 +157,13 @@ def write_project_style_lock(
     path: Path = STYLE_LIBRARY_PATH,
 ) -> Path:
     # Resolve the executable registry exactly once when the lock is created.
-    # Production consumers then use the stored snapshot verbatim.
+    # Production consumers then use the stored snapshot verbatim. Legacy Style
+    # 10 callers are mapped to Style 09 before this snapshot is written.
     style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
+    legacy_alias = bool(
+        style.get("legacy_alias_from_style_id") is not None
+        or style.get("legacy_alias_from_style_name")
+    )
     lock_path = project / VISUAL_LOCK_RELATIVE
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -137,6 +172,12 @@ def write_project_style_lock(
         "style_source": str(path),
         "source_reference": load_style_library(path).get("source_reference"),
         "source_script": str(source_script) if source_script else None,
+        "selection": {
+            "requested_style_id": style_id,
+            "requested_style_name": style_name,
+            "canonical_style_id": int(style.get("id") or -1),
+            "legacy_alias": legacy_alias,
+        },
         "style": style,
         "resolved_contract": _snapshot_metadata(style),
         "policy": {
@@ -147,6 +188,7 @@ def write_project_style_lock(
             "samples_are_required_for_user_confirmation": True,
             "resolved_contract_is_immutable": True,
             "executable_style_authority": "style_registry_snapshot",
+            "legacy_alias_resolves_to_canonical_snapshot": legacy_alias,
         },
     }
     if int(style.get("id", -1)) in REFERENCE_IMAGE_STYLE_IDS and style.get("sample"):
@@ -209,7 +251,7 @@ def _strip_style09_registry_meta(section: str) -> str:
 def _load_live_extension_contract(style_id: int) -> str:
     """Legacy diagnostic helper for reading the documentation section.
 
-    This helper is intentionally not used by resolve_default_style(), lock
+    This function is intentionally not used by resolve_default_style(), lock
     creation or lock migration. It remains only for compatibility/debugging.
     """
 
