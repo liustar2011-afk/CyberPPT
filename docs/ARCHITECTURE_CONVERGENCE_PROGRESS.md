@@ -31,6 +31,7 @@
 | 19 | `8d474ea59e999d20f8702aab4def816031d55941` | 将已退役 Style10 的主测试合同改为“不可解析、不可锁定、无 palette-10”，防止旧测试驱动生产代码恢复废弃风格 |
 | 20 | `00dc915017243be307ac0388ecd98d47fd857dcc` | Style Lock snapshot 测试迁移到 registry authority：registry 修订产生新锁版本，说明文档修订不改变可执行合同，legacy lock 仅迁移一次 |
 | 21 | `d1c6a6c3a39f2df953062ae06e7865f14bb711b2` | Terminal execution lock 在追加前删除正文中完全相同的硬约束整行，避免重复 Prompt；部分匹配和页面业务句保持不变 |
+| 22 | `99a6acb29d2724e849a1e99a5bdb277c6ee2f5ac` | Style09 回归测试从旧 Prompt 逐字快照迁移为 registry/纯白/合同章节/锁 SHA/迁移/终端锁/CLI 等正式不变量 |
 
 ## 当前结构性结果
 
@@ -53,6 +54,7 @@
 - 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结，此后不再刷新。
 - Style10 不属于当前 executable registry；测试不得再要求恢复 Style10、palette-10 或 Style10 默认选择。
 - Runtime terminal lock 只在 Prompt 绝对末尾保留一份；若同一终端硬约束已作为独立整行出现在正文，会在 reassert 前精确去重，不删除包含额外上下文的页面句子。
+- Style09 测试只锁定正式视觉合同的不变量与安全边界，不再把某个历史 Prompt 版本的整段措辞当作 API。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
 - 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
@@ -86,15 +88,15 @@
 
 ## 尚未完成 / 后续建议
 
-1. 清理 Style09/Style10 历史测试契约与 prompt frozen baseline，使测试只锁定当前正式 contract/invariant。
+1. 清理其余 Style10 历史调用和 prompt frozen baseline。
 2. 修复 legacy facade `ensure_output_size` patch seam 的单项回归。
-3. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入。
-4. 把 `script_engine.quality_policy` 接入正式 `audit-final/lint` 输出，在回归验证充分后让 advisory 不再影响主阻断结果。
-5. 增加 wheel 环境下不调用外网/Office 的最小 Stage 01→Stage 02 fixture build，以及 macOS/Windows OfficeCLI/render 集成 CI。
+3. 统一 `references/visual-system.md` 中 Style09 的说明性文字，清除仍残留的象牙白旧说明。
+4. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入。
+5. 把 `script_engine.quality_policy` 接入正式 `audit-final/lint` 输出，并补 wheel fixture / Office 集成 CI。
 
 ## 验证状态
 
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败。
 - 阶段 17 run `33339954486`：Python 3.12 为 37 failed、1753 passed、8 skipped。
 - 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。Style 09 已实际切换到 registry 中的纯白长合同；新增 3 项失败均为旧 snapshot 测试语义，阶段 20 已迁移。
-- 阶段 21 增加 runtime terminal-lock 精确去重与单元测试；后续以其 CI 结果判断 Style09 人物规则重复断言是否随生产修复消失。
+- 阶段 21 增加 runtime terminal-lock 精确去重与单元测试；阶段 22 迁移 Style09 旧逐字断言。后续以阶段 22 之后的 CI 失败清单继续清理。
