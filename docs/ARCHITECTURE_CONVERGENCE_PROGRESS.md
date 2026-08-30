@@ -1,40 +1,80 @@
 # CyberPPT 架构收敛改造记录
 
-本文件记录 2026-08-31 开始的架构收敛工作。每完成一个小阶段即提交，确保中断后可从已提交状态继续。
+本文件记录 2026-08-31 开始的架构收敛工作。每完成一个小阶段即提交，确保会话、Agent 或本地进程中断后可以从 Git 历史继续。
 
 ## 目标
 
-在保持“源材料 → 脚本 → 完整图片 → 图转可编辑 PPT → QA 交付”正式路线不变的前提下，收敛权威模型、运行状态、兼容层和可复现性边界。
+保持“源材料 → 脚本 → 完整图片 → 图转可编辑 PPT → QA 交付”正式路线不变，收敛权威模型、运行状态、兼容层和可复现性边界。
 
-## 已完成
+## 已完成阶段与恢复点
 
-1. `b64fed0 fix(stage02): freeze visual style lock contract`
-2. `67586a0 docs(stage01): define canonical authority map`
-3. `6862598 feat(stage02): add explicit build state model`
-4. `f57692e feat(stage02): separate input fingerprint from run id`
-5. `4b5f225 build: define installation capability boundaries`
-6. `5948b6c chore: remove root scratch artifacts`
-7. `7042e15 feat(script): classify heuristic quality findings`
-8. `ebf2f74 fix(stage02): invalidate stale visual artifacts by input identity`
-9. `01a95b2 feat(stage02): return expected continuation states`
-10. `8062deb feat(stage02): persist expected action state`
-11. `ad4a99e build: package production runtime and resources`
+| 阶段 | Commit | 内容 |
+|---|---|---|
+| 1 | `b64fed03162ae26fb474655a4dcdb67813c3482e` | Style 09 lock 改为创建时合同快照，禁止读取旧锁时 live refresh |
+| 2 | `67586a09620082cfb1742b749526146a5d0e2d0e` | 建立 Stage 01/02 Authority Map，统一可写权威与 projection 边界 |
+| 3 | `6862598eb1314b8ad8fe73edd398542d55649e2a` | 增加 Stage 02 正常待办/真实失败状态模型 |
+| 4 | `f57692ec6887e38ae25373af2c206219194b7dc4` | 分离稳定 `input_fingerprint` 与每次执行 `run_id/build_id` |
+| 5 | `4b5f225cc8a780003cca95b4997586e7b187e037` | 明确安装能力边界、直接/可选依赖和 CI runtime import smoke |
+| 6 | `5948b6c8f2ea5483efe58a9c28035ad2cdbcabe8` | 删除根目录 scratch 产物并增加 ignore 规则 |
+| 7 | `7042e158240c39b58c9deba596967cc7b1ee8608` | Script deterministic finding 增加 blocker/advisory severity policy |
+| 8 | `ebf2f748e6349255221960e6c78a61dbed1a4ad2` | 正式 manifest 按 input identity + Prompt SHA 精确失效旧视觉资产 |
+| 9 | `01a95b299851bdee200229baa0cb2f5aee51fb4e` | 主 orchestrator 将缺 SVG/待审核转换为 `needs_action` 正常结果 |
+| 10 | `8062debc4fc7442ac2b77ae19784fb9611a22edf` | `needs_action` 写回 `build_context.json`，中断后可直接恢复 |
+| 11 | `ad4a99ef39a82fd0554127d84aab2aa6905b8971` | 正式 runtime/contract/reference/assets 纳入 wheel 包边界并增加 wheel smoke |
+| 12 | `2e9cd4e3cac6c213b09b2a2b028c10b8fc613997` | Compatibility seam 封口为固定 6 项 `LegacyPatchSet`，保留旧测试兼容 |
 
-## 阶段 12：Compatibility seam 封口
+## 当前结构性结果
 
-状态：已完成，待本次提交落盘。
+### Stage 01
 
-改动：
+- strict whole-document 单一可写语义权威：`semantic-argument-model.json`。
+- `source-truth.json` 是 deterministic projection。
+- `script/foundation.json` 是 PLAN/AUTHOR 语义合同。
+- `script/deck-plan.json` 负责章节、页序、页面使命和来源范围。
+- `script/dist/final-script.md` 是 Stage 02 唯一跨阶段内容权威。
+- 详细规则见 `docs/CYBERPPT_AUTHORITY_MAP.md`。
 
-- 新增冻结 dataclass `LegacyPatchSet`，将历史兼容 patch 点固定为 6 个显式字段。
-- `final_script_pages` 不再向 compat 函数传递一长串任意 patch keyword，而是构造一个有限 patch set。
-- 保留旧 `sync_legacy_patch_points()` 作为向后兼容 wrapper，已有测试 patch `final_script_pages.run_codex_image/ensure_output_size` 仍可工作。
-- 新增回归测试锁定兼容面，防止后续继续向 monkey-patch seam 增加新后端依赖。
+### Stage 02
 
-说明：这一阶段完成“封口”，尚未完全删除 monkey patch。完全删除需要把六个依赖逐步改成 Stage02RunOptions/Dependency Hooks 的显式依赖注入，并同步迁移旧测试；在完成前不做破坏性切换。
+- Style 09 生产合同由 style lock snapshot 固定。
+- `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
+- Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
+- Full image 通过审计后仍是 editable reconstruction 的视觉权威。
+- `needs_svg_authoring`、`needs_visual_review` 等属于正常 action state，不再等同 terminal failure。
+- Action state 写入 manifest、独立回执和 `build_context.json`。
 
-## 后续阶段
+### Script QA
 
-1. 六个 compat patch 点逐个迁移为显式 dependency hooks，最终删除 monkey patch wrapper。
-2. wheel 环境最小无外网 Stage 01→Stage 02 fixture build。
-3. macOS/Windows Office/render 集成 CI。
+- 高置信 schema/结构/未知 deterministic finding 默认 blocker。
+- 首批措辞/视觉语法正则类检查进入 advisory policy，避免作者为了通过 regex 机械堆关系动词。
+- 原 `lint` 退出行为暂保持兼容，severity policy 先独立运行再逐步接入主 gate。
+
+### Packaging / CI
+
+- Pillow 为直接依赖；XLSX/MarkItDown 能力进入 `source` extra。
+- `scripts`、`references`、`contracts`、`assets` 进入 wheel 包边界。
+- CI 覆盖 Python 3.10/3.12 pytest、runtime import、wheel build 和离开仓库目录后的 wheel import/resource smoke。
+
+## Compatibility seam 当前状态
+
+现有 `tests/test_final_script_pages.py` 直接 patch `cyberppt.commands.final_script_pages.run_codex_image/ensure_output_size`。因此本轮没有破坏性删除 monkey patch，而是：
+
+1. 把兼容入口收敛到 `cyberppt.stage02_production.compat`；
+2. 固定为 6 项 `LegacyPatchSet`；
+3. 保留旧 `sync_legacy_patch_points()` wrapper；
+4. 新增测试禁止 patch surface 继续扩张。
+
+下一步应逐个把这 6 项迁移到显式 dependency hooks，迁移一个、删除一个，最终移除 wrapper。
+
+## 尚未完成 / 后续建议
+
+1. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入；这是剩余的主要架构技术债务。
+2. 把 `script_engine.quality_policy` 接入正式 `audit-final/lint` 输出，在回归验证充分后让 advisory 不再影响主阻断结果。
+3. 增加 wheel 环境下不调用外网/Office 的最小 Stage 01→Stage 02 fixture build。
+4. 增加 macOS/Windows OfficeCLI/render 集成 CI。
+5. 继续拆分超大 Stage 01 模块；优先 `source_argument_model.py`、`stage01_compiler.py`、`visual_structure_contract.py`、`script_engine/contracts.py`。拆分必须按领域职责进行，不做单纯文件切割。
+
+## 验证状态
+
+- GitHub Actions 已由阶段 12 的 `main` push 触发；截至本 checkpoint 编写时，Python 3.10/3.12 job 均已启动且处于依赖安装阶段，尚无最终 conclusion。
+- 当前会话环境不能直接访问 GitHub 网络克隆仓库，因此没有本地执行 pytest；最终 CI conclusion 应作为本轮变更的正式自动化验证结果。
