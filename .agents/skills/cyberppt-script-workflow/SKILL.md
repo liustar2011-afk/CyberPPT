@@ -27,6 +27,24 @@ That file is the single operational authority for authoring behavior. This
 `SKILL.md` owns routing and stage boundaries; `AGENTS.md` retains repository hard
 constraints. Do not reconstruct author rules from summaries in other files.
 
+### Deterministic gate vs Critic advisory
+
+Keep high-confidence contracts fail-closed: schema, source references, numbers,
+responsibility, state, conditions, boundaries, audience-visible author/meta
+leakage, explicitly banned phrasing and semantic underspecification remain hard
+lint/audit failures.
+
+Pure rhetoric, speaker-style preferences and heuristic judgments about whether a
+thesis "sounds like analysis" are Critic advisories. Run:
+
+```bash
+.venv/bin/python3 -m script_engine.advisory_lint <final-script.json>
+```
+
+Review its warnings during `CRITIQUE`, but never fail delivery solely because an
+advisory warning exists. `contracts/banned-phrasing.json` is the hard phrasing
+set; `contracts/advisory-phrasing.json` is the non-blocking set.
+
 ## 2. New source-to-script
 
 Internal route:
@@ -41,7 +59,7 @@ Automatically:
 4. preserve source chapters and plan PPT pages within that structure;
 5. present **脚本规划待确认**;
 6. after ordinary approval, execute the mandatory authoring reference;
-7. run Critic, rewrite, deterministic audits and delivery validation;
+7. run Critic, non-blocking advisory lint, rewrite, deterministic hard audits and delivery validation;
 8. report **最终脚本已生成**.
 
 For every new project, PLAN writes a v2 lean `deck-plan.json` containing deck
@@ -99,11 +117,16 @@ explicitly authorizes structural change.
 
 ## 6. Whole-deck review / rewrite
 
-Read the mandatory authoring reference, then run Critic and Rewrite against
+Read the mandatory authoring reference, run `python -m script_engine.advisory_lint`
+for warning-only phrasing heuristics, then run Critic and Rewrite against
 Foundation, Deck Plan and current script. Review source structure, inference
 boundary, analytical depth, claim strength, classification or progression,
 optionality, visibility, compression loss, formal register and every whole-deck
 check in the authoring contract.
+
+Advisory warnings are prompts for contextual judgment. Rewrite them only when the
+actual page or speaking context improves; do not mechanically rewrite a valid
+sentence merely to make the warning count zero.
 
 Repair the smallest affected page scope and rerun adjacent-page review. Do not
 expose Critic self-dialogue; return the rewritten result and a concise summary of
