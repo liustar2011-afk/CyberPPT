@@ -25,8 +25,8 @@
 | 0 | 建立独立分支与实施记录 | 完成 | `8f12875` |
 | 1 | 真正冻结 Style 09 resolved contract，并建立运行输入 fingerprint | 完成 | 见阶段 1 记录 |
 | 2 | 统一 Stage 01 Authority Map 与权威命名 | 完成 | 见阶段 2 记录 |
-| 3 | Stage 02 正式状态机与 needs-action 语义 | 待实施 | - |
-| 4 | 收缩 Stage 02 compatibility facade，去除 monkey-patch 生产依赖 | 待实施 | - |
+| 3 | Stage 02 正式状态机与 needs-action 语义 | 完成 | 见阶段 3 记录 |
+| 4 | 收缩 Stage 02 compatibility facade，去除 monkey-patch 生产依赖 | 完成，测试迁移已提交 | 见阶段 4 记录 |
 | 5 | 将主观语义/文风检查从 hard blocker 分级为 warning/critic | 待实施 | - |
 | 6 | 修复 Python 包/运行时依赖边界，增加 production extras 与 wheel smoke CI | 待实施 | - |
 | 7 | 独立 `input_fingerprint` 与 `run_id/build_id` | 待实施 | - |
@@ -66,7 +66,7 @@
 - `3b004a8` `fix(stage02): invalidate reused artifacts when prompt changes`
 - `81dc232` `test(stage02): block stale prompt artifact reuse`
 
-完成内容：full 图和其 clean base / authored SVG / Quick checkpoint 只能在页级 generated Prompt SHA 与当前 Prompt SHA 一致时复用。
+完成内容：正式 Stage 02 编排中的 full 图和其 clean base / authored SVG / Quick checkpoint 只能在页级 generated Prompt SHA 与当前 Prompt SHA 一致时复用。
 
 ## 阶段 2：Stage 01 Authority 收敛
 
@@ -88,9 +88,55 @@
 5. 修订 `cyberppt-source-foundation` 与 `business-semantic-understanding` Skill，消除“canonical semantic-argument-model”与四文件 SemanticIR 并存的命名歧义。
 6. 新增静态回归测试防止后续文档再次把 compatibility projection 提升为独立 authority。
 
+## 阶段 3：Stage 02 needs-action 状态机
+
+状态：完成。
+
+提交：
+
+- `01bcff8` `feat(stage02): add explicit needs-action state model`
+- `b4b46cc` `refactor(stage02): carry pending actions in result model`
+- `7a8febc` `feat(stage02): return needs-action instead of checkpoint exception`
+- `2839669` `feat(stage02): persist needs-action delivery state`
+- `4835b53` `test(stage02): cover explicit needs-action states`
+
+完成内容：
+
+1. 新增 `stage02_production/state.py`，区分正常待办和真正失败。
+2. 缺少 authored SVG → `needs_action / author_svg`。
+3. Quick 页已渲染待人工/Agent检查 → `needs_action / review_quick_page`。
+4. Quick 视觉审核失败 → `needs_action / revise_quick_page`。
+5. 几何、文字、运行时等未分类失败继续抛出原异常，保持 fail-closed。
+6. `ReconstructionStageResult`、run summary 和 build context 均持久化 `needs_actions`。
+7. `needs_action` 状态不启动整套 OfficeCLI 交付 QA；完成待办后使用同一 build 续跑。
+8. 本阶段不新增独立 `build-status` CLI；现有 run summary / build context 已是稳定机器查询面，避免为了单一命令扩大 44KB CLI 的修改风险。
+
+## 阶段 4：Compatibility facade 单向化
+
+状态：完成；历史测试 patch 点迁移已提交，最新 CI 结果待确认。
+
+提交：
+
+- `a29a454` `refactor(stage02): make legacy patch seam non-mutating`
+- `f2b4ad7` `refactor(stage02): make command facade a one-way adapter`
+- `25c4697` `test(stage02): enforce non-mutating compatibility seam`
+- `cea6f05` `test(stage02): migrate legacy facade patch targets`
+
+完成内容：
+
+1. `stage02_production/compat.py` 只保留历史 import 名，`sync_legacy_patch_points()` 变为 deprecated no-op。
+2. `commands/final_script_pages.py` 只负责参数转换并调用 typed `run_production()`，正式执行前不再把 facade monkey-patch 写入 image/reconstruction/delivery 模块。
+3. 正式依赖由 owning module 自己解析，运行行为不再受 facade import 顺序影响。
+4. 首轮 PR CI 暴露 10 个历史测试仍 patch 旧 facade 名称；没有恢复生产 monkey-patch，而是在 `tests/conftest.py` 中把该历史回归模块的 patch target 定向到 owning module，作为测试迁移层。
+5. 新代码测试继续要求生产 facade 非变异；待旧大测试文件后续自然拆分时可删除迁移 shim。
+
 ## CI
 
-Draft PR #24 已创建。GitHub Actions `CyberPPT tests` 已开始随 PR commit 自动执行；阶段完成记录不以“CI 已通过”作为虚构前提，最终合并前统一确认最新 head 的全量 CI 结果。
+Draft PR #24 已创建，GitHub Actions `CyberPPT tests` 随 PR commit 自动执行。
+
+- Stage 4 首轮 CI：10 failed / 755 passed / 1 skipped / 2 deselected。失败集中在历史 `test_final_script_pages.py` 仍 patch 已废止的 facade seam，未发现需要恢复生产 monkey-patch 的证据。
+- 已提交 `cea6f05` 将这些 pytest patch target 映射到真正 owning module。
+- 最新 head 的全量 CI 结果仍需在后续阶段持续确认；最终合并前必须两套 Python matrix 全绿。
 
 ## 续跑规则
 
