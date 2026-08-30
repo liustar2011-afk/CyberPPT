@@ -15,19 +15,20 @@
 5. `4b5f225 build: define installation capability boundaries`
 6. `5948b6c chore: remove root scratch artifacts`
 7. `7042e15 feat(script): classify heuristic quality findings`
+8. `ebf2f74 fix(stage02): invalidate stale visual artifacts by input identity`
 
-## 阶段 8：Stage 02 视觉资产精确失效
+## 阶段 9：Stage 02 状态模型接入主 orchestrator
 
 状态：已完成，待本次提交落盘。
 
 改动：
 
-- 正式 manifest 恢复只在 `input_fingerprint` 完全一致时复用旧 authored SVG、clean base、graphic text policy、Quick checkpoint 和 audited full 图状态。
-- audited full 图的文字审计只有在当前 Prompt SHA 与实际生成 Prompt SHA 一致时才允许带入新 manifest。
-- partial page recovery 只有在相同 input fingerprint 下才能保留未选中页面，防止 style/visual spec/model 参数变化后把旧页混入新 build。
-- 新增回归测试覆盖 fingerprint 改变、Prompt 改变和 partial recovery 三种失效情况。
+- `run_production()` 在 reconstruction 抛错后读取已持久化 manifest 的正式状态模型。
+- 只有状态模型确认 `needs_action` 时，才把异常转换成正常的 `Stage02ProductionResult(status=needs_action)`；真实 failure 继续抛出，保持 fail-closed。
+- `needs_action` 结果生成 `stage02_needs_action.json`，列出页面、action、preview 等续跑信息。
+- 首先覆盖缺 authored SVG、待 Quick visual review 等现有 expected-action 场景，不修改 Quick runtime 本身。
 
-兼容说明：低层 `_generate_manifest_images` helper 仍保留“直接传入旧 manifest 时可复用 audited full”的历史行为，因为现有测试和旧调用依赖它；正式 `final-script-pages` 主链已经在 manifest 边界阻止 stale prompt/input 复用。
+这一步使 Stage 02 开始从“异常驱动工作流”迁移为“状态驱动工作流”，同时保留旧运行时和真实错误语义。
 
 ## 暂缓：compatibility facade 单向化
 
@@ -37,4 +38,4 @@
 
 1. compatibility facade dependency hooks 与单向化。
 2. 正式 runtime package 化与 wheel 安装 smoke test。
-3. 将 Stage 02 状态模型接入主 orchestrator，逐步减少 expected-action exception。
+3. 将更多 Stage 02 expected-action 写入 artifact ledger/build context，而不是仅写状态回执。

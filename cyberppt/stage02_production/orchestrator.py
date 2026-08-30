@@ -5,10 +5,61 @@ from scripts.imagegen_pipeline.page_manifest import require_generated
 from .delivery_stage import run_delivery_stage
 from .image_stage import bind_reconstruction_visual_sources, normalize_audited_manifest_images, run_image_stage
 from .manifest_stage import prepare_manifest
-from .models import Stage02ProductionResult, Stage02RunOptions
+from .models import (
+    DeliveryStageResult,
+    ReconstructionStageResult,
+    Stage02ProductionResult,
+    Stage02RunOptions,
+)
 from .preflight import prepare_preflight, write_json
 from .reconstruction_stage import run_reconstruction_stage
 from .rhythm_stage import run_full_image_rhythm_stage
+from .state import classify_manifest
+
+
+def _expected_action_result(*, context, manifest, images, error: Exception) -> Stage02ProductionResult | None:
+    """Convert expected Stage 02 continuation work into a first-class result.
+
+    Quick reconstruction currently raises ValueError for both real failures and
+    normal continuation points. We classify the persisted manifest after the
+    exception and only absorb it when the state model proves that the run is
+    waiting for an explicit Agent/human action. Real failures still propagate.
+    """
+
+    state_report = classify_manifest(images.manifest)
+    if state_report.get("state") != "needs_action":
+        return None
+
+    images.manifest["stage02_state"] = state_report
+    write_json(manifest.manifest_path, images.manifest)
+    summary_path = context.build_dir / "stage02_needs_action.json"
+    summary = {
+        "schema": "cyberppt.stage02_expected_action.v1",
+        "build_id": context.build_id,
+        "status": "needs_action",
+        "actions": state_report.get("actions") or [],
+        "pages": state_report.get("pages") or [],
+        "source_error": str(error),
+        "manifest": str(manifest.manifest_path),
+        "resume_rule": "Complete the listed page actions, then rerun final-script-pages with the same build id and output directory.",
+    }
+    write_json(summary_path, summary)
+    reconstruction = ReconstructionStageResult(
+        production_readiness=state_report,
+        status="needs_action",
+    )
+    delivery = DeliveryStageResult(
+        summary=summary,
+        summary_path=summary_path,
+        build_context_path=manifest.build_context_path,
+    )
+    return Stage02ProductionResult(
+        context=context,
+        manifest=manifest,
+        images=images,
+        reconstruction=reconstruction,
+        delivery=delivery,
+    )
 
 
 def run_production(options: Stage02RunOptions) -> Stage02ProductionResult:
@@ -34,7 +85,18 @@ def run_production(options: Stage02RunOptions) -> Stage02ProductionResult:
                 )
             bind_reconstruction_visual_sources(images.manifest)
         write_json(manifest.manifest_path, images.manifest)
-    reconstruction = run_reconstruction_stage(context, manifest, images, options)
+    try:
+        reconstruction = run_reconstruction_stage(context, manifest, images, options)
+    except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
+        expected = _expected_action_result(
+            context=context,
+            manifest=manifest,
+            images=images,
+            error=exc,
+        )
+        if expected is not None:
+            return expected
+        raise
     delivery = run_delivery_stage(context, manifest, images, reconstruction, options)
     return Stage02ProductionResult(
         context=context,
