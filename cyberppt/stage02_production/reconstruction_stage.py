@@ -11,6 +11,7 @@ from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruc
 
 from .models import ImageStageResult, ManifestStageResult, ReconstructionStageResult, Stage02BuildContext, Stage02RunOptions
 from .preflight import read_json, sha256_file, write_json
+from .state import classify_reconstruction_checkpoint
 
 
 def _run_image_to_editable_svg_build(
@@ -74,13 +75,42 @@ def run_reconstruction_stage(
     current_context["artifacts"]["page_image_pairs"]["sha256"] = sha256_file(manifest_result.manifest_path)
     write_json(manifest_result.build_context_path, current_context)
 
-    build = _run_image_to_editable_svg_build(
-        project=context.project,
-        manifest_path=manifest_result.manifest_path,
-        output_dir=context.build_dir,
-        pages_raw=context.pages_raw,
-        assembly_mode=context.assembly_mode,
-    )
+    try:
+        build = _run_image_to_editable_svg_build(
+            project=context.project,
+            manifest_path=manifest_result.manifest_path,
+            output_dir=context.build_dir,
+            pages_raw=context.pages_raw,
+            assembly_mode=context.assembly_mode,
+        )
+    except ValueError:
+        # The Quick adapter historically reports normal human/Agent checkpoints
+        # through ValueError after persisting page-level state. Convert only
+        # fully classified checkpoints to an explicit workflow state; unknown
+        # failures remain fail-closed and preserve the original exception.
+        refreshed_manifest = read_json(manifest_result.manifest_path)
+        checkpoint = classify_reconstruction_checkpoint(
+            refreshed_manifest,
+            requested_pages=context.selected_pages,
+        )
+        if checkpoint is None:
+            raise
+        actions = tuple(checkpoint["actions"])
+        readiness = {
+            "schema": "cyberppt.stage02.production_readiness.v1",
+            "status": checkpoint["status"],
+            "actions": list(actions),
+            "tool_consumption": {},
+        }
+        return ReconstructionStageResult(
+            clean_base_generation=clean_base_generation,
+            build=None,
+            production_readiness=readiness,
+            tool_consumption={},
+            status=str(checkpoint["status"]),
+            needs_actions=actions,
+        )
+
     production_readiness = build["delivery_readiness"]
     tool_consumption = production_readiness["tool_consumption"]
     return ReconstructionStageResult(
