@@ -27,6 +27,8 @@ class Stage02RunOptions:
     dry_run_images: bool = False
     prompt_enrich: str = "off"
     require_send_approval: bool = False
+    # Historical CLI name. Semantically this selects the run identity used for
+    # resume; it must never be used as a substitute for input_fingerprint.
     build_id: str | None = None
     external_script: bool = False
     autonomous_contract: Path | None = None
@@ -47,6 +49,7 @@ class Stage02BuildContext:
     canonical_script: Path
     selected_pages: tuple[int, ...]
     pages_raw: str
+    # Compatibility storage name for the unique execution/run identity.
     build_id: str
     build_dir: Path
     style_lock: Path
@@ -59,7 +62,7 @@ class Stage02BuildContext:
     source_mode: str
     # Deterministic identity of the meaningful Stage 02 preflight inputs.  It
     # intentionally excludes timestamps and output locations so repeated runs
-    # can be recognized as the same input even when they receive new build IDs.
+    # can be recognized as the same input even when they receive new run IDs.
     input_fingerprint: str = ""
     # Hash of the frozen resolved prompt contract embedded in the style lock.
     # Kept separately from style_lock_sha256 so provenance reports can explain
@@ -68,6 +71,12 @@ class Stage02BuildContext:
     full_reference_images: tuple[Path, ...] = ()
     autonomous_contract: Path | None = None
     project_created: bool = False
+
+    @property
+    def run_id(self) -> str:
+        """Canonical semantic name for ``build_id`` during compatibility migration."""
+
+        return self.build_id
 
 
 @dataclass(frozen=True)
