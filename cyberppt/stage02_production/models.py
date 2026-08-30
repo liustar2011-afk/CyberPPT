@@ -93,6 +93,7 @@ class ReconstructionStageResult:
     production_readiness: dict[str, Any] | None = None
     tool_consumption: dict[str, Any] = field(default_factory=dict)
     status: str = "ready_for_image_generation"
+    needs_actions: tuple[dict[str, Any], ...] = ()
 
 
 @dataclass(frozen=True)
