@@ -16,18 +16,17 @@
    - 增加 Stage 02 正常待办/真实失败状态分类。
 4. `f57692e feat(stage02): separate input fingerprint from run id`
    - 分离稳定 input fingerprint 与每次执行 run id。
+5. `4b5f225 build: define installation capability boundaries`
+   - 明确 repository editable install、直接/可选依赖和 CI runtime import 检查。
 
-## 阶段 5：安装与能力边界
+## 阶段 6：仓库卫生清理
 
 状态：已完成，待本次提交落盘。
 
 改动：
 
-- 将 Pillow 从隐式传递依赖提升为直接依赖。
-- 增加 `source` extra：`openpyxl` + `markitdown`，与 source extractor 的实际可选能力一致。
-- 增加 `dev` extra，CI 统一安装 source + test 能力。
-- CI 增加正式 Stage 02 runtime import smoke test。
-- 新增 `docs/INSTALLATION_CAPABILITIES.md`，明确当前正式支持形态仍是 repository editable install；暂不虚假宣称 wheel 已能脱离 `scripts/`、`references/`、`assets/` 独立运行。
+- 删除根目录 `out.txt`、`tmp_p15_prompt_after.md`、`tmp_source_text.txt` 临时产物。
+- `.gitignore` 增加根目录 `/tmp_*` 与 `/out.txt`，避免实验材料重新进入正式代码面。
 
 ## 暂缓：compatibility facade 单向化
 

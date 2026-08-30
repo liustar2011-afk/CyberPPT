@@ -33,6 +33,10 @@ build/
 /**/*_ocr/
 /**/*_diff/
 
+# Root scratch files must not become repository artifacts
+/tmp_*
+/out.txt
+
 # Project-authoritative final scripts
 !projects/**/script/dist/
 !projects/**/script/dist/**
