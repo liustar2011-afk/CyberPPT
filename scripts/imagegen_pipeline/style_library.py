@@ -83,6 +83,15 @@ def resolve_default_style(
     )
 
 
+def _snapshot_metadata(style: dict[str, Any]) -> dict[str, Any]:
+    prompt_contract = str(style.get("prompt_contract") or "")
+    return {
+        "mode": "snapshot",
+        "source": str(style.get("prompt_contract_source") or ""),
+        "sha256": sha256(prompt_contract.encode("utf-8")).hexdigest().upper() if prompt_contract else None,
+    }
+
+
 def write_project_style_lock(
     *,
     project: Path,
@@ -98,7 +107,6 @@ def write_project_style_lock(
     style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
     lock_path = project / VISUAL_LOCK_RELATIVE
     lock_path.parent.mkdir(parents=True, exist_ok=True)
-    prompt_contract = str(style.get("prompt_contract") or "")
     payload = {
         "schema": "cyberppt.visual_style_lock.v1",
         "created_at": _utc_now(),
@@ -106,11 +114,7 @@ def write_project_style_lock(
         "source_reference": load_style_library(path).get("source_reference"),
         "source_script": str(source_script) if source_script else None,
         "style": style,
-        "resolved_contract": {
-            "mode": "snapshot",
-            "source": str(style.get("prompt_contract_source") or ""),
-            "sha256": sha256(prompt_contract.encode("utf-8")).hexdigest().upper() if prompt_contract else None,
-        },
+        "resolved_contract": _snapshot_metadata(style),
         "policy": {
             "selected_from_default_8": not bool(style.get("extension_only")),
             "selected_from_extension": bool(style.get("extension_only")),
@@ -174,11 +178,7 @@ def _strip_style09_registry_meta(section: str) -> str:
 
 
 def _load_live_extension_contract(style_id: int) -> str:
-    """Load a live extension contract from the canonical visual-system source.
-
-    This function is used only while creating a new style lock. Existing locks
-    are immutable snapshots and are never refreshed at read time.
-    """
+    """Load the current extension contract while creating or migrating a lock."""
 
     if style_id not in LIVE_CONTRACT_STYLE_IDS:
         raise ValueError(f"live extension contract is not defined for style {style_id}: {style_id}")
@@ -213,13 +213,64 @@ def _apply_live_extension_contract(style: dict[str, Any]) -> None:
     style["prompt_contract_sha256"] = sha256(contract.encode("utf-8")).hexdigest().upper()
 
 
-def load_style_lock(path: Path) -> dict[str, Any]:
-    """Load an immutable style-lock snapshot.
+def _is_immutable_snapshot(payload: dict[str, Any]) -> bool:
+    resolved = payload.get("resolved_contract")
+    policy = payload.get("policy")
+    return (
+        isinstance(resolved, dict)
+        and resolved.get("mode") == "snapshot"
+        and isinstance(policy, dict)
+        and policy.get("resolved_contract_is_immutable") is True
+    )
 
-    Older code refreshed Style 09 from references/visual-system.md here. That
-    violated lock semantics: the effective prompt could change without changing
-    the lock bytes or build identity. New locks resolve the live contract once
-    at creation time, and every consumer now uses the stored snapshot verbatim.
+
+def _migrate_legacy_live_lock(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    """Upgrade a pre-snapshot live Style 09 lock once, then freeze it.
+
+    Historical locks intentionally refreshed Style 09 at every read. Simply
+    treating those old bytes as an immutable snapshot would freeze arbitrary
+    stale contracts and break existing projects/tests. We therefore preserve
+    the historical refresh exactly once, persist the resolved contract into the
+    lock, mark it immutable, and never refresh that migrated lock again.
     """
 
-    return _read_json(path)
+    style = payload.get("style")
+    if not isinstance(style, dict):
+        return payload
+    try:
+        style_id = int(style.get("id") or -1)
+    except (TypeError, ValueError):
+        return payload
+    if style_id not in LIVE_CONTRACT_STYLE_IDS or _is_immutable_snapshot(payload):
+        return payload
+
+    migrated = dict(payload)
+    migrated_style = dict(style)
+    _apply_live_extension_contract(migrated_style)
+    migrated["style"] = migrated_style
+    migrated["resolved_contract"] = _snapshot_metadata(migrated_style)
+    policy = dict(migrated.get("policy") or {})
+    policy["resolved_contract_is_immutable"] = True
+    migrated["policy"] = policy
+    migrated["migration"] = {
+        "from": "legacy_live_refresh",
+        "migrated_at": _utc_now(),
+    }
+    path.write_text(
+        json.dumps(migrated, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return migrated
+
+
+def load_style_lock(path: Path) -> dict[str, Any]:
+    """Load a frozen style contract, migrating legacy live locks once.
+
+    New locks are immutable snapshots. Pre-snapshot Style 09 locks are upgraded
+    on first read by resolving the current canonical contract and persisting it
+    into the same lock; every later read consumes that persisted snapshot.
+    """
+
+    payload = _read_json(path)
+    return _migrate_legacy_live_lock(path, payload)

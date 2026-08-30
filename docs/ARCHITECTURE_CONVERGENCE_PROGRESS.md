@@ -24,7 +24,8 @@
 | 12 | `2e9cd4e3cac6c213b09b2a2b028c10b8fc613997` | Compatibility seam 封口为固定 6 项 `LegacyPatchSet`，保留旧测试兼容 |
 | 13 | `f0cf8a17e8d74034b8e7bdfe0250be60d688ec6a` | CI 在 pytest 失败时持久化完整日志 artifact，便于精确诊断和恢复 |
 | 14 | `ed7e1385816cae33454f82e4841192370eb42c1c` | 修正 Pillow 直接依赖版本，恢复 Pillow 12 像素迭代 API |
-| 15 | 待本次提交 | 新 fingerprint 严格失效，同时保留无 fingerprint 历史 manifest 的旧项目恢复兼容 |
+| 15 | `fa65965d0acaccbb77f545d6994fa54d0e1f3def` | 新 fingerprint 严格失效，同时保留无 fingerprint 历史 manifest 的旧项目恢复兼容 |
+| 16 | 待本次提交 | 旧 Style 09 live lock 首次读取时迁移并落盘为 snapshot；新锁和迁移后的锁均永久冻结 |
 
 ## 当前结构性结果
 
@@ -39,7 +40,8 @@
 
 ### Stage 02
 
-- Style 09 生产合同由 style lock snapshot 固定。
+- 新建 Style 09 锁在创建时解析当前合同并冻结。
+- 历史 pre-snapshot Style 09 锁首次读取时按旧行为解析一次当前合同，写回 `resolved_contract.mode=snapshot` 和迁移标记；此后不再 live refresh。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
 - 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
@@ -55,7 +57,7 @@
 
 ### Packaging / CI
 
-- Pillow 为直接依赖；XLSX/MarkItDown 能力进入 `source` extra。
+- Pillow 12 为直接依赖；XLSX/MarkItDown 能力进入 `source` extra。
 - `scripts`、`references`、`contracts`、`assets` 进入 wheel 包边界。
 - CI 覆盖 Python 3.10/3.12 pytest、runtime import、wheel build 和离开仓库目录后的 wheel import/resource smoke。
 - pytest 输出通过 `tee` 保存，并使用 `actions/upload-artifact@v4` 在成功或失败时均上传 `pytest-log-<python-version>`；`pipefail` 保证日志保存不会吞掉测试失败退出码。
@@ -82,5 +84,5 @@
 ## 验证状态
 
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败；因此当前 CI 红色包含仓库既有失败，不能全部归因于本轮。
-- 阶段 13 run `33339540943` 摘要为 50 failed、1738 passed、8 skipped。阶段 14 修复 Pillow 版本回归；阶段 15 修复本轮 fingerprint 改造对历史 partial recovery 测试造成的兼容回归。
+- 阶段 13 run `33339540943` 摘要为 50 failed、1738 passed、8 skipped。阶段 14 修复 Pillow 版本回归；阶段 15 修复 fingerprint 改造对历史 partial recovery 的兼容回归；阶段 16 修复 snapshot 改造对 pre-snapshot Style 09 锁的升级兼容。
 - 后续继续优先消除本轮引入回归，再单独登记仓库原有失败基线。
