@@ -11,7 +11,15 @@ from PIL import Image
 from tests._final_script_pages_base import FinalScriptPagesTests as _FinalScriptPagesTestsBase
 
 
+# Pytest's unittest collector can collect an imported TestCase even when the
+# alias begins with an underscore. Keep the historical base available for
+# inheritance but make only the modern wrapper class collectable.
+_FinalScriptPagesTestsBase.__test__ = False
+
+
 class FinalScriptPagesTests(_FinalScriptPagesTestsBase):
+    __test__ = True
+
     def test_typo_audit_regenerates_before_enhancement(self) -> None:
         """Correction retry must operate on real image bytes before enhancement."""
 
