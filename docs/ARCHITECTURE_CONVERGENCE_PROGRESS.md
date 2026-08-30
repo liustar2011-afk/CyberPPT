@@ -28,12 +28,15 @@
 | 16 | `45dcf03a38d76d53c37a9d6747d06f31a290680e` | 旧 Style 09 live lock 首次读取时迁移并落盘为 snapshot；新锁和迁移后的锁均永久冻结 |
 | 17 | `9690e2f49532a25c79cdfe32baa4a6900d149657` | `projects/AGENTS.md` 与仓库主流程统一：新源材料项目默认 strict/legacy，script 仅显式选择时启用 |
 | 18 | `901196a5976f385f108cbc517f2ae817df3cbe2b` | 消除 Style 09 双权威：可执行合同只从 style registry JSON 解析；`visual-system.md` 降为说明性文档，不再覆盖运行时 Prompt |
-| 19 | `8d474ea59e999d20f8702aab4def816031d55941` | 将已退役 Style10 的主测试合同改为“不可解析、不可锁定、无 palette-10”，防止旧测试驱动生产代码恢复废弃风格 |
+| 19 | `8d474ea59e999d20f8702aab4def816031d55941` | 首轮清理独立 Style10 测试合同，确认 registry 不再维护第十套视觉定义或 palette-10 |
 | 20 | `00dc915017243be307ac0388ecd98d47fd857dcc` | Style Lock snapshot 测试迁移到 registry authority：registry 修订产生新锁版本，说明文档修订不改变可执行合同，legacy lock 仅迁移一次 |
 | 21 | `d1c6a6c3a39f2df953062ae06e7865f14bb711b2` | Terminal execution lock 在追加前删除正文中完全相同的硬约束整行，避免重复 Prompt；部分匹配和页面业务句保持不变 |
 | 22 | `99a6acb29d2724e849a1e99a5bdb277c6ee2f5ac` | Style09 回归测试从旧 Prompt 逐字快照迁移为 registry/纯白/合同章节/锁 SHA/迁移/终端锁/CLI 等正式不变量 |
 | 23 | `ffc500cec29329168e75601a45ac5f6f33ebec3d` | Style09 样张与合同测试彻底脱离 `visual-system.md` 旧复制文本，直接验证 runtime registry；删除人为 Prompt 长度上限 |
 | 24 | `4ea6ed5b58ad568cfe0df31863dac455ba45f5dd` | 将 handoff 模块化测试从历史公共面/Style10/逐字 Prompt baseline 改为 facade 与 modular implementation 的行为等价性合同 |
+| 25 | `a085e2c0221421b9a7543e2f7c9418dd3ca98741` | Manifest provenance 回归改为 Style09，保留 compiler、Prompt 一致性与 `prompt_sha256` 自描述追溯，不再绑定旧 Style10 |
+| 26 | `11bed7543c100e43d8dcf614f62a2e64831889c8` | Style10 从独立视觉风格降为兼容 alias：旧 ID/slug 统一解析到 canonical Style09 snapshot，继续使用同一 Prompt SHA 与 palette-09 |
+| 27 | `04f43ed9cd3c0852e60edebff77dd8e5360d3989` | Handoff facade 测试同步 legacy Style10 alias 语义，验证旧入口不会形成第二套视觉权威 |
 
 ## 当前结构性结果
 
@@ -54,10 +57,11 @@
 - 新建 Style 09 锁在创建时从 style registry 解析合同并冻结；`resolved_contract.source` 指向 style registry。
 - registry 合同修订只影响新建锁；已经是 immutable snapshot 的锁保持原字节不变。
 - 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结，此后不再刷新。
-- Style10 不属于当前 executable registry；测试不得再要求恢复 Style10、palette-10 或 Style10 默认选择。
+- Style10 不再拥有独立 registry entry、独立 Prompt 或 palette-10；旧 `style_id=10`、`light_tech_business_dense`、`ivory_deep_blue_semantic_scene` 仅作为兼容入口，统一解析为 canonical Style09。
+- Style10 alias 锁显式记录 `requested_style_id/name`、`canonical_style_id=9` 和 `legacy_alias=true`，便于追溯旧调用来源；最终 Prompt SHA、reference image 和执行合同仍只有一份。
 - Runtime terminal lock 只在 Prompt 绝对末尾保留一份；若同一终端硬约束已作为独立整行出现在正文，会在 reassert 前精确去重，不删除包含额外上下文的页面句子。
 - Style09 测试只锁定正式视觉合同的不变量与安全边界，不再把某个历史 Prompt 版本的整段措辞、文档副本或固定字符长度当作 API。
-- `imagegen_handoff.py` 兼容 facade 的正式回归标准改为：关键符号直接 re-export 模块实现、公共面无重复、Style10 不复活、相同 Style09 输入经 facade 与模块生成完全相同结果。
+- `imagegen_handoff.py` 兼容 facade 的正式回归标准为：关键符号直接 re-export 模块实现、公共面无重复、旧 Style10 只能归一到 Style09、相同 Style09 输入经 facade 与模块生成完全相同结果。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
 - 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
@@ -85,8 +89,8 @@
 ## 尚未完成 / 后续建议
 
 1. 修正局部文字纠错测试夹具：生成合法 PNG 后验证真实 local-edit → enhancement 链。
-2. 清理 creative brief、deliverable prompt、page manifest、no-visual-structure、provenance 中余下 Style10/旧 Style09 字符串断言。
-3. 统一 `references/visual-system.md` 中 Style09 的说明性文字，清除仍残留的象牙白旧说明。
+2. 清理 creative brief、deliverable prompt、page manifest、no-visual-structure 中余下旧 Style09 精确字符串/标题断言。
+3. 统一 `references/visual-system.md` 中 Style09 的说明性文字，清除仍残留的象牙白旧说明，并注明 Style10 仅为兼容 alias。
 4. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入，并继续接入 quality policy / wheel fixture / Office 集成 CI。
 
 ## 验证状态
@@ -94,5 +98,6 @@
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败。
 - 阶段 17 run `33339954486`：Python 3.12 为 37 failed、1753 passed、8 skipped。
 - 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。
-- 阶段 22 文档 checkpoint run `33340603317`：Python 3.12 为 **24 failed、1764 passed、8 skipped**。
-- 阶段 23、24 已进一步清除 Style09 doc-coupled 断言和 handoff frozen legacy baseline；以后续 CI 失败清单继续收敛。
+- 阶段 22 文档 checkpoint run `33340603317`：Python 3.12 为 24 failed、1764 passed、8 skipped。
+- 阶段 24 文档 checkpoint run `33340946220`：Python 3.12 为 **9 failed、1751 passed、8 skipped**。剩余 9 项均已定位；阶段 25 已消除 provenance 对 Style10 的绑定，阶段 26 将其他旧 Style10 调用归一到 Style09，阶段 27 同步 handoff facade 测试。
+- 阶段 27 之后的 CI 将作为下一轮精确失败清单；在 GitHub Actions 最终 conclusion 变绿前，不视为全量验证完成。
