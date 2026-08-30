@@ -32,3 +32,10 @@ jobs:
           python -c "import cyberppt, script_engine; import scripts.imagegen_pipeline.page_manifest; import scripts.image_to_pptx_runtime.stage02_adapter"
       - name: Run test suite
         run: python -m pytest -q
+      - name: Build wheel
+        run: python -m build --wheel
+      - name: Wheel import smoke outside repository
+        run: |
+          python -m pip install --force-reinstall --no-deps dist/cyberppt-*.whl
+          cd /tmp
+          python -c "import cyberppt, script_engine, contracts, references, assets; import scripts.imagegen_pipeline.page_manifest; import scripts.image_to_pptx_runtime.stage02_adapter; from scripts.imagegen_pipeline.style_library import STYLE_LIBRARY_PATH, VISUAL_SYSTEM_PATH; assert STYLE_LIBRARY_PATH.is_file(); assert VISUAL_SYSTEM_PATH.is_file()"

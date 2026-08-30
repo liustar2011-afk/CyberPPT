@@ -17,17 +17,20 @@
 7. `7042e15 feat(script): classify heuristic quality findings`
 8. `ebf2f74 fix(stage02): invalidate stale visual artifacts by input identity`
 9. `01a95b2 feat(stage02): return expected continuation states`
+10. `8062deb feat(stage02): persist expected action state`
 
-## 阶段 10：Expected action 持久化
+## 阶段 11：正式 runtime 进入 wheel 包边界
 
 状态：已完成，待本次提交落盘。
 
 改动：
 
-- `needs_action` 除了写独立 `stage02_needs_action.json`，同时写回当前 `build_context.json`。
-- build context 保存完整 `stage02_state` 和 `artifacts.needs_action.path`。
-- 即使会话或 Agent 进程终止，下一次运行也可以直接从 build 目录判断缺哪个 authored SVG、哪一页等待 visual review。
-- 新增回归测试验证状态回执与 build context 同步落盘。
+- 将 `scripts`、`references`、`contracts`、`assets` 注册为可打包 Python package/resource 边界。
+- Wheel 包含 ImageGen/Quick runtime、JSON contract、视觉规范 Markdown、palette samples 和 style preset。
+- CI 新增 `python -m build --wheel`。
+- CI 用 wheel 覆盖 editable install 后切换到 `/tmp`，验证正式 Stage 02 runtime 可 import，Style Library 与 `references/visual-system.md` 能从安装位置定位。
+
+边界：本阶段是 wheel import/resource smoke，不声称 OfficeCLI、ImageGen 网络调用和平台二进制已完成纯 wheel 端到端验证。
 
 ## 暂缓：compatibility facade 单向化
 
@@ -36,4 +39,5 @@
 ## 后续阶段
 
 1. compatibility facade dependency hooks 与单向化。
-2. 正式 runtime package 化与 wheel 安装 smoke test。
+2. wheel 环境的最小无外网 Stage 01→Stage 02 fixture build。
+3. macOS/Windows Office/render 集成 CI。

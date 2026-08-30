@@ -1,14 +1,12 @@
 # CyberPPT 安装与能力边界
 
-CyberPPT 当前正式运行形态是仓库应用：克隆仓库后，在仓库根目录创建虚拟环境并以 editable 模式安装。Stage 02 正式运行时仍消费仓库内 `scripts/`、`references/`、`assets/` 等资源，因此本文件不把当前版本描述为“脱离仓库即可独立运行的 wheel 应用”。
+CyberPPT 的正式开发/生产入口仍优先采用仓库根目录的 editable install。自 2026-08-31 起，正式 Python runtime 与关键只读资源也进入 wheel 包边界，并由 CI 做离开仓库目录后的 import/resource smoke test。
 
 ## 基础依赖
 
-`pyproject.toml` 的基础依赖覆盖正式 Python 代码直接导入的通用运行库。Pillow 现在作为直接依赖声明，不再依赖其他包间接带入。
+`pyproject.toml` 的基础依赖覆盖正式 Python 代码直接导入的通用运行库。Pillow 作为直接依赖声明，不再依赖其他包间接带入。
 
 ## Source 解析能力
-
-安装：
 
 ```bash
 python -m pip install -e '.[source]'
@@ -19,22 +17,21 @@ python -m pip install -e '.[source]'
 - `openpyxl`：XLSX 原生 worksheet / row / formula 提取。
 - `markitdown`：PDF、HTML、RTF 等格式的可选文本转换回退。
 
-未安装这些可选依赖时，source extractor 必须明确给出 capability warning，不得静默声称完成原生解析。
+## Wheel 包边界
 
-## 开发环境
+当前 wheel 明确打包：
 
-```bash
-python -m pip install -e '.[dev]'
-```
+- `cyberppt`、`script_engine`；
+- 正式 `scripts` runtime，包括 ImageGen 与 image-to-PPTX runtime；
+- `contracts/*.json`；
+- `references/*.md`；
+- `assets/palette-samples/*.png`；
+- ImageGen style preset JSON。
 
-`dev` 合并 source 解析能力和测试依赖。CI 使用该入口，并执行生产 runtime import smoke test。
+CI 在完成 pytest 后构建 wheel，用 wheel 覆盖 editable install，并切换到 `/tmp` 再 import 正式 Stage 02 runtime，同时检查 style library 与 `visual-system.md` 能够从安装位置定位。
 
-## 后续 wheel 化条件
+## 当前边界
 
-只有完成以下工作后，才把 CyberPPT 标记为可脱离仓库资源独立 wheel 安装：
+Wheel smoke 证明“正式 Python 模块和上述关键资源可安装、可导入”，不等价于完整端到端 PPT 生产已在纯 wheel 环境验证。OfficeCLI、ImageGen provider、外部二进制、vendor enhancer 和平台相关能力仍需要各自的运行环境检查。
 
-1. `scripts.imagegen_pipeline`、`scripts.image_to_pptx_runtime`、`scripts.presentation_qa` 等正式 runtime 进入明确 package 边界。
-2. `references/visual-system.md`、样张、模板和运行时资源改为 package resource 或安装后可定位的数据资源。
-3. 新增 `python -m build` + wheel 安装后的端到端 smoke test。
-
-在此之前，editable repository install 是正式支持路径。
+完整 wheel 交付的下一步是增加一个不调用外网和 Office 的最小 Stage 01→Stage 02 fixture build，再分别增加 macOS/Windows 的 Office/render 集成测试。

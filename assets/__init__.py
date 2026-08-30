@@ -1,0 +1,1 @@
+"""Packaged CyberPPT visual assets."""
