@@ -1,11 +1,12 @@
 """Legacy patch-point bridge kept outside the Stage 02 command facade.
 
 This module is the only compatibility seam allowed to import concrete ImageGen,
-Quick reconstruction and Office rendering backends. The public command facade
-only adapts arguments and forwards caller monkey-patches into this seam.
+Quick reconstruction and Office rendering backends. New code must not add
+module-global monkey patches outside this file.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from scripts.imagegen_pipeline.imagegen_handoff import IMAGEGEN_CANVAS_CONTRACT as BODY_IMAGE_CANVAS_CONTRACT
@@ -13,6 +14,42 @@ from scripts.imagegen_pipeline.page_manifest import FULL_IMAGE_MODE, require_gen
 from scripts.imagegen_pipeline.providers.codex_oauth_image import ensure_output_size, run_codex_image
 from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPTX_ROUTE
 from cyberppt.commands.production_qa import run_officecli_render_qa
+
+
+@dataclass(frozen=True)
+class LegacyPatchSet:
+    """Finite compatibility surface for historical facade monkey patches.
+
+    The type makes the seam enumerable and prevents new patch points from being
+    smuggled in as ad-hoc keyword arguments. It is transitional: production
+    modules should eventually receive explicit dependencies directly.
+    """
+
+    run_codex_image: Any
+    ensure_output_size: Any
+    require_generated: Any
+    reconstruction_build: Any
+    officecli_render_qa: Any
+    append_ledger: Any
+
+
+LEGACY_PATCH_FIELDS = tuple(LegacyPatchSet.__dataclass_fields__)
+
+
+def apply_legacy_patch_set(
+    *,
+    image_stage: Any,
+    orchestrator: Any,
+    reconstruction_stage: Any,
+    delivery_stage: Any,
+    patches: LegacyPatchSet,
+) -> None:
+    image_stage.run_codex_image = patches.run_codex_image
+    image_stage.ensure_output_size = patches.ensure_output_size
+    orchestrator.require_generated = patches.require_generated
+    reconstruction_stage._run_image_to_editable_svg_build = patches.reconstruction_build
+    delivery_stage.run_officecli_render_qa = patches.officecli_render_qa
+    delivery_stage._append_ledger = patches.append_ledger
 
 
 def sync_legacy_patch_points(
@@ -28,18 +65,31 @@ def sync_legacy_patch_points(
     officecli_patch: Any,
     append_ledger_patch: Any,
 ) -> None:
-    image_stage.run_codex_image = run_codex_image_patch
-    image_stage.ensure_output_size = ensure_output_size_patch
-    orchestrator.require_generated = require_generated_patch
-    reconstruction_stage._run_image_to_editable_svg_build = reconstruction_patch
-    delivery_stage.run_officecli_render_qa = officecli_patch
-    delivery_stage._append_ledger = append_ledger_patch
+    """Backward-compatible wrapper for callers using the old keyword API."""
+
+    apply_legacy_patch_set(
+        image_stage=image_stage,
+        orchestrator=orchestrator,
+        reconstruction_stage=reconstruction_stage,
+        delivery_stage=delivery_stage,
+        patches=LegacyPatchSet(
+            run_codex_image=run_codex_image_patch,
+            ensure_output_size=ensure_output_size_patch,
+            require_generated=require_generated_patch,
+            reconstruction_build=reconstruction_patch,
+            officecli_render_qa=officecli_patch,
+            append_ledger=append_ledger_patch,
+        ),
+    )
 
 
 __all__ = [
     "BODY_IMAGE_CANVAS_CONTRACT",
     "CANONICAL_EDITABLE_PPTX_ROUTE",
     "FULL_IMAGE_MODE",
+    "LEGACY_PATCH_FIELDS",
+    "LegacyPatchSet",
+    "apply_legacy_patch_set",
     "ensure_output_size",
     "require_generated",
     "run_codex_image",
