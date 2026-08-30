@@ -38,6 +38,7 @@
 | 26 | `11bed7543c100e43d8dcf614f62a2e64831889c8` | Style10 从独立视觉风格降为兼容 alias：旧 ID/slug 统一解析到 canonical Style09 snapshot，继续使用同一 Prompt SHA 与 palette-09 |
 | 27 | `04f43ed9cd3c0852e60edebff77dd8e5360d3989` | Handoff facade 测试同步 legacy Style10 alias 语义，验证旧入口不会形成第二套视觉权威 |
 | 28 | `1c5adc1f70b3204159fb4d4fd94ba8619d979de4` | 局部文字纠错回归改用真实 PNG；保留完整旧测试集为非收集 base，并覆盖 failed image、bbox crop、local edit、request record 与 enhancement |
+| 29 | `df2aa24260c52ed70cd555760cc780b94c947ce0` | Style09 生图安全测试迁移到当前合同：默认无人物/无正脸、组织标识禁绘、辅助语义图少量中文、全页禁箭头、事实忠实与伪中文禁令 |
 
 ## 当前结构性结果
 
@@ -64,6 +65,7 @@
 - Style09 测试只锁定正式视觉合同的不变量与安全边界，不再把某个历史 Prompt 版本的整段措辞、文档副本或固定字符长度当作 API。
 - `imagegen_handoff.py` 兼容 facade 的正式回归标准为：关键符号直接 re-export 模块实现、公共面无重复、旧 Style10 只能归一到 Style09、相同 Style09 输入经 facade 与模块生成完全相同结果。
 - 局部文字纠错回归使用真实 PNG 和真实 bbox crop；无效图片字节不再被测试夹具误当成成功生成物。
+- 当前安全测试与正式 Style09 合同一致：默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍；组织名称/Logo/印章/标识禁绘；辅助语义图仅允许少量清晰中文；禁止任何箭头或箭头头部。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
 - 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
@@ -86,11 +88,11 @@
 
 ## Compatibility seam 当前状态
 
-现有生产兼容入口收敛到 `cyberppt.stage02_production.compat` 的 6 项 `LegacyPatchSet`。`tests/test_final_script_pages.py` 现以薄子类覆盖一个需要现代真实图片夹具的用例，其余完整历史测试定义保存在 `tests/_final_script_pages_base.py`，避免为单点修复删除既有覆盖。后续迁移一个显式 dependency hook 后再删除一个 legacy 字段。
+现有生产兼容入口收敛到 `cyberppt.stage02_production.compat` 的 6 项 `LegacyPatchSet`。`tests/test_final_script_pages.py` 现以薄子类覆盖一个需要现代真实图片夹具的用例，其余完整历史测试定义保存在 `tests/_final_script_pages_base.py`，避免为单点修复删除既有覆盖。其他大型历史测试文件也仅在需要迁移单项旧合同断言时采用同样的 base + override 方式，保持原覆盖面。
 
 ## 尚未完成 / 后续建议
 
-1. 清理 creative brief、deliverable prompt、page manifest、no-visual-structure 中余下旧 Style09 精确字符串/标题断言。
+1. 清理 creative brief、page manifest、no-visual-structure 中余下旧 Style09 精确字符串/标题断言。
 2. 统一 `references/visual-system.md` 中 Style09 的说明性文字，清除仍残留的象牙白旧说明，并注明 Style10 仅为兼容 alias。
 3. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入，并继续接入 quality policy / wheel fixture / Office 集成 CI。
 
@@ -100,5 +102,6 @@
 - 阶段 17 run `33339954486`：Python 3.12 为 37 failed、1753 passed、8 skipped。
 - 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。
 - 阶段 22 文档 checkpoint run `33340603317`：Python 3.12 为 24 failed、1764 passed、8 skipped。
-- 阶段 24 文档 checkpoint run `33340946220`：Python 3.12 为 **9 failed、1751 passed、8 skipped**。剩余 9 项均已定位；阶段 25–28 已分别处理 provenance、Style10 legacy alias、handoff alias 语义和真实 PNG 纠错夹具。
-- 阶段 28 之后的 CI 将作为下一轮精确失败清单；在 GitHub Actions 最终 conclusion 变绿前，不视为全量验证完成。
+- 阶段 24 文档 checkpoint run `33340946220`：Python 3.12 为 9 failed、1751 passed、8 skipped。
+- 阶段 25–29 已依次处理 provenance、Style10 alias、handoff alias、真实 PNG 纠错夹具和安全规则旧断言；以后续 CI 结果作为新的精确失败清单。
+- 在 GitHub Actions 最终 conclusion 变绿前，不视为全量验证完成。
