@@ -32,6 +32,7 @@
 | 20 | `00dc915017243be307ac0388ecd98d47fd857dcc` | Style Lock snapshot 测试迁移到 registry authority：registry 修订产生新锁版本，说明文档修订不改变可执行合同，legacy lock 仅迁移一次 |
 | 21 | `d1c6a6c3a39f2df953062ae06e7865f14bb711b2` | Terminal execution lock 在追加前删除正文中完全相同的硬约束整行，避免重复 Prompt；部分匹配和页面业务句保持不变 |
 | 22 | `99a6acb29d2724e849a1e99a5bdb277c6ee2f5ac` | Style09 回归测试从旧 Prompt 逐字快照迁移为 registry/纯白/合同章节/锁 SHA/迁移/终端锁/CLI 等正式不变量 |
+| 23 | `ffc500cec29329168e75601a45ac5f6f33ebec3d` | Style09 样张与合同测试彻底脱离 `visual-system.md` 旧复制文本，直接验证 runtime registry；删除人为 Prompt 长度上限 |
 
 ## 当前结构性结果
 
@@ -54,7 +55,7 @@
 - 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结，此后不再刷新。
 - Style10 不属于当前 executable registry；测试不得再要求恢复 Style10、palette-10 或 Style10 默认选择。
 - Runtime terminal lock 只在 Prompt 绝对末尾保留一份；若同一终端硬约束已作为独立整行出现在正文，会在 reassert 前精确去重，不删除包含额外上下文的页面句子。
-- Style09 测试只锁定正式视觉合同的不变量与安全边界，不再把某个历史 Prompt 版本的整段措辞当作 API。
+- Style09 测试只锁定正式视觉合同的不变量与安全边界，不再把某个历史 Prompt 版本的整段措辞、文档副本或固定字符长度当作 API。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
 - 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
@@ -77,26 +78,20 @@
 
 ## Compatibility seam 当前状态
 
-现有 `tests/test_final_script_pages.py` 直接 patch `cyberppt.commands.final_script_pages.run_codex_image/ensure_output_size`。因此本轮没有破坏性删除 monkey patch，而是：
-
-1. 把兼容入口收敛到 `cyberppt.stage02_production.compat`；
-2. 固定为 6 项 `LegacyPatchSet`；
-3. 保留旧 `sync_legacy_patch_points()` wrapper；
-4. 新增测试禁止 patch surface 继续扩张。
-
-下一步应逐个把这 6 项迁移到显式 dependency hooks，迁移一个、删除一个，最终移除 wrapper。
+现有 `tests/test_final_script_pages.py` 直接 patch `cyberppt.commands.final_script_pages.run_codex_image/ensure_output_size`。本轮没有破坏性删除 monkey patch，而是把兼容入口收敛到 `cyberppt.stage02_production.compat` 并固定为 6 项 `LegacyPatchSet`。后续迁移一个显式 dependency hook 后再删除一个 legacy 字段。
 
 ## 尚未完成 / 后续建议
 
-1. 清理其余 Style10 历史调用和 prompt frozen baseline。
-2. 修复 legacy facade `ensure_output_size` patch seam 的单项回归。
-3. 统一 `references/visual-system.md` 中 Style09 的说明性文字，清除仍残留的象牙白旧说明。
-4. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入。
-5. 把 `script_engine.quality_policy` 接入正式 `audit-final/lint` 输出，并补 wheel fixture / Office 集成 CI。
+1. 将 `test_imagegen_handoff_modularization.py` 从 Style10/历史 Prompt frozen baseline 迁移为当前 facade → modular module 行为等价性测试。
+2. 修正局部文字纠错测试夹具：生成合法 PNG 后验证真实 local-edit → enhancement 链。
+3. 清理 creative brief、deliverable prompt、page manifest、no-visual-structure、provenance 中余下 Style10/旧 Style09 字符串断言。
+4. 统一 `references/visual-system.md` 中 Style09 的说明性文字，清除仍残留的象牙白旧说明。
+5. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入，并继续接入 quality policy / wheel fixture / Office 集成 CI。
 
 ## 验证状态
 
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败。
 - 阶段 17 run `33339954486`：Python 3.12 为 37 failed、1753 passed、8 skipped。
-- 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。Style 09 已实际切换到 registry 中的纯白长合同；新增 3 项失败均为旧 snapshot 测试语义，阶段 20 已迁移。
-- 阶段 21 增加 runtime terminal-lock 精确去重与单元测试；阶段 22 迁移 Style09 旧逐字断言。后续以阶段 22 之后的 CI 失败清单继续清理。
+- 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。
+- 阶段 22 文档 checkpoint run `33340603317`：Python 3.12 为 **24 failed、1764 passed、8 skipped**。剩余失败已集中到 Style10 历史测试、少量旧 Style09 字符串断言和 1 个无效 PNG 测试夹具。
+- 阶段 23 已消除其中 Style09 长度上限和 doc-coupled 样张断言；后续以最新 CI 继续收敛。
