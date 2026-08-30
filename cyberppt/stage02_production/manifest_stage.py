@@ -83,12 +83,26 @@ def _template_text_lock(
     return path
 
 
+def _page_prompt_matches(pair: dict[str, Any], prior_pair: dict[str, Any]) -> bool:
+    """Return whether the prior full image was generated from this page prompt."""
+
+    current_full = pair.get("full") if isinstance(pair.get("full"), dict) else {}
+    prior_full = prior_pair.get("full") if isinstance(prior_pair.get("full"), dict) else {}
+    generated_prompt_sha256 = str(prior_full.get("generated_prompt_sha256") or "")
+    current_prompt_sha256 = str(current_full.get("prompt_sha256") or "")
+    return bool(generated_prompt_sha256 and current_prompt_sha256 and generated_prompt_sha256 == current_prompt_sha256)
+
+
 def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None, production_mode: str) -> None:
     if not isinstance(prior_manifest, dict):
         return
     same_source = prior_manifest.get("source_script_sha256") == manifest["source_script_sha256"]
     same_mode = prior_manifest.get("production_mode") == manifest.get("production_mode")
-    if not (same_source and same_mode):
+    same_style_contract = (
+        prior_manifest.get("resolved_style_contract_sha256")
+        == manifest.get("resolved_style_contract_sha256")
+    )
+    if not (same_source and same_mode and same_style_contract):
         return
     prior_pairs = {
         int(pair.get("page_number")): pair
@@ -97,7 +111,7 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
     }
     for pair in manifest.get("pairs", []):
         prior_pair = prior_pairs.get(int(pair.get("page_number")))
-        if not isinstance(prior_pair, dict):
+        if not isinstance(prior_pair, dict) or not _page_prompt_matches(pair, prior_pair):
             continue
         prior_authoring_svg = Path(str(prior_pair.get("authoring_svg") or ""))
         prior_graphic_text_policy = prior_pair.get("graphic_text_policy")
@@ -119,13 +133,20 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
             current_item = pair.get(variant) or {}
             prior_item = prior_pair.get(variant) or {}
             prior_path = Path(str(prior_item.get("path") or ""))
+            prompt_matches = (
+                str(prior_item.get("generated_prompt_sha256") or "")
+                == str(current_item.get("prompt_sha256") or "")
+                and bool(prior_item.get("generated_prompt_sha256"))
+            )
             if (
-                prior_path == Path(str(current_item.get("path") or ""))
+                prompt_matches
+                and prior_path == Path(str(current_item.get("path") or ""))
                 and prior_path.is_file()
                 and (prior_item.get("text_audit") or {}).get("valid") is True
             ):
                 current_item["status"] = "Generated"
                 current_item["generated_at"] = prior_item.get("generated_at")
+                current_item["generated_prompt_sha256"] = prior_item.get("generated_prompt_sha256")
                 current_item["text_audit"] = prior_item["text_audit"]
 
 
@@ -135,13 +156,15 @@ def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dic
     A partial ``--pages`` recovery writes to the same manifest path as the
     original batch.  Without this merge, the new two-page manifest discards
     every previously audited page and makes the batch ineligible for a safe
-    full-deck continuation.
+    full-deck continuation.  Frozen visual authority must still match.
     """
     if not isinstance(prior_manifest, dict):
         return
     if (
         prior_manifest.get("source_script_sha256") != manifest.get("source_script_sha256")
         or prior_manifest.get("production_mode") != manifest.get("production_mode")
+        or prior_manifest.get("resolved_style_contract_sha256")
+        != manifest.get("resolved_style_contract_sha256")
     ):
         return
 
@@ -158,7 +181,8 @@ def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dic
         full = prior_pair.get("full") or {}
         path = Path(str(full.get("path") or ""))
         audited = (full.get("text_audit") or {}).get("valid") is True
-        if page_number not in selected_pages and audited and path.is_file():
+        prompt_bound = bool(full.get("generated_prompt_sha256"))
+        if page_number not in selected_pages and audited and prompt_bound and path.is_file():
             retained.append(prior_pair)
 
     if not retained:
