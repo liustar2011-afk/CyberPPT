@@ -9,6 +9,7 @@ from cyberppt.commands.production_qa import run_officecli_render_qa
 
 from .models import DeliveryStageResult, ImageStageResult, ManifestStageResult, ReconstructionStageResult, Stage02BuildContext, Stage02RunOptions
 from .preflight import LEDGER_PATH, page_range_slug, sha256_file, utc_now, write_json
+from .state import STATUS_NEEDS_ACTION
 
 
 def _artifact_record(
@@ -60,7 +61,7 @@ def _run_office_qa(
     reconstruction: ReconstructionStageResult,
     production_build: bool,
 ) -> tuple[dict[str, dict[str, Any]], list[Path]]:
-    if not production_build:
+    if not production_build or reconstruction.status == STATUS_NEEDS_ACTION:
         return {}, []
     build = reconstruction.build
     if not isinstance(build, dict):
@@ -107,6 +108,7 @@ def run_delivery_stage(
     stage_name = "02-production-build" if options.production_build else "02-blueprint-image-to-editable-svg"
     status = reconstruction.status
     build = reconstruction.build
+    needs_actions = list(reconstruction.needs_actions)
     prompt_overrides_dir = options.prompt_overrides_dir.expanduser().resolve() if options.prompt_overrides_dir else None
     image_ppt_output_dir = context.build_dir / "editable_svg"
 
@@ -131,6 +133,7 @@ def run_delivery_stage(
         "autonomous_contract": str(context.autonomous_contract) if context.autonomous_contract else None,
         "project_created": context.project_created,
         "status": status,
+        "needs_actions": needs_actions,
         "production_mode": context.production_mode,
         "assembly_mode": context.assembly_mode,
         "editable_pptx_route": CANONICAL_EDITABLE_PPTX_ROUTE,
@@ -150,7 +153,7 @@ def run_delivery_stage(
             "officecli_render_qa": {mode: report["report_path"] for mode, report in officecli_render_qa.items()} or None,
             "semantic_plan_dir": str(options.semantic_plan_dir) if options.semantic_plan_dir else None,
         },
-        "next_steps": [
+        "next_steps": needs_actions or [
             "Generate the audited 2:1 full image, then publish the selected image, editable SVG, or both template-assembled PPTX routes.",
             "Provide the completed high-fidelity authored SVG, then use the vendored Quick runtime for editable export.",
         ],
@@ -190,6 +193,7 @@ def run_delivery_stage(
         ),
         "project_created": context.project_created,
         "status": status,
+        "needs_actions": needs_actions,
         "artifacts": {
             "compiled_deliverable_prompt": {"path": str(manifest_result.compiled_script), "sha256": sha256_file(manifest_result.compiled_script)},
             "page_image_pairs": {"path": str(manifest_result.manifest_path), "sha256": sha256_file(manifest_result.manifest_path)},
