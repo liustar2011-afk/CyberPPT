@@ -46,6 +46,13 @@ def default_style_choices(path: Path = STYLE_LIBRARY_PATH) -> str:
 
 
 def _resolved_style(style: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a style once when a project lock is created.
+
+    Live extension sources are authoring inputs, not runtime dependencies.  The
+    returned payload is therefore a snapshot that must be persisted into the
+    visual style lock before production starts.
+    """
+
     resolved = dict(style)
     if int(resolved.get("id") or -1) in LIVE_CONTRACT_STYLE_IDS:
         _apply_live_extension_contract(resolved)
@@ -94,6 +101,8 @@ def write_project_style_lock(
     style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
     lock_path = project / VISUAL_LOCK_RELATIVE
     lock_path.parent.mkdir(parents=True, exist_ok=True)
+    style_id_value = int(style.get("id", -1))
+    resolved_contract_sha256 = str(style.get("prompt_contract_sha256") or "")
     payload = {
         "schema": "cyberppt.visual_style_lock.v1",
         "created_at": _utc_now(),
@@ -101,15 +110,23 @@ def write_project_style_lock(
         "source_reference": load_style_library(path).get("source_reference"),
         "source_script": str(source_script) if source_script else None,
         "style": style,
+        "resolution": {
+            "mode": "frozen_snapshot",
+            "style_id": style_id_value,
+            "resolved_contract_sha256": resolved_contract_sha256 or None,
+            "resolved_contract_source": style.get("prompt_contract_source"),
+            "resolved_at": _utc_now(),
+        },
         "policy": {
             "selected_from_default_8": not bool(style.get("extension_only")),
             "selected_from_extension": bool(style.get("extension_only")),
             "prompt_must_use_style_lock": True,
             "do_not_substitute_external_preset": True,
             "samples_are_required_for_user_confirmation": True,
+            "runtime_contract_refresh_forbidden": True,
         },
     }
-    if int(style.get("id", -1)) in LIVE_CONTRACT_STYLE_IDS and style.get("sample"):
+    if style_id_value in LIVE_CONTRACT_STYLE_IDS and style.get("sample"):
         repository_root = path.resolve().parents[3]
         reference_path = (repository_root / str(style["sample"])).resolve()
         if reference_path.is_file():
@@ -163,7 +180,7 @@ def _strip_style09_registry_meta(section: str) -> str:
 
 
 def _load_live_extension_contract(style_id: int) -> str:
-    """Load a live extension contract from the canonical visual-system source."""
+    """Load a live extension contract only while creating a new lock snapshot."""
 
     if style_id not in LIVE_CONTRACT_STYLE_IDS:
         raise ValueError(f"live extension contract is not defined for style {style_id}: {style_id}")
@@ -190,7 +207,7 @@ def _load_live_extension_contract(style_id: int) -> str:
 
 
 def _apply_live_extension_contract(style: dict[str, Any]) -> None:
-    """Attach provenance and live contract without trusting lock snapshots."""
+    """Resolve the canonical extension source into a lock-ready snapshot."""
 
     contract = _load_live_extension_contract(int(style["id"]))
     style["prompt_contract"] = contract
@@ -198,16 +215,45 @@ def _apply_live_extension_contract(style: dict[str, Any]) -> None:
     style["prompt_contract_sha256"] = sha256(contract.encode("utf-8")).hexdigest().upper()
 
 
-def load_style_lock(path: Path) -> dict[str, Any]:
-    payload = _read_json(path)
+def _validate_frozen_extension_contract(payload: dict[str, Any], path: Path) -> None:
     style = payload.get("style")
-    style_id = int(style.get("id", -1)) if isinstance(style, dict) else -1
-    if not isinstance(style, dict) or style_id not in LIVE_CONTRACT_STYLE_IDS:
-        return payload
+    if not isinstance(style, dict):
+        return
+    style_id = int(style.get("id", -1))
+    if style_id not in LIVE_CONTRACT_STYLE_IDS:
+        return
+    contract = style.get("prompt_contract")
+    expected_sha256 = str(style.get("prompt_contract_sha256") or "").upper()
+    if not isinstance(contract, str) or not contract.strip() or not expected_sha256:
+        raise ValueError(
+            f"Style {style_id:02d} lock is a legacy live lock without a frozen resolved contract: {path}. "
+            "Regenerate the project visual style lock before production."
+        )
+    actual_sha256 = sha256(contract.encode("utf-8")).hexdigest().upper()
+    if actual_sha256 != expected_sha256:
+        raise ValueError(
+            f"Style {style_id:02d} frozen contract hash mismatch in {path}: "
+            f"expected {expected_sha256}, got {actual_sha256}"
+        )
+    resolution = payload.get("resolution")
+    if isinstance(resolution, dict):
+        resolution_sha256 = str(resolution.get("resolved_contract_sha256") or "").upper()
+        if resolution_sha256 and resolution_sha256 != actual_sha256:
+            raise ValueError(
+                f"Style {style_id:02d} resolution hash mismatch in {path}: "
+                f"expected {resolution_sha256}, got {actual_sha256}"
+            )
 
-    # The lock records selection metadata. Refresh Style 09 from the canonical source.
-    refreshed = dict(payload)
-    refreshed_style = dict(style)
-    _apply_live_extension_contract(refreshed_style)
-    refreshed["style"] = refreshed_style
-    return refreshed
+
+def load_style_lock(path: Path) -> dict[str, Any]:
+    """Load exactly the style snapshot recorded by the lock.
+
+    Production must never refresh a previously created lock from
+    ``references/visual-system.md``.  A Style 09 lock therefore fails closed if
+    it predates frozen-contract snapshots or if its embedded contract hash no
+    longer matches the stored text.
+    """
+
+    payload = _read_json(path)
+    _validate_frozen_extension_contract(payload, path)
+    return payload
