@@ -23,7 +23,8 @@
 | 11 | `ad4a99ef39a82fd0554127d84aab2aa6905b8971` | 正式 runtime/contract/reference/assets 纳入 wheel 包边界并增加 wheel smoke |
 | 12 | `2e9cd4e3cac6c213b09b2a2b028c10b8fc613997` | Compatibility seam 封口为固定 6 项 `LegacyPatchSet`，保留旧测试兼容 |
 | 13 | `f0cf8a17e8d74034b8e7bdfe0250be60d688ec6a` | CI 在 pytest 失败时持久化完整日志 artifact，便于精确诊断和恢复 |
-| 14 | 待本次提交 | 修正 Pillow 直接依赖版本，恢复现有像素级 QA 使用的 `Image.get_flattened_data()` API |
+| 14 | `ed7e1385816cae33454f82e4841192370eb42c1c` | 修正 Pillow 直接依赖版本，恢复 Pillow 12 像素迭代 API |
+| 15 | 待本次提交 | 新 fingerprint 严格失效，同时保留无 fingerprint 历史 manifest 的旧项目恢复兼容 |
 
 ## 当前结构性结果
 
@@ -40,7 +41,8 @@
 
 - Style 09 生产合同由 style lock snapshot 固定。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
-- Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
+- 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
+- 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
 - Full image 通过审计后仍是 editable reconstruction 的视觉权威。
 - `needs_svg_authoring`、`needs_visual_review` 等属于正常 action state，不再等同 terminal failure。
 - Action state 写入 manifest、独立回执和 `build_context.json`。
@@ -80,5 +82,5 @@
 ## 验证状态
 
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败；因此当前 CI 红色包含仓库既有失败，不能全部归因于本轮。
-- 阶段 13 run `33339540943` 已通过 artifact 提取出完整 pytest 摘要：50 failed、1738 passed、8 skipped。已确认本轮直接引入的第一类回归是把 Pillow 限制到 `<12`，而现有 clean-base/local-edit 像素 QA 使用 Pillow 12 的 `Image.get_flattened_data()`；阶段 14 改为 `Pillow>=12,<13`。
+- 阶段 13 run `33339540943` 摘要为 50 failed、1738 passed、8 skipped。阶段 14 修复 Pillow 版本回归；阶段 15 修复本轮 fingerprint 改造对历史 partial recovery 测试造成的兼容回归。
 - 后续继续优先消除本轮引入回归，再单独登记仓库原有失败基线。

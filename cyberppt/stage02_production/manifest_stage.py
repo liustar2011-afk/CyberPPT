@@ -84,15 +84,28 @@ def _template_text_lock(
     return path
 
 
+def _recovery_identity_compatible(manifest: dict[str, Any], prior_manifest: dict[str, Any]) -> tuple[bool, bool]:
+    """Return (compatible, legacy_identity_mode).
+
+    New manifests always carry ``input_fingerprint`` and must match it exactly.
+    Historical manifests created before the fingerprint contract carry no
+    fingerprint on either side; they retain the old source/mode recovery rules
+    so existing interrupted projects remain resumable after upgrade.
+    """
+
+    current = str(manifest.get("input_fingerprint") or "")
+    prior = str(prior_manifest.get("input_fingerprint") or "")
+    if current or prior:
+        return bool(current and prior and current == prior), False
+    return True, True
+
+
 def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None, production_mode: str) -> None:
     if not isinstance(prior_manifest, dict):
         return
     same_source = prior_manifest.get("source_script_sha256") == manifest["source_script_sha256"]
     same_mode = prior_manifest.get("production_mode") == manifest.get("production_mode")
-    same_identity = (
-        bool(prior_manifest.get("input_fingerprint"))
-        and prior_manifest.get("input_fingerprint") == manifest.get("input_fingerprint")
-    )
+    same_identity, legacy_identity_mode = _recovery_identity_compatible(manifest, prior_manifest)
     if not (same_source and same_mode and same_identity):
         return
     prior_pairs = {
@@ -127,7 +140,10 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
             current_prompt_sha = str(current_item.get("prompt_sha256") or "")
             generated_prompt_sha = str(prior_item.get("generated_prompt_sha256") or "")
             prior_prompt_sha = str(prior_item.get("prompt_sha256") or "")
-            same_prompt = bool(current_prompt_sha) and current_prompt_sha in {generated_prompt_sha, prior_prompt_sha}
+            same_prompt = legacy_identity_mode or (
+                bool(current_prompt_sha)
+                and current_prompt_sha in {generated_prompt_sha, prior_prompt_sha}
+            )
             if (
                 prior_path == Path(str(current_item.get("path") or ""))
                 and prior_path.is_file()
@@ -136,19 +152,20 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
             ):
                 current_item["status"] = "Generated"
                 current_item["generated_at"] = prior_item.get("generated_at")
-                current_item["generated_prompt_sha256"] = generated_prompt_sha or prior_prompt_sha
+                if generated_prompt_sha or prior_prompt_sha:
+                    current_item["generated_prompt_sha256"] = generated_prompt_sha or prior_prompt_sha
                 current_item["text_audit"] = prior_item["text_audit"]
 
 
 def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None) -> None:
-    """Keep audited pages when a same-input recovery targets only failed pages."""
+    """Keep audited pages when recovery inputs are compatible."""
     if not isinstance(prior_manifest, dict):
         return
+    same_identity, _legacy_identity_mode = _recovery_identity_compatible(manifest, prior_manifest)
     if (
         prior_manifest.get("source_script_sha256") != manifest.get("source_script_sha256")
         or prior_manifest.get("production_mode") != manifest.get("production_mode")
-        or not prior_manifest.get("input_fingerprint")
-        or prior_manifest.get("input_fingerprint") != manifest.get("input_fingerprint")
+        or not same_identity
     ):
         return
 

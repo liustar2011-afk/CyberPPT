@@ -74,3 +74,20 @@ def test_partial_recovery_retains_pages_only_for_same_input_identity(tmp_path: P
     }
     _retain_audited_prior_pairs(manifest=current, prior_manifest=prior)
     assert [pair["page_number"] for pair in current["pairs"]] == [4]
+
+
+def test_historical_manifests_without_fingerprint_keep_legacy_recovery(tmp_path: Path) -> None:
+    passed = tmp_path / "p4.png"
+    passed.write_bytes(b"image")
+    prior = {
+        "source_script_sha256": "script",
+        "production_mode": "image-to-editable-svg",
+        "pairs": [{"page_number": 4, "full": {"path": str(passed), "text_audit": {"valid": True}}}],
+    }
+    current = {
+        "source_script_sha256": "script",
+        "production_mode": "image-to-editable-svg",
+        "pairs": [{"page_number": 5, "full": {"path": str(tmp_path / 'p5.png')}}],
+    }
+    _retain_audited_prior_pairs(manifest=current, prior_manifest=prior)
+    assert [pair["page_number"] for pair in current["pairs"]] == [4, 5]
