@@ -25,7 +25,7 @@ dependencies = [
   "rapidocr-onnxruntime>=1.4,<2",
   "python-pptx",
   "jsonschema>=4,<5",
-  "Pillow>=10,<12",
+  "Pillow>=12,<13",
 ]
 
 [project.optional-dependencies]

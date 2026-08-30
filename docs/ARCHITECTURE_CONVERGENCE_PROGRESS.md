@@ -22,7 +22,8 @@
 | 10 | `8062debc4fc7442ac2b77ae19784fb9611a22edf` | `needs_action` 写回 `build_context.json`，中断后可直接恢复 |
 | 11 | `ad4a99ef39a82fd0554127d84aab2aa6905b8971` | 正式 runtime/contract/reference/assets 纳入 wheel 包边界并增加 wheel smoke |
 | 12 | `2e9cd4e3cac6c213b09b2a2b028c10b8fc613997` | Compatibility seam 封口为固定 6 项 `LegacyPatchSet`，保留旧测试兼容 |
-| 13 | 待本次提交 | CI 在 pytest 失败时持久化完整日志 artifact，便于精确诊断和恢复 |
+| 13 | `f0cf8a17e8d74034b8e7bdfe0250be60d688ec6a` | CI 在 pytest 失败时持久化完整日志 artifact，便于精确诊断和恢复 |
+| 14 | 待本次提交 | 修正 Pillow 直接依赖版本，恢复现有像素级 QA 使用的 `Image.get_flattened_data()` API |
 
 ## 当前结构性结果
 
@@ -78,6 +79,6 @@
 
 ## 验证状态
 
-- 阶段 12 workflow run `33339330170` 在 Python 3.10/3.12 两个 job 的 pytest 阶段失败；安装、环境检查和正式 runtime import 均已通过。
-- 原 Actions 日志体量过大，连接器返回内容被截断，无法稳定读取 pytest 尾部失败摘要。阶段 13 因此先增加失败日志 artifact；下一次 workflow 即可下载完整 pytest 日志并据此修复具体回归。
-- 当前状态不得视为全量验证通过；以修复后 GitHub Actions 最终 conclusion 为准。
+- 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败；因此当前 CI 红色包含仓库既有失败，不能全部归因于本轮。
+- 阶段 13 run `33339540943` 已通过 artifact 提取出完整 pytest 摘要：50 failed、1738 passed、8 skipped。已确认本轮直接引入的第一类回归是把 Pillow 限制到 `<12`，而现有 clean-base/local-edit 像素 QA 使用 Pillow 12 的 `Image.get_flattened_data()`；阶段 14 改为 `Pillow>=12,<13`。
+- 后续继续优先消除本轮引入回归，再单独登记仓库原有失败基线。
