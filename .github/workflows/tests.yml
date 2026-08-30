@@ -29,3 +29,18 @@ jobs:
           python -m pytest --version
       - name: Run test suite
         run: python -m pytest -q
+      - name: Build wheel
+        run: python -m build --wheel
+      - name: Smoke test installed wheel outside repository
+        run: |
+          python -m venv --system-site-packages /tmp/cyberppt-wheel-smoke
+          /tmp/cyberppt-wheel-smoke/bin/python -m pip install --no-deps dist/cyberppt-*.whl
+          cd /tmp
+          /tmp/cyberppt-wheel-smoke/bin/python - <<'PY'
+          import cyberppt
+          import script_engine
+          import scripts.imagegen_pipeline.page_manifest
+          import scripts.image_to_pptx_runtime.stage02_adapter
+          import scripts.presentation_qa.render_page
+          print("wheel smoke: ok")
+          PY
