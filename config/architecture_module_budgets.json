@@ -1,0 +1,15 @@
+{
+  "schema": "cyberppt.architecture_module_budgets.v1",
+  "policy": "Large semantic modules may shrink freely. Growth beyond these ceilings requires an explicit decomposition decision and budget update in the same reviewed change.",
+  "files": {
+    "cyberppt/source_argument_model.py": 102400,
+    "cyberppt/stage01_compiler.py": 76800,
+    "cyberppt/visual_structure_contract.py": 73728,
+    "script_engine/contracts.py": 59392,
+    "cyberppt/stage02_handoff.py": 49152,
+    "cyberppt/source_foundation_projection.py": 47104,
+    "cyberppt/page_artifact_spec.py": 45056,
+    "cyberppt/page_logic_contract.py": 40960,
+    "cyberppt/semantic_understanding.py": 39936
+  }
+}
