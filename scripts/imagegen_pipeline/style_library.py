@@ -91,9 +91,14 @@ def write_project_style_lock(
     source_script: Path | None = None,
     path: Path = STYLE_LIBRARY_PATH,
 ) -> Path:
+    # Resolve live style definitions exactly once when the lock is created.
+    # Production consumers must use this snapshot verbatim; otherwise a later
+    # edit to references/visual-system.md can silently change prompts while the
+    # style-lock file and its SHA remain unchanged.
     style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
     lock_path = project / VISUAL_LOCK_RELATIVE
     lock_path.parent.mkdir(parents=True, exist_ok=True)
+    prompt_contract = str(style.get("prompt_contract") or "")
     payload = {
         "schema": "cyberppt.visual_style_lock.v1",
         "created_at": _utc_now(),
@@ -101,12 +106,18 @@ def write_project_style_lock(
         "source_reference": load_style_library(path).get("source_reference"),
         "source_script": str(source_script) if source_script else None,
         "style": style,
+        "resolved_contract": {
+            "mode": "snapshot",
+            "source": str(style.get("prompt_contract_source") or ""),
+            "sha256": sha256(prompt_contract.encode("utf-8")).hexdigest().upper() if prompt_contract else None,
+        },
         "policy": {
             "selected_from_default_8": not bool(style.get("extension_only")),
             "selected_from_extension": bool(style.get("extension_only")),
             "prompt_must_use_style_lock": True,
             "do_not_substitute_external_preset": True,
             "samples_are_required_for_user_confirmation": True,
+            "resolved_contract_is_immutable": True,
         },
     }
     if int(style.get("id", -1)) in LIVE_CONTRACT_STYLE_IDS and style.get("sample"):
@@ -163,7 +174,11 @@ def _strip_style09_registry_meta(section: str) -> str:
 
 
 def _load_live_extension_contract(style_id: int) -> str:
-    """Load a live extension contract from the canonical visual-system source."""
+    """Load a live extension contract from the canonical visual-system source.
+
+    This function is used only while creating a new style lock. Existing locks
+    are immutable snapshots and are never refreshed at read time.
+    """
 
     if style_id not in LIVE_CONTRACT_STYLE_IDS:
         raise ValueError(f"live extension contract is not defined for style {style_id}: {style_id}")
@@ -190,7 +205,7 @@ def _load_live_extension_contract(style_id: int) -> str:
 
 
 def _apply_live_extension_contract(style: dict[str, Any]) -> None:
-    """Attach provenance and live contract without trusting lock snapshots."""
+    """Attach the current live contract while resolving a new lock snapshot."""
 
     contract = _load_live_extension_contract(int(style["id"]))
     style["prompt_contract"] = contract
@@ -199,15 +214,12 @@ def _apply_live_extension_contract(style: dict[str, Any]) -> None:
 
 
 def load_style_lock(path: Path) -> dict[str, Any]:
-    payload = _read_json(path)
-    style = payload.get("style")
-    style_id = int(style.get("id", -1)) if isinstance(style, dict) else -1
-    if not isinstance(style, dict) or style_id not in LIVE_CONTRACT_STYLE_IDS:
-        return payload
+    """Load an immutable style-lock snapshot.
 
-    # The lock records selection metadata. Refresh Style 09 from the canonical source.
-    refreshed = dict(payload)
-    refreshed_style = dict(style)
-    _apply_live_extension_contract(refreshed_style)
-    refreshed["style"] = refreshed_style
-    return refreshed
+    Older code refreshed Style 09 from references/visual-system.md here. That
+    violated lock semantics: the effective prompt could change without changing
+    the lock bytes or build identity. New locks resolve the live contract once
+    at creation time, and every consumer now uses the stored snapshot verbatim.
+    """
+
+    return _read_json(path)
