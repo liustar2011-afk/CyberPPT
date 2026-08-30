@@ -11,20 +11,14 @@ from .models import (
     Stage02ProductionResult,
     Stage02RunOptions,
 )
-from .preflight import prepare_preflight, write_json
+from .preflight import prepare_preflight, read_json, write_json
 from .reconstruction_stage import run_reconstruction_stage
 from .rhythm_stage import run_full_image_rhythm_stage
 from .state import classify_manifest
 
 
 def _expected_action_result(*, context, manifest, images, error: Exception) -> Stage02ProductionResult | None:
-    """Convert expected Stage 02 continuation work into a first-class result.
-
-    Quick reconstruction currently raises ValueError for both real failures and
-    normal continuation points. We classify the persisted manifest after the
-    exception and only absorb it when the state model proves that the run is
-    waiting for an explicit Agent/human action. Real failures still propagate.
-    """
+    """Convert expected Stage 02 continuation work into a durable result."""
 
     state_report = classify_manifest(images.manifest)
     if state_report.get("state") != "needs_action":
@@ -44,6 +38,17 @@ def _expected_action_result(*, context, manifest, images, error: Exception) -> S
         "resume_rule": "Complete the listed page actions, then rerun final-script-pages with the same build id and output directory.",
     }
     write_json(summary_path, summary)
+
+    build_context = read_json(manifest.build_context_path)
+    build_context["status"] = "needs_action"
+    build_context["stage02_state"] = state_report
+    artifacts = build_context.get("artifacts")
+    if not isinstance(artifacts, dict):
+        artifacts = {}
+        build_context["artifacts"] = artifacts
+    artifacts["needs_action"] = {"path": str(summary_path)}
+    write_json(manifest.build_context_path, build_context)
+
     reconstruction = ReconstructionStageResult(
         production_readiness=state_report,
         status="needs_action",

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -12,7 +13,7 @@ from cyberppt.stage02_production.models import (
 from cyberppt.stage02_production.orchestrator import run_production
 
 
-def test_missing_authored_svg_returns_needs_action_instead_of_failure(tmp_path: Path) -> None:
+def test_missing_authored_svg_returns_and_persists_needs_action(tmp_path: Path) -> None:
     image = tmp_path / "p1.png"
     image.write_bytes(b"image")
     script = tmp_path / "script.md"
@@ -23,7 +24,7 @@ def test_missing_authored_svg_returns_needs_action_instead_of_failure(tmp_path: 
     build_dir.mkdir()
     manifest_path = build_dir / "page_image_pairs.json"
     context_path = build_dir / "build_context.json"
-    context_path.write_text("{}", encoding="utf-8")
+    context_path.write_text(json.dumps({"schema": "cyberppt.build_context.v1", "status": "in_progress", "artifacts": {}}), encoding="utf-8")
     manifest_payload = {
         "pairs": [
             {
@@ -80,6 +81,8 @@ def test_missing_authored_svg_returns_needs_action_instead_of_failure(tmp_path: 
         result = run_production(options)
 
     assert result.reconstruction.status == "needs_action"
-    assert result.delivery.summary["status"] == "needs_action"
     assert result.delivery.summary["actions"][0]["state"] == "needs_svg_authoring"
-    assert result.delivery.summary_path.is_file()
+    persisted = json.loads(context_path.read_text(encoding="utf-8"))
+    assert persisted["status"] == "needs_action"
+    assert persisted["stage02_state"]["state"] == "needs_action"
+    assert Path(persisted["artifacts"]["needs_action"]["path"]).is_file()

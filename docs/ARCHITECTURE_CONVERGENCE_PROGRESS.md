@@ -16,19 +16,18 @@
 6. `5948b6c chore: remove root scratch artifacts`
 7. `7042e15 feat(script): classify heuristic quality findings`
 8. `ebf2f74 fix(stage02): invalidate stale visual artifacts by input identity`
+9. `01a95b2 feat(stage02): return expected continuation states`
 
-## 阶段 9：Stage 02 状态模型接入主 orchestrator
+## 阶段 10：Expected action 持久化
 
 状态：已完成，待本次提交落盘。
 
 改动：
 
-- `run_production()` 在 reconstruction 抛错后读取已持久化 manifest 的正式状态模型。
-- 只有状态模型确认 `needs_action` 时，才把异常转换成正常的 `Stage02ProductionResult(status=needs_action)`；真实 failure 继续抛出，保持 fail-closed。
-- `needs_action` 结果生成 `stage02_needs_action.json`，列出页面、action、preview 等续跑信息。
-- 首先覆盖缺 authored SVG、待 Quick visual review 等现有 expected-action 场景，不修改 Quick runtime 本身。
-
-这一步使 Stage 02 开始从“异常驱动工作流”迁移为“状态驱动工作流”，同时保留旧运行时和真实错误语义。
+- `needs_action` 除了写独立 `stage02_needs_action.json`，同时写回当前 `build_context.json`。
+- build context 保存完整 `stage02_state` 和 `artifacts.needs_action.path`。
+- 即使会话或 Agent 进程终止，下一次运行也可以直接从 build 目录判断缺哪个 authored SVG、哪一页等待 visual review。
+- 新增回归测试验证状态回执与 build context 同步落盘。
 
 ## 暂缓：compatibility facade 单向化
 
@@ -38,4 +37,3 @@
 
 1. compatibility facade dependency hooks 与单向化。
 2. 正式 runtime package 化与 wheel 安装 smoke test。
-3. 将更多 Stage 02 expected-action 写入 artifact ledger/build context，而不是仅写状态回执。
