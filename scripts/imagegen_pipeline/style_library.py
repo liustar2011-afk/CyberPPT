@@ -13,7 +13,10 @@ from typing import Any
 STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
 VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
 VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visual-system.md"
+# Retained for compatibility with callers that identify historical live-lock
+# styles. Production resolution no longer reads the documentation file live.
 LIVE_CONTRACT_STYLE_IDS = frozenset({9})
+REFERENCE_IMAGE_STYLE_IDS = frozenset({9})
 
 
 def _utc_now() -> str:
@@ -45,10 +48,25 @@ def default_style_choices(path: Path = STYLE_LIBRARY_PATH) -> str:
     return "\n".join(choices)
 
 
-def _resolved_style(style: dict[str, Any]) -> dict[str, Any]:
+def _resolved_style(
+    style: dict[str, Any],
+    source_path: Path = STYLE_LIBRARY_PATH,
+) -> dict[str, Any]:
+    """Return one style resolved from the style registry itself.
+
+    The registry JSON is the single executable style authority. Documentation
+    in references/visual-system.md may describe the style but must never
+    override prompt bytes at runtime; otherwise two files can silently disagree
+    on background color, prompt rules and build identity.
+    """
+
     resolved = dict(style)
-    if int(resolved.get("id") or -1) in LIVE_CONTRACT_STYLE_IDS:
-        _apply_live_extension_contract(resolved)
+    prompt_contract = str(resolved.get("prompt_contract") or "")
+    if prompt_contract:
+        resolved["prompt_contract_source"] = str(source_path)
+        resolved["prompt_contract_sha256"] = sha256(
+            prompt_contract.encode("utf-8")
+        ).hexdigest().upper()
     return resolved
 
 
@@ -69,14 +87,18 @@ def resolve_default_style(
     normalized_name = (style_name or "").strip()
     for style in library["styles"]:
         if style_id is not None and int(style["id"]) == int(style_id):
-            return _resolved_style(style)
+            return _resolved_style(style, path)
         aliases = {
             str(alias).strip()
             for alias in style.get("aliases", [])
             if str(alias).strip()
         }
-        if normalized_name and normalized_name in {str(style["name"]), str(style["slug"]), *aliases}:
-            return _resolved_style(style)
+        if normalized_name and normalized_name in {
+            str(style["name"]),
+            str(style["slug"]),
+            *aliases,
+        }:
+            return _resolved_style(style, path)
     raise ValueError(
         f"unknown CyberPPT style selection: id={style_id!r}, name={style_name!r}. "
         "Available styles:\n" + default_style_choices(path)
@@ -87,8 +109,12 @@ def _snapshot_metadata(style: dict[str, Any]) -> dict[str, Any]:
     prompt_contract = str(style.get("prompt_contract") or "")
     return {
         "mode": "snapshot",
-        "source": str(style.get("prompt_contract_source") or ""),
-        "sha256": sha256(prompt_contract.encode("utf-8")).hexdigest().upper() if prompt_contract else None,
+        "source": str(style.get("prompt_contract_source") or STYLE_LIBRARY_PATH),
+        "sha256": (
+            sha256(prompt_contract.encode("utf-8")).hexdigest().upper()
+            if prompt_contract
+            else None
+        ),
     }
 
 
@@ -100,10 +126,8 @@ def write_project_style_lock(
     source_script: Path | None = None,
     path: Path = STYLE_LIBRARY_PATH,
 ) -> Path:
-    # Resolve live style definitions exactly once when the lock is created.
-    # Production consumers must use this snapshot verbatim; otherwise a later
-    # edit to references/visual-system.md can silently change prompts while the
-    # style-lock file and its SHA remain unchanged.
+    # Resolve the executable registry exactly once when the lock is created.
+    # Production consumers then use the stored snapshot verbatim.
     style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
     lock_path = project / VISUAL_LOCK_RELATIVE
     lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -122,9 +146,10 @@ def write_project_style_lock(
             "do_not_substitute_external_preset": True,
             "samples_are_required_for_user_confirmation": True,
             "resolved_contract_is_immutable": True,
+            "executable_style_authority": "style_registry_snapshot",
         },
     }
-    if int(style.get("id", -1)) in LIVE_CONTRACT_STYLE_IDS and style.get("sample"):
+    if int(style.get("id", -1)) in REFERENCE_IMAGE_STYLE_IDS and style.get("sample"):
         repository_root = path.resolve().parents[3]
         reference_path = (repository_root / str(style["sample"])).resolve()
         if reference_path.is_file():
@@ -134,12 +159,16 @@ def write_project_style_lock(
                 "required_for_every_page": True,
                 "role": "style_reference_only",
             }
-    lock_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    lock_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     return lock_path
 
 
 def _strip_live_contract_registry_meta(section: str) -> str:
-    """Keep model-usable visual rules; drop registry/routing metadata."""
+    """Legacy helper: strip registry metadata from a documentation section."""
 
     kept: list[str] = []
     for raw in section.splitlines():
@@ -178,10 +207,16 @@ def _strip_style09_registry_meta(section: str) -> str:
 
 
 def _load_live_extension_contract(style_id: int) -> str:
-    """Load the current extension contract while creating or migrating a lock."""
+    """Legacy diagnostic helper for reading the documentation section.
+
+    This helper is intentionally not used by resolve_default_style(), lock
+    creation or lock migration. It remains only for compatibility/debugging.
+    """
 
     if style_id not in LIVE_CONTRACT_STYLE_IDS:
-        raise ValueError(f"live extension contract is not defined for style {style_id}: {style_id}")
+        raise ValueError(
+            f"live extension contract is not defined for style {style_id}: {style_id}"
+        )
     if not VISUAL_SYSTEM_PATH.is_file():
         raise FileNotFoundError(
             f"Style {style_id:02d} source file is missing: {VISUAL_SYSTEM_PATH}"
@@ -191,7 +226,7 @@ def _load_live_extension_contract(style_id: int) -> str:
     start = text.find(marker)
     if start < 0:
         raise ValueError(
-            f"Style {style_id:02d} section is missing from canonical source: {VISUAL_SYSTEM_PATH}"
+            f"Style {style_id:02d} section is missing from documentation: {VISUAL_SYSTEM_PATH}"
         )
     tail_start = start + len(marker)
     next_heading = re.search(r"(?m)^[ \t]{0,3}##[ \t]+", text[tail_start:])
@@ -199,18 +234,20 @@ def _load_live_extension_contract(style_id: int) -> str:
     contract = _strip_live_contract_registry_meta(text[start:end].strip())
     if not contract:
         raise ValueError(
-            f"Style {style_id:02d} section is empty in canonical source: {VISUAL_SYSTEM_PATH}"
+            f"Style {style_id:02d} section is empty in documentation: {VISUAL_SYSTEM_PATH}"
         )
     return contract
 
 
 def _apply_live_extension_contract(style: dict[str, Any]) -> None:
-    """Attach the current live contract while resolving a new lock snapshot."""
+    """Legacy compatibility helper; never called by production resolution."""
 
     contract = _load_live_extension_contract(int(style["id"]))
     style["prompt_contract"] = contract
     style["prompt_contract_source"] = str(VISUAL_SYSTEM_PATH)
-    style["prompt_contract_sha256"] = sha256(contract.encode("utf-8")).hexdigest().upper()
+    style["prompt_contract_sha256"] = sha256(
+        contract.encode("utf-8")
+    ).hexdigest().upper()
 
 
 def _is_immutable_snapshot(payload: dict[str, Any]) -> bool:
@@ -225,13 +262,11 @@ def _is_immutable_snapshot(payload: dict[str, Any]) -> bool:
 
 
 def _migrate_legacy_live_lock(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
-    """Upgrade a pre-snapshot live Style 09 lock once, then freeze it.
+    """Upgrade a pre-snapshot Style 09 lock once, then freeze it.
 
-    Historical locks intentionally refreshed Style 09 at every read. Simply
-    treating those old bytes as an immutable snapshot would freeze arbitrary
-    stale contracts and break existing projects/tests. We therefore preserve
-    the historical refresh exactly once, persist the resolved contract into the
-    lock, mark it immutable, and never refresh that migrated lock again.
+    Existing immutable snapshots remain untouched for reproducibility. Only
+    historical pre-snapshot locks are migrated, and their one-time target is
+    now the executable style registry rather than the documentation projection.
     """
 
     style = payload.get("style")
@@ -245,15 +280,17 @@ def _migrate_legacy_live_lock(path: Path, payload: dict[str, Any]) -> dict[str, 
         return payload
 
     migrated = dict(payload)
-    migrated_style = dict(style)
-    _apply_live_extension_contract(migrated_style)
+    migrated_style = resolve_default_style(style_id=style_id)
     migrated["style"] = migrated_style
+    migrated["style_source"] = str(STYLE_LIBRARY_PATH)
     migrated["resolved_contract"] = _snapshot_metadata(migrated_style)
     policy = dict(migrated.get("policy") or {})
     policy["resolved_contract_is_immutable"] = True
+    policy["executable_style_authority"] = "style_registry_snapshot"
     migrated["policy"] = policy
     migrated["migration"] = {
         "from": "legacy_live_refresh",
+        "to": "style_registry_snapshot",
         "migrated_at": _utc_now(),
     }
     path.write_text(
@@ -267,9 +304,9 @@ def _migrate_legacy_live_lock(path: Path, payload: dict[str, Any]) -> dict[str, 
 def load_style_lock(path: Path) -> dict[str, Any]:
     """Load a frozen style contract, migrating legacy live locks once.
 
-    New locks are immutable snapshots. Pre-snapshot Style 09 locks are upgraded
-    on first read by resolving the current canonical contract and persisting it
-    into the same lock; every later read consumes that persisted snapshot.
+    New locks are immutable registry snapshots. Pre-snapshot Style 09 locks are
+    upgraded on first read to the current registry contract and persisted into
+    the same lock; every later read consumes that persisted snapshot.
     """
 
     payload = _read_json(path)

@@ -26,7 +26,8 @@
 | 14 | `ed7e1385816cae33454f82e4841192370eb42c1c` | 修正 Pillow 直接依赖版本，恢复 Pillow 12 像素迭代 API |
 | 15 | `fa65965d0acaccbb77f545d6994fa54d0e1f3def` | 新 fingerprint 严格失效，同时保留无 fingerprint 历史 manifest 的旧项目恢复兼容 |
 | 16 | `45dcf03a38d76d53c37a9d6747d06f31a290680e` | 旧 Style 09 live lock 首次读取时迁移并落盘为 snapshot；新锁和迁移后的锁均永久冻结 |
-| 17 | 待本次提交 | `projects/AGENTS.md` 与仓库主流程统一：新源材料项目默认 strict/legacy，script 仅显式选择时启用 |
+| 17 | `9690e2f49532a25c79cdfe32baa4a6900d149657` | `projects/AGENTS.md` 与仓库主流程统一：新源材料项目默认 strict/legacy，script 仅显式选择时启用 |
+| 18 | 待本次提交 | 消除 Style 09 双权威：可执行合同只从 style registry JSON 解析；`visual-system.md` 降为说明性文档，不再覆盖运行时 Prompt |
 
 ## 当前结构性结果
 
@@ -42,8 +43,10 @@
 
 ### Stage 02
 
-- 新建 Style 09 锁在创建时解析当前合同并冻结。
-- 历史 pre-snapshot Style 09 锁首次读取时按旧行为解析一次当前合同，写回 `resolved_contract.mode=snapshot` 和迁移标记；此后不再 live refresh。
+- Style registry `scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json` 是可执行视觉合同的唯一解析源。
+- `references/visual-system.md` 仅作为视觉系统说明与探索文档，不再在运行时覆盖 Style 09 Prompt；从而消除 JSON 中纯白 `#FFFFFF` 与文档中象牙白 `#F7F6F0` 并存造成的双权威和不可复现行为。
+- 新建 Style 09 锁在创建时从 style registry 解析合同并冻结；`resolved_contract.source` 指向 style registry。
+- 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结。已经是 immutable snapshot 的历史锁保持原字节不变，保证既有项目可复现。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
 - 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
@@ -86,5 +89,6 @@
 ## 验证状态
 
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败；因此当前 CI 红色包含仓库既有失败，不能全部归因于本轮。
-- 阶段 16 run `33339768029` 的 Python 3.12 日志显示 38 failed、1752 passed、8 skipped；失败已由阶段 13 的 50 项下降。可枚举失败主要集中在已退役 Style10、旧 Style09 prompt 合同、项目默认 profile 漂移以及一个 legacy facade mock 测试。
-- 阶段 17 先消除会真实影响 Agent 路由的项目级 profile 冲突；随后再清理已退役 Style10/旧 Style09 测试契约。
+- 阶段 16 run `33339768029` 的 Python 3.12 日志显示 38 failed、1752 passed、8 skipped。
+- 阶段 17 run `33339954486` 的 Python 3.12 日志显示 37 failed、1753 passed、8 skipped；项目默认 profile 冲突已经消失。
+- 阶段 17 日志进一步确认 Style 09 的主要剩余失败来自运行时从 `visual-system.md` 覆盖 style registry 内置合同。阶段 18 将该双权威收敛为单一 style registry executable authority；提交后的 CI 用于判断剩余旧 Style10/legacy facade 契约数量。
