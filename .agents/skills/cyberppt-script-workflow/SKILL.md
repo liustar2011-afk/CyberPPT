@@ -50,8 +50,8 @@ questions, missions and source boundaries.  The Foundation profile remains
 independent: strict/legacy keeps Source Truth and its stronger source-fidelity
 surface, while `script` uses the lightweight UNDERSTAND route.  Neither route
 pre-authors judgments, modules, evidence dispositions, onscreen contracts,
-visual relations or speaker threads in PLAN.  v1 strict Deck Plans remain only
-for in-place compatibility with existing legacy projects.
+visual relations or speaker threads in PLAN.  v1 strict Deck Plans must be
+migrated to v2 lean before entering this workflow.
 
 AUTHOR writes the complete page argument before selecting onscreen information.
 High-risk pages compare judgment-led and evidence-led candidates and retain only

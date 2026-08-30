@@ -548,49 +548,6 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
     return record
 
 
-def _deck_plan_page_map(
-    project: Path,
-    requested_script: Path,
-    document: ScriptDocument,
-) -> dict[str, dict[str, Any]]:
-    """Load only legacy strict planning data for a project-owned script.
-
-    Lean Deck Plans are transitional outlines.  Stage 02 consumes the locked
-    Final Script directly and must not freeze tentative PLAN wording.
-    """
-
-    try:
-        requested_script.relative_to(project / "script")
-    except ValueError:
-        return {}
-    plan_path = project / "script" / "deck-plan.json"
-    if not plan_path.is_file():
-        return {}
-    payload = _read_json(plan_path)
-    if payload.get("plan_contract_version") == 2 and payload.get("planning_profile") == "lean":
-        return {}
-    pages = {
-        normalize_page_id(item.get("id") or item.get("page_id")):
-        item
-        for item in payload.get("pages") or []
-        if isinstance(item, dict) and (item.get("id") or item.get("page_id"))
-    }
-    for page in document.pages:
-        page_id = normalize_page_id(page.page_id, page.sequence)
-        plan = pages.get(page_id)
-        if plan is None:
-            raise ValueError(f"DECK_PLAN_SCRIPT_DRIFT: {page_id} is absent from deck-plan.json")
-        plan_title = str(plan.get("title") or "").strip()
-        plan_message = str(plan.get("message") or plan.get("core_message") or "").strip()
-        if (plan_title and plan_title != page.title) or (
-            plan_message and plan_message != page.main_message
-        ):
-            raise ValueError(
-                f"DECK_PLAN_SCRIPT_DRIFT: {page_id} title or core judgment differs from final-script.md"
-            )
-    return pages
-
-
 def build_stage02_handoff(
     project: Path,
     *,
@@ -634,14 +591,7 @@ def build_stage02_handoff(
                         external[key] = previous[key]
         bindings["script"].update(external)
     document = parse_script_path(script)
-    deck_plan_pages = _deck_plan_page_map(project, requested_script, document)
-    records = [
-        _page_record(
-            page,
-            deck_plan_pages.get(normalize_page_id(page.page_id, page.sequence)),
-        )
-        for page in document.pages
-    ]
+    records = [_page_record(page, None) for page in document.pages]
     return {
         "schema": "cyberppt.stage02_handoff.v1",
         "project": str(project),

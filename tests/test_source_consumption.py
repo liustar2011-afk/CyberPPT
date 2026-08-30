@@ -81,9 +81,11 @@ def _page() -> dict:
 def _plan(page: dict | None = None) -> dict:
     return {
         "communication_goal": "说明标准范围",
-        "evidence_fit_review_mode": "strict",
+        "plan_contract_version": 2,
+        "planning_profile": "lean",
+        "source_structure_mode": "presentation_grouping",
         "chapters": [],
-        "pages": [page or _page()],
+        "pages": [{"title": "标准范围", "page_role": "content", **(page or _page())}],
     }
 
 

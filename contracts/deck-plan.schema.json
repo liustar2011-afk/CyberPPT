@@ -3,7 +3,7 @@
   "$id": "https://cyberppt.local/contracts/deck-plan.schema.json",
   "title": "CyberPPT Deck Plan",
   "type": "object",
-  "required": ["communication_goal", "chapters", "pages"],
+  "required": ["communication_goal", "plan_contract_version", "planning_profile", "source_structure_mode", "chapters", "pages"],
   "$defs": {
     "relation_basis": {"type": "string", "enum": ["explicit", "inferred"]},
     "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
@@ -259,8 +259,8 @@
   },
   "properties": {
     "communication_goal": {"type": "string"},
-    "plan_contract_version": {"type": "integer", "enum": [1, 2]},
-    "planning_profile": {"type": "string", "enum": ["strict", "lean"]},
+    "plan_contract_version": {"const": 2},
+    "planning_profile": {"const": "lean"},
     "delivery_mode": {"type": "string", "enum": ["presented", "self_read"]},
     "narrative_design": {"$ref": "#/$defs/narrative_design"},
     "source_thesis": {"type": "string", "description": "Exact statement of foundation.document_thesis; the deck may compress it only at page level."},
@@ -282,21 +282,9 @@
   },
   "allOf": [
     {
-      "if": {"properties": {"plan_contract_version": {"const": 2}}, "required": ["plan_contract_version"]},
-      "then": {
-        "required": ["planning_profile", "source_structure_mode"],
-        "properties": {
-          "planning_profile": {"const": "lean"},
-          "chapters": {"items": {"required": ["id", "title", "purpose", "source_chapter_ids"]}},
-          "pages": {"items": {"required": ["id", "title", "question", "logic", "page_role", "source_refs"]}}
-        }
-      },
-      "else": {
-        "required": ["evidence_fit_review_mode"],
-        "properties": {
-          "chapters": {"items": {"required": ["id", "purpose"]}},
-          "pages": {"items": {"required": ["id", "question", "message", "logic", "content"], "allOf": [{"if": {"properties": {"content": {"minItems": 2}}, "required": ["content"]}, "then": {"required": ["primary_relation"]}}]}}
-        }
+      "properties": {
+        "chapters": {"items": {"required": ["id", "title", "purpose", "source_chapter_ids"]}},
+        "pages": {"items": {"required": ["id", "title", "question", "logic", "page_role", "source_refs"]}}
       }
     }
   ],

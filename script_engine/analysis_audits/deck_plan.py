@@ -2,19 +2,13 @@
 from __future__ import annotations
 
 from .common import *
-from script_engine.contracts import is_lean_deck_plan
-from script_engine.source_arguments import (
-    argument_source_refs,
-    source_argument_index,
-    source_argument_method,
-)
 
 
 _STRUCTURAL_PAGE_ROLES = frozenset(
     {"cover", "agenda", "contents", "chapter", "chapter_divider", "transition", "ending", "closing"}
 )
 _CHAPTER_TRANSITION_ROLES = frozenset({"chapter", "chapter_divider", "transition"})
-_LEAN_ROOT_AUTHOR_FIELDS = frozenset(
+_PLAN_FORBIDDEN_AUTHOR_FIELDS = frozenset(
     {
         "delivery_mode", "narrative_design", "source_thesis",
         "source_argument_method", "thesis", "narrative_arc", "storyline",
@@ -22,10 +16,10 @@ _LEAN_ROOT_AUTHOR_FIELDS = frozenset(
         "evidence_fit_review_mode",
     }
 )
-_LEAN_CHAPTER_AUTHOR_FIELDS = frozenset(
+_PLAN_FORBIDDEN_CHAPTER_AUTHOR_FIELDS = frozenset(
     {"question", "message", "relationship_to_previous", "source_argument_node_ids", "source_scope"}
 )
-_LEAN_PAGE_AUTHOR_FIELDS = frozenset(
+_PLAN_FORBIDDEN_PAGE_AUTHOR_FIELDS = frozenset(
     {
         "subtitle", "message", "beat", "spoken_thread", "content", "receives", "next",
         "source_argument_node_ids", "source_scope", "content_load", "must_include",
@@ -41,10 +35,6 @@ _TITLE_CLAIM_MARKERS_RE = re.compile(
     r"形成|实现|建立|完成|提升|促进|支撑|保障|决定|成为|推动|加快)"
 )
 _TITLE_SENTENCE_PUNCT_RE = re.compile(r"[，,；;。！？!?：:]")
-
-
-def _is_lean_plan(plan: dict[str, Any]) -> bool:
-    return is_lean_deck_plan(plan)
 
 
 def _narrative_text(value: object) -> str:
@@ -183,32 +173,14 @@ def _presentation_structure_diagnostics(
 def _narrative_contract_diagnostics(
     plan: dict[str, Any],
 ) -> tuple[list[str], list[str]]:
-    """Check the explicit deck narrative without imposing a story pattern.
-
-    Missing fields are warnings for historical plans.  The deterministic
-    failures are limited to referential and ordering errors that can be
-    proven from the plan itself.
-    """
+    """Check PLAN structure without requiring AUTHOR-owned narrative fields."""
 
     issues: list[str] = []
     warnings: list[str] = []
-    lean_plan = _is_lean_plan(plan)
-    narrative_keys = ("thesis", "narrative_arc", "storyline", "audience_start", "audience_end")
-    has_narrative_fields = any(key in plan for key in narrative_keys)
     chapters = [item for item in plan.get("chapters") or [] if isinstance(item, dict)]
     pages = [item for item in plan.get("pages") or [] if isinstance(item, dict)]
-    if not has_narrative_fields and not chapters:
+    if not chapters:
         return issues, warnings
-
-    missing_deck_fields = [
-        key for key in ("thesis", "narrative_arc", "storyline")
-        if not plan.get(key)
-    ]
-    if missing_deck_fields and not lean_plan:
-        warnings.append(
-            "NARRATIVE_PLAN_FIELDS_INCOMPLETE: missing deck narrative field(s) "
-            f"{missing_deck_fields}; evidence=plan; suggested_action=fill the fields from the approved source-constrained planning decision"
-        )
 
     chapter_ids = [str(chapter.get("id") or "").strip() for chapter in chapters]
     duplicate_chapter_ids = sorted(
@@ -220,21 +192,6 @@ def _narrative_contract_diagnostics(
             f"{duplicate_chapter_ids}; evidence=chapters; suggested_action=assign one stable id to each chapter"
         )
     chapter_id_set = {chapter_id for chapter_id in chapter_ids if chapter_id}
-    missing_chapter_fields: list[str] = []
-    for chapter in chapters:
-        chapter_id = str(chapter.get("id") or "?")
-        missing = [
-            key for key in ("purpose", "question", "message", "relationship_to_previous")
-            if not _narrative_text(chapter.get(key))
-        ]
-        if missing:
-            missing_chapter_fields.append(f"{chapter_id}: {','.join(missing)}")
-    if missing_chapter_fields and not lean_plan:
-        warnings.append(
-            "NARRATIVE_CHAPTER_FIELDS_INCOMPLETE: "
-            f"{missing_chapter_fields}; evidence=chapters; suggested_action=state each chapter's purpose, question, message and handoff"
-        )
-
     page_chapter_ids = []
     for page in pages:
         page_id = str(page.get("id") or "?")
@@ -278,59 +235,6 @@ def _narrative_contract_diagnostics(
                     f"evidence={page_id}.title,{page_id}.subtitle,{page_id}.question,{page_id}.message,{page_id}.logic,{page_id}.content; "
                     "suggested_action=use a concise formal title that names the page's overall topic without restating one judgment"
                 )
-        if not lean_plan and index > 0 and not _narrative_text(page.get("receives")):
-            warnings.append(
-                "NARRATIVE_PAGE_HANDOFF_MISSING: "
-                f"page {page_id} has no receives field; evidence={page_id}; suggested_action=state the prior question or recognition this page takes forward"
-            )
-        if not lean_plan and index < len(content_pages) - 1 and not _narrative_text(page.get("next")):
-            warnings.append(
-                "NARRATIVE_PAGE_HANDOFF_MISSING: "
-                f"page {page_id} has no next field; evidence={page_id}; suggested_action=state the recognition or question handed to the next content page"
-            )
-
-        if lean_plan:
-            continue
-        next_text = _narrative_text(page.get("next"))
-        if not next_text or index >= len(content_pages) - 1:
-            continue
-        next_page = content_pages[index + 1]
-        next_question = _narrative_text(next_page.get("question"))
-        next_terms = _narrative_terms(next_text)
-        question_terms = _narrative_terms(next_question)
-        if next_question and next_terms and question_terms and not (next_terms & question_terms):
-            warnings.append(
-                "NARRATIVE_NEXT_RECEIVES_CONFLICT: "
-                f"page {page_id}.next has no identifiable subject overlap with {next_page.get('id') or '?'} question; "
-                f"evidence={page_id}.next,{next_page.get('id') or '?'}.question; suggested_action=align the handoff wording with the next page's question"
-            )
-
-    if lean_plan:
-        return issues, warnings
-
-    page_messages_by_chapter: dict[str, list[str]] = {}
-    for page in pages:
-        chapter_id = str(page.get("chapter_id") or "").strip()
-        message = _narrative_text(page.get("message"))
-        if chapter_id and message:
-            page_messages_by_chapter.setdefault(chapter_id, []).append(message)
-    for chapter in chapters:
-        chapter_id = str(chapter.get("id") or "").strip()
-        chapter_message = _narrative_text(chapter.get("message"))
-        page_messages = page_messages_by_chapter.get(chapter_id, [])
-        if not chapter_message or not page_messages:
-            continue
-        chapter_terms = _narrative_terms(chapter_message)
-        best_overlap = max(
-            (len(chapter_terms & _narrative_terms(message)) / max(1, len(chapter_terms)) for message in page_messages),
-            default=0.0,
-        )
-        if best_overlap < 0.15:
-            warnings.append(
-                "NARRATIVE_CHAPTER_MESSAGE_UNSUPPORTED: "
-                f"chapter {chapter_id} message has weak overlap with its page messages; evidence={chapter_id}.message,pages[{chapter_id}].message; "
-                "suggested_action=narrow the chapter conclusion or ensure its pages form the stated conclusion"
-            )
     return issues, warnings
 
 
@@ -344,7 +248,7 @@ def _source_argument_binding_issues(
     of facts when pages are planned.
     """
 
-    if _is_lean_plan(plan):
+    if True:
         items = foundation_items_by_id(foundation)
         known_refs = set(items).union(
             str(asset.get("id"))
@@ -421,7 +325,7 @@ def _source_argument_binding_issues(
         chapter_id = _narrative_text(page.get("chapter_id"))
         page_nodes_by_chapter.setdefault(chapter_id, set()).update(selected)
         page_refs = set(_page_evidence_ids(page))
-        if _is_lean_plan(plan):
+        if True:
             page_refs.update(
                 _narrative_text(ref)
                 for ref in page.get("source_refs") or []
@@ -619,23 +523,21 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
     issues.extend(narrative_issues)
     warnings.extend(narrative_warnings)
     issues.extend(_source_argument_binding_issues(plan, foundation))
-    lean_plan = _is_lean_plan(plan)
-    if lean_plan:
-        present = sorted(_LEAN_ROOT_AUTHOR_FIELDS.intersection(plan))
+    present = sorted(_PLAN_FORBIDDEN_AUTHOR_FIELDS.intersection(plan))
+    if present:
+        issues.append(f"PLAN_AUTHOR_FIELDS_FORBIDDEN: move AUTHOR fields out of Deck Plan: {present}")
+    for index, chapter in enumerate(plan.get("chapters") or []):
+        if not isinstance(chapter, dict):
+            continue
+        present = sorted(_PLAN_FORBIDDEN_CHAPTER_AUTHOR_FIELDS.intersection(chapter))
         if present:
-            issues.append(f"LEAN_PLAN_ROOT_TOO_DETAILED: move AUTHOR fields out of Deck Plan: {present}")
-        for index, chapter in enumerate(plan.get("chapters") or []):
-            if not isinstance(chapter, dict):
-                continue
-            present = sorted(_LEAN_CHAPTER_AUTHOR_FIELDS.intersection(chapter))
-            if present:
-                issues.append(f"chapters.{index}: LEAN_PLAN_CHAPTER_TOO_DETAILED: {present}")
-        for index, page in enumerate(plan.get("pages") or []):
-            if not isinstance(page, dict):
-                continue
-            present = sorted(_LEAN_PAGE_AUTHOR_FIELDS.intersection(page))
-            if present:
-                issues.append(f"pages.{index} ({page.get('id') or '?'}): LEAN_PLAN_PAGE_TOO_DETAILED: {present}")
+            issues.append(f"chapters.{index}: PLAN_CHAPTER_AUTHOR_FIELDS_FORBIDDEN: {present}")
+    for index, page in enumerate(plan.get("pages") or []):
+        if not isinstance(page, dict):
+            continue
+        present = sorted(_PLAN_FORBIDDEN_PAGE_AUTHOR_FIELDS.intersection(page))
+        if present:
+            issues.append(f"pages.{index} ({page.get('id') or '?'}): PLAN_PAGE_AUTHOR_FIELDS_FORBIDDEN: {present}")
     items = foundation_items_by_id(foundation)
     source_assets = {
         str(asset.get("id")): asset
@@ -683,92 +585,23 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
     warnings.extend(presentation_warnings)
 
     audience_scope = plan.get("audience_scope", "unspecified")
-    strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
-    if not lean_plan and foundation.get("source_consumption_contract_version") == 2:
-        warnings.append(
-            "PLAN_CONTRACT_LEGACY_WITH_MODERN_FOUNDATION: v1 strict Deck Plan is a "
-            "legacy compatibility surface; new strict/legacy source projects should use "
-            "plan_contract_version=2 and planning_profile='lean' so PLAN keeps source "
-            "boundaries without pre-authoring AUTHOR content"
-        )
-    if not lean_plan and not strict_evidence_fit:
-        issues.append(
-            "evidence_fit_review_mode: strict is required before PLAN can enter AUTHOR"
-        )
     for index, page in enumerate(plan.get("pages") or []):
         if not isinstance(page, dict):
             continue
         page_id = page.get("id") or f"#{index}"
-        if not lean_plan:
-            for route_issue in audit_content_route(page):
-                issues.append(f"pages.{index} ({page_id}): {route_issue}")
-            for coverage_issue in _audit_content_coverage_definition(page):
-                issues.append(f"pages.{index} ({page_id}): {coverage_issue}")
-            for readiness_issue in audit_stage02_readiness(page):
-                issues.append(f"pages.{index} ({page_id}): {readiness_issue}")
-            for composition_issue in _audit_onscreen_composition_definition(page):
-                issues.append(f"pages.{index} ({page_id}): {composition_issue}")
-            for contract_issue in _audit_onscreen_contract_definition(page, items):
-                issues.append(f"pages.{index} ({page_id}): {contract_issue}")
-            for relation_issue in _primary_relation_issues(page):
-                issues.append(f"pages.{index} ({page_id}): {relation_issue}")
-            for consumption_issue in _audit_source_consumption_definition(page, items, foundation):
+        if True:
+            # Lean planning excludes AUTHOR prose and visual selections, but a
+            # Foundation may still require strict source consumption.  Validate
+            # that compiler-owned contract before approval so AUTHOR is never
+            # started on a plan that cannot prove semantic preservation.
+            for consumption_issue in _audit_source_consumption_definition(
+                page, items, foundation
+            ):
                 issues.append(f"pages.{index} ({page_id}): {consumption_issue}")
-            for unit_issue in _audit_unit_consumption_definition(page, items, foundation):
+            for unit_issue in _audit_unit_consumption_definition(
+                page, items, foundation
+            ):
                 issues.append(f"pages.{index} ({page_id}): {unit_issue}")
-            for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
-                issues.append(f"pages.{index} ({page_id}): {review_issue}")
-        structural_role = str(page.get("page_role") or page.get("page_type") or "").strip()
-        if not lean_plan and structural_role not in _STRUCTURAL_PAGE_ROLES:
-            visual = page.get("visual_evidence")
-            if isinstance(visual, dict) and visual.get("kind") != "none":
-                ref = str(visual.get("ref") or "").strip()
-                if not ref or (ref not in items and ref not in source_assets):
-                    issues.append(
-                        f"pages.{index} ({page_id}): LEAN_VISUAL_EVIDENCE_REF_UNKNOWN: {ref or '<missing>'}"
-                    )
-                if visual.get("kind") == "asset" and ref in source_assets:
-                    asset = source_assets[ref]
-                    if not str(visual.get("carrying_element") or "").strip():
-                        issues.append(
-                            f"pages.{index} ({page_id}): SOURCE_ASSET_CARRYING_ELEMENT_MISSING: {ref}"
-                        )
-                    node_ids = {
-                        str(value) for value in asset.get("argument_node_ids") or [] if str(value)
-                    }
-                    if not node_ids:
-                        issues.append(
-                            f"pages.{index} ({page_id}): SOURCE_ASSET_ARGUMENT_BINDING_MISSING: {ref}"
-                        )
-                    unknown_nodes = sorted(node_ids - set(argument_nodes))
-                    if unknown_nodes:
-                        issues.append(
-                            f"pages.{index} ({page_id}): SOURCE_ASSET_ARGUMENT_NODE_UNKNOWN: {ref} uses {unknown_nodes}"
-                        )
-                    asset_refs = {
-                        str(value) for value in asset.get("source_unit_refs") or [] if str(value)
-                    }
-                    if node_ids and not any(
-                        asset_refs
-                        & {
-                            str(value)
-                            for value in (argument_nodes.get(node_id) or {}).get("source_refs") or []
-                            if str(value)
-                        }
-                        for node_id in node_ids
-                    ):
-                        issues.append(
-                            f"pages.{index} ({page_id}): SOURCE_ASSET_ARGUMENT_EVIDENCE_DISCONNECTED: {ref}"
-                        )
-                    if not str(asset.get("wrong_reading") or "").strip():
-                        message = (
-                            f"pages.{index} ({page_id}): SOURCE_ASSET_WRONG_READING_MISSING: {ref}"
-                        )
-                        if str(page_id) == peak_page_id or asset.get("presentation_role") == "money_slide":
-                            issues.append(message)
-                        else:
-                            warnings.append(message)
-        if lean_plan:
             evidence = _support_items(sorted(_page_evidence_ids(page)), items)
             internal = [item.get("id", "?") for item in evidence if effective_visibility(item) == "internal_only"]
             if audience_scope == "external" and internal and page.get("visibility_decision") not in (
@@ -810,4 +643,4 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
 
     return issues, warnings
 
-__all__ = ['_adjacent_plan_duplication_warnings', '_is_lean_plan', '_narrative_contract_diagnostics', '_source_argument_binding_issues', '_scope_chapters', '_audit_content_coverage_definition', '_audit_onscreen_contract_definition', '_primary_relation_issues', 'audit_deck_plan']
+__all__ = ['_adjacent_plan_duplication_warnings', '_narrative_contract_diagnostics', '_source_argument_binding_issues', '_scope_chapters', 'audit_deck_plan']

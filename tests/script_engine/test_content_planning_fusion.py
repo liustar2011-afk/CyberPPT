@@ -135,8 +135,8 @@ def test_v2_lean_plan_rejects_author_and_visual_fields() -> None:
     plan["pages"][0]["content"] = ["提前编写的内容"]
     plan["pages"][0]["onscreen_contract"] = {"relation": "parallel", "detail_axis": "对象", "modules": []}
     issues, _ = audit_deck_plan(plan, _foundation())
-    assert any("LEAN_PLAN_ROOT_TOO_DETAILED" in issue for issue in issues)
-    assert any("LEAN_PLAN_PAGE_TOO_DETAILED" in issue for issue in issues)
+    assert any("PLAN_AUTHOR_FIELDS_FORBIDDEN" in issue for issue in issues)
+    assert any("PLAN_PAGE_AUTHOR_FIELDS_FORBIDDEN" in issue for issue in issues)
 
 
 def test_v2_final_script_owns_authored_message() -> None:
@@ -189,7 +189,7 @@ def test_v2_lean_source_refs_are_evidence_boundary_not_full_copy_checklist() -> 
     assert not any("F1-U2" in issue or "source_consumption" in issue for issue in issues)
 
 
-def test_strict_foundation_uses_v2_lean_plan_without_pre_authoring_contracts() -> None:
+def test_strict_foundation_requires_its_source_consumption_contract_before_authoring() -> None:
     plan = _lean_plan()
     foundation = _foundation()
     foundation.update(
@@ -201,11 +201,11 @@ def test_strict_foundation_uses_v2_lean_plan_without_pre_authoring_contracts() -
 
     issues, warnings = audit_deck_plan(plan, foundation)
 
-    assert issues == []
-    assert not any("PLAN_CONTRACT_LEGACY" in warning for warning in warnings)
+    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
+    assert not warnings
 
 
-def test_modern_foundation_warns_when_legacy_plan_contract_is_reused() -> None:
+def test_legacy_plan_contract_is_rejected_by_schema() -> None:
     plan = _lean_plan()
     plan["plan_contract_version"] = 1
     plan["planning_profile"] = "strict"
@@ -213,9 +213,7 @@ def test_modern_foundation_warns_when_legacy_plan_contract_is_reused() -> None:
     foundation = _foundation()
     foundation["source_consumption_contract_version"] = 2
 
-    _, warnings = audit_deck_plan(plan, foundation)
-
-    assert any("PLAN_CONTRACT_LEGACY_WITH_MODERN_FOUNDATION" in warning for warning in warnings)
+    assert validate_deck_plan(plan)
 
 
 def test_whole_deck_audit_warns_on_uniform_author_shape_and_missing_relationships() -> None:

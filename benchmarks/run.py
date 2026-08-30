@@ -127,7 +127,7 @@ def _real_project_result(name: str) -> dict[str, Any]:
         "foundation_issues": foundation_issues,
         "plan_issues": plan_issues + audit_issues,
         "plan_warnings": audit_warnings,
-        "plan_contract_version": plan.get("plan_contract_version", 1),
+        "plan_contract_version": plan.get("plan_contract_version", 2),
     }
 
 
@@ -247,7 +247,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         "- 交付 Foundation 人工审核稿，并由独立审阅者确认 long 选区与排除理由。",
         "- 完成 v1/v2 四维盲评；现有 P03/P04 Agent 盲评保留为前置证据，不代替独立人工评审。",
         "",
-        "当前保持 v1 为生产默认，v2 lean 可继续用于受控验证。满足全部条件后再切换默认。",
+        "当前生产路径统一采用 v2 lean；历史 v1 计划必须先完成迁移。",
         "",
     ])
     return "\n".join(lines)

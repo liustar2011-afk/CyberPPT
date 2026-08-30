@@ -34,14 +34,6 @@ def validate_deck_plan(payload: dict[str, Any]) -> list[str]:
     return validate_payload(payload, "deck-plan.schema.json")
 
 
-def is_lean_deck_plan(payload: dict[str, Any]) -> bool:
-    """Return whether PLAN uses the v2 lean authoring contract."""
-
-    return (
-        payload.get("plan_contract_version") == 2
-        and payload.get("planning_profile") == "lean"
-    )
-
 def validate_foundation(payload: dict[str, Any]) -> list[str]:
     return validate_payload(payload, "foundation.schema.json")
 

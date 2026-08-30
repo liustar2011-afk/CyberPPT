@@ -125,7 +125,7 @@ Deck Plan 默认将相邻来源章节按受众问题、论证角色和承接关�
 副标题和核心判断属于最终脚本内容，不由 PLAN 锁定。标题覆盖检查只判断暂定标题
 能否标识页面讨论对象，不把判断句回灌到标题。
 
-所有新项目统一使用 Deck Plan v2 lean。strict/legacy 与 `script` profile 的差异只作用于 Foundation 的理解深度、Source Truth 和来源保全方式；不得把 strict/legacy 的来源消费要求转换成 PLAN 中的核心判断、内容模块、证据处置、上屏合同或视觉关系。v1 strict Deck Plan 只用于已有旧项目原位兼容。
+所有项目统一使用 Deck Plan v2 lean。strict/legacy 与 `script` profile 的差异只作用于 Foundation 的理解深度、Source Truth 和来源保全方式；不得把 strict/legacy 的来源消费要求转换成 PLAN 中的核心判断、内容模块、证据处置、上屏合同或视觉关系。旧版 v1 Deck Plan 必须迁移后才能进入当前流程。
 
 主责 Skill：`cyberppt-script-workflow`。
 

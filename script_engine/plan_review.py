@@ -249,7 +249,7 @@ def render_plan_review(
         else:
             unassigned.append(page)
 
-    lean_plan = plan.get("plan_contract_version") == 2 and plan.get("planning_profile") == "lean"
+    lean_plan = True
     narrative_design = plan.get("narrative_design") if isinstance(plan.get("narrative_design"), dict) else {}
     source_assets = {
         str(item.get("id")): item
@@ -259,29 +259,16 @@ def render_plan_review(
     lines = [
         "# 脚本规划待确认",
         "",
-        f"- 规划合同：{'v2 lean' if lean_plan else 'v1 strict'}",
+        "- 规划合同：v2 lean",
         f"- 交流目标：{_text(plan.get('communication_goal'))}",
         f"- 汇报对象：{_text(plan.get('audience'))}",
         f"- 受众范围：{_text(plan.get('audience_scope'))}",
         f"- 来源结构：{_label(plan.get('source_structure_mode'), _STRUCTURE_MODE_LABELS)}",
         f"- 汇报结构：{_label(plan.get('presentation_structure_mode'), _PRESENTATION_STRUCTURE_MODE_LABELS)}",
         f"- 汇报章节数：{len(chapters)}",
-        "- 规划边界：章节、页序、页面问题、页面使命和来源范围" if lean_plan else (
-            "- 来源适配门禁：严格质询"
-            if plan.get("evidence_fit_review_mode") == "strict"
-            else "- 来源适配门禁：缺失，阻断 AUTHOR"
-        ),
+        "- 规划边界：章节、页序、页面问题、页面使命和来源范围",
         "",
     ]
-    if not lean_plan:
-        lines[-1:-1] = [
-            f"- 来源总论点：{_text(plan.get('source_thesis'))}",
-            "- 来源论证顺序：" + " → ".join(_ids(plan.get("source_argument_method"))),
-            f"- 全稿主旨：{_text(plan.get('thesis'))}",
-            f"- 叙事弧：{_text(plan.get('narrative_arc'))}",
-            f"- 受众起点：{_text(plan.get('audience_start'))}",
-            f"- 受众终点：{_text(plan.get('audience_end'))}",
-        ]
 
     if narrative_design:
         lines.extend(

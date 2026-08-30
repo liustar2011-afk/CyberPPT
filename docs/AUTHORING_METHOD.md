@@ -51,8 +51,7 @@ boundaries.
 The Foundation profile is independent from this planning contract.
 strict/legacy retains Source Truth, full semantic modelling and stronger source
 fidelity checks; `script` retains the lightweight UNDERSTAND route. v1 strict
-Deck Plans remain supported only for existing legacy projects that have not yet
-been replanned.
+Deck Plans must be migrated to v2 lean before authoring.
 - independent review accepts Foundation readability and long-reading selection;
 - v2 wins at least three of four blind-review dimensions;
 - average manually authored planning fields fall by at least 40%.

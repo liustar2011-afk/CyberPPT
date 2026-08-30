@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from .common import *
 from .composed_trace import hard_finding_messages, trace_composed
-from .deck_plan import _is_lean_plan
 
 _STATUS_PRESERVATION_MARKERS = {
     "规划": ("拟", "将", "应", "计划", "推动", "制定", "形成", "完成", "开展", "目标", "后续", "需"),
@@ -891,13 +890,7 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
     structure = {x.get("id"): x for x in (foundation.get("source_structure") or []) if isinstance(x, dict) and isinstance(x.get("id"), str)}
     audience_scope = plan.get("audience_scope", "unspecified")
     preserve_structure = plan.get("source_structure_mode") == "preserve"
-    lean_plan = _is_lean_plan(plan)
     delivery_mode = str((final_script.get("deck") or {}).get("delivery_mode") or plan.get("delivery_mode") or "self_read")
-    strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
-    if not lean_plan and not strict_evidence_fit:
-        issues.append(
-            "PLAN evidence-fit gate: evidence_fit_review_mode: strict is required before AUTHOR"
-        )
 
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
@@ -907,24 +900,10 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
         if page is None:
             warnings.append(f"slides.{index} ({slide_id}): no matching deck-plan page; semantic inheritance cannot be audited")
             continue
-        plan_message = str(page.get("message") or "").strip()
-        authored_message = str(slide.get("core_message") or "").strip()
-        source_argument_ids = [
-            value for value in page.get("source_argument_node_ids") or []
-            if isinstance(value, str) and value.strip()
-        ]
-        if source_argument_ids and plan_message and authored_message != plan_message:
-            issues.append(
-                f"slides.{index} ({slide_id}): AUTHOR_PAGE_PROPOSITION_DRIFTED: core_message must preserve the approved deck-plan message"
-            )
         final_text = _slide_text(slide)
         plan_text = _page_text(page)
         evidence_ids = _page_evidence_ids(page)
         evidence = _support_items(sorted(evidence_ids), items)
-
-        if not lean_plan:
-            for review_issue in _audit_evidence_fit_reviews(page, items, strict=strict_evidence_fit):
-                issues.append(f"slides.{index} ({slide_id}): PLAN evidence-fit gate: {review_issue}")
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
         plan_logic = str(page.get("logic") or "")
@@ -965,21 +944,20 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
             issues.append(f"slides.{index} ({slide_id}): {density_issue}")
         for contract_issue in _audit_authored_onscreen_contract(page, slide, items):
             issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
-        if not lean_plan:
-            for relation_issue in _authored_relationships_issues(page, slide):
-                issues.append(f"slides.{index} ({slide_id}): {relation_issue}")
-        if not lean_plan:
-            for consumption_issue in _audit_authored_source_consumption(
-                page, slide, items, foundation
-            ):
-                issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
-            for unit_issue in _audit_authored_unit_consumption(page, slide, items, foundation):
-                issues.append(f"slides.{index} ({slide_id}): {unit_issue}")
+        # A lean Deck Plan deliberately omits AUTHOR prose and onscreen contracts,
+        # but it must never disable Foundation-owned source-consumption safeguards.
+        # In particular, strict/legacy Foundations set source_consumption_policy to
+        # ``required``.  Skipping these checks for every lean plan allowed a page
+        # with dozens of assigned source facts to pass with a short summary and no
+        # declared preservation contract.
+        for consumption_issue in _audit_authored_source_consumption(
+            page, slide, items, foundation
+        ):
+            issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
+        for unit_issue in _audit_authored_unit_consumption(page, slide, items, foundation):
+            issues.append(f"slides.{index} ({slide_id}): {unit_issue}")
         for coverage_issue in _audit_authored_content_coverage(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
-        if not lean_plan:
-            for readiness_issue in audit_authored_stage02_readiness(page, slide):
-                issues.append(f"slides.{index} ({slide_id}): {readiness_issue}")
         for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
             issues.append(
                 f"slides.{index} ({slide_id}): ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: "

@@ -241,7 +241,7 @@ def test_cyberppt_script_canonical_markdown_populates_stage02_business_relations
     assert page["prompt_mode"] == "semantic_brief"
 
 
-def test_project_final_script_consumes_matching_deck_plan_boundaries() -> None:
+def test_project_final_script_ignores_removed_deck_plan_contract() -> None:
     with TemporaryDirectory() as directory:
         project = Path(directory) / "project"
         script = project / "script" / "dist" / "final-script.md"
@@ -298,10 +298,10 @@ def test_project_final_script_consumes_matching_deck_plan_boundaries() -> None:
 
         page = build_stage02_handoff(project, script=script)["pages"][0]
 
-    assert page["argument_role"] == "scope"
-    assert page["source_refs"] == ["ST0030"]
+    assert page["argument_role"] == ""
+    assert page["source_refs"] == []
     assert page["provenance_refs"] == ["SU-PROJECT-PARAGRAPH-01"]
-    assert page["must_not_include"] == ["不得扩展到未批准任务"]
+    assert page["must_not_include"] == []
 
 
 def test_stage02_ignores_lean_deck_plan_wording_and_uses_locked_script() -> None:

@@ -230,6 +230,35 @@ def test_contract_v2_rejects_source_record_without_semantic_units() -> None:
     assert any("SOURCE_CONSUMPTION_FOUNDATION_UNITS_MISSING" in issue for issue in issues)
 
 
+def test_lean_plan_cannot_bypass_required_source_consumption() -> None:
+    """Regression: v2 lean planning must retain Foundation-owned strict gates."""
+    page = _page()
+    page.pop("source_consumption")
+    page.pop("onscreen_contract")
+    plan = _plan(page)
+    plan.update({"plan_contract_version": 2, "planning_profile": "lean"})
+    foundation = _foundation()
+    foundation["source_consumption_contract_version"] = 2
+
+    issues, _ = audit_final_script(_final(), plan, foundation)
+
+    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
+
+
+def test_lean_plan_fails_before_author_when_strict_contract_is_missing() -> None:
+    page = _page()
+    page.pop("source_consumption")
+    page.pop("onscreen_contract")
+    plan = _plan(page)
+    plan.update({"plan_contract_version": 2, "planning_profile": "lean"})
+    foundation = _foundation()
+    foundation["source_consumption_contract_version"] = 2
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
+
+
 def test_author_rejects_label_enumeration_when_source_units_carry_detail() -> None:
     page = _page()
     page["onscreen_contract"]["modules"][0]["heading"] = "标准明细"
