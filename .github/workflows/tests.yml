@@ -19,13 +19,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - name: Install package and test dependencies
+      - name: Install package and development capabilities
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[test]"
+          python -m pip install -e ".[dev]"
       - name: Environment check
         run: |
           python -m pip check
           python -m pytest --version
+      - name: Import production runtime
+        run: |
+          python -c "import cyberppt, script_engine; import scripts.imagegen_pipeline.page_manifest; import scripts.image_to_pptx_runtime.stage02_adapter"
       - name: Run test suite
         run: python -m pytest -q
