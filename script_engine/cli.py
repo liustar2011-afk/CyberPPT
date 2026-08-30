@@ -53,13 +53,34 @@ def _validate(kind: str, path: Path) -> int:
     return 0 if not issues else 1
 
 
+def _project_profile_for_foundation(path: Path) -> str:
+    """Read the owning project's declared profile when this is a project Foundation."""
+
+    manifest = path.parent.parent / "manifest.yml"
+    if not manifest.is_file():
+        return "unspecified"
+    for line in manifest.read_text(encoding="utf-8-sig").splitlines():
+        if line.startswith("profile:"):
+            profile = line.partition(":")[2].strip()
+            return profile if profile in {"script", "strict", "legacy"} else "unspecified"
+    return "unspecified"
+
+
 def _audit_foundation(path: Path) -> int:
     payload = load_json(path)
     issues = validate_foundation(payload)
     audit_issues, warnings = audit_foundation_analysis(payload)
     issues += audit_issues
     source_index_path = path.parent / ".cache" / "source-index.json"
-    if source_index_path.is_file():
+    # ``source-index.json`` and ``reading_strategy`` belong to the script
+    # profile. Strict and legacy Foundations are mechanical Source Truth
+    # projections, so a stale script-profile cache must not select that audit.
+    # Keep the historical sibling-index behavior for standalone Foundations
+    # whose project profile cannot be discovered.
+    if (
+        _project_profile_for_foundation(path) not in {"strict", "legacy"}
+        and source_index_path.is_file()
+    ):
         source_index = load_json(source_index_path)
         if source_index.get("schema") == "cyberppt.source_index.v2":
             issues += validate_script_foundation_against_index(payload, source_index)

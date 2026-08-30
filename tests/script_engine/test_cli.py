@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+
 from script_engine.cli import main
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,6 +22,54 @@ def test_cli_validate_plan_passes_on_example(capsys) -> None:
     out = json.loads(capsys.readouterr().out)
     assert exit_code == 0
     assert out["status"] == "passed"
+
+
+def test_cli_audit_foundation_routes_sibling_source_index_by_project_profile(
+    tmp_path, capsys
+) -> None:
+    foundation = {
+        "sources": [{"id": "SRC-1", "path": "source/brief.md", "sha256": "authored"}],
+        "facts": [],
+        "concepts": [],
+        "relations": [],
+        "arguments": [],
+    }
+    stale_index = {
+        "schema": "cyberppt.source_index.v2",
+        "sources": [{"source_id": "SRC-1", "path": "source/brief.md", "sha256": "indexed"}],
+        "source_structure": [],
+        "units": [],
+    }
+
+    strict_project = tmp_path / "strict-project"
+    strict_project.mkdir()
+    (strict_project / "manifest.yml").write_text("profile: strict\n", encoding="utf-8")
+    strict_foundation = strict_project / "script/foundation.json"
+    strict_foundation.parent.mkdir()
+    strict_foundation.write_text(json.dumps(foundation), encoding="utf-8")
+    strict_cache = strict_project / "script/.cache"
+    strict_cache.mkdir(exist_ok=True)
+    (strict_cache / "source-index.json").write_text(json.dumps(stale_index), encoding="utf-8")
+
+    assert main(["audit-foundation", str(strict_foundation)]) == 0
+    strict_report = json.loads(capsys.readouterr().out)
+    assert strict_report["status"] == "passed"
+
+    script_project = tmp_path / "script-project"
+    script_project.mkdir()
+    (script_project / "manifest.yml").write_text("profile: script\n", encoding="utf-8")
+    script_foundation = script_project / "script/foundation.json"
+    script_foundation.parent.mkdir()
+    script_foundation.write_text(json.dumps(foundation), encoding="utf-8")
+    script_cache = script_project / "script/.cache"
+    script_cache.mkdir(exist_ok=True)
+    (script_cache / "source-index.json").write_text(json.dumps(stale_index), encoding="utf-8")
+
+    assert main(["audit-foundation", str(script_foundation)]) == 1
+    script_report = json.loads(capsys.readouterr().out)
+    assert script_report["status"] == "failed"
+    assert any("sha256 differs" in issue for issue in script_report["issues"])
+    assert "reading_strategy is required for script-profile Foundation" in script_report["issues"]
 
 
 def test_cli_validate_final_fails_on_broken_payload(tmp_path, capsys) -> None:
