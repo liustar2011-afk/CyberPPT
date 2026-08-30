@@ -108,6 +108,53 @@ def test_legacy_page_without_source_consumption_remains_compatible() -> None:
     assert not any("source_consumption" in issue for issue in issues)
 
 
+def test_author_gate_rejects_structural_metadata_concatenated_into_full_copy() -> None:
+    page = _page()
+    page["source_refs"] = ["ST1", "ST2", "ST3", "META1", "META2"]
+    foundation = _strict_foundation()
+    foundation["facts"].extend([
+        {"id": "META1", "statement": "目 录"},
+        {"id": "META2", "statement": "2026年7月"},
+    ])
+    final = _final(
+        "标准覆盖共同语言与资源治理；目 录；2026年7月；基础通用；数据资源；治理要求"
+    )
+
+    issues, _ = audit_final_script(final, _plan(page), foundation)
+
+    assert any("AUTHOR_STRUCTURAL_METADATA_LEAK" in issue for issue in issues)
+    assert any("AUTHOR_MECHANICAL_SOURCE_CONCATENATION" in issue for issue in issues)
+
+
+def test_author_gate_rejects_phrase_led_self_read_fragments() -> None:
+    page = _page()
+    page["onscreen_contract"]["expression_mode"] = "phrase_led"
+    final = _final()
+    final["deck"] = {"delivery_mode": "self_read"}
+    final["slides"][0]["onscreen"][1]["items"] = ["月度修正、重点时段和区域专题"]
+
+    issues, _ = audit_final_script(final, _plan(page), _strict_foundation())
+
+    assert any("AUTHOR_ONSCREEN_INCOMPLETE_DETAIL" in issue for issue in issues)
+
+
+def test_author_gate_accepts_complete_phrase_led_business_proposition() -> None:
+    page = _page()
+    page["onscreen_contract"]["expression_mode"] = "phrase_led"
+    final = _final()
+    final["deck"] = {"delivery_mode": "self_read"}
+    final["slides"][0]["onscreen"][0]["items"] = [
+        "基础通用标准统一电力数据基础设施术语定义"
+    ]
+    final["slides"][0]["onscreen"][1]["items"] = [
+        "需求侧结构变化增加了负荷预测难度"
+    ]
+
+    issues, _ = audit_final_script(final, _plan(page), _strict_foundation())
+
+    assert not any("AUTHOR_ONSCREEN_INCOMPLETE_DETAIL" in issue for issue in issues)
+
+
 def test_strict_foundation_missing_contract_fails_plan_and_author() -> None:
     page = _page()
     page.pop("source_consumption")

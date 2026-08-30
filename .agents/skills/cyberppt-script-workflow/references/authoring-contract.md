@@ -45,43 +45,58 @@ Run these steps in order for every content page:
 3. **Author the page conclusion.** `core_message` states what the page means and
    organizes the entire page. It contains no planning label, author self-talk,
    review language or relationship-construction note.
-4. **Write semantic-preserving full copy.** Reorganize source prose into a
+4. **Build the claim–argument–evidence chain.** State the independent arguments
+   that establish `core_message`, then bind each argument to the source-grounded
+   evidence that proves, explains or qualifies it. Apply the organising rules in
+   2.8 before prose selection.
+5. **Write semantic-preserving full copy.** Reorganize source prose into a
    judgment-first hierarchy. Preserve protected payload and omit only subordinate
    material that does not support the page conclusion.
-5. **Make an editorial selection.** Select the decisive visible argument. Do not
+6. **Set the reading form and density boundary.** Before selecting visible copy,
+   declare the page's primary reading form, one visible conclusion, its
+   top-level information roles and the decisive proof retained for each role.
+   Apply the density-and-heading preflight in 2.6 before drafting modules.
+7. **Make an editorial selection.** Select the decisive visible argument. Do not
    proportionally shorten every paragraph or keep one bullet per source fact.
-6. **Build visible hierarchy and close semantics.** Apply `one page, one
+8. **Build visible hierarchy and close semantics.** Apply `one page, one
    conclusion; one level, one question; peers, one dimension; children, added
    evidence; different levels, visible relationships`. A normal content module
    heading states a complete judgment; the taxonomy exception in 3.2 applies to
-   formally defined categories, stages and actors. Every detail is a complete proposition or
-   `语义标签：语义完整的短语或说明`, retaining its action, relation, object and
-   material qualifier. A normal module heading must carry a short complete
-   judgment. In the compact `标题：短句` form, the heading carries the core
-   subject and predicate; the text after the colon only adds scope, condition,
-   result or supporting detail. Noun-only headings such as `建设框架`、`治理目标`
+   formally defined categories, stages and actors. Every detail is normally a
+   complete proposition. A `语义标签：语义完整的短语或说明` is permitted only for a
+   direct evidence detail whose role is already clear from its parent; it cannot
+   replace the main clause of a module or paragraph. A normal module heading
+   must carry a short complete judgment. In the compact `标题：短句` form, the
+   heading carries the core subject and predicate; the text after the colon only
+   adds scope, condition, result or supporting detail and the whole line must
+   remain natural when read aloud. Noun-only headings such as `建设框架`、`治理目标`
    and `编制方法` require rewriting when they carry the page's main judgment.
-7. **Check peer logic.** Visible siblings share one comparison dimension and
+9. **Check subject and argument continuity.** Before keeping a paragraph or
+   visible module, identify its primary audience question, named actor or actor
+   group, and the actor's role. Apply the continuity check in 2.7. Split a
+   change from condition or demand to response or action into a new reasoning
+   unit unless one explicit relationship carries the transition.
+10. **Check peer logic.** Visible siblings share one comparison dimension and
    comparable explanatory depth. Attach supplementary facts, certifications and
    evaluation results to the actor or main claim they qualify.
-8. **Check strength and scope.** Compare `core_message`, `full_copy`, headings,
+11. **Check strength and scope.** Compare `core_message`, `full_copy`, headings,
    details and `speaker_notes` with the source brief. Preserve status, modality,
    responsibility and page boundary in every layer.
-9. **Expose the business relationship.** When the conclusion claims mapping,
+12. **Expose the business relationship.** When the conclusion claims mapping,
    alignment, coordination, conversion, support or a closed loop, show both ends
    and the action between them. For staged paths, show the applicable year or
    trigger and the new state reached.
-10. **Write incremental speaker notes.** Add explanation, subordinate evidence,
-    a secondary condition that does not change the visible claim, an audience
-    focus or a natural transition. Material conditions remain onscreen. Do not
-    recite the visible modules in sequence.
-11. **Critique and rewrite the whole page.** Compare judgment-led and
-    evidence-led candidates for high-risk, dense, peak or conclusion pages. Keep
-    only the rewritten winner. A failed conclusion, hierarchy or selection causes
-    a whole-page rewrite, not line-by-line patching.
-12. **Run whole-deck Critic, then deterministic checks.** Review repeated facts,
-    chapter flow, density, conclusion synthesis and adjacent-page scope before
-    lint, audit and delivery.
+13. **Write incremental speaker notes.** Add explanation, subordinate evidence,
+   a secondary condition that does not change the visible claim, an audience
+   focus or a natural transition. Material conditions remain onscreen. Do not
+   recite the visible modules in sequence.
+14. **Critique and rewrite the whole page.** Compare judgment-led and
+   evidence-led candidates for high-risk, dense, peak or conclusion pages. Keep
+   only the rewritten winner. A failed conclusion, hierarchy or selection causes
+   a whole-page rewrite, not line-by-line patching.
+15. **Run whole-deck Critic, then deterministic checks.** Review repeated facts,
+   chapter flow, density, conclusion synthesis and adjacent-page scope before
+   lint, audit and delivery.
 
 ## 2. Semantic foundation
 
@@ -103,8 +118,8 @@ navigation but never completes the current page's meaning.
 ### 2.2 Source fidelity and full copy
 
 `full_copy` is the structured semantic source consumed by `onscreen`, not a
-reader-facing prose transcript and not a requirement to compress every source
-sentence proportionally. It retains the source's core facts,
+requirement to compress every source sentence proportionally. It retains the
+source's core facts,
 named actors, formal documents, implementation status, task strength, dates and
 numbers, responsibilities, conditions, boundaries and explicit conclusions while
 improving hierarchy and reading order.
@@ -185,11 +200,269 @@ Purposeful restatement is allowed when it provides navigation first and evidence
 second. Mechanical repetition adds no value. Do not force numbered enumeration
 onto a short paragraph, a single causal chain or facts that are not parallel.
 
-Full copy may also use `语义标签：语义完整的短语或说明` beneath a paragraph
-judgment when that form exposes the evidence roles more clearly for later
-onscreen selection. Use numbered sub-conclusions for parallel arguments and
-labelled details for attributes, evidence, scope, actions, conditions or results;
-do not force either grammar onto every paragraph.
+Full copy may use `语义标签：语义完整的短语或说明` beneath a paragraph judgment
+only when that form exposes an evidence role more clearly than a natural
+sentence. It must remain subordinate to complete prose and must not turn a
+paragraph into a sequence of fields. Use numbered sub-conclusions for parallel
+arguments and limited labelled details for attributes, evidence, scope, actions,
+conditions or results; do not force either grammar onto every paragraph.
+
+### 2.4 Judgment-led prose quality
+
+`full_copy` and `onscreen` serve different reading depths, but they share one
+authoring standard: each must help the audience acquire a specific business
+understanding, not merely retain a complete inventory of source materials. Apply
+the following tests to both layers before delivery:
+
+1. **Audience takeaway.** A reader must be able to state, in one sentence, what
+   has changed, what it means, or what decision follows. A page title names a
+   topic; it does not substitute for this judgment.
+2. **Judgment before evidence.** Lead with the business conclusion, then use a
+   document, standard, date, capability, task or example as evidence for it.
+   Formal instruments must not become the grammatical subject of a page merely
+   because they are easy to cite.
+3. **Natural professional syntax.** A module judgment and every full-copy
+   paragraph must remain intelligible when read aloud without indentation,
+   colour or visual layout. Do not use repeated label-plus-list grammar, pipes,
+   stacked modifiers or generic verbs such as `支撑`、`推进`、`形成`、`提升` unless
+   their actor, object and material effect are explicit.
+4. **Meaningful relationship.** A substantive page shows the relationship that
+   matters to the audience: for example condition to outcome, gap to impact,
+   requirement to decision, scenario to standard demand, or output to the next
+   action. Parallel facts alone do not establish professional analysis.
+5. **Decisive selection.** Keep a visible fact only when removing it would
+   weaken the reader's understanding of the judgment, its strength, or its
+   action implication. Move supporting inventories and non-decisive citations
+   to full copy, notes or a genuine taxonomy table. For a taxonomy page, add a
+   readable guide explaining what the classification distinguishes or governs.
+
+These are generative authoring and human-review criteria, not a fixed character
+count, a mandatory stock sentence, or a deterministic score. Do not satisfy the
+tests by replacing one bureaucratic template with another.
+
+### 2.5 Page writing framework selection
+
+Every content page uses two composable expression layers. The layers guide the
+reading order of `core_message`, `full_copy` and `onscreen`; they do not add
+unsupported facts, force visible framework jargon, or require every method on
+every page.
+
+1. **Universal organising framework.** Use claim–argument–evidence on every
+   page. Apply Pyramid when the reader needs the answer before its independent
+   reasons; apply MECE when the arguments or evidence require a closed,
+   non-overlapping grouping; apply SCR when the page or chapter needs to move
+   from shared situation through tension to a supported response. These methods
+   organise how the author reasons and writes.
+2. **Relationship grammar.** Select a grammar when the page must make a
+   particular business relationship visible. **Mapping** shows input,
+   correspondence rule and business use. **Roadmap** shows start condition,
+   stages, newly reached states and feedback or gates. **Governance chain**
+   shows actor, mechanism, collaborating parties or resources, and the result
+   the mechanism is intended to secure. A formal classification states its
+   shared dimension and reader's guide. These grammars determine the relationship
+   the reader sees; they can be organised by Pyramid, MECE or SCR.
+
+Examples: a roadmap may use a Pyramid claim followed by stage arguments and
+stage evidence; it may also use MECE to test whether each scoped work item has
+one stage home. A mapping may use a Pyramid claim to state why the correspondence
+matters and MECE to group inputs or outputs. A governance chain may use SCR to
+explain why the mechanism is needed. The author selects the smallest combination
+that makes the judgment and relationship readable.
+
+At deck level, use SCR as an internal-report storyline when it fits: establish
+the shared operating situation, isolate the management-relevant tension, then
+present the bounded resolution and its implementation conditions. In the current
+project, national deployment, enterprise practice and usable foundations form
+the situation; the five-dimensional gap is the complication; the framework,
+priorities, roadmap and safeguards form the resolution. Retain the approved
+source chapter order and use each page's selected framework inside that arc.
+
+### 2.6 Density and heading preflight
+
+Perform this preflight before drafting `full_copy` or `onscreen` for every
+content page. Its purpose is to prevent a page from accumulating valid facts
+that answer different audience questions, then relying on late compression or
+visual layout to make them fit.
+
+1. **Declare one relationship grammar and its organising method.** Select the
+   visible relationship grammar—ordinary argument, classification, mapping,
+   roadmap or governance chain—then state whether Pyramid, MECE or SCR governs
+   the reading order. A page may add a small evidence table or timeline inside
+   its grammar. It may not ask the reader to decode several equal-weight
+   relationship grammars at once.
+2. **Set the visible information budget.** A normal page contains one visible
+   conclusion and two to four top-level information units. This is a default
+   authoring budget, not a universal production limit. A formally defined
+   taxonomy, roadmap or mapping may exceed it only when the shared dimension,
+   reading direction and reader's guide are visible before the inventory.
+3. **Separate independent information roles.** Context, diagnosis, requirement,
+   task, condition, output and next-step path are distinct information roles.
+   When peer modules combine more than two of these roles, split the page or
+   express their supported relationship as a chain, map, roadmap or governance
+   flow. A vertical list cannot carry a mixed role structure merely because each
+   item is source-faithful.
+4. **Keep only decision-bearing proof visible.** For every top-level unit, state
+   the evidence that makes the page conclusion understandable. Move named
+   documents, standard numbers, examples and complete inventories to full copy
+   or notes unless their visible absence would weaken the conclusion, its
+   strength or its action implication. A taxonomy retains its complete list only
+   when the list itself is the audience's required output.
+5. **Write one judgment per heading.** A normal module heading has one subject,
+   one principal predicate and one reader question. Two independent actions,
+   conclusions, dates or transitions in the same heading signal that one must
+   become a child, a sibling module or a separate page. Taxonomy names remain
+   available under the exception in 3.2, with an explanatory child line.
+6. **Shorten by restructuring before wording.** First promote the shared
+   subject, condition or conclusion into the page lead. Then retain the unique
+   judgment in each module heading. Then move supporting scope, citations and
+   secondary conditions into evidence detail. Split the module or page whenever
+   two independent judgments remain. Never shorten by removing a protected
+   object, action, relation, condition or qualifier.
+7. **Use length only as a review signal.** A heading whose plain-text reading
+   contains several conjunctions, several actions, a date plus a formal
+   instrument, or more than one independent clause requires this preflight
+   again. Character counts may flag a review candidate; they cannot certify
+   clarity or force truncation.
+
+The author records this preflight in working judgment only. It creates no new
+project artifact, authoring field, approval record or deterministic gate.
+
+### 2.7 Subject and argument continuity
+
+Before prose selection, trace each paragraph and onscreen module through three
+internal dimensions: the audience question it answers, the actor or actor group
+it describes, and that actor's role. This trace remains author working judgment;
+it creates no page field or project artifact.
+
+1. **One reasoning unit, one primary question.** A paragraph or visible module
+   may explain one condition, demand, task, response, mechanism, result or
+   boundary. When copy moves from a problem or demand to the study's response,
+   from a policy requirement to an industry task, or from an existing fact to a
+   recommended action, begin a new paragraph or module. Keep the explicit
+   relationship between the two units visible in the lead, transition or
+   relation layer.
+2. **Complete an actor before switching actors.** When several details concern
+   the same institution, project, enterprise or standard, keep its
+   decision-bearing facts together before introducing the next actor. A return
+   to an earlier actor after another actor has appeared requires an explicit new
+   relation, such as guidance, coordination, feedback or comparison.
+3. **Order actors by source-supported responsibility.** When source material
+   establishes a chain such as policy deployment, competent-department guidance,
+   industry-organisation stewardship and enterprise practice, present the chain
+   in that order. When source material
+   does not establish authority, group actors by their stated role and avoid
+   inferring an administrative rank from the institution's name alone.
+4. **Keep the same continuity on screen.** A visible module that presents
+   several actor-specific facts follows the same actor order as its full copy.
+   Do not interleave a higher-level actor's deployment, an industry actor's
+   responsibility and the higher-level actor's supporting channel as three
+   interchangeable bullets. Group each actor's facts, then show the handoff to
+   the next actor.
+5. **Use a transition to name the handoff.** A paragraph boundary alone does
+   not establish why the next unit follows. Name the supported handoff, for
+   example `由此提出行业任务`、`在这一需求下`、`依托该渠道` or `验证结果再反馈`.
+   Do not use a transition to conceal an unsupported inference or an unshown
+   responsibility.
+
+These rules diagnose logic order and actor continuity. They do not impose a
+universal hierarchy of institutions, a mandatory paragraph count or a lexical
+entity-recognition gate.
+
+### 2.8 Claim–argument–evidence and organising principles
+
+Before drafting prose, express the page in the internal form
+`claim → independent argument(s) → source-grounded evidence`. This is an author
+working map, not an additional project artifact or a request for visible
+framework labels.
+
+For every content page, execute this operating loop. Analytical, decision and
+conclusion pages use all six steps. Foundation, status and formal-taxonomy pages
+use steps 1, 2, 4 and 6; they do not manufacture a hypothesis, recommendation or
+counterfactual absent from the source.
+
+1. **Define the page question and universe.** Restate the page question as an
+   answerable audience question. Name the source-scoped universe being examined,
+   the required audience takeaway and the boundary reserved for adjacent pages.
+   A page whose question is only a topic label must be rewritten before evidence
+   selection.
+2. **Choose one decomposition logic.** Before listing modules, choose the rule
+   that makes them peers: policy-to-industry responsibility, actor role,
+   condition, capability, stage, priority, process, or another source-supported
+   whole. Write the one-sentence grouping rule internally. For MECE grouping,
+   test both a candidate overlap and a plausible uncovered item against that
+   rule. Revise the grouping when either test fails.
+3. **Form the page's testable proposition.** For an analytical or decision
+   page, write `if these source-supported conditions hold, this judgment or
+   action follows`. Then name the strongest source-bound fact, condition or
+   counterargument that would weaken the proposition. For a source report, this
+   is a claim-stress test rather than a request to collect new facts: an
+   unverified condition remains visible as a boundary, recommendation or open
+   question.
+4. **Build argument cards before prose.** For each top-level argument, record
+   internally: its complete sub-judgment; the source facts that prove, explain
+   or qualify it; the strength of each item—existing fact, stated target,
+   inferred relation, recommendation or boundary; and the one fact that a
+   reader must retain. Delete a branch that has no decision-bearing evidence;
+   demote evidence that has no argument role.
+5. **Synthesize in Pyramid order.** State the governing thought, group two to
+   four independent arguments by the chosen logic, then place evidence beneath
+   its argument. Apply the `so what` test at every level: each fact must change
+   the reader's understanding of its argument, and each argument must change the
+   reader's understanding of the claim. A conclusion or decision page also
+   states the next action, the material boundary and the strongest source-bound
+   counterargument or reversal condition.
+6. **Project the reasoning into its relationship grammar.** Only after the
+   claim, arguments and evidence are stable, select the visible grammar—ordinary
+   argument, classification, mapping, roadmap or governance chain. Preserve the
+   argument order inside that grammar. A relationship diagram cannot replace an
+   argument card, and a Pyramid cannot conceal the relationship the page needs
+   to show.
+
+The operating loop produces the following core chain tests:
+
+1. **Claim.** `core_message` states one answer to the page question. It names
+   the business object, the supported judgment and the applicable status or
+   boundary. A topic, source heading, document name or list of modules cannot
+   substitute for the claim.
+2. **Argument.** Each top-level module explains one reason why the claim holds,
+   one mechanism by which it operates, or one bounded action that implements it.
+   An argument is a complete sub-judgment with a distinct role in the page
+   answer. A source fact, document title, number, actor name or task label is
+   evidence until the author states what it establishes.
+3. **Evidence.** Each child fact must prove, explain or qualify its direct
+   argument. Preserve the source actor, status, object, action and material
+   condition. A fact that does not advance any argument moves to full copy,
+   notes or a genuine reference list; an argument without sufficient evidence is
+   weakened, removed or recast as a recommendation or open question.
+4. **Pyramid test.** Pyramid can organise any relationship grammar when the
+   audience needs an answer before its reasons and a decision or next action.
+   The claim appears first; two to four arguments are mutually independent ways
+   of establishing or implementing it; evidence sits beneath its argument. Order
+   arguments by a stated logic such as importance, time, causal sequence or
+   decision priority. A roadmap, mapping or governance chain retains its own
+   relationship grammar while using this top-down organisation. A source-order
+   inventory fails the Pyramid test.
+5. **MECE test.** MECE is a grouping discipline available inside any page when
+   the source and page mission provide one shared classification question, such
+   as which role, stage, category, priority or capability each item represents.
+   State the shared dimension and scope before the categories. Test mutual
+   exclusivity by asking whether any item belongs under two peers in the stated
+   dimension; test collective exhaustion by asking whether every source item
+   required for the claimed scope has one home. When the source does not define
+   a closed scope, state the classification boundary and do not claim
+   completeness. A mixed list of actors, methods, tasks and results fails MECE
+   even when each entry is valid; use the appropriate relationship grammar and
+   an ordinary evidence grouping instead.
+6. **Relationship-grammar-to-evidence fit.** SCR separates situation,
+   complication and response; a roadmap separates stage, trigger and newly
+   reached state; a mapping separates input, correspondence rule and use. Apply
+   the same discipline in each: every visible evidence detail has one parent
+   argument or category, and every parent has a source-supported purpose in the
+   page claim.
+
+Critic reviews this map by relation rather than word overlap. Passing source
+coverage or a semantic-completeness lint does not demonstrate a claim,
+argument and evidence chain.
 
 ## 3. Audience-facing construction
 
@@ -233,8 +506,9 @@ content levels are stable even when the visual design changes:
    explains or implements the page conclusion. Normal modules are independently
    intelligible sub-judgments; the taxonomy exception below remains available.
 3. **Evidence detail.** A module's `text` or `items` answers what fact, scope,
-   action, object, condition or result establishes that module. It may be a
-   complete proposition or `语义标签：完整内容`.
+   action, object, condition or result establishes that module. Prefer a
+   complete proposition. `语义标签：完整内容` is a limited evidence-detail form,
+   never the default reading rhythm of a module or page.
 
 Cause, progression, mapping, conversion and closed loops form a relationship
 layer across these content levels; they are not a fourth list of equal peers.
@@ -251,8 +525,18 @@ Show both business endpoints and the action, trigger or landing between them.
 - **Children, added evidence.** A child must add a source-grounded fact, action,
   relationship, object, condition or result. Rephrasing the parent is not a new
   level.
-- **Labels declare roles.** `标签：短语` is valid when the label states the child's
-  role in the parent judgment and the phrase completely fills that role.
+- **Claim–evidence role fit.** A child must prove, explain or qualify the
+  relation asserted by its direct parent. A module claiming that a project is
+  ready, has a basis, meets a condition, causes an outcome or creates an impact
+  must show the corresponding readiness facts, basis, conditions, causal link or
+  outcome. Project scope, capabilities, work packages, task lists and named
+  deliverables explain what will be done; they do not by themselves prove a
+  readiness or condition claim. When the source provides both, split the task
+  module from the condition module and make the condition evidence visible.
+- **Labels declare roles.** Use `标签：短语` sparingly and only when the label
+  states the child's evidence role in the parent judgment and the phrase
+  completely fills that role. A run of label-plus-list lines fails the
+  read-aloud test even when each line is semantically complete.
 - **Different levels, visible relationships.** Cause, progression, mapping,
   conversion, closed loop and structures such as `成果 → 行动 → 价值` require an
   explicit reading direction or landing; do not render them as equal peers.
@@ -265,10 +549,11 @@ Show both business endpoints and the action, trigger or landing between them.
   detail; full copy or notes alone cannot carry it.
 
 Use structural indentation and line breaks as the primary hierarchy markers.
-Reserve the colon for a detail's `label：content` relation; do not use it to
-simulate several levels in one line. A module with one unlabeled explanation may
-render compactly as `module judgment：complete proposition`. When the explanation
-already contains a semantic label, preserve it as a nested child:
+Do not use a colon as the default way to compress a relationship. A colon may
+mark one evidence detail's `label：content` relation; it must not simulate several
+levels in one line. A module with one natural explanation may render compactly
+as `module judgment：complete proposition`. When the explanation already contains
+a semantic label, preserve it as a nested child:
 
 ```text
 - 电力领域数据基础设施标准体系尚未形成统一框架
@@ -301,11 +586,14 @@ object or role, its peers cannot stop at titles alone.
 
 ### 3.4 Detail grammar and evidence payload
 
-`标签：短语` is a valid compact onscreen grammar when the label declares a real
-semantic relation and the short value completely fills that semantic slot. Valid examples include
+`标签：短语` is an optional compact grammar for a direct evidence detail, not a
+default onscreen sentence pattern. Use it only when the parent has already
+stated a complete judgment, the label declares a real semantic relation, and
+the short value completely fills that semantic slot. Valid examples include
 `覆盖范围：电力数据全生命周期和全产业链` and
 `推进条件：技术路线和业务模式成熟后转化`. `建设依据：国家政策` and
-`推进方式：协同实施` remain abstract.
+`推进方式：协同实施` remain abstract. Repeated label-plus-list lines must be
+rewritten as propositions or consolidated into a genuine taxonomy table.
 
 Shortness, punctuation and bullet indentation do not prove semantic completeness.
 A short value may inherit the business relation explicitly declared by its label
@@ -326,8 +614,9 @@ A label does not authorize a dangling modifier such as
 For self-read pages, prefer `国家建设指引明确四大方向和八项能力：覆盖数据
 基础设施全生命周期` over `建设框架：四大方向、八项能力`. Prefer
 `GB/T 13016规范体系表编制原则、程序和格式：提供统一编制依据` over
-`编制方法：原则、程序和格式`. The heading may wrap visually, but its subject,
-predicate, object and material qualifier remain together.
+`编制方法：原则、程序和格式`. Visual wrapping supports layout only. It does not
+permit a heading to retain multiple judgments or omit the subject, predicate,
+object or material qualifier required for self-read meaning.
 
 A standard number, document title, framework name, initiative, institution or
 category list identifies evidence but does not yet explain it. State what the
@@ -389,6 +678,8 @@ targets. When semantically complete copy exceeds them, preserve meaning by
 splitting distinct semantic roles, promoting a shared proposition into a module
 lead, revising the page mission or paginating. Never pass a length gate by
 truncating a protected object, action, relationship, condition or qualifier.
+Apply the 2.6 preflight before this late-stage remedy: it governs page reading
+form, information roles and heading scope before prose accumulates.
 
 ### 3.7 Speaker notes
 
@@ -435,6 +726,62 @@ After all pages are drafted, review the complete deck:
     descriptive grouping; every `directly`, `ensures`, `completes`, `forms`,
     `achieves`, `inherits` or `converts` claim must retain its source-supported
     actor, object, status, scope and relation basis.
+13. For every module that asserts readiness, a basis, a condition, a cause, an
+    outcome or an impact, read its child lines as the sole proof set. Confirm
+    that they establish that asserted relation rather than merely inventory the
+    project's scope, capabilities, tasks or deliverables. Split mixed proof
+    roles before delivery.
+14. Reapply the density preflight to every high-density page. Confirm that one
+    visible grammar governs the page, the top-level modules stay within the
+    normal information budget or carry a declared taxonomy, mapping or roadmap
+    exception, and peer modules do not mix independent roles without an explicit
+    relationship.
+15. Read every normal module heading in plain text. Confirm that it states one
+    complete judgment and survives when the page title, visual wrapping and
+    layout are removed. Restructure headings with multiple independent clauses;
+    a shorter but semantically weakened heading fails review.
+16. Trace every substantive paragraph and visible module by its audience
+    question, actor and actor role. Split a demand from its response, a
+    condition from its action, or an existing fact from a recommendation unless
+    a source-supported relationship is explicit and visible.
+17. Review actor order inside every evidence group. Keep the same actor's
+    decision-bearing facts together and follow source-supported responsibility
+    chains across actors. Treat an `A → B → A` sequence as a review failure
+    unless the return to A states a new explicit relationship.
+18. For every content page, reconstruct the internal chain from visible copy:
+    claim → argument → evidence. Confirm that every module is an independently
+    intelligible reason, mechanism or bounded action for the page claim, and
+    that every child proves, explains or qualifies that direct module. Remove or
+    demote orphan evidence and unsupported arguments.
+19. For every page organised with Pyramid, confirm that the answer appears
+    before its reasons, peer arguments are independent, their order has a stated
+    logic, and the evidence is grouped beneath the argument it supports. Apply
+    this test whether the visible relationship grammar is a roadmap, mapping,
+    governance chain, classification or ordinary argument. Source-order
+    paraphrase fails this test.
+20. For every page using MECE grouping, state the shared dimension and claimed
+    scope, test each item for a single category home, and verify that every
+    source item required by that scope is represented. Apply this test inside a
+    roadmap, mapping, governance chain or ordinary argument when items are
+    presented as a complete grouping. Mixed lists require an ordinary evidence
+    grouping or an explicit relationship grammar.
+21. Confirm that the universal organising framework and visible relationship
+    grammar reinforce the same page claim. A Pyramid claim cannot obscure the
+    stage relation of a roadmap, MECE categories cannot hide a mapping rule, and
+    SCR resolution cannot appear before the source-supported complication.
+22. Reconstruct the six-step operating loop for every analytical, decision and
+    conclusion page. Verify an answerable question and scoped universe, one
+    peer-grouping rule, a source-bound claim-stress test, complete argument
+    cards, Pyramid synthesis and a visible relationship grammar. Repair the
+    earliest failed step instead of polishing downstream prose.
+23. For every asserted MECE grouping, test one potential overlap and one
+    plausible uncovered item against the declared universe. Remove the MECE claim
+    or revise the grouping whenever either test fails; a neat layout is not
+    evidence of mutual exclusivity or collective exhaustion.
+24. For every recommendation, condition or forward path, identify the strongest
+    source-supported boundary, counterargument or reversal condition. Keep it
+    visible when it materially changes the decision; retain it in full copy or
+    notes when it explains scope without changing the visible claim.
 
 ### 4.2 Revision and deterministic boundary
 

@@ -54,21 +54,22 @@ class CliTests(unittest.TestCase):
         self.assertIn("visual-structure-audit", help_text)
         self.assertIn("prepare-stage02-handoff", help_text)
 
-    def test_lightweight_init_omits_control_and_stage02_directories(self) -> None:
+    def test_default_init_uses_strict_profile_without_runtime_control_directories(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            project = Path(tmp) / "lightweight"
+            project = Path(tmp) / "strict-default"
             buffer = io.StringIO()
             with redirect_stdout(buffer):
                 code = main(["init", str(project)])
 
             self.assertEqual(0, code)
             self.assertIn("mode: lightweight", (project / "manifest.yml").read_text(encoding="utf-8"))
-            self.assertIn("profile: script", (project / "manifest.yml").read_text(encoding="utf-8"))
+            self.assertIn("profile: strict", (project / "manifest.yml").read_text(encoding="utf-8"))
+            self.assertIn("source_truth:", (project / "manifest.yml").read_text(encoding="utf-8"))
             self.assertTrue((project / "script/.cache").is_dir())
             self.assertFalse((project / "workbench").exists())
             readme = (project / "README.md").read_text(encoding="utf-8")
-            self.assertIn("complete UNDERSTAND once", readme)
-            self.assertIn("do not run `prepare-source-map`", readme)
+            self.assertIn("project-foundation", readme)
+            self.assertNotIn("prepare-script-foundation", readme)
             self.assertFalse((project / "workbench/artifact-ledger.json").exists())
             self.assertFalse((project / "workbench/approvals").exists())
             self.assertFalse((project / "workbench/decisions").exists())
@@ -76,17 +77,18 @@ class CliTests(unittest.TestCase):
             self.assertFalse((project / "workbench/stages/02-visual").exists())
             self.assertFalse((project / "workbench/stages/01-analysis/outline-attempts").exists())
 
-    def test_strict_init_is_explicit_and_keeps_compatibility_route(self) -> None:
+    def test_explicit_script_init_keeps_lightweight_route(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            project = Path(tmp) / "strict"
-            self.assertEqual(0, main(["init", str(project), "--profile", "strict"]))
+            project = Path(tmp) / "script"
+            self.assertEqual(0, main(["init", str(project), "--profile", "script"]))
 
             manifest = (project / "manifest.yml").read_text(encoding="utf-8")
             readme = (project / "README.md").read_text(encoding="utf-8")
-            self.assertIn("profile: strict", manifest)
-            self.assertIn("source_truth:", manifest)
-            self.assertIn("project-foundation", readme)
-            self.assertNotIn("prepare-script-foundation", readme)
+            self.assertIn("profile: script", manifest)
+            self.assertNotIn("source_truth:", manifest)
+            self.assertIn("prepare-script-foundation", readme)
+            self.assertIn("do not run `prepare-source-map`", readme)
+            self.assertIn("or `project-foundation`", readme)
 
     def test_lightweight_semantic_prepare_prints_plain_task_without_json_duplication(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

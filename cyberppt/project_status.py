@@ -92,7 +92,12 @@ def _stage01(project: Path) -> list[dict[str, Any]]:
         issues = validate_foundation(foundation)
         semantic_issues, semantic_warnings = audit_foundation_analysis(foundation)
         issues = [*issues, *semantic_issues]
-        if source_index_path.is_file():
+        # ``source-index.json`` belongs exclusively to the lightweight script
+        # profile.  A strict Foundation is mechanically projected from Source
+        # Truth and deliberately does not carry the script-profile reading
+        # strategy, so a stale cache from a profile migration must not make
+        # its status fail.
+        if _project_profile(project) == "script" and source_index_path.is_file():
             source_index = _read_json(source_index_path)
             if source_index.get("schema") == "cyberppt.source_index.v2":
                 issues.extend(validate_script_foundation_against_index(foundation, source_index))

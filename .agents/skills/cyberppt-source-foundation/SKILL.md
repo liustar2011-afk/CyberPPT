@@ -7,11 +7,12 @@ description: Strict/legacy source-foundation route for contracts, regulation, fa
 
 ## Purpose
 
-Use this Skill for `strict/legacy` projects: contracts, regulation, explicit
-fact-by-fact verification, Source Truth or full semantic-model work, and old
-project migration. New ordinary script projects use `cyberppt-script-understand`
-after deterministic source indexing. For an existing strict project, first
-determine whether approved source-foundation outputs can be reused.
+Use this Skill by default for new source-to-script projects and for existing
+`strict/legacy` projects. It provides contracts, regulation, explicit
+fact-by-fact verification, Source Truth and full semantic-model work. Use
+`cyberppt-script-understand` only when the user explicitly selects the
+lightweight `script` profile. For an existing strict project, first determine
+whether approved source-foundation outputs can be reused.
 
 Authoritative chain:
 

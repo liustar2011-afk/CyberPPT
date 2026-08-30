@@ -41,23 +41,18 @@ Cross-chapter movement requires explicit user authorization.
 
 ## 3. Deck Plan contracts
 
-v1 strict remains the production default during Task 6 graduation. It retains
-the existing evidence-fit and source-consumption surfaces.
-
-v2 lean is available for controlled validation. It preserves source thesis,
-source argument order and chapter/page argument-node bindings while reducing
-routine authoring fields. Machine audits continue to enforce source identity,
+v2 lean is the production Deck Plan contract for every new project. It preserves
+source thesis, source argument order and chapter/page argument-node bindings
+while leaving judgments, evidence selection, onscreen hierarchy and
+relationships to AUTHOR. Machine audits continue to enforce source identity,
 reference resolution, argument intersection, visibility and inference
 boundaries.
 
-The production default switches to v2 only after all of these conditions have
-evidence:
-
-- three independent real projects reach Foundation, Plan, Author and Stage 02
-  handoff;
-- script/strict dual runs show no loss in numbers, responsibilities, conditions
-  or boundaries, and no increase in source errors;
-- script structured artifacts occupy at most 40% of the strict run;
+The Foundation profile is independent from this planning contract.
+strict/legacy retains Source Truth, full semantic modelling and stronger source
+fidelity checks; `script` retains the lightweight UNDERSTAND route. v1 strict
+Deck Plans remain supported only for existing legacy projects that have not yet
+been replanned.
 - independent review accepts Foundation readability and long-reading selection;
 - v2 wins at least three of four blind-review dimensions;
 - average manually authored planning fields fall by at least 40%.

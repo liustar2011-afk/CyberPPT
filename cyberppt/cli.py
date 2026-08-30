@@ -567,8 +567,8 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument(
         "--profile",
         choices=("script", "strict", "legacy"),
-        default="script",
-        help="script uses one direct Foundation pass; strict/legacy retain Source Truth compatibility.",
+        default="strict",
+        help="strict uses Source Truth by default; script is the explicit lightweight Foundation route.",
     )
     init.add_argument("--force", action="store_true", help="Overwrite generated project manifest and README.")
     init.set_defaults(func=_init_command)

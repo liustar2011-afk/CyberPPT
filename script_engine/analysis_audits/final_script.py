@@ -73,7 +73,13 @@ def _is_readable_proposition(line: str) -> bool:
         _LEAD_LIKE_EVIDENCE_ITEM_RE.search(value)
         or re.search(
             r"(已有|已形成|已明确|缺少|不清|不健全|滞后|并存|负责|承担|"
-            r"体现|保障|贯穿|统筹|纳入|建立|扩大|持续|具备|属于|仍需)",
+            r"体现|保障|贯穿|统筹|纳入|建立|扩大|持续|具备|属于|仍需|"
+            r"回应|界定|提升|形成|连接|约束|支撑|控制|沉淀|拓展|深化|"
+            r"承载|驱动|贯通|复用|转化|推进|决定|提供|用于|服务|规范|覆盖|"
+            r"增加|定位|实现|保持|验证|反映|降低|审核|审定|履行|判断|构成|"
+            r"明确|统一|改善|完善|强化|提高|促进|推动|满足|适应|识别|管理|保护|"
+            r"扩展|依托|展示|评估|补充|保留|采用|固化|表达|分析|"
+            r"主导|实行|贯通|支持|需要|需做到)",
             value,
         )
     )
@@ -113,6 +119,86 @@ def _onscreen_expression_warnings(
             "combine compact evidence phrases with at least one source-grounded sentence"
         ]
     return []
+
+
+_STRUCTURAL_METADATA_PATTERNS = (
+    re.compile(r"^目\s*录$"),
+    re.compile(r"^工作摘要$"),
+    re.compile(r"^[（(]?(?:重构稿\s*)?V\d+(?:\.\d+)*[^。；]*[）)]?$", re.I),
+    re.compile(r"^\d{4}年\d{1,2}月(?:\d{1,2}日)?$"),
+    re.compile(r"^[一二三四五六七八九十]+、[^。；]{2,40}$"),
+    re.compile(r"^附件[一二三四五六七八九十\d]+(?:[：:].*)?$"),
+)
+
+def _looks_like_structural_metadata(value: str) -> bool:
+    text = re.sub(r"\s+", " ", str(value or "")).strip(" ；;。")
+    return bool(text) and any(pattern.fullmatch(text) for pattern in _STRUCTURAL_METADATA_PATTERNS)
+
+
+def _author_execution_issues(
+    delivery_mode: str,
+    page: dict[str, Any],
+    slide: dict[str, Any],
+    items: dict[str, dict[str, Any]],
+) -> list[str]:
+    """Fail closed on deterministic assembly signatures that cannot count as AUTHOR.
+
+    This gate intentionally verifies authored output rather than accepting a self-
+    declared ``author_mode`` flag.  It catches the two bypasses that previously let
+    plan headings and source rows be concatenated into a formally valid script.
+    """
+    if slide.get("page_type") != "content":
+        return []
+
+    issues: list[str] = []
+    full_copy = str(slide.get("full_copy") or "").strip()
+    metadata_hits: list[str] = []
+    for ref in page.get("source_refs") or []:
+        item = items.get(ref) if isinstance(ref, str) else None
+        if not isinstance(item, dict):
+            continue
+        source_text = _item_text(item).strip()
+        if _looks_like_structural_metadata(source_text) and source_text in full_copy:
+            metadata_hits.append(ref)
+    if metadata_hits:
+        issues.append(
+            "AUTHOR_STRUCTURAL_METADATA_LEAK: full_copy contains document front matter, "
+            f"TOC entries, or section labels as argument prose: {metadata_hits}"
+        )
+
+    semicolon_segments = [part.strip() for part in re.split(r"[；;]", full_copy) if part.strip()]
+    if len(semicolon_segments) >= 5 and sum(
+        1 for part in semicolon_segments if len(_VISIBLE_CHAR_RE.findall(part)) <= 36
+    ) >= 4:
+        issues.append(
+            "AUTHOR_MECHANICAL_SOURCE_CONCATENATION: full_copy is dominated by short "
+            "semicolon-joined source fragments; rewrite it as a coherent argument"
+        )
+
+    contract = page.get("onscreen_contract")
+    expression_mode = str(contract.get("expression_mode") or "") if isinstance(contract, dict) else ""
+    if delivery_mode == "self_read" and expression_mode == "phrase_led":
+        for module in slide.get("onscreen") or []:
+            if not isinstance(module, dict):
+                continue
+            heading = str(module.get("heading") or "?").strip()
+            for line in _onscreen_module_lines(module):
+                if "|" in line:
+                    issues.append(
+                        f"AUTHOR_ONSCREEN_TABLE_FRAGMENT: module '{heading}' contains a raw table row: {line!r}"
+                    )
+                    continue
+                if _is_readable_proposition(line):
+                    continue
+                if re.search(r"[：:]", line):
+                    _, body = re.split(r"[：:]", line, maxsplit=1)
+                    if _is_readable_proposition(body) or len(_VISIBLE_CHAR_RE.findall(body)) >= 12:
+                        continue
+                issues.append(
+                    f"AUTHOR_ONSCREEN_INCOMPLETE_DETAIL: module '{heading}' has a visible "
+                    f"detail without a complete business action, relation, or result: {line!r}"
+                )
+    return issues
 
 def _authored_bare_label_detail_issues(
     page: dict[str, Any],
@@ -731,6 +817,70 @@ def _source_text_for_refs(source_refs: list[Any], foundation: dict[str, Any]) ->
 def _normalize_source_chapter_title(title: str) -> str:
     return CHAPTER_PREFIX_RE.sub("", title).strip(" 　")
 
+
+_RELATIONSHIP_CLAIM_RE = re.compile(
+    r"(映射|协同|闭环|衔接|转化|贯通|联动|传导|反馈|对应|支撑.+(?:形成|实现|落地))"
+)
+
+
+def _whole_deck_authoring_warnings(final_script: dict[str, Any]) -> list[str]:
+    """Flag deck-wide authoring regressions that page-local checks cannot see.
+
+    These are review signals, not fixed layout rules.  A short deck can
+    legitimately use the same composition on every page, and a taxonomy deck
+    can legitimately carry few explicit relationships.
+    """
+    content_slides = [
+        slide
+        for slide in final_script.get("slides") or []
+        if isinstance(slide, dict) and slide.get("page_type") == "content"
+    ]
+    if len(content_slides) < 6:
+        return []
+
+    warnings: list[str] = []
+    shapes: list[tuple[int, int]] = []
+    for slide in content_slides:
+        modules = [
+            module for module in slide.get("onscreen") or [] if isinstance(module, dict)
+        ]
+        shapes.append(
+            (
+                len(modules),
+                sum(len(module.get("items") or []) for module in modules),
+            )
+        )
+    if len(set(shapes)) == 1:
+        module_count, item_count = shapes[0]
+        warnings.append(
+            "AUTHOR_STRUCTURE_FLATLINE: all "
+            f"{len(content_slides)} content pages use the same {module_count}-module/"
+            f"{item_count}-item shape; run whole-deck Critic to verify that page missions, "
+            "evidence depth and relationship grammars were authored independently"
+        )
+
+    relationship_count = sum(
+        len([item for item in slide.get("relationships") or [] if isinstance(item, dict)])
+        for slide in content_slides
+    )
+    relation_claim_pages = [
+        str(slide.get("id") or "?")
+        for slide in content_slides
+        if _RELATIONSHIP_CLAIM_RE.search(
+            " ".join(
+                str(slide.get(key) or "")
+                for key in ("core_message", "visual_thesis")
+            )
+        )
+    ]
+    if relationship_count == 0 and len(relation_claim_pages) >= 2:
+        warnings.append(
+            "AUTHOR_RELATIONSHIP_LAYER_ABSENT: the deck makes relationship claims on "
+            f"{relation_claim_pages} but no content page declares relationships; verify "
+            "both endpoints and the connecting action in Final Script"
+        )
+    return warnings
+
 def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[list[str], list[str]]:
     issues: list[str] = audit_final_internal_expert_voice(final_script, plan)
     warnings: list[str] = []
@@ -835,6 +985,8 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
                 f"slides.{index} ({slide_id}): ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: "
                 f"{detail_issue}"
             )
+        for author_issue in _author_execution_issues(delivery_mode, page, slide, items):
+            issues.append(f"slides.{index} ({slide_id}): {author_issue}")
         warnings.extend(
             f"slides.{index} ({slide_id}): {warning}"
             for warning in _onscreen_expression_warnings(page, slide)
@@ -852,6 +1004,7 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
                     if actual and expected and actual != expected:
                         issues.append(f"slides.{index} ({slide_id}): source_structure_mode='preserve' requires chapter title '{expected}', got '{actual}'")
 
+    warnings.extend(_whole_deck_authoring_warnings(final_script))
     return issues, warnings
 
-__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_authored_source_consumption', '_audit_authored_unit_consumption', '_audit_authored_onscreen_composition', '_semantic_payload_units', '_audit_self_reading_density', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', 'audit_final_script']
+__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_looks_like_structural_metadata', '_author_execution_issues', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_authored_source_consumption', '_audit_authored_unit_consumption', '_audit_authored_onscreen_composition', '_semantic_payload_units', '_audit_self_reading_density', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', '_whole_deck_authoring_warnings', 'audit_final_script']

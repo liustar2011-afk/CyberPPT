@@ -22,11 +22,33 @@ def source_argument_method(foundation: dict[str, Any]) -> list[str]:
     semantics = foundation.get("document_semantics") or {}
     if not isinstance(semantics, dict):
         return []
-    return [
-        _text(node_id)
-        for node_id in semantics.get("argument_method") or []
-        if _text(node_id)
-    ]
+    method = semantics.get("argument_method") or []
+    nodes = source_argument_index(foundation)
+    node_by_heading = {
+        _text(node.get("source_heading")): node_id
+        for node_id, node in nodes.items()
+        if _text(node.get("source_heading"))
+    }
+    heading_by_ref = {
+        ref: _text(item.get("title"))
+        for item in foundation.get("source_structure") or []
+        if isinstance(item, dict)
+        for ref in item.get("source_refs") or []
+        if _text(ref) and _text(item.get("title"))
+    }
+
+    resolved: list[str] = []
+    for item in method:
+        if isinstance(item, str) and _text(item):
+            resolved.append(_text(item))
+            continue
+        if not isinstance(item, dict):
+            continue
+        for ref in item.get("source_refs") or []:
+            node_id = node_by_heading.get(heading_by_ref.get(_text(ref), ""))
+            if node_id:
+                resolved.append(node_id)
+    return list(dict.fromkeys(resolved))
 
 
 def argument_source_refs(

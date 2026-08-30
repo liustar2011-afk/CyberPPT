@@ -189,6 +189,75 @@ def test_v2_lean_source_refs_are_evidence_boundary_not_full_copy_checklist() -> 
     assert not any("F1-U2" in issue or "source_consumption" in issue for issue in issues)
 
 
+def test_strict_foundation_uses_v2_lean_plan_without_pre_authoring_contracts() -> None:
+    plan = _lean_plan()
+    foundation = _foundation()
+    foundation.update(
+        {
+            "source_consumption_policy": "required",
+            "source_consumption_contract_version": 2,
+        }
+    )
+
+    issues, warnings = audit_deck_plan(plan, foundation)
+
+    assert issues == []
+    assert not any("PLAN_CONTRACT_LEGACY" in warning for warning in warnings)
+
+
+def test_modern_foundation_warns_when_legacy_plan_contract_is_reused() -> None:
+    plan = _lean_plan()
+    plan["plan_contract_version"] = 1
+    plan["planning_profile"] = "strict"
+    plan["evidence_fit_review_mode"] = "strict"
+    foundation = _foundation()
+    foundation["source_consumption_contract_version"] = 2
+
+    _, warnings = audit_deck_plan(plan, foundation)
+
+    assert any("PLAN_CONTRACT_LEGACY_WITH_MODERN_FOUNDATION" in warning for warning in warnings)
+
+
+def test_whole_deck_audit_warns_on_uniform_author_shape_and_missing_relationships() -> None:
+    plan = _lean_plan()
+    plan["pages"] = []
+    slides = []
+    for index in range(6):
+        page_id = f"P{index + 1:02d}"
+        plan["pages"].append(
+            {
+                "id": page_id,
+                "chapter_id": "C1",
+                "title": f"主题{index + 1}",
+                "question": f"问题{index + 1}",
+                "logic": f"说明关系{index + 1}",
+                "page_role": "content",
+                "source_refs": ["F1"],
+            }
+        )
+        slides.append(
+            {
+                "id": page_id,
+                "page_type": "content",
+                "title": f"主题{index + 1}",
+                "core_message": "统一规则推动来源事实转化为建设行动",
+                "full_copy": "国家部署给出总体任务。",
+                "onscreen": [
+                    {"heading": "国家部署明确总体任务", "items": ["总体任务形成建设依据"]},
+                    {"heading": "统一规则推动任务落地", "items": ["建设行动承接总体要求"]},
+                ],
+                "relationships": [],
+                "speaker_notes": "总体任务需要落实为具体行动。",
+                "source_refs": ["F1"],
+            }
+        )
+
+    _, warnings = audit_final_script({"slides": slides}, plan, _foundation())
+
+    assert any("AUTHOR_STRUCTURE_FLATLINE" in warning for warning in warnings)
+    assert any("AUTHOR_RELATIONSHIP_LAYER_ABSENT" in warning for warning in warnings)
+
+
 def test_plan_review_shows_compact_outline_without_authoring_details() -> None:
     plan = _lean_plan()
     review = render_plan_review(plan, _foundation())

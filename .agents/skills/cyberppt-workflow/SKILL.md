@@ -11,7 +11,7 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 
 1. Read [docs/CYBERPPT_WORKFLOW.md](../../../docs/CYBERPPT_WORKFLOW.md) completely enough to identify the task stage, required human stop, authoritative inputs and completion gate.
 2. Read the repository root [AGENTS.md](../../../AGENTS.md) before acting.
-3. For ordinary new source-to-script work, use `cyberppt-script-understand` after deterministic source indexing. Invoke `cyberppt-source-foundation` for strict/legacy work involving contracts, regulation, fact-by-fact verification, Source Truth, full semantic models, or old-project migration. For deck planning or page writing/rewriting, load and execute `cyberppt-script-workflow` after a validated `script/foundation.json` exists. Loading is not completion: the current main agent must perform the generative PLAN/AUTHOR work in the same task, not merely cite the Skill or run its deterministic audits.
+3. For a new source-to-script project, invoke `cyberppt-source-foundation` by default. Use `cyberppt-script-understand` only when the user explicitly selects the lightweight `script` profile. For deck planning or page writing/rewriting, load and execute `cyberppt-script-workflow` after a validated `script/foundation.json` exists. Loading is not completion: the current main agent must perform the generative PLAN/AUTHOR work in the same task, not merely cite the Skill or run its deterministic audits.
 4. For a request to convert an image, screenshot, or rendered visual into an editable PPTX, invoke `cyberppt-stage02-editable-pptx`. It owns the Stage 02 route and forbids direct adapter invocation. For other pure visual, image, SVG or PPTX QA tasks, route to the corresponding Stage 02 or page Skill identified by the overview.
    The aliases “高保真+Quick”, “高保真 Quick”, “无字底图+文字 SVG”,
    “authored SVG”, and “图片转可编辑 PPT” always resolve to
@@ -21,9 +21,9 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 
 ## Route at a glance
 
-Default: `source index -> foundation -> deck plan -> author -> final script -> Stage 02 visual production -> PPTX QA`
+Default for new source-to-script projects: `source -> Source Foundation -> business semantics -> project-foundation -> deck plan -> author -> final script -> Stage 02 visual production -> PPTX QA`
 
-Strict/legacy: `source -> Source Foundation -> business semantics -> project-foundation -> deck plan -> author -> final script -> Stage 02 visual production -> PPTX QA`
+Explicit lightweight `script` profile: `source index -> foundation -> deck plan -> author -> final script -> Stage 02 visual production -> PPTX QA`
 
 Registered Stage 02 assembly routes:
 

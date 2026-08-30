@@ -11,10 +11,10 @@ Create a compact, complete semantic foundation that preserves what the source sa
 
 Output: `foundation.json`.
 
-This is the default `script` profile for ordinary PPT script work. It consumes
+This is the explicit lightweight `script` profile for ordinary PPT script work. It consumes
 the deterministic `.cache/source-index.json` plus selected source text and
 writes the semantic result directly into the existing Foundation authority.
-Use the full Source Truth route only for `strict/legacy` projects.
+New source-to-script projects use the full Source Truth route by default.
 
 This is the first of the three authoritative Stage 01 script artifacts. The
 following `deck-plan.json` and `dist/final-script.md` are produced by PLAN/AUTHOR

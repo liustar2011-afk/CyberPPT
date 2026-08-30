@@ -34,6 +34,37 @@ def test_project_status_reports_initialized_profile(tmp_path: Path) -> None:
     assert report["profile"] == "strict"
 
 
+def test_strict_status_ignores_stale_script_source_index(tmp_path: Path) -> None:
+    project = tmp_path / "strict-project"
+    init_project(project, profile="strict")
+    script = project / "script"
+    (script / "foundation.json").write_text(
+        json.dumps({"sources": [], "facts": [], "concepts": [], "relations": [], "arguments": []}),
+        encoding="utf-8",
+    )
+    cache = script / ".cache"
+    cache.mkdir(exist_ok=True)
+    (cache / "source-index.json").write_text(
+        json.dumps({"schema": "cyberppt.source_index.v2", "sources": [], "source_structure": [], "units": []}),
+        encoding="utf-8",
+    )
+
+    report = build_project_status(project)
+
+    foundation = next(stage for stage in report["stages"] if stage["name"] == "foundation")
+    assert "reading_strategy is required for script-profile Foundation" not in foundation["issues"]
+
+
+def test_init_project_defaults_to_strict_profile(tmp_path: Path) -> None:
+    project = tmp_path / "default-project"
+
+    init_project(project)
+
+    manifest = (project / "manifest.yml").read_text(encoding="utf-8")
+    assert "profile: strict" in manifest
+    assert "source_truth:" in manifest
+
+
 def test_project_status_surfaces_live_handoff_failure(tmp_path: Path) -> None:
     project = tmp_path / "project"
     source = project / "source"

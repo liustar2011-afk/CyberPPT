@@ -9,6 +9,7 @@ from cyberppt.source_argument_model import (
     render_model_block,
     validate_model,
 )
+from script_engine.source_arguments import source_argument_method
 
 
 def model() -> dict[str, object]:
@@ -166,6 +167,22 @@ def strict_model() -> tuple[dict[str, object], set[str], list[dict[str, object]]
 
 
 class SourceArgumentModelTests(unittest.TestCase):
+
+    def test_source_argument_method_resolves_semantic_trace_by_heading_ref(self) -> None:
+        payload, _, _ = strict_model()
+        payload["document_semantics"]["argument_method"] = [
+            {"statement": "第一章", "source_refs": ["SU-ABCDEF1234-HEADING-BBBBBBBBBBBB-01"]}
+        ]
+        payload["source_structure"] = [
+            {
+                "id": "H-ABCDEF1234-BBBBBBBBBBBB-01",
+                "title": "第一章",
+                "source_refs": ["SU-ABCDEF1234-HEADING-BBBBBBBBBBBB-01"],
+            }
+        ]
+        payload["argument_nodes"] = payload["section_nodes"]
+
+        assert source_argument_method(payload) == ["c01"]
     def test_formal_semantic_outline_enables_disposition_by_default(self) -> None:
         outline = {
             "semantic_argument_model_mode": "required",

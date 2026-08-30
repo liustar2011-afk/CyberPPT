@@ -15,7 +15,7 @@
 
 - 处理任何 CyberPPT 源材料、Source Truth、语义模型、脚本规划、页面脚本或视觉生产任务，先阅读 [docs/CYBERPPT_WORKFLOW.md](docs/CYBERPPT_WORKFLOW.md)。该文件是全流程总览和检索入口。
 - `AGENTS.md` 负责仓库级硬约束；各 `.agents/skills/*/SKILL.md` 负责阶段细则。不要通过拼接多个 Skill 的局部说明自行重建主流程。
-- 新脚本项目默认使用 `script` profile：`prepare-source-context` → `prepare-script-foundation --profile script` → `.agents/skills/cyberppt-script-understand/SKILL.md` → `foundation.json` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。合同、监管、逐事实核验、用户明确要求完整知识建模或旧项目迁移使用 `strict/legacy` profile，并从 `.agents/skills/cyberppt-source-foundation/SKILL.md` 进入完整 Source Truth 路线；纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
+- 新建且包含正式源材料的 Stage 01 项目默认使用 `strict/legacy` profile：`.agents/skills/cyberppt-source-foundation/SKILL.md` → `business-semantic-understanding` → `project-foundation` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。`script` profile 仅在用户明确选择轻量路径时使用：`prepare-source-context` → `prepare-script-foundation --profile script` → `.agents/skills/cyberppt-script-understand/SKILL.md` → `foundation.json` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
 - 对任何“图转可编辑 PPT”“按图复刻 PPT”“图片/截图转 PPTX”请求，必须调用 `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md`，并通过 `python -m cyberppt final-script-pages --production-build` 进入生产。禁止手写最终脚本或 `page_image_pairs.json` 后直调 `scripts.image_to_pptx_runtime.stage02_adapter.run_stage02_reconstruction`；该 adapter 只消费正式编排产生且仍有效的 build context。
 
 ## 独立技术判断（硬规则）
@@ -31,7 +31,7 @@
 
 Stage 01 分两段，各有唯一权威路线，之间用一次机械投影衔接：
 
-**理解段（UNDERSTAND）**：默认 `script` profile 保留来源身份、哈希、标题结构、稳定 source units、来源主论点、论证顺序、关键事实、数字、责任、状态、条件和边界，直接写入 `script/foundation.json`。`strict/legacy` profile 继续由 `cyberppt-source-foundation` → `business-semantic-understanding` 产出 `source-truth.json`，随后机械投影 Foundation。
+**理解段（UNDERSTAND）**：新建 Stage 01 源材料项目默认由 `strict/legacy` profile 经 `cyberppt-source-foundation` → `business-semantic-understanding` 产出 `source-truth.json`，随后机械投影 Foundation。用户明确选择轻量路径时，`script` profile 保留来源身份、哈希、标题结构、稳定 source units、来源主论点、论证顺序、关键事实、数字、责任、状态、条件和边界，直接写入 `script/foundation.json`。
 
 **规划与写作段（PLAN/AUTHOR）**：两种 profile 均从 `script/foundation.json` 进入 `.agents/skills/cyberppt-script-workflow/SKILL.md` 编排的 `PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER`，产出 `script/deck-plan.json` 和 `script/dist/final-script.md`。strict/legacy 的 `project-foundation` 只做字段搬运，不重新分析。
 
@@ -49,7 +49,7 @@ Stage 01 分两段，各有唯一权威路线，之间用一次机械投影衔�
 - “短语化、条目化”只描述上屏明细的表面形式，不构成写作目标或语义完整性的判据：可以删减虚词和句末标点，必须保留业务对象、动作、关系和必要限定。该要求不适用于把 `full_copy` 段落观点、`onscreen.heading` 或证据明细缩成孤立名词标签。来源正式定义的分类名、标准名或任务名只有在父级标题或引导句已经完整说明共同主体、动作、分组依据和必要条件时，才可作为名称清单保留；否则每项必须补足其业务动作或作用。
 - 完整语义必须明确具体事项。子项只能继承同一可见模块直接声明的共同主语或动作，且标签必须明确语义角色；`full_copy` 的段落观点和 `onscreen.heading` 不得依赖页标题、上一段、相邻模块、上一页或读者猜测来补全业务对象。“国家已明确……”“项目将推进……”“研究形成成果”“后续开展工作”等表述必须写明具体部署、项目、研究成果或工作事项。
 - 上屏语义完整性同时约束模块标题和明细行。普通内容模块标题必须表达完整判断；来源正式定义的分类、阶段或主体名称可以作为模块标题，其下必须说明该分类规范什么、该阶段实现什么或该主体承担什么。明细必须采用完整命题或“语义标签：语义完整的短语或说明”。明细可以继承同一可见模块直接声明的主语或动作，但必须保留关系、对象和必要限定。以“以、基于、围绕、结合、按照、通过、面向、依托、针对”开头的依据、条件、方式或范围表达必须在同一行补全业务动作或结果，不得形成悬空状语。确定性长度门禁属于生产约束，不是写作目标；超限时通过拆分语义角色、提升共同命题、调整页面使命或分页处理，不得截断关键对象、动作、关系、条件或限定。AUTHOR 逐页执行“锁定来源最强结论与保护信息—完整稿语义保全—上屏证据取舍—逐项语义闭合—来源力度与边界复核—整页重写”的内部闭环；该闭环不新增状态文件，确定性 lint 只负责发现可机械识别的缺陷。
-- 新项目的 Deck Plan 使用 v2 lean，只承担章节归并、页数分配、暂定标题、页面问题/使命和来源边界。核心判断、内容模块、证据取舍、上屏合同、视觉关系与讲述线索属于 AUTHOR 和 Final Script；Stage 02 不读取 v2 Deck Plan 文案。
+- 所有新项目的 Deck Plan 均使用 v2 lean；profile 只决定 Foundation 的理解深度和来源保全方式，不决定页面规划合同。strict/legacy 继续保留 Source Truth、完整语义模型、逐事实核验和 `source_consumption_policy: required`，Deck Plan 只承担章节归并、页数分配、暂定标题、页面问题/使命和来源边界；核心判断、内容模块、证据取舍、上屏合同、视觉关系与讲述线索属于 AUTHOR 和 Final Script。v1 strict Deck Plan 仅供已有旧项目原位兼容，不得作为新项目默认模板。Stage 02 不读取 Deck Plan 文案。
 
 来源章节与汇报章节必须分层。Foundation 保留来源章节身份、边界和顺序；
 Deck Plan 默认把相邻来源章节按共同受众问题、论证角色和承接关系归并为汇报

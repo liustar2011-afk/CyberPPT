@@ -44,10 +44,14 @@ Automatically:
 7. run Critic, rewrite, deterministic audits and delivery validation;
 8. report **最终脚本已生成**.
 
-PLAN writes a lightweight `deck-plan.json` v2 lean containing deck purpose,
-chapter grouping, page allocation, tentative topic titles, page questions,
-missions and source boundaries. It does not pre-author judgments, modules,
-evidence dispositions, onscreen contracts, visual relations or speaker threads.
+For every new project, PLAN writes a v2 lean `deck-plan.json` containing deck
+purpose, chapter grouping, page allocation, tentative topic titles, page
+questions, missions and source boundaries.  The Foundation profile remains
+independent: strict/legacy keeps Source Truth and its stronger source-fidelity
+surface, while `script` uses the lightweight UNDERSTAND route.  Neither route
+pre-authors judgments, modules, evidence dispositions, onscreen contracts,
+visual relations or speaker threads in PLAN.  v1 strict Deck Plans remain only
+for in-place compatibility with existing legacy projects.
 
 AUTHOR writes the complete page argument before selecting onscreen information.
 High-risk pages compare judgment-led and evidence-led candidates and retain only

@@ -8,8 +8,8 @@
 
 收到任务后，先按任务类型选择入口：
 
-1. 新脚本项目涉及源材料、页面规划或脚本写作：使用 `script` profile，先建立确定性来源索引，再调用 `cyberppt-script-understand` 生成 `foundation.json`。
-2. 涉及合同/监管逐事实核验、Source Truth、完整语义模型或旧项目迁移：使用 `strict/legacy` profile，先调用 `cyberppt-source-foundation`。
+1. 新脚本项目涉及源材料、页面规划或脚本写作：默认使用 `strict/legacy` profile，先调用 `cyberppt-source-foundation`。
+2. 用户明确要求轻量路径时：使用 `script` profile，先建立确定性来源索引，再调用 `cyberppt-script-understand` 生成 `foundation.json`。
 3. 只涉及已锁定最终脚本的单页写作：进入 `cyberppt-write-single-page`。
 4. 只涉及视觉结构、图片、SVG、ImageGen 或 PPTX QA：可以从对应 Stage 02 Skill 开始，不重复建立 Source Foundation。
 5. 涉及旧项目但已有已验证 Foundation 产物：先核对产物状态，再复用；不得因项目已存在而跳过 profile 与产物有效性检查。
@@ -20,15 +20,15 @@
 
 ### Stage 01
 
-默认：`来源索引 → cyberppt-script-understand → cyberppt-script-workflow（PLAN/AUTHOR）`
+默认：`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow（PLAN/AUTHOR）`
 
-严格/兼容：`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow（PLAN/AUTHOR）`
+显式轻量：`来源索引 → cyberppt-script-understand → cyberppt-script-workflow（PLAN/AUTHOR）`
 
 ### 全流程
 
-默认：源材料 → 来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR 逐页写作 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
+默认：源材料 → Source Foundation → 一次业务语义理解 → 机械投影 Foundation → Deck Plan → AUTHOR → Stage 02 视觉生产 → PPTX QA 与交付
 
-严格/兼容：源材料 → Source Foundation → 一次业务语义理解 → 机械投影 Foundation → Deck Plan → AUTHOR → Stage 02
+显式轻量：源材料 → 来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR 逐页写作 → 最终全稿 → Stage 02
 
 旧版 Outline/Handoff 命令仅用于历史项目迁移的内部兼容，不是新项目或已验证 Source Truth 项目的第二条路线。
 
@@ -36,7 +36,7 @@
 
 ### 1. 建立脚本 Foundation
 
-默认 `script` profile 只建立 `script/.cache/source-index.json` 和
+显式轻量 `script` profile 只建立 `script/.cache/source-index.json` 和
 `script/foundation.json`。来源转换采用直接解析优先、按格式回退；OCR 显式启用。
 
 执行入口：
@@ -72,8 +72,7 @@
 - `argument-chain.json`
 - `semantic-report.json`
 
-主责 Skill：默认 `cyberppt-script-understand`；严格/兼容为
-`cyberppt-source-foundation`、`business-semantic-understanding`。
+主责 Skill：默认 `cyberppt-source-foundation`、`business-semantic-understanding`；显式轻量路径为 `cyberppt-script-understand`。
 
 ### 2. 形成 strict/legacy 业务语义理解
 
@@ -126,8 +125,7 @@ Deck Plan 默认将相邻来源章节按受众问题、论证角色和承接关�
 副标题和核心判断属于最终脚本内容，不由 PLAN 锁定。标题覆盖检查只判断暂定标题
 能否标识页面讨论对象，不把判断句回灌到标题。
 
-新项目默认使用 Deck Plan v2 lean。v1 strict 仅用于合同、监管逐事实核验和旧项目
-兼容；不得把 strict 的来源消费、上屏合同或证据质询复制到普通脚本项目。
+所有新项目统一使用 Deck Plan v2 lean。strict/legacy 与 `script` profile 的差异只作用于 Foundation 的理解深度、Source Truth 和来源保全方式；不得把 strict/legacy 的来源消费要求转换成 PLAN 中的核心判断、内容模块、证据处置、上屏合同或视觉关系。v1 strict Deck Plan 只用于已有旧项目原位兼容。
 
 主责 Skill：`cyberppt-script-workflow`。
 
@@ -170,11 +168,11 @@ AUTHOR 写作前直接读取 Foundation、轻量 Deck Plan 和对应来源证据
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
-v1 strict 兼容路线可以继续声明结构化证据合同。v2 lean 只保留页面来源范围和必要的暴露边界，完整证据取舍由 AUTHOR 完成，最终审计直接对照 Foundation 与 Final Script。
+v2 lean Deck Plan 只保留页面来源范围和必要的暴露边界，完整证据取舍由 AUTHOR 完成。strict/legacy Foundation 的逐事实核验、数字、责任、状态、条件和边界继续由最终审计直接对照 Foundation 与 Final Script，不在 PLAN 中预制页面表达。
 
 Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成简洁 Markdown 审阅稿，只展示章节、页面分配、暂定标题、页面问题、页面使命和来源范围。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
 
-v1 strict Foundation 的 `source_consumption_policy: required` 继续服务严格兼容路线。v2 lean 不在 Deck Plan 逐记录声明消费方式；完整稿与上屏选择由 AUTHOR 在来源边界内完成，机器审计直接检查引用、数字、责任、状态、条件与边界。
+strict/legacy Foundation 的 `source_consumption_policy: required` 继续服务新建源材料项目，但 v2 lean Deck Plan 不逐记录声明页面消费方式。完整稿与上屏选择由 AUTHOR 在来源边界内完成，机器审计直接检查引用、数字、责任、状态、条件与边界。
 
 AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态和分类层级。上屏审计验证代表来源的模块映射和可见特征。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
@@ -300,7 +298,7 @@ PPTX 组装支持三个正式分支：`editable` 为默认输出，`image` 输�
 
 ## 六、权威产物与边界
 
-### 默认 script profile
+### 显式轻量 script profile
 
 `script/foundation.json` 是统一语义 Foundation；
 `script/.cache/source-index.json` 是唯一来源派生索引。

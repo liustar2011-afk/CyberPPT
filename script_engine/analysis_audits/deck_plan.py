@@ -684,6 +684,13 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
 
     audience_scope = plan.get("audience_scope", "unspecified")
     strict_evidence_fit = plan.get("evidence_fit_review_mode") == "strict"
+    if not lean_plan and foundation.get("source_consumption_contract_version") == 2:
+        warnings.append(
+            "PLAN_CONTRACT_LEGACY_WITH_MODERN_FOUNDATION: v1 strict Deck Plan is a "
+            "legacy compatibility surface; new strict/legacy source projects should use "
+            "plan_contract_version=2 and planning_profile='lean' so PLAN keeps source "
+            "boundaries without pre-authoring AUTHOR content"
+        )
     if not lean_plan and not strict_evidence_fit:
         issues.append(
             "evidence_fit_review_mode: strict is required before PLAN can enter AUTHOR"
