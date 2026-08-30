@@ -8,7 +8,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 from scripts.imagegen_pipeline.page_manifest import FULL_IMAGE_MODE, output_variants_for_mode
 from scripts.imagegen_pipeline.providers.codex_oauth_image import ensure_output_size, run_codex_image
@@ -154,6 +154,43 @@ def _text_audit_error_crops(failed_image: Path, audit: dict[str, Any], attempt: 
             return crops
     except OSError:
         return []
+
+
+def _local_edit_boxes(image: Image.Image, audit: dict[str, Any]) -> list[tuple[int, int, int, int]]:
+    reported = audit.get("image_size") or list(image.size)
+    if not isinstance(reported, list) or len(reported) != 2:
+        reported = list(image.size)
+    sx, sy = image.width / float(reported[0]), image.height / float(reported[1])
+    boxes: list[tuple[int, int, int, int]] = []
+    for issue in audit.get("issues", []):
+        bbox = issue.get("bbox") if isinstance(issue, dict) else None
+        if not isinstance(bbox, list) or len(bbox) != 4:
+            continue
+        left, top, right, bottom = [round(float(v) * scale) for v, scale in zip(bbox, (sx, sy, sx, sy))]
+        pad = max(32, round(max(right - left, bottom - top) * 0.75))
+        boxes.append((max(0, left - pad), max(0, top - pad), min(image.width, right + pad), min(image.height, bottom + pad)))
+    return boxes
+
+
+def _apply_local_edit(original: Path, candidate: Path, destination: Path, audit: dict[str, Any]) -> dict[str, Any]:
+    """Paste only declared correction regions; every outside pixel stays original."""
+    with Image.open(original) as source, Image.open(candidate) as edited:
+        base = source.convert("RGB")
+        revised = edited.convert("RGB").resize(base.size, Image.Resampling.LANCZOS)
+        result = base.copy()
+        boxes = _local_edit_boxes(base, audit)
+        for box in boxes:
+            result.paste(revised.crop(box), box)
+        result.save(destination)
+        outside_changed = 0
+        # Compare the composited result with the source after blanking declared boxes.
+        diff = ImageChops.difference(base, result)
+        for box in boxes:
+            diff.paste((0, 0, 0), box)
+        outside_changed = sum(1 for pixel in diff.get_flattened_data() if pixel != (0, 0, 0))
+    if outside_changed:
+        raise RuntimeError(f"local text edit changed {outside_changed} pixels outside declared regions")
+    return {"mode": "local_patch_composite", "source_image": str(original), "candidate_image": str(candidate), "boxes": [list(box) for box in boxes], "outside_changed_pixels": outside_changed}
 
 
 def _text_correction_prompt(base_prompt: str, audit: dict[str, Any]) -> str:
@@ -303,9 +340,12 @@ def _generate_manifest_images(
                             correction_audit=correction_audit,
                         )
                     )
+                    candidate_path = output_path
+                    if correction_audit is not None:
+                        candidate_path = output_path.with_name(f"{output_path.stem}.attempt-{attempt:02d}-local-edit-candidate{output_path.suffix}")
                     run_codex_image(
                         prompt=prompt,
-                        output_path=output_path,
+                        output_path=candidate_path,
                         image_paths=attempt_input_images,
                         model=model,
                         size=canvas,
@@ -315,6 +355,11 @@ def _generate_manifest_images(
                         dry_run=dry_run,
                         postprocess=False,
                     )
+                    if correction_audit is not None and not dry_run:
+                        local_edit = _apply_local_edit(
+                            Path(str(correction_audit["image"])), candidate_path, output_path, correction_audit
+                        )
+                        correction_audit["local_edit"] = local_edit
                     if dry_run:
                         break
                     if isinstance(text_truth, dict):
