@@ -1,6 +1,6 @@
 # PPT Argument Patterns
 
-Use these after analysis has identified a defensible source-supported relationship. `references/analysis-models.md` helps discover latent logic; this file helps turn validated logic into a page argument.
+Use these after analysis has identified a defensible source-supported relationship. `.agents/skills/cyberppt-script-understand/references/analysis-models.md` helps discover latent logic; this file helps turn validated logic into a page argument.
 
 ## Selection rule
 

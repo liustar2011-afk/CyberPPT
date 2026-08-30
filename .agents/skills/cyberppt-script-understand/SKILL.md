@@ -24,8 +24,8 @@ or replace either of them.
 Read:
 
 - `docs/SOURCE_FIDELITY_AND_ANALYSIS.md`;
-- `references/analysis-models.md`;
-- `references/evidence-architecture.md`.
+- [`references/analysis-models.md`](references/analysis-models.md);
+- [`references/evidence-architecture.md`](references/evidence-architecture.md).
 
 ## Pass 1 — Source structure
 
@@ -115,7 +115,7 @@ Use `basis: explicit`.
 
 ## Pass 4 — Latent Logic Mining
 
-Use `references/analysis-models.md` as reasoning lenses. Test whether source facts support deeper relationships that are useful for PPT expression:
+Use [`references/analysis-models.md`](references/analysis-models.md) as reasoning lenses. Test whether source facts support deeper relationships that are useful for PPT expression:
 
 - problem/tension;
 - causal or enabling chain;

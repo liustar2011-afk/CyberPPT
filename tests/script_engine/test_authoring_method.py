@@ -27,12 +27,20 @@ def test_understand_skill_contains_latent_logic_pass() -> None:
     for token in ("Source structure", "Atomic facts", "Latent Logic Mining", "basis: inferred", "support", "confidence"):
         assert token in text
 
+
+def test_understand_skill_bundles_its_analysis_references() -> None:
+    skill_root = ROOT / ".agents/skills/cyberppt-script-understand"
+    for relative in (
+        "references/analysis-models.md",
+        "references/evidence-architecture.md",
+    ):
+        assert (skill_root / relative).is_file()
+
+
 def test_core_references_exist_without_new_authorities() -> None:
     for relative in (
         "docs/SOURCE_FIDELITY_AND_ANALYSIS.md",
-        "references/analysis-models.md",
         "references/storyline-planning.md",
-        "references/evidence-architecture.md",
         "references/argument-patterns.md",
         "references/script-quality-rubric.md",
         "references/screen-copy-authoring.md",

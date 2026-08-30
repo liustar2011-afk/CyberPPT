@@ -40,7 +40,7 @@ grouped for oral comprehension. They do not authorize source reordering or loss.
 
 ## 3. Use analysis models inside structural boundaries
 
-Read `references/analysis-models.md`.
+Read `.agents/skills/cyberppt-script-understand/references/analysis-models.md`.
 
 Within each chapter, test whether the source supports a deeper analytical structure such as:
 
