@@ -2,6 +2,8 @@
 
 > 分支：`agent/architecture-convergence-20260831`
 >
+> Draft PR：`#24`
+>
 > 目的：按阶段实施架构收敛，每个小阶段独立提交，保证中断后可从最近提交继续。
 
 ## 技术判断
@@ -22,7 +24,7 @@
 |---|---|---|---|
 | 0 | 建立独立分支与实施记录 | 完成 | `8f12875` |
 | 1 | 真正冻结 Style 09 resolved contract，并建立运行输入 fingerprint | 完成 | 见阶段 1 记录 |
-| 2 | 统一 Stage 01 Authority Map 与权威命名 | 待实施 | - |
+| 2 | 统一 Stage 01 Authority Map 与权威命名 | 完成 | 见阶段 2 记录 |
 | 3 | Stage 02 正式状态机与 needs-action 语义 | 待实施 | - |
 | 4 | 收缩 Stage 02 compatibility facade，去除 monkey-patch 生产依赖 | 待实施 | - |
 | 5 | 将主观语义/文风检查从 hard blocker 分级为 warning/critic | 待实施 | - |
@@ -43,14 +45,7 @@
 - `46c34f8` `fix(style): freeze resolved Style 09 contract in lock`
 - `d159005` `test(style): cover frozen Style 09 snapshots`
 
-完成内容：
-
-1. Style 09 只在创建 `visual_style_lock.json` 时读取 `references/visual-system.md` 并解析完整 contract。
-2. 锁文件新增 `resolution.mode = frozen_snapshot`、resolved contract SHA-256 与来源记录。
-3. `load_style_lock()` 生产消费时只读取锁内快照，不再动态刷新 canonical source。
-4. 旧式 Style 09 live lock 因没有冻结 contract 而 fail-closed，要求重新生成锁。
-5. 锁内 contract 被修改但 SHA 未同步时直接拒绝。
-6. 新增回归测试覆盖快照不刷新、legacy lock 拒绝、篡改检测和新锁快照生成。
+完成内容：Style 09 在锁创建时冻结 resolved contract；运行时禁止 live refresh；legacy live lock 和篡改锁 fail-closed。
 
 ### 1B. Deterministic input fingerprint
 
@@ -62,13 +57,7 @@
 - `408c4da` `feat(stage02): expose input identity in delivery receipts`
 - `b960e7e` `test(stage02): cover deterministic input fingerprint`
 
-完成内容：
-
-1. `Stage02BuildContext` 新增 `input_fingerprint` 与 `resolved_style_contract_sha256`。
-2. fingerprint 采用稳定 JSON 序列化，纳入脚本快照、Stage 02 intake、视觉规格、style lock、冻结 style contract、页集合、生产/组装模式、ImageGen 模型和质量、prompt enrich、参考图开关、文字审计策略、prompt override 目录摘要及 autonomous contract 摘要。
-3. 默认 `build_id` 的摘要部分从 fingerprint 派生，时间戳仍只承担本次运行身份；阶段 7 再完成命名和兼容接口收敛。
-4. manifest、build context 与最终 run summary 均持久化 input fingerprint 与相关 SHA，恢复和审计时可直接区分输入身份与运行身份。
-5. 新增 deterministic、style contract 变化、assembly mode 变化和显式 build ID 保持等测试。
+完成内容：建立 timestamp-free input fingerprint，并持久化到 manifest、build context 和 run summary；默认 build ID 摘要由 fingerprint 派生。
 
 ### 1C. Prompt 变化后的产物失效
 
@@ -77,16 +66,31 @@
 - `3b004a8` `fix(stage02): invalidate reused artifacts when prompt changes`
 - `81dc232` `test(stage02): block stale prompt artifact reuse`
 
+完成内容：full 图和其 clean base / authored SVG / Quick checkpoint 只能在页级 generated Prompt SHA 与当前 Prompt SHA 一致时复用。
+
+## 阶段 2：Stage 01 Authority 收敛
+
+状态：完成。
+
+提交：
+
+- `85a3dec` `docs(stage01): define canonical authority map`
+- `889eefe` `docs(stage01): align strict skill with authority map`
+- `f52f9b4` `docs(stage01): define semantic IR field ownership`
+- `c707821` `test(stage01): enforce authority documentation boundary`
+
 完成内容：
 
-1. prior full 图只有在其 `generated_prompt_sha256` 与当前页 `prompt_sha256` 完全一致时才可复用。
-2. clean base、graphic text policy、authored SVG 和 Quick checkpoint 与 full 图使用同一页级 Prompt 绑定，不再仅凭“源脚本相同”继承。
-3. partial recovery 继续支持保留未重跑页面，但要求 frozen Style contract 一致且 retained full 图存在明确 generated prompt binding。
-4. 新增测试覆盖 Prompt 改变时禁止复用、Prompt 不变时允许复用、Style contract 改变时 partial recovery 不继承旧页。
+1. 新增 `docs/STAGE01_AUTHORITY_MAP.md`，统一 Source Evidence、SemanticIR、FoundationIR、DeckPlanIR、FinalScriptIR 五个运行层级，其中只有内容 authority 可以被直接修复。
+2. strict/legacy 的 `normalized-facts.json`、`concept-base.json`、`relation-graph.json`、`argument-chain.json` 被定义为一个逻辑 SemanticIR 的字段分区，并明确各自字段所有权。
+3. `semantic-argument-model.json`、`source-truth.json`、`outline.json` 在 strict/legacy 中统一定义为兼容/机械 projection；即使当前 runtime 消费它们，也不得手工修改为第二套语义 authority。
+4. `script/foundation.json` 是 PLAN/AUTHOR 的统一语义入口；`script/deck-plan.json` 是 DeckPlanIR；`script/dist/final-script.md` 是 FinalScriptIR 和 Stage 02 唯一跨阶段业务输入。
+5. 修订 `cyberppt-source-foundation` 与 `business-semantic-understanding` Skill，消除“canonical semantic-argument-model”与四文件 SemanticIR 并存的命名歧义。
+6. 新增静态回归测试防止后续文档再次把 compatibility projection 提升为独立 authority。
 
-### 阶段 1 验证说明
+## CI
 
-已新增针对三个子阶段的回归测试。仓库 Actions 当前仅在 `main` push 和 Pull Request 事件触发，独立工作分支本身不会产生 CI run；本阶段完成后创建 Draft PR，使后续每次 push 都由现有 GitHub Actions 执行全量 pytest。
+Draft PR #24 已创建。GitHub Actions `CyberPPT tests` 已开始随 PR commit 自动执行；阶段完成记录不以“CI 已通过”作为虚构前提，最终合并前统一确认最新 head 的全量 CI 结果。
 
 ## 续跑规则
 
