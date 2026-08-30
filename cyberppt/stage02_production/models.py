@@ -57,6 +57,14 @@ class Stage02BuildContext:
     production_mode: str
     assembly_mode: str
     source_mode: str
+    # Deterministic identity of the meaningful Stage 02 preflight inputs.  It
+    # intentionally excludes timestamps and output locations so repeated runs
+    # can be recognized as the same input even when they receive new build IDs.
+    input_fingerprint: str = ""
+    # Hash of the frozen resolved prompt contract embedded in the style lock.
+    # Kept separately from style_lock_sha256 so provenance reports can explain
+    # whether a style-content change or unrelated lock metadata caused a miss.
+    resolved_style_contract_sha256: str = ""
     full_reference_images: tuple[Path, ...] = ()
     autonomous_contract: Path | None = None
     project_created: bool = False
