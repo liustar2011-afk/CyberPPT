@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from cyberppt.script_quality.models import ScriptPage
+from cyberppt.script_quality.parsing import parse_script_markdown
 from cyberppt.script_quality.presentation import _presentation_issues
 
 
@@ -139,3 +142,24 @@ def test_comparison_requires_two_matched_units_under_total_thesis() -> None:
     codes = {issue.code for issue in _presentation_issues(page)}
 
     assert "ONSCREEN_COMPARISON_UNIT_COUNT" in codes
+
+
+def test_golden_page_script_example_passes_hierarchy_quality_checks() -> None:
+    reference = (
+        Path(__file__).resolve().parents[1]
+        / ".agents/skills/cyberppt-script-workflow/references/golden-page-script-example.md"
+    )
+    document = parse_script_markdown(reference.read_text(encoding="utf-8"))
+
+    assert len(document.pages) == 1
+    page = document.pages[0]
+    codes = {issue.code for issue in _presentation_issues(page)}
+
+    assert page.main_message == "统一预测体系贯通研判范围、周期规则和运行闭环，形成持续风险预警。"
+    assert page.onscreen_expression_form == "parallel_classification_3_6"
+    assert not {
+        "ONSCREEN_TOTAL_THESIS_MISSING",
+        "ONSCREEN_GROUP_PARENT_MISSING",
+        "ONSCREEN_GROUP_DETAIL_MISSING",
+        "ONSCREEN_GROUP_ROLE_REPETITION",
+    } & codes

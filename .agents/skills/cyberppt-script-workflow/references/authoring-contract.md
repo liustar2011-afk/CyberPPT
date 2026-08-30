@@ -692,6 +692,12 @@ Use this authoring sequence for every content page:
    groups for classification, path for flow, convergence for aggregation,
    paired field for comparison, and explicit endpoints for mapping.
 
+For a complete reference implementation of the classification grammar, use
+[黄金页面脚本示例](golden-page-script-example.md). Treat its hierarchy,
+relationship choice, visual reading contract and self-checks as one connected
+pattern; replace its business content with the verified source material of the
+current page.
+
 Run the **card independence self-read** before finalizing: cover the level-3
 copy and confirm that every level-2 heading still names a different part of the
 page story; then cover the heading and confirm the level-3 copy adds new object,
