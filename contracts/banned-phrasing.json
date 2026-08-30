@@ -1,38 +1,32 @@
 {
-  "version": "1.0",
-  "description": "Single source of truth for mechanically-enforced banned phrasing in final-script.json. `script_engine.contracts.lint_final_script` reads this file. `.agents/skills/cyberppt-script-workflow/SKILL.md` governs the author/Critic passes — keep both in sync when a rule changes.",
+  "version": "2.0",
+  "description": "Hard, mechanically-enforced phrasing blockers for final-script.json. Keep this file limited to high-confidence audience-visible leakage, explicit repository/user prohibitions, and semantic underspecification. Subjective rhetoric and speaker-style preferences live in advisory-phrasing.json.",
   "rules": [
     {
       "id": "contrastive-reveal",
+      "severity": "error",
       "pattern": "不是.{0,40}而是|并非.{0,40}而是|不只是.{0,20}更是|不仅是.{0,20}更是|与其说.{0,20}不如说|不应视为.{0,20}而应|不在于.{0,40}而在于|不以.{0,30}而是|不应.{0,30}而是|不宜.{0,30}而是|与其.{0,30}不如|宁可.{0,30}也不|既非.{0,20}也非|既非.{0,20}亦非",
-      "description": "\"不是A，而是B\" 对比反转句式及其变体：先立一个靶子否定，再给出\"真实\"结论。公文语域应直接陈述结论。"
+      "description": "显式禁止的对比反转句式及其变体。正式材料直接陈述结论。"
     },
     {
       "id": "self-reference",
+      "severity": "error",
       "pattern": "（对应第|\\(对应第|呼应第.{0,4}[页章节]|如上所述|如前所述|前文提到|后文将",
-      "description": "结构自指：引用本篇章/页码/前后文的元评论。观众看到的是报告内容本身，不是关于报告结构的注释。",
+      "description": "结构自指泄漏到最终读者可见/可听内容。",
       "exclude_fields": ["mission"],
-      "exclude_fields_note": "mission describes the page's function within the deck's own narrative (e.g. \"呼应第一章…\") — that is its job, not a leak into audience-visible content."
+      "exclude_fields_note": "mission 可描述本页在整套稿中的职责。"
     },
     {
       "id": "author-facing-instruction",
+      "severity": "error",
       "pattern": "可(以)?强调|需要指出|建议在此|此处应强调|讲述时可",
-      "description": "面向作者/操作者的写作指令泄漏进了最终稿，而不是报告内容本身——直接陈述内容，不要先说'可以强调'再说内容。"
-    },
-    {
-      "id": "restating-aside",
-      "pattern": "也就是说|换句话说",
-      "description": "口语化复述转折——用另一句话把刚说的话再说一遍。公文语域应直接陈述，不需要复述。"
-    },
-    {
-      "id": "authoring-intent-description",
-      "pattern": "让受众.{0,10}意识到|让听众.{0,10}意识到|降低.{0,10}顾虑|降低.{0,10}疑虑",
-      "description": "描述本页对受众的心理效果，而不是陈述本页在报告逻辑中的功能——mission 应说明本页确立/衔接/回应了什么，而不是说它让受众感受到什么。"
+      "description": "面向作者/操作者的写作指令泄漏进最终稿。"
     },
     {
       "id": "audience-facing-meta",
+      "severity": "error",
       "pattern": "本页|这一页|页面(?:内容|观点|结论|逻辑|结构|表达)|上屏(?:文字|内容)|核心结论(?:是|为|：)|(?:^|[：:])汇合点(?:$|[：:])|逻辑(?:关系|说明|顺序)|关系说明|后台(?:思维|逻辑|说明)|作者(?:视角|说明)|审核(?:意见|说明)|审计(?:结论|说明)|待确认|待核验",
-      "description": "核心结论或上屏文字泄漏了作者、页面、审核或后台组织视角。直接陈述面向最终读者的业务内容。",
+      "description": "核心结论或上屏文字泄漏作者、页面、审核或后台组织视角。",
       "include_fields": [
         "subtitle",
         "core_message",
@@ -44,8 +38,9 @@
     },
     {
       "id": "underspecified-business-object",
+      "severity": "error",
       "pattern": "(?:电力行业|项目)(?:基础)?能力建设|(?:相关|相应|有关)(?:能力|工作|任务|要求)",
-      "description": "使用了边界不清的概括对象，读者无法知道具体建设哪些能力或推进哪些事项。直接列明业务对象。",
+      "description": "业务对象边界不清，无法确定具体建设能力、工作或任务。",
       "include_fields": [
         "core_message",
         "onscreen.heading",
@@ -54,33 +49,10 @@
       ]
     },
     {
-      "id": "analysis-process-as-thesis",
-      "pattern": "(识别|筛选|评估|诊断|归纳|整理|分析|测算|判断|论证|比对|梳理)(起点|标准|结果|过程|依据|路径|框架|方法|结论|维度)[^。！？]{0,20}(构成|形成|奠定|支撑)[^。！？]{0,20}(依据|基础|方向|判断)",
-      "description": "论点字段写成了'我是怎么分析出来的'（识别/筛选/归纳等分析动作本身构成了判断依据），而不是正面陈述判断/论点本身。核心结论、视觉论点应该是读者可以直接采纳或反对的业务判断，不是关于分析方法或推导过程的说明——把分析动作从主语位置换成实际结论本身。",
-      "include_fields": ["core_message", "visual_thesis"]
-    },
-    {
-      "id": "third-person-audience-reference",
-      "pattern": "听众|受众",
-      "description": "演讲者备注应该是演讲者对着现场的人说的话，不能把现场的人称为'听众/受众'——那是第三人称旁白，不是站在台上会说出口的话。改成直接对现场的称呼（各位/大家）或直接删掉这类旁白式称呼。",
-      "include_fields": ["speaker_notes"]
-    },
-    {
       "id": "stage-direction-label",
+      "severity": "error",
       "pattern": "^过渡语[:：]|^开场语[:：]|^提示[:：]",
-      "description": "演讲者备注不应该以'过渡语：'这类标签开头——这是给作者自己看的分类标签，不是演讲者会念出来的话。去掉标签，把后面内容改写成可以直接念的句子。",
-      "include_fields": ["speaker_notes"]
-    },
-    {
-      "id": "speaker-notes-slide-meta",
-      "pattern": "这一页|下一页|上一页|本页我们|本页先|本页把|本页只|看这一页|从这一页",
-      "description": "演讲者备注把'页面'当成话题在说——现场没有人会说'这一页/下一页'，讲的应该是内容本身，不是文档的分页结构。改成直接陈述内容，或用自然的口播过渡（如'接下来看…'）而不提'页'。",
-      "include_fields": ["speaker_notes"]
-    },
-    {
-      "id": "speaker-notes-host-meta",
-      "pattern": "各位同事|先说明|先谈|先讲规则|接下来看|到这里收一下|全篇收在|请先记住",
-      "description": "主持人式的场控套话，不是要讲给合作伙伴听的内容——把它换成实际要说的那句话本身。",
+      "description": "作者用的舞台说明标签泄漏到演讲者备注。",
       "include_fields": ["speaker_notes"]
     }
   ]
