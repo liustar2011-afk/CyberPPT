@@ -22,6 +22,7 @@
 | 10 | `8062debc4fc7442ac2b77ae19784fb9611a22edf` | `needs_action` 写回 `build_context.json`，中断后可直接恢复 |
 | 11 | `ad4a99ef39a82fd0554127d84aab2aa6905b8971` | 正式 runtime/contract/reference/assets 纳入 wheel 包边界并增加 wheel smoke |
 | 12 | `2e9cd4e3cac6c213b09b2a2b028c10b8fc613997` | Compatibility seam 封口为固定 6 项 `LegacyPatchSet`，保留旧测试兼容 |
+| 13 | 待本次提交 | CI 在 pytest 失败时持久化完整日志 artifact，便于精确诊断和恢复 |
 
 ## 当前结构性结果
 
@@ -54,6 +55,7 @@
 - Pillow 为直接依赖；XLSX/MarkItDown 能力进入 `source` extra。
 - `scripts`、`references`、`contracts`、`assets` 进入 wheel 包边界。
 - CI 覆盖 Python 3.10/3.12 pytest、runtime import、wheel build 和离开仓库目录后的 wheel import/resource smoke。
+- pytest 输出通过 `tee` 保存，并使用 `actions/upload-artifact@v4` 在成功或失败时均上传 `pytest-log-<python-version>`；`pipefail` 保证日志保存不会吞掉测试失败退出码。
 
 ## Compatibility seam 当前状态
 
@@ -76,5 +78,6 @@
 
 ## 验证状态
 
-- GitHub Actions 已由阶段 12 的 `main` push 触发；截至本 checkpoint 编写时，Python 3.10/3.12 job 均已启动且处于依赖安装阶段，尚无最终 conclusion。
-- 当前会话环境不能直接访问 GitHub 网络克隆仓库，因此没有本地执行 pytest；最终 CI conclusion 应作为本轮变更的正式自动化验证结果。
+- 阶段 12 workflow run `33339330170` 在 Python 3.10/3.12 两个 job 的 pytest 阶段失败；安装、环境检查和正式 runtime import 均已通过。
+- 原 Actions 日志体量过大，连接器返回内容被截断，无法稳定读取 pytest 尾部失败摘要。阶段 13 因此先增加失败日志 artifact；下一次 workflow 即可下载完整 pytest 日志并据此修复具体回归。
+- 当前状态不得视为全量验证通过；以修复后 GitHub Actions 最终 conclusion 为准。

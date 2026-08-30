@@ -31,7 +31,17 @@ jobs:
         run: |
           python -c "import cyberppt, script_engine; import scripts.imagegen_pipeline.page_manifest; import scripts.image_to_pptx_runtime.stage02_adapter"
       - name: Run test suite
-        run: python -m pytest -q
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q --tb=short 2>&1 | tee "pytest-${{ matrix.python-version }}.log"
+      - name: Upload pytest log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-log-${{ matrix.python-version }}
+          path: pytest-${{ matrix.python-version }}.log
+          if-no-files-found: error
       - name: Build wheel
         run: python -m build --wheel
       - name: Wheel import smoke outside repository
