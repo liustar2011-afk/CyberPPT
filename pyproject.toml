@@ -62,6 +62,7 @@ include = [
 [tool.setuptools.package-data]
 cyberppt = ["script_quality/*.yaml"]
 "scripts.imagegen_pipeline" = ["style_presets/*.json"]
+"scripts.image_to_pptx_runtime.pptx_shapes" = ["data/*"]
 references = ["*.md"]
 contracts = ["*.json"]
 assets = ["palette-samples/*.png"]
