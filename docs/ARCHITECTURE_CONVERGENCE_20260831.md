@@ -21,7 +21,7 @@
 | 阶段 | 内容 | 状态 | 提交 |
 |---|---|---|---|
 | 0 | 建立独立分支与实施记录 | 完成 | `8f12875` |
-| 1 | 真正冻结 Style 09 resolved contract，并建立运行输入 fingerprint | 进行中 | 见阶段 1 记录 |
+| 1 | 真正冻结 Style 09 resolved contract，并建立运行输入 fingerprint | 完成 | 见阶段 1 记录 |
 | 2 | 统一 Stage 01 Authority Map 与权威命名 | 待实施 | - |
 | 3 | Stage 02 正式状态机与 needs-action 语义 | 待实施 | - |
 | 4 | 收缩 Stage 02 compatibility facade，去除 monkey-patch 生产依赖 | 待实施 | - |
@@ -34,9 +34,9 @@
 
 ## 阶段 1：视觉锁与输入身份
 
-### 1A. Style 09 resolved contract 真冻结
-
 状态：完成。
+
+### 1A. Style 09 resolved contract 真冻结
 
 提交：
 
@@ -52,10 +52,41 @@
 5. 锁内 contract 被修改但 SHA 未同步时直接拒绝。
 6. 新增回归测试覆盖快照不刷新、legacy lock 拒绝、篡改检测和新锁快照生成。
 
-待完成：
+### 1B. Deterministic input fingerprint
 
-- 1B：将冻结的 resolved contract SHA 和关键 Stage 02 输入组成 deterministic `input_fingerprint`。
-- 1C：Prompt SHA 变化时，已审计 full 图不得因为旧 text audit 继续静默复用。
+提交：
+
+- `bedefa0` `refactor(stage02): model deterministic input identity`
+- `742e685` `feat(stage02): derive deterministic input fingerprint`
+- `031f90f` `feat(stage02): persist input fingerprint in manifest`
+- `408c4da` `feat(stage02): expose input identity in delivery receipts`
+- `b960e7e` `test(stage02): cover deterministic input fingerprint`
+
+完成内容：
+
+1. `Stage02BuildContext` 新增 `input_fingerprint` 与 `resolved_style_contract_sha256`。
+2. fingerprint 采用稳定 JSON 序列化，纳入脚本快照、Stage 02 intake、视觉规格、style lock、冻结 style contract、页集合、生产/组装模式、ImageGen 模型和质量、prompt enrich、参考图开关、文字审计策略、prompt override 目录摘要及 autonomous contract 摘要。
+3. 默认 `build_id` 的摘要部分从 fingerprint 派生，时间戳仍只承担本次运行身份；阶段 7 再完成命名和兼容接口收敛。
+4. manifest、build context 与最终 run summary 均持久化 input fingerprint 与相关 SHA，恢复和审计时可直接区分输入身份与运行身份。
+5. 新增 deterministic、style contract 变化、assembly mode 变化和显式 build ID 保持等测试。
+
+### 1C. Prompt 变化后的产物失效
+
+提交：
+
+- `3b004a8` `fix(stage02): invalidate reused artifacts when prompt changes`
+- `81dc232` `test(stage02): block stale prompt artifact reuse`
+
+完成内容：
+
+1. prior full 图只有在其 `generated_prompt_sha256` 与当前页 `prompt_sha256` 完全一致时才可复用。
+2. clean base、graphic text policy、authored SVG 和 Quick checkpoint 与 full 图使用同一页级 Prompt 绑定，不再仅凭“源脚本相同”继承。
+3. partial recovery 继续支持保留未重跑页面，但要求 frozen Style contract 一致且 retained full 图存在明确 generated prompt binding。
+4. 新增测试覆盖 Prompt 改变时禁止复用、Prompt 不变时允许复用、Style contract 改变时 partial recovery 不继承旧页。
+
+### 阶段 1 验证说明
+
+已新增针对三个子阶段的回归测试。仓库 Actions 当前仅在 `main` push 和 Pull Request 事件触发，独立工作分支本身不会产生 CI run；本阶段完成后创建 Draft PR，使后续每次 push 都由现有 GitHub Actions 执行全量 pytest。
 
 ## 续跑规则
 
