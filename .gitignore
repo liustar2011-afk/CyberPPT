@@ -1,6 +1,11 @@
-# Python caches
+# Python caches and build metadata
 __pycache__/
 *.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+*.whl
 
 # Local virtual environments
 .venv/
@@ -12,6 +17,10 @@ node_modules/
 dist/
 build/
 .tools/
+
+# Root scratch files
+/out.txt
+/tmp_*
 
 # Project-specific working directories
 /out/
@@ -61,7 +70,6 @@ vendor/ppt-image-enhancer-skill-v1.0.0/runtime/verification/
 vendor/ppt-image-enhancer-skill-v1.0.0/third_party/BasicSR/
 vendor/ppt-image-enhancer-skill-v1.0.0/third_party/Real-ESRGAN/
 vendor/ppt-image-enhancer-skill-v1.0.0/third_party/SwinIR/
-vendor/ppt-image-enhancer-skill-v1.0.0/src/*.egg-info/
 
 # OS/editor files
 .DS_Store
