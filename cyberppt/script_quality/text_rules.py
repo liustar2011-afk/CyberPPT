@@ -36,6 +36,10 @@ SPEAKER_HOST_META_RE = re.compile(
     r"综合起来|接下来看|到这里收一下|全篇收在|请.{0,12}听|请先记住)"
 )
 
+SPEAKER_PRESENTER_CUE_RE = re.compile(
+    r"(随后分别(?:说明|介绍|展开)|汇报时|讲解顺序|按.{0,18}(?:调整|安排).{0,12}(?:顺序|讲解|汇报))"
+)
+
 SPEAKER_PLACEHOLDER_RE = re.compile(
     r"(原文围绕.{0,36}(?:展开|说明)|"
     r"各项内容共同回答.{0,18}(?:问题|任务)|"
@@ -919,7 +923,25 @@ def _prose_issues(
                     page,
                     "Speaker notes use host-style framing instead of formal briefing narration.",
                     "Start with the judgment, then state its support and implication directly.",
-                    evidence=host_hits,
+                evidence=host_hits,
+            )
+        )
+        presenter_cue_hits = tuple(
+            sorted(
+                {
+                    match.group(0)
+                    for match in SPEAKER_PRESENTER_CUE_RE.finditer(notes)
+                }
+            )
+        )
+        if presenter_cue_hits:
+            issues.append(
+                _issue(
+                    "SPEAKER_NOTES_PRESENTER_CUE",
+                    page,
+                    "Speaker notes give presenter instructions instead of adding business narration.",
+                    "Replace sequencing or delivery cues with the business meaning, mechanism, evidence, or implication the speaker should explain.",
+                    evidence=presenter_cue_hits,
                 )
             )
         placeholder_hits = _speaker_placeholder_hits(notes)

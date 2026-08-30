@@ -5396,6 +5396,16 @@ def _judgment_page(**overrides: object) -> ScriptPage:
 
 
 class SpeakerNotesParagraphTests(unittest.TestCase):
+    def test_rejects_presenter_cues_in_speaker_notes(self) -> None:
+        notes = (
+            "先明确建设目标，随后分别说明三项建设维度。"
+            "汇报时可按业务关注点调整讲解顺序。"
+        )
+        codes = {
+            issue.code for issue in _prose_issues(_judgment_page(speaker_notes=notes))
+        }
+        self.assertIn("SPEAKER_NOTES_PRESENTER_CUE", codes)
+
     def test_rejects_long_unsegmented_speaker_notes(self) -> None:
         notes = (
             "平台先统一识别客户需求和可用资源，再通过审核验证形成明确的产品规格。"

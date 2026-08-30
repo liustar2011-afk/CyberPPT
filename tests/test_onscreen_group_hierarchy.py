@@ -151,9 +151,11 @@ def test_golden_page_script_example_passes_hierarchy_quality_checks() -> None:
     )
     document = parse_script_markdown(reference.read_text(encoding="utf-8"))
 
-    assert len(document.pages) == 1
+    assert len(document.pages) == 2
     page = document.pages[0]
+    flow_page = document.pages[1]
     codes = {issue.code for issue in _presentation_issues(page)}
+    flow_codes = {issue.code for issue in _presentation_issues(flow_page)}
 
     assert page.main_message == "统一预测体系贯通研判范围、周期规则和运行闭环，形成持续风险预警。"
     assert page.onscreen_expression_form == "parallel_classification_3_6"
@@ -163,3 +165,15 @@ def test_golden_page_script_example_passes_hierarchy_quality_checks() -> None:
         "ONSCREEN_GROUP_DETAIL_MISSING",
         "ONSCREEN_GROUP_ROLE_REPETITION",
     } & codes
+    assert flow_page.main_message == "统一数据、分析与审校流程把预测结果转化为持续更新的风险预警闭环。"
+    assert flow_page.onscreen_expression_form == "flow_3_5"
+    assert not {
+        "ONSCREEN_TOTAL_THESIS_MISSING",
+        "ONSCREEN_RELATION_UNIT_DETAIL_MISSING",
+        "ONSCREEN_FLOW_FEEDBACK_MISSING",
+    } & flow_codes
+    for golden_page in (page, flow_page):
+        assert len(golden_page.speaker_notes) >= 120
+        assert "本页" not in golden_page.speaker_notes
+        assert "汇报时" not in golden_page.speaker_notes
+        assert "讲解顺序" not in golden_page.speaker_notes

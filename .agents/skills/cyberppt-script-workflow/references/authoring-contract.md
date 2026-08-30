@@ -950,6 +950,16 @@ responsibility or applicability, an audience focus or a natural transition.
 Material conditions remain visible. Sequentially paraphrasing every visible
 module fails Critic.
 
+Write each note as a short spoken argument, not as a presenter instruction. Its
+normal rhythm is `business meaning or audience focus → evidence, mechanism or
+condition that explains it → implication or natural handoff`. The note must name
+the business objects and relationships that make the visible conclusion hold;
+it may not merely say “先明确目标、随后分别说明、按关注点调整顺序” or direct how
+to introduce the cards. A note that only restates the title, total thesis or
+visible groups in order fails even when it is long. For a flow page, explain the
+handoff and feedback that make it a flow; for a classification page, explain why
+the groups jointly establish the total thesis without inventing a sequence.
+
 ### 3.9 Mandatory supporting-field construction pass
 
 Execute this pass for every content page. It gives `mission`, `core_message`,
