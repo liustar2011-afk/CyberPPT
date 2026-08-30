@@ -119,6 +119,29 @@ def load_runtime_style_contract(style_lock: Path) -> RuntimeStyleContract:
     )
 
 
+def _without_terminal_duplicates(body: str, terminal_lock: str) -> str:
+    """Remove exact terminal instruction lines already present in the body.
+
+    Page-specific prose is preserved. Only whole lines that exactly equal a
+    non-empty terminal-lock line are removed, preventing the same hard rule from
+    being sent to the model twice when the terminal lock is reasserted.
+    """
+
+    terminal_lines = {
+        line.strip()
+        for line in str(terminal_lock or "").splitlines()
+        if line.strip()
+    }
+    if not terminal_lines:
+        return body.rstrip()
+    retained = [
+        line
+        for line in body.splitlines()
+        if line.strip() not in terminal_lines
+    ]
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(retained)).rstrip()
+
+
 def enforce_terminal_execution_lock(prompt: str, runtime: RuntimeStyleContract) -> str:
     """Append exactly one generic terminal lock at the absolute end."""
 
@@ -129,7 +152,9 @@ def enforce_terminal_execution_lock(prompt: str, runtime: RuntimeStyleContract) 
             body = body[:pos].rstrip()
     if not runtime.terminal_lock:
         raise ValueError("live runtime style contract has no terminal execution lock")
-    return f"{body}\n\n{TERMINAL_EXECUTION_HEADING}\n{runtime.terminal_lock.strip()}\n"
+    terminal = runtime.terminal_lock.strip()
+    body = _without_terminal_duplicates(body, terminal)
+    return f"{body}\n\n{TERMINAL_EXECUTION_HEADING}\n{terminal}\n"
 
 
 def internal_style_token_leaks(text: str) -> tuple[str, ...]:
