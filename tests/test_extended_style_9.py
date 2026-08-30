@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -10,9 +11,12 @@ from scripts.imagegen_pipeline.deliverable_prompt import (
     PageBlock,
     _style09_page_semantic_tags,
     enforce_style09_terminal_lock,
-    style_contract,
 )
 from scripts.imagegen_pipeline.imagegen_handoff import render_content_first_style_contract
+from scripts.imagegen_pipeline.runtime_style_contract import (
+    TERMINAL_EXECUTION_HEADING,
+    load_runtime_style_contract,
+)
 from scripts.imagegen_pipeline.style_library import (
     default_style_choices,
     load_style_lock,
@@ -25,7 +29,6 @@ from scripts.imagegen_pipeline.style_library import (
 STYLE_FOUR_CONTRACT = {
     "id": 4,
     "slug": "ivory_deep_blue",
-    "name": "象牙白 + 深蓝强调",
     "colors": {
         "background": "#F7F6F0",
         "title": "#101820",
@@ -34,35 +37,21 @@ STYLE_FOUR_CONTRACT = {
         "divider": "#C9CDD1",
         "accent": "#12355B",
     },
-    "scenario": "科技、SaaS、B2B、企业数字化、AI Agent 报告",
-    "sample": "assets/palette-samples/palette-04.png",
-    "scope_rule": (
-        "本风格只约束色彩、材质、线条、图标克制度和视觉语气；其中提到的紧凑矩阵、右侧栏、"
-        "编号 chips、流程轴、SO WHAT 条等仅为可选视觉语言，不得覆盖原脚本的页面定位、版式草图、"
-        "组件数量、箭头关系和框内文字。"
-    ),
-    "prompt_contract": (
-        "视觉风格使用象牙白 + 深蓝强调：背景 #F7F6F0，标题 #101820，正文 #303030，"
-        "次级文字 #6F7275，线条 #C9CDD1，强调色 #12355B。适合科技、SaaS、B2B、企业数字化、"
-        "AI Agent 报告；采用正式内部汇报结构、深蓝页内强调、紧凑矩阵、细线分隔、右侧栏、"
-        "编号 chips 和底部 SO WHAT 条。"
-    ),
-    "density_rule": (
-        "保持高密度企业数字化汇报页；在不改变原脚本结构的前提下，可使用紧凑矩阵、右侧栏、"
-        "编号 chips、流程轴和底部 SO WHAT 条。"
-    ),
 }
 
 
-def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
-    styles = load_style_library()["styles"]
+def test_style_nine_is_the_explicit_pure_white_extension_and_style_four_is_unchanged() -> None:
+    library = load_style_library()
+    styles = library["styles"]
 
-    assert [style["id"] for style in styles[:9]] == list(range(1, 10))
-    assert len(styles) >= 9
+    assert [style["id"] for style in styles] == list(range(1, 10))
+    assert library["default_style_id"] == 9
+
     style_four = next(style for style in styles if style["id"] == 4)
     assert style_four["id"] == STYLE_FOUR_CONTRACT["id"]
     assert style_four["slug"] == STYLE_FOUR_CONTRACT["slug"]
     assert style_four["colors"] == STYLE_FOUR_CONTRACT["colors"]
+
     style_nine = resolve_default_style(style_id=9)
     assert style_nine["slug"] == "ivory_deep_blue_scene"
     assert style_nine["extension_only"] is True
@@ -72,94 +61,67 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
         **STYLE_FOUR_CONTRACT["colors"],
         "background": "#FFFFFF",
     }
-    assert "先保证锁定上屏文字完整、舒展、清晰" in style_nine["content_visual_rule"]
-    assert "再区分主体、支撑、输入、输出" in style_nine["content_visual_rule"]
-    assert "使用跨页面展开的图形形态、色带、路径、箭头" not in style_nine["content_visual_rule"]
-    assert "实景、近实景和物件型语义图只作少量局部点缀" not in style_nine["content_visual_rule"]
-    assert "不得逐项配图、形成照片栏或取代整页图形主线" not in style_nine["content_visual_rule"]
-    assert "生成式图形构图负责组织页面主线" not in style_nine["scope_rule"]
-    assert "锁定文字嵌入稳定承载面" not in style_nine["scope_rule"]
-    assert "文字是页面主体" not in style_nine["scope_rule"]
-    assert "少量实景、近实景或物件型语义图仅作点缀" not in style_nine["scope_rule"]
-    # Style09 is a compact global visual contract. Page truth and topology are
-    # already supplied by the artifact prompt IR, so the style must consume
-    # those declarations instead of trying to infer a second page plan.
-    assert "semantic editorial executive-report style" in style_nine["prompt_contract"]
-    assert "Treat those declarations as the only content truth" in style_nine["prompt_contract"]
-    assert "exact visible text and factual boundaries" in style_nine["prompt_contract"]
-    assert "Let genuinely parallel content receive equal visual treatment" in style_nine["prompt_contract"]
-    assert "a flat structured relationship field or publication-like layout is valid" in style_nine["prompt_contract"]
-    assert "#FFFFFF" in style_nine["prompt_contract"]
-    assert "#12355B" in style_nine["prompt_contract"]
-    terminal_lock = style_nine["prompt_contract"].split("【风格09最终执行锁｜最高优先级】", 1)[1]
-    assert "以页面已声明的精确上屏文字、事实边界和业务关系为最高优先级" in terminal_lock
-    assert "真实并列项可以等权处理" in terminal_lock
-    assert "参考图只提供色板、线条工艺、留白节奏和整体克制度" in terminal_lock
-    assert "Style 09 scale" not in style_nine["prompt_contract"]
-    assert "Industry scene anchor" not in style_nine["prompt_contract"]
-    assert "逐项配图" not in style_nine["prompt_contract"]
-    # people_rule/factuality_rule/semantic_image_text_rule/component_rule used
-    # to be separate JSON fields concatenated onto prompt_contract at compile
-    # time (see deliverable_prompt.py::_style_contract_from_payload). They are
-    # now authored directly inside visual-system.md's "扩展风格9" section, so
-    # their content must show up inside prompt_contract itself, with no
-    # separate JSON field left behind.
-    assert "people_rule" not in style_nine
-    assert "factuality_rule" not in style_nine
-    assert "semantic_image_text_rule" not in style_nine
-    assert "component_rule" not in style_nine
-    assert "People are absent by default" in style_nine["prompt_contract"]
-    assert "without a recognizable face or staged meeting scene" in style_nine["prompt_contract"]
-    assert "Do not depict real organization logos, seals, signage" in style_nine["prompt_contract"]
-    assert "Preserve every character, named entity, number, date, unit" in style_nine["prompt_contract"]
-    assert "Auxiliary imagery stays text-free" in style_nine["prompt_contract"]
-    assert "pseudo-Chinese" in style_nine["prompt_contract"]
-    assert "invented names, logos, seals, signage" not in style_nine["prompt_contract"]
-    assert "Express relationships first through proximity, alignment, containment" in style_nine["prompt_contract"]
-    assert "use a short local deep-blue arrow from one source to one target" in style_nine["prompt_contract"]
-    assert "purposeful connectors" not in style_nine["prompt_contract"]
-    assert "Icon count is zero by default" in style_nine["prompt_contract"]
-    assert "glossy or exaggerated 3D" in style_nine["prompt_contract"]
-    assert "icon_rule" not in style_nine
-    assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
-    assert "领导汇报" in style_nine["scenario"]
-    assert 4_000 < len(style_nine["prompt_contract"]) < 10_000
-    assert style_nine["imagegen_signature"] == []
-    assert "节奏与媒介" not in style_nine["prompt_contract"]
+    assert style_nine["prompt_contract_source"].endswith(
+        "scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json"
+    )
+
+
+def test_style_nine_registry_contract_carries_current_visual_invariants() -> None:
+    style = resolve_default_style(style_id=9)
+    contract = style["prompt_contract"]
+
+    assert "pure white background #FFFFFF" in contract
+    assert "deep blue #12355B" in contract
+    assert "### 1. Style identity and semantic principle — hard" in contract
+    assert "### 2. Semantic anchor and composition — hard" in contract
+    assert "### 3. Content fidelity and presentation expression — hard" in contract
+    assert "### 6. Depth, material and icon discipline — hard" in contract
+    assert "### 7. Semantic economy and final priority — hard" in contract
+    assert "Represent each source-supported concept once" in contract
+    assert "Keep connection lines absent by default" in contract
+    assert "Icons are not a default visual language" in contract
+    assert "glossy or decorative 3D rendering" in contract
+    assert "#F7F6F0" not in contract
+    assert 4_000 < len(contract) < 20_000
 
 
 def test_default_style_choices_still_show_only_original_eight() -> None:
     choices = default_style_choices()
-
     assert choices.count("\n") == 7
     assert "8. 冷白灰 + 深紫" in choices
     assert "9." not in choices
+    assert "10." not in choices
 
 
-def test_style_nine_lock_records_extension_selection() -> None:
+def test_style_nine_lock_records_registry_snapshot_and_reference_image() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         payload = json.loads(lock.read_text(encoding="utf-8"))
 
+    contract = payload["style"]["prompt_contract"]
     assert payload["style"]["id"] == 9
     assert payload["style"]["name"] == "纯白 + 深蓝领导汇报"
     assert payload["policy"]["selected_from_default_8"] is False
     assert payload["policy"]["selected_from_extension"] is True
-    assert "semantic editorial executive-report style" in payload["style"]["prompt_contract"]
-    assert "Icon count is zero by default" in payload["style"]["prompt_contract"]
-    assert "Treat those declarations as the only content truth" in payload["style"]["prompt_contract"]
-    assert "最终执行锁" in payload["style"]["prompt_contract"]
+    assert payload["policy"]["resolved_contract_is_immutable"] is True
+    assert payload["policy"]["executable_style_authority"] == "style_registry_snapshot"
+    assert payload["resolved_contract"]["mode"] == "snapshot"
+    assert payload["resolved_contract"]["source"].endswith(
+        "scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json"
+    )
+    assert payload["resolved_contract"]["sha256"] == sha256(
+        contract.encode("utf-8")
+    ).hexdigest().upper()
     assert payload["reference_image"]["required_for_every_page"] is True
     assert payload["reference_image"]["path"].endswith("palette-09.png")
 
 
-def test_style_nine_ignores_lock_snapshot_and_caller_controlled_source_path() -> None:
+def test_legacy_style_nine_lock_ignores_caller_controlled_documentation_source() -> None:
     with TemporaryDirectory() as directory:
         root = Path(directory)
         reference = root / "visual-system.md"
         reference.write_text(
-            "## 扩展风格9：测试\n\nStyle 09 only.\n\n"
-            "  ## 扩展风格10：测试\n\nStyle 10 must not leak.\n",
+            "## 扩展风格9：测试\n\ncaller-controlled stale contract\n",
             encoding="utf-8",
         )
         lock = root / "visual_style_lock.json"
@@ -178,41 +140,43 @@ def test_style_nine_ignores_lock_snapshot_and_caller_controlled_source_path() ->
         payload = load_style_lock(lock)
 
     contract = payload["style"]["prompt_contract"]
-    assert "Style 09 only." not in contract
-    assert "Style 10 must not leak." not in contract
-    assert "semantic editorial executive-report style" in contract
-    assert Path(payload["style"]["prompt_contract_source"]).as_posix().endswith(
-        "references/visual-system.md"
+    assert "caller-controlled stale contract" not in contract
+    assert "pure white background #FFFFFF" in contract
+    assert payload["migration"]["from"] == "legacy_live_refresh"
+    assert payload["migration"]["to"] == "style_registry_snapshot"
+    assert payload["style"]["prompt_contract_source"].endswith(
+        "scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json"
     )
 
 
-def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
+def test_style_nine_contract_reaches_content_first_prompt_compiler() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         contract = render_content_first_style_contract(lock)
 
-    assert "semantic editorial executive-report style" in contract
-    assert "### 1. Content authority and priority — hard" in contract
-    assert "### 5. Shape, material and icon discipline — hard" in contract
-    assert "Icon count is zero by default" in contract
+    assert "【视觉风格｜不上屏】" in contract
+    assert "pure white background #FFFFFF" in contract
+    assert "### 1. Style identity and semantic principle — hard" in contract
+    assert "### 2. Semantic anchor and composition — hard" in contract
+    assert "### 6. Depth, material and icon discipline — hard" in contract
     assert "semantic_tags:" not in contract
     assert "style09:scope" not in contract
-    assert "最终执行锁" in contract
 
 
-def test_style_nine_is_a_compact_global_contract_not_a_page_clause_selector() -> None:
+def test_style_nine_is_a_global_contract_not_a_page_clause_selector() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
-        contract = render_content_first_style_contract(
+        base = render_content_first_style_contract(lock)
+        tagged = render_content_first_style_contract(
             lock,
             semantic_tags=frozenset({"flow", "feedback"}),
         )
 
-    assert "### 2. Visual identity — hard" in contract
-    assert "### 6. Compact exclusion set — hard" in contract
-    assert "The page prompt already declares the exact visible text" in contract
-    assert "Identify the page’s core judgment" not in contract
-    assert "semantic_tags:" not in contract
+    assert tagged == base
+    assert "### 4. Reusable composition grammars" in tagged
+    assert "#### A. Continuous object transformation" in tagged
+    assert "#### D. Multi-source convergence" in tagged
+    assert "semantic_tags:" not in tagged
 
 
 def test_style_nine_infers_multiple_page_semantic_tags_without_incidental_boundary() -> None:
@@ -233,29 +197,25 @@ def test_style_nine_infers_multiple_page_semantic_tags_without_incidental_bounda
     assert "boundary" not in tags
 
 
-def test_style_nine_people_rule_comes_from_the_single_style_contract() -> None:
+def test_style_nine_terminal_lock_is_reasserted_once_at_absolute_end() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
+        runtime = load_runtime_style_contract(lock)
+        assert runtime.terminal_lock
+        duplicated_line = next(
+            line.strip()
+            for line in runtime.terminal_lock.splitlines()
+            if line.strip()
+        )
         prompt = enforce_style09_terminal_lock(
-            "页面场景要求联合团队围桌讨论。\n默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。",
+            f"Page-specific constraint.\n{duplicated_line}\nNo invented facts.",
             lock,
         )
 
-    rule = "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。"
-    assert "### Final ImageGen execution lock" not in prompt
-    assert prompt.count(rule) == 1
-
-
-def test_style_nine_terminal_lock_helper_is_not_the_formal_style_consumer() -> None:
-    with TemporaryDirectory() as directory:
-        lock = write_project_style_lock(project=Path(directory), style_id=9)
-        prompt = enforce_style09_terminal_lock(style_contract(lock), lock)
-
-    assert prompt.count("### Final ImageGen execution lock — hard") == 0
-    assert prompt.count("【最终视觉执行约束｜最高优先级】") == 1
-    terminal_lock = prompt.split("【最终视觉执行约束｜最高优先级】", 1)[1]
-    assert terminal_lock.count("真实并列项可以等权处理") == 1
-    assert "purposeful connectors" not in prompt
+    assert prompt.count(TERMINAL_EXECUTION_HEADING) == 1
+    assert prompt.count(duplicated_line) == 1
+    assert "No invented facts." in prompt
+    assert prompt.rstrip().endswith(runtime.terminal_lock.strip())
 
 
 def test_final_script_pages_cli_accepts_explicit_style_nine() -> None:
@@ -271,7 +231,6 @@ def test_final_script_pages_cli_accepts_explicit_style_nine() -> None:
             "9",
         ]
     )
-
     assert args.style_id == 9
 
 
@@ -281,7 +240,6 @@ def test_pair_manifest_accepts_explicit_style_nine() -> None:
         script = root / "script.md"
         output = root / "output"
         script.write_text("## 第1页：扩展风格\n组件A：业务内容\n", encoding="utf-8")
-
         code = pair_manifest_main(
             [
                 "--script",
@@ -296,31 +254,13 @@ def test_pair_manifest_accepts_explicit_style_nine() -> None:
                 "9",
             ]
         )
-
     assert code == 0
 
 
-def test_style_nine_contract_suppresses_duplicate_response_structures() -> None:
-    with TemporaryDirectory() as directory:
-        lock = write_project_style_lock(project=Path(directory), style_id=9)
-        payload = json.loads(lock.read_text(encoding="utf-8"))
+def test_style_nine_contract_uses_page_specific_evidence_without_generic_dashboard_fallback() -> None:
+    contract = resolve_default_style(style_id=9)["prompt_contract"]
 
-    contract = payload["style"]["prompt_contract"]
-    assert "### 6. Compact exclusion set — hard" in contract
-    assert "Show each approved text unit once" in contract
-    assert "second conclusion structure or decorative summary band" in contract
-    assert "建设响应" not in contract
-    assert "duplicate process chain" in contract
-
-
-def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document_carriers() -> None:
-    with TemporaryDirectory() as directory:
-        lock = write_project_style_lock(project=Path(directory), style_id=9)
-        payload = json.loads(lock.read_text(encoding="utf-8"))
-
-    contract = payload["style"]["prompt_contract"]
-    assert "Use only objects, actions, states, content/data assets, evidence fragments" in contract
-    assert "use one dominant object or localized scene" in contract
-    assert "For abstract, enumerative, policy, data or evidence-heavy pages" in contract
-    assert "publication-like layout is valid and may contain no scene" in contract
-    assert "Icon count is zero by default." in contract
+    assert "Suitable visual material includes:" in contract
+    assert "never a generic control room, dashboard wall or stock BI screen" in contract
+    assert "prefer the flat structured relationship field over a generic technology scene" in contract
+    assert "Never assign one icon to each bullet, module, stage, actor, capability or message" in contract
