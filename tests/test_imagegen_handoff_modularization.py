@@ -4,8 +4,6 @@ import importlib
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import pytest
-
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.imagegen_pipeline.style_library import (
     resolve_default_style,
@@ -124,6 +122,10 @@ def test_compiled_prompt_metadata_uses_current_compiler_and_style09() -> None:
     assert "pure white background #FFFFFF" in compiled.prompt
 
 
-def test_retired_style10_is_not_reintroduced_by_compatibility_facade() -> None:
-    with pytest.raises(ValueError, match="unknown CyberPPT style selection"):
-        resolve_default_style(style_id=10)
+def test_legacy_style10_alias_does_not_create_second_facade_authority() -> None:
+    style9 = resolve_default_style(style_id=9)
+    style10 = resolve_default_style(style_id=10)
+
+    assert style10["id"] == 9
+    assert style10["prompt_contract_sha256"] == style9["prompt_contract_sha256"]
+    assert style10["legacy_alias_from_style_id"] == 10
