@@ -38,7 +38,11 @@ def test_final_script_schema_places_content_load_on_slide_items() -> None:
         "deck": {"title": "测试", "communication_goal": "测试跨阶段契约"},
         "slides": [{"id": "P1", "page_type": "content", "title": "推进安排",
                     "mission": "说明推进安排", "core_message": "形成协同机制",
+                    "argument": {"pattern": "progression", "chain": ["责任分工", "协同推进"]},
+                    "full_copy": "明确责任分工，形成协同推进机制。",
                     "onscreen": [{"heading": "协同推进", "text": "明确责任分工"}],
+                    "visual_thesis": "责任分工推动协同机制形成。",
+                    "speaker_notes": "重点说明各方责任如何在推进过程中衔接。",
                     "content_load": "dense"}],
     }
     validator = Draft202012Validator(schema)

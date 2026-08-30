@@ -1,292 +1,93 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cyberppt.local/contracts/deck-plan.schema.json",
-  "title": "CyberPPT Deck Plan",
+  "title": "CyberPPT Deck Plan v2 Lean",
   "type": "object",
-  "required": ["communication_goal", "plan_contract_version", "planning_profile", "source_structure_mode", "chapters", "pages"],
-  "$defs": {
-    "relation_basis": {"type": "string", "enum": ["explicit", "inferred"]},
-    "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
-    "evidence_fit_review_item": {
-      "type": "object",
-      "required": ["evidence_ref", "fit", "role", "reason"],
-      "properties": {
-        "evidence_ref": {"type": "string", "minLength": 1},
-        "fit": {"type": "string", "enum": ["direct", "indirect", "topic_only", "no", "uncertain"]},
-        "role": {"type": "string", "minLength": 1},
-        "reason": {"type": "string", "minLength": 1}
-      },
-      "additionalProperties": false
-    },
-    "evidence_fit_review": {
-      "type": "object",
-      "required": ["question", "items", "counter_case", "verdict"],
-      "properties": {
-        "question": {"type": "string", "minLength": 1},
-        "items": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_fit_review_item"}},
-        "counter_case": {"type": "string", "minLength": 1},
-        "verdict": {"type": "string", "enum": ["keep", "rename", "move", "split", "reject"]}
-      },
-      "additionalProperties": false
-    },
-    "structural_operation": {"type": "string", "enum": ["preserve", "split", "merge_within_chapter", "group_adjacent_source_chapters", "user_authorized_cross_chapter"]},
-    "content_route": {
-      "type": "object",
-      "required": ["primary"],
-      "properties": {
-        "primary": {"type": "string", "enum": ["state", "diagnosis", "system", "action", "source_native"]},
-        "facets": {"type": "array", "uniqueItems": true, "items": {"type": "string", "enum": ["background", "current", "progress", "comparison", "risk", "boundary", "coordination", "next_step"]}},
-        "confidence": {"$ref": "#/$defs/confidence"},
-        "basis": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-        "rationale": {"type": "string", "minLength": 1},
-        "meaning_signals": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
-      },
-      "additionalProperties": false
-    },
-    "stage02_readiness": {
-      "type": "object",
-      "properties": {
-        "continuous_sentence_signals": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "containers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["id", "heading"],
-            "properties": {
-              "id": {"type": "string", "minLength": 1},
-              "heading": {"type": "string", "minLength": 1},
-              "role": {"type": "string", "enum": ["module", "table", "shared"]}
-            },
-            "additionalProperties": false
-          }
-        },
-        "tables": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["container_id", "header_rows"],
-            "properties": {
-              "container_id": {"type": "string", "minLength": 1},
-              "header_rows": {"type": "integer", "minimum": 0},
-              "header_role": {"type": "string", "enum": ["header", "body", "note"]},
-              "body_role": {"type": "string", "enum": ["header", "body", "note"]},
-              "note_role": {"type": "string", "enum": ["header", "body", "note"]}
-            },
-            "additionalProperties": false
-          }
-        }
-      },
-      "additionalProperties": false
-    },
-    "onscreen_module": {
-      "type": "object",
-      "required": ["heading", "evidence_refs", "required_signals"],
-      "properties": {
-        "heading": {"type": "string", "minLength": 1},
-        "evidence_refs": {"type": "array", "items": {"type": "string"}},
-        "required_signals": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-        "forbidden_signals": {"type": "array", "items": {"type": "string"}},
-        "evidence_fit_review": {"$ref": "#/$defs/evidence_fit_review"}
-      },
-      "additionalProperties": true
-    },
-    "primary_relation": {
-      "type": "object",
-      "required": ["type", "scope", "authority"],
-      "properties": {
-        "type": {"type": "string", "enum": ["parallel", "sequence", "hierarchy", "matrix", "mixed", "none"]},
-        "scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-        "authority": {"type": "string", "const": "hard"}
-      },
-      "additionalProperties": false
-    },
-    "secondary_relation": {
-      "type": "object",
-      "required": ["from", "to", "type", "authority"],
-      "properties": {
-        "from": {"type": "string", "minLength": 1},
-        "to": {"type": "string", "minLength": 1},
-        "type": {"type": "string", "enum": ["influence", "dependency", "feedback", "reference"]},
-        "authority": {"type": "string", "const": "soft"},
-        "basis": {"$ref": "#/$defs/relation_basis"},
-        "evidence_ref": {"type": "string", "minLength": 1}
-      },
-      "additionalProperties": false
-    },
-    "onscreen_contract": {
-      "type": "object",
-      "required": ["relation", "detail_axis", "modules"],
-      "properties": {
-        "relation": {"type": "string", "enum": ["parallel", "sequence", "hierarchy", "matrix", "mixed"]},
-        "detail_axis": {"type": "string", "minLength": 1},
-        "expression_mode": {"type": "string", "enum": ["phrase_led", "sentence_led", "mixed"]},
-        "scope_mode": {"type": "string", "enum": ["exclusive", "shared"]},
-        "modules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/onscreen_module"}},
-        "detail_policy": {
-          "type": "object",
-          "properties": {
-            "allowed_roles": {"type": "array", "items": {"type": "string"}},
-            "forbidden_roles": {"type": "array", "items": {"type": "string"}},
-            "label_only_allowed": {"type": "boolean"},
-            "role_markers": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}},
-            "forbidden_patterns": {"type": "array", "items": {"type": "string"}}
-          },
-          "additionalProperties": true
-        }
-      },
-      "additionalProperties": true
-    },
-    "onscreen_composition": {
-      "type": "object",
-      "required": ["mode"],
-      "properties": {
-        "mode": {"type": "string", "enum": ["evidence_first", "selective_lead"]},
-        "lead_budget": {"type": "integer", "minimum": 0}
-      },
-      "allOf": [
-        {
-          "if": {"properties": {"mode": {"const": "evidence_first"}}},
-          "then": {"properties": {"lead_budget": {"const": 0}}}
-        },
-        {
-          "if": {"properties": {"mode": {"const": "selective_lead"}}},
-          "then": {"required": ["lead_budget"], "properties": {"lead_budget": {"minimum": 1}}}
-        }
-      ],
-      "additionalProperties": false
-    },
-    "narrative_candidate": {
-      "type": "object",
-      "required": ["id", "name", "shape", "opening_roles", "audience_question", "objection", "closing_ask", "argument_focus_node_ids", "evidence_refs"],
-      "properties": {
-        "id": {"type": "string", "minLength": 1},
-        "name": {"type": "string", "minLength": 1},
-        "shape": {"type": "string", "minLength": 1},
-        "opening_roles": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-        "audience_question": {"type": "string", "minLength": 1},
-        "objection": {"type": "string", "minLength": 1},
-        "closing_ask": {"type": "string", "minLength": 1},
-        "argument_focus_node_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "loss_reason": {"type": "string", "minLength": 1}
-      },
-      "additionalProperties": false
-    },
-    "narrative_design": {
-      "type": "object",
-      "required": ["mode"],
-      "properties": {
-        "mode": {"type": "string", "enum": ["direct", "competitive"]},
-        "chosen_id": {"type": "string", "minLength": 1},
-        "candidates": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/narrative_candidate"}},
-        "selection_reason": {"type": "string", "minLength": 1},
-        "emotional_curve": {"type": "string", "minLength": 1},
-        "peak_page_id": {"type": "string", "minLength": 1},
-        "no_single_peak_reason": {"type": "string", "minLength": 1},
-        "staged_reveal": {"type": "string", "minLength": 1}
-      },
-      "allOf": [
-        {
-          "if": {"properties": {"mode": {"const": "competitive"}}, "required": ["mode"]},
-          "then": {"required": ["chosen_id", "candidates", "selection_reason"], "properties": {"candidates": {"minItems": 2}}}
-        }
-      ],
-      "additionalProperties": false
-    },
-    "visual_evidence": {
-      "type": "object",
-      "required": ["kind"],
-      "properties": {
-        "kind": {"type": "string", "enum": ["asset", "number", "equation", "fact", "none"]},
-        "ref": {"type": "string", "minLength": 1},
-        "locator": {"type": "string"},
-        "carrying_element": {"type": "string"},
-        "answers": {"type": "string", "enum": ["what", "how", "why"]}
-      },
-      "additionalProperties": false
-    },
-    "source_consumption": {
-      "type": "object",
-      "description": "Foundation-governed source-to-full-copy-to-onscreen contract. New projected foundations require it on sourced content pages; historical foundations remain audit-compatible.",
-      "required": ["mode"],
-      "properties": {
-        "mode": {"type": "string", "enum": ["strict"]},
-        "detail_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "intentional_omissions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["source_refs", "reason"],
-            "properties": {
-              "source_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-              "reason": {"type": "string", "minLength": 8}
-            },
-            "additionalProperties": false
-          }
-        },
-        "full_prose_anchors": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["source_ref", "anchors"],
-            "properties": {
-              "source_ref": {"type": "string", "minLength": 1},
-              "anchors": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-              "minimum_hits": {"type": "integer", "minimum": 1}
-            },
-            "additionalProperties": false
-          }
-        },
-        "onscreen_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "unit_dispositions": {
-          "type": "array",
-          "description": "Per-semantic-unit consumption disposition, keyed by source_ref + unit_id. Optional; when absent, unit-level audit checks are skipped for the page.",
-          "items": {
-            "type": "object",
-            "required": ["source_ref", "unit_id", "disposition"],
-            "properties": {
-              "source_ref": {"type": "string", "minLength": 1},
-              "unit_id": {"type": "string", "minLength": 1},
-              "disposition": {"type": "string", "enum": ["full_copy", "onscreen", "reserved_for_later", "trace_only", "intentional_omission"]},
-              "reason": {"type": "string"}
-            },
-            "additionalProperties": false
-          }
-        }
-      },
-      "additionalProperties": false
-    }
-  },
+  "required": [
+    "communication_goal",
+    "plan_contract_version",
+    "planning_profile",
+    "source_structure_mode",
+    "chapters",
+    "pages"
+  ],
   "properties": {
-    "communication_goal": {"type": "string"},
+    "communication_goal": {"type": "string", "minLength": 1},
     "plan_contract_version": {"const": 2},
     "planning_profile": {"const": "lean"},
-    "delivery_mode": {"type": "string", "enum": ["presented", "self_read"]},
-    "narrative_design": {"$ref": "#/$defs/narrative_design"},
-    "source_thesis": {"type": "string", "description": "Exact statement of foundation.document_thesis; the deck may compress it only at page level."},
-    "source_argument_method": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}, "description": "Ordered argument-node IDs copied from foundation.document_semantics.argument_method."},
     "audience": {"type": "string"},
-    "audience_scope": {"type": "string", "enum": ["internal", "external", "mixed", "unspecified"]},
-    "source_structure_mode": {"type": "string", "enum": ["preserve", "presentation_grouping", "user_authorized_restructure"]},
-    "presentation_structure_mode": {"type": "string", "enum": ["formal_chaptered", "continuous"]},
+    "audience_scope": {
+      "type": "string",
+      "enum": ["internal", "external", "mixed", "unspecified"]
+    },
+    "source_structure_mode": {
+      "type": "string",
+      "enum": ["preserve", "presentation_grouping", "user_authorized_restructure"]
+    },
+    "presentation_structure_mode": {
+      "type": "string",
+      "enum": ["formal_chaptered", "continuous"]
+    },
     "chapter_count_exception": {"type": "string", "minLength": 1},
-    "evidence_fit_review_mode": {"type": "string", "enum": ["strict"]},
-    "narrative_arc": {"type": "string", "description": "The overall source-constrained reasoning path from the audience starting point to the communication goal."},
-    "thesis": {"type": "string", "description": "The single recognition the audience should retain at the end of the deck."},
-    "audience_start": {"type": "string", "description": "The audience's starting recognition or question."},
-    "audience_end": {"type": "string", "description": "The audience recognition reached after the planned narrative."},
-    "storyline": {"type": "array", "description": "Ordered narrative recognition nodes; do not duplicate page prose.", "items": {"type": "string", "minLength": 1}},
-    "content_load_curve": {"type": "string"},
-    "chapters": {"type": "array", "items": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string", "minLength": 1}, "title": {"type": "string"}, "purpose": {"type": "string", "description": "The chapter's contribution to the deck."}, "question": {"type": "string"}, "message": {"type": "string"}, "relationship_to_previous": {"type": "string"}, "source_argument_node_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "source_chapter_ids": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}}, "additionalProperties": true}},
-    "pages": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string", "minLength": 1}, "chapter_id": {"type": "string", "minLength": 1}, "title": {"type": "string", "description": "Tentative concise formal topic title; AUTHOR may refine it."}, "subtitle": {"type": "string"}, "question": {"type": "string"}, "message": {"type": "string"}, "logic": {"type": "string", "description": "The page mission at PLAN time."}, "beat": {"type": "string"}, "spoken_thread": {"type": "string"}, "content": {"type": "array", "items": {"type": "string"}}, "next": {"type": "string"}, "source_argument_node_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "source_refs": {"type": "array", "items": {"type": "string"}}, "source_scope": {"type": "array", "items": {"type": "string"}}, "structural_operation": {"$ref": "#/$defs/structural_operation"}, "page_role": {"type": "string"}, "content_load": {"type": "string", "enum": ["light", "standard", "dense"]}, "receives": {"type": "string"}, "must_include": {"type": "array", "items": {"type": "string"}}, "must_not_include": {"type": "array", "items": {"type": "string"}}, "reserved_for_later": {"type": "array", "items": {"type": "string"}}, "analysis_basis": {"type": "object", "additionalProperties": true}, "visual_evidence": {"$ref": "#/$defs/visual_evidence"}, "content_route": {"$ref": "#/$defs/content_route"}, "stage02_readiness": {"$ref": "#/$defs/stage02_readiness"}, "onscreen_contract": {"$ref": "#/$defs/onscreen_contract"}, "onscreen_composition": {"$ref": "#/$defs/onscreen_composition"}, "source_consumption": {"$ref": "#/$defs/source_consumption"}, "evidence_fit_review": {"$ref": "#/$defs/evidence_fit_review"}, "primary_relation": {"$ref": "#/$defs/primary_relation"}, "secondary_relations": {"type": "array", "items": {"$ref": "#/$defs/secondary_relation"}}, "proof": {"type": "object", "additionalProperties": true}, "visibility_decision": {"type": "string"}}, "additionalProperties": true}}
-  },
-  "allOf": [
-    {
-      "properties": {
-        "chapters": {"items": {"required": ["id", "title", "purpose", "source_chapter_ids"]}},
-        "pages": {"items": {"required": ["id", "title", "question", "logic", "page_role", "source_refs"]}}
-      }
+    "chapters": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/chapter"}
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/page"}
     }
-  ],
-  "additionalProperties": true
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "structural_operation": {
+      "type": "string",
+      "enum": [
+        "preserve",
+        "merge_adjacent",
+        "group_adjacent_source_chapters",
+        "split_for_presentation",
+        "user_authorized_cross_chapter"
+      ]
+    },
+    "chapter": {
+      "type": "object",
+      "required": ["id", "title", "purpose", "source_chapter_ids"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "purpose": {"type": "string", "minLength": 1},
+        "source_chapter_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "structural_operation": {"$ref": "#/$defs/structural_operation"}
+      },
+      "additionalProperties": false
+    },
+    "page": {
+      "type": "object",
+      "required": ["id", "title", "question", "logic", "page_role", "source_refs"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "chapter_id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "question": {"type": "string", "minLength": 1},
+        "logic": {
+          "type": "string",
+          "minLength": 1,
+          "description": "PLAN-time page mission; AUTHOR owns the final proposition and prose."
+        },
+        "page_role": {"type": "string", "minLength": 1},
+        "source_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
 }

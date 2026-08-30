@@ -279,7 +279,10 @@ def _status(project_dir: Path) -> int:
     if foundation.get("valid"):
         foundation_payload = load_json(foundation_path)
         f_issues, f_warnings = audit_foundation_analysis(foundation_payload)
-        if source_index_path.exists():
+        if (
+            _project_profile_for_foundation(foundation_path) not in {"strict", "legacy"}
+            and source_index_path.exists()
+        ):
             source_index = load_json(source_index_path)
             if source_index.get("schema") == "cyberppt.source_index.v2":
                 f_issues.extend(

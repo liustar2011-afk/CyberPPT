@@ -2,7 +2,7 @@ from __future__ import annotations
 import copy, json, re
 from pathlib import Path
 from cyberppt.script_quality.parsing import parse_script_markdown
-from script_engine.contracts import validate_deck_plan, validate_final_script, collect_foundation_source_codes, validate_source_refs_coverage, lint_final_script, check_onscreen_structure, check_full_copy_duplication, outline_final_script, check_speaker_notes_length, check_declared_count, check_onscreen_detail_length, check_onscreen_terminal_punctuation
+from script_engine.contracts import validate_deck_plan, validate_final_script, collect_foundation_source_codes, validate_source_refs_coverage, lint_final_script, check_author_field_contract, check_onscreen_structure, check_full_copy_duplication, outline_final_script, check_speaker_notes_length, check_declared_count, check_onscreen_detail_length, check_onscreen_terminal_punctuation
 from script_engine.render import render_stage02_markdown
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,6 +24,36 @@ def test_validate_final_script_rejects_content_page_missing_required_fields() ->
     issues = validate_final_script(payload)
     assert issues
     assert any("core_message" in issue for issue in issues)
+
+def test_validate_final_script_requires_all_author_fields_on_content_pages() -> None:
+    for field in ("argument", "full_copy", "visual_thesis", "speaker_notes"):
+        payload = copy.deepcopy(_example())
+        del payload["slides"][0][field]
+        issues = validate_final_script(payload)
+        assert any(field in issue for issue in issues), field
+
+def test_author_field_contract_rejects_unregistered_topology_and_nonrelational_visual() -> None:
+    payload = copy.deepcopy(_example())
+    slide = payload["slides"][0]
+    slide["argument"]["pattern"] = "invented-shape"
+    slide["visual_thesis"] = "展示数据治理、可信流通和服务应用。"
+    issues = check_author_field_contract(payload)
+    assert any("AUTHOR_ARGUMENT_PATTERN_UNREGISTERED" in issue for issue in issues)
+    assert any("AUTHOR_VISUAL_THESIS_NONRELATIONAL" in issue for issue in issues)
+    assert any("AUTHOR_ARGUMENT_PATTERN_UNREGISTERED" in issue for issue in lint_final_script(payload))
+
+def test_author_field_contract_rejects_hidden_relation_steps_and_note_restatement() -> None:
+    payload = copy.deepcopy(_example())
+    slide = payload["slides"][0]
+    slide["relationships"][0]["relation"] = "提供数据输入，再通过专家会商形成结论"
+    slide["speaker_notes"] = slide["core_message"]
+    issues = check_author_field_contract(payload)
+    assert any("AUTHOR_RELATION_HIDDEN_INTERMEDIATE" in issue for issue in issues)
+    assert any("AUTHOR_SPEAKER_NOTES_RESTATEMENT" in issue for issue in issues)
+
+def test_author_field_contract_accepts_incremental_notes_and_atomic_edges() -> None:
+    payload = copy.deepcopy(_example())
+    assert check_author_field_contract(payload) == []
 
 def test_validate_final_script_rejects_empty_onscreen_on_content_page() -> None:
     payload = copy.deepcopy(_example())
@@ -77,10 +107,10 @@ def test_validate_deck_plan_rejects_invalid_content_load_enum() -> None:
 
 def test_validate_deck_plan_rejects_page_missing_required_field() -> None:
     payload = copy.deepcopy(_deck_plan_example())
-    del payload["pages"][0]["message"]
+    del payload["pages"][0]["logic"]
     issues = validate_deck_plan(payload)
     assert issues
-    assert any("message" in issue for issue in issues)
+    assert any("logic" in issue for issue in issues)
 
 def test_stage02_markdown_uses_compatible_page_heading() -> None:
     markdown = render_stage02_markdown(_example())
@@ -91,6 +121,14 @@ def test_stage02_markdown_uses_compatible_page_heading() -> None:
     assert "### 上屏文字" in markdown
     assert "### 视觉结构" in markdown
     assert "### 演讲者备注" in markdown
+
+def test_stage02_markdown_renders_registered_argument_topologies() -> None:
+    payload = copy.deepcopy(_example())
+    slide = payload["slides"][0]
+    slide["argument"] = {"pattern": "decision-package", "chain": ["方向", "资源", "安全"]}
+    assert "主论证链：决策分组｜方向 ｜ 资源 ｜ 安全" in render_stage02_markdown(payload)
+    slide["argument"] = {"pattern": "delivery-baseline", "chain": ["平台", "模型", "验收"]}
+    assert "主论证链：验收汇聚｜平台 ＋ 模型 → 验收" in render_stage02_markdown(payload)
 
 def test_stage02_boundary_does_not_leak_internal_artifacts() -> None:
     markdown = render_stage02_markdown(_example())
@@ -369,6 +407,150 @@ def test_lint_final_script_flags_flat_long_multi_step_full_copy() -> None:
     payload["slides"][0]["full_copy"] = payload["slides"][0]["full_copy"].replace("\n\n", "")
     issues = lint_final_script(payload)
     assert any("FULL_COPY_STRUCTURE_FLAT" in issue for issue in issues)
+
+
+def test_lint_final_script_flags_label_led_parallel_subconclusions() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = (
+        "首期建设已经具备三个相互衔接的业务条件："
+        "一是建设内容；二是阶段安排；三是技术支撑。"
+    )
+
+    issues = lint_final_script(payload)
+
+    assert sum("FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE" in issue for issue in issues) == 3
+
+
+def test_lint_final_script_flags_abstract_transformation_parallel_subconclusion() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = (
+        "首期建设已经具备三个相互衔接的业务条件："
+        "一是月度季度分析和年度报告为首期建设提供明确业务入口；"
+        "二是既有预测报告已经形成可复用的数据和流程基础；"
+        "三是统计分析基础经体系化建设可以转化为行业公共预测能力。"
+    )
+
+    issues = lint_final_script(payload)
+
+    assert any("FULL_COPY_PARALLEL_SUBCONCLUSION_ABSTRACT" in issue for issue in issues)
+
+
+def test_lint_final_script_allows_parallel_subconclusion_with_concrete_operating_change() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = (
+        "首期建设已经具备三个相互衔接的业务条件："
+        "一是月度季度分析和年度报告为首期建设提供明确业务入口；"
+        "二是既有预测报告已经形成可复用的数据和流程基础；"
+        "三是月度、季度和年度预测将统一数据口径和分析方法，并形成审校、发布和误差复盘闭环。"
+    )
+
+    issues = lint_final_script(payload)
+
+    assert not any("FULL_COPY_PARALLEL_SUBCONCLUSION" in issue for issue in issues)
+
+
+def test_lint_final_script_flags_abstract_transformation_onscreen_heading() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "heading": "五类体系化建设推动统计分析基础转化为公共预测能力",
+        "items": ["统一业务规则并建立可信数据供给机制"],
+    }]
+
+    issues = lint_final_script(payload)
+
+    assert any("ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION" in issue for issue in issues)
+
+
+def test_lint_final_script_allows_onscreen_heading_with_observable_operating_result() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "heading": "月度、季度和年度预测共用数据与方法，持续形成风险预警",
+        "items": ["基准预测、情景分析、专家修正、报告发布和误差复盘形成业务闭环"],
+    }]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION" in issue for issue in issues)
+
+
+def test_lint_final_script_does_not_reject_transformation_with_measurable_result() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "heading": "体系化建设推动月报生成时间从5天缩短到1天",
+        "items": ["数据校验、图表生成和审校发布使用同一版本"],
+    }]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION" in issue for issue in issues)
+
+
+def test_lint_final_script_accepts_complete_business_predicates_in_parallel_subconclusions() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = (
+        "三类支撑共同建立运行基础："
+        "一是外部团队补充数据工程和模型工程能力；"
+        "二是平台记录数据、模型和报告版本；"
+        "三是周期评价检查数据质量和预测误差。"
+    )
+
+    issues = lint_final_script(payload)
+
+    assert not any("FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE" in issue for issue in issues)
+
+
+def test_lint_final_script_does_not_force_numbering_onto_a_causal_chain() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = (
+        "用电结构持续变化，负荷特征随之复杂，现有分析能力需要扩大数据尺度和预测周期，"
+        "因此项目需要先统一基础数据再推进预测模型建设。"
+    )
+
+    issues = lint_final_script(payload)
+
+    assert not any("FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE" in issue for issue in issues)
+
+
+def test_lint_final_script_flags_multi_module_projection_without_evidence_layer() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "月季分析与年度预测构成首期业务入口"},
+        {"heading": "既有预测工作已经形成可复用基础"},
+        {"heading": "月度、季度和年度预测共用数据与方法，持续形成风险预警"},
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert any("ONSCREEN_EVIDENCE_LAYER_MISSING" in issue for issue in issues)
+
+
+def test_lint_final_script_allows_multi_module_projection_with_decisive_evidence() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {
+            "heading": "月季分析与年度预测构成首期业务入口",
+            "text": "数据、流程和使用需求已经较为成熟",
+        },
+        {
+            "heading": "月度、季度和年度预测共用数据与方法，持续形成风险预警",
+            "text": "审校、发布和误差复盘形成持续运行的业务闭环",
+        },
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_EVIDENCE_LAYER_MISSING" in issue for issue in issues)
+
+
+def test_lint_final_script_keeps_short_single_module_projection_valid() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [
+        {"heading": "月季分析与年度预测构成首期业务入口"}
+    ]
+
+    issues = lint_final_script(payload)
+
+    assert not any("ONSCREEN_EVIDENCE_LAYER_MISSING" in issue for issue in issues)
 
 def test_lint_final_script_flags_onscreen_unrelated_to_core_message() -> None:
     payload = copy.deepcopy(_example())

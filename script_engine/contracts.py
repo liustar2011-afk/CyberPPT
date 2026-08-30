@@ -4,6 +4,7 @@ import difflib, json, re, unicodedata
 from pathlib import Path
 from typing import Any, Iterator
 from jsonschema import Draft202012Validator
+from .delivery_cleanliness import argument_pattern_topology
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / "contracts"
@@ -153,16 +154,160 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
             match = regex.search(text)
             if match:
                 issues.append(f"{field_path}: [{rule_id}] {description} — matched '{match.group(0)}'")
+    issues.extend(check_author_field_contract(final_script))
     issues.extend(check_full_copy_structure(final_script))
     issues.extend(check_full_copy_topic_semantics(final_script))
+    issues.extend(check_full_copy_parallel_subconclusions(final_script))
     issues.extend(check_onscreen_heading_semantics(final_script))
     issues.extend(check_onscreen_detail_semantics(final_script))
+    issues.extend(check_onscreen_projection_structure(final_script))
     issues.extend(check_onscreen_hierarchy_punctuation(final_script))
     issues.extend(check_onscreen_code_context(final_script))
     issues.extend(check_onscreen_core_alignment(final_script))
     return issues
 
 _ITEM_SIMILARITY_THRESHOLD = 0.6
+_MISSION_GENERIC_RE = re.compile(
+    r"^(?:说明|明确|解释|呈现|组织|界定|梳理).{0,12}(?:相关|有关|主要)(?:内容|情况|工作|事项|关系)[。.]?$"
+)
+_VISUAL_RELATION_GRAMMAR_RE = re.compile(
+    r"共同|并列|汇聚|进入|形成|推动|驱动|衔接|决定|贯通|分层|分步|分为|归入|管理|依次|映射|对应|支撑|保障|承接|转化|闭环|递进|循环|流向|接受"
+)
+_PARALLEL_VISUAL_GRAMMAR_RE = re.compile(
+    r"共同|并列|分组|分类|分层|贯穿|纵向|横向|三类|四类|五类|六类|七类|八类"
+)
+_CONVERGENCE_VISUAL_GRAMMAR_RE = re.compile(r"共同|汇聚|形成|构成|支撑|保障|接受|落到|指向")
+_HIDDEN_RELATION_STEP_RE = re.compile(r"[，,；;].{0,24}(?:再|随后|进而|继而|并通过)")
+
+
+def _field_is_blank(value: object) -> bool:
+    return not isinstance(value, str) or not value.strip()
+
+
+def _onscreen_lines(slide: dict[str, Any]) -> list[str]:
+    lines: list[str] = []
+    for module in slide.get("onscreen") or []:
+        if not isinstance(module, dict):
+            continue
+        for key in ("heading", "text"):
+            value = module.get(key)
+            if isinstance(value, str) and value.strip():
+                lines.append(value.strip())
+        lines.extend(
+            item.strip() for item in module.get("items") or []
+            if isinstance(item, str) and item.strip()
+        )
+    return lines
+
+
+def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
+    """Enforce the mechanical floor of the mandatory supporting-field pass.
+
+    Semantic quality remains an AUTHOR/Critic responsibility. This gate checks only
+    high-confidence failures: missing fields, unregistered topology, unusable chains,
+    non-relational visual theses, abstract or multi-step edges and direct note restatement.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        prefix = f"slides.{index} ({slide_id})"
+
+        for field in ("mission", "core_message", "full_copy", "visual_thesis", "speaker_notes"):
+            if _field_is_blank(slide.get(field)):
+                issues.append(f"AUTHOR_FIELD_REQUIRED: {prefix}.{field}: content pages require a non-empty {field}")
+
+        mission = str(slide.get("mission") or "").strip()
+        if mission and _MISSION_GENERIC_RE.fullmatch(mission):
+            issues.append(
+                f"AUTHOR_MISSION_GENERIC: {prefix}.mission: '{mission}' names a generic review topic; "
+                "state the single audience question or page duty"
+            )
+
+        argument = slide.get("argument")
+        if not isinstance(argument, dict):
+            issues.append(f"AUTHOR_ARGUMENT_REQUIRED: {prefix}.argument: content pages require an argument object")
+            topology = None
+            chain: list[object] = []
+        else:
+            pattern = str(argument.get("pattern") or "").strip()
+            topology = argument_pattern_topology(pattern)
+            if topology is None:
+                issues.append(
+                    f"AUTHOR_ARGUMENT_PATTERN_UNREGISTERED: {prefix}.argument.pattern: "
+                    f"'{pattern}' has no registered topology"
+                )
+            chain = argument.get("chain") if isinstance(argument.get("chain"), list) else []
+            usable_chain = [item.strip() for item in chain if isinstance(item, str) and item.strip()]
+            if len(usable_chain) < 2 or len(usable_chain) != len(chain):
+                issues.append(
+                    f"AUTHOR_ARGUMENT_CHAIN_INVALID: {prefix}.argument.chain: provide at least two non-empty semantic nodes"
+                )
+
+        visual_thesis = str(slide.get("visual_thesis") or "").strip()
+        if visual_thesis and not _VISUAL_RELATION_GRAMMAR_RE.search(visual_thesis):
+            issues.append(
+                f"AUTHOR_VISUAL_THESIS_NONRELATIONAL: {prefix}.visual_thesis: '{visual_thesis}' "
+                "does not state a visible direction, grouping, mapping, convergence or closed loop"
+            )
+        if topology == "parallel" and visual_thesis and not _PARALLEL_VISUAL_GRAMMAR_RE.search(visual_thesis):
+            issues.append(
+                f"AUTHOR_VISUAL_TOPOLOGY_CONFLICT: {prefix}.visual_thesis: registered parallel pattern "
+                "requires visible parallel, grouping or shared-dimension grammar"
+            )
+        if topology == "convergence" and visual_thesis and not _CONVERGENCE_VISUAL_GRAMMAR_RE.search(visual_thesis):
+            issues.append(
+                f"AUTHOR_VISUAL_TOPOLOGY_CONFLICT: {prefix}.visual_thesis: registered convergence pattern "
+                "requires inputs to share a visible landing"
+            )
+
+        core = _normalize_item_text(str(slide.get("core_message") or ""))
+        visual = _normalize_item_text(visual_thesis)
+        if core and visual and len(core) >= 16 and difflib.SequenceMatcher(None, core, visual).ratio() >= 0.9:
+            issues.append(
+                f"AUTHOR_VISUAL_THESIS_RESTATEMENT: {prefix}.visual_thesis restates core_message "
+                "instead of declaring the visual relationship"
+            )
+
+        for relation_index, relation in enumerate(slide.get("relationships") or []):
+            if not isinstance(relation, dict):
+                issues.append(f"AUTHOR_RELATION_INVALID: {prefix}.relationships[{relation_index}] must be an object")
+                continue
+            source = str(relation.get("from") or "").strip()
+            target = str(relation.get("to") or "").strip()
+            action = str(relation.get("relation") or "").strip()
+            if not source or not target or not action:
+                issues.append(
+                    f"AUTHOR_RELATION_INCOMPLETE: {prefix}.relationships[{relation_index}] requires from, to and relation"
+                )
+                continue
+            if _HIDDEN_RELATION_STEP_RE.search(action):
+                issues.append(
+                    f"AUTHOR_RELATION_HIDDEN_INTERMEDIATE: {prefix}.relationships[{relation_index}].relation: "
+                    f"'{action}' hides more than one process step inside one edge"
+                )
+            combined = _normalize_item_text(f"{source}{action}{target}")
+            if _GENERIC_TRANSFORMATION_CLAIM_RE.search(combined):
+                issues.append(
+                    f"AUTHOR_RELATION_ABSTRACT_TRANSFORMATION: {prefix}.relationships[{relation_index}]: "
+                    "name the concrete operating mechanism and observable result at both ends"
+                )
+
+        notes = _normalize_item_text(str(slide.get("speaker_notes") or ""))
+        comparison_lines = [
+            _normalize_item_text(str(slide.get("core_message") or "")),
+            *(_normalize_item_text(line) for line in _onscreen_lines(slide)),
+        ]
+        if notes and any(
+            line and len(line) >= 12 and difflib.SequenceMatcher(None, notes, line).ratio() >= 0.88
+            for line in comparison_lines
+        ):
+            issues.append(
+                f"AUTHOR_SPEAKER_NOTES_RESTATEMENT: {prefix}.speaker_notes directly restates a visible judgment; "
+                "add basis, subordinate evidence, a non-material boundary, audience focus or natural transition"
+            )
+    return issues
 
 def _normalize_item_text(text: str) -> str:
     """Strip whitespace and punctuation so near-duplicate items compare on their actual content,
@@ -260,12 +405,22 @@ _SEMANTIC_PREDICATES = (
     "实现", "贯通", "增加", "提出", "转化", "构成", "支撑", "保障",
     "导致", "滞后", "已有", "校准", "承载", "对应", "建成", "推进",
     "确立", "体现", "规定", "检验", "固化", "纳入", "发布", "启动",
+    "扩展", "接入", "帮助", "辅助", "记录", "采用", "补充", "检查",
 )
 _ABSTRACT_TOPIC_SENTENCE_RE = re.compile(
     r"(?:任务|要求|工作|建设|内容).{0,8}(?:具体化|更加明确|进一步明确|更为清晰|具有重要意义|意义重大)"
 )
 _SOURCE_STRENGTH_ABSTRACTION_RE = re.compile(
     r"(?:形成|建立).{0,40}(?:建设内容|阶段进度|技术规则).{0,40}(?:安排|框架)"
+)
+_GENERIC_TRANSFORMATION_CLAIM_RE = re.compile(
+    r"(?:"
+    r"[一二三四五六七八九十\d]+(?:类|项|方面)(?:体系化|系统化|一体化|综合性|整体性)?"
+    r"|(?:体系化|系统化|一体化|综合性|整体性)"
+    r")"
+    r"(?:建设|举措|措施|工作|机制)"
+    r".{0,18}(?:推动|促进|支撑|实现|转化(?:为)?|形成|提升)"
+    r".{0,18}(?:能力|体系|水平|效能|基础|服务)$"
 )
 _FORMAL_TAXONOMY_HEADING_RE = re.compile(r"^(?:[A-Z]\s+|\d{1,2}[.、．\s]+)\S+")
 _CONTEXT_DEPENDENT_HEADING_RE = re.compile(
@@ -331,6 +486,53 @@ def check_full_copy_topic_semantics(final_script: dict[str, Any]) -> list[str]:
     return issues
 
 
+_FULL_COPY_ORDINAL_RE = re.compile(r"(?:^|[：:，,。；;])\s*([一二三四五六七八九十]+)是")
+
+
+def check_full_copy_parallel_subconclusions(final_script: dict[str, Any]) -> list[str]:
+    """Reject label-led branches in an explicit full-copy enumeration.
+
+    Whether source material is genuinely parallel remains an AUTHOR/Critic decision. This
+    narrow outcome gate activates only after an author has explicitly used at least two
+    ``一是/二是/三是`` branches, then verifies that each branch starts with a complete
+    sub-conclusion instead of a generic category label.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        paragraphs = [
+            paragraph.strip()
+            for paragraph in re.split(r"\n\s*\n", str(slide.get("full_copy") or ""))
+            if paragraph.strip()
+        ]
+        for paragraph_index, paragraph in enumerate(paragraphs):
+            matches = list(_FULL_COPY_ORDINAL_RE.finditer(paragraph))
+            if len(matches) < 2:
+                continue
+            for branch_index, match in enumerate(matches):
+                branch_end = matches[branch_index + 1].start() if branch_index + 1 < len(matches) else len(paragraph)
+                branch = paragraph[match.end():branch_end].lstrip("，,：: ")
+                opening = re.split(r"[。；;]", branch, maxsplit=1)[0].strip()
+                compact = _normalize_item_text(opening)
+                if _GENERIC_TRANSFORMATION_CLAIM_RE.search(compact):
+                    issues.append(
+                        f"FULL_COPY_PARALLEL_SUBCONCLUSION_ABSTRACT: slides.{index} ({slide_id}).full_copy "
+                        f"paragraph {paragraph_index + 1}, branch {match.group(1)}: opening '{opening}' names an "
+                        "abstract construction-to-capability transformation without stating the concrete business "
+                        "mechanism or observable operating result"
+                    )
+                elif len(compact) < 12 or not _has_complete_semantic_predicate(opening):
+                    issues.append(
+                        f"FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE: slides.{index} ({slide_id}).full_copy "
+                        f"paragraph {paragraph_index + 1}, branch {match.group(1)}: opening '{opening}' is a label "
+                        "or incomplete clause; begin the numbered branch with an independently intelligible "
+                        "business sub-conclusion before its supporting detail"
+                    )
+    return issues
+
+
 def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
     """Reject short category labels that force readers to infer a module's business meaning.
 
@@ -360,6 +562,13 @@ def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
                     f"ONSCREEN_HEADING_OBJECT_OMITTED: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
                     f"'{heading}' relies on page context to supply the business matter; name the exact deployment, "
                     "project, research output or work item in the heading itself"
+                )
+                continue
+            if _GENERIC_TRANSFORMATION_CLAIM_RE.search(compact):
+                issues.append(
+                    f"ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
+                    f"'{heading}' is grammatically complete but leaves both the construction mechanism and operating "
+                    "result abstract; name what will work differently in the business"
                 )
                 continue
             if (
@@ -417,6 +626,38 @@ def check_onscreen_detail_semantics(final_script: dict[str, Any]) -> list[str]:
                         f"ONSCREEN_DETAIL_GENERIC: slides.{index} ({slide_id}).onscreen[{module_index}].{field}: "
                         f"'{line}' uses a semantic label but leaves the business matter abstract"
                     )
+    return issues
+
+
+def check_onscreen_projection_structure(final_script: dict[str, Any]) -> list[str]:
+    """Require a mechanical evidence floor for normal multi-module self-read pages.
+
+    The semantic relationship between modules remains an AUTHOR/Critic decision. This check
+    only rejects the high-confidence failure where a content page presents several module
+    judgments but none has child text or items, leaving no visible evidence layer at all.
+    A short single-module page remains valid, and one module may carry an integrated judgment
+    without a child when other modules establish the page's evidence layer.
+    """
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        modules = [module for module in slide.get("onscreen") or [] if isinstance(module, dict)]
+        if len(modules) < 2:
+            continue
+        has_evidence_layer = any(
+            (isinstance(module.get("text"), str) and module.get("text", "").strip())
+            or any(isinstance(item, str) and item.strip() for item in module.get("items") or [])
+            for module in modules
+        )
+        if not has_evidence_layer:
+            slide_id = slide.get("id") or f"#{index}"
+            issues.append(
+                f"ONSCREEN_EVIDENCE_LAYER_MISSING: slides.{index} ({slide_id}).onscreen: "
+                "multiple module judgments are presented without any child text or items; "
+                "retain the decisive evidence, condition, scope or result that establishes "
+                "the projected argument layer"
+            )
     return issues
 
 

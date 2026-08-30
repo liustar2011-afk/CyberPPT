@@ -53,7 +53,9 @@ pre-authors judgments, modules, evidence dispositions, onscreen contracts,
 visual relations or speaker threads in PLAN.  v1 strict Deck Plans must be
 migrated to v2 lean before entering this workflow.
 
-AUTHOR writes the complete page argument before selecting onscreen information.
+AUTHOR executes page-logic normalization and the mandatory full-copy structure
+pass, then projects the stabilized argument through the mandatory onscreen
+structure-projection pass before finalizing visible information.
 High-risk pages compare judgment-led and evidence-led candidates and retain only
 the rewritten winner. These passes occur inside the existing three authoritative
 artifacts; they create no Content Plan, checkpoint, gate receipt or review

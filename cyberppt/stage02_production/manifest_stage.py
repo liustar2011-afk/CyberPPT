@@ -129,6 +129,51 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
                 current_item["text_audit"] = prior_item["text_audit"]
 
 
+def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None) -> None:
+    """Keep audited pages when a same-build recovery targets only failed pages.
+
+    A partial ``--pages`` recovery writes to the same manifest path as the
+    original batch.  Without this merge, the new two-page manifest discards
+    every previously audited page and makes the batch ineligible for a safe
+    full-deck continuation.
+    """
+    if not isinstance(prior_manifest, dict):
+        return
+    if (
+        prior_manifest.get("source_script_sha256") != manifest.get("source_script_sha256")
+        or prior_manifest.get("production_mode") != manifest.get("production_mode")
+    ):
+        return
+
+    selected_pages = {
+        int(pair.get("page_number"))
+        for pair in manifest.get("pairs", [])
+        if isinstance(pair, dict) and pair.get("page_number") is not None
+    }
+    retained: list[dict[str, Any]] = []
+    for prior_pair in prior_manifest.get("pairs", []):
+        if not isinstance(prior_pair, dict) or prior_pair.get("page_number") is None:
+            continue
+        page_number = int(prior_pair["page_number"])
+        full = prior_pair.get("full") or {}
+        path = Path(str(full.get("path") or ""))
+        audited = (full.get("text_audit") or {}).get("valid") is True
+        if page_number not in selected_pages and audited and path.is_file():
+            retained.append(prior_pair)
+
+    if not retained:
+        return
+    manifest["pairs"] = sorted(
+        [*manifest.get("pairs", []), *retained],
+        key=lambda pair: int(pair["page_number"]),
+    )
+    manifest["content_page_numbers"] = [
+        int(pair["page_number"])
+        for pair in manifest["pairs"]
+        if isinstance(pair, dict) and pair.get("page_number") is not None
+    ]
+
+
 def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -> ManifestStageResult:
     target_dir = context.build_dir
     prior_manifest_path = target_dir / "page_image_pairs.json"
@@ -155,6 +200,7 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
     manifest["source_script"] = str(context.canonical_script)
     manifest["source_script_sha256"] = context.source_script_sha256
     _reuse_prior_artifacts(manifest=manifest, prior_manifest=prior_manifest, production_mode=context.production_mode)
+    _retain_audited_prior_pairs(manifest=manifest, prior_manifest=prior_manifest)
     write_json(manifest_path, manifest)
     lock_path = _template_text_lock(
         project=context.project,

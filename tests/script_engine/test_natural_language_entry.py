@@ -43,6 +43,13 @@ def test_current_main_agent_executes_author_instead_of_delegating_to_dead_code()
     assert not (ROOT / "scripts" / "author_v16_outline.py").exists()
 
 
+def test_workflow_requires_full_copy_structure_pass_before_onscreen_selection() -> None:
+    workflow = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
+
+    assert "AUTHOR executes page-logic normalization and the mandatory full-copy structure" in workflow
+    assert "mandatory onscreen\nstructure-projection pass before finalizing visible information" in workflow
+
+
 def test_user_facing_states_are_limited_to_plan_and_final() -> None:
     text = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
     assert "脚本规划待确认" in text

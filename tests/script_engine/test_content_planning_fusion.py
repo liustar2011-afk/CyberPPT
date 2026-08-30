@@ -190,6 +190,10 @@ def test_v2_lean_source_refs_are_evidence_boundary_not_full_copy_checklist() -> 
 
 
 def test_strict_foundation_requires_its_source_consumption_contract_before_authoring() -> None:
+    """A v2 lean Deck Plan cannot carry an AUTHOR-owned source_consumption contract
+    (PLAN_PAGE_AUTHOR_FIELDS_FORBIDDEN), so a strict Foundation's
+    source_consumption_policy: required is enforced post-hoc against the actual
+    Final Script slide instead of blocking PLAN."""
     plan = _lean_plan()
     foundation = _foundation()
     foundation.update(
@@ -200,9 +204,23 @@ def test_strict_foundation_requires_its_source_consumption_contract_before_autho
     )
 
     issues, warnings = audit_deck_plan(plan, foundation)
-
-    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
+    assert not any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
     assert not warnings
+
+    final = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "title": "建设部署形成统一约束",
+                "core_message": "国家部署已经形成统一建设约束。",
+                "full_copy": "国家部署给出总体任务，形成建设边界。",
+                "onscreen": [{"heading": "依据", "items": ["国家部署给出总体任务"]}],
+            }
+        ]
+    }
+    final_issues, _ = audit_final_script(final, plan, foundation)
+    assert any("AUTHOR_SOURCE_CONSUMPTION_MISSING" in issue for issue in final_issues)
 
 
 def test_legacy_plan_contract_is_rejected_by_schema() -> None:

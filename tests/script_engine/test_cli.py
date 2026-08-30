@@ -72,6 +72,45 @@ def test_cli_audit_foundation_routes_sibling_source_index_by_project_profile(
     assert "reading_strategy is required for script-profile Foundation" in script_report["issues"]
 
 
+def test_cli_status_routes_sibling_source_index_by_project_profile(tmp_path, capsys) -> None:
+    foundation = {
+        "sources": [{"id": "SRC-1", "path": "source/brief.md", "sha256": "authored"}],
+        "facts": [],
+        "concepts": [],
+        "relations": [],
+        "arguments": [],
+    }
+    stale_index = {
+        "schema": "cyberppt.source_index.v2",
+        "sources": [{"source_id": "SRC-1", "path": "source/brief.md", "sha256": "indexed"}],
+        "source_structure": [],
+        "units": [],
+    }
+
+    for profile in ("strict", "script"):
+        project = tmp_path / f"{profile}-project"
+        (project / "source").mkdir(parents=True)
+        (project / "source/brief.md").write_text("source", encoding="utf-8")
+        (project / "manifest.yml").write_text(f"profile: {profile}\n", encoding="utf-8")
+        script = project / "script"
+        script.mkdir()
+        (script / "foundation.json").write_text(json.dumps(foundation), encoding="utf-8")
+        cache = script / ".cache"
+        cache.mkdir()
+        (cache / "source-index.json").write_text(json.dumps(stale_index), encoding="utf-8")
+
+        assert main(["status", str(project)]) == 0
+        report = json.loads(capsys.readouterr().out)
+        if profile == "strict":
+            assert report["analysis_audit"]["foundation"]["status"] == "passed"
+        else:
+            assert report["analysis_audit"]["foundation"]["status"] == "failed"
+            assert any(
+                "sha256 differs" in issue
+                for issue in report["analysis_audit"]["foundation"]["issues"]
+            )
+
+
 def test_cli_validate_final_fails_on_broken_payload(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     del payload["slides"][0]["core_message"]
@@ -299,7 +338,9 @@ def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, caps
     final_payload.setdefault("deck", {})["delivery_mode"] = "presented"
     final_payload["slides"][0]["page_type"] = "content"
     final_payload["slides"][0]["core_message"] = "单一模块提供简短说明。"
+    final_payload["slides"][0]["full_copy"] = "单一模块提供简短说明。"
     final_payload["slides"][0]["onscreen"] = [{"heading": "单一模块提供简短说明", "text": "简短说明"}]
+    final_payload["slides"][0]["relationships"] = []
     (project_dir / "dist" / "final-script.json").write_text(
         json.dumps(final_payload, ensure_ascii=False),
         encoding="utf-8",

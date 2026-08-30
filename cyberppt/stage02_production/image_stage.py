@@ -108,12 +108,60 @@ def _failed_text_audit_image_path(output_path: Path, attempt: int) -> Path:
     return output_path.with_name(f"{output_path.stem}.attempt-{attempt:02d}-text-audit-failed{output_path.suffix}")
 
 
+def _text_audit_error_crops(failed_image: Path, audit: dict[str, Any], attempt: int) -> list[Path]:
+    """Write zoomed error regions for an image-edit correction request."""
+    try:
+        with Image.open(failed_image) as image:
+            width, height = image.size
+            reported_size = audit.get("image_size")
+            if not (
+                isinstance(reported_size, list)
+                and len(reported_size) == 2
+                and all(isinstance(value, (int, float)) and value > 0 for value in reported_size)
+            ):
+                reported_size = [width, height]
+            scale_x = width / float(reported_size[0])
+            scale_y = height / float(reported_size[1])
+            crops: list[Path] = []
+            for index, issue in enumerate(audit.get("issues", []), start=1):
+                bbox = issue.get("bbox") if isinstance(issue, dict) else None
+                if not (
+                    isinstance(bbox, list)
+                    and len(bbox) == 4
+                    and all(isinstance(value, (int, float)) for value in bbox)
+                ):
+                    continue
+                left, top, right, bottom = (
+                    round(float(bbox[0]) * scale_x),
+                    round(float(bbox[1]) * scale_y),
+                    round(float(bbox[2]) * scale_x),
+                    round(float(bbox[3]) * scale_y),
+                )
+                margin = max(32, round(max(right - left, bottom - top) * 0.75))
+                crop_box = (
+                    max(0, left - margin),
+                    max(0, top - margin),
+                    min(width, right + margin),
+                    min(height, bottom + margin),
+                )
+                if crop_box[2] <= crop_box[0] or crop_box[3] <= crop_box[1]:
+                    continue
+                path = failed_image.with_name(
+                    f"{failed_image.stem}-text-audit-region-{index:02d}{failed_image.suffix}"
+                )
+                image.crop(crop_box).save(path, format="PNG")
+                crops.append(path)
+            return crops
+    except OSError:
+        return []
+
+
 def _text_correction_prompt(base_prompt: str, audit: dict[str, Any]) -> str:
     issues = json.dumps(audit.get("issues", []), ensure_ascii=False, indent=2)
     return f"""{base_prompt}
 
 文字纠错重绘（最高优先级）：
-第一张输入图片是上一轮生成但文字审计未通过的原图。请以该图为基础重新生成，保持其构图、配色、视觉层级、图形关系及所有无关文字不变。
+第一张输入图片是上一轮生成但文字审计未通过的原图。随后的输入图片是按 bbox 截取的错字局部放大图；请以整图为基础、以局部图逐字校正，保持其构图、配色、视觉层级、图形关系及所有无关文字不变。
 只纠正下列已确认的错字或乱码；expected 是正确写法，observed 是原图中的错误写法，bbox 是错误位置（如有）：
 {issues}
 不得忽略、改写或扩展纠错清单，不得借机调整其他内容。所有纠错项必须按 expected 准确呈现。
@@ -292,7 +340,9 @@ def _generate_manifest_images(
                                     "source_image": str(failed_image),
                                     "issues": audit.get("issues", []),
                                 }
-                                attempt_input_images = [failed_image, *input_images]
+                                error_crops = _text_audit_error_crops(failed_image, audit, attempt)
+                                audit["correction_retry"]["error_region_images"] = [str(path) for path in error_crops]
+                                attempt_input_images = [failed_image, *error_crops, *input_images]
                                 prompt = _text_correction_prompt(base_prompt, audit)
                                 correction_audit = audit
                                 continue

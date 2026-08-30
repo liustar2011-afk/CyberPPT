@@ -5,7 +5,9 @@ from pathlib import Path
 
 from script_engine.delivery_cleanliness import (
     argument_pattern_label,
+    argument_pattern_topology,
     check_delivery_cleanliness,
+    render_argument_chain,
     sanitize_delivery_prose,
     sanitize_relation_text,
 )
@@ -19,6 +21,18 @@ def test_argument_pattern_label_maps_internal_models_to_delivery_chinese() -> No
     assert argument_pattern_label("classification / taxonomy") == "分类结构"
     assert argument_pattern_label("progression / maturity") == "演进路径"
     assert argument_pattern_label("implementation") == "推进流程"
+    assert argument_pattern_label("decision-package") == "决策分组"
+    assert argument_pattern_label("risk-control-governance") == "风险保障"
+    assert argument_pattern_label("unregistered-pattern") == ""
+
+
+def test_argument_pattern_topology_and_rendering_preserve_relation_shape() -> None:
+    assert argument_pattern_topology("roadmap") == "directed"
+    assert argument_pattern_topology("decision-package") == "parallel"
+    assert argument_pattern_topology("delivery-baseline") == "convergence"
+    assert render_argument_chain("roadmap", ["起点", "阶段", "结果"]) == "起点 → 阶段 → 结果"
+    assert render_argument_chain("decision-package", ["方向", "资源", "安全"]) == "方向 ｜ 资源 ｜ 安全"
+    assert render_argument_chain("delivery-baseline", ["平台", "模型", "验收"]) == "平台 ＋ 模型 → 验收"
 
 
 def test_relation_cleanup_removes_evidence_grade_annotation() -> None:

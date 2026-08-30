@@ -89,14 +89,21 @@
           },
           "argument": {
             "type": "object",
+            "required": [
+              "pattern",
+              "chain"
+            ],
             "properties": {
               "pattern": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "chain": {
                 "type": "array",
+                "minItems": 2,
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "minLength": 1
                 }
               }
             },
@@ -200,7 +207,11 @@
               "required": [
                 "mission",
                 "core_message",
-                "onscreen"
+                "argument",
+                "full_copy",
+                "onscreen",
+                "visual_thesis",
+                "speaker_notes"
               ],
               "properties": {
                 "mission": {
@@ -209,8 +220,17 @@
                 "core_message": {
                   "minLength": 1
                 },
+                "full_copy": {
+                  "minLength": 1
+                },
                 "onscreen": {
                   "minItems": 1
+                },
+                "visual_thesis": {
+                  "minLength": 1
+                },
+                "speaker_notes": {
+                  "minLength": 1
                 }
               }
             }

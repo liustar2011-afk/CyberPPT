@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from .delivery_cleanliness import argument_pattern_label, sanitize_delivery_prose, sanitize_relation_text
+from .delivery_cleanliness import argument_pattern_label, render_argument_chain, sanitize_delivery_prose, sanitize_relation_text
 
 PAGE_TYPE_LABELS = {"cover": "封面", "contents": "目录", "chapter": "章节页", "content": "内容页", "closing": "封底"}
 DETAIL_LABEL_RE = re.compile(r"^[^\s：:，,。；;、]{2,24}[：:]")
@@ -65,7 +65,7 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
         argument = slide.get("argument") if isinstance(slide.get("argument"), dict) else {}
         pattern = _single_line(argument_pattern_label(argument.get("pattern"))); chain = [_single_line(i) for i in (argument.get("chain") or []) if _text(i)]
         if pattern or chain:
-            logic = " → ".join(chain); value = "｜".join(part for part in (pattern, logic) if part)
+            logic = render_argument_chain(argument.get("pattern"), chain); value = "｜".join(part for part in (pattern, logic) if part)
             lines.append(f"- 主论证链：{value}")
         full_copy = sanitize_delivery_prose(slide.get("full_copy"))
         if full_copy: lines.extend(["", "### 完整文字稿", "", full_copy])

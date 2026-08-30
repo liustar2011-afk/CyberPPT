@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from copy import deepcopy
-
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script
 
 
@@ -13,68 +11,67 @@ def _foundation() -> dict:
             {
                 "id": "ST0001",
                 "statement": "国家数据基础设施建设进入全面实施阶段，明确总体架构和数据全生命周期要求。",
-                "coverage_anchors": ["全面实施阶段", "总体架构"],
+                "status": "来源陈述",
                 "semantic_units": [
                     {"id": "ST0001#0", "text": "国家数据基础设施建设进入全面实施阶段", "claim_role": "fact"},
-                    {"id": "ST0001#1", "text": "明确总体架构和数据全生命周期要求", "claim_role": "fact"},
-                    {"id": "ST0001#2", "text": "形成六项配套技术文件为行业建设提供统一依据", "claim_role": "fact"},
                 ],
             },
+            {
+                "id": "ST0002",
+                "statement": "电力行业已形成六项配套技术文件，为标准落地提供统一依据。",
+                "status": "来源陈述",
+                "number_refs": ["N0001"],
+            },
+            {
+                "id": "ST0003",
+                "statement": "行业协会负责统筹标准宣贯与执行监督工作。",
+                "status": "来源陈述",
+                "entity_refs": ["E0001"],
+            },
+            {
+                "id": "ST0004",
+                "statement": "试点单位已完成首批数据接口改造并进入验收阶段。",
+                "status": "来源陈述",
+                "conditions": ["完成首批接口改造后方可验收"],
+            },
+        ],
+        "numbers": [
+            {"id": "N0001", "value": "6", "unit": "项"},
+        ],
+        "entities": [
+            {"id": "E0001", "name": "中国电力企业联合会"},
         ],
         "concepts": [],
-        "entities": [],
         "relations": [],
         "arguments": [],
         "constraints": [],
-        "numbers": [],
     }
 
 
-def _page() -> dict:
+def _page(source_refs: list[str] | None = None) -> dict:
+    """A v2 lean Deck Plan page: only the source_refs boundary, no AUTHOR fields."""
     return {
         "id": "P01",
-        "page_type": "content",
+        "title": "国家部署",
+        "page_role": "content",
         "question": "国家部署提供了哪些建设依托",
-        "message": "国家部署明确总体架构与配套依据",
         "logic": "并列",
-        "content": ["国家部署"],
-        "source_refs": ["ST0001"],
-        "source_consumption": {
-            "mode": "strict",
-            "full_prose_anchors": [
-                {"source_ref": "ST0001", "anchors": ["全面实施阶段", "总体架构"], "minimum_hits": 2}
-            ],
-            "onscreen_refs": ["ST0001"],
-            "unit_dispositions": [
-                {"source_ref": "ST0001", "unit_id": "ST0001#0", "disposition": "full_copy"},
-                {"source_ref": "ST0001", "unit_id": "ST0001#1", "disposition": "full_copy"},
-                {"source_ref": "ST0001", "unit_id": "ST0001#2", "disposition": "full_copy"},
-            ],
-        },
-        "onscreen_contract": {
-            "relation": "hierarchy",
-            "detail_axis": "国家部署",
-            "modules": [
-                {
-                    "heading": "国家环境",
-                    "evidence_refs": ["ST0001"],
-                    "required_signals": ["全面实施阶段"],
-                }
-            ],
-        },
+        "source_refs": source_refs if source_refs is not None else ["ST0001", "ST0002", "ST0003", "ST0004"],
     }
 
 
 def _plan(page: dict | None = None) -> dict:
     return {
         "communication_goal": "说明国家部署背景",
-        "evidence_fit_review_mode": "strict",
+        "plan_contract_version": 2,
+        "planning_profile": "lean",
+        "source_structure_mode": "preserve",
         "chapters": [],
         "pages": [page or _page()],
     }
 
 
-def _final(full_copy: str | None = None, onscreen_items: list[str] | None = None) -> dict:
+def _final(source_refs: list[str], full_copy: str, onscreen_items: list[str] | None = None) -> dict:
     return {
         "slides": [
             {
@@ -82,11 +79,8 @@ def _final(full_copy: str | None = None, onscreen_items: list[str] | None = None
                 "page_type": "content",
                 "title": "国家部署",
                 "core_message": "国家部署明确总体架构与配套依据",
-                "full_copy": full_copy
-                or (
-                    "国家数据基础设施建设进入全面实施阶段。明确总体架构和数据全生命周期要求。"
-                    "形成六项配套技术文件为行业建设提供统一依据。"
-                ),
+                "source_refs": source_refs,
+                "full_copy": full_copy,
                 "onscreen": [
                     {
                         "heading": "国家环境",
@@ -98,215 +92,181 @@ def _final(full_copy: str | None = None, onscreen_items: list[str] | None = None
     }
 
 
-def test_plan_requires_every_unit_of_a_full_copy_source_to_have_a_disposition() -> None:
-    page = _page()
-    page["source_consumption"]["unit_dispositions"].pop()  # drop ST0001#2
-    issues, _ = audit_deck_plan(_plan(page), _foundation())
-    assert any(
-        "SOURCE_CONSUMPTION_UNIT_MISSING" in issue and "ST0001#2" in issue for issue in issues
-    )
+def test_lean_plan_only_requires_source_refs_boundary() -> None:
+    """PLAN must not be blocked by any AUTHOR-owned source_consumption contract:
+    that field is forbidden on PLAN pages and is audited post-hoc against the
+    Final Script instead."""
+    issues, _ = audit_deck_plan(_plan(), _foundation())
+    assert not any("SOURCE_CONSUMPTION" in issue for issue in issues)
+    assert not any("AUTHOR_FIELDS_FORBIDDEN" in issue for issue in issues)
 
 
-def test_plan_rejects_boilerplate_reason_on_reserved_unit() -> None:
-    page = _page()
-    page["source_consumption"]["unit_dispositions"][-1] = {
-        "source_ref": "ST0001",
-        "unit_id": "ST0001#2",
-        "disposition": "reserved_for_later",
-        "reason": "后续再说",
-    }
-    issues, _ = audit_deck_plan(_plan(page), _foundation())
-    assert any("SOURCE_CONSUMPTION_UNIT_REASON_MISSING" in issue for issue in issues)
+def test_final_requires_slide_to_declare_actual_source_refs() -> None:
+    final = _final([], "国家数据基础设施建设进入全面实施阶段，明确总体架构。")
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_SOURCE_CONSUMPTION_MISSING" in issue for issue in issues)
 
 
-def test_plan_accepts_specific_reason_on_reserved_unit() -> None:
-    page = _page()
-    page["source_consumption"]["unit_dispositions"][-1] = {
-        "source_ref": "ST0001",
-        "unit_id": "ST0001#2",
-        "disposition": "reserved_for_later",
-        "reason": "六项配套技术文件的具体内容留给后续标准清单页展开",
-    }
-    issues, _ = audit_deck_plan(_plan(page), _foundation())
-    assert not any("SOURCE_CONSUMPTION_UNIT" in issue for issue in issues)
-
-
-def test_plan_flags_unknown_unit_id() -> None:
-    page = _page()
-    page["source_consumption"]["unit_dispositions"].append(
-        {"source_ref": "ST0001", "unit_id": "ST0001#99", "disposition": "full_copy"}
-    )
-    issues, _ = audit_deck_plan(_plan(page), _foundation())
-    assert any("SOURCE_CONSUMPTION_UNIT_UNKNOWN" in issue for issue in issues)
-
-
-def test_author_flags_semantic_unit_gap_when_full_copy_drops_a_unit() -> None:
-    """Reproduces the root-cause report's 137-char counterexample: record-level anchors
-    and protected fields survive, but a whole semantic unit silently disappears."""
-    page = _page()
-    plan = _plan(page)
-    foundation = _foundation()
-    # full_copy keeps the anchor phrases (full_prose_anchors still pass) but drops the
-    # third semantic unit (six supporting technical documents) entirely.
-    final = _final("国家数据基础设施建设进入全面实施阶段，明确总体架构和数据全生命周期要求。")
-
-    issues, _ = audit_final_script(final, plan, foundation)
-    assert not any("FULL_COPY_SOURCE_ANCHOR_MISSING" in issue for issue in issues)
-    assert any(
-        "FULL_COPY_SEMANTIC_UNIT_GAP" in issue and "ST0001#2" in issue for issue in issues
-    )
-
-
-def test_author_passes_when_every_full_copy_unit_is_expressed() -> None:
-    page = _page()
-    issues, _ = audit_final_script(_final(), _plan(page), _foundation())
-    assert not any("FULL_COPY_SEMANTIC_UNIT_GAP" in issue for issue in issues)
-
-
-def test_author_flags_onscreen_detail_insufficient_for_declared_onscreen_unit() -> None:
-    page = _page()
-    page["source_consumption"]["unit_dispositions"][0]["disposition"] = "onscreen"
-    plan = _plan(page)
-    foundation = _foundation()
-    final = _final(onscreen_items=["国家部署"])  # too generic, drops the specific unit text
-
-    issues, _ = audit_final_script(final, plan, foundation)
-    assert any(
-        "ONSCREEN_SOURCE_DETAIL_INSUFFICIENT" in issue and "ST0001#0" in issue for issue in issues
-    )
-
-
-def test_positional_ids_work_when_source_truth_did_not_assign_one() -> None:
-    """Real Source Truth data has no ``semantic_units[].id`` field (see
-    cyberppt/stage01_compiler.py); the audit must synthesize a stable
-    ``{source_ref}#{index}`` id rather than requiring one to be persisted, since
-    foundation_projection.py is a deliberately pure mechanical copy that must not
-    add fields Source Truth didn't provide."""
-    foundation = _foundation()
-    for unit in foundation["facts"][0]["semantic_units"]:
-        unit.pop("id")
-    page = _page()
-    issues, _ = audit_deck_plan(_plan(page), foundation)
-    assert not any("SOURCE_CONSUMPTION_UNIT" in issue for issue in issues)
-
-
-def test_pages_without_unit_dispositions_are_unaffected() -> None:
-    page = _page()
-    page["source_consumption"].pop("unit_dispositions")
-    plan = _plan(page)
-    foundation = _foundation()
-    final = _final("国家数据基础设施建设进入全面实施阶段。")
-
-    plan_issues, _ = audit_deck_plan(plan, foundation)
-    final_issues, _ = audit_final_script(final, plan, foundation)
-    assert not any("SOURCE_CONSUMPTION_UNIT" in issue for issue in plan_issues)
-    assert not any(
-        code in issue
-        for issue in final_issues
-        for code in ("FULL_COPY_SEMANTIC_UNIT_GAP", "ONSCREEN_SOURCE_DETAIL_INSUFFICIENT")
-    )
-
-
-def test_contract_v2_requires_unit_dispositions_on_strict_pages() -> None:
-    page = _page()
-    page["source_consumption"].pop("unit_dispositions")
-    foundation = _foundation()
-    foundation["source_consumption_contract_version"] = 2
-
-    issues, _ = audit_deck_plan(_plan(page), foundation)
-
-    assert any("SOURCE_CONSUMPTION_UNIT_CONTRACT_MISSING" in issue for issue in issues)
-
-
-def test_contract_v2_rejects_source_record_without_semantic_units() -> None:
-    page = _page()
-    page["source_consumption"]["unit_dispositions"] = []
-    foundation = _foundation()
-    foundation["source_consumption_contract_version"] = 2
-    foundation["facts"][0]["semantic_units"] = []
-
-    issues, _ = audit_deck_plan(_plan(page), foundation)
-
-    assert any("SOURCE_CONSUMPTION_FOUNDATION_UNITS_MISSING" in issue for issue in issues)
-
-
-def test_lean_plan_cannot_bypass_required_source_consumption() -> None:
-    """Regression: v2 lean planning must retain Foundation-owned strict gates."""
-    page = _page()
-    page.pop("source_consumption")
-    page.pop("onscreen_contract")
-    plan = _plan(page)
-    plan.update({"plan_contract_version": 2, "planning_profile": "lean"})
-    foundation = _foundation()
-    foundation["source_consumption_contract_version"] = 2
-
-    issues, _ = audit_final_script(_final(), plan, foundation)
-
-    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
-
-
-def test_lean_plan_fails_before_author_when_strict_contract_is_missing() -> None:
-    page = _page()
-    page.pop("source_consumption")
-    page.pop("onscreen_contract")
-    plan = _plan(page)
-    plan.update({"plan_contract_version": 2, "planning_profile": "lean"})
-    foundation = _foundation()
-    foundation["source_consumption_contract_version"] = 2
-
-    issues, _ = audit_deck_plan(plan, foundation)
-
-    assert any("SOURCE_CONSUMPTION_CONTRACT_MISSING" in issue for issue in issues)
-
-
-def test_author_rejects_label_enumeration_when_source_units_carry_detail() -> None:
-    page = _page()
-    page["onscreen_contract"]["modules"][0]["heading"] = "标准明细"
-    foundation = _foundation()
-    foundation["facts"][0]["semantic_units"] = [
-        {
-            "id": "ST0001#0",
-            "text": "参考架构明确与国家数据基础设施总体架构的映射关系",
-            "claim_role": "fact",
-        },
-        {
-            "id": "ST0001#1",
-            "text": "标识目录规定电力数据标识管理和目录描述要求",
-            "claim_role": "fact",
-        },
-    ]
-    final = _final(onscreen_items=["参考架构、标识目录"])
-    final["slides"][0]["onscreen"][0]["heading"] = "标准明细"
-
-    issues, _ = audit_final_script(final, _plan(page), foundation)
-
-    assert any("collapses source-backed" in issue for issue in issues)
-
-
-def test_author_accepts_explanatory_items_for_source_backed_labels() -> None:
-    page = _page()
-    page["onscreen_contract"]["modules"][0]["heading"] = "标准明细"
-    foundation = _foundation()
-    foundation["facts"][0]["semantic_units"] = [
-        {
-            "id": "ST0001#0",
-            "text": "参考架构明确与国家数据基础设施总体架构的映射关系",
-            "claim_role": "fact",
-        },
-        {
-            "id": "ST0001#1",
-            "text": "标识目录规定电力数据标识管理和目录描述要求",
-            "claim_role": "fact",
-        },
-    ]
+def test_final_rejects_declared_ref_outside_plan_scope() -> None:
+    page = _page(["ST0001", "ST0002", "ST0003"])
     final = _final(
-        onscreen_items=[
-            "参考架构：明确与国家总体架构的映射关系",
-            "标识目录：规定电力数据标识和目录描述要求",
-        ]
+        ["ST0001", "ST0002", "ST0003", "ST0004"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。"
+        "电力行业已形成六项配套技术文件，为标准落地提供统一依据。"
+        "行业协会负责统筹标准宣贯与执行监督工作。",
     )
-    final["slides"][0]["onscreen"][0]["heading"] = "标准明细"
+    issues, _ = audit_final_script(final, _plan(page), _foundation())
+    assert any("AUTHOR_SOURCE_REF_OUTSIDE_PLAN_SCOPE" in issue and "ST0004" in issue for issue in issues)
 
-    issues, _ = audit_final_script(final, _plan(page), foundation)
 
-    assert not any("collapses source-backed" in issue for issue in issues)
+def test_final_rejects_unknown_source_ref() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003", "ST9999"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。"
+        "电力行业已形成六项配套技术文件，为标准落地提供统一依据。"
+        "行业协会负责统筹标准宣贯与执行监督工作。",
+    )
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_SOURCE_REF_UNKNOWN" in issue and "ST9999" in issue for issue in issues)
+
+
+def test_final_requires_minimum_distinct_facts_for_a_multi_source_page() -> None:
+    """A strict sourced page with several available facts cannot rest the whole
+    argument on a single declared record."""
+    final = _final(["ST0001"], "国家数据基础设施建设进入全面实施阶段。")
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW" in issue for issue in issues)
+
+
+def test_final_lowers_the_distinct_fact_floor_for_a_short_sourced_page() -> None:
+    """A page whose PLAN scope only has one source_ref cannot be held to the
+    three-fact floor (v2 lean's own evidence-selection freedom)."""
+    page = _page(["ST0001"])
+    final = _final(["ST0001"], "国家数据基础设施建设进入全面实施阶段，明确总体架构和数据全生命周期要求。")
+    issues, _ = audit_final_script(final, _plan(page), _foundation())
+    assert not any("AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW" in issue for issue in issues)
+
+
+def test_final_flags_semantics_lost_when_full_copy_ignores_a_declared_source() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。今年工作稳步推进，各方持续关注进展。",
+    )
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_SOURCE_SEMANTICS_LOST" in issue and "ST0002" in issue for issue in issues)
+    assert any("AUTHOR_SOURCE_SEMANTICS_LOST" in issue and "ST0003" in issue for issue in issues)
+
+
+def test_final_flags_protected_number_lost() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。"
+        "电力行业已形成配套技术文件，为标准落地提供统一依据。"
+        "行业协会负责统筹标准宣贯与执行监督工作。",
+    )
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_NUMBER_OR_DATE_LOST" in issue and "ST0002" in issue for issue in issues)
+
+
+def test_final_flags_protected_entity_lost() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。"
+        "电力行业已形成六项配套技术文件，为标准落地提供统一依据。"
+        "有关方面负责统筹标准宣贯与执行监督工作。",
+    )
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_RESPONSIBILITY_LOST" in issue and "ST0003" in issue for issue in issues)
+
+
+def test_final_flags_protected_condition_lost() -> None:
+    page = _page(["ST0004"])
+    final = _final(["ST0004"], "试点单位已完成首批数据接口改造并进入验收阶段。")
+    issues, _ = audit_final_script(final, _plan(page), _foundation())
+    assert any("AUTHOR_CONDITION_LOST" in issue and "ST0004" in issue for issue in issues)
+
+
+def test_final_passes_for_a_well_authored_lean_page() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构和数据全生命周期要求。"
+        "电力行业已形成6项配套技术文件，为标准落地提供统一依据。"
+        "行业协会（中国电力企业联合会）负责统筹标准宣贯与执行监督工作。",
+        onscreen_items=["国家建设进入全面实施阶段", "电力行业已形成6项配套技术文件"],
+    )
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+    assert not any(
+        issue.split(": ", 1)[-1].startswith("AUTHOR_SOURCE")
+        or "AUTHOR_NUMBER_OR_DATE_LOST" in issue
+        or "AUTHOR_RESPONSIBILITY_LOST" in issue
+        or "AUTHOR_CONDITION_LOST" in issue
+        for issue in issues
+    )
+
+
+def test_pages_without_source_refs_are_not_subject_to_the_strict_gate() -> None:
+    """A page that carries no source_refs at all (e.g. a purely narrative page) is
+    outside requires_source_consumption's scope and must not be blocked."""
+    page = _page([])
+    plan = _plan(page)
+    final = _final([], "本页不引用任何 Foundation 记录。")
+    plan_issues, _ = audit_deck_plan(plan, _foundation())
+    final_issues, _ = audit_final_script(final, plan, _foundation())
+    assert not any("SOURCE_CONSUMPTION" in issue for issue in plan_issues)
+    assert not any(code in issue for issue in final_issues for code in ("AUTHOR_SOURCE_CONSUMPTION_MISSING",))
+
+
+def test_final_rejects_thin_single_block_for_multi_fact_page() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段。电力行业已形成6项配套技术文件。"
+        "中国电力企业联合会负责标准宣贯与执行监督。",
+        onscreen_items=["国家建设进入全面实施阶段", "电力行业已形成6项配套技术文件"],
+    )
+
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+
+    assert any("AUTHOR_FULL_COPY_TOO_THIN" in issue for issue in issues)
+
+
+def test_final_rejects_onscreen_claim_absent_from_full_copy() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
+        "电力行业已形成6项配套技术文件，中国电力企业联合会负责标准宣贯与监督。",
+        onscreen_items=["平台已经自动完成全部模型审批", "各省已经进入实时调度运行"],
+    )
+
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+
+    assert any("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED" in issue for issue in issues)
+
+
+def test_final_rejects_relationship_that_exists_only_in_metadata() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
+        "电力行业已形成6项配套技术文件，中国电力企业联合会负责标准宣贯与监督。",
+        onscreen_items=["国家建设进入全面实施阶段", "电力行业已形成6项配套技术文件"],
+    )
+    final["slides"][0]["relationships"] = [
+        {"from": "数据底座", "to": "政策发布", "relation": "自动驱动"}
+    ]
+
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+
+    assert any("AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue for issue in issues)
+
+
+def test_final_rejects_relation_claim_without_materialized_edge() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
+        "配套技术文件与协会统筹工作共同支撑标准落地，形成执行闭环。",
+        onscreen_items=["总体架构明确建设边界", "配套文件与协会统筹形成执行闭环"],
+    )
+    final["slides"][0]["core_message"] = "总体架构与配套机制贯通形成执行闭环"
+
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+
+    assert any("AUTHOR_RELATIONSHIP_NOT_MATERIALIZED" in issue for issue in issues)

@@ -9,26 +9,68 @@ from __future__ import annotations
 import re
 
 
-_ARGUMENT_LABEL_RULES: tuple[tuple[str, str], ...] = (
-    ("classification with optional progression", "分类与演进"),
-    ("situation-tension-response", "问题与回应"),
-    ("problem-to-response", "问题回应"),
-    ("necessity / diagnosis", "问题诊断"),
-    ("evidence synthesis", "证据支撑"),
-    ("resource transformation", "资源转化"),
-    ("operating loop", "运营闭环"),
-    ("value formation", "价值形成"),
-    ("classification", "分类结构"),
-    ("taxonomy", "分类结构"),
-    ("progression", "演进路径"),
-    ("maturity", "演进路径"),
-    ("risk-control-protection", "风险保障"),
-    ("governance / responsibility", "职责关系"),
-    ("architecture", "架构关系"),
-    ("implementation", "推进流程"),
-    ("mechanism", "形成机制"),
-    ("value", "价值结构"),
-)
+_ARGUMENT_PATTERN_SPECS: dict[str, tuple[str, str]] = {
+    "classification with optional progression": ("分类与演进", "directed"),
+    "situation-tension-response": ("问题与回应", "directed"),
+    "situation-complication-response": ("问题与回应", "directed"),
+    "problem-to-response": ("问题回应", "directed"),
+    "problem-to-response mapping": ("问题回应", "directed"),
+    "necessity / diagnosis": ("问题诊断", "directed"),
+    "evidence synthesis": ("证据汇聚", "convergence"),
+    "resource transformation": ("资源转化", "directed"),
+    "operating loop": ("运营闭环", "directed"),
+    "operating-chain": ("业务闭环", "directed"),
+    "value formation": ("价值形成", "convergence"),
+    "classification": ("分类结构", "parallel"),
+    "classification / taxonomy": ("分类结构", "parallel"),
+    "taxonomy": ("分类结构", "parallel"),
+    "taxonomy-mece": ("分类结构", "parallel"),
+    "pyramid-mece": ("并列论据", "parallel"),
+    "progression": ("演进路径", "directed"),
+    "progression / maturity": ("演进路径", "directed"),
+    "maturity": ("演进路径", "directed"),
+    "roadmap": ("推进路径", "directed"),
+    "pyramid-roadmap": ("推进路径", "directed"),
+    "governance-roadmap": ("治理推进", "directed"),
+    "risk-control-protection": ("风险保障", "convergence"),
+    "risk-control-governance": ("风险保障", "parallel"),
+    "governance / responsibility": ("职责关系", "directed"),
+    "governance-chain": ("治理链条", "directed"),
+    "pyramid-governance-chain": ("治理链条", "directed"),
+    "architecture": ("架构关系", "parallel"),
+    "implementation": ("推进流程", "directed"),
+    "mechanism": ("形成机制", "directed"),
+    "value": ("价值结构", "convergence"),
+    "mapping": ("映射关系", "mapping"),
+    "pyramid-mapping": ("映射关系", "mapping"),
+    "pyramid-action": ("行动路径", "directed"),
+    "pyramid": ("论点展开", "directed"),
+    "scr": ("问题与回应", "directed"),
+    "causal": ("因果链条", "directed"),
+    "cycle": ("运行闭环", "directed"),
+    "sequence": ("推进顺序", "directed"),
+    "framework": ("框架结构", "parallel"),
+    "decision-package": ("决策分组", "parallel"),
+    "input-boundary": ("输入分层", "parallel"),
+    "delivery-baseline": ("验收汇聚", "convergence"),
+    "形势研判": ("形势研判", "directed"),
+    "证据综合": ("证据汇聚", "convergence"),
+    "问题诊断": ("问题诊断", "directed"),
+    "问题回应": ("问题回应", "directed"),
+    "设计机制": ("设计机制", "directed"),
+    "分类结构": ("分类结构", "parallel"),
+    "功能映射": ("功能映射", "mapping"),
+    "任务分级": ("任务分级", "parallel"),
+    "推进流程": ("推进流程", "directed"),
+    "治理保障": ("治理保障", "convergence"),
+    "结论收束": ("结论收束", "convergence"),
+    "结论回收": ("结论回收", "convergence"),
+    "并列对照": ("并列对照", "parallel"),
+    "并列归类": ("并列归类", "parallel"),
+    "对应关系": ("对应关系", "mapping"),
+    "优先级分层": ("优先级分层", "parallel"),
+    "保障结构": ("保障结构", "convergence"),
+}
 
 _EVIDENCE_ANNOTATION_RE = re.compile(
     r"[（(]\s*(?:explicit|inferred|speculative)\b[^）)]*[）)]",
@@ -91,18 +133,39 @@ _LAST_CHAPTER_RE = re.compile(r"最后一章[，,][^。！？]*[。！？]?")
 _NEXT_PAGE_ROLE_RE = re.compile(r"具体如何组合角色，将在下一页[^。！？]*[。！？]?")
 
 
-def argument_pattern_label(pattern: object) -> str:
-    """Map internal analytical-model names to short Chinese delivery labels."""
+def argument_pattern_spec(pattern: object) -> tuple[str, str] | None:
+    """Resolve an AUTHOR-declared argument pattern to its label and topology."""
     raw = str(pattern or "").strip()
     if not raw:
+        return None
+    return _ARGUMENT_PATTERN_SPECS.get(raw.lower())
+
+
+def argument_pattern_label(pattern: object) -> str:
+    """Map a registered analytical model to a specific Chinese delivery label."""
+    spec = argument_pattern_spec(pattern)
+    return spec[0] if spec else ""
+
+
+def argument_pattern_topology(pattern: object) -> str | None:
+    """Return the registered rendering topology for an argument pattern."""
+    spec = argument_pattern_spec(pattern)
+    return spec[1] if spec else None
+
+
+def render_argument_chain(pattern: object, chain: list[str]) -> str:
+    """Render chain nodes without inventing direction for parallel or convergent logic."""
+    nodes = [str(item or "").strip() for item in chain if str(item or "").strip()]
+    if not nodes:
         return ""
-    lowered = raw.lower()
-    for token, label in _ARGUMENT_LABEL_RULES:
-        if token in lowered:
-            return label
-    if re.search(r"[A-Za-z]", raw):
-        return "论证关系"
-    return raw
+    topology = argument_pattern_topology(pattern)
+    if topology == "parallel":
+        return " ｜ ".join(nodes)
+    if topology == "convergence" and len(nodes) >= 2:
+        return " ＋ ".join(nodes[:-1]) + " → " + nodes[-1]
+    if topology == "mapping":
+        return " ⇢ ".join(nodes)
+    return " → ".join(nodes)
 
 
 def sanitize_relation_text(value: object) -> str:

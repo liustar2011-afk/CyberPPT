@@ -44,20 +44,27 @@ Run these steps in order for every content page:
    source-supported editorial inference before drafting.
 3. **Author the page conclusion.** `core_message` states what the page means and
    organizes the entire page. It contains no planning label, author self-talk,
-   review language or relationship-construction note.
+   review language or relationship-construction note. Execute the mission and
+   core-message methods in 3.9 before building the argument.
 4. **Build the claim–argument–evidence chain.** State the independent arguments
    that establish `core_message`, then bind each argument to the source-grounded
    evidence that proves, explains or qualifies it. Apply the organising rules in
-   2.8 before prose selection.
+   2.8, the page-logic normalization in 2.9 and the argument-topology method in
+   3.9 before prose selection.
 5. **Write semantic-preserving full copy.** Reorganize source prose into a
    judgment-first hierarchy. Preserve protected payload and omit only subordinate
-   material that does not support the page conclusion.
+   material that does not support the page conclusion. Draft from the paragraph
+   blueprint established in 2.9, then execute the full-copy structure pass in
+   2.10 before selecting onscreen information; do not discover the page logic
+   while writing prose.
 6. **Set the reading form and density boundary.** Before selecting visible copy,
    declare the page's primary reading form, one visible conclusion, its
    top-level information roles and the decisive proof retained for each role.
    Apply the density-and-heading preflight in 2.6 before drafting modules.
-7. **Make an editorial selection.** Select the decisive visible argument. Do not
-   proportionally shorten every paragraph or keep one bullet per source fact.
+7. **Make an editorial selection and project the structure.** Select the decisive
+   visible argument, then execute the mandatory onscreen structure-projection
+   pass in 3.3. Do not proportionally shorten every paragraph, keep one bullet
+   per source fact or rediscover a different page logic during compression.
 8. **Build visible hierarchy and close semantics.** Apply `one page, one
    conclusion; one level, one question; peers, one dimension; children, added
    evidence; different levels, visible relationships`. A normal content module
@@ -85,15 +92,21 @@ Run these steps in order for every content page:
 12. **Expose the business relationship.** When the conclusion claims mapping,
    alignment, coordination, conversion, support or a closed loop, show both ends
    and the action between them. For staged paths, show the applicable year or
-   trigger and the new state reached.
+   trigger and the new state reached. Execute the visual-structure method and
+   atomic relationship-edge test in 3.9.
 13. **Write incremental speaker notes.** Add explanation, subordinate evidence,
    a secondary condition that does not change the visible claim, an audience
    focus or a natural transition. Material conditions remain onscreen. Do not
-   recite the visible modules in sequence.
-14. **Critique and rewrite the whole page.** Compare judgment-led and
-   evidence-led candidates for high-risk, dense, peak or conclusion pages. Keep
-   only the rewritten winner. A failed conclusion, hierarchy or selection causes
-   a whole-page rewrite, not line-by-line patching.
+   recite the visible modules in sequence. Execute the speaker-note increment
+   method in 3.9.
+14. **Critique and rewrite the whole page.** Reconstruct the page logic using
+   the role and ownership tests in 2.9, the paragraph hierarchy tests in 2.10 and
+   the onscreen projection tests in 3.3, then execute the cross-field reverse
+   test in 3.9. Compare judgment-led and evidence-led candidates for high-risk,
+   dense, peak or conclusion pages. Keep only the rewritten winner. A failed
+   question, chain, paragraph role, boundary, conclusion, hierarchy, projection,
+   field role or selection causes a rewrite from the earliest failed step, not
+   line-by-line patching.
 15. **Run whole-deck Critic, then deterministic checks.** Review repeated facts,
    chapter flow, density, conclusion synthesis and adjacent-page scope before
    lint, audit and delivery.
@@ -464,6 +477,110 @@ Critic reviews this map by relation rather than word overlap. Passing source
 coverage or a semantic-completeness lint does not demonstrate a claim,
 argument and evidence chain.
 
+### 2.9 Page-logic normalization and paragraph ownership
+
+Before drafting `full_copy`, AUTHOR must normalize the page logic in working
+judgment. This method is mandatory for every analytical, decision, transition or
+conclusion page and remains useful in reduced form for foundation and taxonomy
+pages. It creates no new project artifact, authoring field, receipt or user gate.
+
+1. **页面问题归一化。** Rewrite the Deck Plan question as one answerable audience
+   question with one decision-bearing verb. A question that joins several roles
+   such as context, basis, requirement, action and outcome must be narrowed to the
+   one role this page owns; the other roles become evidence, an explicit relation
+   or adjacent-page material.
+2. **论证角色分配。** Assign every candidate source fact one primary role on this
+   page: driver or context, existing basis, gap or tension, response or action,
+   result or implication, condition or boundary. A fact may support several deck
+   arguments, but within one page it must have one principal duty. Do not treat
+   these roles as peer modules merely because all facts are relevant.
+3. **Build one directional chain.** Order the retained roles so every transition
+   answers one of three questions: `because of what`, `therefore what`, or `how
+   does it happen`. A valid chain has a readable direction such as `change → new
+   requirement → current gap → construction conclusion`. A set of related facts
+   without a directional predicate remains an inventory and must be regrouped.
+4. **相邻页问题归属。** Compare every proposed paragraph and decision-bearing
+   sentence with the current page question and the immediately adjacent page
+   questions. The sentence belongs to the page whose question it answers most
+   directly. When the same fact is retained on two pages, each occurrence must
+   have a different explicit argument role. Material that explains `how to start`,
+   `what to build`, `when to advance` or `what result to deliver` moves out of a
+   page that only owns `why change is required`, unless that material is the
+   source-supported landing of the current causal chain.
+5. **段落角色单一性。** Build a paragraph blueprint from the directional chain.
+   Each substantive paragraph has one principal role and opens with the
+   corresponding sub-judgment. Every following sentence must prove, explain,
+   qualify or explicitly transition from that sub-judgment. A sentence that
+   introduces a new principal role starts a new paragraph or moves to its owning
+   page. Paragraph count does not certify logic; role continuity does.
+6. **Keep outcomes at their supported landing.** An implementation entry,
+   staged action, capability conversion or long-term result cannot appear as a
+   sibling proof of an earlier condition. It appears after the condition through
+   an explicit action or trigger, or on the adjacent page that owns implementation
+   and delivery.
+7. **Run the role-switch Critic.** Ignore the title and visual hierarchy, then
+   label each paragraph and each decision-bearing sentence by its primary role.
+   Reject the draft when one paragraph silently switches roles, a sentence has no
+   parent argument, the response appears before the gap is established, an
+   outcome is presented as evidence for an entry condition, or adjacent-page
+   material answers a different question more directly.
+8. **Rewrite from the earliest failed link.** Repair the page question first,
+   then the directional chain, paragraph ownership, full copy and onscreen
+   selection in that order. Downstream wording edits cannot compensate for an
+   invalid question or chain.
+
+For example, a page that owns `why capability upgrading is required` may use
+`operating change → expanded analytical requirement → current capability gap →
+upgrade conclusion`. A first-phase business entry belongs to the next page when
+that page owns `what to build and where to start`; it stays on the first page
+only when the source makes it a necessary condition of the upgrade conclusion
+and the transition is stated explicitly.
+
+### 2.10 Mandatory full-copy structure pass
+
+Execute this pass after page-logic normalization and before onscreen selection
+for every content page. It is a generative rewrite pass over `full_copy`, not a
+formatting cleanup and not a deterministic text transformation. It creates no
+new project artifact, authoring field, receipt or user gate.
+
+1. **Classify each paragraph's internal relation.** Decide whether its retained
+   material forms genuinely parallel facts, tasks, stages or results; one causal
+   or temporal chain; one claim with qualifications; or a short single point.
+   Do not choose enumeration merely because the source contains several nouns or
+   sentences.
+2. **Build three levels for genuine parallel content.** Rewrite two or more
+   substantive parallel branches as `段首核心结论 → 分项结论句 → 事实明细`. The
+   paragraph lead states what the complete set establishes. Each `一是、二是、三是`
+   starts with an independently intelligible sub-conclusion that names its
+   business object and judgment before giving the document, actor, action,
+   scope, number, date, condition or result that supports it.
+3. **Keep peers on one dimension.** Test the most plausible overlap and the most
+   plausible missing branch. If the branches mix actor, business field, method,
+   maturity judgment or result, regroup them under their actual parents or use a
+   directional chain. A source-faithful mixed list still fails this pass.
+4. **Reject label-led pseudo-structure.** Openings such as `一是建设内容`、
+   `二是阶段安排` and `三是技术支撑` are labels, not sub-conclusions. Rewrite each
+   opening as a complete proposition. The detail may then restate part of that
+   proposition for navigation and proof, but it must add evidence, scope or
+   qualification rather than mechanically repeat it.
+5. **Preserve non-parallel forms.** Keep a short single point as a natural
+   paragraph. Keep a causal or staged chain in its supported order with explicit
+   transitions. Do not force numbering when it would disguise dependency,
+   chronology or qualification as peer logic.
+6. **Flatten and audit before projection.** Read the paragraph without visual
+   indentation and verify that the lead, every sub-conclusion and every evidence
+   detail remains intelligible in sequence. Confirm that each detail has one
+   parent, each sub-conclusion advances the paragraph lead, and the paragraph
+   advances `core_message`. Rewrite the entire paragraph from its role when any
+   link fails; adding ordinal markers to the existing draft does not complete
+   this pass.
+
+Critic repeats this classification independently. Deterministic lint may reject
+explicit numbered branches whose openings are labels or incomplete clauses, but
+it cannot decide whether source meaning is genuinely parallel. A passing lint
+therefore confirms only the mechanical floor; completion requires the AUTHOR
+pass and the role-switched Critic judgment above.
+
 ## 3. Audience-facing construction
 
 ### 3.1 Onscreen selection
@@ -570,7 +687,65 @@ Flatten the page to plain text during Critic: if the reader cannot distinguish
 the page conclusion, module judgments, evidence details and relationship layer
 without color, cards or narration, the hierarchy fails.
 
-### 3.3 Peer dimension and supplementary evidence
+### 3.3 Mandatory onscreen structure-projection pass
+
+Execute this pass after the full-copy structure is stable and before visible
+wording is finalized for every content page. This is a semantic projection and
+editorial selection pass, not proportional abbreviation, paragraph-to-bullet
+conversion or a second page-planning stage. It creates no new project artifact,
+authoring field, receipt or user gate.
+
+1. **Lock the invariant logic skeleton.** Carry forward `core_message`, the
+   retained argument order, each argument's decisive evidence, every material
+   condition and the selected relationship grammar. Compression may reduce
+   evidence volume; it may not change a branch's role, reverse a relation,
+   strengthen its status or create a new grouping dimension.
+2. **Select before shortening.** Decide which full-copy arguments a silent
+   reader must retain. Omit subordinate examples, repeated proof and
+   non-decisive citations. Do not create one visible module for every paragraph
+   or preserve every source fact at equal rank.
+3. **Project semantic levels explicitly.** Project the page conclusion into the
+   visible lead or governing composition; project each retained argument into an
+   independently intelligible module judgment; project only its decisive proof,
+   scope, condition or result into child text or items. A normal multi-module
+   self-read page must expose both the argument layer and an evidence layer.
+4. **Preserve relationship grammar.** Parallel arguments may become peer
+   modules only when they share one dimension. Cause, progression, mapping,
+   conversion, governance and closed-loop relations retain their endpoints,
+   direction, trigger or landing. Do not flatten an `入口 → 基础 → 能力转化`
+   chain into three interchangeable cards.
+5. **Close every visible statement.** Normal module headings remain complete
+   sub-conclusions; evidence lines state what fact establishes them. A formal
+   taxonomy name may remain a heading only with a child that explains its role.
+   Do not shorten a full-copy sub-conclusion into a noun label such as `业务入口`,
+   `实施基础` or `能力转化`.
+   **Reject abstract transformation claims.** Grammatical completeness is not
+   business intelligibility. A heading such as `五类体系化建设推动统计分析基础转化为
+   公共预测能力` still fails because the counted construction, transformation
+   mechanism and observable operating result remain unnamed. Replace it with
+   the concrete change a business user can recognize, such as shared data and
+   methods across monthly, quarterly and annual forecasting, followed by the
+   resulting review, release or warning workflow.
+6. **Check projection completeness by role.** Compare onscreen content with
+   `full_copy`, branch by branch. Every visible item must trace to one retained
+   argument or its evidence. Every omitted item must be subordinate to a visible
+   argument. A condition that changes strength, timing, responsibility or scope
+   remains visible even when its supporting detail moves to notes.
+7. **Flatten and reverse-test the page.** Read only the plain onscreen text and
+   reconstruct `page conclusion → module judgment → decisive evidence` plus the
+   relationship grammar. Then compare that reconstruction with `full_copy`.
+   Rewrite the complete projection when a module has no argument role, a child
+   proves a different claim, peer dimensions differ, evidence disappears or a
+   directional relation becomes a flat list.
+
+Critic performs this reverse test independently. Deterministic lint may reject a
+multi-module page whose modules contain no evidence layer, incomplete headings,
+dangling details or aggregate drift from `core_message`; it cannot determine the
+correct semantic role or relationship grammar. Passing lint confirms the
+mechanical floor only. Completion requires the AUTHOR projection and Critic
+judgment above.
+
+### 3.4 Peer dimension and supplementary evidence
 
 Before keeping a visible sibling list, identify its single comparison dimension:
 actor, capability, stage, problem, task or result. Do not place an actor, a
@@ -584,7 +759,7 @@ provides unique proof the conclusion otherwise lacks.
 Peer groups use comparable explanatory depth. If one standard names its regulated
 object or role, its peers cannot stop at titles alone.
 
-### 3.4 Detail grammar and evidence payload
+### 3.5 Detail grammar and evidence payload
 
 `标签：短语` is an optional compact grammar for a direct evidence detail, not a
 default onscreen sentence pattern. Use it only when the parent has already
@@ -627,7 +802,7 @@ over `信息模型：DL/T 890、CIM、CIS`. When the source provides only a name
 keep it for traceability or omit it from the visible layer; do not invent an
 effect.
 
-### 3.5 Strength, status and modality
+### 3.6 Strength, status and modality
 
 Protect source terms such as issued, formed, undertakes, target, planned,
 recommended, provides a basis and may be connected. Check each audience layer
@@ -652,7 +827,7 @@ action. For example, when the source says the power sector has not developed
 supporting implementation rules, do not recast the national technical
 requirements themselves as having failed to develop those rules.
 
-### 3.6 Relationship, time and density
+### 3.7 Relationship, time and density
 
 If a page claims mapping, alignment, coordination, conversion, support or a closed
 loop, visible copy shows both business objects and the action between them.
@@ -681,7 +856,7 @@ truncating a protected object, action, relationship, condition or qualifier.
 Apply the 2.6 preflight before this late-stage remedy: it governs page reading
 form, information roles and heading scope before prose accumulates.
 
-### 3.7 Speaker notes
+### 3.8 Speaker notes
 
 Speaker notes use complete spoken language that can be read aloud or naturally
 paraphrased. They do not mention “本页”“下一页”“上页”“页面设计”“审核稿” or
@@ -694,6 +869,54 @@ or boundary that does not alter the visible claim's strength, timing,
 responsibility or applicability, an audience focus or a natural transition.
 Material conditions remain visible. Sequentially paraphrasing every visible
 module fails Critic.
+
+### 3.9 Mandatory supporting-field construction pass
+
+Execute this pass for every content page. It gives `mission`, `core_message`,
+`argument`, `visual_thesis`, `relationships` and `speaker_notes` the same
+method discipline already applied to `full_copy` and `onscreen`. The pass occurs
+inside Final Script and creates no new project artifact, authoring field,
+receipt or user gate.
+
+1. **Mission ownership method.** Start from the approved Deck Plan question.
+   Rewrite it as one page duty with one decision-bearing verb and one owned
+   audience question. State what this page must resolve and keep context,
+   response, result, condition and adjacent-page material out unless an explicit
+   relationship makes one of them necessary. A list of topics after `说明` or
+   `明确` does not establish page ownership.
+2. **Core-answer method.** Answer the mission directly. Name the business object,
+   the source-supported judgment or action, its status and the material boundary.
+   Run a one-sentence takeaway test and a claim-stress test. When two independent
+   answers remain, narrow the mission, make their relationship explicit or split
+   the page.
+3. **Argument-topology method.** Choose the smallest topology that proves the
+   core answer: directed chain, parallel grouping, convergence, mapping,
+   governance chain, roadmap or bounded decision package. `argument.pattern`
+   names that topology; every `argument.chain` node has one semantic role; every
+   directed transition has a supported relation. Do not use an arrow to connect
+   items that are merely parallel, grouped or jointly sufficient.
+4. **Visual-structure method.** Project the verified argument topology into
+   `visual_thesis` and atomic `relationships`. The thesis states the visible
+   relationship or spatial grammar, not a shortened copy of `core_message`.
+   Each relationship edge carries one source object, one target object and one
+   connecting action. Split an edge that hides a second actor, intermediate
+   process, trigger or result. Visual fields may simplify evidence volume; they
+   may not reverse direction, invent sequence or strengthen the claim.
+5. **Speaker-note increment method.** Choose the note's incremental role before
+   writing: basis explanation, subordinate evidence, non-material boundary,
+   audience focus or natural transition. Write complete spoken language, then
+   remove every sentence that only repeats the title, core message or visible
+   modules. A longer paraphrase still fails when it adds no new role.
+6. **Cross-field reverse test.** Read only these fields in order:
+   `mission → core_message → argument → visual_thesis/relationships →
+   speaker_notes`. Reconstruct the audience question, answer, proof topology,
+   visible direction and spoken increment. Rewrite from the earliest field whose
+   role cannot be reconstructed or conflicts with a later field.
+
+Critic repeats all six methods independently. Deterministic checks enforce field
+presence, registered topology, non-empty chains, visual relationship grammar,
+high-confidence restatement and incompatible rendering. They provide execution
+evidence for the artifact shape; they do not replace semantic Critic judgment.
 
 ## 4. Review and delivery
 

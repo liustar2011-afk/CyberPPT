@@ -326,48 +326,151 @@
 
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create a restrained executive editorial business-infographic page for formal leadership briefing.
+Create a high-end senior leadership briefing page in a scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation.
 
-### Core visual grammar — hard
+The default visual medium is one open, coherent business scene or concrete business-object field. The page should first read as a clear business judgment expressed through recognizable objects, actions and outcomes, and then as an information structure. Use abstract geometry, boundaries and connectors to organize concrete meaning, not to replace it.
 
-1. Use the page's declared core judgment and business relationship.
-2. Choose one recognizable, page-specific business anchor drawn from named content: an operating scene, business object, content or data asset, professional work environment, evidence structure or visible outcome.
-3. Give the anchor about 35%–50% of the visual field when content permits. Build an asymmetric, unequally weighted shared visual field around it.
-4. Attach two to five open content groupings directly to the anchor through proximity, containment, alignment, scale, crop or overlap. Equal columns, equal rows and equal-detail stages are forbidden.
-5. Express the declared relationship through one large visible action or state change. Use the page-specific relation: comparison, convergence, transformation, controlled containment or outcome.
-6. Complete the reading path with one emphasized judgment or outcome region.
+### Positive construction grammar — hard
 
-Use one primary grammar per page. A second grammar is allowed only when the locked content carries a second essential relationship:
+1. Identify the page’s core judgment and primary business relationship.
+2. Select one recognizable, page-specific business anchor: an operating scene, business object, controlled service field, content or data asset, professional work environment, industry facility, evidence structure or visible outcome.
+3. Give the main anchor approximately 35%–50% of the visual field when content permits. Build one integrated, asymmetric and unequally weighted composition around it.
+4. Organize two to five open content groupings around, within or along the main anchor. These groupings share one visual field and do not require independent cards or panels.
+5. Embed all locked Chinese text into the corresponding scene, object, business field, boundary or outcome region.
+6. Use one or two large semantic actions to show how business objects compare, converge, transform, separate, support, pass through control or produce results.
+7. Create hierarchy through crop, overlap, scale contrast, tonal separation, foreground–background relationships, precise alignment and a few short connectors.
+8. Use one clearly emphasized judgment or outcome region to complete the reading path.
 
-- **Transformation:** one object changes across input, processing, review, control or output.
-- **Attached actions:** supporting capabilities, conditions or outcomes connect directly to one scene or object.
-- **Comparison:** two concrete states reveal a visible difference, gap or transition.
-- **Convergence:** distinct inputs or actors visibly enter one shared result.
-- **Controlled containment:** a protected object remains visible inside a field that shows access, isolation, checkpoints or approved output.
+Suitable anchors include:
+- multiple source materials being parsed into one structured knowledge object;
+- two business or evidence fields compared around one visible gap;
+- one controlled content object moving through review, approval and output;
+- several foundations visibly supporting one shared capability or judgment;
+- several inputs converging into one service, model, decision or result;
+- one protected asset operating inside a controlled service field;
+- one operational environment showing monitoring, analysis, isolation, review or coordinated action.
 
-### Locked Chinese text — hard
+Use one dominant anchor and two to four secondary scene or evidence fragments. Vary their scale, crop and viewpoint. Let some fragments extend beyond local boundaries or overlap quiet color fields so the page feels composed as one visual field rather than assembled from modules.
 
-Allocate complete, high-contrast text-safe regions before adding scene detail. Render all locked Chinese text complete, unchanged and in its original order. Keep each primary grouping's text together in one readable region. Avoid microtext, invented labels and readable text inside screens, documents or interfaces.
+### Locked Chinese text and scene integration — hard
 
-Place text in a quiet field, along an object edge, beside the related action, or inside the outcome region. Text and visual material must identify the same business object, action, condition, state or outcome.
+Keep all locked Chinese text complete, unchanged and in its original order. Do not summarize, rewrite, shorten, relabel or convert paragraphs into compressed tags.
 
-### Scene, hierarchy and materials
+Allocate space for locked text before adding scenes, evidence, icons or decoration. Use one complete and clearly readable text region for each primary content grouping. Do not split one paragraph across several small boxes.
 
-Use one dominant scene or concrete business object. Add only the supporting evidence fragments required by the page's named content; vary crop, scale and viewpoint. A workspace, device, document or industry facility must visibly demonstrate the relevant action or state. Generic office decoration, control rooms and dashboard walls are forbidden.
+Keep body text at normal senior-presentation reading scale, visually equivalent to approximately 24–30 px at 1280 × 720. If space is limited, simplify scenes, reduce evidence, remove decorative detail or enlarge the text field. Never shrink locked text to fit.
 
-Create hierarchy through crop, overlap, scale contrast, tonal separation, precise alignment, selective deep-blue emphasis and shallow foreground–background depth. Use ivory, white, pale blue-grey and deep blue for level separation.
+Render only the locked Chinese text provided in the page script. Screens, documents and interfaces may contain large text-free structures, highlighted regions, check states, contrast areas, approval marks or simplified diagrams, but should not contain invented readable microtext.
 
-Maintain a matte, flat editorial finish with crisp edges and gentle tonal transitions. Depth comes from composition, not floating objects. Use an extremely soft diffuse shadow only when it clarifies a meaningful overlap.
+Treat each primary content grouping as one editorial scene unit containing:
+- one recognizable scene, object or evidence structure;
+- one complete locked-text region;
+- one visible action, condition, state or outcome.
 
-### Symbols, connectors and exclusions
+Place text inside a quiet field within the scene, attach it to the object edge, align it with the corresponding action, or embed it in the outcome region. Text and visual material should read as one semantic unit. The scene carries the business meaning; the locked text completes the judgment.
 
-Icons default to zero. A single small, flat, deep-blue icon is allowed only when it provides immediate semantic recognition inside an existing scene or text grouping.
+### Reusable composition grammars
 
-Keep connection lines absent by default. Express relationships through placement, proximity, grouping, containment, alignment, scale and color. When an explicitly declared cross-object relationship cannot be expressed this way, use one short, plain, undirected connector. Arrows, icon rows, icon walls, card dashboards, repeated device mockups, duplicate summary chains, glossy 3D objects, glassmorphism, neon glow and product-showcase rendering are forbidden.
+Select one primary grammar from the page semantics.
 
-Represent each locked concept once. Supporting elements may add a distinct condition, boundary, evidence or outcome.
+#### A. Continuous object transformation
 
-Priority: locked Chinese text and core judgment → recognizable business anchor → declared business relationship → visible action or state change → evidence and outcome → crop, overlap and tonal depth → auxiliary symbol when indispensable.
+Use one recognizable business object across the page and show it changing through input, processing, review, control or output. Keep it visually continuous rather than splitting it into separate step cards.
+
+#### B. Core scene with attached actions
+
+Place one business object, service field or operating environment in the main visual region. Attach supporting capabilities, conditions, controls or outcomes through direct spatial relationships, unequal scale and selective emphasis.
+
+#### C. Dual-field comparison
+
+Use two concrete business fields or states in a controlled comparison. Show the main difference, mismatch or transition through scale, alignment, crop, selective highlighting and one decisive judgment region.
+
+#### D. Multi-source convergence
+
+Show several distinct sources, foundations or actors entering one shared service, capability, result or judgment. Use visible convergence and one dominant outcome field rather than equal parallel modules.
+
+#### E. Concrete controlled containment
+
+Place one recognizable protected object, data asset, content object or operating scene inside a controlled field. Express access, isolation, protection and approved output through checkpoints, partial boundaries, state changes and spatial depth. Keep the concrete object visible; the boundaries organize the relationship rather than becoming the page’s main subject.
+
+Use one grammar per page unless the locked content clearly requires a second relationship.
+
+### Open grouping and executive hierarchy
+
+Use open content groupings within one shared visual field. Group content through common alignment, proximity, shared background tone, partial boundaries and direct attachment to the main scene or object.
+
+Create refinement through:
+- one strong visual judgment;
+- one dominant business anchor;
+- unequal scale, density and detail;
+- controlled asymmetric whitespace;
+- large calm scene regions;
+- precise alignment;
+- selective deep-blue emphasis;
+- one subordinate supporting area;
+- clear foreground, middle-ground and background relationships;
+- open edges and partial contours;
+- short, purposeful connectors.
+
+The core judgment or principal business relationship carries the greatest visual weight. Supporting evidence and explanations remain quieter and subordinate.
+
+Do not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages.
+
+Use two to five open groupings, one key outcome region, one large semantic action per primary grouping, at most one supporting evidence object per grouping, and four to six essential connectors across the page.
+
+### Scene richness and visual expression
+
+Create visual richness through meaningful scene selection, varied cropping, unequal scale, selective overlap and viewpoint changes.
+
+Prefer:
+- one dominant scene or concrete business object;
+- one partially cropped supporting scene;
+- one or two close-up evidence fragments;
+- one clearly emphasized outcome or judgment region.
+
+Use realistic or semi-realistic industry and business materials where they strengthen meaning: professional operating environments, controlled content objects, data assets, documents in transformation, review activity, analytical workspaces, industry facilities, service interaction or visible results.
+
+A workspace, device or document should visibly demonstrate the relevant action or state. Screens and interfaces are supporting evidence inside a broader scene, not isolated products or the default visual language.
+
+### Depth and material finish
+
+Maintain a flat editorial foundation. Create depth primarily through overlap, cropping, scale contrast, tonal separation and foreground–background relationships.
+
+Use subtle variations of ivory, white, pale blue-grey and deep blue to distinguish levels. Allow scene fragments, business objects and quiet text fields to overlap slightly where this clarifies hierarchy.
+
+Visible drop shadows are not the default treatment. Use an extremely soft, diffuse and low-contrast shadow only at one or two meaningful overlaps. Most text regions and content groupings remain flat and shadow-free.
+
+Use matte surfaces, precise edges, restrained translucency and gentle tonal transitions. Material depth should strengthen the main anchor and meaningful object relationships without producing floating cards, raised panels or exhibition objects.
+
+### Icons and symbolic marks
+
+Use icons only as small embedded recognition cues inside an existing scene, object or text grouping.
+
+The main business meaning is carried by recognizable scenes, concrete objects, visible actions and outcomes. Icons should never become the largest objects, the repeated structure of the page or the default carrier for each content item.
+
+A typical page may contain one or two small icons. Keep them simple, deep blue and visually subordinate.
+
+### Semantic economy
+
+Represent each locked concept once as the primary textual and visual expression.
+
+A supporting element may add an outcome, condition, boundary or evidence, but should not repeat the same label, rebuild the same sequence or add a paraphrased conclusion.
+
+When the main composition already expresses a process, hierarchy, dimensions or layered relationship, do not add a second icon chain, footer process, repeated layer list or extra summary band unless explicitly required by locked text.
+
+Use one primary visual metaphor across the page. Express remaining relationships through the business scene, object state, position, scale, crop, color fields, partial boundaries and connectors.
+
+Do not automatically convert the page into a left structure + right explanation column + bottom summary chain. Supporting text belongs inside the same integrated composition.
+
+### Essential guardrails
+
+Keep the result free from icon walls, repeated device mockups, dense microtext, generic office decoration, product-showcase rendering, duplicated semantic summaries, glossy 3D objects, glassmorphism, neon glow and floating display objects.
+
+These exclusions are secondary. Always prioritize the positive construction grammar, recognizable business anchoring, open scene-led composition, complete locked text, semantic clarity and executive-level visual hierarchy.
+
+Priority: locked Chinese text and core judgment → recognizable business anchor → business relationships → large-scale semantic actions → evidence and outcomes → crop, overlap and tonal depth → auxiliary symbols.
+
+Final result: one calm, highly readable and visually refined executive-report composition with complete locked text, a recognizable business scene or object, open content grouping, clear page-specific meaning, strong hierarchy, natural spatial depth and no unnecessary semantic repetition.
 
 【最终视觉执行约束｜最高优先级】
 

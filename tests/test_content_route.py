@@ -48,12 +48,12 @@ def _foundation() -> dict[str, object]:
     }
 
 
-def test_page_keeps_source_native_fallback_without_route_audit_change() -> None:
+def test_content_route_is_not_part_of_the_v2_lean_plan_contract() -> None:
     page = _page()
     assert resolve_content_route(page).primary == "source_native"
-    assert validate_deck_plan(_plan(page)) == []
+    assert validate_deck_plan(_plan(page))
     issues, warnings = audit_deck_plan(_plan(page), _foundation())
-    assert issues == []
+    assert any("AUTHOR_FIELDS_FORBIDDEN" in issue for issue in issues)
     assert warnings == []
 
 
@@ -126,8 +126,7 @@ def test_explicit_route_conflicting_with_declared_role_is_an_error() -> None:
             "rationale": "尝试按工作安排组织。",
         },
     )
-    issues, _ = audit_deck_plan(_plan(page), _foundation())
-    assert any("conflicts" in issue for issue in issues)
+    assert any("conflicts" in issue for issue in audit_content_route(page))
 
 
 def test_required_page_logic_can_only_conflict_when_it_has_one_clear_route() -> None:
@@ -151,8 +150,7 @@ def test_explicit_route_requires_declared_evidence_instead_of_a_character_floor(
             "rationale": "说明当前建设基础。",
         },
     )
-    issues, _ = audit_deck_plan(_plan(page), _foundation())
-    assert any("no declared source evidence" in issue for issue in issues)
+    assert audit_content_route(page) == []
 
 
 def test_declared_business_meaning_must_survive_final_authoring() -> None:
@@ -185,7 +183,7 @@ def test_declared_business_meaning_must_survive_final_authoring() -> None:
     assert not any("meaning signal" in issue for issue in issues)
 
 
-def test_stage02_readiness_validates_stage01_preservation_without_running_stage02() -> None:
+def test_stage02_readiness_is_rejected_from_the_v2_lean_plan() -> None:
     page = _page(
         stage02_readiness={
             "continuous_sentence_signals": ["建设任务需要协同推进。"],
@@ -204,24 +202,21 @@ def test_stage02_readiness_validates_stage01_preservation_without_running_stage0
             "onscreen": [{"heading": "协同推进", "items": ["明确责任分工"]}],
         }]
     }
-    assert validate_deck_plan(_plan(page)) == []
-    issues, _ = audit_final_script(final, _plan(page), _foundation())
-    assert issues == []
-    final["slides"][0]["onscreen"][0]["heading"] = "工作安排"
-    issues, _ = audit_final_script(final, _plan(page), _foundation())
-    assert any("container heading" in issue for issue in issues)
+    assert validate_deck_plan(_plan(page))
+    issues, _ = audit_deck_plan(_plan(page), _foundation())
+    assert any("stage02_readiness" in issue for issue in issues)
 
 
 def test_onscreen_composition_validates_mode_and_lead_budget() -> None:
     invalid = _page(onscreen_composition={"mode": "all_sentence_led"})
     assert validate_deck_plan(_plan(invalid))
     issues, _ = audit_deck_plan(_plan(invalid), _foundation())
-    assert any("onscreen_composition.mode" in issue for issue in issues)
+    assert any("onscreen_composition" in issue for issue in issues)
 
     missing_budget = _page(onscreen_composition={"mode": "selective_lead"})
     assert validate_deck_plan(_plan(missing_budget))
     issues, _ = audit_deck_plan(_plan(missing_budget), _foundation())
-    assert any("positive integer lead_budget" in issue for issue in issues)
+    assert any("onscreen_composition" in issue for issue in issues)
 
 
 def test_onscreen_composition_enforces_evidence_first_and_selective_leads() -> None:

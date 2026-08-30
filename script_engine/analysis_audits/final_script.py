@@ -12,12 +12,20 @@ _STATUS_PRESERVATION_MARKERS = {
 
 
 def _status_strength_preserved(status: str, text: str) -> bool:
-    """Preserve modality without leaking internal status labels into prose."""
+    """Preserve modality without leaking internal status labels into prose.
 
-    if not status or status == "现状":
+    Only statuses with a known modal-marker vocabulary (规划/建议/待确认) impose a
+    check; any other status (e.g. a Foundation's neutral "来源陈述"/"现状" label) is a
+    compiler-internal category, not a phrase a human would ever write verbatim in
+    prose, so it is treated as carrying no modality claim to preserve.
+    """
+
+    if not status:
         return True
     markers = _STATUS_PRESERVATION_MARKERS.get(status)
-    return status in text if markers is None else any(marker in text for marker in markers)
+    if markers is None:
+        return True
+    return any(marker in text for marker in markers)
 
 def _onscreen_module_lines(module: dict[str, Any]) -> list[str]:
     lines: list[str] = []
@@ -318,174 +326,298 @@ def _authored_relationships_issues(page: dict[str, Any], slide: dict[str, Any]) 
         )
     return issues
 
-def _audit_authored_source_consumption(
+def _audit_lean_authored_source_consumption(
     page: dict[str, Any],
     slide: dict[str, Any],
     items: dict[str, dict[str, Any]],
     foundation: dict[str, Any],
 ) -> list[str]:
-    """Require assigned source facts in full_copy and selected facts onscreen."""
-    required_policy = requires_source_consumption(page, foundation)
-    contract = page.get("source_consumption")
-    definition_issues = _audit_source_consumption_definition(page, items, foundation)
-    if not isinstance(contract, dict):
-        return definition_issues
-    if contract.get("mode") != "strict":
-        return definition_issues if required_policy else []
-    if not required_policy and foundation.get("source_consumption_policy") == "required":
+    """Audit AUTHOR's actual evidence selection directly against the Final Script slide.
+
+    A v2 lean Deck Plan only states the page's source_refs boundary; it must not carry
+    an AUTHOR-owned source_consumption contract (forbidden by
+    ``_PLAN_FORBIDDEN_PAGE_AUTHOR_FIELDS`` in deck_plan.py). So a strict/legacy
+    Foundation's ``source_consumption_policy: required`` cannot be enforced at PLAN
+    time — it is checked post-hoc against what AUTHOR actually wrote:
+    ``slide.source_refs`` declares which Foundation records were used, and
+    ``full_copy`` must carry their source-specific semantics and protected values.
+    """
+    if not requires_source_consumption(page, foundation):
         return []
 
-    issues = definition_issues
-    detail_refs, omitted_refs, _ = _source_consumption_sets(contract)
-    required_refs = [
-        ref
-        for ref in page.get("source_refs") or []
-        if isinstance(ref, str) and ref and ref not in detail_refs and ref not in omitted_refs
-    ]
-    anchors_by_ref = {
-        str(anchor.get("source_ref")): anchor
-        for anchor in contract.get("full_prose_anchors") or []
-        if isinstance(anchor, dict) and isinstance(anchor.get("source_ref"), str)
+    page_refs = {ref for ref in page.get("source_refs") or [] if isinstance(ref, str) and ref}
+    slide_refs = [ref for ref in slide.get("source_refs") or [] if isinstance(ref, str) and ref]
+
+    if not slide_refs:
+        return [
+            "AUTHOR_SOURCE_CONSUMPTION_MISSING: strict sourced content page requires "
+            "slide.source_refs to declare the Foundation records AUTHOR actually used"
+        ]
+
+    issues: list[str] = []
+    unknown = sorted({ref for ref in slide_refs if ref not in items})
+    if unknown:
+        issues.append(
+            f"AUTHOR_SOURCE_REF_UNKNOWN: slide.source_refs cites unknown foundation records {unknown}"
+        )
+    outside = sorted({ref for ref in slide_refs if ref not in page_refs} - set(unknown))
+    if outside:
+        issues.append(
+            "AUTHOR_SOURCE_REF_OUTSIDE_PLAN_SCOPE: slide.source_refs "
+            f"{outside} fall outside the page's PLAN-approved source_refs boundary"
+        )
+
+    usable_refs = sorted(ref for ref in set(slide_refs) if ref in page_refs and ref in items)
+
+    substantive_page_refs = {
+        ref for ref in page_refs
+        if ref in items and not _looks_like_structural_metadata(_item_text(items[ref]))
     }
+    substantive_usable_refs = [
+        ref for ref in usable_refs
+        if not _looks_like_structural_metadata(_item_text(items[ref]))
+    ]
+    distinct_statements = {
+        str(items[ref].get("statement") or _item_text(items[ref])).strip()
+        for ref in substantive_usable_refs
+        if str(items[ref].get("statement") or _item_text(items[ref])).strip()
+    }
+    minimum_distinct = min(3, len(substantive_page_refs))
+    if minimum_distinct and len(distinct_statements) < minimum_distinct:
+        issues.append(
+            "AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW: usable evidence covers only "
+            f"{len(distinct_statements)} distinct source fact(s), fewer than the required "
+            f"{minimum_distinct}; a strict sourced page cannot rest the whole argument on one fact"
+        )
+
     full_copy = str(slide.get("full_copy") or "")
     compact_full_copy = re.sub(r"\s+", "", full_copy)
 
-    for ref in required_refs:
-        item = items.get(ref)
-        if not isinstance(item, dict):
-            continue
-        anchor_contract = anchors_by_ref.get(ref)
-        if anchor_contract:
-            anchors = [
-                str(value).strip()
-                for value in anchor_contract.get("anchors") or []
-                if str(value).strip()
-            ]
-            hits = [
-                anchor for anchor in anchors
-                if re.sub(r"\s+", "", anchor) in compact_full_copy
-            ]
-            minimum_hits = anchor_contract.get("minimum_hits", len(anchors))
-            if isinstance(minimum_hits, int) and len(hits) < minimum_hits:
-                missing = [anchor for anchor in anchors if anchor not in hits]
-                if not hits:
-                    issues.append(
-                        f"FULL_COPY_SOURCE_REF_MISSING: {ref} has no declared source anchor in full_copy"
-                    )
-                issues.append(
-                    f"FULL_COPY_SOURCE_ANCHOR_MISSING: source_consumption full_copy gap for {ref}: anchor hits "
-                    f"{len(hits)}/{minimum_hits}; missing anchors {missing}; "
-                    f"source statement: {_item_text(item)}"
-                )
-            if required_policy:
-                source_surface = " ".join(_source_surface_values(item))
-                protected_numbers = set(
-                    re.findall(
-                        r"\d+(?:\.\d+)?(?:年\d{1,2}月\d{1,2}日|年|月|日|%|％|万|亿|项|级)?",
-                        source_surface,
-                    )
-                )
-                for number_ref in item.get("number_refs") or []:
-                    number = items.get(number_ref)
-                    if not isinstance(number, dict):
-                        continue
-                    raw_value = number.get("value")
-                    unit = str(number.get("unit") or "").strip()
-                    raw_values = raw_value if isinstance(raw_value, list) else [raw_value]
-                    for raw_entry in raw_values:
-                        value = "" if raw_entry is None else str(raw_entry).strip()
-                        if not value:
-                            continue
-                        protected_numbers.add(value)
-                        if (
-                            not isinstance(raw_value, list)
-                            and unit
-                            and unit not in {"时间", "年份", "生效日期"}
-                        ):
-                            protected_numbers.add(f"{value}{unit}")
-                missing_numbers = sorted(
-                    value for value in protected_numbers
-                    if value and re.sub(r"\s+", "", value) not in compact_full_copy
-                )
-                if missing_numbers:
-                    issues.append(
-                        f"FULL_COPY_NUMBER_OR_DATE_LOST: {ref} lost protected values {missing_numbers}"
-                    )
-
-                missing_conditions = [
-                    str(value).strip()
-                    for value in item.get("conditions") or []
-                    if str(value).strip()
-                    and re.sub(r"\s+", "", str(value)) not in compact_full_copy
-                ]
-                if missing_conditions:
-                    issues.append(
-                        f"FULL_COPY_CONDITION_LOST: {ref} lost source conditions {missing_conditions}"
-                    )
-
-                missing_entities = []
-                for entity_ref in item.get("entity_refs") or []:
-                    entity = items.get(entity_ref)
-                    name = str((entity or {}).get("name") or "").strip()
-                    if name and re.sub(r"\s+", "", name) not in compact_full_copy:
-                        missing_entities.append(name)
-                if missing_entities:
-                    issues.append(
-                        f"FULL_COPY_RESPONSIBILITY_LOST: {ref} lost source actors {missing_entities}"
-                    )
-
-                status = str(item.get("status") or "").strip()
-                if not _status_strength_preserved(status, full_copy):
-                    issues.append(
-                        f"FULL_COPY_STATUS_STRENGTH_LOST: {ref} lost source status '{status}'"
-                    )
-            continue
-
-        if required_policy:
-            issues.append(
-                f"FULL_COPY_SOURCE_ANCHOR_MISSING: {ref} has no strict full_prose_anchors contract"
-            )
-            continue
-
-        statements = [_item_text(item)]
-        statements.extend(
-            str(unit.get("text") or "")
-            for unit in item.get("semantic_units") or []
-            if isinstance(unit, dict) and str(unit.get("text") or "").strip()
+    paragraphs = [
+        paragraph.strip()
+        for paragraph in re.split(r"\n\s*\n", full_copy)
+        if paragraph.strip()
+    ]
+    required_paragraphs = (
+        3 if len(substantive_usable_refs) >= 6
+        else 2 if len(substantive_usable_refs) >= 3
+        else 1
+    )
+    if len(paragraphs) < required_paragraphs:
+        issues.append(
+            "AUTHOR_FULL_COPY_TOO_THIN: full_copy uses "
+            f"{len(substantive_usable_refs)} substantive source facts but exposes only "
+            f"{len(paragraphs)} substantive paragraph(s); at least {required_paragraphs} "
+            "argument paragraph(s) are required so the complete copy preserves an "
+            "audience-facing reasoning hierarchy before onscreen compression"
         )
+
+    selected_source_statements = [
+        statement
+        for ref in substantive_usable_refs
+        for statement in _source_surface_values(items[ref])
+        if statement
+    ]
+    for paragraph_index, paragraph in enumerate(paragraphs):
         overlap = max(
-            (_source_statement_overlap(statement, full_copy) for statement in statements if statement.strip()),
+            (
+                _source_statement_overlap(statement, paragraph)
+                for statement in selected_source_statements
+            ),
             default=0.0,
+        )
+        if overlap < 0.04:
+            issues.append(
+                "AUTHOR_FULL_COPY_PARAGRAPH_UNGROUNDED: full_copy paragraph "
+                f"{paragraph_index + 1} has no source-specific support from the "
+                f"page's declared evidence (overlap={overlap:.3f})"
+            )
+
+    for ref in usable_refs:
+        item = items[ref]
+        primary_statement = str(
+            item.get("statement")
+            or item.get("claim")
+            or item.get("definition")
+            or item.get("relation")
+            or _item_text(item)
+        ).strip()
+        overlap = (
+            _source_statement_overlap(primary_statement, full_copy)
+            if primary_statement else 0.0
         )
         if overlap < 0.08:
             issues.append(
-                f"source_consumption full_copy gap for {ref}: source-specific content is absent "
-                f"(overlap={overlap:.3f}); source statement: {_item_text(item)}"
+                f"AUTHOR_SOURCE_SEMANTICS_LOST: {ref} is declared as used but its source-specific "
+                f"content is absent from full_copy (overlap={overlap:.3f}); "
+                f"source statement: {primary_statement or _item_text(item)}"
             )
 
-    if required_policy:
-        _, _, onscreen_refs = _source_consumption_sets(contract)
-        expected_modules = [
-            module
-            for module in (page.get("onscreen_contract") or {}).get("modules") or []
-            if isinstance(module, dict)
-            and onscreen_refs.intersection(
-                ref for ref in module.get("evidence_refs") or [] if isinstance(ref, str)
+        source_surface = " ".join(_source_surface_values(item))
+        protected_numbers = set(
+            re.findall(
+                r"\d+(?:\.\d+)?(?:年\d{1,2}月\d{1,2}日|年|月|日|%|％|万|亿|项|级)?",
+                source_surface,
             )
+        )
+        for number_ref in item.get("number_refs") or []:
+            number = items.get(number_ref)
+            if not isinstance(number, dict):
+                continue
+            raw_value = number.get("value")
+            unit = str(number.get("unit") or "").strip()
+            raw_values = raw_value if isinstance(raw_value, list) else [raw_value]
+            for raw_entry in raw_values:
+                value = "" if raw_entry is None else str(raw_entry).strip()
+                if not value:
+                    continue
+                protected_numbers.add(value)
+                if not isinstance(raw_value, list) and unit and unit not in {"时间", "年份", "生效日期"}:
+                    protected_numbers.add(f"{value}{unit}")
+        missing_numbers = sorted(
+            value for value in protected_numbers
+            if value and re.sub(r"\s+", "", value) not in compact_full_copy
+        )
+        if missing_numbers:
+            issues.append(f"AUTHOR_NUMBER_OR_DATE_LOST: {ref} lost protected values {missing_numbers}")
+
+        missing_conditions = [
+            str(value).strip()
+            for value in item.get("conditions") or []
+            if str(value).strip() and re.sub(r"\s+", "", str(value)) not in compact_full_copy
         ]
-        actual_by_heading = {
-            str(module.get("heading") or "").strip(): module
-            for module in slide.get("onscreen") or []
-            if isinstance(module, dict)
-        }
-        for module in expected_modules:
-            heading = str(module.get("heading") or "").strip()
-            actual = actual_by_heading.get(heading)
-            if not isinstance(actual, dict) or not _onscreen_module_lines(actual):
+        if missing_conditions:
+            issues.append(f"AUTHOR_CONDITION_LOST: {ref} lost source conditions {missing_conditions}")
+
+        missing_entities = []
+        for entity_ref in item.get("entity_refs") or []:
+            entity = items.get(entity_ref)
+            name = str((entity or {}).get("name") or "").strip()
+            if name and re.sub(r"\s+", "", name) not in compact_full_copy:
+                missing_entities.append(name)
+        if missing_entities:
+            issues.append(f"AUTHOR_RESPONSIBILITY_LOST: {ref} lost source actors {missing_entities}")
+
+        status = str(item.get("status") or "").strip()
+        if not _status_strength_preserved(status, full_copy):
+            issues.append(f"AUTHOR_STATUS_STRENGTH_LOST: {ref} lost source status '{status}'")
+
+    return issues
+
+
+def _onscreen_surface(slide: dict[str, Any]) -> str:
+    return " ".join(
+        value
+        for module in slide.get("onscreen") or []
+        if isinstance(module, dict)
+        for value in (
+            [str(module.get("heading") or "").strip()]
+            + _onscreen_module_lines(module)
+        )
+        if value
+    )
+
+
+def _audit_lean_onscreen_full_copy_alignment(slide: dict[str, Any]) -> list[str]:
+    """Require every visible v2-lean proposition to derive from complete copy."""
+    if slide.get("page_type") != "content":
+        return []
+
+    full_copy = str(slide.get("full_copy") or "").strip()
+    core_message = str(slide.get("core_message") or "").strip()
+    issues: list[str] = []
+    if core_message and _source_statement_overlap(core_message, full_copy, size=3) < 0.08:
+        issues.append(
+            "AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED: core_message is not materially "
+            "supported by full_copy"
+        )
+
+    heading_support = " ".join(value for value in (core_message, full_copy) if value)
+    compact_full_copy = re.sub(r"\s+", "", full_copy)
+    for module_index, module in enumerate(slide.get("onscreen") or []):
+        if not isinstance(module, dict):
+            continue
+        heading = str(module.get("heading") or "").strip()
+        if heading and _source_statement_overlap(heading, heading_support, size=3) < 0.08:
+            issues.append(
+                "AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED: onscreen module "
+                f"{module_index + 1} heading {heading!r} has no semantic anchor in "
+                "core_message or full_copy"
+            )
+        for line in _onscreen_module_lines(module):
+            overlap = _source_statement_overlap(line, full_copy, size=3)
+            if overlap < 0.08:
                 issues.append(
-                    "ONSCREEN_SOURCE_REF_MISSING: representative source module "
-                    f"'{heading}' is absent or empty"
+                    "AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED: onscreen module "
+                    f"{module_index + 1} detail {line!r} is not a supported selection "
+                    f"from full_copy (overlap={overlap:.3f})"
                 )
+            visible_numbers = set(
+                re.findall(
+                    r"\d+(?:\.\d+)?(?:年\d{1,2}月\d{1,2}日|年|月|日|%|％|万|亿|项|级)?",
+                    line,
+                )
+            )
+            missing_numbers = sorted(
+                number for number in visible_numbers
+                if number and re.sub(r"\s+", "", number) not in compact_full_copy
+            )
+            if missing_numbers:
+                issues.append(
+                    "AUTHOR_ONSCREEN_PROTECTED_FACT_DRIFTED: onscreen module "
+                    f"{module_index + 1} introduces values absent from full_copy: "
+                    f"{missing_numbers}"
+                )
+    return issues
+
+
+def _audit_lean_relationship_visibility(slide: dict[str, Any]) -> list[str]:
+    """Require relationship claims and edges to be visible in both copy layers."""
+    if slide.get("page_type") != "content":
+        return []
+
+    full_copy = str(slide.get("full_copy") or "").strip()
+    visible = _onscreen_surface(slide)
+    relationships = [
+        relation
+        for relation in slide.get("relationships") or []
+        if isinstance(relation, dict)
+    ]
+    claim_surface = " ".join(
+        str(slide.get(key) or "") for key in ("core_message", "visual_thesis")
+    )
+    issues: list[str] = []
+    if _RELATIONSHIP_CLAIM_RE.search(claim_surface) and not relationships:
+        issues.append(
+            "AUTHOR_RELATIONSHIP_NOT_MATERIALIZED: the page claims a relationship "
+            "but declares no edge with two endpoints and a connecting action"
+        )
+
+    for relation_index, relation in enumerate(relationships):
+        missing = [
+            key for key in ("from", "to", "relation")
+            if not str(relation.get(key) or "").strip()
+        ]
+        if missing:
+            issues.append(
+                "AUTHOR_RELATIONSHIP_NOT_MATERIALIZED: relationships[{}] is missing "
+                "{}".format(relation_index, missing)
+            )
+            continue
+        statement = " ".join(
+            str(relation.get(key) or "").strip()
+            for key in ("from", "relation", "to")
+        )
+        prose_overlap = _source_statement_overlap(statement, full_copy, size=3)
+        visible_overlap = _source_statement_overlap(statement, visible, size=3)
+        if prose_overlap < 0.08 or visible_overlap < 0.08:
+            issues.append(
+                "AUTHOR_RELATIONSHIP_METADATA_ONLY: relationships[{}] is not "
+                "materially expressed in both full_copy and onscreen "
+                "(full_copy={:.3f}, onscreen={:.3f})".format(
+                    relation_index, prose_overlap, visible_overlap
+                )
+            )
     return issues
 
 def _audit_authored_onscreen_composition(
@@ -690,90 +822,6 @@ def _audit_authored_onscreen_contract(
                     )
     return issues
 
-def _audit_authored_unit_consumption(
-    page: dict[str, Any], slide: dict[str, Any], items: dict[str, dict[str, Any]], foundation: dict[str, Any]
-) -> list[str]:
-    """Check that AUTHOR actually expressed every semantic unit PLAN assigned a disposition to.
-
-    Record-level source_consumption only proves one anchor from a record survived into
-    full_copy; a record with several semantic units can still lose most of them. This is
-    the per-unit follow-through, and only fires when PLAN declared ``unit_dispositions``
-    for the page (see ``_audit_unit_consumption_definition`` for the PLAN-side shape
-    validation). Pages without a declaration are unaffected.
-    """
-    if not requires_source_consumption(page, foundation):
-        return []
-    contract = page.get("source_consumption")
-    if not isinstance(contract, dict):
-        return []
-    dispositions = contract.get("unit_dispositions")
-    if not isinstance(dispositions, list) or not dispositions:
-        return []
-
-    full_copy = str(slide.get("full_copy") or "")
-    onscreen_contract = page.get("onscreen_contract") or {}
-    modules_by_ref: dict[str, list[str]] = {}
-    if isinstance(onscreen_contract, dict):
-        for module in onscreen_contract.get("modules") or []:
-            if not isinstance(module, dict):
-                continue
-            heading = str(module.get("heading") or "").strip()
-            for ref in module.get("evidence_refs") or []:
-                if isinstance(ref, str) and ref:
-                    modules_by_ref.setdefault(ref, []).append(heading)
-    actual_by_heading = {
-        str(module.get("heading") or "").strip(): module
-        for module in slide.get("onscreen") or []
-        if isinstance(module, dict)
-    }
-
-    issues: list[str] = []
-    for entry in dispositions:
-        if not isinstance(entry, dict):
-            continue
-        ref = str(entry.get("source_ref") or "").strip()
-        unit_id = str(entry.get("unit_id") or "").strip()
-        disposition = entry.get("disposition")
-        item = items.get(ref)
-        if not ref or not unit_id or not isinstance(item, dict):
-            continue
-        unit = next(
-            (
-                candidate
-                for candidate_index, candidate in enumerate(item.get("semantic_units") or [])
-                if isinstance(candidate, dict)
-                and (str(candidate.get("id") or "").strip() or f"{ref}#{candidate_index}") == unit_id
-            ),
-            None,
-        )
-        if not isinstance(unit, dict):
-            continue
-        unit_text = str(unit.get("text") or "").strip()
-        if not unit_text:
-            continue
-
-        if disposition == "full_copy":
-            overlap = _source_statement_overlap(unit_text, full_copy)
-            if overlap < 0.08:
-                issues.append(
-                    f"FULL_COPY_SEMANTIC_UNIT_GAP: {ref}#{unit_id} is assigned full_copy disposition "
-                    f"but is absent from full_copy (overlap={overlap:.3f}); unit text: {unit_text}"
-                )
-        elif disposition == "onscreen":
-            headings = modules_by_ref.get(ref) or []
-            module_text = " ".join(
-                " ".join(_onscreen_module_lines(actual_by_heading[heading]))
-                for heading in headings
-                if heading in actual_by_heading
-            )
-            overlap = _source_statement_overlap(unit_text, module_text) if module_text else 0.0
-            if overlap < 0.08:
-                issues.append(
-                    f"ONSCREEN_SOURCE_DETAIL_INSUFFICIENT: {ref}#{unit_id} is assigned onscreen disposition "
-                    f"but is absent from the mapped onscreen module(s); unit text: {unit_text}"
-                )
-    return issues
-
 def _slide_text(slide: dict[str, Any]) -> str:
     parts: list[str] = []
     for key in ("title", "subtitle", "mission", "core_message", "full_copy", "visual_thesis", "speaker_notes"):
@@ -944,18 +992,18 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
             issues.append(f"slides.{index} ({slide_id}): {density_issue}")
         for contract_issue in _audit_authored_onscreen_contract(page, slide, items):
             issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
-        # A lean Deck Plan deliberately omits AUTHOR prose and onscreen contracts,
-        # but it must never disable Foundation-owned source-consumption safeguards.
-        # In particular, strict/legacy Foundations set source_consumption_policy to
-        # ``required``.  Skipping these checks for every lean plan allowed a page
-        # with dozens of assigned source facts to pass with a short summary and no
-        # declared preservation contract.
-        for consumption_issue in _audit_authored_source_consumption(
+        # A lean Deck Plan deliberately omits AUTHOR prose and onscreen contracts, so
+        # Foundation-owned source-consumption safeguards (source_consumption_policy:
+        # required) cannot be checked against PLAN — they are checked here, directly
+        # against what AUTHOR actually wrote.
+        for consumption_issue in _audit_lean_authored_source_consumption(
             page, slide, items, foundation
         ):
             issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
-        for unit_issue in _audit_authored_unit_consumption(page, slide, items, foundation):
-            issues.append(f"slides.{index} ({slide_id}): {unit_issue}")
+        for alignment_issue in _audit_lean_onscreen_full_copy_alignment(slide):
+            issues.append(f"slides.{index} ({slide_id}): {alignment_issue}")
+        for relationship_issue in _audit_lean_relationship_visibility(slide):
+            issues.append(f"slides.{index} ({slide_id}): {relationship_issue}")
         for coverage_issue in _audit_authored_content_coverage(page, slide):
             issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
         for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
@@ -985,4 +1033,4 @@ def audit_final_script(final_script: dict[str, Any], plan: dict[str, Any], found
     warnings.extend(_whole_deck_authoring_warnings(final_script))
     return issues, warnings
 
-__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_looks_like_structural_metadata', '_author_execution_issues', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_authored_source_consumption', '_audit_authored_unit_consumption', '_audit_authored_onscreen_composition', '_semantic_payload_units', '_audit_self_reading_density', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', '_whole_deck_authoring_warnings', 'audit_final_script']
+__all__ = ['_onscreen_module_lines', '_is_lead_like_evidence_item', '_evidence_first_item_hierarchy_issues', '_is_readable_proposition', '_onscreen_expression_warnings', '_looks_like_structural_metadata', '_author_execution_issues', '_authored_bare_label_detail_issues', '_audit_authored_content_coverage', '_authored_relationships_issues', '_audit_lean_authored_source_consumption', '_audit_lean_onscreen_full_copy_alignment', '_audit_lean_relationship_visibility', '_audit_authored_onscreen_composition', '_semantic_payload_units', '_audit_self_reading_density', '_audit_authored_onscreen_contract', '_slide_text', '_source_text_for_refs', '_normalize_source_chapter_title', '_whole_deck_authoring_warnings', 'audit_final_script']

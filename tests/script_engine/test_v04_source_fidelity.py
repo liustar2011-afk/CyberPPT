@@ -38,19 +38,8 @@ def _plan() -> dict:
             {"id": "C2", "title": "第二章", "purpose": "y", "source_chapter_ids": ["CH02"]},
         ],
         "pages": [{
-            "id": "P1", "chapter_id": "C1", "title": "主题", "question": "q", "message": "m", "logic": "l", "page_role": "content", "source_refs": ["F1"], "content": ["x"],
-            "source_scope": ["S1.1"], "structural_operation": "preserve",
-            "analysis_basis": {"model": "problem-diagnosis", "relation_basis": "inferred", "confidence": "high", "supports": ["F1", "F2"]},
-            "proof": {"method": "reasoning", "evidence_refs": ["F1", "F2"], "relation_basis": "inferred"},
-            "evidence_fit_review": {
-                "question": "q",
-                "items": [
-                    {"evidence_ref": "F1", "fit": "indirect", "role": "reason", "reason": "F1 supports the inferred relation"},
-                    {"evidence_ref": "F2", "fit": "indirect", "role": "result", "reason": "F2 supports the inferred relation"},
-                ],
-                "counter_case": "Without both facts the inferred relation would need to be removed",
-                "verdict": "keep",
-            },
+            "id": "P1", "chapter_id": "C1", "title": "主题", "question": "q",
+            "logic": "说明事实关系", "page_role": "content", "source_refs": ["F1", "F2"],
         }],
     }
 
@@ -71,19 +60,16 @@ def test_source_preserve_detects_chapter_reorder() -> None:
     plan = _plan()
     plan["chapters"] = list(reversed(plan["chapters"]))
     issues, _ = audit_deck_plan(plan, foundation)
-    assert any("source chapter order/content differs" in issue for issue in issues)
+    assert any("PRESENTATION_SOURCE_CHAPTER_MAPPING_CONFLICT" in issue for issue in issues)
 
 def test_external_internal_evidence_requires_visibility_decision() -> None:
     foundation = _foundation()
     plan = _plan()
-    plan["pages"][0]["proof"]["evidence_refs"].append("F3")
+    plan["pages"][0]["source_refs"].append("F3")
     issues, _ = audit_deck_plan(plan, foundation)
     assert any("internal-only evidence" in issue for issue in issues)
-    plan["pages"][0]["visibility_decision"] = "internal_only_used_as_hidden_support"
-    issues, _ = audit_deck_plan(plan, foundation)
-    assert not any("internal-only evidence" in issue for issue in issues)
 
-def test_plan_schema_accepts_v04_fields() -> None:
+def test_plan_schema_accepts_v2_lean_fields() -> None:
     assert validate_deck_plan(_plan()) == []
 
 def test_source_index_maps_word_hierarchy() -> None:
