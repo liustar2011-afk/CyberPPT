@@ -28,7 +28,8 @@
 | 16 | `45dcf03a38d76d53c37a9d6747d06f31a290680e` | 旧 Style 09 live lock 首次读取时迁移并落盘为 snapshot；新锁和迁移后的锁均永久冻结 |
 | 17 | `9690e2f49532a25c79cdfe32baa4a6900d149657` | `projects/AGENTS.md` 与仓库主流程统一：新源材料项目默认 strict/legacy，script 仅显式选择时启用 |
 | 18 | `901196a5976f385f108cbc517f2ae817df3cbe2b` | 消除 Style 09 双权威：可执行合同只从 style registry JSON 解析；`visual-system.md` 降为说明性文档，不再覆盖运行时 Prompt |
-| 19 | 待本次提交 | 将已退役 Style10 的主测试合同改为“不可解析、不可锁定、无 palette-10”，防止旧测试驱动生产代码恢复废弃风格 |
+| 19 | `8d474ea59e999d20f8702aab4def816031d55941` | 将已退役 Style10 的主测试合同改为“不可解析、不可锁定、无 palette-10”，防止旧测试驱动生产代码恢复废弃风格 |
+| 20 | `00dc915017243be307ac0388ecd98d47fd857dcc` | Style Lock snapshot 测试迁移到 registry authority：registry 修订产生新锁版本，说明文档修订不改变可执行合同，legacy lock 仅迁移一次 |
 
 ## 当前结构性结果
 
@@ -45,9 +46,10 @@
 ### Stage 02
 
 - Style registry `scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json` 是可执行视觉合同的唯一解析源。
-- `references/visual-system.md` 仅作为视觉系统说明与探索文档，不再在运行时覆盖 Style 09 Prompt；从而消除 JSON 中纯白 `#FFFFFF` 与文档中象牙白 `#F7F6F0` 并存造成的双权威和不可复现行为。
+- `references/visual-system.md` 仅作为视觉系统说明与探索文档，不再在运行时覆盖 Style 09 Prompt。
 - 新建 Style 09 锁在创建时从 style registry 解析合同并冻结；`resolved_contract.source` 指向 style registry。
-- 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结。已经是 immutable snapshot 的历史锁保持原字节不变，保证既有项目可复现。
+- registry 合同修订只影响新建锁；已经是 immutable snapshot 的锁保持原字节不变。
+- 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结，此后不再刷新。
 - Style10 不属于当前 executable registry；测试不得再要求恢复 Style10、palette-10 或 Style10 默认选择。
 - `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
 - 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
@@ -82,16 +84,15 @@
 
 ## 尚未完成 / 后续建议
 
-1. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入；这是剩余的主要架构技术债务。
-2. 把 `script_engine.quality_policy` 接入正式 `audit-final/lint` 输出，在回归验证充分后让 advisory 不再影响主阻断结果。
-3. 增加 wheel 环境下不调用外网/Office 的最小 Stage 01→Stage 02 fixture build。
-4. 增加 macOS/Windows OfficeCLI/render 集成 CI。
-5. 继续拆分超大 Stage 01 模块；优先 `source_argument_model.py`、`stage01_compiler.py`、`visual_structure_contract.py`、`script_engine/contracts.py`。拆分必须按领域职责进行，不做单纯文件切割。
+1. 清理 Style09/Style10 历史测试契约与 prompt frozen baseline，使测试只锁定当前正式 contract/invariant。
+2. 修复 legacy facade `ensure_output_size` patch seam 的单项回归。
+3. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入。
+4. 把 `script_engine.quality_policy` 接入正式 `audit-final/lint` 输出，在回归验证充分后让 advisory 不再影响主阻断结果。
+5. 增加 wheel 环境下不调用外网/Office 的最小 Stage 01→Stage 02 fixture build，以及 macOS/Windows OfficeCLI/render 集成 CI。
 
 ## 验证状态
 
-- 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败；因此当前 CI 红色包含仓库既有失败，不能全部归因于本轮。
-- 阶段 16 run `33339768029` 的 Python 3.12 日志显示 38 failed、1752 passed、8 skipped。
-- 阶段 17 run `33339954486` 的 Python 3.12 日志显示 37 failed、1753 passed、8 skipped；项目默认 profile 冲突已经消失。
-- 阶段 18 run `33340180065` 的 Python 3.12 日志显示 40 failed、1750 passed、8 skipped。Style 09 已实际使用 registry 中的纯白长合同；新增 3 项失败来自旧 snapshot 测试仍通过修改 `visual-system.md` 驱动合同变化，证明这些测试需要迁移到 registry authority 语义。
-- 阶段 19 先清除 `tests/test_extended_style_10.py` 对退役 Style10 的错误生产要求，随后单独迁移 snapshot 测试，避免把两类测试契约变更混在一个提交里。
+- 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败。
+- 阶段 17 run `33339954486`：Python 3.12 为 37 failed、1753 passed、8 skipped。
+- 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。Style 09 已实际切换到 registry 中的纯白长合同；新增 3 项失败均为旧 snapshot 测试语义，阶段 20 已迁移。
+- 后续以阶段 20 之后的 CI 作为新的失败清单，继续逐项消除旧 Style10/Style09 测试债务与 legacy facade 回归。
