@@ -9,24 +9,23 @@
 ## 已完成
 
 1. `b64fed0 fix(stage02): freeze visual style lock contract`
-   - Style 09 lock 改为创建时合同快照。
 2. `67586a0 docs(stage01): define canonical authority map`
-   - 定义 Stage 01/02 唯一可写权威与 projection 边界。
 3. `6862598 feat(stage02): add explicit build state model`
-   - 增加 Stage 02 正常待办/真实失败状态分类。
 4. `f57692e feat(stage02): separate input fingerprint from run id`
-   - 分离稳定 input fingerprint 与每次执行 run id。
 5. `4b5f225 build: define installation capability boundaries`
-   - 明确 repository editable install、直接/可选依赖和 CI runtime import 检查。
+6. `5948b6c chore: remove root scratch artifacts`
 
-## 阶段 6：仓库卫生清理
+## 阶段 7：deterministic semantic gate 分级
 
 状态：已完成，待本次提交落盘。
 
 改动：
 
-- 删除根目录 `out.txt`、`tmp_p15_prompt_after.md`、`tmp_source_text.txt` 临时产物。
-- `.gitignore` 增加根目录 `/tmp_*` 与 `/out.txt`，避免实验材料重新进入正式代码面。
+- 新增 `script_engine.quality_policy`，显式区分 blocker 与 advisory。
+- Schema/结构/未知新规则默认 blocker，保持 fail-closed。
+- 首批将依赖措辞正则的 `AUTHOR_MISSION_GENERIC`、`AUTHOR_VISUAL_THESIS_NONRELATIONAL`、`AUTHOR_VISUAL_TOPOLOGY_CONFLICT` 定义为 advisory。
+- 新增 `docs/SCRIPT_QUALITY_SEVERITY_POLICY.md` 和回归测试。
+- 原有 `lint` 主命令暂不改变退出语义；可以先使用 `python -m script_engine.quality_policy <final-script.json>` 观察分级结果，再在覆盖充分后接入主门禁。
 
 ## 暂缓：compatibility facade 单向化
 
@@ -34,6 +33,6 @@
 
 ## 后续阶段
 
-1. deterministic semantic gate 分级。
-2. compatibility facade 调用面测试与单向化。
-3. 正式 runtime package 化与 wheel 安装 smoke test。
+1. compatibility facade 调用面测试与单向化。
+2. 正式 runtime package 化与 wheel 安装 smoke test。
+3. 将 Stage 02 状态模型接入主 orchestrator，逐步减少 expected-action exception。
