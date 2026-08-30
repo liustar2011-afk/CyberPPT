@@ -1,4 +1,4 @@
-"""CyberPPT default visual style library and project visual locks."""
+"""CyberPPT visual style library and frozen project visual locks."""
 
 from __future__ import annotations
 
@@ -13,7 +13,8 @@ from typing import Any
 STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
 VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
 VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visual-system.md"
-LIVE_CONTRACT_STYLE_IDS = frozenset({9})
+PRODUCTION_STYLE_ID = 9
+LIVE_CONTRACT_STYLE_IDS = frozenset({PRODUCTION_STYLE_ID})
 
 
 def _utc_now() -> str:
@@ -36,6 +37,8 @@ def load_style_library(path: Path = STYLE_LIBRARY_PATH) -> dict[str, Any]:
 
 
 def default_style_choices(path: Path = STYLE_LIBRARY_PATH) -> str:
+    """Return the historical/reference 1-8 style catalogue, not production routing."""
+
     library = load_style_library(path)
     choices: list[str] = []
     for style in library["styles"]:
@@ -86,7 +89,7 @@ def resolve_default_style(
             return _resolved_style(style)
     raise ValueError(
         f"unknown CyberPPT style selection: id={style_id!r}, name={style_name!r}. "
-        "Available styles:\n" + default_style_choices(path)
+        "Available reference styles:\n" + default_style_choices(path)
     )
 
 
@@ -102,6 +105,7 @@ def write_project_style_lock(
     lock_path = project / VISUAL_LOCK_RELATIVE
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     style_id_value = int(style.get("id", -1))
+    production_style = style_id_value == PRODUCTION_STYLE_ID
     resolved_contract_sha256 = str(style.get("prompt_contract_sha256") or "")
     payload = {
         "schema": "cyberppt.visual_style_lock.v1",
@@ -118,11 +122,15 @@ def write_project_style_lock(
             "resolved_at": _utc_now(),
         },
         "policy": {
-            "selected_from_default_8": not bool(style.get("extension_only")),
+            "production_style": production_style,
+            "production_style_id": PRODUCTION_STYLE_ID,
+            "selected_from_reference_catalogue": not bool(style.get("extension_only")),
             "selected_from_extension": bool(style.get("extension_only")),
             "prompt_must_use_style_lock": True,
             "do_not_substitute_external_preset": True,
-            "samples_are_required_for_user_confirmation": True,
+            # Current production routing owns Style 09 automatically. Historical
+            # 1-8 reference/style-library flows may still request sample review.
+            "samples_are_required_for_user_confirmation": not production_style,
             "runtime_contract_refresh_forbidden": True,
         },
     }
