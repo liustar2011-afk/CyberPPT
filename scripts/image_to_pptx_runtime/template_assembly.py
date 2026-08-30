@@ -99,7 +99,7 @@ def _render_chrome(
         f'<rect x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" fill="{TEMPLATE_BACKGROUND}"/>',
         f'<rect x="0" y="{top.get("y", 84)}" width="{CANVAS_WIDTH}" height="{top.get("height", 3)}" fill={quoteattr(str(top.get("fill", "#8B0000")))}/>',
         f'<image x="{logo.get("x", 1050)}" y="{logo.get("y", 13)}" width="{logo.get("width", 210)}" height="{logo.get("height", 70)}" href={quoteattr(logo_href)} preserveAspectRatio="xMidYMid meet"/>',
-        f'<text x="{header.get("x", 58)}" y="{title_y:g}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="25" font-weight="700" fill="#123B66">{xml_escape(title)}</text>',
+        f'<text x="{header.get("x", 58)}" y="{title_y:g}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="32" font-weight="700" fill="#123B66">{xml_escape(title)}</text>',
     ]
     if subtitle.strip():
         lines.append(

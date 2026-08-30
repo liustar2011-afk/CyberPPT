@@ -152,6 +152,15 @@ Stage 01 的脚本规划与写作段只有三个权威内容产物（vendored en
 This repo is indexed in `graft/`: small linked markdown nodes that explain each
 system and carry exact file:line spans, kept in sync with the code through git.
 
+### 搜索门禁（硬规则）
+
+- 任何需要定位、理解、排查或修改代码/文件的任务，自动使用
+  `.agents/skills/graft-first-search/SKILL.md`；用户无需显式点名该 Skill。
+- 在执行 `rg`、`grep`、`find`、`fd`，或为定位内容而直接读取源码前，必须先运行
+  `graft ask "<任务或标识符>" --source`。即使已知文件路径，也不得绕过图谱。
+- 仅当目标属于未索引文件、图谱明确提示没有命中，或返回的精确跨度仍不足以完成任务时，
+  才能使用原始搜索或读取；范围必须收窄到该未索引文件或图谱给出的行号。
+
 For ANY task here — understanding how something works, finding where code lives,
 or scoping a change — get context from the graph before grepping or opening
 source files. Re-ask freely (it's cheap) and reuse literal identifiers you
