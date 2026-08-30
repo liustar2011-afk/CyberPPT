@@ -8,8 +8,10 @@ from cyberppt.onscreen_expression import (
     audit_expression_balance,
     resolve_onscreen_expression,
 )
+from .common import text_similarity
 
 from .models import ScriptPage, ScriptQualityIssue, _issue, resolve_judgment_mode
+from .parsing import _line_indent
 from .onscreen import (
     ANTI_PATTERN_TERMS,
     BUSINESS_LANE_LABEL_RE,
@@ -77,6 +79,214 @@ VISIBLE_CERTAINTY_TERMS = COMPLETED_TERMS + (
     "将建成",
     "已经实现",
 )
+
+
+def _onscreen_entries(raw_onscreen_text: str) -> list[tuple[int, int, str]]:
+    """Return authored visible lines with their indentation, preserving hierarchy."""
+
+    entries: list[tuple[int, int, str]] = []
+    for line_number, raw_line in enumerate(raw_onscreen_text.splitlines(), start=1):
+        if not raw_line.strip():
+            continue
+        text = re.sub(r"^\s*(?:[-*+]\s+)?", "", raw_line).strip()
+        if text:
+            entries.append((line_number, _line_indent(raw_line), text))
+    return entries
+
+
+def _direct_children(
+    entries: list[tuple[int, int, str]], parent_index: int,
+) -> list[int]:
+    """Find direct descendants before the next same-or-shallower authored line."""
+
+    parent_indent = entries[parent_index][1]
+    descendants: list[int] = []
+    for index in range(parent_index + 1, len(entries)):
+        indent = entries[index][1]
+        if indent <= parent_indent:
+            break
+        descendants.append(index)
+    if not descendants:
+        return []
+    direct_indent = min(entries[index][1] for index in descendants)
+    return [index for index in descendants if entries[index][1] == direct_indent]
+
+
+def _group_heading_detail_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Require a visible common parent, named peer cards, and details under them."""
+
+    entries = _onscreen_entries(page.raw_onscreen_text)
+    if not entries:
+        return []
+    root_indent = min(entry[1] for entry in entries)
+    roots = [index for index, entry in enumerate(entries) if entry[1] == root_indent]
+    issues: list[ScriptQualityIssue] = []
+    if 3 <= len(roots) <= 4 and all(_direct_children(entries, index) for index in roots):
+        issues.append(
+            _issue(
+                "ONSCREEN_GROUP_PARENT_MISSING",
+                page,
+                "Three or four peer cards begin without a visible common group heading, so the reader encounters subdivisions before knowing what they collectively establish.",
+                "Add one visible level-1 total heading; move the cards to level 2; retain each card's judgment or evidence at level 3.",
+                evidence=tuple(entries[index][2] for index in roots),
+                severity="error",
+            )
+        )
+        return issues
+    if len(roots) != 1:
+        return issues
+    groups = _direct_children(entries, roots[0])
+    if not 3 <= len(groups) <= 4:
+        return issues
+    missing_detail = [entries[index][2] for index in groups if not _direct_children(entries, index)]
+    if missing_detail:
+        issues.append(
+            _issue(
+                "ONSCREEN_GROUP_DETAIL_MISSING",
+                page,
+                "A visible common group heading has peer cards without their own judgment or evidence detail.",
+                "Keep the visible level-1 total heading; give every level-2 card a named group heading and at least one level-3 judgment or evidence line.",
+                evidence=tuple(missing_detail),
+                severity="error",
+            )
+        )
+    return issues
+
+
+_FLOW_EXPRESSION_FORMS = frozenset({
+    "flow_3_5", "operation_loop", "causal_chain", "directed_dependency_2_6",
+})
+_CONVERGENCE_EXPRESSION_FORMS = frozenset({"support_convergence_3_6"})
+
+
+def _relationship_structure_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Keep the universal thesis ladder separate from a page's relation grammar."""
+
+    entries = _onscreen_entries(page.raw_onscreen_text)
+    if not entries:
+        return []
+    root_indent = min(entry[1] for entry in entries)
+    roots = [index for index, entry in enumerate(entries) if entry[1] == root_indent]
+    form = str(page.onscreen_expression_form or "").strip()
+    explicit_parallel_field = (
+        3 <= len(roots) <= 4 and all(_direct_children(entries, index) for index in roots)
+    )
+    if len(roots) >= 2 and (form or explicit_parallel_field):
+        return [
+            _issue(
+                "ONSCREEN_TOTAL_THESIS_MISSING",
+                page,
+                "Multiple visible argument units begin before the reader sees the page's total thesis.",
+                "Render core_message, or a complete display-safe equivalent, as one level-1 entry statement; place the current units beneath it according to their verified relation grammar.",
+                evidence=tuple(entries[index][2] for index in roots),
+                severity="error",
+            )
+        ]
+    if len(roots) != 1:
+        return []
+
+    units = _direct_children(entries, roots[0])
+    if len(units) <= 1:
+        return []
+    unit_text = tuple(entries[index][2] for index in units)
+    missing_detail = tuple(
+        entries[index][2] for index in units if not _direct_children(entries, index)
+    )
+    issues: list[ScriptQualityIssue] = []
+    if form in _FLOW_EXPRESSION_FORMS and missing_detail:
+        issues.append(
+            _issue(
+                "ONSCREEN_RELATION_UNIT_DETAIL_MISSING",
+                page,
+                "A flow, causal chain, or operating loop has stage labels without their input, action, output, condition, or handoff detail.",
+                "Keep the visible total thesis; give every stage one or more child lines that state what changes, enters, exits, or constrains that stage.",
+                evidence=missing_detail,
+                severity="error",
+            )
+        )
+    if form == "operation_loop" and not any(
+        any(signal in text for signal in LOOP_SIGNALS) for text in unit_text
+    ):
+        issues.append(
+            _issue(
+                "ONSCREEN_LOOP_RETURN_MISSING",
+                page,
+                "The declared operation loop has no visible feedback, return, iteration, or review unit.",
+                "Add one named loop-closing unit and its child detail; keep it as a business feedback relation rather than a decorative circular arrow.",
+                evidence=unit_text,
+                severity="error",
+            )
+        )
+    if form == "comparison_2col" and len(units) != 2:
+        issues.append(
+            _issue(
+                "ONSCREEN_COMPARISON_UNIT_COUNT",
+                page,
+                "A comparison expression must expose exactly two matched comparison units beneath the total thesis.",
+                "Use two same-dimension units and place the shared comparison criterion in their child detail or in a visible common label.",
+                evidence=unit_text,
+                severity="error",
+            )
+        )
+    if form in _CONVERGENCE_EXPRESSION_FORMS and len(units) < 2:
+        issues.append(
+            _issue(
+                "ONSCREEN_CONVERGENCE_INPUTS_MISSING",
+                page,
+                "A convergence expression needs at least two independently named inputs beneath the total thesis.",
+                "Expose each contributing input as a level-2 unit and state its distinct contribution in child detail.",
+                evidence=unit_text,
+                severity="error",
+            )
+        )
+    return issues
+
+
+def _group_heading_repetition_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Reject card headings that repeat their details or another card's content."""
+
+    entries = _onscreen_entries(page.raw_onscreen_text)
+    if not entries:
+        return []
+    root_indent = min(entry[1] for entry in entries)
+    roots = [index for index, entry in enumerate(entries) if entry[1] == root_indent]
+    if len(roots) != 1:
+        return []
+    groups = _direct_children(entries, roots[0])
+    if not 3 <= len(groups) <= 4:
+        return []
+    cards = [
+        (entries[index][2], tuple(entries[child][2] for child in _direct_children(entries, index)))
+        for index in groups
+    ]
+    repeated: list[str] = []
+    for index, (heading, details) in enumerate(cards):
+        for detail in details:
+            score = text_similarity(heading, detail)
+            if score >= 0.58:
+                repeated.append(f"{heading} ↔ {detail}（同卡重述 overlap={round(score, 2)}）")
+        for other_index, (other_heading, other_details) in enumerate(cards):
+            if other_index == index:
+                continue
+            score = text_similarity(heading, other_heading)
+            if score >= 0.58:
+                repeated.append(f"{heading} ↔ {other_heading}（卡头重复 overlap={round(score, 2)}）")
+            for detail in other_details:
+                score = text_similarity(heading, detail)
+                if score >= 0.58:
+                    repeated.append(f"{heading} ↔ {detail}（跨卡复用 overlap={round(score, 2)}）")
+    if not repeated:
+        return []
+    return [
+        _issue(
+            "ONSCREEN_GROUP_ROLE_REPETITION",
+            page,
+            "A group heading repeats its own detail or another card's content, so the hierarchy adds no new meaning.",
+            "Rewrite the heading as this card's distinct group judgment, then keep only new object, action, scope, condition or result in its detail. Give every peer card a different semantic responsibility.",
+            evidence=tuple(dict.fromkeys(repeated))[:8],
+            severity="error",
+        )
+    ]
 
 
 def _preflight_semantic_issues(
@@ -216,6 +426,9 @@ def _presentation_issues(
         and isinstance(logic.get("onscreen_expression"), dict)
     )
     if page.page_type == "content":
+        issues.extend(_group_heading_detail_issues(page))
+        issues.extend(_relationship_structure_issues(page))
+        issues.extend(_group_heading_repetition_issues(page))
         markdown_hits = _onscreen_markdown_hits(page.raw_onscreen_text)
         if markdown_hits:
             issues.append(

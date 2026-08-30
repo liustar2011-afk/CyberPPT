@@ -2204,6 +2204,18 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         self.assertGreater(overages[0][1], 30)
         self.assertEqual((), _onscreen_detail_phrase_overages("模块标题\n完整业务标签"))
 
+    def test_detail_phrase_rule_allows_complete_level_one_total_above_three_groups(self) -> None:
+        visible = (
+            "统一预测体系需要贯通研判范围、周期规则与运行闭环，持续形成可解释的风险判断\n"
+            "  研判范围扩展\n"
+            "    多维分析支撑风险判断\n"
+            "  周期规则贯通\n"
+            "    统一口径保障相互校核\n"
+            "  运行闭环形成\n"
+            "    审校复盘推动持续更新"
+        )
+        self.assertEqual((), _onscreen_detail_phrase_overages(visible))
+
     def test_full_prose_is_not_a_visible_detail_input(self) -> None:
         page = parse_script_markdown(
             "## 第1页：正文与上屏分离\n"

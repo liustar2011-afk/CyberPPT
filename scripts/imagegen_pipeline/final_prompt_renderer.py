@@ -55,11 +55,18 @@ def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
             responsibility += f" {group.summary}"
         lines.append(responsibility)
         if binding is not None:
+            levels = binding.hierarchy_levels or (binding.hierarchy_level,) * len(binding.exact_text)
+            if min(levels) == 1 and 2 in levels and 3 in levels:
+                lines.append(
+                    "- required text hierarchy: render the single level-1 item as the visible total heading for "
+                    "the complete group field; render level-2 items as named peer card/group headings beneath it; "
+                    "keep each level-3 item visibly attached to its preceding level-2 heading. Preserve three "
+                    "distinct reading ranks; do not flatten them into peer cards or body copy."
+                )
             lines.append("- exact visible text assigned to this group:")
             lines.extend(f'- Exact visible text: "{text}"' for text in binding.exact_text)
-            lines.append(
-                f"- hierarchy: level {binding.hierarchy_level}; keep this group's text together in one coherent visual region."
-            )
+            level_path = " → ".join(str(level) for level in levels)
+            lines.append(f"- hierarchy: levels {level_path}; keep this group's text together in one coherent visual region.")
     return tuple(lines)
 
 

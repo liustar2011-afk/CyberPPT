@@ -618,7 +618,10 @@ content levels are stable even when the visual design changes:
 
 1. **Page conclusion.** `core_message` answers what the page means. It is one
    complete judgment with the exact business matter, actor and source-supported
-   state or action.
+   state or action. On a CyberPPT content page it is also the **total thesis**:
+   render it, or a display-safe equivalent with the same judgment, as the first
+   visible level-1 statement. `core_message` may not exist only in metadata,
+   notes or an off-page title.
 2. **Module judgment.** Each top-level onscreen module answers which part proves,
    explains or implements the page conclusion. Normal modules are independently
    intelligible sub-judgments; the taxonomy exception below remains available.
@@ -626,6 +629,75 @@ content levels are stable even when the visual design changes:
    action, object, condition or result establishes that module. Prefer a
    complete proposition. `语义标签：完整内容` is a limited evidence-detail form,
    never the default reading rhythm of a module or page.
+
+When a page presents three or four parallel content groups, use all three
+visible levels: **one visible level-1 total heading → named level-2 card/group
+headings → level-3 group judgments or evidence**. The level-1 heading names
+the whole field and gives the reader one story line; a page title stored only in
+metadata does not satisfy this requirement. Each level-2 heading answers “which
+part of the whole story is this?”, and each owns one or more level-3 lines that
+explain what it establishes. Every level-1 and level-2 heading is author-written
+locked text, never a label inferred by the renderer from a detail sentence.
+Author every heading from the verified grouping dimension. For example:
+
+```text
+- 供需研判范围扩展
+  - 研判对象发生扩展
+    - 供给、需求与市场变化共同扩大供需研判范围
+  - 研判维度形成覆盖
+    - 总量、结构、区域、时段与风险纳入统一研判
+  - 成果形态延伸决策支撑
+    - 预测延伸至区间、概率和情景分析，形成多类决策支撑
+```
+
+For another four-card field, the visible total heading can name `统一预测闭环的
+运行要求`, followed by group headings such as `周期规则贯通`、`分析口径统一`、
+`预测流程固化` and `成果校核复盘`. A business detail sentence, card visual or a
+page title stored only in metadata does not substitute for the visible total
+heading and named level-2 headings. A page with one or two arguments does not
+need this extra hierarchy.
+
+The three-level ladder controls **reading order**; it does not prescribe a
+single business relationship for all level-2 units. Before authoring a page,
+choose one verified **relation grammar** from the source and use it consistently:
+
+| Relation grammar | Level-2 units answer | Level-3 detail must show |
+| --- | --- | --- |
+| MECE classification | What independent parts jointly establish the total thesis? | The distinct judgment and source-grounded proof for that part. |
+| Flow, causal chain, or operating loop | What happens at each stage? | Input, action, output, handoff, condition, or feedback at that stage. |
+| Convergence | Which independent inputs jointly form the result? | How that input supports, constrains, or contributes to the stated result. |
+| Mapping | Which source corresponds to which target, response, owner, or capability? | Both ends of the mapping and their concrete correspondence. |
+| Comparison | What are the two matched objects under one criterion? | The shared criterion, material difference, and applicable condition. |
+| Boundary or governance | Which requirement, boundary, or control protects the total thesis? | What it governs, limits, enables, or verifies. |
+
+`core_message → relation units → evidence` remains visible in every content
+page. The relation grammar changes the connections among the units, their
+reading path, and their visual carrier. A flow must not be written as a peer
+classification; convergence must not be written as a staged process; comparison
+must preserve a matched dimension; mapping must expose both endpoints. The
+author selects the grammar from verified source relationships, records it in
+`上屏表达结构` when available, and lets visual design express that grammar without
+creating a second narrative chain.
+
+Use this authoring sequence for every content page:
+
+1. Write `core_message` as one complete total thesis and project it to the
+   first visible level-1 entry statement.
+2. State the relation grammar and the reader question for the level-2 units.
+3. Draft level-2 units from the same relation role; use MECE only for genuine
+   classifications.
+4. Add level-3 proof that belongs to one unit and adds an object, action,
+   condition, scope, output, or result.
+5. Check that the chosen visual relationship matches the authored grammar:
+   groups for classification, path for flow, convergence for aggregation,
+   paired field for comparison, and explicit endpoints for mapping.
+
+Run the **card independence self-read** before finalizing: cover the level-3
+copy and confirm that every level-2 heading still names a different part of the
+page story; then cover the heading and confirm the level-3 copy adds new object,
+action, scope, condition or result. A heading that paraphrases its detail, or a
+card that repeats another card's heading or detail, fails this test and must be
+rewritten or merged.
 
 Cause, progression, mapping, conversion and closed loops form a relationship
 layer across these content levels; they are not a fourth list of equal peers.
@@ -707,8 +779,10 @@ authoring field, receipt or user gate.
 3. **Project semantic levels explicitly.** Project the page conclusion into the
    visible lead or governing composition; project each retained argument into an
    independently intelligible module judgment; project only its decisive proof,
-   scope, condition or result into child text or items. A normal multi-module
-   self-read page must expose both the argument layer and an evidence layer.
+   scope, condition or result into child text or items. For a three- or four-card
+   field, write one visible level-1 total heading, write every level-2 card/group
+   heading, and retain its judgment or evidence at level 3. A normal multi-module self-read
+   page must expose both the argument layer and an evidence layer.
 4. **Preserve relationship grammar.** Parallel arguments may become peer
    modules only when they share one dimension. Cause, progression, mapping,
    conversion, governance and closed-loop relations retain their endpoints,

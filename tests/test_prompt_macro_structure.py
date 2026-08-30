@@ -64,6 +64,8 @@ def test_final_prompt_renders_macro_region_authority_without_backend_ids():
     assert "RG02" not in prompt
     assert "E1" not in prompt
     assert "P01-T01" not in prompt
+    assert "required text hierarchy:" not in prompt
+    assert "card/group heading" not in prompt
 
 
 def test_semantic_brief_no_longer_delegates_macro_spatial_organization():

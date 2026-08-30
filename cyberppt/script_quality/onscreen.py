@@ -894,11 +894,27 @@ def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
     the compact-detail rule by dropping terminal punctuation.
     """
 
+    visible_lines: list[tuple[int, str]] = []
+    for raw in text.splitlines():
+        line = strip_authoring_group_marker(raw).strip()
+        line = re.sub(r"^[-*+•]\s*", "", line).strip()
+        if line:
+            visible_lines.append((_line_indent(raw), line))
+    root_indent = min((indent for indent, _line in visible_lines), default=0)
+    roots = [index for index, (indent, _line) in enumerate(visible_lines) if indent == root_indent]
+    total_heading = ""
+    if len(roots) == 1:
+        descendants = visible_lines[roots[0] + 1:]
+        child_indent = min((indent for indent, _line in descendants if indent > root_indent), default=None)
+        group_count = sum(1 for indent, _line in descendants if indent == child_indent)
+        if child_indent is not None and 3 <= group_count <= 4:
+            total_heading = visible_lines[roots[0]][1]
+
     overages: list[tuple[str, int]] = []
     for raw in text.splitlines():
         line = strip_authoring_group_marker(raw).strip()
         line = re.sub(r"^[-*+•]\s*", "", line).strip()
-        if not line or line.startswith("#") or MODULE_RE.match(line):
+        if not line or line.startswith("#") or MODULE_RE.match(line) or line == total_heading:
             continue
         parts = re.split(r"[：:]", line, maxsplit=1)
         labelled_detail = len(parts) == 2 and parts[1].strip()

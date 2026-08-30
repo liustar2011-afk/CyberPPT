@@ -19,6 +19,7 @@ from cyberppt.page_artifact_spec import (
     RelationshipSpec,
     SemanticContextSpec,
     TypographySpec,
+    VisibleTextBindingSpec,
     VisualCarrierSpec,
 )
 from scripts.imagegen_pipeline.artifact_prompt import (
@@ -221,21 +222,36 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertGreater(prompt.count("Governed input"), 1)
         self.assertEqual(1, prompt.count('- Exact visible text: "Governed input"'))
 
-    def test_bracketed_visible_text_uses_one_shared_hierarchy_grammar(self) -> None:
+    def test_group_heading_constraint_keeps_heading_above_locked_detail(self) -> None:
+        bindings = (
+            VisibleTextBindingSpec("P01-T01", "预测体系运行要求", "ROOT-1", 1, "root_module", 1),
+            VisibleTextBindingSpec("P01-T02", "数据治理提供可信输入", "ROOT-1", 2, "root_subgroup", 2),
+            VisibleTextBindingSpec("P01-T03", "行业统计数据优先形成稳定基础", "ROOT-1", 3, "evidence", 3),
+            VisibleTextBindingSpec("P01-T04", "模型研判形成可发布结论", "ROOT-1", 4, "root_subgroup", 2),
+            VisibleTextBindingSpec("P01-T05", "模型结果进入业务审校后发布", "ROOT-1", 5, "evidence", 3),
+            VisibleTextBindingSpec("P01-T06", "智能工具承担受控辅助任务", "ROOT-1", 6, "root_subgroup", 2),
+            VisibleTextBindingSpec("P01-T07", "敏感信息不得进入未授权环境", "ROOT-1", 7, "evidence", 3),
+        )
         spec = replace(
             _spec(),
             typography=replace(
                 _spec().typography,
-                visible_text=("【建设方向】", "Governed input", "Traceable result"),
+                visible_text=tuple(binding.text for binding in bindings),
             ),
+            visible_text_bindings=bindings,
         )
 
         prompt = render_final_prompt(build_final_prompt_ir(spec))
 
-        self.assertIn('Render "【建设方向】" exactly once in its group container', prompt)
-        self.assertIn("one level-1 family", prompt)
-        self.assertIn("same compact flat rectangular title band", prompt)
-        self.assertIn("one quieter level-2 style", prompt)
+        self.assertIn("visible level-1 total heading", prompt)
+        self.assertIn("every level-2 heading above its own detail", prompt)
+        self.assertIn("upper entry region as the first visible statement before every group", prompt)
+        self.assertIn("semantic, not a fixed banner template", prompt)
+        self.assertIn("Never place it inside a diagram, hub, callout or peer card", prompt)
+        self.assertIn('Use "预测体系运行要求" only as the level-1 total heading', prompt)
+        self.assertIn('group heading "数据治理提供可信输入" owns only: "行业统计数据优先形成稳定基础"', prompt)
+        self.assertIn("Never promote a level-3 detail into a card/group heading", prompt)
+        self.assertIn("Never repeat or summarize the level-1 heading inside the visual field", prompt)
 
     def test_artifact_compiler_uses_projection_as_sole_prompt_authority(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -269,7 +285,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertEqual(expected, compiled.prompt)
         self.assertNotIn("WRONG LEGACY", compiled.prompt)
         self.assertEqual(_spec().to_dict(), compiled.build_metadata()["artifact_spec"])
-        self.assertEqual("v3", compiled.prompt_ir_version)
+        self.assertEqual("v4", compiled.prompt_ir_version)
         self.assertIsNotNone(compiled.debug_receipt)
         self.assertEqual("P07", compiled.debug_receipt["page"])
         # Default production uses a semantic brief. Stage 02 composition

@@ -69,24 +69,34 @@ class RenderFinalPromptTests(unittest.TestCase):
 
     def test_bound_visible_text_is_rendered_once_globally(self) -> None:
         ir = _sample_ir(
+            visible_text=(
+                "预测体系运行要求",
+                "需求变化扩大预测范围",
+                "需求侧变化扩大预测范围",
+                "审校闭环形成可追溯结果",
+                "审校发布形成可追溯结果",
+                "成果校核沉淀组织知识",
+                "复盘结果进入下一轮预测",
+            ),
             semantic_groups=(
-                SemanticGroupIR(id="g-process", role="process", summary="Input", emphasis="secondary"),
-                SemanticGroupIR(id="g-result", role="result", summary="Outcome", emphasis="primary"),
+                SemanticGroupIR(id="g-process", role="process", summary="Input", emphasis="primary"),
             ),
             text_bindings=(
                 TextBindingIR(
                     group_id="g-process",
                     role="process",
                     hierarchy_level=1,
-                    exact_text=("①需求侧变化",),
-                    text_ids=("P01-T01",),
-                ),
-                TextBindingIR(
-                    group_id="g-result",
-                    role="result",
-                    hierarchy_level=1,
-                    exact_text=("Traceable result",),
-                    text_ids=("P01-T02",),
+                    exact_text=(
+                        "预测体系运行要求",
+                        "需求变化扩大预测范围",
+                        "需求侧变化扩大预测范围",
+                        "审校闭环形成可追溯结果",
+                        "审校发布形成可追溯结果",
+                        "成果校核沉淀组织知识",
+                        "复盘结果进入下一轮预测",
+                    ),
+                    text_ids=("P01-T01", "P01-T02", "P01-T03", "P01-T04", "P01-T05", "P01-T06", "P01-T07"),
+                    hierarchy_levels=(1, 2, 3, 2, 3, 2, 3),
                 ),
             ),
         )
@@ -95,6 +105,8 @@ class RenderFinalPromptTests(unittest.TestCase):
 
         for text in ir.visible_text:
             self.assertEqual(1, prompt.count(text))
+        self.assertEqual(1, prompt.count("required text hierarchy:"))
+        self.assertIn("visible total heading", prompt)
 
     def test_style09_terminal_lock_ends_up_at_absolute_end(self) -> None:
         source_marker = "### Final ImageGen execution lock — hard"

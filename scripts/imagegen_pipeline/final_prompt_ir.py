@@ -12,7 +12,9 @@ from dataclasses import dataclass
 MAX_SEMANTIC_GROUPS = 10
 # The rendered contract now binds exact text to semantic groups and renders each
 # visible string once, so persisted debug receipts must record the new version.
-FINAL_PROMPT_IR_VERSION = "v3"
+# v4 additionally preserves per-line visible-text hierarchy so the prompt can
+# render a shared group heading, peer groups, and their details distinctly.
+FINAL_PROMPT_IR_VERSION = "v4"
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 
@@ -58,6 +60,7 @@ class TextBindingIR:
     hierarchy_level: int
     exact_text: tuple[str, ...]
     text_ids: tuple[str, ...] = ()
+    hierarchy_levels: tuple[int, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.group_id.strip():
@@ -68,6 +71,11 @@ class TextBindingIR:
             raise PromptContractError("text binding hierarchy_level must be positive")
         if self.text_ids and len(self.text_ids) != len(self.exact_text):
             raise PromptContractError("text binding text_ids must align one-to-one with exact_text")
+        if self.hierarchy_levels:
+            if len(self.hierarchy_levels) != len(self.exact_text):
+                raise PromptContractError("text binding hierarchy_levels must align one-to-one with exact_text")
+            if any(level <= 0 for level in self.hierarchy_levels):
+                raise PromptContractError("text binding hierarchy_levels must be positive")
 
 
 @dataclass(frozen=True)

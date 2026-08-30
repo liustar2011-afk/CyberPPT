@@ -403,6 +403,45 @@ def _bracketed_header_constraints(visible_text: tuple[str, ...]) -> tuple[str, .
     )
 
 
+def _three_level_group_heading_constraints(spec: PageArtifactSpec) -> tuple[str, ...]:
+    """Preserve a visible total heading, named peer cards, and their details."""
+
+    bindings = spec.visible_text_bindings
+    if not bindings:
+        return ()
+    if len({binding.root_id for binding in bindings}) != 1:
+        return ()
+    levels = tuple(binding.hierarchy_level for binding in bindings)
+    if levels.count(1) != 1 or not 3 <= levels.count(2) <= 4 or 3 not in levels:
+        return ()
+    total = next(binding.text for binding in bindings if binding.hierarchy_level == 1)
+    groups: list[tuple[str, list[str]]] = []
+    active_group: list[str] | None = None
+    for binding in bindings:
+        if binding.hierarchy_level == 2:
+            active_group = [binding.text]
+            groups.append((binding.text, active_group))
+        elif binding.hierarchy_level == 3 and active_group is not None:
+            active_group.append(binding.text)
+    if len(groups) != levels.count(2) or any(len(group) < 2 for _, group in groups):
+        return ()
+    named_groups = " | ".join(
+        f'group heading "{heading}" owns only: ' + "; ".join(f'"{detail}"' for detail in details[1:])
+        for heading, details in groups
+    )
+    return (
+        "The locked text contains a visible level-1 total heading, three or four named level-2 card/group "
+        "headings, and level-3 judgment or evidence detail. Render the level-1 heading once in the upper entry "
+        "region as the first visible statement before every group. Its upper placement is semantic, not a fixed "
+        "banner template: vary its alignment, width and integration with the page-specific visual anchor. Never "
+        "place it inside a diagram, hub, callout or peer card. "
+        "Render every level-2 heading above its own detail, using visibly distinct type scale, weight and spacing.",
+        f'Use "{total}" only as the level-1 total heading. Exact level-2 ownership map: {named_groups}. '
+        "Never repeat or summarize the level-1 heading inside the visual field. Never promote a level-3 detail "
+        "into a card/group heading, and never move a level-3 detail to another named group.",
+    )
+
+
 def _required_binding_roots(spec: PageArtifactSpec) -> tuple[tuple[str, str], ...]:
     roots: list[tuple[str, str]] = []
     seen: set[str] = set()
@@ -431,6 +470,7 @@ def _text_binding_ir(spec: PageArtifactSpec) -> tuple[TextBindingIR, ...]:
             hierarchy_level=min(int(item.hierarchy_level) for item in buckets[root_id]),
             exact_text=tuple(str(item.text) for item in buckets[root_id]),
             text_ids=tuple(str(item.text_id) for item in buckets[root_id]),
+            hierarchy_levels=tuple(int(item.hierarchy_level) for item in buckets[root_id]),
         )
         for root_id in order
     )
@@ -586,6 +626,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             *spec.hard_constraints.global_constraints,
             *spec.hard_constraints.page_constraints,
             *(() if live_style_surface else _bracketed_header_constraints(spec.typography.visible_text)),
+            *_three_level_group_heading_constraints(spec),
         )))
         semantic_relationship = (
             _prompt_safe_visual_text(_avoid_judgment_repeat(spec.visual_thesis.strip(), page_judgment))
