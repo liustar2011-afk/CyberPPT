@@ -1,8 +1,8 @@
-"""Legacy patch-point bridge kept outside the Stage 02 command facade.
+"""Read-only compatibility exports for historical Stage 02 callers.
 
-This module is the only compatibility seam allowed to import concrete ImageGen,
-Quick reconstruction and Office rendering backends. The public command facade
-only adapts arguments and forwards caller monkey-patches into this seam.
+Legacy import names remain available during migration, but this module no
+longer mutates the typed production pipeline.  Canonical production dependencies
+are resolved by ``cyberppt.stage02_production`` modules themselves.
 """
 from __future__ import annotations
 
@@ -15,25 +15,16 @@ from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPT
 from cyberppt.commands.production_qa import run_officecli_render_qa
 
 
-def sync_legacy_patch_points(
-    *,
-    image_stage: Any,
-    orchestrator: Any,
-    reconstruction_stage: Any,
-    delivery_stage: Any,
-    run_codex_image_patch: Any,
-    ensure_output_size_patch: Any,
-    require_generated_patch: Any,
-    reconstruction_patch: Any,
-    officecli_patch: Any,
-    append_ledger_patch: Any,
-) -> None:
-    image_stage.run_codex_image = run_codex_image_patch
-    image_stage.ensure_output_size = ensure_output_size_patch
-    orchestrator.require_generated = require_generated_patch
-    reconstruction_stage._run_image_to_editable_svg_build = reconstruction_patch
-    delivery_stage.run_officecli_render_qa = officecli_patch
-    delivery_stage._append_ledger = append_ledger_patch
+def sync_legacy_patch_points(**_kwargs: Any) -> None:
+    """Deprecated no-op retained only for source compatibility.
+
+    Previous releases copied facade-level monkey patches into live production
+    modules.  That made runtime behavior depend on import order and test patch
+    points.  Production is now intentionally non-mutating; callers that need
+    substitution must inject it at the owning module/test boundary instead.
+    """
+
+    return None
 
 
 __all__ = [
