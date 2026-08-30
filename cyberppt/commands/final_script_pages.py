@@ -1,4 +1,4 @@
-"""Compatibility facade for the typed Stage 02 production pipeline."""
+"""One-way compatibility facade for the typed Stage 02 production pipeline."""
 
 from __future__ import annotations
 
@@ -7,6 +7,8 @@ from typing import Any
 
 from cyberppt.stage02_production import compat as _compat
 
+# Historical import names remain available, but changing these facade aliases no
+# longer mutates canonical Stage 02 modules.
 BODY_IMAGE_CANVAS_CONTRACT = _compat.BODY_IMAGE_CANVAS_CONTRACT
 CANONICAL_EDITABLE_PPTX_ROUTE = _compat.CANONICAL_EDITABLE_PPTX_ROUTE
 FULL_IMAGE_MODE = _compat.FULL_IMAGE_MODE
@@ -17,8 +19,6 @@ run_officecli_render_qa = _compat.run_officecli_render_qa
 
 from cyberppt.stage02_production import image_stage as _image_stage
 from cyberppt.stage02_production import orchestrator as _orchestrator
-from cyberppt.stage02_production import reconstruction_stage as _reconstruction_stage
-from cyberppt.stage02_production import delivery_stage as _delivery_stage
 from cyberppt.stage02_production.delivery_stage import _append_ledger, _artifact_record
 from cyberppt.stage02_production.manifest_stage import _template_text_lock
 from cyberppt.stage02_production.models import Stage02RunOptions
@@ -40,29 +40,16 @@ from cyberppt.stage02_production.reconstruction_stage import _run_image_to_edita
 
 
 def _sync_legacy_patch_points() -> None:
-    """Keep existing monkey-patch/import paths effective during migration."""
-    _compat.sync_legacy_patch_points(
-        image_stage=_image_stage,
-        orchestrator=_orchestrator,
-        reconstruction_stage=_reconstruction_stage,
-        delivery_stage=_delivery_stage,
-        run_codex_image_patch=run_codex_image,
-        ensure_output_size_patch=ensure_output_size,
-        require_generated_patch=require_generated,
-        reconstruction_patch=_run_image_to_editable_svg_build,
-        officecli_patch=run_officecli_render_qa,
-        append_ledger_patch=_append_ledger,
-    )
+    """Deprecated no-op retained for old imports/tests during migration."""
 
+    _compat.sync_legacy_patch_points()
 
 
 def _generate_manifest_images(*args: Any, **kwargs: Any) -> dict[str, Any]:
-    _sync_legacy_patch_points()
     return _image_stage._generate_manifest_images(*args, **kwargs)
 
 
 def _normalize_audited_manifest_images(manifest: dict[str, Any]) -> None:
-    _sync_legacy_patch_points()
     _image_stage.normalize_audited_manifest_images(manifest)
 
 
@@ -101,10 +88,9 @@ def run_final_script_pages(
     allow_prompt_edit: bool = False,
     prompt_overrides_dir: Path | None = None,
 ) -> dict[str, Any]:
-    _ = lightweight_stage01_confirmed, rebuild_args
+    _ = lightweight_stage01_confirmed, rebuild_args, style_id, style_name
     if run_rebuild:
         raise ValueError("--run-rebuild was removed; use --production-build for image-to-editable-svg")
-    _sync_legacy_patch_points()
     result = _orchestrator.run_production(
         Stage02RunOptions(
             project=project,
