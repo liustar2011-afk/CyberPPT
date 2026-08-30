@@ -9,6 +9,8 @@ description: Use when source materials have already been structurally parsed and
 
 Turn layer-two source assertions into a traceable semantic model. The model may interpret, normalize and diagnose the source, but it must never blur the boundary between what the source explicitly says and what the agent infers.
 
+In the strict/legacy profile, the four document-level files produced by this Skill are field-partitioned parts of one logical `SemanticIR`, not four competing semantic authorities. Read [`docs/STAGE01_AUTHORITY_MAP.md`](../../../docs/STAGE01_AUTHORITY_MAP.md) before changing authority or projection behavior.
+
 ## Required inputs
 
 Use a foundation directory containing `structure.json` and `fact-base.json`. If only Word/PDF/PPT/XLSX or Markdown exists, run the earlier source-material layers first.
@@ -45,6 +47,17 @@ Run the commands below from this Skill directory with the repository interpreter
 ```
 
 `semantic-report.json` must report `status: ok`. If validation fails, correct the semantic artifacts; do not bypass the validator.
+
+## SemanticIR field ownership
+
+The four files divide ownership as follows:
+
+- `normalized-facts.json` owns source assertions, state, numbers, responsibility, conditions and exact evidence coordinates.
+- `concept-base.json` owns business objects, definitions, aliases and conceptual boundaries.
+- `relation-graph.json` owns relationships and their `basis: source | inferred | external` classification.
+- `argument-chain.json` owns document thesis, document semantics, source/reconstructed argument order and diagnostics.
+
+Do not independently restate and maintain the same semantic field in another file. If a cross-file contradiction appears, fix it in the owning field and rerun validation. Downstream Source Truth, semantic argument model, Outline or handoff projections may carry copies for compatibility, but they may not become the place where a semantic defect is repaired.
 
 ## Evidence and inference rules
 
