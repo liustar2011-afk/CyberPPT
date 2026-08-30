@@ -1,8 +1,0 @@
-pyyaml
-rapidocr-onnxruntime<2,>=1.4
-python-pptx
-jsonschema<5,>=4
-
-[test]
-pytest<10,>=8
-pytest-cov<7,>=5
