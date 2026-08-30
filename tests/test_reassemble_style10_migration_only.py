@@ -1,13 +1,9 @@
-"""Task 6 regression: a production manifest is self-describing.
+"""Regression: a production manifest is self-describing.
 
-reassemble_style10_prompts.py used to be a shadow prompt-assembly path,
-independent from scripts/imagegen_pipeline/artifact_prompt.py's single
-renderer, and its output directories were the closest thing to "the real
-prompt" for Style 10 projects. This test locks the replacement guarantee: a
-real production manifest (built through build_manifest / compile_page_prompt)
-carries enough self-describing provenance (compiler, prompt_ir_version,
-prompt_sha256) that nobody needs to trust a hand-copied prompts/ directory to
-know where a prompt came from.
+Legacy prompt-reassembly scripts used to create shadow prompt directories outside
+the canonical compiler. The replacement guarantee is style-independent: a real
+production manifest carries compiler identity and prompt hashes so no copied
+prompt directory is authoritative.
 """
 
 from __future__ import annotations
@@ -28,7 +24,7 @@ from tests.test_artifact_prompt import _spec
 
 
 class ProductionManifestCarriesSelfDescribingProvenanceTests(unittest.TestCase):
-    def test_manifest_prompt_traces_back_without_a_reassembled_directory(self) -> None:
+    def test_manifest_prompt_traces_back_without_a_shadow_reassembled_directory(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "project"
@@ -39,10 +35,16 @@ class ProductionManifestCarriesSelfDescribingProvenanceTests(unittest.TestCase):
                 "- 主判断：治理结果可追溯。\n- 上屏文字：\n\n  Governed input\n  Traceable result\n",
                 encoding="utf-8",
             )
-            style_lock = write_project_style_lock(project=project, style_id=10, source_script=script)
+            style_lock = write_project_style_lock(
+                project=project,
+                style_id=9,
+                source_script=script,
+            )
             spec = replace(_spec(), page_id="P02", page_number=2)
             expected_prompt = render_final_prompt(
-                build_final_prompt_ir(spec), style_id=spec.art_direction.style_id, style_lock=style_lock
+                build_final_prompt_ir(spec),
+                style_id=spec.art_direction.style_id,
+                style_lock=style_lock,
             )
             approved = root / "approved.md"
             approved.write_text(expected_prompt, encoding="utf-8")
@@ -66,8 +68,8 @@ class ProductionManifestCarriesSelfDescribingProvenanceTests(unittest.TestCase):
         self.assertEqual("artifact-spec-v2", manifest["prompt_contract"]["compiler"])
         pair = manifest["pairs"][0]
         self.assertEqual(expected_prompt, pair["full"]["prompt"])
-        self.assertIn("prompt_sha256", pair["full"])
         self.assertTrue(pair["full"]["prompt_sha256"])
+        self.assertNotIn("reassembled", pair["full"].get("prompt_source", "").lower())
 
 
 if __name__ == "__main__":
