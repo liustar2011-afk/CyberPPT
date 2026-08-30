@@ -43,14 +43,22 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("The current main agent is the AUTHOR executor", text)
         self.assertIn("There is no separate AUTHOR", text)
 
-    def test_default_project_route_runs_understand_once(self) -> None:
+    def test_default_project_route_uses_current_strict_pipeline(self) -> None:
         agents = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
         workflow = WORKFLOW.read_text(encoding="utf-8-sig")
-        script_skill = SCRIPT_SKILL.read_text(encoding="utf-8-sig")
-        self.assertIn("Ordinary new projects use the `script` profile", agents)
-        self.assertIn("Do not run `prepare-source-map`", agents)
-        self.assertIn("一次 UNDERSTAND/Foundation", workflow)
-        self.assertIn("once per deck", script_skill)
+        source_skill = SOURCE_SKILL.read_text(encoding="utf-8-sig")
+        self.assertIn("New source-to-script projects use the `strict/legacy` profile by default", agents)
+        self.assertIn("一次业务语义理解", workflow)
+        for command in (
+            "prepare-source-map",
+            "source-map-check",
+            "prepare-semantic-understanding",
+            "semantic-check",
+            "compile-source-truth",
+            "project-foundation",
+        ):
+            self.assertIn(command, source_skill)
+        self.assertNotIn("source_foundation_pipeline.py", source_skill)
 
     def test_stage01_has_two_default_human_stops(self) -> None:
         workflow = WORKFLOW.read_text(encoding="utf-8-sig")

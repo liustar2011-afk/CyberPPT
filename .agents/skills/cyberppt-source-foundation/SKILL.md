@@ -15,7 +15,7 @@ determine whether approved source-foundation outputs can be reused.
 
 Authoritative chain:
 
-`source -> Source Foundation -> business semantics -> project-foundation -> cyberppt-script-workflow`
+`source mapping -> whole-document semantic model -> Source Truth -> project-foundation -> cyberppt-script-workflow`
 
 The projection is a compatibility artifact only. It must never become a second semantic authority.
 
@@ -25,18 +25,18 @@ Before acting, read the repository-wide [CyberPPT workflow overview](../../../do
 
 ## Canonical route
 
-The strict/legacy route is `cyberppt-source-foundation` →
-`business-semantic-understanding` → `project-foundation` →
+The strict/legacy route is `prepare-source-map` → whole-document semantic
+understanding → `compile-source-truth` → `project-foundation` →
 `cyberppt-script-workflow` (PLAN/AUTHOR). Legacy Outline/Handoff implementations
 remain internal compatibility code and must not run over current Source Truth
 outputs.
 
 ## Required sequence
 
-1. From the repository root, run `.venv/bin/python3 scripts/source_foundation_pipeline.py <source> -o <project>/workbench/source-foundation --prepare-semantic --report`.
-2. Use `business-semantic-understanding` to author the four semantic outputs in the prepared semantic directory, then run its validator with `--report`.
-3. Before planning pages, derive one source-faithful communication-goal direction from the semantic outputs and include it in **脚本规划待确认**. Do not add a separate communication-goal approval stop. The user's wording may constrain audience, use, or delivery, but must not be promoted into a source fact, source judgment, or page conclusion without direct source support.
-4. Run `.venv/bin/python3 -m cyberppt semantic-check <project>` and confirm the semantic report is `ok`.
+1. From the repository root, run `.venv/bin/python3 -m cyberppt prepare-source-map <project>`, then `.venv/bin/python3 -m cyberppt source-map-check <project>`. Resolve every blocking extraction issue before continuing.
+2. Run `.venv/bin/python3 -m cyberppt prepare-semantic-understanding <project>`. Use its source-bound authoring task to create the canonical whole-document `semantic-argument-model.json`; this model preserves the document map, semantic nodes, argument relations, source coverage, source-native status and evidence references.
+3. Run `.venv/bin/python3 -m cyberppt semantic-check <project>` and confirm the semantic report is `ok`.
+4. Before planning pages, derive one source-faithful communication-goal direction from the validated semantic model and include it in **脚本规划待确认**. Do not add a separate communication-goal approval stop. The user's wording may constrain audience, use, or delivery, but must not be promoted into a source fact, source judgment, or page conclusion without direct source support.
 5. Run `.venv/bin/python3 -m cyberppt compile-source-truth <project>` and `.venv/bin/python3 -m cyberppt source-truth-audit <project> --input <project>/workbench/stages/01-analysis/source-truth.json`.
 6. Run `.venv/bin/python3 -m cyberppt project-foundation <project>` to mechanically project the validated Source Truth into `script/foundation.json`.
 7. Continue with `cyberppt-script-workflow` for PLAN/AUTHOR. Present the readable deck plan at **脚本规划待确认** before writing the final script.
