@@ -25,7 +25,8 @@
 | 13 | `f0cf8a17e8d74034b8e7bdfe0250be60d688ec6a` | CI 在 pytest 失败时持久化完整日志 artifact，便于精确诊断和恢复 |
 | 14 | `ed7e1385816cae33454f82e4841192370eb42c1c` | 修正 Pillow 直接依赖版本，恢复 Pillow 12 像素迭代 API |
 | 15 | `fa65965d0acaccbb77f545d6994fa54d0e1f3def` | 新 fingerprint 严格失效，同时保留无 fingerprint 历史 manifest 的旧项目恢复兼容 |
-| 16 | 待本次提交 | 旧 Style 09 live lock 首次读取时迁移并落盘为 snapshot；新锁和迁移后的锁均永久冻结 |
+| 16 | `45dcf03a38d76d53c37a9d6747d06f31a290680e` | 旧 Style 09 live lock 首次读取时迁移并落盘为 snapshot；新锁和迁移后的锁均永久冻结 |
+| 17 | 待本次提交 | `projects/AGENTS.md` 与仓库主流程统一：新源材料项目默认 strict/legacy，script 仅显式选择时启用 |
 
 ## 当前结构性结果
 
@@ -36,6 +37,7 @@
 - `script/foundation.json` 是 PLAN/AUTHOR 语义合同。
 - `script/deck-plan.json` 负责章节、页序、页面使命和来源范围。
 - `script/dist/final-script.md` 是 Stage 02 唯一跨阶段内容权威。
+- `projects/AGENTS.md` 不再维护一条相反的默认路线；项目目录规则明确从属于仓库总流程。
 - 详细规则见 `docs/CYBERPPT_AUTHORITY_MAP.md`。
 
 ### Stage 02
@@ -84,5 +86,5 @@
 ## 验证状态
 
 - 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败；因此当前 CI 红色包含仓库既有失败，不能全部归因于本轮。
-- 阶段 13 run `33339540943` 摘要为 50 failed、1738 passed、8 skipped。阶段 14 修复 Pillow 版本回归；阶段 15 修复 fingerprint 改造对历史 partial recovery 的兼容回归；阶段 16 修复 snapshot 改造对 pre-snapshot Style 09 锁的升级兼容。
-- 后续继续优先消除本轮引入回归，再单独登记仓库原有失败基线。
+- 阶段 16 run `33339768029` 的 Python 3.12 日志显示 38 failed、1752 passed、8 skipped；失败已由阶段 13 的 50 项下降。可枚举失败主要集中在已退役 Style10、旧 Style09 prompt 合同、项目默认 profile 漂移以及一个 legacy facade mock 测试。
+- 阶段 17 先消除会真实影响 Agent 路由的项目级 profile 冲突；随后再清理已退役 Style10/旧 Style09 测试契约。
