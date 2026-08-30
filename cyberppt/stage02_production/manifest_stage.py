@@ -199,6 +199,8 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
     manifest["source_mode"] = context.source_mode
     manifest["source_script"] = str(context.canonical_script)
     manifest["source_script_sha256"] = context.source_script_sha256
+    manifest["input_fingerprint"] = context.input_fingerprint
+    manifest["resolved_style_contract_sha256"] = context.resolved_style_contract_sha256
     _reuse_prior_artifacts(manifest=manifest, prior_manifest=prior_manifest, production_mode=context.production_mode)
     _retain_audited_prior_pairs(manifest=manifest, prior_manifest=prior_manifest)
     write_json(manifest_path, manifest)
@@ -220,12 +222,16 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
         {
             "schema": "cyberppt.build_context.v1",
             "build_id": context.build_id,
+            "input_fingerprint": context.input_fingerprint,
             "created_at": utc_now(),
             "project": str(context.project),
             "source_script": str(context.canonical_script),
             "source_script_sha256": context.source_script_sha256,
+            "script_input_sha256": context.script_input_sha256,
+            "visual_spec_sha256": context.visual_spec_sha256,
             "style_lock": str(context.style_lock),
             "style_lock_sha256": context.style_lock_sha256,
+            "resolved_style_contract_sha256": context.resolved_style_contract_sha256,
             "page_set": list(page_numbers),
             "production_mode": context.production_mode,
             "assembly_mode": context.assembly_mode,
