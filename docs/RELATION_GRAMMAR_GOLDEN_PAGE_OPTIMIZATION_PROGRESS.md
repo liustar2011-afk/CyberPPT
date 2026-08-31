@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch E — Onscreen 微语法与 Speaker Notes 去重
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E5
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E6
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch E6 Comparison，强化“评价维度 / 对象A状态 / 对象B状态”微语法，并让备注只解释比较可比性与误读边界
+- 下一恢复点：Batch E7 Roadmap，强化“状态 / 进入条件 / 新状态”的跃迁微语法，并让备注只解释状态链判别与验收逻辑
 
 ## 剩余任务
 
-- [ ] Batch E6：Comparison 上屏微语法与备注去重
 - [ ] Batch E7：Roadmap 上屏微语法与备注去重
 - [ ] Batch E8：Governance 上屏微语法与备注去重
 - [ ] Batch F：统一视觉结构合同
@@ -55,6 +54,7 @@
 | Batch E3 Causal | 完成 | `09a18ca04ffcbd6bc2b5351f2fb5c0001215dd69` | 上屏统一为“因果角色｜状态 / 直接后果｜下一状态”；Speaker Notes 改为“因为A所以B + 反事实”两项因果测试，清理链条复述 | 下一步：Convergence 微语法 |
 | Batch E4 Convergence | 完成 | `5bef322a06e5a124e43eccd9c8847e7f657a78ba` | 上屏固定“输入角色｜贡献 / 依据｜事实”；Speaker Notes 只解释共同结果、输入独立性及与 Parallel 的边界 | 下一步：Mapping 微语法 |
 | Batch E5 Mapping | 完成 | `f8c7af32a1cf9298cd6322a2b6524d6528214b13` | 上屏统一为“问题｜A → 响应｜B / 回答｜业务问题”；Speaker Notes 只解释映射方向、1:1 Cardinality 与 1:N / N:1 保真原则 | 下一步：Comparison 微语法 |
+| Batch E6 Comparison | 完成 | `e0b0ff588b4d9ff9139058642111b5a9e71d67d7` | 上屏统一为“评价维度｜D / 对象A｜状态 / 对象B｜状态”；Speaker Notes 只解释可比性条件、失效边界及为何不得用方向箭头 | 下一步：Roadmap 微语法 |
 
 ## Batch D2 详细验收
 
@@ -79,3 +79,10 @@
 - Speaker Notes 不再逐项复述四组业务内容，改为解释“为什么有方向、为什么本例是 1:1、何时必须保留 1:N / N:1”。
 - 1:1 仅作为本示例业务事实，不提升为视觉规则；实际 Cardinality 优先于版式整齐。
 - 视觉结构继续保留四条独立 `A → B：问题回应`，未改变 Stage2 现有可解析语义。
+
+## Batch E6 详细验收
+
+- Comparison 上屏已固定为“评价维度｜D / 对象A｜状态 / 对象B｜状态”，比较对象与评价维度的角色稳定。
+- Speaker Notes 不再复述四行差异，改为说明 Comparison 成立的三个条件：对象固定、维度一致、证据成对。
+- 明确任一行更换对象、评价口径或证据尺度即失去可比性。
+- 页面继续禁止对象间方向箭头，避免状态差异被误读为迁移、流程或路线图。
