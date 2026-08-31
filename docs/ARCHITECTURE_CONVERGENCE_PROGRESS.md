@@ -12,10 +12,10 @@
 
 ## 当前结论
 
-- 代码级架构收敛已完成至 **Stage 75**。
-- Stage 75 implementation/test checkpoint：`4a7f58a02e7220e7dbdd711357ef14566a3f26c0`。
-- Stage 75 workflow run：`33375703037`，Linux Python 3.10/3.12、macOS/Windows wheel smoke、OfficeCLI render smoke 五项全部 `success`。
-- 本文件与阶段归档的统一属于 **Stage 76 收口工作**；完成后，原架构收敛里程碑视为关闭。
+- 架构收敛里程碑已完成至 **Stage 76**，本轮收敛正式关闭。
+- Stage 75 最后一项代码职责域收敛 checkpoint：`4a7f58a02e7220e7dbdd711357ef14566a3f26c0`，workflow run `33375703037` 五项全部 `success`。
+- Stage 76 状态收口 implementation checkpoint：`acc79fd0ebc3f2a7f9c8e000688c3e9651cfa079`，workflow run `33376132351` 五项全部 `success`。
+- 原架构收敛 backlog 当前没有未关闭的强制项。
 - 后续不再按文件大小机械拆分模块。只有出现真实的多权威、运行时隐式 patch、compat facade 回长业务实现、跨职责耦合导致变更风险、打包/恢复/CI 边界回退时，才从 Stage 77 继续编号。
 
 ## 恢复入口
@@ -23,12 +23,12 @@
 需要恢复工作时，按以下顺序读取：
 
 1. `docs/ARCHITECTURE_CONVERGENCE_PROGRESS.md`：唯一当前状态与恢复规则。
-2. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_66PLUS.md`：最新阶段明细，当前覆盖 Stage 66–75。
+2. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_66PLUS.md`：最新阶段明细，覆盖 Stage 66–76。
 3. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_50PLUS.md`：Stage 50–65。
 4. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_30PLUS.md`：Stage 30–49。
 5. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_01_29.md`：Stage 1–29 历史归档。
 
-任何恢复动作均以 GitHub `main` 的实际 commit 和对应 GitHub Actions 结果为准。只有同时满足“代码已进入 main、五项 CI 全绿、checkpoint 已记录”三个条件，才允许宣布某个 Stage 正式完成。
+任何恢复动作均以 GitHub `main` 的实际 commit 和对应 GitHub Actions 结果为准。只有同时满足“变更已进入 main、五项 CI 全绿、checkpoint 已记录”三个条件，才允许宣布某个 Stage 正式完成。
 
 ## 当前架构结果
 
@@ -94,11 +94,11 @@
 2. `references/visual-system.md` 中旧象牙白说明及 Style10 定位：Stage 36 完成统一，Style10 明确为 compatibility alias。
 3. LegacyPatchSet module-global patch、quality policy、wheel fixture 与 Office 集成 CI：Stage 37–45 完成，生产 module-global patch 清零，quality policy 与三平台/OfficeCLI CI 已接入。
 
-随后 Stage 46–75 完成 Script Engine 与 analysis audit God Module 的职责域收敛。因此，原架构收敛 backlog 当前没有未关闭的强制项。
+随后 Stage 46–75 完成 Script Engine 与 analysis audit God Module 的职责域收敛，Stage 76 完成恢复权威与状态入口统一。因此，原架构收敛 backlog 当前没有未关闭的强制项。
 
 ## 退出准则与后续规则
 
-架构收敛里程碑在 Stage 76 完成后关闭。后续开发遵循以下规则：
+本轮架构收敛在 Stage 76 正式关闭。后续开发遵循以下规则：
 
 - 不新增第二套可写权威或第二套视觉执行权威。
 - 不恢复生产 module-global monkey-patch。
