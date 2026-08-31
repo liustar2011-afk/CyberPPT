@@ -12,6 +12,7 @@
 | 71 | `bc350a7f573e3493be11667986d35caec9e72fa9` | 将 `analysis_audits/final_script_runtime.py` 从动态 rebinding router 收缩为静态显式 re-export facade；移除 focused-module fan-in、`setattr()` 与 `globals()` 修改，只保留历史 runtime import path 兼容，并以 AST 门禁禁止动态路由回流。实现提交：`97c85b8`、`bc350a7` |
 | 72 | `4c4f4e65a1e9085a2bf940344de018115dee983e` | 新增 `analysis_audits/common_primitives.py`，迁移 source/evidence 常量、Foundation item 索引、可见性、optionality/group-strength、page evidence refs、source-consumption、source surface 和 page text 等底层 primitives；`common.py` 保留原 `__all__` 并仅自有 4 个高层 contract validator。实现提交：`fa035a0`、`09eee81`、`4c4f4e6` |
 | 73 | `3f86818e99147ec8d062f4eaa340a192e38324f8` | 新增 `analysis_audits/common_contracts.py`，迁移 evidence-fit review、onscreen contract definition 和 onscreen composition definition 四个高层 validator；`common.py` 收缩为无函数/类实现的 compatibility facade，仅组合外部依赖、`common_primitives` 与 `common_contracts`，并保持历史 `__all__`。实现提交：`45e5c80`、`adc4a1c`、`3f86818` |
+| 74 | `186bca9cd44dbc7147a1adff0f9166322a3d5af0` | 将约 15KB 的 `analysis_audits/final_authoring.py` 拆为 `final_authoring_expression.py` 与 `final_authoring_structure.py` 两个 focused authority，分别承载可见表达/机械拼接检查与来源细节/内容覆盖/关系拓扑检查；原 `final_authoring.py` 收缩为 thin compatibility facade，并以对象身份与 AST 门禁锁定职责边界。实现提交：`132f279`、`c0955fb`、`945f154`、`186bca9` |
 
 ## 验证记录
 
@@ -23,3 +24,4 @@
 - 阶段 71 workflow run `33373849896`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；runtime 动态 rebinding 完全移除后，历史 import path、公开 API 对象身份和正式审计行为保持兼容。
 - 阶段 72 workflow run `33374386175`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；common primitives 迁出后，所有 `.common import *` 消费者、历史 `common.__all__` 和审计 finding 行为保持兼容。
 - 阶段 73 workflow run `33374727992`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；高层 contract validators 迁出并将 `common.py` 收缩为 thin facade 后，历史 wildcard import、对象身份和审计 finding 行为保持兼容。
+- 阶段 74 workflow run `33375411393`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；authoring expression/structure 两个 focused domain 接管后，原 `final_authoring` 公共面、Final Script facade、orchestrator 依赖身份与全部 finding 行为保持兼容。
