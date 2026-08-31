@@ -40,21 +40,35 @@ from cyberppt.stage02_production.preflight import (
 from cyberppt.stage02_production.reconstruction_stage import _run_image_to_editable_svg_build
 
 
-def _sync_legacy_patch_points() -> None:
-    """Translate historical facade monkey-patches into the finite compat seam."""
+def _legacy_dependencies() -> Stage02Dependencies:
+    """Capture the current facade patch values as explicit runtime dependencies."""
 
+    return Stage02Dependencies(
+        require_generated=require_generated,
+        run_codex_image=run_codex_image,
+        ensure_output_size=ensure_output_size,
+        reconstruction_build=_run_image_to_editable_svg_build,
+        officecli_render_qa=run_officecli_render_qa,
+        append_ledger=_append_ledger,
+    )
+
+
+def _sync_legacy_patch_points() -> None:
+    """Translate the two remaining ImageGen monkey patches into the compat seam."""
+
+    deps = _legacy_dependencies()
     _compat.apply_legacy_patch_set(
         image_stage=_image_stage,
         orchestrator=_orchestrator,
         reconstruction_stage=_reconstruction_stage,
         delivery_stage=_delivery_stage,
         patches=_compat.LegacyPatchSet(
-            run_codex_image=run_codex_image,
-            ensure_output_size=ensure_output_size,
-            require_generated=require_generated,
-            reconstruction_build=_run_image_to_editable_svg_build,
-            officecli_render_qa=run_officecli_render_qa,
-            append_ledger=_append_ledger,
+            run_codex_image=deps.run_codex_image,
+            ensure_output_size=deps.ensure_output_size,
+            require_generated=deps.require_generated,
+            reconstruction_build=deps.reconstruction_build,
+            officecli_render_qa=deps.officecli_render_qa,
+            append_ledger=deps.append_ledger,
         ),
     )
 
@@ -107,6 +121,7 @@ def run_final_script_pages(
     _ = lightweight_stage01_confirmed, rebuild_args, style_id, style_name
     if run_rebuild:
         raise ValueError("--run-rebuild was removed; use --production-build for image-to-editable-svg")
+    dependencies = _legacy_dependencies()
     _sync_legacy_patch_points()
     result = _orchestrator.run_production(
         Stage02RunOptions(
@@ -141,6 +156,6 @@ def run_final_script_pages(
             allow_prompt_edit=allow_prompt_edit,
             prompt_overrides_dir=prompt_overrides_dir,
         ),
-        dependencies=Stage02Dependencies(require_generated=require_generated),
+        dependencies=dependencies,
     )
     return result.delivery.summary
