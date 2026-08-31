@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 
 import script_engine.analysis_audit as facade
@@ -119,6 +120,25 @@ def test_final_script_runtime_routes_orchestrator_to_focused_module() -> None:
     }
     for name, value in expected_globals.items():
         assert focused.__globals__[name] is value
+
+
+def test_legacy_final_script_is_thin_compatibility_facade() -> None:
+    path = ROOT / "script_engine" / "analysis_audits" / "final_script.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+
+    implementations = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    ]
+    assert implementations == []
+    assert path.stat().st_size < 5_000
+    assert "from .final_orchestrator import audit_final_script" in source
+    assert "_STATUS_PRESERVATION_MARKERS" in source
+    assert "_STRUCTURAL_METADATA_PATTERNS" in source
+    assert "_status_strength_preserved" in source
+    assert "_onscreen_surface" in source
 
 
 def test_final_script_public_facades_use_runtime_router() -> None:
