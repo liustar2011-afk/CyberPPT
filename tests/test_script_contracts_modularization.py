@@ -5,17 +5,26 @@ from pathlib import Path
 
 import script_engine.contract_rules as implementation
 import script_engine.contracts as facade
+import script_engine.schema_contracts as schema_contracts
+import script_engine.source_trace_contracts as source_trace_contracts
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_contracts_facade_reexports_internal_implementation() -> None:
-    assert facade.validate_final_script is implementation.validate_final_script
-    assert facade.validate_deck_plan is implementation.validate_deck_plan
-    assert facade.validate_foundation is implementation.validate_foundation
+def test_contracts_facade_routes_focused_domains() -> None:
+    assert facade.load_json is schema_contracts.load_json
+    assert facade.validate_final_script is schema_contracts.validate_final_script
+    assert facade.validate_deck_plan is schema_contracts.validate_deck_plan
+    assert facade.validate_foundation is schema_contracts.validate_foundation
+    assert facade.collect_foundation_source_codes is source_trace_contracts.collect_foundation_source_codes
+    assert facade.validate_source_refs_coverage is source_trace_contracts.validate_source_refs_coverage
+
+
+def test_contracts_facade_keeps_remaining_rules_compatible() -> None:
     assert facade.lint_final_script is implementation.lint_final_script
     assert facade.check_onscreen_structure is implementation.check_onscreen_structure
+    assert facade.check_full_copy_duplication is implementation.check_full_copy_duplication
 
 
 def test_contracts_facade_contains_no_rule_implementation() -> None:
