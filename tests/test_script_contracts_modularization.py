@@ -6,6 +6,7 @@ from pathlib import Path
 import script_engine.contract_rules as implementation
 import script_engine.contracts as facade
 import script_engine.delivery_contracts as delivery_contracts
+import script_engine.lint_contracts as lint_contracts
 import script_engine.schema_contracts as schema_contracts
 import script_engine.source_trace_contracts as source_trace_contracts
 import script_engine.structural_contracts as structural_contracts
@@ -28,12 +29,15 @@ def test_contracts_facade_routes_focused_domains() -> None:
     assert facade.outline_final_script is delivery_contracts.outline_final_script
     assert facade.check_onscreen_structure is structural_contracts.check_onscreen_structure
     assert facade.check_full_copy_duplication is structural_contracts.check_full_copy_duplication
+    assert facade.load_banned_phrasing is lint_contracts.load_banned_phrasing
+    assert facade.iter_final_script_text_fields is lint_contracts.iter_final_script_text_fields
+    assert facade.lint_final_script is lint_contracts.lint_final_script
 
 
 def test_contracts_facade_keeps_remaining_rules_compatible() -> None:
-    assert facade.lint_final_script is implementation.lint_final_script
     assert facade.check_author_field_contract is implementation.check_author_field_contract
     assert facade.check_full_copy_structure is implementation.check_full_copy_structure
+    assert facade.check_onscreen_heading_semantics is implementation.check_onscreen_heading_semantics
 
 
 def test_contracts_facade_contains_no_rule_implementation() -> None:
