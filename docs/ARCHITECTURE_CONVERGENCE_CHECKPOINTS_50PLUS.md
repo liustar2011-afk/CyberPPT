@@ -19,6 +19,7 @@
 | 62 | `698a7123f279943db5f712e9070d1cb9546c97cc` | 将 source-index v2 的阅读负载估算、direct/long 模式判定和默认 reading strategy 迁入 `source_reading.py`；`source_index.py` 继续以原函数名兼容导出并复用 focused implementation，移除自身 `math`/策略实现。实现提交：`ea107f0`、`e055048`、`a8d4449`、`698a712` |
 | 63 | `56b814ecbbf20c2ca807549e5ce10e1c98520bfc` | 将旧版 Word `source_extract` 的段落/目录识别、中文序号解析、v1 source-index 构建与文件落盘迁入 `source_index_legacy.py`；`source_index.py` 继续以原常量/函数名兼容导出，v2 builder/validation 保持原行为。实现提交：`ea7f0b7`、`0840aed`、`56b814e` |
 | 64 | `d14fde0309de424ffedb4a37f376914a5d6fc85b` | 将 source-index v2 的 reading strategy 校验、Foundation source identity/citation 绑定、source asset 绑定和 detail atomicity 校验迁入 `source_index_validation.py`；`source_index.py` 继续兼容导出公开 validator 与关键私有 helper，主体收敛为 v2 builder/context renderer/writer facade。实现提交：`b35fc64`、`dab344d`、`d14fde0` |
+| 65 | `f5208e80a66175c84bbd9c549c8354e4c5c4befb` | 新增 `analysis_audits/final_authoring.py`，抽出 AUTHOR 可见表达、evidence-first 层级、结构元数据泄漏、机械拼接、bare-label 细项、content-route 覆盖和 relationship topology 等 helper；新增 `final_script_runtime.py` 在运行时将 legacy `final_script.py` 的同名全局绑定到 focused 实现，包级与 `analysis_audit.py` facade 均改走 runtime router，保持 `audit_final_script` 函数对象与主循环顺序不变。实现提交：`f754b8a`、`090e2b2`、`b4edb86`、`89f3615`、`4bf9caa`、`f5208e8` |
 
 ## 验证记录
 
@@ -37,3 +38,4 @@
 - 阶段 62 workflow run `33367835415` 首次执行仅因新架构测试的 25KB 文件大小阈值过严失败；该次运行中既有 1783 个 pytest 全部通过，生产行为未出现回归。将门禁校准到 27KB 后，workflow run `33367971890` 五个 job 全部 `success`，三平台 wheel smoke、Linux Python3.10/3.12 全量 pytest 与 OfficeCLI 真实渲染均通过。
 - 阶段 63 workflow run `33368338111`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；legacy Word extract parser/build/write 迁出后，原常量/函数对象身份、TOC 去重、中文序号、v1 JSON 结构和 CLI build-source-index 行为保持兼容。
 - 阶段 64 workflow run `33368689461`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；v2 validation 迁出后，reading strategy、source identity/citation、asset binding、detail atomicity 与组合 validator 的公开对象身份和 finding 行为保持兼容。
+- 阶段 65 workflow run `33369518780` 首次执行仅因新增架构测试错误假设 `_status_strength_preserved` 应进入 legacy `__all__` 而失败；该次运行中既有 1787 个 pytest 全部通过，生产审计行为未出现回归。测试改为仅校验 legacy orchestrator 全局 rebinding、同时保持原 export boundary 后，workflow run `33369660923` 五个 job 全部 `success`，三平台 wheel smoke、Linux Python3.10/3.12 全量 pytest 与 OfficeCLI 真实渲染均通过。
