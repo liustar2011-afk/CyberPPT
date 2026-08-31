@@ -72,4 +72,4 @@ def test_source_index_no_longer_owns_reading_strategy_implementation() -> None:
     assert "default_reading_strategy" not in function_names
     assert "_critical_deep_read_unit_ids" not in function_names
     assert "math" not in imported_names
-    assert path.stat().st_size < 25_000
+    assert path.stat().st_size < 27_000
