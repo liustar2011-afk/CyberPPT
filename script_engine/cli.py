@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,6 +25,7 @@ from .contracts import (
 )
 from .final_quality import collect_final_lint_issues, partition_final_lint_findings
 from .plan_review import render_plan_review
+from .project_scaffold import create_project
 from .render import render_stage02_markdown
 from .source_index import (
     build_source_index_file,
@@ -195,33 +195,12 @@ def _outline(final_path: Path) -> int:
     return 0
 
 
-SLUG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-
-# Directories a downstream pipeline (e.g. the CyberPPT main repo's Stage 02) may write into
-# this project folder. They are not among this repo's three authoritative artifacts
-# (foundation.json, deck-plan.json, dist/final-script.md) and must never be tracked here.
-PROJECT_GITIGNORE = """# Non-authoritative artifacts produced by downstream pipelines (Stage 02 and later).
-# This repo's only authoritative content is foundation.json, deck-plan.json and dist/final-script.md.
-workbench/
-outputs/
-delivery/
-visual/
-"""
-
-
 def _new_project(slug: str, base_dir: Path) -> int:
-    if not SLUG_PATTERN.match(slug):
-        _print_report({"status": "failed", "issues": [f"'{slug}' is not a valid project slug: use lowercase letters, digits, and hyphens only"]}, stderr=True)
+    try:
+        project_dir = create_project(slug, base_dir)
+    except (ValueError, FileExistsError) as error:
+        _print_report({"status": "failed", "issues": [str(error)]}, stderr=True)
         return 1
-    project_dir = base_dir / slug
-    if project_dir.exists():
-        _print_report({"status": "failed", "issues": [f"project directory already exists: {project_dir}"]}, stderr=True)
-        return 1
-    for directory in (project_dir / "dist", project_dir / "sources", project_dir / ".cache"):
-        directory.mkdir(parents=True)
-    (project_dir / "dist" / ".gitkeep").touch()
-    (project_dir / "sources" / ".gitkeep").touch()
-    (project_dir / ".gitignore").write_text(PROJECT_GITIGNORE, encoding="utf-8")
     _print_report({"status": "created", "path": str(project_dir.resolve())})
     return 0
 
