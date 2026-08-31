@@ -13,6 +13,7 @@
 | 56 | `0fbb81aa7724e86da139d3df83d42aedcd2c0325` | 新增 `final_quality.py` 作为 Final Script 确定性质量评估的 focused composition boundary，集中组合 language/structure/full-copy/speaker-notes/delivery-cleanliness/terminal-punctuation/detail-length 检查及 blocker/advisory policy；`cli.py` 保留 `_final_lint_issues` monkeypatch seam 并将 lint/status/render/check-sync 四条路径路由到 focused evaluator。实现提交：`b9a7a59`、`c0d6ac1`、`0fbb81a` |
 | 57 | `dfdadc3bc25f35bb804aebb32b981e8d78ec9b8b` | 将 `new-project` 的 slug 规则、目录树创建和非权威产物 `.gitignore` 模板迁入 `project_scaffold.py`；CLI 仅保留异常/成功结果到既有 JSON 输出和退出码的适配，并以架构测试禁止脚手架常量与文件系统实现回流。实现提交：`8e21ae7`、`ea2ff31`、`dfdadc3` |
 | 58 | `1afd0fe944bb03ca09270b0d275254eb8d0bd081` | 将 `status` 的项目布局识别、artifact 校验、Foundation/PLAN/Final 审计、source-index 状态和阶段判定迁入 `project_status.py`；CLI 仅打印 focused evaluator 返回的既有 JSON，并通过 callback 保留 `_final_lint_issues` 动态 monkeypatch 兼容及 profile resolver 身份。实现提交：`e222eef`、`ba1c08f`、`1afd0fe` |
+| 59 | `26506bbc690ed63557d8d7d5d49c3d66bad39344` | 将完整 argparse 命令树、帮助文本、choices、默认值和参数定义迁入 `cli_parser.py`；保留 `cli.build_parser()` 兼容入口，仅向 focused parser schema 传递现有 validation kinds，并以架构测试禁止 argparse 配置回流。实现提交：`8bdf0e2`、`86102f4`、`26506bb` |
 
 ## 验证记录
 
@@ -25,3 +26,4 @@
 - 阶段 56 workflow run `33365693202`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；Final Script quality composition 从 `cli.py` 迁出后，既有 advisory/blocker 分类、CLI 退出语义及测试 monkeypatch seam 保持兼容。
 - 阶段 57 workflow run `33365981529`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；`new-project` 抽取后非法 slug、重复目录、目录结构、JSON 输出和退出码保持兼容。
 - 阶段 58 workflow run `33366336229`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；`status` 抽取后既有 JSON 字段、中文阶段文案、strict/legacy profile 分支、source-index 行为、advisory monkeypatch 与退出码保持兼容。
+- 阶段 59 workflow run `33366643152`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；parser schema 抽取后全部子命令名称、help、choices、默认值、必填参数、原 `cli.build_parser()` 入口和 CLI 分发行为保持兼容。
