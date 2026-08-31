@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch F — 统一视觉结构合同
 - 总体状态：进行中
-- 已完成：Step 0、Batch A–E、Batch F1–F5
+- 已完成：Step 0、Batch A–E、Batch F1–F6
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch F6，归一 Causal 五项视觉结构合同
+- 下一恢复点：Batch F7，归一 Convergence 五项视觉结构合同
 
 ## 剩余任务
 
-- [ ] Batch F6：Causal 五项视觉结构合同
 - [ ] Batch F7：Convergence 五项视觉结构合同
 - [ ] Batch F8：Mapping / Comparison 五项视觉结构合同
 - [ ] Batch F9：Roadmap 五项视觉结构合同
@@ -30,12 +29,12 @@
 | Batch F1 | 完成 | `6f07e780...` | 新增 Visual Structure 五项合同 | 完成 |
 | Batch F2 | 完成 | `2b9930d1...`、`a2b75c91...` | Comparison `A vs B` 无方向解析及回归 | 完成 |
 | Batch F3 | 完成 | `f363d256...`、`9a0d3ef1...`、`920a789e...` | Governance 原子边、reading-contract 修复及回归 | 完成 |
-| Batch F4 | 完成 | `2be66f90abc528ea70cb2bfed46b61543b37319e` | Parallel 五项合同；兄弟无方向、N→1 上位支撑、禁止流程化 | 完成 |
-| Batch F5 | 完成 | `309200d98c28d8f75e876f26942ceb072ec2e8c7` | Flow 五项合同；阶段、交接物、反馈边、业务周期层级与禁止误读明确 | F6 Causal |
+| Batch F4 | 完成 | `2be66f90abc528ea70cb2bfed46b61543b37319e` | Parallel 五项合同 | 完成 |
+| Batch F5 | 完成 | `309200d98c28d8f75e876f26942ceb072ec2e8c7` | Flow 五项合同 | 完成 |
+| Batch F6 | 完成 | `3c59189afd2803c004727144c612411ee6f2131f` | Causal 五项合同；明确状态节点、因果边、单向 1→1 链和禁止流程化 | F7 Convergence |
 
 ## 当前验证状态
 
-- Parallel 保留 adapter 可识别的“并列分类 / 同级 / 相互独立”语义。
-- Flow 保留既有 4 条显式原子边，Runtime 解析路径不变。
+- Flow / Causal 均保留既有显式原子边，Runtime 解析路径不变。
 - Comparison / Governance 新跨层回归已写入既有测试文件。
 - 尚未触发远端 CI；Batch H 统一执行全量测试。
