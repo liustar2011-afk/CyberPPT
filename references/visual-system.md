@@ -1,374 +1,146 @@
-﻿# 视觉系统与 ImageGen 探索
-
-## 默认视觉风格探索
-
-当用户没有提供品牌或参考风格时，先展示 8 个固定 CyberPPT 视觉风格选项。可以根据源材料推荐一个，但不要替用户决定。这些是视觉系统，不只是配色。
-
-| 选项 | 名称 | 颜色 | 适合场景 |
-|---|---|---|---|
-| 1 | 经典深红咨询风 | 背景 `#F3F4EF`; 标题/正文 `#111111`; 次级 `#555555`; 线条 `#D6D6D2`; 强调 `#8B1E1E` | 战略、竞品分析、行业研究、商业计划 |
-| 2 | 冷灰 + 勃艮第红 | 背景 `#F5F5F2`; 标题 `#000000`; 正文 `#151515`; 次级 `#6B6B6B`; 线条 `#D9D9D6`; 强调 `#7A1F2B` | 财务、投研、咨询、风险分析 |
-| 3 | 暖象牙白 + 暗酒红 | 背景 `#F4F1EA`; 标题 `#121212`; 正文 `#2B2B2B`; 次级 `#77736C`; 线条 `#D8D3CA`; 强调 `#8A1538` | 品牌战略、消费品、电商、用户研究 |
-| 4 | 象牙白 + 深蓝强调 | 背景 `#F7F6F0`; 标题 `#101820`; 正文 `#303030`; 次级 `#6F7275`; 线条 `#C9CDD1`; 强调 `#12355B` | 科技、SaaS、B2B、企业数字化、AI Agent 报告 |
-| 5 | 浅灰白 + 墨绿 | 背景 `#F2F3EF`; 标题 `#111111`; 正文 `#333333`; 次级 `#666666`; 线条 `#D7D9D3`; 强调 `#1F5B4D` | 可持续、海外市场、增长战略、长期趋势 |
-| 6 | 纸张米色 + 铜棕 | 背景 `#F4F0E8`; 标题 `#161616`; 正文 `#2F2F2F`; 次级 `#76716A`; 线条 `#B8B6B1` / `#D8D5CE`; 强调 `#9A5A2E` | 消费、零售、奢侈品、商业模式分析 |
-| 7 | 纯净浅灰 + 黑金 | 背景 `#F6F6F4`; 标题 `#000000`; 正文 `#252525`; 次级 `#707070`; 线条 `#DADADA`; 强调 `#A87932` | 高管汇报、融资材料、年度战略、董事会材料 |
-| 8 | 冷白灰 + 深紫 | 背景 `#F4F5F6`; 标题 `#111111`; 正文 `#303030`; 次级 `#6D7175`; 线条 `#C8CCD0`; 强调 `#4B2E83` | AI、技术趋势、产品战略、创新研究 |
+# CyberPPT 视觉系统说明
 
-每个风格样张应使用可比的信息密度和页面结构，让用户可以判断语气、层级、图表语言和可读性。选定后，整份 PPT 锁定同一视觉系统。
+> 本文件是说明性文档，不参与运行时 Prompt 解析。
+>
+> Stage 02 的唯一可执行视觉权威是 `scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json`；项目运行时使用 `workbench/locks/visual_style_lock.json` 中冻结的 registry snapshot。修改本文件不会改变既有 Style Lock，也不会改变实际送图 Prompt。
 
-## 第二步的两个子阶段
+## 1. 当前正式生产风格
 
-第二步不是一次性动作，必须分成“风格样张子阶段”和“逐页蓝图子阶段”。两个子阶段都要对照本文件执行。
+CyberPPT 当前正式 Stage 02 生产链统一使用 canonical Style 09：
 
-### 风格样张子阶段
+- `style_id`: `9`
+- `slug`: `ivory_deep_blue_scene`
+- 名称：`纯白 + 深蓝领导汇报`
+- 页面背景：`#FFFFFF`
+- 标题：`#101820`
+- 正文：`#303030`
+- 次级文字：`#6F7275`
+- 分隔线：`#C9CDD1`
+- 强调色：`#12355B`
+- 参考样张：`assets/palette-samples/palette-09.png`
 
-- 如果用户没有明确提供品牌、模板或替代风格，必须逐项生成上表固定 8 种 CyberPPT 视觉风格。
-- 必须直接通过当前对话发送 8 张独立完整的 16:9 内置样张图片供用户选择，路径为：
-  - `assets/palette-samples/palette-01.png`
-  - `assets/palette-samples/palette-02.png`
-  - `assets/palette-samples/palette-03.png`
-  - `assets/palette-samples/palette-04.png`
-  - `assets/palette-samples/palette-05.png`
-  - `assets/palette-samples/palette-06.png`
-  - `assets/palette-samples/palette-07.png`
-  - `assets/palette-samples/palette-08.png`
-- 如果决定重新生成样张，也必须交付 8 张真实图片；新图可以替代内置图，但不能只给文字说明。
-- 网页、HTML、URL、文件夹路径、文件列表、Markdown 表格、文字说明、拼图或缩略图墙只能作为补充，不能替代当前对话中的 8 张独立样张图片。
-- 如果使用网页辅助，网页只能作为附加浏览方式，不得作为风格确认的唯一依据。
-- 不得用扩展风格替代默认 8 种；“8 个视觉方向”“8 个审美路线”或“8 个行业风格”不等于固定 8 种。
-- 如果用户明确要求引入某个具体风格，只能替换最接近的默认项，并说明替换了哪个编号和原因。
-- 每个选项必须是一张独立完整的 16:9 页面。拼图、缩略图墙、contact sheet 只能作为辅助总览，不能替代 8 张独立样张。
-- 风格样张输出时，必须在图片外列出编号、名称、色板、语气、优势和风险。
-- 不得把 `stage2_style_options.md`、Markdown 表格、文字列表或推荐理由当作风格确认物。它们只能作为图片后的辅助说明。
-- 在用户能够在当前对话中直接看到 8 张样张之前，不得请求用户选择风格，不得进入逐页蓝图阶段。
-- 如果当前界面无法显示图片，应停止并说明“风格样张展示门未通过”，不要让用户基于纯文本、网页、HTML、URL、文件夹路径或文件列表选择视觉风格。
-- 如果网页中图片未加载、路径失效或用户无法看到样张，视为风格样张子阶段失败，不得继续。
-- “只用源文件”表示最终事实、数字和文案只能来自源材料，不表示跳过本阶段的图片样张展示。
+视觉目标：政企领导汇报、演讲辅助、阅读型 PPT；强调完整业务语义、清晰层级、连续构图、真实业务对象与场景、克制的编辑式视觉表达。
 
-### 逐页蓝图子阶段
+Style 09 的完整硬约束、构图语法、文字规则、人物/图标/箭头规则、内容忠实度规则和最终执行锁只维护在 style registry 的 `prompt_contract` 中。本文件只解释规则来源和使用方式，避免形成第二套可执行合同。
 
-- 用户选定风格后，不再重新发散风格；先声明锁定风格编号、名称、色板、网格、标题层级、图表语言和信息密度规则。
-- **送图脚本门禁**：调用 ImageGen 前，必须把将送入生图工具的明文 prompt 落盘到 `workbench/prompts/imagegen/`，在对话中展示，并等待用户修改或批准。送图内容只含主判断、上屏文字、视觉结构与清洗后的边界；禁止夹带完整文字稿、取舍说明、证据映射、证据编号、讲解提示。
-- 每一页蓝图都必须沿用同一视觉系统，允许因页面角色调整密度，但不能改变配色、网格、标题层级、图表语言或页脚体系。
-- 每一页蓝图提示词都必须包含锁定风格编号和名称，避免 ImageGen 默认漂移到其他审美方向。
-- 蓝图生成后逐页检查风格漂移：如果出现深色驾驶舱、瑞士网格、杂志海报、科技蓝图等未被选定的扩展风格，必须重做该页。
+## 2. 单一视觉权威
 
-## 可选的扩展风格探索
+运行链遵循以下顺序：
 
-如果用户要求比配色更广的视觉探索，可以生成不同方向，例如：
+```text
+style registry JSON
+        ↓
+创建 visual_style_lock.json
+        ↓
+冻结 resolved contract + SHA256
+        ↓
+Stage 02 Prompt compiler
+        ↓
+逐页 ImageGen Prompt
+```
 
-1. MBB 高密度咨询风
-2. 高级品牌战略风
-3. 高管编辑杂志风
-4. 瑞士国际主义网格
-5. 现代数据叙事风
+规则：
 
-当某个方向不适合主题或受众时，可以替换，但要保持选项之间足够可区分。
+1. `cyberppt_default_styles.json` 是可执行视觉合同的唯一解析源。
+2. 新建项目创建 Style Lock 时读取一次 registry，并将合同快照冻结到项目。
+3. 已冻结的 Style Lock 后续按原字节消费；registry 更新只影响新锁。
+4. 历史 pre-snapshot Style 09 锁首次读取时迁移一次到当前 registry snapshot，迁移后永久冻结。
+5. `references/visual-system.md` 只用于帮助人理解视觉系统，不得覆盖 Prompt、背景色、构图规则或 build identity。
+6. Style Lock 的 `resolved_contract.sha256` 与实际冻结合同一致，用于 provenance、恢复和失效判断。
 
-如果用户提出具体风格，把它纳入 8 个选项，或替换最接近的选项。除非用户明确跳过，否则仍展示 8 个选择。扩展风格只能在用户明确要求时使用；默认流程不得用扩展风格替代默认 8 种。
+## 3. Style 10 兼容规则
 
-## 图像生成规则
+历史 Style 10 已退出独立视觉体系，仅保留旧项目兼容入口。
 
-- 每个方向生成一张独立完整的 16:9 页面。
-- 跨选项使用同一类代表性内容，确保可以公平比较风格。
-- 不得创建拼图、缩略图墙或一张图里塞多页。
-- 样张必须足以判断标题层级、网格、图表样式、注释、间距和密度。
-- 避免细小伪文字。可以使用真实感文字块，但所有生成文字和数值都视为一次性占位。
-- 选项标签放在图片外或文件名中，不依赖生成图里的文字。
+以下旧调用统一解析到 canonical Style 09：
 
-用户可以明确跳过 ImageGen。跳过时，确认用户提供的模板、截图、品牌指南或文字规范是否足够具体。
+- `style_id=10`
+- `light_tech_business_dense`
+- `ivory_deep_blue_semantic_scene`
 
-## 将选定方向转成系统
+兼容锁会记录原始 requested style，同时写入：
 
-记录：
+- `canonical_style_id=9`
+- `legacy_alias=true`
 
-- 页面尺寸和安全边距；
-- 列网格和行网格；
-- 固定 Typography Scale：`C0` 封面/章节幕标题，`T1-T14` 内容页文字层级，包括页码徽章、页面标题、副标题、模块/图表标题、证据标签、证据块标题、正文、结论条、SO WHAT、图表标签、KPI、注释和来源；
-- 字体族和备选字体；
-- 背景、文字、线条、中性色和强调色；
-- 图表配色和强调规则；
-- 表格边框、填充和层级；
-- 圆角、阴影、分隔线、图标和图片处理；
-- 页眉、页脚、来源和页码处理（默认策略见 `SKILL.md`"默认页面结构策略"：默认不设左上角页码徽章、不设独立页脚区、不含保密声明文字；来源/证据ID/口径改为内容区内联小字。仅当用户明确要求启用时才记录页码徽章/页脚样式）；
-- 间距节奏和目标信息密度。
-- 通用图标库选择：从 `chunk-filled`、`tabler-filled`、`tabler-outline` 或 `phosphor-duotone` 中锁定一个 stylistic library；`simple-icons` 仅作为真实品牌 logo 例外。
+最终使用的 Prompt、Prompt SHA、palette 和参考图全部来自 Style 09，不再维护第二套 Style 10 合同。
 
-不要只因为颜色好看就批准风格。网格、密度、层级、图表语言和留白行为共同定义视觉系统。
+## 4. 历史 Style 1–8 的定位
 
-图标风格也属于视觉系统。第二阶段锁定视觉方向后，应同时锁定通用图标库；第三阶段不得跨库混用普通概念图标。蓝图中的随机概念图标不要求逐像素复刻，但最终 PPT 图标必须语义近似、同库同风格，并通过空间注册反测。
+Style 1–8 仍保留在 registry 和 `assets/palette-samples/` 中，作为历史探索、对照样张和兼容数据。
 
-必须额外记录统一页面表面系统：
+当前正式 Stage 02 主链不依赖“先展示 8 套样张再选择”的旧流程。默认生产由 Style 09 snapshot 驱动。未来如果重新开放多风格生产，应以新的明确 feature、独立测试和版本化 registry contract 实施，避免通过说明文档恢复旧流程。
 
-- 页面如何使用已选风格的背景底色、面板色阶、细边框、栏头、分隔线、留白或轻微明暗差分区；
-- 内容面板、图表区、侧栏、结论条、页脚分别使用什么底色；
-- 白色是否为局部强调，还是全局内容底；
-- 分区依赖细边框、栏头、分隔线、阴影还是留白；
-- 后续 PPTX 还原是否允许大面积 `#FFFFFF` 卡片。
+## 5. Style 09 的稳定视觉原则
 
-蓝图默认采用统一页面表面系统。除非蓝图明确把白色卡片作为主要分区语言，否则第三阶段不得把模块底色擅自改为大面积纯白卡片。该规则适用于全部 8 种固定视觉风格，不代表把其他风格改成象牙白或米黄色。
+下列内容用于帮助人工检查；真正硬门禁以 registry `prompt_contract` 为准。
 
-## 逐页正文内容区 ImageGen 蓝图
+### 页面底色与气质
 
-用户确认视觉方向后，必须为请求的全部页数，或已确认大纲所需的全部页数，生成逐页正文内容区 ImageGen 蓝图。这个步骤必须发生在混合还原 PPTX 之前。正文区蓝图是主线；页面标题、副标题、Logo、页脚、页码、蓝线、母版红线和公共模板元素不进入 ImageGen 蓝图画面，由模板/母版/可编辑文字层生成。
+- 页面级背景保持纯白 `#FFFFFF`。
+- 深蓝只承担关键层级、必要强调和结构锚点。
+- 允许局部浅蓝灰用于轻量分区、证据区和低干扰结构组织。
+- 避免将整页整体偏向象牙白、米黄、暖纸色。
+- 整体保持平面、哑光、克制、高级编辑式汇报质感。
 
-### 逐页正文区 ImageGen 蓝图真实性门
+### 页面结构
 
-除非用户明确要求跳过 ImageGen，第二阶段逐页正文区蓝图必须由 ImageGen 生成 bitmap 图片。蓝图不是 PPT 草稿、HTML 页面、SVG 线框、canvas 截图、Markdown 图示或本地脚本绘图。主线 prompt 编译入口是 `scripts/body_blueprint_prompt.py`；该脚本只能组织正文区 ImageGen prompt、manifest 和策略记录，不能替代 ImageGen 生图。
+- 每页围绕一个核心业务判断组织。
+- 优先使用一个可识别的业务对象、业务场景、内容资产或结果作为主视觉锚点。
+- 通过空间、尺度、裁切、重叠、对齐、包含和色调层级表达关系。
+- 页面内容按语义权重分配面积，避免按条目数量机械均分。
+- 构图保持连续、非对称、主次明确，避免平行卡片堆叠。
 
-本规则只约束第二阶段逐页蓝图交付，不限制第三阶段允许的 PPTX 还原辅助工具。PptxGenJS、SVG、custom geometry、Pillow、matplotlib、HTML 或 canvas 可以用于第三阶段 QA、裁图、overlay、metadata 或 prompt 管理，但不得作为第二阶段逐页蓝图的最终图像生成器。`python-pptx` 不得用于第三阶段正式 PPTX 生成。
+### 上屏文字
 
-允许脚本做以下辅助工作：
+- 事实、数字、日期、单位、主体、责任、状态和条件保持来源语义强度。
+- 标记为 locked/verbatim 的文字保持完整、原样、清晰可读。
+- 普通上屏文字允许为阅读型 PPT 调整断句、层级和视觉组织，但不得改变事实含义。
+- 文字空间优先于装饰、图标和泛化场景；空间不足时先简化视觉，再考虑压缩表达。
 
-- 组织和批量生成 ImageGen prompt；
-- 保存、复制、重命名 ImageGen 输出图片；
-- 生成 metadata、manifest、QA 报告；
-- 生成对照图、contact sheet 或检查用 overlay。
+### 图像、人物、图标和连接关系
 
-禁止脚本做以下替代：
+- 默认不出现人物；避免正脸、围桌会议、多人讨论和摆拍式素材。
+- 组织名称、Logo、印章和组织标识不进入正文生图画面。
+- 图标从零开始，仅在缺少图标会显著损害即时语义理解时使用极少量小型平面图标。
+- 禁止 icon wall、逐条图标、逐模块图标和装饰性图标阵列。
+- 默认不使用箭头或箭头头部；优先通过空间关系表达流程、汇聚、包含、对比和因果。
+- 真实场景必须与本页锁定内容直接相关；没有具体业务指向时，优先使用平面结构关系场，而非泛化控制室或科技大屏。
 
-- 用 HTML/CSS/SVG/canvas/Pillow/matplotlib/PptxGenJS/python-pptx 直接绘制逐页蓝图；
-- 用 PowerPoint、网页截图、线框稿、结构草图或默认卡片页冒充 ImageGen 蓝图；
-- 为了后续测量方便，把蓝图降级成规整占位图或低保真 mockup。
+## 6. Stage 02 生图边界
 
-每页蓝图必须记录：
+正文完整图用于后续“完整图 → 可编辑 PPT”重建，因此必须保持重建友好：
 
-- `imagegen_prompt`；
-- `imagegen_output_path`；
-- `imagegen_generation_id` 或等价生成记录；
-- `selected_style_id` 和 `selected_style_name`；
-- `effective_language`；
-- `density_target`；
-- `visual_quality_check`。
+- 正文画布：`2048 × 1024`。
+- 页面标题、副标题、Logo、页码、页脚和模板框架由 PowerPoint 层处理，不进入正文图。
+- 不在图中绘制 source refs、evidence ids、text ids、字段名或编排指令。
+- 完整图通过审计后成为 editable reconstruction 的 visual authority。
+- Clean Base 与 Authored SVG 只能恢复可编辑层和清除对应文字区域，不得重新设计已冻结的视觉构图。
 
-如果用户明确跳过 ImageGen，必须记录：
+## 7. 修改视觉风格的正确方式
 
-- `imagegen_skipped_by_user=true`；
-- 用户提供的模板、截图、品牌指南或视觉规范路径；
-- 替代依据为什么足以作为蓝图；
-- 不得声称该页是 ImageGen 蓝图。
+需要调整正式生产风格时：
 
-### 逐页正文区蓝图质量门
+1. 修改 `scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json` 中 Style 09 的 registry contract；
+2. 更新与该合同相关的 invariant tests；
+3. 为新项目重新创建 Style Lock；
+4. 通过 Prompt SHA / input fingerprint 触发正确的视觉资产失效；
+5. 保持历史已冻结项目可复现。
 
-逐页正文区蓝图必须延续已确认风格样张的正文区视觉系统，并达到第一阶段确认的信息密度和组件计划。ImageGen 文字和数字仍视为不可靠占位；本门只检查正文区视觉系统、密度和构图，不要求生成文字事实准确。页面标题、副标题、页脚、页码、Logo、蓝线和公共模板元素不属于正文区蓝图质量门的图内元素。
+仅修改本说明文件不会改变任何生产行为。
 
-以下情况视为逐页蓝图失败，必须重做：
+## 8. 权威优先级
 
-- 看起来像普通 PPT 原生卡片拼版、HTML dashboard、线框稿、低保真 mockup 或脚本绘图；
-- 大面积默认白卡片、默认圆角矩形、默认阴影或默认 KPI 卡片替代已选视觉系统；
-- 只增加卡片数量或文字数量，但缺少页面计划要求的主图、侧栏、注释、证据区、caveat、微图表、小表格、SO WHAT 或证据 ID；
-- 信息密度低于第一阶段确认的页面计划；
-- 风格样张中的色彩、材质、正文区网格、图表语言、正文区层级或注释系统没有延续到逐页蓝图；
-- 为方便第三阶段还原、测量或可编辑性，主动降低蓝图视觉复杂度、信息密度或审美完成度。
+视觉规则冲突时按以下顺序处理：
 
-### slide_content_lock 门
+```text
+项目 visual_style_lock.json 中冻结的 contract
+        ↓
+style registry 当前合同（用于新锁）
+        ↓
+Stage 02 页面语义 / Artifact Spec
+        ↓
+本说明文件与参考样张
+```
 
-逐页正文区 ImageGen 蓝图生成前，必须先建立 `slide_content_lock`。该锁定文件必须来自第一阶段证据表、逐页大纲和用户确认内容，不得由 ImageGen 或第三阶段重新解释生成。
-
-`slide_content_lock` 至少包含：
-
-- 页面标题、副标题和语境说明；
-- 每个图表的真实指标名、期间、单位和数值；
-- 表格行列结构、真实行列标签和核心单元格内容；
-- KPI、同比、CAGR、占比、差值等关键数值；
-- 注释、caveat、来源口径和证据 ID；
-- 右侧解读栏、管理启示或结论短句；
-- SO WHAT 的真实分区、标题和要点；
-- 不允许缺失的组件清单。
-
-可以使用 `scripts/build_content_lock.py` 从已确认的逐页大纲/证据 JSON 生成锁定文件。蓝图画面可以出现文字渲染误差，但内容结构必须以 `slide_content_lock` 为准。第三阶段不得因为蓝图文字不清、数字变形或局部模糊而删减区域、降低信息密度或重组内容。
-
-### blueprint_component_signature 冻结门
-
-每页蓝图确认后，必须生成并冻结 `blueprint_component_signature`。该签名记录已批准蓝图的组件类型、组件结构、子组件、优先级、蓝图 hash 和对应 `slide_content_lock` hash。第三阶段只能读取，不得新建、重写或放宽组件签名。
-
-组件签名必须记录：
-
-- `slide_number`；
-- `blueprint_path` 和 `blueprint_sha256`；
-- `content_lock_path` 和 `content_lock_sha256`；
-- `components[]`，每个组件包含 `id`、`type`、`priority`、`required_subcomponents`、`content_lock_refs` 和 `must_preserve_type=true`。
-
-可以使用 `scripts/build_component_signature.py` 生成签名。如果第三阶段发现签名缺失或不完整，必须回到第二阶段补签名并重新确认，不得在第三阶段临时补写。
-
-### visual_element_registry 门
-
-每页蓝图确认后，必须建立 `visual_element_registry`，登记蓝图中的全部可见元素。所有文本、数字、图标、线条、箭头、面板、表格线、图表元素、SO WHAT 元素、装饰线、点阵和纹理都必须登记。
-
-每个元素至少包含 `element_id`、`priority`、`element_type`、`source_component_id`、`blueprint_bbox_px` 和 `tolerance_px`。可以使用 `scripts/measure_blueprint.py` 结合人工/AI 标注生成 registry。完全自动识别任意 ImageGen 蓝图的所有元素并不可靠；因此缺少人工/AI 标注时，脚本必须显式失败，而不是自动声称覆盖完整。
-
-### 测量元数据边界门
-
-`visual_element_inventory_targets` 和 `blueprint_measurement_targets` 只是第二阶段蓝图记录的 metadata，用于第三阶段还原准备。它们不得改变第二阶段蓝图的交付物性质。
-
-测量准备必须服务于 ImageGen 蓝图，而不是支配蓝图。不得因为需要后续测量，把蓝图做成结构草图、线框图、规整占位图、默认卡片页或脚本绘制图。
-
-正文区蓝图规则：
-
-- 每一页使用一张正文内容区图片；不得画入完整 PPT 外框。
-- 保持选定配色、正文区网格、密度、图表语言和正文区间距一致。
-- 不得画入页面标题、副标题、Logo、页脚、页码、蓝线、母版红线、保密声明或任何企业公共模板元素。
-- 必须使用第一阶段确认的页面信息密度和组件清单，包括信息区数量、主图/侧栏比例、表格、注释、图例、微图表、证据 ID 和 SO WHAT。不得把高密度计划降级成宽松卡片。
-- 使用已确认大纲作为内容结构，但生成文字、数字、引用、图表值、Logo 和标签都视为不可靠占位。
-- 蓝图定义构图、层级、密度和视觉元素语言。最终 PPT 的文本、数据、表格值、图表值和来源说明必须从证据表重建。
-- 蓝图不是最终 PPT 图片资产。除非用户明确要求静态图交付，第三阶段不得把正文区蓝图或大面积蓝图截图作为页面背景。
-- 蓝图中的折线图、柱状图、坐标轴、标签、表格、对比条、流程箭头和 SO WHAT 只定义正文区视觉关系，第三阶段默认必须原生重建；真实文本和数据必须来自 `slide_content_lock`。页眉页脚、标题、副标题、页码、Logo 和蓝线由模板/母版/可编辑文字层生成，不从 ImageGen 蓝图复制。
-- 除非用户明确要求，否则咨询报告封面蓝图保持低密度。
-- 生成逐页蓝图前，必须自动判定默认 `target_language`，不得为语言选择单独增加确认步骤。
-- 默认 `target_language` 判定优先级：用户明确指定的全局交付语言 > 源材料主要语言 > 当前对话语言。
-- 只有源材料多语言且无明显主语言，或用户指令与源材料语言冲突时，才询问用户确认。
-- 每页蓝图提示词必须显式包含 `target_language`、`language_source` 和本页生效的 `effective_language`。
-- 如果用户明确要求某一页、某一节或某个组件使用不同语言，必须登记 `language_overrides`。
-- `language_overrides` 至少记录：`scope`、`target`、`language`、`reason`。
-- QA 时以 `effective_language` 为准，不得用全局 `target_language` 判定已登记覆盖范围失败。
-- 蓝图正文区中的所有可见文字占位，包括模块标题、图表标签、图例、轴标签、注释、来源、SO WHAT 和按钮/标签，都必须使用对应范围的 `effective_language`。页面标题、副标题、页脚、页码、Logo、蓝线和公共模板元素不得作为蓝图画面中的可见文字。
-- 不得因为 ImageGen、MBB、consulting slide、executive deck 或英文 prompt 模板更常见，就默认生成英文蓝图。
-- 英文或其他外语只允许用于品牌名、产品名、专有名词、代码名、原文引用、指标缩写、用户明确要求保留原文的内容，或已登记的 `language_overrides` 范围，并应记录为 `allowed_foreign_terms` 或 `language_overrides`。
-- `target_language`、`language_source`、`effective_language`、`language_overrides` 和 `allowed_foreign_terms` 是执行元数据，只能写入蓝图记录、prompt 说明、manifest 或 QA 记录，不得写入页面内容区，不得作为蓝图画面中的可见文字。
-
-每张蓝图还要记录：
-
-- `imagegen_prompt`；
-- `imagegen_output_path`；
-- `imagegen_generation_id` 或等价生成记录；
-- `selected_style_id` 和 `selected_style_name`；
-- 页码和页面角色；
-- 计划保留为复杂视觉资产的区域或元素；
-- 预留给可编辑文本的区域；
-- 需要用 PowerPoint 原生形状、表格或图表重建的组件；
-- 是否允许最终 `pictures > 0`，以及每个允许图片资产的必要性；如果复杂视觉扫描确认没有复杂照片、Logo、产品 UI、复杂插画、复杂纹理、复杂 3D、复杂图标、流线、异形边界、复杂弧线、非标准图表形态或其他非文字视觉资产，则记录为“无复杂视觉资产，通常可原生重建，pictures=0 仅为预期结果而非目标”；
-- 支撑最终文本和数据的证据 ID；
-- `target_language`：整套 PPT 的默认目标交付语言；
-- `language_source`：`user_specified`、`source_material` 或 `conversation`；
-- `effective_language`：本页实际使用语言，等于默认语言或页级覆盖语言；
-- `language_overrides`：页级、章节级或组件级语言覆盖；
-- `allowed_foreign_terms`：允许保留外语的品牌名、产品名、专有名词、指标缩写或原文引用；
-- 预期信息密度和页面组件清单。
-
-这些记录必须能直接转成第三阶段 `slide_manifest.json`。第二阶段蓝图记录中必须明确给出：
-
-- `expected_pictures`：必须来自复杂视觉扫描和资产准入判断；无复杂视觉资产且蓝图允许完全原生重建时通常为 `0`，但不得作为第三阶段目标；
-- `image_assets`：允许保留为图片的区域；每项必须写明区域、来源类型、必要性和可编辑性牺牲；
-- `native_components`：折线图、柱状图、坐标轴、标签、关键数字、表格、对比条、流程箭头和 SO WHAT 默认都必须列入；标题、副标题、页眉页脚、页码、Logo 和蓝线另由模板/母版/可编辑文字层列入最终 PPT manifest。
-- `text_objects`：正文区主要文字区域对应的 Typography Scale 层级，至少覆盖模块标题、正文、图表标签、关键数字、注释、来源和 SO WHAT；标题、副标题、页脚和页码作为模板/母版文字层记录，不得要求 ImageGen 画入正文区蓝图。
-- `target_language`、`language_source`、`effective_language`、`language_overrides` 和 `allowed_foreign_terms`：语言规则执行记录；这些字段是元数据，不得进入页面可见内容。
-- `complex_visual_scan`：记录扫描完成状态、复杂视觉候选、触发门、native-only 理由和 `pictures_zero_is_not_goal=true`；不得主动避免触发图片、曲线、异形或复杂视觉门。
-
-以下情况视为逐页蓝图子阶段失败，不得进入 PPTX：
-
-- 除非用户明确跳过 ImageGen，否则不能证明图片来自 ImageGen；
-- 用 PptxGenJS、python-pptx、HTML、CSS、SVG、canvas、Pillow、matplotlib、PowerPoint 或任何本地绘图脚本直接绘制逐页蓝图；
-- 用 PowerPoint 页面、网页截图、线框稿、结构草图、默认卡片页、低保真 mockup 或便于测量的规整占位图冒充 ImageGen 蓝图；
-- 逐页蓝图看起来像普通 PPT 原生卡片拼版、HTML dashboard、线框稿、低保真 mockup 或脚本绘图；
-- 为方便第三阶段还原、测量或可编辑性，主动降低蓝图视觉复杂度、信息密度或审美完成度；
-- 未自动判定并记录 `target_language`；
-- 每页未记录本页 `effective_language`；
-- 用户未要求英文，且英文不是该页有效目标语言，却默认生成英文蓝图；
-- 蓝图正文区模块标题、图表标签、SO WHAT、注释或来源等主要可见文字语言与 `effective_language` 不一致；
-- 存在页级、章节级或组件级外语内容，但未记录在 `language_overrides` 或 `allowed_foreign_terms`；
-- 用户只要求局部范围使用另一语言，却把未覆盖范围也改成该语言；
-- 页面画面中出现语言元数据字段或类似“目标语言=中文”“language=Chinese”的执行指令文字。
-
-每张蓝图还必须做图表语义和追踪触发记录：
-
-| 项目 | 要求 |
-|---|---|
-| `chart_semantics` | 标明主图是普通柱线图、结构图、矩阵、迁移图、流线图、桑基图、弧线图、波形图、异形区域图等 |
-| `visual_surface` | 标明连续纸面、白卡片、有色面板、透明面板或复杂背景 |
-| `trace_required` | 出现曲线、流带、异形边界、非标准弧线或用户要求 1:1 时必须为 `true` |
-| `trace_targets` | 需要追踪的区域或元素，如主流带、弯曲箭头、波形分割线、地图边界 |
-| `native_labels_required` | 确认标签、数值、来源、页脚和 SO WHAT 后续必须原生重建 |
-| `label_collision_risk` | 标明是否存在图标、节点、曲线、圆环、箭头密集区，第三阶段必须做标签避让检查 |
-| `curve_fidelity_targets` | 标明核心曲线、弧线、流带或异形边界，后续需用 path/freeform/custom geometry 或密集采样 |
-| `spatial_registration_targets` | 标明图标、节点、标签、箭头、连接线、组间距和阅读顺序等需要 1:1 锚点还原的区域 |
-| `visual_element_inventory_targets` | 标明全部可见视觉元素或元素组，并预分配 P0/P1/P2 优先级 |
-| `blueprint_measurement_targets` | 标明第三阶段必须逐项测量或装饰组测量的区域，并记录画布 px 到 PPT inch 的换算需求 |
-| `container_overflow_targets` | 标明卡片、面板、表格单元格、SO WHAT、结论条、图表区等固定文字归属容器 |
-| `continuous_text_flow_targets` | 标明含高亮、拆分片段、跨区域连续句或 SO WHAT 主句的文本流 |
-| `table_semantic_typography_targets` | 标明表格正文、行动项、风险项、解释句、建议句、微标签分别对应的 Typography Scale |
-| `table_density_targets` | 标明表格行高、列宽、单元格内容密度和允许留白节奏 |
-
-触发 `trace_required=true` 的蓝图，在第三阶段不得被普通矩形、平行四边形、默认流程图、普通堆叠条或 ImageGen 重绘替代。必须走裁切、采样、trace debug、SVG path 或 PPT custom geometry 的精确追踪流程。
-
-如果蓝图包含中心图、流程图、架构图、生态图、矩阵图、时间线、路径图或图标密集图，必须在蓝图记录中标出 `label_collision_risk=true`。第三阶段不得只按大致坐标摆放文字；必须做标签避让检查，确认文字不压住图标、节点、箭头、曲线、圆环或边框。
-
-如果蓝图包含图标、节点、标签、箭头或连接线密集区域，必须在蓝图记录中标出 `spatial_registration_targets`。第三阶段不得只做“不重叠”的避让判断；必须检查图标是否在节点锚点、标签是否在图标/节点的正确相对位置、箭头端点是否接到正确边界、组间距和阅读顺序是否匹配蓝图。
-
-蓝图记录必须为第三阶段准备 `visual_element_inventory_targets` 和 `blueprint_measurement_targets`。第三阶段必须登记正文区全部可见视觉元素：P0 覆盖主图、SO WHAT、关键数字、核心面板和用户指出区域；P1 覆盖普通卡片、图标、标签、箭头、表格和分隔线；P2 覆盖装饰线、点阵、纹理、重复刻度和背景纹样。页面标题、副标题、页脚、页码、Logo、蓝线和公共模板元素不由正文区蓝图测量，但仍必须在最终 PPT 的模板/可编辑文字层 QA 中检查。P0 必须逐项数值测量，P1 必须逐项或组内子锚点测量，P2 可以装饰组测量但不得跳过登记。
-
-如果蓝图包含核心曲线或弧线，不得在第三阶段用少量折线点近似。蓝图记录应说明曲线是视觉语义核心还是装饰辅助；核心曲线必须进入曲线高保真检查。
-
-如果蓝图包含卡片、面板、表格、结论条、SO WHAT、图表标注或固定区域文本，必须在蓝图记录中标出 `container_overflow_targets`。第三阶段不得只检查是否超出页面画布；必须检查文字是否留在归属容器内。
-
-如果蓝图包含拆分文本、富文本高亮、跨区域连续句、SO WHAT 主句或结论句，必须在蓝图记录中标出 `continuous_text_flow_targets`。第三阶段必须检查基线、字距、空格、断句和阅读顺序。
-
-如果蓝图包含表格、矩阵、行动清单、风险清单或网格化管理表，必须在蓝图记录中标出 `table_semantic_typography_targets` 和 `table_density_targets`。第三阶段必须按语义角色设置字号；表格正文、行动项、风险项、解释句和建议句不得登记为 `T11`。
-
-如果蓝图记录无法判断某区域是否允许图片，默认不允许图片，第三阶段必须原生重建。不得把“蓝图复杂”作为图片准入理由。
-
-## 可读性护栏
-
-- 全篇锁定 15 个文字层级：`C0` 为封面/章节幕专用，`T1-T14` 为内容页层级。蓝图和 PPTX 还原都不得临时发明未记录的字号层级。
-- 字号不足或容器溢出时，必须重组、分组、精炼文本、调整容器或拆页；不得用低于语义层级的字号解决。
-- 关键数字和结论要能在正常演示缩放下快速扫读。
-- 强调色只用于表达含义：优先级、例外、结论或行动。
-- 保持有意图的留白，但拒绝由画布不匹配造成的大块右侧或底部空白。
-- 图表标签必须横向直接标注；空间不足时必须调整图表布局，不得依赖图例替代关键标注。
-
-## 确认输出
-
-直接通过当前对话发送 8 张独立图片，并简要比较语气、密度、优势和风险。需要时给出推荐风格。网页、拼图或总览图只能作为辅助浏览，不能作为确认依据。停止并请求第二次确认，然后再进入混合还原 PPTX。
-
-## 扩展风格9：象牙白 + 深蓝领导汇报
-
-默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
-
-Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
-
-Create a restrained executive editorial business-infographic page for formal leadership briefing.
-
-### Core visual grammar — hard
-
-1. Use the page's declared core judgment and business relationship.
-2. Choose one recognizable, page-specific business anchor drawn from named content: an operating scene, business object, content or data asset, professional work environment, evidence structure or visible outcome.
-3. Give the anchor about 35%–50% of the visual field when content permits. Build an asymmetric, unequally weighted shared visual field around it.
-4. Attach two to five open content groupings directly to the anchor through proximity, containment, alignment, scale, crop or overlap. Equal columns, equal rows and equal-detail stages are forbidden.
-5. Express the declared relationship through one large visible action or state change. Use the page-specific relation: comparison, convergence, transformation, controlled containment or outcome.
-6. Complete the reading path with one emphasized judgment or outcome region.
-
-Use one primary grammar per page. A second grammar is allowed only when the locked content carries a second essential relationship:
-
-- **Transformation:** one object changes across input, processing, review, control or output.
-- **Attached actions:** supporting capabilities, conditions or outcomes connect directly to one scene or object.
-- **Comparison:** two concrete states reveal a visible difference, gap or transition.
-- **Convergence:** distinct inputs or actors visibly enter one shared result.
-- **Controlled containment:** a protected object remains visible inside a field that shows access, isolation, checkpoints or approved output.
-
-### Locked Chinese text — hard
-
-Allocate complete, high-contrast text-safe regions before adding scene detail. Render all locked Chinese text complete, unchanged and in its original order. Keep each primary grouping's text together in one readable region. Avoid microtext, invented labels and readable text inside screens, documents or interfaces.
-
-Place text in a quiet field, along an object edge, beside the related action, or inside the outcome region. Text and visual material must identify the same business object, action, condition, state or outcome.
-
-### Scene, hierarchy and materials
-
-Use one dominant scene or concrete business object. Add only the supporting evidence fragments required by the page's named content; vary crop, scale and viewpoint. A workspace, device, document or industry facility must visibly demonstrate the relevant action or state. Generic office decoration, control rooms and dashboard walls are forbidden.
-
-Create hierarchy through crop, overlap, scale contrast, tonal separation, precise alignment, selective deep-blue emphasis and shallow foreground–background depth. Use ivory, white, pale blue-grey and deep blue for level separation.
-
-Maintain a matte, flat editorial finish with crisp edges and gentle tonal transitions. Depth comes from composition, not floating objects. Use an extremely soft diffuse shadow only when it clarifies a meaningful overlap.
-
-### Symbols, connectors and exclusions
-
-Icons default to zero. A single small, flat, deep-blue icon is allowed only when it provides immediate semantic recognition inside an existing scene or text grouping.
-
-Keep connection lines absent by default. Express relationships through placement, proximity, grouping, containment, alignment, scale and color. When an explicitly declared cross-object relationship cannot be expressed this way, use one short, plain, undirected connector. Arrows, icon rows, icon walls, card dashboards, repeated device mockups, duplicate summary chains, glossy 3D objects, glassmorphism, neon glow and product-showcase rendering are forbidden.
-
-Represent each locked concept once. Supporting elements may add a distinct condition, boundary, evidence or outcome.
-
-Priority: locked Chinese text and core judgment → recognizable business anchor → declared business relationship → visible action or state change → evidence and outcome → crop, overlap and tonal depth → auxiliary symbol when indispensable.
-
-【最终视觉执行约束｜最高优先级】
-
-Keep all locked Chinese text complete, unchanged and readable. Treat this style contract as the final execution authority after the page-specific semantic and text contracts. Keep connection lines absent by default; use only a plain, undirected connector when the declared relationship cannot be expressed through placement, proximity, grouping, containment or alignment.
+参考样张只影响审美理解和视觉校准，不得覆盖页面事实、上屏文字、业务关系、构图语法和硬约束。
