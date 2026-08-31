@@ -6,6 +6,7 @@ split incrementally.
 """
 from __future__ import annotations
 
+from . import author_contracts as _author
 from . import contract_rules as _impl
 from . import delivery_contracts as _delivery
 from . import lint_contracts as _lint
@@ -33,6 +34,7 @@ _FOCUSED_EXPORTS = {
     "load_banned_phrasing": _lint.load_banned_phrasing,
     "iter_final_script_text_fields": _lint.iter_final_script_text_fields,
     "lint_final_script": _lint.lint_final_script,
+    "check_author_field_contract": _author.check_author_field_contract,
     "SPEAKER_NOTES_MIN_CHARS": _delivery.SPEAKER_NOTES_MIN_CHARS,
     "ONSCREEN_DETAIL_PHRASE_MAX_CHARS": _delivery.ONSCREEN_DETAIL_PHRASE_MAX_CHARS,
     "ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS": _delivery.ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS,
