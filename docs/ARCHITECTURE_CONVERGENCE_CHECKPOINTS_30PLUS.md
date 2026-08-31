@@ -23,6 +23,7 @@
 | 46 | `793ca20f51b1b4625446e4b4cfca1826ae9af399` | 开始收敛 Script Engine God Module：将原 `contracts.py` 实现原字节迁入 `contract_rules.py`，`contracts.py` 缩为稳定兼容 facade；新增架构测试锁定 facade 不得重新长回业务实现，为后续按 schema/source-trace/AUTHOR/onscreen 子域继续拆分建立边界 |
 | 47 | `52214c61bf728b86271d1b61d5a598e717ea44a2` | 将 schema validation 与 source_refs traceability 提升为独立运行时模块 `schema_contracts.py`、`source_trace_contracts.py`；`contracts` facade 已将对应公共函数切换到 focused implementation，其余 AUTHOR/onscreen 规则继续由 `contract_rules.py` 提供。实现提交：`f76057a`、`4337655`、`be78356`、`52214c6` |
 | 48 | `41a612e8259d668149af23a3195e4bfe5084776b` | 将 speaker notes 最低长度、显式 peer count、上屏末尾标点、上屏详情长度、outline review 五类机械交付检查抽到 `delivery_contracts.py`；CLI 继续通过 `contracts` facade 使用同名 API。实现提交：`7fc1017`、`1721cf3`、`41a612e` |
+| 49 | `8dd74da36a03324424a1ee4e27089e6f9e402048` | 将 `check_onscreen_structure` 与 `check_full_copy_duplication` 抽到 `structural_contracts.py`；主 CLI lint 的结构重复检查已不再依赖 monolithic `contract_rules.py`。实现提交：`d4c9056`、`6dcffcd`、`8dd74da` |
 
 ## 验证记录
 
@@ -42,3 +43,4 @@
 - 阶段 46 workflow run `33361256556`：Linux Python3.10/3.12 全量 pytest + wheel repo 外 smoke、真实 OfficeCLI render smoke、macOS/Windows wheel smoke全部 `success`；`contracts.py` facade 化未改变任何现有 Script Engine 行为。
 - 阶段 47 workflow run `33361499406`：五个 job 全部 `success`。Linux Python3.10/3.12 全量测试与 wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；schema/source-trace focused implementation 已成为 facade 的运行时出口。
 - 阶段 48 workflow run `33361745792`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke全部通过；机械交付检查切换到 `delivery_contracts.py` 后 CLI 输出与退出语义保持兼容。
+- 阶段 49 workflow run `33361974577`：五个 job 全部 `success`。结构重复检查切换到 `structural_contracts.py` 后 Linux 全量测试、三平台 wheel smoke 与 OfficeCLI 真实渲染均保持通过。
