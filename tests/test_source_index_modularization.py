@@ -5,6 +5,7 @@ from pathlib import Path
 
 import script_engine.source_index as source_index
 import script_engine.source_index_legacy as source_index_legacy
+import script_engine.source_index_validation as source_index_validation
 import script_engine.source_reading as source_reading
 
 
@@ -76,6 +77,18 @@ def test_source_index_routes_legacy_parser_through_focused_module() -> None:
     )
 
 
+def test_source_index_routes_v2_validation_through_focused_module() -> None:
+    assert source_index.validate_reading_strategy is source_index_validation.validate_reading_strategy
+    assert source_index.validate_foundation_source_bindings is source_index_validation.validate_foundation_source_bindings
+    assert source_index.validate_foundation_detail_atomicity is source_index_validation.validate_foundation_detail_atomicity
+    assert source_index.validate_script_foundation_against_index is source_index_validation.validate_script_foundation_against_index
+    assert source_index._source_unit_refs is source_index_validation._source_unit_refs
+    assert source_index._detail_obligation_count is source_index_validation._detail_obligation_count
+    assert source_index._detail_overlap is source_index_validation._detail_overlap
+    assert source_index._DETAIL_SENTENCE_SPLIT_RE is source_index_validation._DETAIL_SENTENCE_SPLIT_RE
+    assert source_index._DETAIL_MEANINGFUL_RE is source_index_validation._DETAIL_MEANINGFUL_RE
+
+
 def test_source_index_no_longer_owns_extracted_implementations() -> None:
     path = ROOT / "script_engine" / "source_index.py"
     source = path.read_text(encoding="utf-8")
@@ -91,6 +104,11 @@ def test_source_index_no_longer_owns_extracted_implementations() -> None:
         if isinstance(node, ast.Import)
         for alias in node.names
     }
+    imported_modules = {
+        node.module
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom) and node.module
+    }
 
     assert "estimate_reading_load" not in function_names
     assert "recommend_reading_mode" not in function_names
@@ -101,5 +119,14 @@ def test_source_index_no_longer_owns_extracted_implementations() -> None:
     assert "_is_toc_entry" not in function_names
     assert "build_source_index" not in function_names
     assert "build_source_index_file" not in function_names
+    assert "_source_unit_refs" not in function_names
+    assert "validate_reading_strategy" not in function_names
+    assert "validate_foundation_source_bindings" not in function_names
+    assert "_detail_obligation_count" not in function_names
+    assert "_detail_overlap" not in function_names
+    assert "validate_foundation_detail_atomicity" not in function_names
+    assert "validate_script_foundation_against_index" not in function_names
     assert "math" not in imported_names
-    assert path.stat().st_size < 27_000
+    assert "re" not in imported_names
+    assert "source_index_validation" in imported_modules
+    assert path.stat().st_size < 10_000
