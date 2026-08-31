@@ -13,6 +13,7 @@ from PIL import Image, ImageChops
 from scripts.imagegen_pipeline.page_manifest import FULL_IMAGE_MODE, output_variants_for_mode
 from scripts.imagegen_pipeline.providers.codex_oauth_image import ensure_output_size, run_codex_image
 
+from .dependencies import Stage02Dependencies, default_stage02_dependencies
 from .models import ImageStageResult, ManifestStageResult, Stage02BuildContext, Stage02RunOptions
 from .preflight import utc_now, write_json
 
@@ -45,9 +46,14 @@ def _attach_content_root_qa(
     )
 
 
-def normalize_audited_manifest_images(manifest: dict[str, Any]) -> None:
+def normalize_audited_manifest_images(
+    manifest: dict[str, Any],
+    *,
+    ensure_output_size_fn: Any | None = None,
+) -> None:
     from scripts.imagegen_pipeline.providers.codex_oauth_image import raw_output_path
 
+    resize_image = ensure_output_size_fn or ensure_output_size
     for pair in manifest.get("pairs", []):
         if not isinstance(pair, dict):
             continue
@@ -67,7 +73,7 @@ def normalize_audited_manifest_images(manifest: dict[str, Any]) -> None:
         match = re.fullmatch(r"\s*(\d+)x(\d+)\s*", canvas)
         expected_size = [int(match.group(1)), int(match.group(2))] if match else None
         if expected_size is None or _image_size(path) != expected_size:
-            ensure_output_size(path, canvas)
+            resize_image(path, canvas)
         normalized_size = _image_size(path)
         if normalized_size is not None:
             audit["normalized_image_size"] = normalized_size
@@ -259,7 +265,11 @@ def _generate_manifest_images(
     force: bool,
     dry_run: bool,
     skip_text_audit: bool = False,
+    run_codex_image_fn: Any | None = None,
+    ensure_output_size_fn: Any | None = None,
 ) -> dict[str, Any]:
+    generate_image = run_codex_image_fn or run_codex_image
+    resize_image = ensure_output_size_fn or ensure_output_size
     if skip_text_audit:
         manifest["text_audit_contract"] = {
             "required_before_enhancement": False,
@@ -302,7 +312,7 @@ def _generate_manifest_images(
                         source_size = _image_size(audit_source)
                         if source_size is not None:
                             audit["image_size"] = source_size
-                ensure_output_size(output_path, str(item.get("canvas") or "2048x1024"))
+                resize_image(output_path, str(item.get("canvas") or "2048x1024"))
                 if audit is not None:
                     normalized_size = _image_size(output_path)
                     if normalized_size is not None:
@@ -343,7 +353,7 @@ def _generate_manifest_images(
                     candidate_path = output_path
                     if correction_audit is not None:
                         candidate_path = output_path.with_name(f"{output_path.stem}.attempt-{attempt:02d}-local-edit-candidate{output_path.suffix}")
-                    run_codex_image(
+                    generate_image(
                         prompt=prompt,
                         output_path=candidate_path,
                         image_paths=attempt_input_images,
@@ -396,7 +406,7 @@ def _generate_manifest_images(
                                 f"{json.dumps(audit.get('issues', []), ensure_ascii=False)}"
                             )
                         accepted_audit = audit
-                    ensure_output_size(output_path, canvas)
+                    resize_image(output_path, canvas)
                     if accepted_audit is not None:
                         normalized_size = _image_size(output_path)
                         if normalized_size is not None:
@@ -442,7 +452,9 @@ def run_image_stage(
     context: Stage02BuildContext,
     manifest_result: ManifestStageResult,
     options: Stage02RunOptions,
+    dependencies: Stage02Dependencies | None = None,
 ) -> ImageStageResult:
+    deps = dependencies or default_stage02_dependencies()
     manifest = manifest_result.manifest
     generation = None
     if options.generate_images:
@@ -456,6 +468,8 @@ def run_image_stage(
             force=options.force_images,
             dry_run=options.dry_run_images,
             skip_text_audit=options.skip_image_text_audit,
+            run_codex_image_fn=deps.run_codex_image,
+            ensure_output_size_fn=deps.ensure_output_size,
         )
         write_json(manifest_result.manifest_path, manifest)
         failed_pages = generation.get("failed") or []
