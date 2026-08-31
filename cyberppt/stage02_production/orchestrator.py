@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from scripts.imagegen_pipeline.page_manifest import require_generated
-
 from .delivery_stage import run_delivery_stage
+from .dependencies import Stage02Dependencies, default_stage02_dependencies
 from .image_stage import bind_reconstruction_visual_sources, normalize_audited_manifest_images, run_image_stage
 from .manifest_stage import prepare_manifest
 from .models import (
@@ -67,13 +66,18 @@ def _expected_action_result(*, context, manifest, images, error: Exception) -> S
     )
 
 
-def run_production(options: Stage02RunOptions) -> Stage02ProductionResult:
+def run_production(
+    options: Stage02RunOptions,
+    *,
+    dependencies: Stage02Dependencies | None = None,
+) -> Stage02ProductionResult:
+    deps = dependencies or default_stage02_dependencies()
     context = prepare_preflight(options)
     manifest = prepare_manifest(context, options)
     images = run_image_stage(context, manifest, options)
     if options.require_images or (options.production_build and not options.dry_run_images):
         normalize_audited_manifest_images(images.manifest)
-        require_generated(images.manifest)
+        deps.require_generated(images.manifest)
         if context.assembly_mode in {"editable", "both"}:
             rhythm_qa = run_full_image_rhythm_stage(
                 images.manifest,
