@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from cyberppt.stage02_production import orchestrator
+from cyberppt.stage02_production.dependencies import Stage02Dependencies
 from cyberppt.stage02_production.models import (
     ImageStageResult,
     ManifestStageResult,
@@ -52,7 +53,7 @@ def _options(tmp_path: Path) -> Stage02RunOptions:
     )
 
 
-def _install_common(monkeypatch, tmp_path: Path, events: list[str], rhythm_status: str):
+def _install_common(monkeypatch, tmp_path: Path, events: list[str], rhythm_status: str) -> Stage02Dependencies:
     context = _context(tmp_path)
     manifest = _manifest(tmp_path)
     images = ImageStageResult(manifest={"pairs": []})
@@ -60,7 +61,6 @@ def _install_common(monkeypatch, tmp_path: Path, events: list[str], rhythm_statu
     monkeypatch.setattr(orchestrator, "prepare_manifest", lambda context, options: manifest)
     monkeypatch.setattr(orchestrator, "run_image_stage", lambda context, manifest, options: images)
     monkeypatch.setattr(orchestrator, "normalize_audited_manifest_images", lambda payload: events.append("normalize"))
-    monkeypatch.setattr(orchestrator, "require_generated", lambda payload: events.append("require"))
 
     def rhythm(payload, *, build_dir):
         events.append("rhythm")
@@ -73,12 +73,13 @@ def _install_common(monkeypatch, tmp_path: Path, events: list[str], rhythm_statu
     monkeypatch.setattr(orchestrator, "bind_reconstruction_visual_sources", lambda payload: events.append("bind"))
     monkeypatch.setattr(orchestrator, "run_reconstruction_stage", lambda *args: events.append("reconstruct") or object())
     monkeypatch.setattr(orchestrator, "run_delivery_stage", lambda *args: events.append("delivery") or object())
+    return Stage02Dependencies(require_generated=lambda payload: events.append("require"))
 
 
 def test_rhythm_gate_runs_after_generated_check_and_before_authority_binding(monkeypatch, tmp_path):
     events: list[str] = []
-    _install_common(monkeypatch, tmp_path, events, "passed_with_warnings")
-    orchestrator.run_production(_options(tmp_path))
+    dependencies = _install_common(monkeypatch, tmp_path, events, "passed_with_warnings")
+    orchestrator.run_production(_options(tmp_path), dependencies=dependencies)
     assert events.index("require") < events.index("rhythm") < events.index("bind")
     assert events.index("rhythm") < events.index("write") < events.index("bind")
     assert events[-2:] == ["reconstruct", "delivery"]
@@ -86,9 +87,9 @@ def test_rhythm_gate_runs_after_generated_check_and_before_authority_binding(mon
 
 def test_blocked_rhythm_is_persisted_and_prevents_reconstruction_authority(monkeypatch, tmp_path):
     events: list[str] = []
-    _install_common(monkeypatch, tmp_path, events, "blocked")
+    dependencies = _install_common(monkeypatch, tmp_path, events, "blocked")
     with pytest.raises(RuntimeError, match="FULL_IMAGE_DECK_RHYTHM_BLOCKED"):
-        orchestrator.run_production(_options(tmp_path))
+        orchestrator.run_production(_options(tmp_path), dependencies=dependencies)
     assert events.index("rhythm") < events.index("write")
     assert "bind" not in events
     assert "reconstruct" not in events
