@@ -20,6 +20,15 @@
 
 三项一级业务语义单元处于同一“统一预测体系建设维度”，彼此独立并共同支撑总论；不得画成实施先后或因果链。
 
+## Relation Contract
+
+- Node Role：一个 Core Message + 多个同维度兄弟 Relation Units。
+- Edge Semantics：兄弟单元分别支撑同一 Core Message，兄弟之间不建立默认关系。
+- Direction / Cardinality：N → 1；兄弟单元之间无方向。
+- Invariant：所有兄弟 Relation Units 必须处于同一分解维度，并能回答完全相同的上位问句。
+- Confusable With：Convergence。
+- Disambiguation Rule：Parallel 回答“结论由哪些同层维度构成”；Convergence 回答“哪些独立输入共同生成一个结果”。
+
 ## Relation Units
 
 1. 研判范围扩展为多维分析与多形态成果；
