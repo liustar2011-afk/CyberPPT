@@ -1,8 +1,9 @@
 """Legacy patch-point bridge kept outside the Stage 02 command facade.
 
-This module is the only compatibility seam allowed to import concrete ImageGen,
-Quick reconstruction and Office rendering backends. New code must not add
-module-global monkey patches outside this file.
+Only the two ImageGen call sites still require module-global patch translation.
+The other historical patch fields remain enumerable for backward compatibility
+but are now passed through :class:`Stage02Dependencies` instead of mutating
+production modules.
 """
 from __future__ import annotations
 
@@ -20,9 +21,10 @@ from cyberppt.commands.production_qa import run_officecli_render_qa
 class LegacyPatchSet:
     """Finite compatibility surface for historical facade monkey patches.
 
-    The type makes the seam enumerable and prevents new patch points from being
-    smuggled in as ad-hoc keyword arguments. It is transitional: production
-    modules should eventually receive explicit dependencies directly.
+    Six field names remain stable so old tests/callers can still patch the
+    command facade. Four fields are now explicit dependencies; only the two
+    ImageGen fields are translated to module globals until image-stage migration
+    is completed.
     """
 
     run_codex_image: Any
@@ -44,12 +46,11 @@ def apply_legacy_patch_set(
     delivery_stage: Any,
     patches: LegacyPatchSet,
 ) -> None:
+    """Apply only the compatibility patches that still need module mutation."""
+
+    _ = orchestrator, reconstruction_stage, delivery_stage
     image_stage.run_codex_image = patches.run_codex_image
     image_stage.ensure_output_size = patches.ensure_output_size
-    orchestrator.require_generated = patches.require_generated
-    reconstruction_stage._run_image_to_editable_svg_build = patches.reconstruction_build
-    delivery_stage.run_officecli_render_qa = patches.officecli_render_qa
-    delivery_stage._append_ledger = patches.append_ledger
 
 
 def sync_legacy_patch_points(
