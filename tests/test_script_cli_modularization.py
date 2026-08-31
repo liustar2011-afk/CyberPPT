@@ -6,6 +6,7 @@ from pathlib import Path
 import script_engine.audit_reports as audit_reports
 import script_engine.cli as cli
 import script_engine.cli_parser as cli_parser
+import script_engine.delivery_commands as delivery_commands
 import script_engine.final_quality as final_quality
 import script_engine.project_scaffold as project_scaffold
 import script_engine.project_status as project_status
@@ -234,3 +235,40 @@ def test_cli_does_not_reimplement_audit_report_dependencies() -> None:
             "validate_source_refs_coverage",
         }
     )
+
+
+def test_cli_routes_final_delivery_through_focused_commands() -> None:
+    path = ROOT / "script_engine" / "cli.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    wrappers = {
+        node.name: ast.get_source_segment(source, node) or ""
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name in {"_lint", "_outline", "_render", "_check_sync"}
+    }
+
+    assert "lint_report" in wrappers["_lint"]
+    assert "outline_report" in wrappers["_outline"]
+    assert "render_stage02_delivery" in wrappers["_render"]
+    assert "delivery_sync_report" in wrappers["_check_sync"]
+    assert "_final_lint_findings" in wrappers["_lint"]
+    assert "_final_lint_findings" in wrappers["_render"]
+    assert "_final_lint_findings" in wrappers["_check_sync"]
+
+
+def test_cli_does_not_reimplement_final_delivery_dependencies() -> None:
+    path = ROOT / "script_engine" / "cli.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    imported_modules = {
+        node.module
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom) and node.module
+    }
+
+    assert "contracts" not in imported_modules
+    assert "render" not in imported_modules
+    assert "text_io" not in imported_modules
+    assert "delivery_commands" in imported_modules
+    assert path.stat().st_size < 8_000
