@@ -7,6 +7,7 @@ import script_engine.analysis_audits.final_authoring as final_authoring
 import script_engine.analysis_audits.final_deck as final_deck
 import script_engine.analysis_audits.final_lean as final_lean
 import script_engine.analysis_audits.final_onscreen as final_onscreen
+import script_engine.analysis_audits.final_orchestrator as final_orchestrator
 import script_engine.analysis_audits.final_script as legacy_final_script
 import script_engine.analysis_audits.final_script_runtime as runtime
 
@@ -58,11 +59,9 @@ _PUBLIC_DECK_HELPERS = tuple(
 )
 
 
-def _assert_runtime_routes(names: tuple[str, ...], module: object) -> None:
+def _assert_legacy_routes(names: tuple[str, ...], module: object) -> None:
     for name in names:
-        focused = getattr(module, name)
-        assert getattr(legacy_final_script, name) is focused
-        assert legacy_final_script.audit_final_script.__globals__[name] is focused
+        assert getattr(legacy_final_script, name) is getattr(module, name)
 
 
 def _assert_public_facades_route(names: tuple[str, ...], module: object) -> None:
@@ -73,30 +72,53 @@ def _assert_public_facades_route(names: tuple[str, ...], module: object) -> None
 
 
 def test_final_script_runtime_routes_authoring_helpers_to_focused_module() -> None:
-    _assert_runtime_routes(_AUTHORING_HELPERS, final_authoring)
+    _assert_legacy_routes(_AUTHORING_HELPERS, final_authoring)
     _assert_public_facades_route(_PUBLIC_AUTHORING_HELPERS, final_authoring)
-
     assert legacy_final_script._STATUS_PRESERVATION_MARKERS is final_authoring._STATUS_PRESERVATION_MARKERS
     assert legacy_final_script._STRUCTURAL_METADATA_PATTERNS is final_authoring._STRUCTURAL_METADATA_PATTERNS
     assert "_status_strength_preserved" not in runtime.__all__
-    assert runtime.audit_final_script is legacy_final_script.audit_final_script
-    assert facade.audit_final_script is legacy_final_script.audit_final_script
 
 
 def test_final_script_runtime_routes_lean_helpers_to_focused_module() -> None:
-    _assert_runtime_routes(_LEAN_HELPERS, final_lean)
+    _assert_legacy_routes(_LEAN_HELPERS, final_lean)
     _assert_public_facades_route(_PUBLIC_LEAN_HELPERS, final_lean)
     assert "_onscreen_surface" not in runtime.__all__
 
 
 def test_final_script_runtime_routes_onscreen_helpers_to_focused_module() -> None:
-    _assert_runtime_routes(_ONSCREEN_HELPERS, final_onscreen)
+    _assert_legacy_routes(_ONSCREEN_HELPERS, final_onscreen)
     _assert_public_facades_route(_PUBLIC_ONSCREEN_HELPERS, final_onscreen)
 
 
 def test_final_script_runtime_routes_deck_helpers_to_focused_module() -> None:
-    _assert_runtime_routes(_DECK_HELPERS, final_deck)
+    _assert_legacy_routes(_DECK_HELPERS, final_deck)
     _assert_public_facades_route(_PUBLIC_DECK_HELPERS, final_deck)
+
+
+def test_final_script_runtime_routes_orchestrator_to_focused_module() -> None:
+    focused = final_orchestrator.audit_final_script
+    assert legacy_final_script.audit_final_script is focused
+    assert runtime.audit_final_script is focused
+    assert facade.audit_final_script is focused
+
+    expected_globals = {
+        "_slide_text": final_authoring._slide_text,
+        "_audit_authored_content_coverage": final_authoring._audit_authored_content_coverage,
+        "_authored_bare_label_detail_issues": final_authoring._authored_bare_label_detail_issues,
+        "_author_execution_issues": final_authoring._author_execution_issues,
+        "_onscreen_expression_warnings": final_authoring._onscreen_expression_warnings,
+        "_audit_lean_authored_source_consumption": final_lean._audit_lean_authored_source_consumption,
+        "_audit_lean_onscreen_full_copy_alignment": final_lean._audit_lean_onscreen_full_copy_alignment,
+        "_audit_lean_relationship_visibility": final_lean._audit_lean_relationship_visibility,
+        "_audit_authored_onscreen_composition": final_onscreen._audit_authored_onscreen_composition,
+        "_audit_self_reading_density": final_onscreen._audit_self_reading_density,
+        "_audit_authored_onscreen_contract": final_onscreen._audit_authored_onscreen_contract,
+        "_source_text_for_refs": final_deck._source_text_for_refs,
+        "_normalize_source_chapter_title": final_deck._normalize_source_chapter_title,
+        "_whole_deck_authoring_warnings": final_deck._whole_deck_authoring_warnings,
+    }
+    for name, value in expected_globals.items():
+        assert focused.__globals__[name] is value
 
 
 def test_final_script_public_facades_use_runtime_router() -> None:
@@ -109,5 +131,5 @@ def test_final_script_public_facades_use_runtime_router() -> None:
     assert "from .final_script import audit_final_script" not in package_init
     assert "from .analysis_audits.final_script import *" not in compatibility
     assert "for _focused in (_authoring, _lean, _onscreen, _deck):" in runtime_source
-    assert "setattr(_legacy, _name, getattr(_focused, _name))" in runtime_source
+    assert "_legacy.audit_final_script = _orchestrator.audit_final_script" in runtime_source
     assert "globals()[_name] = getattr(_legacy, _name)" in runtime_source
