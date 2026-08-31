@@ -20,6 +20,15 @@
 
 所有比较行都使用同一对对象：分散预测方式与统一预测体系。每一行只改变评价维度，不改变比较对象或判断标准。
 
+## Relation Contract
+
+- Node Role：固定比较对象 A / B + 多个共同评价维度。
+- Edge Semantics：A 与 B 在同一评价维度上形成状态差异，不表示 A 流转、演进或转化为 B。
+- Direction / Cardinality：无流程方向；两个固定对象 × N 个评价维度。
+- Invariant：每一行都必须使用同一对比较对象和同一评价标准，左右 Evidence 必须成对。
+- Confusable With：Mapping / Roadmap。
+- Disambiguation Rule：Comparison 回答“A 与 B 在维度 D 上有什么差异”；Mapping 回答“A 对应什么 B”；Roadmap 回答“状态如何逐步跃迁”。
+
 ## Relation Units
 
 1. 数据基础：分散版本管理 ↔ 统一目录、口径和版本；
