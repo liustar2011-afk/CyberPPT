@@ -91,6 +91,31 @@ def test_final_script_visual_structure_preserves_relationships_for_stage2(
     assert decision[0] == case.expected_expression_form
 
 
+def test_stage2_recovers_explicit_non_directional_comparison_pair() -> None:
+    visual_structure = "比较对象｜分散预测方式 vs 统一预测体系：对照比较"
+
+    derived = derive_business_relationships(
+        visual_structure=visual_structure,
+        title="预测运行能力对比",
+        module_titles=("分散预测方式", "统一预测体系"),
+        top_level_module_titles=("分散预测方式", "统一预测体系"),
+    )
+
+    assert len(derived) == 1
+    relation = derived[0]
+    assert relation["subject"] == "分散预测方式"
+    assert relation["objects"] == ["统一预测体系"]
+    assert relation["relation"] == "comparison"
+    assert relation["direction"] == "unspecified"
+
+    decision = resolve_relation_expression(
+        relationships=derived,
+        module_count=2,
+    )
+    assert decision is not None
+    assert decision[0] == "comparison_2col"
+
+
 @pytest.mark.parametrize(
     "case",
     [case for case in _FAILURE_CASES if case.detection_mode == "lint"],
