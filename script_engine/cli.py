@@ -5,35 +5,30 @@ import json
 import sys
 from pathlib import Path
 
-from .analysis_audit import (
-    audit_deck_plan,
-    audit_final_script,
-    audit_foundation_analysis,
-    validate_source_index_coverage,
+from .audit_reports import (
+    VALIDATORS,
+    build_source_index_report,
+    composed_trace_report,
+    final_audit_report,
+    foundation_audit_report,
+    plan_audit_report,
+    plan_review_text,
+    source_refs_report,
+    validate_artifact_report,
 )
-from .analysis_audits.composed_trace import critic_priorities, trace_composed
 from .cli_parser import build_parser as _build_parser
 from .contracts import (
     check_declared_count,
     load_json,
     outline_final_script,
-    validate_deck_plan,
     validate_final_script,
-    validate_foundation,
-    validate_source_refs_coverage,
 )
 from .final_quality import collect_final_lint_issues, partition_final_lint_findings
-from .plan_review import render_plan_review
 from .project_scaffold import create_project
 from .project_status import build_project_status, project_profile_for_foundation
 from .render import render_stage02_markdown
-from .source_index import (
-    build_source_index_file,
-    validate_script_foundation_against_index,
-)
 from .text_io import write_text_lf
 
-VALIDATORS = {"foundation": validate_foundation, "plan": validate_deck_plan, "final": validate_final_script}
 _project_profile_for_foundation = project_profile_for_foundation
 
 
@@ -42,104 +37,54 @@ def _print_report(report: dict, *, stderr: bool = False) -> None:
 
 
 def _validate(kind: str, path: Path) -> int:
-    payload = load_json(path)
-    issues = VALIDATORS[kind](payload)
-    _print_report({"kind": kind, "path": str(path.resolve()), "status": "passed" if not issues else "failed", "issues": issues})
-    return 0 if not issues else 1
+    report, exit_code = validate_artifact_report(kind, path)
+    _print_report(report)
+    return exit_code
 
 
 def _audit_foundation(path: Path) -> int:
-    payload = load_json(path)
-    issues = validate_foundation(payload)
-    audit_issues, warnings = audit_foundation_analysis(payload)
-    issues += audit_issues
-    source_index_path = path.parent / ".cache" / "source-index.json"
-    if (
-        _project_profile_for_foundation(path) not in {"strict", "legacy"}
-        and source_index_path.is_file()
-    ):
-        source_index = load_json(source_index_path)
-        if source_index.get("schema") == "cyberppt.source_index.v2":
-            issues += validate_script_foundation_against_index(payload, source_index)
-    issues = list(dict.fromkeys(issues))
-    _print_report({"kind": "foundation-analysis", "path": str(path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
-    return 0 if not issues else 1
+    report, exit_code = foundation_audit_report(
+        path,
+        profile_resolver=_project_profile_for_foundation,
+    )
+    _print_report(report)
+    return exit_code
 
 
 def _audit_plan(plan_path: Path, foundation_path: Path) -> int:
-    plan = load_json(plan_path)
-    foundation = load_json(foundation_path)
-    issues = validate_deck_plan(plan) + validate_foundation(foundation)
-    audit_issues, warnings = audit_deck_plan(plan, foundation)
-    issues += audit_issues
-    _print_report({"kind": "source-faithful-plan", "plan": str(plan_path.resolve()), "foundation": str(foundation_path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
-    return 0 if not issues else 1
+    report, exit_code = plan_audit_report(plan_path, foundation_path)
+    _print_report(report)
+    return exit_code
 
 
 def _review_plan(plan_path: Path, foundation_path: Path) -> int:
-    plan = load_json(plan_path)
-    foundation = load_json(foundation_path)
-    issues = validate_deck_plan(plan) + validate_foundation(foundation)
-    audit_issues, warnings = audit_deck_plan(plan, foundation)
-    issues += audit_issues
-    print(render_plan_review(plan, foundation, issues=issues, warnings=warnings))
-    return 0 if not issues else 1
+    review, exit_code = plan_review_text(plan_path, foundation_path)
+    print(review)
+    return exit_code
 
 
 def _audit_final(final_path: Path, plan_path: Path, foundation_path: Path) -> int:
-    final_payload = load_json(final_path)
-    plan = load_json(plan_path)
-    foundation = load_json(foundation_path)
-    issues = validate_final_script(final_payload) + validate_deck_plan(plan) + validate_foundation(foundation)
-    audit_issues, warnings = audit_final_script(final_payload, plan, foundation)
-    issues += audit_issues
-    trace = trace_composed(final_payload, foundation)
-    _print_report({
-        "kind": "final-semantic-inheritance",
-        "final": str(final_path.resolve()),
-        "plan": str(plan_path.resolve()),
-        "foundation": str(foundation_path.resolve()),
-        "status": "passed" if not issues else "failed",
-        "issues": issues,
-        "warnings": warnings,
-        "critic_priorities": critic_priorities(
-            final_payload, plan, foundation, trace=trace
-        ),
-    })
-    return 0 if not issues else 1
+    report, exit_code = final_audit_report(final_path, plan_path, foundation_path)
+    _print_report(report)
+    return exit_code
 
 
 def _trace_composed(final_path: Path, foundation_path: Path, n: int = 3) -> int:
-    final_payload = load_json(final_path)
-    foundation = load_json(foundation_path)
-    report = trace_composed(final_payload, foundation, n=n)
-    report.update(
-        {
-            "final": str(final_path.resolve()),
-            "foundation": str(foundation_path.resolve()),
-            "critic_priorities": critic_priorities(
-                final_payload, {}, foundation, trace=report
-            ),
-        }
-    )
+    report, exit_code = composed_trace_report(final_path, foundation_path, n=n)
     _print_report(report)
-    return 0 if report["status"] == "passed" else 1
+    return exit_code
 
 
 def _check_refs(final_path: Path, foundation_path: Path, source_index_path: Path | None = None) -> int:
-    final_payload = load_json(final_path)
-    foundation_payload = load_json(foundation_path)
-    issues = validate_source_refs_coverage(final_payload, foundation_payload)
-    if source_index_path is not None:
-        issues += validate_source_index_coverage(final_payload, load_json(source_index_path))
-    _print_report({"kind": "source-refs-coverage", "final": str(final_path.resolve()), "foundation": str(foundation_path.resolve()), "source_index": str(source_index_path.resolve()) if source_index_path else None, "status": "passed" if not issues else "failed", "issues": issues})
-    return 0 if not issues else 1
+    report, exit_code = source_refs_report(final_path, foundation_path, source_index_path)
+    _print_report(report)
+    return exit_code
 
 
 def _build_source_index(source_extract: Path, output: Path, source_file: str | None) -> int:
-    index = build_source_index_file(source_extract, output, source_file=source_file)
-    _print_report({"kind": "source-index", "status": "created", "source_extract": str(source_extract.resolve()), "output": str(output.resolve()), "mapped_refs": len(index.get("refs") or {}), "structure_nodes": len(index.get("source_structure") or [])})
-    return 0
+    report, exit_code = build_source_index_report(source_extract, output, source_file)
+    _print_report(report)
+    return exit_code
 
 
 _final_lint_issues = collect_final_lint_issues
