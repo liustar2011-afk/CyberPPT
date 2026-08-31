@@ -9,6 +9,11 @@ from .final_authoring import (
 )
 
 
+_RELATIONSHIP_CLAIM_RE = re.compile(
+    r"(映射|协同|闭环|衔接|转化|贯通|联动|传导|反馈|对应|支撑.+(?:形成|实现|落地))"
+)
+
+
 def _audit_lean_authored_source_consumption(
     page: dict[str, Any],
     slide: dict[str, Any],
