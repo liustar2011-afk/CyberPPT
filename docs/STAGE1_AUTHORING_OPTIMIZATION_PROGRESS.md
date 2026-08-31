@@ -37,8 +37,8 @@
 | 3 | P1 | Golden Examples：建立 8 类关系页面索引并拆出既有 Parallel / Flow | 已完成 |
 | 4 | P1 | Golden Examples：补齐 6 类缺失完整样例与作者自检 | 已完成 |
 | 5 | P1 | Critic / Script Quality：覆盖审计 + 缺失机械底线 | 已完成 |
-| 6 | P1 | Critic / Script Quality：方向关系扁平化、Roadmap completeness 等检查 | 进行中 |
-| 7 | P1 | Topology：Authoring grammar ↔ machine semantic topology 映射与一致性 | 待开始 |
+| 6 | P1 | Critic / Script Quality：方向关系扁平化审计 + Roadmap completeness | 已完成 |
+| 7 | P1 | Topology：Authoring grammar ↔ machine semantic topology 映射与一致性 | 进行中 |
 | 8 | P2 | Stage1 authoring fixtures：8 类正确案例与典型错误案例 | 待开始 |
 | 9 | P2 | 回归测试：Critic/Lint/topology/Stage1→Stage2 结构保持 | 待开始 |
 | 10 | P2 | 全量验证、文档收口、剩余兼容性问题清理 | 待开始 |
@@ -82,18 +82,9 @@
 
 ### Batch 4 — 补齐六类黄金关系页面
 
-新增：
+新增：Causal、Convergence、Mapping、Comparison、Roadmap、Governance 六类完整黄金页面；与既有 Parallel / Flow 共同形成 8 类核心示例。
 
-- `golden-page-causal.md`：变化 → 要求 → 缺口 → 建设结论；
-- `golden-page-convergence.md`：多输入独立贡献并汇入共同结果；
-- `golden-page-mapping.md`：问题端与响应端一一对应；
-- `golden-page-comparison.md`：固定对象、固定评价维度进行比较；
-- `golden-page-roadmap.md`：每阶段同时包含进入条件与新增状态；
-- `golden-page-governance.md`：主体 → 责任对象 → 控制机制 → 受保护结果。
-
-统一要求：六页均包含核心结论、主论证链、Argument Topology、Relation Units、Full Copy、Onscreen、视觉结构、Speaker Notes、作者自检；Relation Units 继续只作为教学标签。
-
-验证：Causal 不把并列事实伪装为时间顺序；Convergence 不虚构输入间先后；Mapping 两端同时可见；Comparison 始终使用同一对比较对象与统一评价维度；Roadmap 以触发条件和新状态建立演进关系；Governance 将主体、责任、机制和受保护结果绑定。
+验证：各页都能从纯文本恢复其核心 relation grammar；Roadmap 以触发条件和新状态建立演进关系；Governance 将主体、责任、机制和受保护结果绑定。
 
 提交：`33489f0172da1c24764d7cb1b3c14a884b287cc7`。
 
@@ -101,34 +92,58 @@
 
 审计结论：新版方案列出的多数机械检查在当前仓库正式 `script_engine` 链路中已经存在，不重复实现。
 
-现有正式覆盖包括：
+现有正式覆盖包括：抽象/名词式模块标题、标题缺业务对象、Full Copy 与 Onscreen 层级、Evidence 层缺失、Core Message 投影偏离、隐藏中间步骤和关系端点完整性等。
 
-- 抽象/名词式模块标题：`ONSCREEN_HEADING_INCOMPLETE`；
-- 标题缺少业务对象：`ONSCREEN_HEADING_OBJECT_OMITTED`；
-- 父子层级和投影结构：现有 Onscreen / Full Copy contracts；
-- 多模块页缺 Evidence 层：`ONSCREEN_EVIDENCE_LAYER_MISSING`；
-- 上屏与 Core Message 偏离：`ONSCREEN_CORE_MISALIGNED`；
-- 隐藏中间步骤、关系端点不完整：AUTHOR field contract；
-- 现有 `cyberppt/script_quality/` 兼容层还包含父子重复、同层级角色混杂、false-parallel、declared relation visibility 等检查。
+新增：
 
-新增的真实缺口：
-
-- 新建 `script_engine/authoring_quality_contracts.py`；
-- 新增 `ONSCREEN_NUMBER_WITHOUT_OBJECT`：只拦截无语义标签的近似纯数字/单位上屏明细，如 `80%`、`30家`、`3项`；
-- `覆盖率：80%`、`2026年`、`首批覆盖30家重点单位` 等有对象/合法日期表达保持通过；
-- 规则已接入正式 `lint_final_script()`，未落到旧兼容链路；
-- 新增 `tests/script_engine/test_stage1_authoring_quality.py` 两组回归用例。
+- `script_engine/authoring_quality_contracts.py`；
+- `ONSCREEN_NUMBER_WITHOUT_OBJECT`，只拦截 `80%`、`30家`、`3项` 等无语义标签的近似纯数字/单位明细；
+- 合法日期、有标签数字及带完整业务对象的数字表达保持通过；
+- 规则接入正式 `lint_final_script()`；
+- 新增 `tests/script_engine/test_stage1_authoring_quality.py` 回归测试。
 
 提交链：
 
 - `be2a768cc1928e1e793949a8a97301aa36ee1793`：新增聚焦规则模块；
 - `d5277ce7d69fc9337bda5ba492938346fd5485ea`：接入正式 lint；
-- `f5a805ac1877f7694c00ae43e79afd138fee5235`：新增回归测试。
+- `f5a805ac1877f7694c00ae43e79afd138fee5235`：新增数字对象回归测试；
+- `fc557be3e0466632158f268669b296801bb90093`：更新进度台账。
 
-验证：代码级调用链与测试用例已落仓；GitHub Actions 状态在本批台账提交后检查，如失败则立即提交修复。
+验证：GitHub 当前未为 push commit 返回 workflow/status；测试文件已入仓，后续 P2 回归批次统一纳入可执行验证。
+
+### Batch 6 — Roadmap completeness 与方向关系覆盖审计
+
+新增确定性规则：
+
+- 仅对明确声明 `roadmap`、`pyramid-roadmap`、`governance-roadmap` 的页面启用 Roadmap 底线；
+- `ROADMAP_STAGE_LAYER_MISSING`：Roadmap 未形成至少两个可见阶段；
+- `ROADMAP_TRIGGER_MISSING`：阶段缺少年份/季度等时间信号或进入/触发条件；
+- `ROADMAP_NEW_STATE_MISSING`：阶段只写活动，没有说明新达到的可验证状态；
+- 普通 `progression` 页面不强制套用 Roadmap 规则。
+
+方向关系审计：
+
+- `cyberppt.script_quality.relationships` 已维护 relation visibility vocabulary；
+- 当 `page_logic_mode=required` 时，现有实现明确把逐边关系可见性检查交给 `page_logic_contract`，避免与关键词表做第二次低精度重复判断；
+- AUTHOR field contract 同时检查关系端点、隐藏中间步骤和 visual thesis 的关系语法；
+- 因此本批不再新增第三套 directed-flattening 判定器，继续沿用现有 edge carrier / relation visibility 机制。
+
+测试：
+
+- 缺条件、缺新状态的两阶段 Roadmap 应分别命中；
+- `进入条件 + 新状态`、`年份 + 新状态` 的 Roadmap 应通过；
+- generic `progression` 不触发 Roadmap 专项规则；
+- 已按同一正则对上述样例做独立样例级验证。
+
+提交链：
+
+- `067930d3b7fde735374e6927b248d9a688034be3`：新增 Roadmap completeness；
+- `dfaee1d134dca8d2406888eb4d1059cd8be5064b`：接入正式 lint；
+- `87358bc5b06056dcde4a15bdc504a9b727b6edb3`：新增 Roadmap 回归用例；
+- 当前提交：更新进度台账。
 
 ## 5. 当前剩余工作
 
-下一批：Batch 6，先审计正式 argument pattern / topology contracts 对 directed flattening 的现有覆盖，再只补 Roadmap `进入条件/时间信号 + 新状态` 等仍可机械判定的缺口。
+下一批：Batch 7，核对 `cyberppt/topology_resolver.py`、`cyberppt/deck_structure_validator.py`、Stage2 relationship adapter 与 `script_engine.delivery_cleanliness._ARGUMENT_PATTERN_SPECS` 的 vocabulary，形成单一明确的 Authoring grammar → semantic topology 映射，优先消除近义类型漂移，不扩充 topology 数量。
 
-随后：Authoring grammar ↔ machine topology 一致性；P2 fixtures 与回归测试；全量验证和收口。
+随后：P2 8 类 fixture；Critic/Lint/topology/Stage1→Stage2 回归测试；全量验证和收口。
