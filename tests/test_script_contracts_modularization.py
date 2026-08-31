@@ -46,11 +46,20 @@ def test_contracts_facade_routes_focused_domains() -> None:
     assert facade.check_full_copy_duplication is structural_contracts.check_full_copy_duplication
 
 
-def test_contracts_facade_contains_no_rule_implementation() -> None:
+def test_contracts_facade_has_no_legacy_runtime_fallback() -> None:
     path = ROOT / "script_engine" / "contracts.py"
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
     functions = [node.name for node in tree.body if isinstance(node, ast.FunctionDef)]
     classes = [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
+    imported_modules = {
+        alias.name
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
     assert functions == []
     assert classes == []
+    assert "contract_rules" not in imported_modules
+    assert "vars(" not in source
     assert path.stat().st_size < 4_000
