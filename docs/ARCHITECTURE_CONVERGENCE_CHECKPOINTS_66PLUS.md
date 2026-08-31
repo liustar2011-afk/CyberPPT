@@ -13,6 +13,7 @@
 | 72 | `4c4f4e65a1e9085a2bf940344de018115dee983e` | 新增 `analysis_audits/common_primitives.py`，迁移 source/evidence 常量、Foundation item 索引、可见性、optionality/group-strength、page evidence refs、source-consumption、source surface 和 page text 等底层 primitives；`common.py` 保留原 `__all__` 并仅自有 4 个高层 contract validator。实现提交：`fa035a0`、`09eee81`、`4c4f4e6` |
 | 73 | `3f86818e99147ec8d062f4eaa340a192e38324f8` | 新增 `analysis_audits/common_contracts.py`，迁移 evidence-fit review、onscreen contract definition 和 onscreen composition definition 四个高层 validator；`common.py` 收缩为无函数/类实现的 compatibility facade，仅组合外部依赖、`common_primitives` 与 `common_contracts`，并保持历史 `__all__`。实现提交：`45e5c80`、`adc4a1c`、`3f86818` |
 | 74 | `186bca9cd44dbc7147a1adff0f9166322a3d5af0` | 将约 15KB 的 `analysis_audits/final_authoring.py` 拆为 `final_authoring_expression.py` 与 `final_authoring_structure.py` 两个 focused authority，分别承载可见表达/机械拼接检查与来源细节/内容覆盖/关系拓扑检查；原 `final_authoring.py` 收缩为 thin compatibility facade，并以对象身份与 AST 门禁锁定职责边界。实现提交：`132f279`、`c0955fb`、`945f154`、`186bca9` |
+| 75 | `4a7f58a02e7220e7dbdd711357ef14566a3f26c0` | 将约 12.6KB 的 `analysis_audits/composed_trace.py` 拆为 `composed_trace_core.py` 与 `composed_trace_priorities.py`，分别承载源面/逐行 trace/硬 finding 与 Critic 页面优先级排序；原 `composed_trace.py` 收缩为静态 compatibility facade，保留历史私有 helper 属性，并保持 trace schema、hard finding 文案和 priority_score 算法不变。实现提交：`0b3101b`、`03d6248`、`b80c5e9`、`4a7f58a` |
 
 ## 验证记录
 
@@ -25,3 +26,4 @@
 - 阶段 72 workflow run `33374386175`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；common primitives 迁出后，所有 `.common import *` 消费者、历史 `common.__all__` 和审计 finding 行为保持兼容。
 - 阶段 73 workflow run `33374727992`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；高层 contract validators 迁出并将 `common.py` 收缩为 thin facade 后，历史 wildcard import、对象身份和审计 finding 行为保持兼容。
 - 阶段 74 workflow run `33375411393`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；authoring expression/structure 两个 focused domain 接管后，原 `final_authoring` 公共面、Final Script facade、orchestrator 依赖身份与全部 finding 行为保持兼容。
+- 阶段 75 workflow run `33375703037`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；composed trace core/priority 两个 focused domain 接管后，历史 direct import、私有 helper 属性、trace 输出 schema、硬 finding 与 Critic 排序保持兼容。
