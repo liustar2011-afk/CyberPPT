@@ -210,20 +210,17 @@ def resolve_semantic_topology(
 
     directed_names = names & _DIRECTED_RELATIONS
     chain = _has_dependency_chain(edges)
-    # Direction alone is insufficient to establish a process.  The old rule
-    # promoted generic directed_relation (and any directional annotation) to
-    # dependency_chain, which made reading order look like business flow.
-    # Keep this carrier for a verified graph chain, explicit sequence, or a
-    # named dependency relation with a verified chain.
-    if chain or ("directed_dependency" in names and chain):
+    # A verified graph chain may imply a generic dependency carrier, but an
+    # explicit sequence relation is stronger semantic evidence and already has
+    # its own topology.  Do not let an equal-scored generic dependency candidate
+    # displace ``sequence`` merely because of lexical tie-breaking.
+    if chain and not sequence:
         relation_names = directed_names or names
         confidence = _relevant_confidence(records, relation_names)
-        evidence = ["directed_dependency"]
-        if chain:
-            evidence.append("graph_chain")
+        evidence = ["directed_dependency", "graph_chain"]
         candidates.append(_candidate(
             "dependency_chain",
-            0.72 + 0.16 * confidence + (0.06 if chain else 0.0),
+            0.72 + 0.16 * confidence + 0.06,
             evidence,
             _relevant_authority(records, relation_names),
         ))
