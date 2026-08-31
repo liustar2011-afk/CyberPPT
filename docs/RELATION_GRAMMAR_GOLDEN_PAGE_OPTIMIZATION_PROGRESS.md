@@ -6,11 +6,11 @@
 
 ## 总体状态
 
-- 当前阶段：Batch B2 — Comparison 重构
+- 当前阶段：Batch B3 — Causal 收紧真实因果
 - 总体状态：进行中
-- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance 分层重构完成
+- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance 分层重构完成；Comparison 无方向对照重构完成
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把 AUTHOR/CRITIQUE 的生成式判断硬编码成低精度 lint
-- 下一恢复点：重构 Comparison，移除状态差异中的方向箭头，用固定对象 + 固定评价维度表达对照关系
+- 下一恢复点：重构 Causal，使每条边都能用明确的“导致/使得/因此”业务语义解释，清理仅凭叙事顺序形成的伪因果
 
 ## 已确认的现状映射
 
@@ -28,7 +28,7 @@
 - [x] Step 0：仓库基线盘点与映射
 - [x] Batch A：统一黄金页面模板与 Relation Contract
 - [x] Batch B1：Governance 重构
-- [ ] Batch B2：Comparison 重构
+- [x] Batch B2：Comparison 重构
 - [ ] Batch B3：Causal 收紧真实因果
 - [ ] Batch C1：Parallel 同层尺度统一
 - [ ] Batch C2：Convergence 输入角色优化
@@ -119,3 +119,20 @@
 - 已发现问题：现有 `tests/stage1_authoring/fixtures.py` 中 Governance 仍是“使用申请 → 授权决策 → 受控调用 → 审计记录”的通用 dependency chain，与当前黄金页语义不一致，需在 Batch G1 同步。
 - 剩余任务：Batch B2–H。
 - 下一恢复点：Batch B2，修正 Comparison 的“状态差异被箭头误读为方向关系”问题。
+
+### Batch B2 — Comparison：固定双列、移除方向箭头
+
+- 状态：完成
+- 完成内容：
+  - 将 Relation Units 从“状态 A ↔ 状态 B”改为“评价维度｜分散方式状态｜统一体系状态”，固定比较对象与评价维度。
+  - 将上屏文字中的四组 `A → B` 全部改为同维度下的双对象证据，消除流程方向语义。
+  - 更新主论证链为“固定比较对象 × 共同评价维度 → 差异结论”。
+  - 更新视觉结构，明确固定双列、稳定行头，通过列位、对齐、栏头和差异强调建立 Comparison，不使用流程箭头。
+  - 更新作者自检，新增“比较对象之间没有方向箭头”的硬性检查。
+- 改动文件：
+  - `.agents/skills/cyberppt-script-workflow/references/golden-page-comparison.md`
+- 实现 commit：`df4b65c47753a758a33878557c939cf6c2baccd7`
+- 测试结果：静态语义核对通过；未改 Runtime 代码。
+- 已发现问题：现有 Stage2 adapter 的正向 Comparison fixture 依赖 `分散预测模式 → 统一预测体系：对照比较` 才能恢复 `comparison`，与新黄金页的无方向表达不一致；需在 Batch F/G 补充无箭头的 Comparison 结构识别。
+- 剩余任务：Batch B3–H。
+- 下一恢复点：Batch B3，收紧 Causal 的边语义，只保留可明确解释的真实因果。
