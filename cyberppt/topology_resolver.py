@@ -25,8 +25,10 @@ _DIRECTED_RELATIONS = {
     *_SUPPORT_RELATIONS, *_SEQUENCE_RELATIONS, *_FEEDBACK_RELATIONS,
 }
 
-# Candidate topologies are render carriers; this map is the boundary between
-# verified semantic topology and the visual decision vocabulary.
+# Candidate topologies are coarse render-carrier families, not detailed
+# Stage2 expressions.  Every semantic topology emitted by this resolver must
+# map to at least one existing carrier family; detailed expression selection
+# remains in ``cyberppt.onscreen_expression``.
 CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
     "peer_set": {"parallel_set"},
     "feedback_loop": {"lifecycle_loop"},
@@ -39,6 +41,9 @@ CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
     "mapping": {"parallel_set", "conclusion_anchor"},
     "causal_chain": {"directed_flow", "causal_convergence"},
     "layered_structure": {"layered_architecture"},
+    "comparison": {"parallel_set"},
+    "containment": {"layered_architecture"},
+    "matrix": {"parallel_set"},
 }
 _DIRECTIONAL_VALUES = {
     "subject_to_objects", "left_to_right", "right_to_left", "top_to_bottom", "bottom_to_top"
