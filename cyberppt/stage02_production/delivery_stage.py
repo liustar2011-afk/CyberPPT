@@ -7,6 +7,7 @@ from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPT
 from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.commands.production_qa import run_officecli_render_qa
 
+from .dependencies import Stage02Dependencies
 from .models import DeliveryStageResult, ImageStageResult, ManifestStageResult, ReconstructionStageResult, Stage02BuildContext, Stage02RunOptions
 from .preflight import LEDGER_PATH, page_range_slug, sha256_file, utc_now, write_json
 
@@ -59,6 +60,7 @@ def _run_office_qa(
     context: Stage02BuildContext,
     reconstruction: ReconstructionStageResult,
     production_build: bool,
+    officecli_render_qa_fn: Any = None,
 ) -> tuple[dict[str, dict[str, Any]], list[Path]]:
     if not production_build:
         return {}, []
@@ -73,6 +75,7 @@ def _run_office_qa(
         raise RuntimeError("Stage 02 assembly returned invalid exported_pptx_by_mode artifacts")
     if not exports_by_mode:
         raise RuntimeError("Stage 02 assembly did not return an exported PPTX for OfficeCLI render QA")
+    qa_fn = officecli_render_qa_fn or run_officecli_render_qa
     reports: dict[str, dict[str, Any]] = {}
     export_paths: list[Path] = []
     for mode, exported_path in exports_by_mode.items():
@@ -80,7 +83,7 @@ def _run_office_qa(
             raise RuntimeError("Stage 02 assembly returned invalid exported PPTX mapping")
         export_path = Path(exported_path)
         export_paths.append(export_path)
-        reports[mode] = run_officecli_render_qa(export_path, context.build_dir / "qa-delivery" / mode)
+        reports[mode] = qa_fn(export_path, context.build_dir / "qa-delivery" / mode)
     failed_modes = [mode for mode, report in reports.items() if not report["passed"]]
     if failed_modes:
         report_paths = ", ".join(str(reports[mode]["report_path"]) for mode in failed_modes)
@@ -97,11 +100,13 @@ def run_delivery_stage(
     image_result: ImageStageResult,
     reconstruction: ReconstructionStageResult,
     options: Stage02RunOptions,
+    dependencies: Stage02Dependencies | None = None,
 ) -> DeliveryStageResult:
     officecli_render_qa, officecli_export_paths = _run_office_qa(
         context=context,
         reconstruction=reconstruction,
         production_build=options.production_build,
+        officecli_render_qa_fn=(dependencies.officecli_render_qa if dependencies is not None else None),
     )
     resume_command = _resume_command(context, options)
     stage_name = "02-production-build" if options.production_build else "02-blueprint-image-to-editable-svg"
@@ -237,7 +242,8 @@ def run_delivery_stage(
             )
         )
     if not options.dry_run_images:
-        _append_ledger(context.project, ledger_records, build_id=context.build_id)
+        ledger_fn = dependencies.append_ledger if dependencies is not None and dependencies.append_ledger is not None else _append_ledger
+        ledger_fn(context.project, ledger_records, build_id=context.build_id)
 
     return DeliveryStageResult(
         summary=run_summary,
