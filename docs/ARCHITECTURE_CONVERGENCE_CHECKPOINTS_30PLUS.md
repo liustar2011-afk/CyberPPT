@@ -17,6 +17,7 @@
 | 40 | `fd02d6bff1126493aa1a620c97ff5fa604c33c5a` | 将 Script QA blocker/advisory severity policy 正式接入 `lint`、`status`、`render-stage02`、`check-sync`；仅三类措辞/视觉语法启发式降为 advisory，未知 finding 继续 fail-closed。实现提交：`ec94dc7`、`947e40f`、`f7aad7b`、`fd02d6b`；策略文档更新：`81b3073` |
 | 41 | `7a23c8642f076c7c48589d07ef49e6e0fc826413` | 将 full-image visual signature 从 Pillow 已弃用的 `getdata()` 迁移到 Pillow 12 `get_flattened_data()`；不改变视觉签名算法，只清除未来 Pillow 14 升级债务 |
 | 42 | `7aba88687273ffc7156bcf62f5e5a5b3f230e0dd` | 删除无人引用但会被 wheel 打包的历史备份 `references/visual-system - 好1.md`；避免旧“默认8风格/象牙白”说明继续形成第二套人工权威 |
+| 43 | `0a681f68a74533994b3db161aacf949c2e3fd183` | 现代化 Python 包 license 元数据：build backend 最低版本提升到 `setuptools>=77`，改用 SPDX `license = "MIT"`，移除已弃用 License classifier |
 
 ## 验证记录
 
@@ -30,3 +31,4 @@
 - 阶段 40 workflow run `33353471481`：Python 3.10/3.12 两个 job 均 `success`，pytest、wheel build、repo 外 smoke 全部通过；advisory-only 场景已覆盖 lint/render/check-sync/status，未知 finding 仍验证为 blocker。
 - 阶段 41 workflow run `33353616539`：Python 3.10/3.12 两个 job 均 `success`。Python 3.12 精确结果为 `1767 passed, 8 skipped, 2 warnings, 49 subtests passed`；Pillow 弃用警告从 20 条降为 0，剩余 2 条仅为 legacy content-integrity projection 兼容提示。
 - 阶段 42 workflow run `33353807515`：Python 3.10/3.12 pytest、wheel build、repo 外 smoke 全部通过；删除历史 visual-system 备份没有任何隐性调用依赖。
+- 阶段 43 workflow run `33353897774`：结论 `success`。Python 3.10/3.12 pytest、wheel build、repo 外 smoke 全绿；SPDX license/build backend 元数据可正常构建和安装。
