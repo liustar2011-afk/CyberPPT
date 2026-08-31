@@ -8,10 +8,11 @@ from __future__ import annotations
 
 from . import final_authoring as _authoring
 from . import final_lean as _lean
+from . import final_onscreen as _onscreen
 from . import final_script as _legacy
 
 
-for _focused in (_authoring, _lean):
+for _focused in (_authoring, _lean, _onscreen):
     for _name in _focused.__all__:
         setattr(_legacy, _name, getattr(_focused, _name))
 
