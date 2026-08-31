@@ -10,6 +10,7 @@ from collections.abc import Iterator
 from typing import Any
 
 from . import author_contracts as _author
+from . import authoring_quality_contracts as _authoring_quality
 from . import full_copy_contracts as _full_copy
 from . import onscreen_contracts as _onscreen
 from .schema_contracts import CONTRACTS, load_json
@@ -125,6 +126,7 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     issues.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
     issues.extend(_onscreen.check_onscreen_code_context(final_script))
     issues.extend(_onscreen.check_onscreen_core_alignment(final_script))
+    issues.extend(_authoring_quality.check_onscreen_numeric_context(final_script))
     return issues
 
 
