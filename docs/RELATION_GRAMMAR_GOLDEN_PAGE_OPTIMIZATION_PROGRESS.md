@@ -8,13 +8,15 @@
 
 - 当前阶段：Batch F — 统一视觉结构合同
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E8
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E8、Batch F1
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch F，统一 8 页视觉结构的语义字段顺序，确保 Stage2 能稳定恢复对象、关系、方向、分组、层级和禁止误读项
+- 下一恢复点：Batch F2，增强 Stage2 adapter 对 `A vs B：对照比较` 的无方向 Comparison 解析
 
 ## 剩余任务
 
-- [ ] Batch F：统一视觉结构合同
+- [ ] Batch F2：Comparison 无方向关系解析
+- [ ] Batch F3：Governance 原子关系边与解析保真
+- [ ] Batch F4–F9：其余黄金页视觉结构五项合同归一
 - [ ] Batch G1：Golden Page ↔ fixture 映射
 - [ ] Batch G2：Grammar 边界回归测试
 - [ ] Batch H：全量验证与收口
@@ -25,6 +27,7 @@
 
 关键文件：
 - 黄金页：`.agents/skills/cyberppt-script-workflow/references/golden-page-*.md`
+- 视觉结构五项合同：`.agents/skills/cyberppt-script-workflow/references/golden-page-visual-structure-contract.md`
 - AUTHOR 权威：`.agents/skills/cyberppt-script-workflow/references/authoring-contract.md`
 - 正向 fixture：`tests/stage1_authoring/fixtures.py`
 - 跨层回归：`tests/stage1_authoring/test_cross_layer_regressions.py`
@@ -47,18 +50,12 @@
 | Batch D1 Flow | 完成 | `b85a5b702f77dc43c88811589fa4d47cd7093ee9` | 增加真实交接物与反馈回写物 | Batch G1 对齐 fixture |
 | Batch D2 Roadmap | 完成 | `a404c1a253b96ea5e4bc053c9b4b50f635dd53f8` | 固定 S0–S3 状态链、进入条件和目标状态 | Batch G1 对齐 fixture |
 | Batch D3 Mapping | 完成 | `519f0f22bce685e21c6f2583e9a4641be58cff1a` | 固定 Problem → Response，显式 1:1 Cardinality | Batch F/G 对齐 |
-| Batch E1 Parallel | 完成 | `5531a74a7952dd1ea0c3ef9a61e54442050e6751` | 微语法与备注去重 | 完成 |
-| Batch E2 Flow | 完成 | `72018cefd3fad3f2bc3939babf8ff9c622c30a0f` | 微语法与备注去重 | 完成 |
-| Batch E3 Causal | 完成 | `09a18ca04ffcbd6bc2b5351f2fb5c0001215dd69` | 微语法与因果测试备注 | 完成 |
-| Batch E4 Convergence | 完成 | `5bef322a06e5a124e43eccd9c8847e7f657a78ba` | 输入角色微语法与备注去重 | 完成 |
-| Batch E5 Mapping | 完成 | `f8c7af32a1cf9298cd6322a2b6524d6528214b13` | 问题/响应/回答微语法，Cardinality 备注 | 完成 |
-| Batch E6 Comparison | 完成 | `e0b0ff588b4d9ff9139058642111b5a9e71d67d7` | 评价维度/对象A/对象B微语法 | 完成 |
-| Batch E7 Roadmap | 完成 | `47d3f122c5c851ae940c5e7e715e0a2f9b09ad48` | 状态/条件/新状态微语法 | 完成 |
-| Batch E8 Governance | 完成 | `65cc4da93ffd1acfc7b62f9eb31bfd24e9b57f01` | 主体/责任对象/控制机制/受保护结果微语法；备注改为责任边界和治理有效性判别 | 下一步：Batch F |
+| Batch E1–E8 | 完成 | `5531a74a...`、`72018cef...`、`09a18ca0...`、`5bef322a...`、`f8c7af32...`、`e0b0ff58...`、`47d3f122...`、`65cc4da9...` | 8 页形成对应 Grammar 的上屏微语法；Speaker Notes 改为增量判别信息 | 下一步：视觉结构合同与 Runtime 恢复 |
+| Batch F1 Visual Structure Contract | 完成 | `6f07e780691b6b880a6777e30e69157fe9fcf2d4` | 新增五项视觉结构合同：视觉对象、关系语义、方向/Cardinality、分组/层级、禁止误读；规定原子边和 Comparison `vs` 无方向表达 | 下一步：F2 adapter 无方向 Comparison 解析 |
 
-## Batch E 验收摘要
+## Batch F1 详细验收
 
-- 8 页上屏均使用与各自 Grammar 对应的稳定微语法，不依赖演讲者补关系。
-- Speaker Notes 从“复述上屏”转为“判别规则、误读风险、边界条件、验收逻辑”。
-- 未新增 Final Script 字段，未把教学标签升级为 Runtime schema。
-- Stage2 关系恢复仍需在 Batch F/G 对 Comparison、Governance 等无显式箭头结构做兼容验证。
+- 新参考文件明确属于黄金页教学表达，不新增 Runtime 字段或 authoritative IR。
+- 五项合同与 AUTHOR Contract 3.9 的 visual-structure / atomic relationship-edge 方法一致。
+- 明确有方向关系使用 `Source → Target：关系标签`；无方向 Comparison 使用 `A vs B：对照比较`，禁止为了适配解析器虚构箭头。
+- 规定 Stage2 应增强关系恢复能力，而不是反向要求 Stage1 制造错误方向。
