@@ -11,6 +11,7 @@
 | 54 | `806ff5cc805b068ed3b204ea6137115583debb9f` | 移除 `contracts.py` 对 `contract_rules.py` 的运行时 wildcard fallback；正式 facade 仅显式导出 focused modules，旧 `contract_rules.py` 暂保留供直接历史 import 兼容，并新增静态门禁禁止 legacy fallback 回流。实现提交：`d7dc8ba`、`806ff5c` |
 | 55 | `d5c478fdfd2f2856d655dfb741e32d69c0c790dd` | 将约 52KB 的旧 `contract_rules.py` 收缩为实现为空的历史兼容 facade，全部公开符号直接转发 `contracts.py`；新增身份级回归测试，保证 legacy import 与正式 facade 使用同一对象并禁止旧规则实现重新长回。实现提交：`17d67da`、`d5c478f` |
 | 56 | `0fbb81aa7724e86da139d3df83d42aedcd2c0325` | 新增 `final_quality.py` 作为 Final Script 确定性质量评估的 focused composition boundary，集中组合 language/structure/full-copy/speaker-notes/delivery-cleanliness/terminal-punctuation/detail-length 检查及 blocker/advisory policy；`cli.py` 保留 `_final_lint_issues` monkeypatch seam 并将 lint/status/render/check-sync 四条路径路由到 focused evaluator。实现提交：`b9a7a59`、`c0d6ac1`、`0fbb81a` |
+| 57 | `dfdadc3bc25f35bb804aebb32b981e8d78ec9b8b` | 将 `new-project` 的 slug 规则、目录树创建和非权威产物 `.gitignore` 模板迁入 `project_scaffold.py`；CLI 仅保留异常/成功结果到既有 JSON 输出和退出码的适配，并以架构测试禁止脚手架常量与文件系统实现回流。实现提交：`8e21ae7`、`ea2ff31`、`dfdadc3` |
 
 ## 验证记录
 
@@ -21,3 +22,4 @@
 - 阶段 54 workflow run `33363394820`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；production `contracts.py` 已不再 import 或 wildcard-reexport `contract_rules.py`，focused facade 成为唯一正式公共出口。
 - 阶段 55 workflow run `33365229408`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；legacy `contract_rules.py` 仅剩 thin facade，历史直接 import 仍保持与正式 `contracts.py` 相同的公开 API 身份。
 - 阶段 56 workflow run `33365693202`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；Final Script quality composition 从 `cli.py` 迁出后，既有 advisory/blocker 分类、CLI 退出语义及测试 monkeypatch seam 保持兼容。
+- 阶段 57 workflow run `33365981529`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；`new-project` 抽取后非法 slug、重复目录、目录结构、JSON 输出和退出码保持兼容。
