@@ -6,11 +6,11 @@
 
 ## 总体状态
 
-- 当前阶段：Batch A — 统一模板与 Relation Contract
+- 当前阶段：Batch B1 — Governance 重构
 - 总体状态：进行中
-- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射
+- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把 AUTHOR/CRITIQUE 的生成式判断硬编码成低精度 lint
-- 下一恢复点：更新黄金页索引与 8 页模板，增加 Relation Contract 和 Grammar 横向边界表
+- 下一恢复点：重构 Governance，使 Actor / Responsibility / Control Mechanism / Protected Outcome 分层明确，共同控制机制不再作为第四个并列责任主体
 
 ## 已确认的现状映射
 
@@ -26,7 +26,7 @@
 ## 任务清单
 
 - [x] Step 0：仓库基线盘点与映射
-- [ ] Batch A：统一黄金页面模板与 Relation Contract
+- [x] Batch A：统一黄金页面模板与 Relation Contract
 - [ ] Batch B1：Governance 重构
 - [ ] Batch B2：Comparison 重构
 - [ ] Batch B3：Causal 收紧真实因果
@@ -76,3 +76,29 @@
   - 文档示例与 executable fixture 尚未建立直接一致性约束。
 - 剩余任务：Batch A–H。
 - 下一恢复点：Batch A，先更新索引和统一 Relation Contract，再逐页补齐模板。
+
+### Batch A — 统一黄金页面模板与 Relation Contract
+
+- 状态：完成
+- 完成内容：
+  - 在黄金页索引增加 8 类 Grammar 的横向边界判别表，明确“何时使用 / 易混关系 / 最小区分规则”。
+  - 为 8 个黄金页统一增加 `Relation Contract`，固定六项：Node Role、Edge Semantics、Direction / Cardinality、Invariant、Confusable With、Disambiguation Rule。
+  - 明确 Parallel / Convergence、Flow / Causal / Roadmap、Mapping / Comparison、Governance / Parallel 等高混淆关系的判别边界。
+  - 保持 AUTHOR Contract 为唯一操作权威；Relation Contract 仅作为黄金示例教学层，不进入 Final Script schema，不形成新的 Stage1 authoritative IR。
+- 改动文件与实现 commit：
+  - `golden-page-script-example.md`：`1c949e0c1e2f047a0441bd9a3a9f6e79d3675a75`
+  - `golden-page-parallel.md`：`4b09b5dea079d2a408c5f124cd7a178977ad3f1f`
+  - `golden-page-flow.md`：`97bc03b469edd4d3adc4a2225ac035c6cd835d0b`
+  - `golden-page-causal.md`：`36895005bd439549415791b548dfa4bb3b8c80f0`
+  - `golden-page-convergence.md`：`6b95c21fc186a69641be649c366984cb432b142b`
+  - `golden-page-mapping.md`：`75a4d44e787d1de822c98b3f6f3f7436fb9c695e`
+  - `golden-page-comparison.md`：`c234a92ec5c0e49ae9ddfd15e50492bfc5f70566`
+  - `golden-page-roadmap.md`：`1b192d4c2b373f73353cd6cb92a55b86ec99c64c`
+  - `golden-page-governance.md`：`fbd4493cfbdaed34b34554c4d8a8126b2cf5b7d2`
+- 测试结果：文档结构变更；逐页静态核对 8 个 Relation Contract 已存在，未改 Runtime 代码。
+- 已发现问题：
+  - Governance 的正文与上屏仍把“会商审校与发布机制”放在第四个同层 Relation Unit，与新 Contract 的分层要求不完全一致。
+  - Comparison 的上屏与 fixture 仍以方向箭头表达状态差异，存在误读为演进流程的风险。
+  - Causal 的现有四节点链中仍混有“叙事递进”和“真实因果”，需要进一步收紧。
+- 剩余任务：Batch B1–H。
+- 下一恢复点：Batch B1，先重构 Governance 页面本体，再同步 fixture / adapter 的跨层语义。
