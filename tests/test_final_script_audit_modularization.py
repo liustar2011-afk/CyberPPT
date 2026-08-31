@@ -5,6 +5,8 @@ from pathlib import Path
 
 import script_engine.analysis_audit as facade
 import script_engine.analysis_audits.final_authoring as final_authoring
+import script_engine.analysis_audits.final_authoring_expression as final_authoring_expression
+import script_engine.analysis_audits.final_authoring_structure as final_authoring_structure
 import script_engine.analysis_audits.final_deck as final_deck
 import script_engine.analysis_audits.final_lean as final_lean
 import script_engine.analysis_audits.final_onscreen as final_onscreen
@@ -70,6 +72,32 @@ def _assert_public_facades_route(names: tuple[str, ...], module: object) -> None
         focused = getattr(module, name)
         assert getattr(runtime, name) is focused
         assert getattr(facade, name) is focused
+
+
+def test_final_authoring_routes_expression_domain() -> None:
+    for name in final_authoring_expression.__all__:
+        assert getattr(final_authoring, name) is getattr(final_authoring_expression, name)
+
+
+def test_final_authoring_routes_structure_domain() -> None:
+    for name in final_authoring_structure.__all__:
+        assert getattr(final_authoring, name) is getattr(final_authoring_structure, name)
+
+
+def test_final_authoring_is_thin_compatibility_facade() -> None:
+    path = ROOT / "script_engine" / "analysis_audits" / "final_authoring.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    implementations = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    ]
+
+    assert implementations == []
+    assert path.stat().st_size < 3_000
+    assert "from .final_authoring_expression import *" in source
+    assert "from .final_authoring_structure import *" in source
 
 
 def test_final_script_runtime_routes_authoring_helpers_to_focused_module() -> None:
