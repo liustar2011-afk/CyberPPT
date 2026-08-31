@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from cyberppt.relation_semantics import resolve_relation_expression
@@ -16,6 +18,24 @@ from .fixtures import AuthoringRelationCase, correct_relationship_cases
 
 _CORRECT_CASES = correct_relationship_cases()
 _FAILURE_CASES = failure_cases()
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_GOLDEN_PAGE_DIR = (
+    _REPO_ROOT
+    / ".agents"
+    / "skills"
+    / "cyberppt-script-workflow"
+    / "references"
+)
+_GOLDEN_PAGE_FILES = {
+    "parallel_mece": "golden-page-parallel.md",
+    "flow_feedback": "golden-page-flow.md",
+    "causal_chain": "golden-page-causal.md",
+    "support_convergence": "golden-page-convergence.md",
+    "mapping": "golden-page-mapping.md",
+    "comparison": "golden-page-comparison.md",
+    "roadmap": "golden-page-roadmap.md",
+    "governance_boundary": "golden-page-governance.md",
+}
 
 
 def _case_id(case: AuthoringRelationCase) -> str:
@@ -34,11 +54,46 @@ def _endpoints(relationships: tuple[dict[str, object], ...]) -> set[str]:
     return values
 
 
+def _markdown_section(text: str, heading: str) -> str:
+    marker = f"## {heading}"
+    assert marker in text, f"missing markdown section: {heading}"
+    tail = text.split(marker, 1)[1]
+    return tail.split("\n## ", 1)[0]
+
+
 def test_fixture_catalog_has_eight_unique_positive_and_negative_cases() -> None:
     assert len(_CORRECT_CASES) == 8
     assert len({case.name for case in _CORRECT_CASES}) == 8
     assert len(_FAILURE_CASES) == 8
     assert len({case.name for case in _FAILURE_CASES}) == 8
+    assert set(_GOLDEN_PAGE_FILES) == {case.name for case in _CORRECT_CASES}
+
+
+@pytest.mark.parametrize("case", _CORRECT_CASES, ids=_case_id)
+def test_golden_page_docs_stay_aligned_with_executable_relation_fixtures(
+    case: AuthoringRelationCase,
+) -> None:
+    path = _GOLDEN_PAGE_DIR / _GOLDEN_PAGE_FILES[case.name]
+    assert path.is_file(), path
+
+    text = path.read_text(encoding="utf-8")
+    topology_section = _markdown_section(text, "Argument Topology")
+    visual_section = _markdown_section(text, "视觉结构")
+
+    assert f"`{case.authoring_topology}`" in topology_section
+    assert "关系语义" in visual_section
+    assert "方向 / Cardinality" in visual_section
+    assert "分组 / 层级" in visual_section
+    assert "禁止误读" in visual_section
+
+    if case.name == "parallel_mece":
+        assert "并列分类" in visual_section
+        assert "无方向" in visual_section
+        for title in case.module_titles:
+            assert title in visual_section
+    else:
+        for relation_line in case.visual_structure.splitlines():
+            assert relation_line in visual_section, (case.name, relation_line)
 
 
 @pytest.mark.parametrize("case", _CORRECT_CASES, ids=_case_id)
