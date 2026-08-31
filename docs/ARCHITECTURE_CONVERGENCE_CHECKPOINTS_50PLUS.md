@@ -15,6 +15,7 @@
 | 58 | `1afd0fe944bb03ca09270b0d275254eb8d0bd081` | 将 `status` 的项目布局识别、artifact 校验、Foundation/PLAN/Final 审计、source-index 状态和阶段判定迁入 `project_status.py`；CLI 仅打印 focused evaluator 返回的既有 JSON，并通过 callback 保留 `_final_lint_issues` 动态 monkeypatch 兼容及 profile resolver 身份。实现提交：`e222eef`、`ba1c08f`、`1afd0fe` |
 | 59 | `26506bbc690ed63557d8d7d5d49c3d66bad39344` | 将完整 argparse 命令树、帮助文本、choices、默认值和参数定义迁入 `cli_parser.py`；保留 `cli.build_parser()` 兼容入口，仅向 focused parser schema 传递现有 validation kinds，并以架构测试禁止 argparse 配置回流。实现提交：`8bdf0e2`、`86102f4`、`26506bb` |
 | 60 | `b5e1c1fabd538df39c8e9adf00a38f8b418c2ce0` | 新增 `audit_reports.py`，集中构造 validate、Foundation/PLAN/Final 审计、plan review、composed trace、source refs 和 source-index build 八类命令结果；CLI handler 统一降为“调用 focused builder → 输出 → 返回 exit code”，并移除对 `analysis_audit`、`composed_trace`、`plan_review`、`source_index` 的直接报告组装依赖。实现提交：`1857734`、`4bafe85`、`b5e1c1f` |
+| 61 | `41632f50ee5c683d80f91a2e32357bb607e31c15` | 新增 `delivery_commands.py`，集中实现 lint、outline、render-stage02 与 check-sync 四类 Final Script 交付行为；CLI 不再直接解析 Final Script、渲染 Markdown、写文件或比较同步状态，仅保留 stdout/stderr 与 exit code 适配，并继续传入动态 `_final_lint_findings` callback。实现提交：`0b1ace8`、`e2a2ed2`、`41632f5` |
 
 ## 验证记录
 
@@ -29,3 +30,4 @@
 - 阶段 58 workflow run `33366336229`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；`status` 抽取后既有 JSON 字段、中文阶段文案、strict/legacy profile 分支、source-index 行为、advisory monkeypatch 与退出码保持兼容。
 - 阶段 59 workflow run `33366643152`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；parser schema 抽取后全部子命令名称、help、choices、默认值、必填参数、原 `cli.build_parser()` 入口和 CLI 分发行为保持兼容。
 - 阶段 60 workflow run `33367035037`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；八类审计/追溯命令迁入 focused report builders 后，报告字段、plan review 文本、source-index 产出路径、退出码及 CLI 分发行为保持兼容。
+- 阶段 61 workflow run `33367339124`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；Final Script 四类交付命令迁出后，lint/advisory 分类、render 成功输出路径、失败 stderr JSON、check-sync 协议、动态 monkeypatch 和 exit code 保持兼容。
