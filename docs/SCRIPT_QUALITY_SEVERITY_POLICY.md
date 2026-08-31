@@ -1,6 +1,6 @@
 # Script Engine 质量检查分级
 
-CyberPPT 的确定性检查分为两层。
+CyberPPT 的确定性检查分为两层，并已接入主 Script Engine 交付边界。
 
 ## Blocker
 
@@ -9,22 +9,27 @@ CyberPPT 的确定性检查分为两层。
 - JSON/schema 不合法或必填字段缺失；
 - source ref、数字、责任、状态、条件、边界等来源一致性错误；
 - 破坏机器合同、无法进入下游的结构错误；
+- 上屏结构、交付清洁度、文字长度等已登记硬约束；
 - 未登记的新 deterministic finding。未知规则默认 fail closed。
+
+Blocker 会使 `lint`、`render-stage02` 或 `check-sync` 失败，并使项目 `status` 保持在需要修复的阶段。
 
 ## Advisory
 
-适用于依赖措辞和表达方式的启发式检查。当前首先将以下规则降为 advisory：
+适用于依赖措辞和表达方式的启发式检查。当前以下规则属于 advisory：
 
 - `AUTHOR_MISSION_GENERIC`
 - `AUTHOR_VISUAL_THESIS_NONRELATIONAL`
 - `AUTHOR_VISUAL_TOPOLOGY_CONFLICT`
 
-这些检查仍应进入 AUTHOR/Critic 评审，但不能要求作者为了命中某组关系动词而机械改写业务表达。
+这些检查仍进入 AUTHOR/Critic 评审和质量报告，但不会要求作者为了命中某组关系动词或固定措辞而机械改写业务表达。
 
-## 使用
+## 主命令行为
 
-```bash
-python -m script_engine.quality_policy path/to/final-script.json
-```
+- `cyberppt-script lint <final-script.json>`：仅 blocker 返回失败；存在 advisory 且无 blocker 时返回 `passed_with_advisories`。
+- `cyberppt-script status <project>`：advisory 写入 `final_script.lint_advisories`，不会把项目退回“需要修复”状态。
+- `cyberppt-script render-stage02 ...`：advisory 不阻止生成 Stage 02 Markdown；blocker 继续阻止交付。
+- `cyberppt-script check-sync ...`：advisory 会出现在报告中，但不会导致同步检查失败。
+- `python -m script_engine.quality_policy <final-script.json>`：可单独查看 `blockers` 与 `advisories` 的机器可读报告。
 
-返回 `blockers` 与 `advisories`。当前原有 `lint` 命令保持兼容行为；本阶段先建立显式严重性策略，后续在确认回归覆盖后再让主 CLI 直接消费该分级结果。
+所有命令在进入严重性分流前仍执行原有完整检查集合；严重性策略只决定 finding 是否阻断，不删除、跳过或隐藏检查。
