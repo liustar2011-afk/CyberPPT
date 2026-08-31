@@ -6,6 +6,7 @@ from pathlib import Path
 import script_engine.cli as cli
 import script_engine.final_quality as final_quality
 import script_engine.project_scaffold as project_scaffold
+import script_engine.project_status as project_status
 from script_engine.contracts import load_json
 from script_engine.render import render_stage02_markdown
 
@@ -88,3 +89,44 @@ def test_cli_does_not_reimplement_project_scaffolding() -> None:
     assert "mkdir(" not in ast.get_source_segment(source, next(
         node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_new_project"
     ))
+
+
+def test_cli_routes_project_status_through_focused_module() -> None:
+    assert cli._project_profile_for_foundation is project_status.project_profile_for_foundation
+
+    path = ROOT / "script_engine" / "cli.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    status_node = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_status"
+    )
+    status_source = ast.get_source_segment(source, status_node) or ""
+
+    assert "build_project_status" in status_source
+    assert "source_candidates" not in status_source
+    assert "audit_foundation_analysis" not in status_source
+    assert "audit_deck_plan" not in status_source
+    assert "audit_final_script" not in status_source
+    assert "render_stage02_markdown" not in status_source
+
+
+def test_cli_does_not_reimplement_project_status_helpers() -> None:
+    path = ROOT / "script_engine" / "cli.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    function_names = {
+        node.name
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+    }
+    imported_modules = {
+        node.module
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom) and node.module
+    }
+
+    assert "_mtime" not in function_names
+    assert "_artifact_report" not in function_names
+    assert "datetime" not in imported_modules
