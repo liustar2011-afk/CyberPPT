@@ -1,13 +1,13 @@
 """Stable facade for Script Engine delivery contracts.
 
-Focused domains are exported from dedicated modules; remaining legacy rule
-implementation stays behind :mod:`script_engine.contract_rules` while it is
-split incrementally.
+All public delivery-contract APIs are exported from focused responsibility
+modules. Legacy implementation remains in :mod:`script_engine.contract_rules`
+for direct historical imports only; the production facade no longer depends on
+or wildcard-reexports that implementation.
 """
 from __future__ import annotations
 
 from . import author_contracts as _author
-from . import contract_rules as _impl
 from . import delivery_contracts as _delivery
 from . import full_copy_contracts as _full_copy
 from . import lint_contracts as _lint
@@ -15,10 +15,6 @@ from . import onscreen_contracts as _onscreen
 from . import schema_contracts as _schema
 from . import source_trace_contracts as _source_trace
 from . import structural_contracts as _structural
-
-for _name, _value in vars(_impl).items():
-    if not _name.startswith("__"):
-        globals()[_name] = _value
 
 _FOCUSED_EXPORTS = {
     "ROOT": _schema.ROOT,
@@ -59,7 +55,4 @@ _FOCUSED_EXPORTS = {
 }
 globals().update(_FOCUSED_EXPORTS)
 
-__all__ = sorted(
-    {name for name in vars(_impl) if not name.startswith("__")}
-    | set(_FOCUSED_EXPORTS)
-)
+__all__ = sorted(_FOCUSED_EXPORTS)
