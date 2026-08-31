@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch E — Onscreen 微语法与 Speaker Notes 去重
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E4
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E5
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch E5 Mapping，统一“问题｜A → 响应｜B / 回答｜...”微语法，并让备注解释方向与 Cardinality 判别
+- 下一恢复点：Batch E6 Comparison，强化“评价维度 / 对象A状态 / 对象B状态”微语法，并让备注只解释比较可比性与误读边界
 
 ## 剩余任务
 
-- [ ] Batch E5：Mapping 上屏微语法与备注去重
 - [ ] Batch E6：Comparison 上屏微语法与备注去重
 - [ ] Batch E7：Roadmap 上屏微语法与备注去重
 - [ ] Batch E8：Governance 上屏微语法与备注去重
@@ -55,6 +54,7 @@
 | Batch E2 Flow | 完成 | `72018cefd3fad3f2bc3939babf8ff9c622c30a0f` | 上屏统一为“阶段｜产出 / 交接｜内容 / 回写｜内容”；Speaker Notes 改为解释边级交接、闭环判别和与 Roadmap 的边界 | 下一步：Causal 微语法 |
 | Batch E3 Causal | 完成 | `09a18ca04ffcbd6bc2b5351f2fb5c0001215dd69` | 上屏统一为“因果角色｜状态 / 直接后果｜下一状态”；Speaker Notes 改为“因为A所以B + 反事实”两项因果测试，清理链条复述 | 下一步：Convergence 微语法 |
 | Batch E4 Convergence | 完成 | `5bef322a06e5a124e43eccd9c8847e7f657a78ba` | 上屏固定“输入角色｜贡献 / 依据｜事实”；Speaker Notes 只解释共同结果、输入独立性及与 Parallel 的边界 | 下一步：Mapping 微语法 |
+| Batch E5 Mapping | 完成 | `f8c7af32a1cf9298cd6322a2b6524d6528214b13` | 上屏统一为“问题｜A → 响应｜B / 回答｜业务问题”；Speaker Notes 只解释映射方向、1:1 Cardinality 与 1:N / N:1 保真原则 | 下一步：Comparison 微语法 |
 
 ## Batch D2 详细验收
 
@@ -72,3 +72,10 @@
 - Relation Contract 明确：映射方向表示“问题由哪项能力响应”，不代表流程、状态演进或双向影响。
 - 视觉结构新增四条独立 `A → B：问题回应` 关系边，现有 `stage02_relationship_adapter` 可直接恢复为 mapping semantics。
 - 本步未新增任何 Final Script 字段，Cardinality 仅作为黄金页语义约束和可读标记存在。
+
+## Batch E5 详细验收
+
+- Mapping 上屏已固定为“问题｜A → 响应｜B / 回答｜业务问题”，方向与端点角色同时可读。
+- Speaker Notes 不再逐项复述四组业务内容，改为解释“为什么有方向、为什么本例是 1:1、何时必须保留 1:N / N:1”。
+- 1:1 仅作为本示例业务事实，不提升为视觉规则；实际 Cardinality 优先于版式整齐。
+- 视觉结构继续保留四条独立 `A → B：问题回应`，未改变 Stage2 现有可解析语义。
