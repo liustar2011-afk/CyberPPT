@@ -150,22 +150,29 @@ def _normalize_screenshot(image_path: Path, *, width: int, height: int) -> None:
         source.save(image_path, format="PNG")
 
 
+def _officecli_failure(label: str, error: subprocess.CalledProcessError) -> RuntimeError:
+    stdout = (error.stdout or "").strip()
+    stderr = (error.stderr or "").strip()
+    return RuntimeError(
+        f"{label} failed with exit code {error.returncode}; "
+        f"stdout={stdout!r}; stderr={stderr!r}"
+    )
+
+
 def _render_with_officecli(pptx_path: Path, out_dir: Path, *, dpi: int) -> list[Path]:
     officecli = _officecli_path()
     if officecli is None:
         raise RuntimeError("OfficeCLI executable was not found; run `python -m cyberppt officecli install`")
     out_dir.mkdir(parents=True, exist_ok=True)
-    stats = subprocess.run(
-        [str(officecli), "view", str(pptx_path), "stats", "--json"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    try:
-        payload = json.loads(stats.stdout)
-        slide_count = int(payload["data"]["slides"])
-    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
-        raise RuntimeError(f"officecli stats returned invalid JSON: {stats.stdout!r}") from error
+
+    # python-pptx has already parsed the deck for geometry QA, so a separate
+    # OfficeCLI `stats` probe adds no rendering assurance and can introduce a
+    # version-specific failure before the actual HTML renderer is exercised.
+    presentation = Presentation(str(pptx_path))
+    slide_count = len(presentation.slides)
+    if slide_count <= 0:
+        raise RuntimeError("PPTX contains no slides to render")
+
     width, height = _officecli_screenshot_dimensions(pptx_path, dpi=dpi)
     node = shutil.which("node")
     font_renderer = _repository_font_screenshot_script()
@@ -178,31 +185,44 @@ def _render_with_officecli(pptx_path: Path, out_dir: Path, *, dpi: int) -> list[
         for slide_number in range(1, slide_count + 1):
             output = out_dir / f"slide-{slide_number}.png"
             html_path = Path(html_dir) / f"slide-{slide_number}.html"
-            subprocess.run(
-                [
-                    str(officecli),
-                    "view",
-                    str(pptx_path),
-                    "html",
-                    "--start",
-                    str(slide_number),
-                    "--end",
-                    str(slide_number),
-                    "-o",
-                    str(html_path),
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            if not html_path.is_file() or html_path.stat().st_size == 0:
-                raise RuntimeError(f"OfficeCLI did not create slide HTML: {html_path}")
-            subprocess.run(
-                [node, str(font_renderer), str(html_path), str(output)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
+            try:
+                html_result = subprocess.run(
+                    [
+                        str(officecli),
+                        "view",
+                        str(pptx_path),
+                        "html",
+                        "--start",
+                        str(slide_number),
+                        "--end",
+                        str(slide_number),
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+            except subprocess.CalledProcessError as error:
+                raise _officecli_failure(
+                    f"OfficeCLI HTML render for slide {slide_number}", error
+                ) from error
+            html_text = html_result.stdout
+            if not html_text.strip():
+                raise RuntimeError(
+                    f"OfficeCLI returned empty HTML for slide {slide_number}; "
+                    f"stderr={(html_result.stderr or '').strip()!r}"
+                )
+            html_path.write_text(html_text, encoding="utf-8", newline="\n")
+            try:
+                subprocess.run(
+                    [node, str(font_renderer), str(html_path), str(output)],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+            except subprocess.CalledProcessError as error:
+                raise _officecli_failure(
+                    f"repository-font screenshot for slide {slide_number}", error
+                ) from error
             if not output.is_file() or output.stat().st_size == 0:
                 raise RuntimeError(f"repository-font renderer did not create screenshot: {output}")
             _normalize_screenshot(output, width=width, height=height)
