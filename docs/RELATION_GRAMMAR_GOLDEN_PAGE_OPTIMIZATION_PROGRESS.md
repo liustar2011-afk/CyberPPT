@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch E — Onscreen 微语法与 Speaker Notes 去重
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E6
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E7
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch E7 Roadmap，强化“状态 / 进入条件 / 新状态”的跃迁微语法，并让备注只解释状态链判别与验收逻辑
+- 下一恢复点：Batch E8 Governance，强化“主体 / 责任对象 / 控制机制 / 受保护结果”的层级微语法，并让备注只解释责任边界与治理有效性判别
 
 ## 剩余任务
 
-- [ ] Batch E7：Roadmap 上屏微语法与备注去重
 - [ ] Batch E8：Governance 上屏微语法与备注去重
 - [ ] Batch F：统一视觉结构合同
 - [ ] Batch G1：Golden Page ↔ fixture 映射
@@ -55,6 +54,7 @@
 | Batch E4 Convergence | 完成 | `5bef322a06e5a124e43eccd9c8847e7f657a78ba` | 上屏固定“输入角色｜贡献 / 依据｜事实”；Speaker Notes 只解释共同结果、输入独立性及与 Parallel 的边界 | 下一步：Mapping 微语法 |
 | Batch E5 Mapping | 完成 | `f8c7af32a1cf9298cd6322a2b6524d6528214b13` | 上屏统一为“问题｜A → 响应｜B / 回答｜业务问题”；Speaker Notes 只解释映射方向、1:1 Cardinality 与 1:N / N:1 保真原则 | 下一步：Comparison 微语法 |
 | Batch E6 Comparison | 完成 | `e0b0ff588b4d9ff9139058642111b5a9e71d67d7` | 上屏统一为“评价维度｜D / 对象A｜状态 / 对象B｜状态”；Speaker Notes 只解释可比性条件、失效边界及为何不得用方向箭头 | 下一步：Roadmap 微语法 |
+| Batch E7 Roadmap | 完成 | `47d3f122c5c851ae940c5e7e715e0a2f9b09ad48` | 上屏统一为“当前状态 / 阶段｜N / 进入条件｜... / 新状态 SN｜...”；Speaker Notes 只解释状态跃迁有效性、可验收新状态及与 Flow 的边语义区别 | 下一步：Governance 微语法 |
 
 ## Batch D2 详细验收
 
@@ -86,3 +86,10 @@
 - Speaker Notes 不再复述四行差异，改为说明 Comparison 成立的三个条件：对象固定、维度一致、证据成对。
 - 明确任一行更换对象、评价口径或证据尺度即失去可比性。
 - 页面继续禁止对象间方向箭头，避免状态差异被误读为迁移、流程或路线图。
+
+## Batch E7 详细验收
+
+- Roadmap 上屏微语法明确区分当前状态、阶段、进入条件和新状态，避免阶段名称承担结果语义。
+- 每条跃迁边都能检查“前状态 + 条件 → 新状态”；完成阶段后若无可验收状态变化，不视为有效 Roadmap 节点。
+- Speaker Notes 不再按 S0–S3 顺序复述内容，改为解释状态链有效性与验收逻辑。
+- 与 Flow 的边界继续固定：Roadmap 解释状态跃迁，Flow 解释业务交接。
