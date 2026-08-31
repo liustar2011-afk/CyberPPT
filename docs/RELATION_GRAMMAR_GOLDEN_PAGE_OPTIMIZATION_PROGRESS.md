@@ -6,11 +6,11 @@
 
 ## 总体状态
 
-- 当前阶段：Batch D1 — Flow 增加真实业务交接物
+- 当前阶段：Batch D2 — Roadmap 状态化进入条件与起终点
 - 总体状态：进行中
-- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance、Comparison、Causal、Parallel、Convergence 优化完成
+- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance、Comparison、Causal、Parallel、Convergence、Flow 优化完成
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把 AUTHOR/CRITIQUE 的生成式判断硬编码成低精度 lint
-- 下一恢复点：为 Flow 的每条阶段边补充真实业务交接物和反馈回写物，进一步与 Causal 区分
+- 下一恢复点：强化 Roadmap 的 Current State、Stage Entry Condition、New State、Target State，使路线图表达状态跃迁而非流程步骤
 
 ## 已确认的现状映射
 
@@ -32,7 +32,7 @@
 - [x] Batch B3：Causal 收紧真实因果
 - [x] Batch C1：Parallel 同层尺度统一
 - [x] Batch C2：Convergence 输入角色优化
-- [ ] Batch D1：Flow 增加真实业务交接物
+- [x] Batch D1：Flow 增加真实业务交接物
 - [ ] Batch D2：Roadmap 增加状态化进入条件与起终点
 - [ ] Batch D3：Mapping 修正方向与 Cardinality
 - [ ] Batch E：Onscreen 微语法与 Speaker Notes 去重
@@ -187,3 +187,20 @@
 - 已发现问题：现有 fixture 的 Convergence 输入仍为“统一数据口径 / 跨周期分析框架 / 误差复盘机制”，业务场景与黄金页不一致；需在 Batch G1 对齐。
 - 剩余任务：Batch D1–H。
 - 下一恢复点：Batch D1，为 Flow 每条边补充真实业务交接物，形成可验证的阶段交接。
+
+### Batch D1 — Flow：为每条边增加真实业务交接物
+
+- 状态：完成
+- 完成内容：
+  - 将四个 Flow Relation Units 统一为“阶段｜该阶段形成的可交接输出”。
+  - 新增“业务交接物”段落，明确数据与规则→预测研判、预测研判→审校发布、审校发布→误差复盘三条正向边分别交接什么。
+  - 明确反馈边的回写内容：偏差原因、口径调整、版本修订和模型参数修正。
+  - 在视觉结构中用 `顺序衔接｜交接物：...` 和 `反馈回流｜回写物：...` 标注关系，使 Stage2 可从语义标签恢复 Flow / Feedback。
+  - 更新 Speaker Notes 与作者自检，将“可命名交接物”作为 Flow 与 Causal 的主要判别条件。
+- 改动文件：
+  - `.agents/skills/cyberppt-script-workflow/references/golden-page-flow.md`
+- 实现 commit：`b85a5b702f77dc43c88811589fa4d47cd7093ee9`
+- 测试结果：静态交接物完整性检查通过；Runtime 统一验证留到 Batch G/H。
+- 已发现问题：现有 fixture 的 Flow 仅有阶段边和反馈边，没有交接物内容；在 Batch G1 同步 fixture 时需要保留关系标签并补充可验证交接信息，避免影响 `feedback_loop` 解析。
+- 剩余任务：Batch D2–H。
+- 下一恢复点：Batch D2，强化 Roadmap 的起点、进入条件、新状态和终点状态。
