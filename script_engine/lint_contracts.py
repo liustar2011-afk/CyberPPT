@@ -1,9 +1,7 @@
 """Final Script deterministic lint orchestration.
 
 This module owns banned-phrasing scanning and the composition order of semantic
-sub-checks. Focused AUTHOR/full-copy/onscreen checks are still supplied by the
-legacy rule module during the incremental split and will be replaced one domain
-at a time.
+sub-checks. Focused domains replace the legacy rule module incrementally.
 """
 from __future__ import annotations
 
@@ -11,6 +9,7 @@ import re
 from collections.abc import Iterator
 from typing import Any
 
+from . import author_contracts as _author
 from . import contract_rules as _legacy
 from .schema_contracts import CONTRACTS, load_json
 
@@ -115,7 +114,7 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
                     f"{field_path}: [{rule_id}] {description} — matched '{match.group(0)}'"
                 )
 
-    issues.extend(_legacy.check_author_field_contract(final_script))
+    issues.extend(_author.check_author_field_contract(final_script))
     issues.extend(_legacy.check_full_copy_structure(final_script))
     issues.extend(_legacy.check_full_copy_topic_semantics(final_script))
     issues.extend(_legacy.check_full_copy_parallel_subconclusions(final_script))
