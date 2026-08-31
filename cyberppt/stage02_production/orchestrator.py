@@ -74,9 +74,12 @@ def run_production(
     deps = dependencies or default_stage02_dependencies()
     context = prepare_preflight(options)
     manifest = prepare_manifest(context, options)
-    images = run_image_stage(context, manifest, options)
+    images = run_image_stage(context, manifest, options, deps)
     if options.require_images or (options.production_build and not options.dry_run_images):
-        normalize_audited_manifest_images(images.manifest)
+        normalize_audited_manifest_images(
+            images.manifest,
+            ensure_output_size_fn=deps.ensure_output_size,
+        )
         deps.require_generated(images.manifest)
         if context.assembly_mode in {"editable", "both"}:
             rhythm_qa = run_full_image_rhythm_stage(
