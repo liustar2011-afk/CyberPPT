@@ -20,6 +20,15 @@
 
 四个 Relation Units 按真实业务交接顺序连接；复盘结果必须回写到数据规则或预测参数，形成闭环。月度、季度、年度属于共用框架中的业务周期，不是串行阶段。
 
+## Relation Contract
+
+- Node Role：业务阶段、阶段交接物、反馈目标。
+- Edge Semantics：前一阶段通过真实业务交接物进入后一阶段；反馈边将复盘结论回写到明确对象。
+- Direction / Cardinality：主链 1 → 1 顺序推进，并存在末端 → 前端的反馈边。
+- Invariant：每条正向边必须存在可命名的业务交接；反馈必须明确回写数据版本、分析规则或模型参数，不能只画装饰性回环。
+- Confusable With：Causal / Roadmap。
+- Disambiguation Rule：Flow 的箭头表示真实业务交接；Causal 表示前因产生后果；Roadmap 表示满足条件后的状态跃迁。
+
 ## Relation Units
 
 1. 统一数据与规则为各周期研判提供一致输入；
