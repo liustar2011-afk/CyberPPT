@@ -17,12 +17,6 @@ from .analysis_audit import (
 from .analysis_audits.composed_trace import critic_priorities, trace_composed
 from .contracts import (
     check_declared_count,
-    check_onscreen_detail_length,
-    check_onscreen_terminal_punctuation,
-    check_onscreen_structure,
-    check_full_copy_duplication,
-    check_speaker_notes_length,
-    lint_final_script,
     load_json,
     outline_final_script,
     validate_deck_plan,
@@ -30,9 +24,8 @@ from .contracts import (
     validate_foundation,
     validate_source_refs_coverage,
 )
-from .delivery_cleanliness import check_delivery_cleanliness
+from .final_quality import collect_final_lint_issues, partition_final_lint_findings
 from .plan_review import render_plan_review
-from .quality_policy import partition_issues
 from .render import render_stage02_markdown
 from .source_index import (
     build_source_index_file,
@@ -166,24 +159,17 @@ def _build_source_index(source_extract: Path, output: Path, source_file: str | N
     return 0
 
 
-def _final_lint_issues(payload: dict, markdown: str) -> list[str]:
-    """Return every deterministic lint finding required at the final boundary."""
-
-    return (
-        lint_final_script(payload)
-        + check_onscreen_structure(payload)
-        + check_full_copy_duplication(payload)
-        + check_speaker_notes_length(payload)
-        + check_delivery_cleanliness(markdown)
-        + check_onscreen_terminal_punctuation(payload)
-        + check_onscreen_detail_length(payload)
-    )
+_final_lint_issues = collect_final_lint_issues
 
 
 def _final_lint_findings(payload: dict, markdown: str) -> tuple[list[str], list[str]]:
-    """Collect all existing lint checks, then apply the shared severity policy."""
+    """Compatibility seam over the focused Final Script quality evaluator."""
 
-    return partition_issues(_final_lint_issues(payload, markdown))
+    return partition_final_lint_findings(
+        payload,
+        markdown,
+        issue_collector=_final_lint_issues,
+    )
 
 
 def _lint(final_path: Path) -> int:
