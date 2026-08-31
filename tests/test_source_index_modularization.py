@@ -4,6 +4,7 @@ import ast
 from pathlib import Path
 
 import script_engine.source_index as source_index
+import script_engine.source_index_legacy as source_index_legacy
 import script_engine.source_reading as source_reading
 
 
@@ -51,7 +52,31 @@ def test_source_index_routes_reading_strategy_through_focused_module() -> None:
     )
 
 
-def test_source_index_no_longer_owns_reading_strategy_implementation() -> None:
+def test_source_index_routes_legacy_parser_through_focused_module() -> None:
+    assert source_index.chinese_number is source_index_legacy.chinese_number
+    assert source_index.build_source_index is source_index_legacy.build_source_index
+    assert source_index.build_source_index_file is source_index_legacy.build_source_index_file
+    assert source_index.PARAGRAPH_RE is source_index_legacy.PARAGRAPH_RE
+    assert source_index.CHAPTER_RE is source_index_legacy.CHAPTER_RE
+    assert source_index.SECTION_RE is source_index_legacy.SECTION_RE
+    assert source_index.SUBSECTION_RE is source_index_legacy.SUBSECTION_RE
+    assert source_index.APPENDIX_RE is source_index_legacy.APPENDIX_RE
+    assert source_index.TOC_ENTRY_RE is source_index_legacy.TOC_ENTRY_RE
+    assert source_index.DIGITS is source_index_legacy.DIGITS
+
+    extract = "\n".join(
+        [
+            "[/body/p[1]] 第一章 总体要求",
+            "[/body/p[2]] 一、 建设目标",
+            "[/body/p[3]] 项目应当明确责任边界。",
+        ]
+    )
+    assert source_index.build_source_index(extract, "sample.docx") == (
+        source_index_legacy.build_source_index(extract, "sample.docx")
+    )
+
+
+def test_source_index_no_longer_owns_extracted_implementations() -> None:
     path = ROOT / "script_engine" / "source_index.py"
     source = path.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=str(path))
@@ -71,5 +96,10 @@ def test_source_index_no_longer_owns_reading_strategy_implementation() -> None:
     assert "recommend_reading_mode" not in function_names
     assert "default_reading_strategy" not in function_names
     assert "_critical_deep_read_unit_ids" not in function_names
+    assert "chinese_number" not in function_names
+    assert "_ensure" not in function_names
+    assert "_is_toc_entry" not in function_names
+    assert "build_source_index" not in function_names
+    assert "build_source_index_file" not in function_names
     assert "math" not in imported_names
     assert path.stat().st_size < 27_000
