@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch F — 统一视觉结构合同
 - 总体状态：进行中
-- 已完成：Step 0、Batch A–E、Batch F1–F7、Batch F8a
+- 已完成：Step 0、Batch A–E、Batch F1–F7、Batch F8a–F8b
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch F8b，归一 Comparison 五项视觉结构合同并使用 `A vs B：对照比较`
+- 下一恢复点：Batch F9，归一 Roadmap 五项视觉结构合同
 
 ## 剩余任务
 
-- [ ] Batch F8b：Comparison 五项视觉结构合同
 - [ ] Batch F9：Roadmap 五项视觉结构合同
 - [ ] Batch G1：Golden Page ↔ fixture 映射
 - [ ] Batch G2：Grammar 边界回归测试
@@ -26,13 +25,15 @@
 |---|---|---|---|---|
 | Step 0 / Batch A–E | 完成 | 见历史提交 | 基线、Relation Grammar 重构、微语法与 Notes 增量化 | 完成 |
 | Batch F1 | 完成 | `6f07e780...` | 新增 Visual Structure 五项合同 | 完成 |
-| Batch F2 | 完成 | `2b9930d1...`、`a2b75c91...` | Comparison 无方向解析及回归 | 完成 |
+| Batch F2 | 完成 | `2b9930d1...`、`a2b75c91...` | Comparison `A vs B` 无方向解析及回归 | 完成 |
 | Batch F3 | 完成 | `f363d256...`、`9a0d3ef1...`、`920a789e...` | Governance 原子边、reading-contract 修复及回归 | 完成 |
 | Batch F4–F7 | 完成 | `2be66f90...`、`309200d9...`、`3c59189a...`、`05269ec6...` | Parallel / Flow / Causal / Convergence 五项合同 | 完成 |
-| Batch F8a | 完成 | `be44bc545ac1f4a76abe38d5ea47c6b42d0c93e7` | Mapping 五项合同；保留 `Problem → Response`、真实 Cardinality、四条独立 `问题回应` 原子边 | F8b Comparison |
+| Batch F8a | 完成 | `be44bc545ac1f4a76abe38d5ea47c6b42d0c93e7` | Mapping 五项合同；保留 Problem→Response 和真实 Cardinality | 完成 |
+| Batch F8b | 完成 | `8111c0bfc615f5d9f1fb70a3f554510ed4949ea8` | Comparison 五项合同；固定对象 A/B、共同维度、无流程方向；加入 `比较对象｜A vs B：对照比较` 可解析关系 | F9 Roadmap |
 
 ## 当前验证状态
 
-- Mapping 继续走现有显式箭头解析，不需要 Runtime 新逻辑。
-- Comparison `vs` 与 Governance 链均已有专门跨层回归。
+- Comparison 视觉结构现已与 F2 的 non-directional `vs` adapter 能力直接对齐。
+- Mapping 继续走显式 `问题回应` 箭头关系。
+- Governance、Comparison 已有专门跨层回归。
 - 尚未触发远端 CI；Batch H 统一执行全量测试。
