@@ -5,6 +5,7 @@ from pathlib import Path
 
 import script_engine.contract_rules as implementation
 import script_engine.contracts as facade
+import script_engine.delivery_contracts as delivery_contracts
 import script_engine.schema_contracts as schema_contracts
 import script_engine.source_trace_contracts as source_trace_contracts
 
@@ -19,6 +20,11 @@ def test_contracts_facade_routes_focused_domains() -> None:
     assert facade.validate_foundation is schema_contracts.validate_foundation
     assert facade.collect_foundation_source_codes is source_trace_contracts.collect_foundation_source_codes
     assert facade.validate_source_refs_coverage is source_trace_contracts.validate_source_refs_coverage
+    assert facade.check_speaker_notes_length is delivery_contracts.check_speaker_notes_length
+    assert facade.check_declared_count is delivery_contracts.check_declared_count
+    assert facade.check_onscreen_terminal_punctuation is delivery_contracts.check_onscreen_terminal_punctuation
+    assert facade.check_onscreen_detail_length is delivery_contracts.check_onscreen_detail_length
+    assert facade.outline_final_script is delivery_contracts.outline_final_script
 
 
 def test_contracts_facade_keeps_remaining_rules_compatible() -> None:
@@ -34,4 +40,4 @@ def test_contracts_facade_contains_no_rule_implementation() -> None:
     classes = [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
     assert functions == []
     assert classes == []
-    assert path.stat().st_size < 2_000
+    assert path.stat().st_size < 3_000
