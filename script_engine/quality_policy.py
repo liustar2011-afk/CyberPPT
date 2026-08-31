@@ -11,7 +11,7 @@ import argparse
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 from .contracts import lint_final_script, load_json, validate_final_script
 
@@ -46,6 +46,23 @@ def classify_issue(issue: str) -> dict[str, str]:
     code = issue_code(issue)
     severity = ADVISORY if code in ADVISORY_CODES else BLOCKER
     return {"code": code, "severity": severity, "message": issue}
+
+
+def partition_issues(issues: Iterable[str]) -> tuple[list[str], list[str]]:
+    """Split deterministic findings into blocking and advisory messages.
+
+    Unknown/unstructured findings remain blockers because ``classify_issue`` is
+    fail-closed. This function is intentionally generic so every CLI boundary
+    can consume one severity policy after collecting its existing checks.
+    """
+
+    blockers: list[str] = []
+    advisories: list[str] = []
+    for issue in issues:
+        finding = classify_issue(str(issue))
+        target = advisories if finding["severity"] == ADVISORY else blockers
+        target.append(finding["message"])
+    return blockers, advisories
 
 
 def build_quality_report(payload: dict[str, Any]) -> dict[str, Any]:
