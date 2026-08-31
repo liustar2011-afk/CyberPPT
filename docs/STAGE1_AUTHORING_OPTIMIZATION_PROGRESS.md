@@ -34,7 +34,7 @@
 | 0 | P0 | 建立持续进度台账与开发边界 | 已完成 |
 | 1 | P0 | AUTHOR Contract 现状审计：主推理链、Relation Unit 语义职责、Evidence Binding | 已完成（基线已满足，不重复改写） |
 | 2 | P0 | AUTHOR Contract 现状审计：Onscreen、Speaker Notes、Critic/Rewrite 最早失败点 | 已完成（基线已满足，不重复改写） |
-| 3 | P1 | Golden Examples：建立 8 类关系页面索引并保留现有两类 | 进行中 |
+| 3 | P1 | Golden Examples：建立 8 类关系页面索引并拆出既有 Parallel / Flow | 已完成 |
 | 4 | P1 | Golden Examples：补齐 6 类缺失完整样例与作者自检 | 待开始 |
 | 5 | P1 | Critic / Script Quality：抽象标题、父子重复、孤立 Evidence 等机械检查 | 待开始 |
 | 6 | P1 | Critic / Script Quality：方向关系扁平化、Roadmap completeness 等检查 | 待开始 |
@@ -88,10 +88,28 @@
 - 已核对 `SKILL.md`：仍只负责路由和 Stage 边界，AUTHOR 规则继续由 Contract 单一持有。
 - 本批不改变 schema、运行时代码或 Stage1→Stage2 handoff。
 
-提交：当前提交（见 Git 历史）。
+提交：`624f6f8e1d827f9edf5a0cf3c5c2d7d76f32706b`。
+
+### Batch 3 — 黄金示例索引与既有样例拆分
+
+完成：
+
+- 将 `golden-page-script-example.md` 重构为 8 类 Relation Grammar 黄金页面总索引。
+- 明确 Relation Units 仅为教学标签，映射到 Contract 的 independent arguments / reasoning units，不进入 Final Script schema。
+- 将原有并列分类示例拆为 `golden-page-parallel.md`。
+- 将原有流程闭环示例拆为 `golden-page-flow.md`。
+- 两个样例统一补齐：页面使命、核心结论、主论证链、Argument Topology、Relation Units、Full Copy、Onscreen、视觉结构、Speaker Notes、作者自检。
+
+验证：
+
+- 原有 Parallel / Flow 两类核心语义与上屏示例得到保留。
+- 索引仍保留原兼容入口文件名，不新增运行时 authoritative artifact。
+- 示例明确区分并列与有向流程，Flow 示例保留 feedback 回写，避免方向关系扁平化。
+
+提交：本批次提交（见 Git 历史，下一批回填 SHA）。
 
 ## 5. 当前剩余工作
 
-下一批：Batch 3，重构 `.agents/skills/cyberppt-script-workflow/references/golden-page-script-example.md` 为 8 类黄金关系页面索引，保留现有 Parallel / Flow 两个完整样例的语义，并为其余 6 类建立独立文件入口。
+下一批：Batch 4，新增 `golden-page-causal.md`、`golden-page-convergence.md`、`golden-page-mapping.md`、`golden-page-comparison.md`、`golden-page-roadmap.md`、`golden-page-governance.md` 六类完整黄金页面。
 
-随后：补齐 6 类完整样例；再对 `cyberppt/script_quality/` 做实际能力审计，只实现现有规则未覆盖的机械检查；最后建立 fixtures 与回归测试。
+随后：对 `cyberppt/script_quality/` 做实际能力审计，只实现现有规则未覆盖的机械检查；再建立 fixtures 与回归测试。
