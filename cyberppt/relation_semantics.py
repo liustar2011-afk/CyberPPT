@@ -202,17 +202,19 @@ def resolve_relation_expression(
         return "mapping_2_6", ("semantic:independent_transformation", *evidence)
 
     # Explicit arrows that could not be typed more narrowly still carry real
-    # direction. Use graph shape to retain that information without inventing
-    # chronology, hierarchy, or peer equivalence.
+    # direction. A connected chain takes precedence over a local many-to-one
+    # merge: governance and control structures commonly converge into an
+    # intermediate control node and then continue to a protected outcome. A
+    # pure many-to-one graph with no downstream chain remains convergence.
     if names & _GENERIC_DIRECTED_RELATIONS and _has_declared_direction(relationships):
-        if _has_multi_source_convergence(edges):
-            return "support_convergence_3_6", (
-                "semantic:directed_convergence",
-                *evidence,
-            )
         if _has_dependency_chain(edges):
             return "directed_dependency_2_6", (
                 "semantic:directed_relation_chain",
+                *evidence,
+            )
+        if _has_multi_source_convergence(edges):
+            return "support_convergence_3_6", (
+                "semantic:directed_convergence",
                 *evidence,
             )
         return "mapping_2_6", (
