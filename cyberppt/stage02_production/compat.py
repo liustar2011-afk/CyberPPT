@@ -1,9 +1,9 @@
-"""Legacy patch-point bridge kept outside the Stage 02 command facade.
+"""Legacy compatibility adapters for the Stage 02 production pipeline.
 
-Only the two ImageGen call sites still require module-global patch translation.
-The other historical patch fields remain enumerable for backward compatibility
-but are now passed through :class:`Stage02Dependencies` instead of mutating
-production modules.
+Historical callers may still identify six backend patch points through
+``LegacyPatchSet``. The compatibility layer now converts those values into the
+typed ``Stage02Dependencies`` object; it never mutates production module
+globals.
 """
 from __future__ import annotations
 
@@ -15,17 +15,12 @@ from scripts.imagegen_pipeline.page_manifest import FULL_IMAGE_MODE, require_gen
 from scripts.imagegen_pipeline.providers.codex_oauth_image import ensure_output_size, run_codex_image
 from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPTX_ROUTE
 from cyberppt.commands.production_qa import run_officecli_render_qa
+from cyberppt.stage02_production.dependencies import Stage02Dependencies
 
 
 @dataclass(frozen=True)
 class LegacyPatchSet:
-    """Finite compatibility surface for historical facade monkey patches.
-
-    Six field names remain stable so old tests/callers can still patch the
-    command facade. Four fields are now explicit dependencies; only the two
-    ImageGen fields are translated to module globals until image-stage migration
-    is completed.
-    """
+    """Finite compatibility surface for historical facade patch points."""
 
     run_codex_image: Any
     ensure_output_size: Any
@@ -45,12 +40,23 @@ def apply_legacy_patch_set(
     reconstruction_stage: Any,
     delivery_stage: Any,
     patches: LegacyPatchSet,
-) -> None:
-    """Apply only the compatibility patches that still need module mutation."""
+) -> Stage02Dependencies:
+    """Translate the historical six-field patch set into explicit dependencies.
 
-    _ = orchestrator, reconstruction_stage, delivery_stage
-    image_stage.run_codex_image = patches.run_codex_image
-    image_stage.ensure_output_size = patches.ensure_output_size
+    The module arguments remain accepted so external callers using the old
+    keyword surface do not break, but they are intentionally ignored. No module
+    attribute is modified.
+    """
+
+    _ = image_stage, orchestrator, reconstruction_stage, delivery_stage
+    return Stage02Dependencies(
+        require_generated=patches.require_generated,
+        run_codex_image=patches.run_codex_image,
+        ensure_output_size=patches.ensure_output_size,
+        reconstruction_build=patches.reconstruction_build,
+        officecli_render_qa=patches.officecli_render_qa,
+        append_ledger=patches.append_ledger,
+    )
 
 
 def sync_legacy_patch_points(
@@ -65,10 +71,10 @@ def sync_legacy_patch_points(
     reconstruction_patch: Any,
     officecli_patch: Any,
     append_ledger_patch: Any,
-) -> None:
+) -> Stage02Dependencies:
     """Backward-compatible wrapper for callers using the old keyword API."""
 
-    apply_legacy_patch_set(
+    return apply_legacy_patch_set(
         image_stage=image_stage,
         orchestrator=orchestrator,
         reconstruction_stage=reconstruction_stage,
