@@ -20,6 +20,7 @@
 | 43 | `0a681f68a74533994b3db161aacf949c2e3fd183` | 现代化 Python 包 license 元数据：build backend 最低版本提升到 `setuptools>=77`，改用 SPDX `license = "MIT"`，移除已弃用 License classifier |
 | 44 | `e9d75c6797664901ac4c4452b7716366bb6bfaa1` | 新增真实 OfficeCLI render CI：现场生成一页 PPTX，经生产 `run_officecli_render_qa` 走 OfficeCLI HTML + Playwright/Chromium PNG；修正 wrapper 为 stdout HTML 契约并将锁定版本升级到实测可用 v1.0.145。主要提交：`f154061`、`5e6ec18`、`db002ff`、`b973dfa`、`e9d75c6` |
 | 45 | `0f6cddd2eb7781359ee4b9e41fa6563e0bed5afe` | 新增 macOS / Windows 轻量 wheel smoke：构建 wheel、无依赖安装、校验 Style09 registry/palette-09、动画预设、preset-shape、SVG Editor、reference/contract 等 package-data；不重复运行 Linux 1700+ 全量测试 |
+| 46 | `793ca20f51b1b4625446e4b4cfca1826ae9af399` | 开始收敛 Script Engine God Module：将原 `contracts.py` 实现原字节迁入 `contract_rules.py`，`contracts.py` 缩为稳定兼容 facade；新增架构测试锁定 facade 不得重新长回业务实现，为后续按 schema/source-trace/AUTHOR/onscreen 子域继续拆分建立边界 |
 
 ## 验证记录
 
@@ -36,3 +37,4 @@
 - 阶段 43 workflow run `33353897774`：结论 `success`。Python 3.10/3.12 pytest、wheel build、repo 外 smoke 全绿；SPDX license/build backend 元数据可正常构建和安装。
 - 阶段 44 workflow run `33354689757`：Python 3.10、Python 3.12、`OfficeCLI render smoke` 三个 job 全部 `success`。OfficeCLI v1.0.145 在 Ubuntu hosted runner 上成功解析真实 PPTX、生成 HTML、通过 Chromium 截图输出非空 PNG，生产几何 QA 与渲染 QA 均通过。
 - 阶段 45 workflow run `33354899758`：Linux Python3.10/3.12、macOS wheel smoke、Windows wheel smoke、OfficeCLI render smoke 五个 job 全部 `success`；关键 package-data 与路径处理已在三类 OS 上验证。
+- 阶段 46 workflow run `33361256556`：Linux Python3.10/3.12 全量 pytest + wheel repo 外 smoke、真实 OfficeCLI render smoke、macOS/Windows wheel smoke全部 `success`；`contracts.py` facade 化未改变任何现有 Script Engine 行为。
