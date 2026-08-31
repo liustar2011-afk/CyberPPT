@@ -36,8 +36,8 @@
 | 2 | P0 | AUTHOR Contract 现状审计：Onscreen、Speaker Notes、Critic/Rewrite 最早失败点 | 已完成（基线已满足，不重复改写） |
 | 3 | P1 | Golden Examples：建立 8 类关系页面索引并拆出既有 Parallel / Flow | 已完成 |
 | 4 | P1 | Golden Examples：补齐 6 类缺失完整样例与作者自检 | 已完成 |
-| 5 | P1 | Critic / Script Quality：抽象标题、父子重复、孤立 Evidence 等机械检查 | 进行中 |
-| 6 | P1 | Critic / Script Quality：方向关系扁平化、Roadmap completeness 等检查 | 待开始 |
+| 5 | P1 | Critic / Script Quality：覆盖审计 + 缺失机械底线 | 已完成 |
+| 6 | P1 | Critic / Script Quality：方向关系扁平化、Roadmap completeness 等检查 | 进行中 |
 | 7 | P1 | Topology：Authoring grammar ↔ machine semantic topology 映射与一致性 | 待开始 |
 | 8 | P2 | Stage1 authoring fixtures：8 类正确案例与典型错误案例 | 待开始 |
 | 9 | P2 | 回归测试：Critic/Lint/topology/Stage1→Stage2 结构保持 | 待开始 |
@@ -93,19 +93,42 @@
 
 统一要求：六页均包含核心结论、主论证链、Argument Topology、Relation Units、Full Copy、Onscreen、视觉结构、Speaker Notes、作者自检；Relation Units 继续只作为教学标签。
 
-验证：
+验证：Causal 不把并列事实伪装为时间顺序；Convergence 不虚构输入间先后；Mapping 两端同时可见；Comparison 始终使用同一对比较对象与统一评价维度；Roadmap 以触发条件和新状态建立演进关系；Governance 将主体、责任、机制和受保护结果绑定。
 
-- Causal 不把并列事实伪装为时间顺序；
-- Convergence 不虚构输入间先后；
-- Mapping 两端同时可见；
-- Comparison 始终使用同一对比较对象与统一评价维度；
-- Roadmap 不在无来源时虚构年份，以明确触发条件和新状态建立演进关系；
-- Governance 每个主体与责任对象绑定，机制说明控制内容，结果避免抽象“保障”。
+提交：`33489f0172da1c24764d7cb1b3c14a884b287cc7`。
 
-提交：本批次提交（见 Git 历史，下一批回填 SHA）。
+### Batch 5 — 正式 Final Script lint 覆盖审计与数字对象底线
+
+审计结论：新版方案列出的多数机械检查在当前仓库正式 `script_engine` 链路中已经存在，不重复实现。
+
+现有正式覆盖包括：
+
+- 抽象/名词式模块标题：`ONSCREEN_HEADING_INCOMPLETE`；
+- 标题缺少业务对象：`ONSCREEN_HEADING_OBJECT_OMITTED`；
+- 父子层级和投影结构：现有 Onscreen / Full Copy contracts；
+- 多模块页缺 Evidence 层：`ONSCREEN_EVIDENCE_LAYER_MISSING`；
+- 上屏与 Core Message 偏离：`ONSCREEN_CORE_MISALIGNED`；
+- 隐藏中间步骤、关系端点不完整：AUTHOR field contract；
+- 现有 `cyberppt/script_quality/` 兼容层还包含父子重复、同层级角色混杂、false-parallel、declared relation visibility 等检查。
+
+新增的真实缺口：
+
+- 新建 `script_engine/authoring_quality_contracts.py`；
+- 新增 `ONSCREEN_NUMBER_WITHOUT_OBJECT`：只拦截无语义标签的近似纯数字/单位上屏明细，如 `80%`、`30家`、`3项`；
+- `覆盖率：80%`、`2026年`、`首批覆盖30家重点单位` 等有对象/合法日期表达保持通过；
+- 规则已接入正式 `lint_final_script()`，未落到旧兼容链路；
+- 新增 `tests/script_engine/test_stage1_authoring_quality.py` 两组回归用例。
+
+提交链：
+
+- `be2a768cc1928e1e793949a8a97301aa36ee1793`：新增聚焦规则模块；
+- `d5277ce7d69fc9337bda5ba492938346fd5485ea`：接入正式 lint；
+- `f5a805ac1877f7694c00ae43e79afd138fee5235`：新增回归测试。
+
+验证：代码级调用链与测试用例已落仓；GitHub Actions 状态在本批台账提交后检查，如失败则立即提交修复。
 
 ## 5. 当前剩余工作
 
-下一批：Batch 5，审计 `cyberppt/script_quality/` 现有规则对抽象标题、父子重复、孤立 Evidence、数字无对象等项目的实际覆盖情况；只对确认缺失的机械规则编码。
+下一批：Batch 6，先审计正式 argument pattern / topology contracts 对 directed flattening 的现有覆盖，再只补 Roadmap `进入条件/时间信号 + 新状态` 等仍可机械判定的缺口。
 
-随后：方向关系扁平化与 Roadmap completeness；Authoring grammar ↔ machine topology 一致性；P2 fixtures 与回归测试；全量验证和收口。
+随后：Authoring grammar ↔ machine topology 一致性；P2 fixtures 与回归测试；全量验证和收口。
