@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch E — Onscreen 微语法与 Speaker Notes 去重
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E3
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E4
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch E4 Convergence，统一“输入角色｜贡献 / Evidence”微语法，并让备注解释汇聚判别而非重复四类输入
+- 下一恢复点：Batch E5 Mapping，统一“问题｜A → 响应｜B / 回答｜...”微语法，并让备注解释方向与 Cardinality 判别
 
 ## 剩余任务
 
-- [ ] Batch E4：Convergence 上屏微语法与备注去重
 - [ ] Batch E5：Mapping 上屏微语法与备注去重
 - [ ] Batch E6：Comparison 上屏微语法与备注去重
 - [ ] Batch E7：Roadmap 上屏微语法与备注去重
@@ -55,6 +54,7 @@
 | Batch E1 Parallel | 完成 | `5531a74a7952dd1ea0c3ef9a61e54442050e6751` | 保留“维度名｜建设动作”上屏微语法；Speaker Notes 改为解释同层判别、边界和误读风险，不再按上屏顺序复述三项内容 | 下一步：Flow 微语法 |
 | Batch E2 Flow | 完成 | `72018cefd3fad3f2bc3939babf8ff9c622c30a0f` | 上屏统一为“阶段｜产出 / 交接｜内容 / 回写｜内容”；Speaker Notes 改为解释边级交接、闭环判别和与 Roadmap 的边界 | 下一步：Causal 微语法 |
 | Batch E3 Causal | 完成 | `09a18ca04ffcbd6bc2b5351f2fb5c0001215dd69` | 上屏统一为“因果角色｜状态 / 直接后果｜下一状态”；Speaker Notes 改为“因为A所以B + 反事实”两项因果测试，清理链条复述 | 下一步：Convergence 微语法 |
+| Batch E4 Convergence | 完成 | `5bef322a06e5a124e43eccd9c8847e7f657a78ba` | 上屏固定“输入角色｜贡献 / 依据｜事实”；Speaker Notes 只解释共同结果、输入独立性及与 Parallel 的边界 | 下一步：Mapping 微语法 |
 
 ## Batch D2 详细验收
 
