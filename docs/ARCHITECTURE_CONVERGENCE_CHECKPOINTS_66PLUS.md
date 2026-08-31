@@ -9,6 +9,7 @@
 | 68 | `8a08381cf23463e407801d825367e58023536207` | 新增 `analysis_audits/final_deck.py`，迁移 source text 聚合、章节标题归一化和 whole-deck authoring warnings；runtime router 扩展为 authoring/lean/onscreen/deck 四组 focused helper authority，逐页主审计循环保持不变。实现提交：`42c7134`、`db700ba`、`8a08381` |
 | 69 | `3aff0fe2040fbe1904cbfbe004c839f3518d1256` | 新增 `analysis_audits/final_orchestrator.py`，将 `audit_final_script()` 主审计编排迁入 focused orchestrator；runtime facade 将 legacy `audit_final_script` 指向 focused 函数，helper finding 顺序、文案和公开 facade API 保持不变。实现提交：`706249c`、`80493ed`、`3aff0fe` |
 | 70 | `0a2d1df516138b8362d53de832bc2accd0535d4b` | 将约 47.9KB 的 `analysis_audits/final_script.py` 收缩为无函数/类实现的 thin compatibility facade，全部公开 helper 与 `audit_final_script` 直接 re-export focused modules；保留历史私有 `_status_strength_preserved`、状态/结构正则常量与 `_onscreen_surface` 属性，并新增 AST/文件体量门禁禁止重复实现回流。实现提交：`433ae43`、`0a2d1df` |
+| 71 | `bc350a7f573e3493be11667986d35caec9e72fa9` | 将 `analysis_audits/final_script_runtime.py` 从动态 rebinding router 收缩为静态显式 re-export facade；移除 focused-module fan-in、`setattr()` 与 `globals()` 修改，只保留历史 runtime import path 兼容，并以 AST 门禁禁止动态路由回流。实现提交：`97c85b8`、`bc350a7` |
 
 ## 验证记录
 
@@ -17,3 +18,4 @@
 - 阶段 68 workflow run `33373004033`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；deck-level source aggregation、chapter-title normalization 和 whole-deck warnings 迁出后结果与公开对象身份保持兼容。
 - 阶段 69 workflow run `33373253000`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；focused `audit_final_script()` 成为正式 runtime authority 后 finding 顺序、报告语义和 compatibility facade 行为保持兼容。
 - 阶段 70 workflow run `33373574401`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；legacy `final_script.py` 清空重复实现后，公开 `__all__`、历史私有属性、direct import 与正式审计行为保持兼容。
+- 阶段 71 workflow run `33373849896`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；runtime 动态 rebinding 完全移除后，历史 import path、公开 API 对象身份和正式审计行为保持兼容。
