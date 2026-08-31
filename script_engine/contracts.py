@@ -7,6 +7,7 @@ split incrementally.
 from __future__ import annotations
 
 from . import contract_rules as _impl
+from . import delivery_contracts as _delivery
 from . import schema_contracts as _schema
 from . import source_trace_contracts as _source_trace
 
@@ -26,6 +27,14 @@ _FOCUSED_EXPORTS = {
     "FOUNDATION_CITABLE_KEYS": _source_trace.FOUNDATION_CITABLE_KEYS,
     "collect_foundation_source_codes": _source_trace.collect_foundation_source_codes,
     "validate_source_refs_coverage": _source_trace.validate_source_refs_coverage,
+    "SPEAKER_NOTES_MIN_CHARS": _delivery.SPEAKER_NOTES_MIN_CHARS,
+    "ONSCREEN_DETAIL_PHRASE_MAX_CHARS": _delivery.ONSCREEN_DETAIL_PHRASE_MAX_CHARS,
+    "ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS": _delivery.ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS,
+    "check_speaker_notes_length": _delivery.check_speaker_notes_length,
+    "check_declared_count": _delivery.check_declared_count,
+    "check_onscreen_terminal_punctuation": _delivery.check_onscreen_terminal_punctuation,
+    "check_onscreen_detail_length": _delivery.check_onscreen_detail_length,
+    "outline_final_script": _delivery.outline_final_script,
 }
 globals().update(_FOCUSED_EXPORTS)
 
