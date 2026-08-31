@@ -5,6 +5,7 @@ from pathlib import Path
 import script_engine.analysis_audit as facade
 import script_engine.analysis_audits.final_authoring as final_authoring
 import script_engine.analysis_audits.final_lean as final_lean
+import script_engine.analysis_audits.final_onscreen as final_onscreen
 import script_engine.analysis_audits.final_script as legacy_final_script
 import script_engine.analysis_audits.final_script_runtime as runtime
 
@@ -31,11 +32,20 @@ _LEAN_HELPERS = (
     "_audit_lean_onscreen_full_copy_alignment",
     "_audit_lean_relationship_visibility",
 )
+_ONSCREEN_HELPERS = (
+    "_audit_authored_onscreen_composition",
+    "_semantic_payload_units",
+    "_audit_self_reading_density",
+    "_audit_authored_onscreen_contract",
+)
 _PUBLIC_AUTHORING_HELPERS = tuple(
     name for name in _AUTHORING_HELPERS if name in legacy_final_script.__all__
 )
 _PUBLIC_LEAN_HELPERS = tuple(
     name for name in _LEAN_HELPERS if name in legacy_final_script.__all__
+)
+_PUBLIC_ONSCREEN_HELPERS = tuple(
+    name for name in _ONSCREEN_HELPERS if name in legacy_final_script.__all__
 )
 
 
@@ -71,6 +81,18 @@ def test_final_script_runtime_routes_lean_helpers_to_focused_module() -> None:
     assert "_onscreen_surface" not in runtime.__all__
 
 
+def test_final_script_runtime_routes_onscreen_helpers_to_focused_module() -> None:
+    for name in _ONSCREEN_HELPERS:
+        focused = getattr(final_onscreen, name)
+        assert getattr(legacy_final_script, name) is focused
+        assert legacy_final_script.audit_final_script.__globals__[name] is focused
+
+    for name in _PUBLIC_ONSCREEN_HELPERS:
+        focused = getattr(final_onscreen, name)
+        assert getattr(runtime, name) is focused
+        assert getattr(facade, name) is focused
+
+
 def test_final_script_public_facades_use_runtime_router() -> None:
     package_init = (ROOT / "script_engine" / "analysis_audits" / "__init__.py").read_text(encoding="utf-8")
     compatibility = (ROOT / "script_engine" / "analysis_audit.py").read_text(encoding="utf-8")
@@ -80,6 +102,6 @@ def test_final_script_public_facades_use_runtime_router() -> None:
     assert "from .analysis_audits.final_script_runtime import *" in compatibility
     assert "from .final_script import audit_final_script" not in package_init
     assert "from .analysis_audits.final_script import *" not in compatibility
-    assert "for _focused in (_authoring, _lean):" in runtime_source
+    assert "for _focused in (_authoring, _lean, _onscreen):" in runtime_source
     assert "setattr(_legacy, _name, getattr(_focused, _name))" in runtime_source
     assert "globals()[_name] = getattr(_legacy, _name)" in runtime_source
