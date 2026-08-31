@@ -6,15 +6,14 @@
 
 ## 当前状态
 
-- 当前阶段：Batch E — Onscreen 微语法与 Speaker Notes 去重
+- 当前阶段：Batch F — 统一视觉结构合同
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E7
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E8
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch E8 Governance，强化“主体 / 责任对象 / 控制机制 / 受保护结果”的层级微语法，并让备注只解释责任边界与治理有效性判别
+- 下一恢复点：Batch F，统一 8 页视觉结构的语义字段顺序，确保 Stage2 能稳定恢复对象、关系、方向、分组、层级和禁止误读项
 
 ## 剩余任务
 
-- [ ] Batch E8：Governance 上屏微语法与备注去重
 - [ ] Batch F：统一视觉结构合同
 - [ ] Batch G1：Golden Page ↔ fixture 映射
 - [ ] Batch G2：Grammar 边界回归测试
@@ -40,56 +39,26 @@
 | Step 0.1 初始化台账 | 完成 | `98d43c2750f0f8b96682d39b1fad5d59e350d534` | 建立开发分支和单一进度文件 | 下一步：仓库映射 |
 | Step 0.2 跨层基线映射 | 完成 | 只读盘点；进度提交 `7e585307f34f444d5d05eb388a195ca6abe3d5b9` | 定位 8 类黄金页、fixture、topology、Stage2 adapter、测试入口 | 发现文档与 fixture 存在语义漂移 |
 | Batch A 统一 Relation Contract | 完成 | 索引 `1c949e0c...`；Parallel `4b09b5de...`；Flow `97bc03b4...`；Causal `36895005...`；Convergence `6b95c21f...`；Mapping `75a4d44e...`；Comparison `c234a92e...`；Roadmap `1b192d4c...`；Governance `fbd4493c...` | 8 页统一六项 Relation Contract；索引增加横向 Grammar 边界 | 下一步：逐页修正文档与 Contract 不一致处 |
-| Batch B1 Governance | 完成 | `1b26d08fdde93e456b7633f1327c6a1d45a53445` | 三个 Actor 分别绑定 Responsibility Object；会商审校/发布授权/复盘留痕独立为共同控制层；增加 Protected Outcome | fixture 仍为通用 dependency chain；Batch G1 对齐 |
-| Batch B2 Comparison | 完成 | `df4b65c47753a758a33878557c939cf6c2baccd7` | 固定双列与共同评价维度；移除对象之间方向箭头 | Stage2 adapter 目前依赖箭头识别 comparison；Batch F/G 修正 |
-| Batch B3 Causal | 完成 | `b14788dd4d887161419b30c9f20b0f2a17dd8721` | 因果链收缩为“口径/版本分散 → 基准不一致 → 跨周期难校核 → 偏差难追溯 → 预警难持续更新”；每条边可通过“因为 A，所以 B” | fixture 节点细度待 Batch G1 对齐 |
-| Batch C1 Parallel | 完成 | `bd323d56afa606ae68d6c12e8f63586dd6e87fa8` | 三个兄弟单元统一为“研判范围 / 周期规则 / 运行机制”，统一句法和业务尺度 | fixture 第三项仍为“运行闭环”；Batch G1 对齐 |
-| Batch C2 Convergence | 完成 | `3ce2b3e5c53677c17ad1bc1dcdf2d1e04dd4faa6` | 输入角色统一为“供给边界 / 需求压力 / 互济缓释 / 波动扰动”，四条输入显式汇入共同结果 | fixture 业务输入不同；Batch G1 对齐 |
-| Batch D1 Flow | 完成 | `b85a5b702f77dc43c88811589fa4d47cd7093ee9` | 三条正向边增加真实交接物，反馈边增加明确回写物；视觉结构保留“顺序衔接 / 反馈回流”关系标签 | fixture 需补交接信息但保持 feedback_loop 解析 |
-| Batch D2 Roadmap | 完成 | `a404c1a253b96ea5e4bc053c9b4b50f635dd53f8` | 固定 Current State S0、S1/S2/S3 新状态、进入条件和 Target State；箭头只表达满足条件后的状态跃迁 | fixture 需补 S0/S1/S2/S3 与进入条件语义；Batch G1 对齐 |
-| Batch D3 Mapping | 完成 | `519f0f22bce685e21c6f2583e9a4641be58cff1a` | 清理 `↔`；固定 `Problem → Response` 单向语义；四组关系显式标注 1:1；视觉结构增加可被 Stage2 adapter 直接解析的“问题回应”关系边 | Batch G1 对齐 fixture；Batch F 统一视觉合同格式 |
-| Batch E1 Parallel | 完成 | `5531a74a7952dd1ea0c3ef9a61e54442050e6751` | 保留“维度名｜建设动作”上屏微语法；Speaker Notes 改为解释同层判别、边界和误读风险，不再按上屏顺序复述三项内容 | 下一步：Flow 微语法 |
-| Batch E2 Flow | 完成 | `72018cefd3fad3f2bc3939babf8ff9c622c30a0f` | 上屏统一为“阶段｜产出 / 交接｜内容 / 回写｜内容”；Speaker Notes 改为解释边级交接、闭环判别和与 Roadmap 的边界 | 下一步：Causal 微语法 |
-| Batch E3 Causal | 完成 | `09a18ca04ffcbd6bc2b5351f2fb5c0001215dd69` | 上屏统一为“因果角色｜状态 / 直接后果｜下一状态”；Speaker Notes 改为“因为A所以B + 反事实”两项因果测试，清理链条复述 | 下一步：Convergence 微语法 |
-| Batch E4 Convergence | 完成 | `5bef322a06e5a124e43eccd9c8847e7f657a78ba` | 上屏固定“输入角色｜贡献 / 依据｜事实”；Speaker Notes 只解释共同结果、输入独立性及与 Parallel 的边界 | 下一步：Mapping 微语法 |
-| Batch E5 Mapping | 完成 | `f8c7af32a1cf9298cd6322a2b6524d6528214b13` | 上屏统一为“问题｜A → 响应｜B / 回答｜业务问题”；Speaker Notes 只解释映射方向、1:1 Cardinality 与 1:N / N:1 保真原则 | 下一步：Comparison 微语法 |
-| Batch E6 Comparison | 完成 | `e0b0ff588b4d9ff9139058642111b5a9e71d67d7` | 上屏统一为“评价维度｜D / 对象A｜状态 / 对象B｜状态”；Speaker Notes 只解释可比性条件、失效边界及为何不得用方向箭头 | 下一步：Roadmap 微语法 |
-| Batch E7 Roadmap | 完成 | `47d3f122c5c851ae940c5e7e715e0a2f9b09ad48` | 上屏统一为“当前状态 / 阶段｜N / 进入条件｜... / 新状态 SN｜...”；Speaker Notes 只解释状态跃迁有效性、可验收新状态及与 Flow 的边语义区别 | 下一步：Governance 微语法 |
+| Batch B1 Governance | 完成 | `1b26d08fdde93e456b7633f1327c6a1d45a53445` | Actor 分别绑定责任对象，共同控制层与受保护结果独立 | Batch G1 对齐 fixture |
+| Batch B2 Comparison | 完成 | `df4b65c47753a758a33878557c939cf6c2baccd7` | 固定双列与共同评价维度；移除方向箭头 | Batch F/G 修正 Stage2 恢复 |
+| Batch B3 Causal | 完成 | `b14788dd4d887161419b30c9f20b0f2a17dd8721` | 收紧为逐边可证明因果链 | Batch G1 对齐 fixture |
+| Batch C1 Parallel | 完成 | `bd323d56afa606ae68d6c12e8f63586dd6e87fa8` | 同层维度统一为研判范围 / 周期规则 / 运行机制 | Batch G1 对齐 fixture |
+| Batch C2 Convergence | 完成 | `3ce2b3e5c53677c17ad1bc1dcdf2d1e04dd4faa6` | 输入角色统一为供给边界 / 需求压力 / 互济缓释 / 波动扰动 | Batch G1 对齐 fixture |
+| Batch D1 Flow | 完成 | `b85a5b702f77dc43c88811589fa4d47cd7093ee9` | 增加真实交接物与反馈回写物 | Batch G1 对齐 fixture |
+| Batch D2 Roadmap | 完成 | `a404c1a253b96ea5e4bc053c9b4b50f635dd53f8` | 固定 S0–S3 状态链、进入条件和目标状态 | Batch G1 对齐 fixture |
+| Batch D3 Mapping | 完成 | `519f0f22bce685e21c6f2583e9a4641be58cff1a` | 固定 Problem → Response，显式 1:1 Cardinality | Batch F/G 对齐 |
+| Batch E1 Parallel | 完成 | `5531a74a7952dd1ea0c3ef9a61e54442050e6751` | 微语法与备注去重 | 完成 |
+| Batch E2 Flow | 完成 | `72018cefd3fad3f2bc3939babf8ff9c622c30a0f` | 微语法与备注去重 | 完成 |
+| Batch E3 Causal | 完成 | `09a18ca04ffcbd6bc2b5351f2fb5c0001215dd69` | 微语法与因果测试备注 | 完成 |
+| Batch E4 Convergence | 完成 | `5bef322a06e5a124e43eccd9c8847e7f657a78ba` | 输入角色微语法与备注去重 | 完成 |
+| Batch E5 Mapping | 完成 | `f8c7af32a1cf9298cd6322a2b6524d6528214b13` | 问题/响应/回答微语法，Cardinality 备注 | 完成 |
+| Batch E6 Comparison | 完成 | `e0b0ff588b4d9ff9139058642111b5a9e71d67d7` | 评价维度/对象A/对象B微语法 | 完成 |
+| Batch E7 Roadmap | 完成 | `47d3f122c5c851ae940c5e7e715e0a2f9b09ad48` | 状态/条件/新状态微语法 | 完成 |
+| Batch E8 Governance | 完成 | `65cc4da93ffd1acfc7b62f9eb31bfd24e9b57f01` | 主体/责任对象/控制机制/受保护结果微语法；备注改为责任边界和治理有效性判别 | 下一步：Batch F |
 
-## Batch D2 详细验收
+## Batch E 验收摘要
 
-- Current State S0 已显式：周期业务已存在，数据口径、版本规则和判断尺度仍相对分散。
-- Stage 1–3 均同时包含“进入条件 + 新状态”。
-- S1、S2 实际成为下一阶段进入条件，避免空跳。
-- Target State S3 已显式：共同输入可复用、跨周期结论可校核、偏差可追溯、复盘可持续回写。
-- 视觉结构使用 `顺序演进｜进入条件：...`，保留 sequence semantics，同时说明状态跃迁依据。
-- 本步仅改黄金页文档；Runtime 回归统一放在 Batch G/H。
-
-## Batch D3 详细验收
-
-- 主论证链已由对称 `↔` 改为单向 `Problem → Response`。
-- 四个 Relation Units 均显式标注 1:1，避免视觉对称被误读为双向作用。
-- Relation Contract 明确：映射方向表示“问题由哪项能力响应”，不代表流程、状态演进或双向影响。
-- 视觉结构新增四条独立 `A → B：问题回应` 关系边，现有 `stage02_relationship_adapter` 可直接恢复为 mapping semantics。
-- 本步未新增任何 Final Script 字段，Cardinality 仅作为黄金页语义约束和可读标记存在。
-
-## Batch E5 详细验收
-
-- Mapping 上屏已固定为“问题｜A → 响应｜B / 回答｜业务问题”，方向与端点角色同时可读。
-- Speaker Notes 不再逐项复述四组业务内容，改为解释“为什么有方向、为什么本例是 1:1、何时必须保留 1:N / N:1”。
-- 1:1 仅作为本示例业务事实，不提升为视觉规则；实际 Cardinality 优先于版式整齐。
-- 视觉结构继续保留四条独立 `A → B：问题回应`，未改变 Stage2 现有可解析语义。
-
-## Batch E6 详细验收
-
-- Comparison 上屏已固定为“评价维度｜D / 对象A｜状态 / 对象B｜状态”，比较对象与评价维度的角色稳定。
-- Speaker Notes 不再复述四行差异，改为说明 Comparison 成立的三个条件：对象固定、维度一致、证据成对。
-- 明确任一行更换对象、评价口径或证据尺度即失去可比性。
-- 页面继续禁止对象间方向箭头，避免状态差异被误读为迁移、流程或路线图。
-
-## Batch E7 详细验收
-
-- Roadmap 上屏微语法明确区分当前状态、阶段、进入条件和新状态，避免阶段名称承担结果语义。
-- 每条跃迁边都能检查“前状态 + 条件 → 新状态”；完成阶段后若无可验收状态变化，不视为有效 Roadmap 节点。
-- Speaker Notes 不再按 S0–S3 顺序复述内容，改为解释状态链有效性与验收逻辑。
-- 与 Flow 的边界继续固定：Roadmap 解释状态跃迁，Flow 解释业务交接。
+- 8 页上屏均使用与各自 Grammar 对应的稳定微语法，不依赖演讲者补关系。
+- Speaker Notes 从“复述上屏”转为“判别规则、误读风险、边界条件、验收逻辑”。
+- 未新增 Final Script 字段，未把教学标签升级为 Runtime schema。
+- Stage2 关系恢复仍需在 Batch F/G 对 Comparison、Governance 等无显式箭头结构做兼容验证。
