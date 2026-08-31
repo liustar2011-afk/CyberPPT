@@ -10,6 +10,19 @@
 
 该标签不进入 Final Script schema，不形成新的 Stage1 authoritative IR，也不要求 AUTHOR 新增持久化字段。
 
+## Relation Contract 的示例口径
+
+每个完整黄金页面在 `Argument Topology` 后增加 `Relation Contract`，只用于教学、人工评审和测试映射。它描述关系的最小合同，不进入 Final Script schema，也不形成新的运行时 ontology。
+
+固定包含：
+
+- `Node Role`：页面有哪些语义节点；
+- `Edge Semantics`：节点之间是什么业务关系；
+- `Direction / Cardinality`：关系方向及 1→N、N→1、1:1、1:N、N:1 等基数；
+- `Invariant`：视觉设计变化时仍必须保持的关系；
+- `Confusable With`：最容易混淆的 Relation Grammar；
+- `Disambiguation Rule`：一条最短判别规则。
+
 ## 8 类黄金页面
 
 | 编号 | 关系类型 | Authoring Topology | 示例文件 | 训练重点 |
@@ -22,6 +35,19 @@
 | 06 | Comparison | comparison | [golden-page-comparison.md](golden-page-comparison.md) | 同一标准下可比、差异可解释 |
 | 07 | Roadmap | roadmap | [golden-page-roadmap.md](golden-page-roadmap.md) | 起点、阶段、触发条件、新状态 |
 | 08 | Governance / Boundary | governance chain | [golden-page-governance.md](golden-page-governance.md) | 主体、责任、控制机制、受保护结果 |
+
+## 8 类 Grammar 横向边界
+
+| Grammar | 核心问题 | 关系本质 | 箭头含义 | 最容易混淆 |
+|---|---|---|---|---|
+| Parallel | 结论由哪些同层维度构成 | 同层分解 | 无方向 | Convergence |
+| Flow | 业务如何运行和交接 | 阶段交接 | 业务流转 | Causal / Roadmap |
+| Causal | 为什么会产生后续结果 | 因果 | 因为→所以 | Flow |
+| Convergence | 哪些输入共同形成结果 | 多输入汇聚 | N→1 | Parallel |
+| Mapping | 哪个问题对应哪个响应 | 端点对应 | A→B / 对应 | Comparison |
+| Comparison | 两个对象在相同维度上有何差异 | 同维度对照 | 无流程方向 | Mapping / Roadmap |
+| Roadmap | 状态如何逐步跃迁 | 条件驱动演进 | 状态跃迁 | Flow |
+| Governance | 谁对什么负责，如何控制结果 | 责任与控制链 | 责任/控制传递 | Parallel |
 
 ## Authoring Grammar 与机器语义拓扑的衔接
 
@@ -45,7 +71,9 @@
 
 ## 统一示例结构
 
-每个完整黄金页面均包含：页面使命、核心结论、主论证链、Argument Topology、Relation Units、完整文字稿、上屏文字、视觉结构、演讲者备注和作者自检。
+每个完整黄金页面统一包含：页面使命、核心结论、主论证链、Argument Topology、Relation Contract、Relation Units、完整文字稿、上屏文字、视觉结构、演讲者备注和作者自检。
+
+`Relation Contract` 和 `Relation Units` 均为黄金示例教学表达，不新增 Runtime 字段。
 
 ## 使用原则
 
