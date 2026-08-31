@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch F — 统一视觉结构合同
 - 总体状态：进行中
-- 已完成：Step 0、Batch A–E、Batch F1–F6
+- 已完成：Step 0、Batch A–E、Batch F1–F7
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch F7，归一 Convergence 五项视觉结构合同
+- 下一恢复点：Batch F8，归一 Mapping / Comparison 五项视觉结构合同
 
 ## 剩余任务
 
-- [ ] Batch F7：Convergence 五项视觉结构合同
 - [ ] Batch F8：Mapping / Comparison 五项视觉结构合同
 - [ ] Batch F9：Roadmap 五项视觉结构合同
 - [ ] Batch G1：Golden Page ↔ fixture 映射
@@ -29,12 +28,13 @@
 | Batch F1 | 完成 | `6f07e780...` | 新增 Visual Structure 五项合同 | 完成 |
 | Batch F2 | 完成 | `2b9930d1...`、`a2b75c91...` | Comparison `A vs B` 无方向解析及回归 | 完成 |
 | Batch F3 | 完成 | `f363d256...`、`9a0d3ef1...`、`920a789e...` | Governance 原子边、reading-contract 修复及回归 | 完成 |
-| Batch F4 | 完成 | `2be66f90abc528ea70cb2bfed46b61543b37319e` | Parallel 五项合同 | 完成 |
-| Batch F5 | 完成 | `309200d98c28d8f75e876f26942ceb072ec2e8c7` | Flow 五项合同 | 完成 |
-| Batch F6 | 完成 | `3c59189afd2803c004727144c612411ee6f2131f` | Causal 五项合同；明确状态节点、因果边、单向 1→1 链和禁止流程化 | F7 Convergence |
+| Batch F4 | 完成 | `2be66f90...` | Parallel 五项合同 | 完成 |
+| Batch F5 | 完成 | `309200d9...` | Flow 五项合同 | 完成 |
+| Batch F6 | 完成 | `3c59189a...` | Causal 五项合同 | 完成 |
+| Batch F7 | 完成 | `05269ec60c4db325fc59289153aebb7c7a3d8047` | Convergence 五项合同；明确纯 N→1 汇聚、共同结果为终点、输入间无关系 | F8 Mapping / Comparison |
 
 ## 当前验证状态
 
-- Flow / Causal 均保留既有显式原子边，Runtime 解析路径不变。
+- Convergence 保留显式 `共同支撑` 关系，走专用 support relation 分支，不受 Governance generic-chain 优先级修复影响。
 - Comparison / Governance 新跨层回归已写入既有测试文件。
 - 尚未触发远端 CI；Batch H 统一执行全量测试。
