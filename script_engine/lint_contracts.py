@@ -127,6 +127,7 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     issues.extend(_onscreen.check_onscreen_code_context(final_script))
     issues.extend(_onscreen.check_onscreen_core_alignment(final_script))
     issues.extend(_authoring_quality.check_onscreen_numeric_context(final_script))
+    issues.extend(_authoring_quality.check_roadmap_completeness(final_script))
     return issues
 
 
