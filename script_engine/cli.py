@@ -32,6 +32,7 @@ from .contracts import (
 )
 from .delivery_cleanliness import check_delivery_cleanliness
 from .plan_review import render_plan_review
+from .quality_policy import partition_issues
 from .render import render_stage02_markdown
 from .source_index import (
     build_source_index_file,
@@ -179,13 +180,27 @@ def _final_lint_issues(payload: dict, markdown: str) -> list[str]:
     )
 
 
+def _final_lint_findings(payload: dict, markdown: str) -> tuple[list[str], list[str]]:
+    """Collect all existing lint checks, then apply the shared severity policy."""
+
+    return partition_issues(_final_lint_issues(payload, markdown))
+
+
 def _lint(final_path: Path) -> int:
     payload = load_json(final_path)
     markdown = render_stage02_markdown(payload)
-    issues = _final_lint_issues(payload, markdown)
+    blockers, advisories = _final_lint_findings(payload, markdown)
     warnings = check_declared_count(payload)
-    _print_report({"kind": "lint", "path": str(final_path.resolve()), "status": "passed" if not issues else "failed", "issues": issues, "warnings": warnings})
-    return 0 if not issues else 1
+    status = "failed" if blockers else "passed_with_advisories" if advisories else "passed"
+    _print_report({
+        "kind": "lint",
+        "path": str(final_path.resolve()),
+        "status": status,
+        "issues": blockers,
+        "advisories": advisories,
+        "warnings": warnings,
+    })
+    return 0 if not blockers else 1
 
 
 def _outline(final_path: Path) -> int:
@@ -298,10 +313,12 @@ def _status(project_dir: Path) -> int:
         final["page_count"] = len(payload.get("slides") or [])
         final["deck_title"] = (payload.get("deck") or {}).get("title")
         markdown = render_stage02_markdown(payload)
-        lint_issues = lint_final_script(payload) + check_onscreen_structure(payload) + check_full_copy_duplication(payload) + check_speaker_notes_length(payload) + check_delivery_cleanliness(markdown) + check_onscreen_terminal_punctuation(payload) + check_onscreen_detail_length(payload)
-        final["lint"] = "passed" if not lint_issues else "failed"
-        if lint_issues:
-            final["lint_issues"] = lint_issues
+        lint_blockers, lint_advisories = _final_lint_findings(payload, markdown)
+        final["lint"] = "failed" if lint_blockers else "passed_with_advisories" if lint_advisories else "passed"
+        if lint_blockers:
+            final["lint_issues"] = lint_blockers
+        if lint_advisories:
+            final["lint_advisories"] = lint_advisories
         lint_warnings = check_declared_count(payload)
         if lint_warnings:
             final["lint_warnings"] = lint_warnings
@@ -352,9 +369,9 @@ def _render(input_path: Path, output_path: Path) -> int:
         _print_report({"status": "failed", "issues": issues}, stderr=True)
         return 1
     markdown = render_stage02_markdown(payload)
-    lint_issues = _final_lint_issues(payload, markdown)
-    if lint_issues:
-        _print_report({"kind": "final-delivery-lint", "status": "failed", "issues": lint_issues}, stderr=True)
+    lint_blockers, _ = _final_lint_findings(payload, markdown)
+    if lint_blockers:
+        _print_report({"kind": "final-delivery-lint", "status": "failed", "issues": lint_blockers}, stderr=True)
         return 1
     output_path.parent.mkdir(parents=True, exist_ok=True)
     write_text_lf(output_path, markdown)
@@ -369,9 +386,9 @@ def _check_sync(final_path: Path, markdown_path: Path) -> int:
         _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "failed", "issues": issues})
         return 1
     expected = render_stage02_markdown(payload)
-    lint_issues = _final_lint_issues(payload, expected)
-    if lint_issues:
-        _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "failed", "issues": lint_issues})
+    lint_blockers, lint_advisories = _final_lint_findings(payload, expected)
+    if lint_blockers:
+        _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "failed", "issues": lint_blockers, "advisories": lint_advisories})
         return 1
     if not markdown_path.exists():
         issues = [f"{markdown_path} does not exist; run render-stage02 to produce it"]
@@ -381,7 +398,8 @@ def _check_sync(final_path: Path, markdown_path: Path) -> int:
             issues = [f"{markdown_path} does not match a fresh render of {final_path} — re-run render-stage02 rather than hand-editing the Markdown"]
         else:
             issues = []
-    _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "passed" if not issues else "failed", "issues": issues})
+    status = "failed" if issues else "passed_with_advisories" if lint_advisories else "passed"
+    _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": status, "issues": issues, "advisories": lint_advisories})
     return 0 if not issues else 1
 
 
