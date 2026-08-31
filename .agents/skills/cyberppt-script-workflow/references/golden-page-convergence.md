@@ -20,6 +20,15 @@
 
 四个 Relation Units 是相互独立的输入贡献，最终汇入同一风险判断。输入之间没有默认先后顺序。
 
+## Relation Contract
+
+- Node Role：多个独立输入 + 一个共同结果节点。
+- Edge Semantics：各输入分别贡献必要信息，共同生成或支撑同一结果。
+- Direction / Cardinality：N → 1；输入之间无默认方向。
+- Invariant：所有输入必须直接汇入共同结果，不能退化为平行卡片，也不能在输入之间虚构流程或因果。
+- Confusable With：Parallel。
+- Disambiguation Rule：Convergence 回答“哪些独立输入共同生成一个结果”；Parallel 回答“一个结论由哪些同层组成维度支撑”。
+
 ## Relation Units
 
 1. 供给可用能力决定系统可实际调用的供给边界；
