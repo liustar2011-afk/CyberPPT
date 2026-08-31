@@ -20,6 +20,15 @@
 
 每个 Relation Unit 都是前一状态产生的业务后果，并为下一判断提供必要前提。不得把四项改写成互不相关的并列建设任务。
 
+## Relation Contract
+
+- Node Role：起因、直接后果、中间后果、最终能力结论。
+- Edge Semantics：前一节点真实产生后一节点，关系必须能够用“因为 A，所以 B”解释。
+- Direction / Cardinality：单向 1 → 1 连续因果链。
+- Invariant：每条边都必须独立通过“因为 A，所以 B”测试；排版、箭头或叙事顺序不能替代因果证据。
+- Confusable With：Flow。
+- Disambiguation Rule：Causal 的箭头回答“为什么 B 会发生”；Flow 的箭头回答“业务从 A 交接什么到 B”。
+
 ## Relation Units
 
 1. 供给、需求、市场和新型主体共同进入研判范围；
