@@ -1,107 +1,108 @@
-# CyberPPT 架构收敛改造记录
+# CyberPPT 架构收敛当前状态
 
-本文件记录 2026-08-31 开始的架构收敛工作。每完成一个小阶段即提交，确保会话、Agent 或本地进程中断后可以从 Git 历史继续。
+本文件是架构收敛工作的唯一当前入口。详细历史按阶段分卷保存，避免会话、Agent 或本地进程中断后出现“对话进度”和 GitHub 实际状态两套口径。
 
-## 目标
+## 正式路线
 
-保持“源材料 → 脚本 → 完整图片 → 图转可编辑 PPT → QA 交付”正式路线不变，收敛权威模型、运行状态、兼容层和可复现性边界。
+保持以下生产路线不变：
 
-## 已完成阶段与恢复点
+`源材料 → 脚本 → 完整图片 → 图转可编辑 PPT → QA 交付`
 
-| 阶段 | Commit | 内容 |
-|---|---|---|
-| 1 | `b64fed03162ae26fb474655a4dcdb67813c3482e` | Style 09 lock 改为创建时合同快照，禁止读取旧锁时 live refresh |
-| 2 | `67586a09620082cfb1742b749526146a5d0e2d0e` | 建立 Stage 01/02 Authority Map，统一可写权威与 projection 边界 |
-| 3 | `6862598eb1314b8ad8fe73edd398542d55649e2a` | 增加 Stage 02 正常待办/真实失败状态模型 |
-| 4 | `f57692ec6887e38ae25373af2c206219194b7dc4` | 分离稳定 `input_fingerprint` 与每次执行 `run_id/build_id` |
-| 5 | `4b5f225cc8a780003cca95b4997586e7b187e037` | 明确安装能力边界、直接/可选依赖和 CI runtime import smoke |
-| 6 | `5948b6c8f2ea5483efe58a9c28035ad2cdbcabe8` | 删除根目录 scratch 产物并增加 ignore 规则 |
-| 7 | `7042e158240c39b58c9deba596967cc7b1ee8608` | Script deterministic finding 增加 blocker/advisory severity policy |
-| 8 | `ebf2f748e6349255221960e6c78a61dbed1a4ad2` | 正式 manifest 按 input identity + Prompt SHA 精确失效旧视觉资产 |
-| 9 | `01a95b299851bdee200229baa0cb2f5aee51fb4e` | 主 orchestrator 将缺 SVG/待审核转换为 `needs_action` 正常结果 |
-| 10 | `8062debc4fc7442ac2b77ae19784fb9611a22edf` | `needs_action` 写回 `build_context.json`，中断后可直接恢复 |
-| 11 | `ad4a99ef39a82fd0554127d84aab2aa6905b8971` | 正式 runtime/contract/reference/assets 纳入 wheel 包边界并增加 wheel smoke |
-| 12 | `2e9cd4e3cac6c213b09b2a2b028c10b8fc613997` | Compatibility seam 封口为固定 6 项 `LegacyPatchSet`，保留旧测试兼容 |
-| 13 | `f0cf8a17e8d74034b8e7bdfe0250be60d688ec6a` | CI 在 pytest 失败时持久化完整日志 artifact，便于精确诊断和恢复 |
-| 14 | `ed7e1385816cae33454f82e4841192370eb42c1c` | 修正 Pillow 直接依赖版本，恢复 Pillow 12 像素迭代 API |
-| 15 | `fa65965d0acaccbb77f545d6994fa54d0e1f3def` | 新 fingerprint 严格失效，同时保留无 fingerprint 历史 manifest 的旧项目恢复兼容 |
-| 16 | `45dcf03a38d76d53c37a9d6747d06f31a290680e` | 旧 Style 09 live lock 首次读取时迁移并落盘为 snapshot；新锁和迁移后的锁均永久冻结 |
-| 17 | `9690e2f49532a25c79cdfe32baa4a6900d149657` | `projects/AGENTS.md` 与仓库主流程统一：新源材料项目默认 strict/legacy，script 仅显式选择时启用 |
-| 18 | `901196a5976f385f108cbc517f2ae817df3cbe2b` | 消除 Style 09 双权威：可执行合同只从 style registry JSON 解析；`visual-system.md` 降为说明性文档，不再覆盖运行时 Prompt |
-| 19 | `8d474ea59e999d20f8702aab4def816031d55941` | 首轮清理独立 Style10 测试合同，确认 registry 不再维护第十套视觉定义或 palette-10 |
-| 20 | `00dc915017243be307ac0388ecd98d47fd857dcc` | Style Lock snapshot 测试迁移到 registry authority：registry 修订产生新锁版本，说明文档修订不改变可执行合同，legacy lock 仅迁移一次 |
-| 21 | `d1c6a6c3a39f2df953062ae06e7865f14bb711b2` | Terminal execution lock 在追加前删除正文中完全相同的硬约束整行，避免重复 Prompt；部分匹配和页面业务句保持不变 |
-| 22 | `99a6acb29d2724e849a1e99a5bdb277c6ee2f5ac` | Style09 回归测试从旧 Prompt 逐字快照迁移为 registry/纯白/合同章节/锁 SHA/迁移/终端锁/CLI 等正式不变量 |
-| 23 | `ffc500cec29329168e75601a45ac5f6f33ebec3d` | Style09 样张与合同测试彻底脱离 `visual-system.md` 旧复制文本，直接验证 runtime registry；删除人为 Prompt 长度上限 |
-| 24 | `4ea6ed5b58ad568cfe0df31863dac455ba45f5dd` | 将 handoff 模块化测试从历史公共面/Style10/逐字 Prompt baseline 改为 facade 与 modular implementation 的行为等价性合同 |
-| 25 | `a085e2c0221421b9a7543e2f7c9418dd3ca98741` | Manifest provenance 回归改为 Style09，保留 compiler、Prompt 一致性与 `prompt_sha256` 自描述追溯，不再绑定旧 Style10 |
-| 26 | `11bed7543c100e43d8dcf614f62a2e64831889c8` | Style10 从独立视觉风格降为兼容 alias：旧 ID/slug 统一解析到 canonical Style09 snapshot，继续使用同一 Prompt SHA 与 palette-09 |
-| 27 | `04f43ed9cd3c0852e60edebff77dd8e5360d3989` | Handoff facade 测试同步 legacy Style10 alias 语义，验证旧入口不会形成第二套视觉权威 |
-| 28 | `1c5adc1f70b3204159fb4d4fd94ba8619d979de4` | 局部文字纠错回归改用真实 PNG；保留完整旧测试集为非收集 base，并覆盖 failed image、bbox crop、local edit、request record 与 enhancement |
-| 29 | `df2aa24260c52ed70cd555760cc780b94c947ce0` | Style09 生图安全测试迁移到当前合同：默认无人物/无正脸、组织标识禁绘、辅助语义图少量中文、全页禁箭头、事实忠实与伪中文禁令 |
+架构收敛只处理权威模型、运行状态、依赖边界、兼容层、可复现性、质量门禁和可维护性，不改变上述生产路线。
 
-## 当前结构性结果
+## 当前结论
 
-### Stage 01
+- 代码级架构收敛已完成至 **Stage 75**。
+- Stage 75 implementation/test checkpoint：`4a7f58a02e7220e7dbdd711357ef14566a3f26c0`。
+- Stage 75 workflow run：`33375703037`，Linux Python 3.10/3.12、macOS/Windows wheel smoke、OfficeCLI render smoke 五项全部 `success`。
+- 本文件与阶段归档的统一属于 **Stage 76 收口工作**；完成后，原架构收敛里程碑视为关闭。
+- 后续不再按文件大小机械拆分模块。只有出现真实的多权威、运行时隐式 patch、compat facade 回长业务实现、跨职责耦合导致变更风险、打包/恢复/CI 边界回退时，才从 Stage 77 继续编号。
 
-- strict whole-document 单一可写语义权威：`semantic-argument-model.json`。
-- `source-truth.json` 是 deterministic projection。
-- `script/foundation.json` 是 PLAN/AUTHOR 语义合同。
+## 恢复入口
+
+需要恢复工作时，按以下顺序读取：
+
+1. `docs/ARCHITECTURE_CONVERGENCE_PROGRESS.md`：唯一当前状态与恢复规则。
+2. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_66PLUS.md`：最新阶段明细，当前覆盖 Stage 66–75。
+3. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_50PLUS.md`：Stage 50–65。
+4. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_30PLUS.md`：Stage 30–49。
+5. `docs/ARCHITECTURE_CONVERGENCE_CHECKPOINTS_01_29.md`：Stage 1–29 历史归档。
+
+任何恢复动作均以 GitHub `main` 的实际 commit 和对应 GitHub Actions 结果为准。只有同时满足“代码已进入 main、五项 CI 全绿、checkpoint 已记录”三个条件，才允许宣布某个 Stage 正式完成。
+
+## 当前架构结果
+
+### Stage 01：语义与脚本权威
+
+- strict whole-document 单一可写语义权威为 `semantic-argument-model.json`。
+- `source-truth.json` 为 deterministic projection。
+- `script/foundation.json` 为 PLAN/AUTHOR 语义合同。
 - `script/deck-plan.json` 负责章节、页序、页面使命和来源范围。
 - `script/dist/final-script.md` 是 Stage 02 唯一跨阶段内容权威。
-- `projects/AGENTS.md` 不再维护一条相反的默认路线；项目目录规则明确从属于仓库总流程。
+- `projects/AGENTS.md` 已与仓库正式流程统一。
 - 详细规则见 `docs/CYBERPPT_AUTHORITY_MAP.md`。
 
-### Stage 02
+### Stage 02：视觉、运行状态与恢复
 
-- Style registry `scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json` 是可执行视觉合同的唯一解析源。
-- `references/visual-system.md` 仅作为视觉系统说明与探索文档，不再在运行时覆盖 Style 09 Prompt。
-- 新建 Style 09 锁在创建时从 style registry 解析合同并冻结；`resolved_contract.source` 指向 style registry。
-- registry 合同修订只影响新建锁；已经是 immutable snapshot 的锁保持原字节不变。
-- 历史 pre-snapshot Style 09 锁首次读取时迁移到 style registry 当前合同并冻结，此后不再刷新。
-- Style10 不再拥有独立 registry entry、独立 Prompt 或 palette-10；旧 `style_id=10`、`light_tech_business_dense`、`ivory_deep_blue_semantic_scene` 仅作为兼容入口，统一解析为 canonical Style09。
-- Style10 alias 锁显式记录 `requested_style_id/name`、`canonical_style_id=9` 和 `legacy_alias=true`，便于追溯旧调用来源；最终 Prompt SHA、reference image 和执行合同仍只有一份。
-- Runtime terminal lock 只在 Prompt 绝对末尾保留一份；若同一终端硬约束已作为独立整行出现在正文，会在 reassert 前精确去重，不删除包含额外上下文的页面句子。
-- Style09 测试只锁定正式视觉合同的不变量与安全边界，不再把某个历史 Prompt 版本的整段措辞、文档副本或固定字符长度当作 API。
-- `imagegen_handoff.py` 兼容 facade 的正式回归标准为：关键符号直接 re-export 模块实现、公共面无重复、旧 Style10 只能归一到 Style09、相同 Style09 输入经 facade 与模块生成完全相同结果。
-- 局部文字纠错回归使用真实 PNG 和真实 bbox crop；无效图片字节不再被测试夹具误当成成功生成物。
-- 当前安全测试与正式 Style09 合同一致：默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍；组织名称/Logo/印章/标识禁绘；辅助语义图仅允许少量清晰中文；禁止任何箭头或箭头头部。
-- `input_fingerprint` 表达输入身份；`run_id/build_id` 表达执行身份。
-- 新版 Manifest 恢复必须同时满足相同 input fingerprint 和相同 Prompt SHA。
-- 双方都没有 fingerprint 的历史 manifest 进入明确 legacy recovery compatibility；一旦任一侧存在 fingerprint，就必须严格匹配，不允许降级回 legacy。
-- Full image 通过审计后仍是 editable reconstruction 的视觉权威。
-- `needs_svg_authoring`、`needs_visual_review` 等属于正常 action state，不再等同 terminal failure。
-- Action state 写入 manifest、独立回执和 `build_context.json`。
+- Style registry `scripts/imagegen_pipeline/style_presets/cyberppt_default_styles.json` 是可执行视觉合同唯一解析源。
+- Style09 为 canonical production style；Style10 仅保留 legacy alias，不再形成第二套视觉权威。
+- Style Lock 为 immutable snapshot；历史 pre-snapshot lock 只迁移一次。
+- `input_fingerprint` 表达输入身份，`run_id/build_id` 表达执行身份。
+- Manifest 恢复同时校验 input fingerprint 与 Prompt SHA；旧无 fingerprint 项目仅进入明确 legacy compatibility。
+- `needs_svg_authoring`、`needs_visual_review` 等为正常 action state，并写入 manifest、回执和 `build_context.json`。
+- Full image 审计通过后继续作为 editable reconstruction 的视觉权威。
 
-### Script QA
+### Compatibility seam
 
-- 高置信 schema/结构/未知 deterministic finding 默认 blocker。
-- 首批措辞/视觉语法正则类检查进入 advisory policy，避免作者为了通过 regex 机械堆关系动词。
-- 原 `lint` 退出行为暂保持兼容，severity policy 先独立运行再逐步接入主 gate。
+- Stage02 生产代码的 module-global monkey-patch 已清零。
+- 历史 `LegacyPatchSet` 名称仅转换为显式 `Stage02Dependencies`，不再修改生产模块全局。
+- Script Engine 的旧入口继续通过 thin compatibility facade 保持历史 import/API，但 facade 不再承载业务实现。
+
+### Script Engine / QA
+
+- `contracts.py`、`contract_rules.py` 已收敛为稳定 facade；schema、source trace、AUTHOR、full-copy、onscreen、delivery、structural 等规则均有 focused implementation。
+- `cli.py` 已收敛为参数分发、stdout/stderr 与 exit-code 适配；parser、project scaffold/status、audit reports、Final Script delivery/quality 均迁入 focused modules。
+- `source_index.py` 已收敛为 builder/render/write facade；阅读策略、legacy Word extract、v2 validation 均独立。
+- deterministic finding 已正式区分 blocker/advisory；未知 finding 继续 fail-closed。
+
+### Analysis Audits
+
+- 原约 47.9KB `analysis_audits/final_script.py` 已收敛为 thin compatibility facade。
+- Final Script 审计已拆为 authoring、lean、onscreen、deck 与 orchestrator focused domains，runtime 动态 rebinding 已删除。
+- `final_authoring.py` 已进一步拆为 expression 与 structure 两个 focused domain，并降为 facade。
+- 原约 21.9KB `common.py` 已拆为 `common_primitives.py` 与 `common_contracts.py`，自身降为 facade。
+- 原约 12.6KB `composed_trace.py` 已拆为 trace core 与 Critic priorities 两个 focused domain，自身降为 facade。
+- 所有上述迁移均保持 finding 文案、顺序、trace schema、历史公开对象与必要私有兼容属性。
 
 ### Packaging / CI
 
-- Pillow 12 为直接依赖；XLSX/MarkItDown 能力进入 `source` extra。
-- `scripts`、`references`、`contracts`、`assets` 进入 wheel 包边界。
-- CI 覆盖 Python 3.10/3.12 pytest、runtime import、wheel build 和离开仓库目录后的 wheel import/resource smoke。
-- pytest 输出通过 `tee` 保存，并使用 `actions/upload-artifact@v4` 在成功或失败时均上传 `pytest-log-<python-version>`；`pipefail` 保证日志保存不会吞掉测试失败退出码。
+正式回归基线为五项 GitHub Actions：
 
-## Compatibility seam 当前状态
+1. Linux Python 3.10 全量 pytest + wheel repo 外 smoke。
+2. Linux Python 3.12 全量 pytest + wheel repo 外 smoke。
+3. macOS wheel smoke。
+4. Windows wheel smoke。
+5. OfficeCLI 真实 PPTX → HTML → Chromium PNG render smoke。
 
-现有生产兼容入口收敛到 `cyberppt.stage02_production.compat` 的 6 项 `LegacyPatchSet`。`tests/test_final_script_pages.py` 现以薄子类覆盖一个需要现代真实图片夹具的用例，其余完整历史测试定义保存在 `tests/_final_script_pages_base.py`，避免为单点修复删除既有覆盖。其他大型历史测试文件也仅在需要迁移单项旧合同断言时采用同样的 base + override 方式，保持原覆盖面。
+关键 runtime、Style09 registry/palette、动画预设、preset-shape、SVG Editor、references/contracts/assets 均进入 wheel 包边界。
 
-## 尚未完成 / 后续建议
+## 原“尚未完成”事项的关闭情况
 
-1. 清理 creative brief、page manifest、no-visual-structure 中余下旧 Style09 精确字符串/标题断言。
-2. 统一 `references/visual-system.md` 中 Style09 的说明性文字，清除仍残留的象牙白旧说明，并注明 Style10 仅为兼容 alias。
-3. 将 6 个 LegacyPatchSet 字段逐个迁移为显式依赖注入，并继续接入 quality policy / wheel fixture / Office 集成 CI。
+早期总进度文件曾列出三项待办，现均已关闭：
 
-## 验证状态
+1. Creative brief、page manifest、no-visual-structure 中旧 Style09 精确字符串/标题断言：Stage 31–33 完成迁移。
+2. `references/visual-system.md` 中旧象牙白说明及 Style10 定位：Stage 36 完成统一，Style10 明确为 compatibility alias。
+3. LegacyPatchSet module-global patch、quality policy、wheel fixture 与 Office 集成 CI：Stage 37–45 完成，生产 module-global patch 清零，quality policy 与三平台/OfficeCLI CI 已接入。
 
-- 基线 commit `f52f72553d41c828e10d12c5c4a3a7cb51c78ab4` 在本轮改造开始前，GitHub Actions run `33323661957` 的 Python 3.10/3.12 pytest 已经失败。
-- 阶段 17 run `33339954486`：Python 3.12 为 37 failed、1753 passed、8 skipped。
-- 阶段 18 run `33340180065`：Python 3.12 为 40 failed、1750 passed、8 skipped。
-- 阶段 22 文档 checkpoint run `33340603317`：Python 3.12 为 24 failed、1764 passed、8 skipped。
-- 阶段 24 文档 checkpoint run `33340946220`：Python 3.12 为 9 failed、1751 passed、8 skipped。
-- 阶段 25–29 已依次处理 provenance、Style10 alias、handoff alias、真实 PNG 纠错夹具和安全规则旧断言；以后续 CI 结果作为新的精确失败清单。
-- 在 GitHub Actions 最终 conclusion 变绿前，不视为全量验证完成。
+随后 Stage 46–75 完成 Script Engine 与 analysis audit God Module 的职责域收敛。因此，原架构收敛 backlog 当前没有未关闭的强制项。
+
+## 退出准则与后续规则
+
+架构收敛里程碑在 Stage 76 完成后关闭。后续开发遵循以下规则：
+
+- 不新增第二套可写权威或第二套视觉执行权威。
+- 不恢复生产 module-global monkey-patch。
+- compatibility facade 只做显式转发，不承载新的业务实现。
+- 新功能优先落入现有 focused domain；只有职责确实独立时再新增模块。
+- 不以单文件大小作为拆分理由；以职责耦合、变更风险和测试边界作为判断依据。
+- 每次架构级变更必须通过五项 CI；若重新开启架构收敛编号，从 Stage 77 开始。
