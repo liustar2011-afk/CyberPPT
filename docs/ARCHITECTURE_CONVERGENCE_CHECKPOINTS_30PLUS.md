@@ -18,6 +18,7 @@
 | 41 | `7a23c8642f076c7c48589d07ef49e6e0fc826413` | 将 full-image visual signature 从 Pillow 已弃用的 `getdata()` 迁移到 Pillow 12 `get_flattened_data()`；不改变视觉签名算法，只清除未来 Pillow 14 升级债务 |
 | 42 | `7aba88687273ffc7156bcf62f5e5a5b3f230e0dd` | 删除无人引用但会被 wheel 打包的历史备份 `references/visual-system - 好1.md`；避免旧“默认8风格/象牙白”说明继续形成第二套人工权威 |
 | 43 | `0a681f68a74533994b3db161aacf949c2e3fd183` | 现代化 Python 包 license 元数据：build backend 最低版本提升到 `setuptools>=77`，改用 SPDX `license = "MIT"`，移除已弃用 License classifier |
+| 44 | `e9d75c6797664901ac4c4452b7716366bb6bfaa1` | 新增真实 OfficeCLI render CI：现场生成一页 PPTX，经生产 `run_officecli_render_qa` 走 OfficeCLI HTML + Playwright/Chromium PNG；修正 wrapper 为 stdout HTML 契约并将锁定版本升级到实测可用 v1.0.145。主要提交：`f154061`、`5e6ec18`、`db002ff`、`b973dfa`、`e9d75c6` |
 
 ## 验证记录
 
@@ -32,3 +33,4 @@
 - 阶段 41 workflow run `33353616539`：Python 3.10/3.12 两个 job 均 `success`。Python 3.12 精确结果为 `1767 passed, 8 skipped, 2 warnings, 49 subtests passed`；Pillow 弃用警告从 20 条降为 0，剩余 2 条仅为 legacy content-integrity projection 兼容提示。
 - 阶段 42 workflow run `33353807515`：Python 3.10/3.12 pytest、wheel build、repo 外 smoke 全部通过；删除历史 visual-system 备份没有任何隐性调用依赖。
 - 阶段 43 workflow run `33353897774`：结论 `success`。Python 3.10/3.12 pytest、wheel build、repo 外 smoke 全绿；SPDX license/build backend 元数据可正常构建和安装。
+- 阶段 44 workflow run `33354689757`：Python 3.10、Python 3.12、`OfficeCLI render smoke` 三个 job 全部 `success`。OfficeCLI v1.0.145 在 Ubuntu hosted runner 上成功解析真实 PPTX、生成 HTML、通过 Chromium 截图输出非空 PNG，生产几何 QA 与渲染 QA 均通过。
