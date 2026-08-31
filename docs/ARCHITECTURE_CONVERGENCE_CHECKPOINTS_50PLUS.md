@@ -8,6 +8,7 @@
 | 51 | `f8f8b81ef2412106cf6b5a451fac7fdc4d3974b7` | 新增共享 `semantic_text_primitives.py`，并将 mission/argument/visual_thesis/relationships/speaker_notes 的 AUTHOR supporting-field 机械合同迁入 `author_contracts.py`；`lint_contracts` 与 `contracts` facade 已切换到 focused implementation。实现提交：`2612508`、`bc4f33f`、`555980e`、`6f90f91`、`f8f8b81` |
 | 52 | `b1812c48ad5f3096c043f0480c95acf31f1ecc9a` | 将 full-copy 段落结构、段首语义完整性和显式并列分支子结论三类检查迁入 `full_copy_contracts.py`，复用共享 semantic text primitives；`lint_contracts` 与 `contracts` facade 已切换到 focused implementation，并以架构测试锁定公共出口。实现提交：`2204cdc`、`9c56549`、`5cdc4d3`、`b1812c4` |
 | 53 | `bf016b2065ca0a62e16afa64a5ed80e744bd82ff` | 将 onscreen 标题语义、细项语义、证据层、层级标点、代码自解释和 core_message 可见投影六类检查迁入 `onscreen_contracts.py`，统一复用共享 semantic text primitives；`lint_contracts` 与 `contracts` facade 已切换到 focused implementation，并以架构测试锁定公共出口。实现提交：`eaa179f`、`c33ea96`、`69f9ec2`、`bf016b2` |
+| 54 | `806ff5cc805b068ed3b204ea6137115583debb9f` | 移除 `contracts.py` 对 `contract_rules.py` 的运行时 wildcard fallback；正式 facade 仅显式导出 focused modules，旧 `contract_rules.py` 暂保留供直接历史 import 兼容，并新增静态门禁禁止 legacy fallback 回流。实现提交：`d7dc8ba`、`806ff5c` |
 
 ## 验证记录
 
@@ -15,3 +16,4 @@
 - 阶段 51 workflow run `33362447591`：五个 job 全部 `success`。AUTHOR supporting-field 迁移后全量测试、三平台 wheel smoke 与 OfficeCLI 真实渲染均通过；`AUTHOR_MISSION_GENERIC`、`AUTHOR_VISUAL_THESIS_NONRELATIONAL`、`AUTHOR_VISUAL_TOPOLOGY_CONFLICT` 的 advisory 分类保持原行为。
 - 阶段 52 workflow run `33362901587`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；full-copy focused module、lint 调度和 facade 公共导出切换后保持现有 deterministic finding 与退出语义兼容。
 - 阶段 53 workflow run `33363190081`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；onscreen focused module、lint 调度和 facade 公共导出切换后保持现有 deterministic finding 与退出语义兼容。
+- 阶段 54 workflow run `33363394820`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；production `contracts.py` 已不再 import 或 wildcard-reexport `contract_rules.py`，focused facade 成为唯一正式公共出口。
