@@ -20,6 +20,15 @@
 
 页面同时显示问题端与响应端。每一对映射都必须说明“该能力具体回答什么问题”，不同映射对之间没有默认先后顺序。
 
+## Relation Contract
+
+- Node Role：问题端点、响应端点、对应规则。
+- Edge Semantics：问题与能够回答该问题的能力建立明确对应，不表示流程先后或双向作用。
+- Direction / Cardinality：本示例为 1:1；实际业务可为 1:N 或 N:1，按真实关系保留 Cardinality。
+- Invariant：问题端与响应端必须同时可见，不能为了视觉整齐强制一一对应，也不能把映射行串成流程。
+- Confusable With：Comparison。
+- Disambiguation Rule：Mapping 回答“A 对应什么 B”；Comparison 回答“A 与 B 在同一评价维度 D 上有什么差异”。
+
 ## Relation Units
 
 1. 供给波动 → 可用能力与检修受限分析；
