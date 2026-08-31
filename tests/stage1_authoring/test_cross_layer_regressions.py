@@ -116,6 +116,51 @@ def test_stage2_recovers_explicit_non_directional_comparison_pair() -> None:
     assert decision[0] == "comparison_2col"
 
 
+def test_stage2_preserves_governance_chain_through_shared_control_node() -> None:
+    visual_structure = "\n".join(
+        (
+            "业务牵头方 → 业务口径与结论边界：责任绑定",
+            "数据责任方 → 数据来源与版本记录：责任绑定",
+            "分析执行方 → 模型方法与计算过程：责任绑定",
+            "业务口径与结论边界 → 共同控制机制：治理汇入",
+            "数据来源与版本记录 → 共同控制机制：治理汇入",
+            "模型方法与计算过程 → 共同控制机制：治理汇入",
+            "共同控制机制 → 受保护结果：保护结果",
+        )
+    )
+
+    derived = derive_business_relationships(
+        visual_structure=visual_structure,
+        title="统一预测治理",
+        module_titles=("业务牵头方", "数据责任方", "分析执行方", "共同控制机制"),
+        top_level_module_titles=("业务牵头方", "数据责任方", "分析执行方", "共同控制机制"),
+    )
+
+    assert len(derived) == 7
+    assert all(item["direction"] == "subject_to_objects" for item in derived)
+
+    incoming_to_control = [
+        item
+        for item in derived
+        if item.get("objects") == ["共同控制机制"]
+    ]
+    outgoing_from_control = [
+        item
+        for item in derived
+        if item.get("subject") == "共同控制机制"
+    ]
+    assert len(incoming_to_control) == 3
+    assert len(outgoing_from_control) == 1
+    assert outgoing_from_control[0]["objects"] == ["受保护结果"]
+
+    decision = resolve_relation_expression(
+        relationships=derived,
+        module_count=4,
+    )
+    assert decision is not None
+    assert decision[0] == "directed_dependency_2_6"
+
+
 @pytest.mark.parametrize(
     "case",
     [case for case in _FAILURE_CASES if case.detection_mode == "lint"],
