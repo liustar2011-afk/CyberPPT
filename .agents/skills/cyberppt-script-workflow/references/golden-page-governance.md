@@ -20,6 +20,15 @@
 
 页面展示责任主体、各自控制对象以及共同治理机制。角色之间可协同，但不得互相替代责任；最终结果必须说明具体被保护的对象。
 
+## Relation Contract
+
+- Node Role：并行责任主体、各自责任对象、共同控制机制、受保护结果。
+- Edge Semantics：主体对责任对象承担明确责任；共同控制机制对关键判断和变更实施控制；控制最终落到可验证结果。
+- Direction / Cardinality：`Actor → Responsibility Object → Control Mechanism → Protected Outcome`；多个 Actor / Responsibility Object 可汇入共同控制层。
+- Invariant：Control Mechanism 不能与 Actor 变成同层第四主体；每个主体必须先绑定自己的责任对象，再进入共同治理层。
+- Confusable With：Parallel。
+- Disambiguation Rule：Governance 回答“谁对什么负责、通过什么控制保护什么结果”；Parallel 只回答“结论由哪些同层维度构成”。
+
 ## Relation Units
 
 1. 业务牵头方负责指标口径、判断尺度和结论边界；
