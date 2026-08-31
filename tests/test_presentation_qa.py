@@ -83,8 +83,8 @@ class PresentationQaTests(unittest.TestCase):
         which.assert_not_called()
 
     def test_officecli_version_is_pinned(self) -> None:
-        self.assertEqual("1.0.144", OFFICECLI_VERSION)
-        self.assertIn("v1.0.144", str(repository_officecli_path()))
+        self.assertEqual("1.0.145", OFFICECLI_VERSION)
+        self.assertIn("v1.0.145", str(repository_officecli_path()))
 
     def test_explicit_soffice_renderer_skips_officecli(self) -> None:
         with TemporaryDirectory() as directory:
@@ -128,15 +128,16 @@ class PresentationQaTests(unittest.TestCase):
             self._write_text_deck(pptx_path)
 
             def run(command, **kwargs):
-                if command[3:5] == ["stats", "--json"]:
-                    return type("Completed", (), {"stdout": '{"data":{"slides":1}}'})()
                 if "html" in command:
-                    html_path = Path(command[command.index("-o") + 1])
-                    html_path.write_text('<div class="slide">中文</div>', encoding="utf-8")
+                    return type(
+                        "Completed",
+                        (),
+                        {"stdout": '<div class="slide">中文</div>', "stderr": "", "returncode": 0},
+                    )()
                 if command[0] == "/usr/bin/node":
                     screenshot = Path(command[-1])
                     Image.new("RGB", (960, 720), "white").save(screenshot, format="PNG")
-                return type("Completed", (), {"stdout": ""})()
+                return type("Completed", (), {"stdout": "", "stderr": "", "returncode": 0})()
 
             with patch("scripts.presentation_qa.render_page._officecli_path", return_value=Path("/usr/bin/officecli")):
                 with patch("scripts.presentation_qa.render_page.shutil.which", return_value="/usr/bin/node"):
@@ -148,6 +149,9 @@ class PresentationQaTests(unittest.TestCase):
         html = next(command for command in commands if "html" in command)
         font_capture = next(command for command in commands if command[0] == "/usr/bin/node")
         self.assertEqual("/usr/bin/officecli", html[0])
+        self.assertNotIn("stats", html)
+        self.assertNotIn("-o", html)
+        self.assertEqual(["--start", "1", "--end", "1"], html[-4:])
         self.assertTrue(font_capture[1].endswith("officecli_html_screenshot.mjs"))
 
     def test_fragmented_native_text_matches_one_script_string(self) -> None:
