@@ -6,11 +6,11 @@
 
 ## 总体状态
 
-- 当前阶段：Batch C1 — Parallel 同层尺度统一
+- 当前阶段：Batch C2 — Convergence 输入角色优化
 - 总体状态：进行中
-- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance 分层重构完成；Comparison 无方向对照重构完成；Causal 真实因果链重构完成
+- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance、Comparison、Causal、Parallel 优化完成
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把 AUTHOR/CRITIQUE 的生成式判断硬编码成低精度 lint
-- 下一恢复点：统一 Parallel 三个兄弟 Relation Units 的业务尺度、命名句法和问句口径
+- 下一恢复点：优化 Convergence 的输入角色命名，使各输入都以“独立贡献 → 共同结果”的同一语义尺度进入汇聚点
 
 ## 已确认的现状映射
 
@@ -30,7 +30,7 @@
 - [x] Batch B1：Governance 重构
 - [x] Batch B2：Comparison 重构
 - [x] Batch B3：Causal 收紧真实因果
-- [ ] Batch C1：Parallel 同层尺度统一
+- [x] Batch C1：Parallel 同层尺度统一
 - [ ] Batch C2：Convergence 输入角色优化
 - [ ] Batch D1：Flow 增加真实业务交接物
 - [ ] Batch D2：Roadmap 增加状态化进入条件与起终点
@@ -153,3 +153,20 @@
 - 已发现问题：正向 fixture 的 causal case 已使用“数据口径不一致 → 跨周期结论不可比 → 风险判断难以持续复盘”，方向与新黄金页一致，但节点细度和最终业务影响仍需 Batch G1 对齐。
 - 剩余任务：Batch C1–H。
 - 下一恢复点：Batch C1，统一 Parallel 三个兄弟单元的业务尺度与命名句法。
+
+### Batch C1 — Parallel：统一兄弟单元的语义尺度与句法
+
+- 状态：完成
+- 完成内容：
+  - 将三个兄弟单元统一为同一业务尺度的能力维度：研判范围、周期规则、运行机制。
+  - Relation Units 统一采用“维度名｜该维度承担的建设动作”句法。
+  - 明确三个兄弟单元都回答同一上位问句：“统一预测体系需要建设哪一个能力维度？”
+  - 重写上屏证据，使三个分组的信息深度、标题句法和视觉权重一致。
+  - 更新视觉结构，明确三组均直接支撑总论，兄弟之间不建立箭头、先后或因果关系。
+- 改动文件：
+  - `.agents/skills/cyberppt-script-workflow/references/golden-page-parallel.md`
+- 实现 commit：`bd323d56afa606ae68d6c12e8f63586dd6e87fa8`
+- 测试结果：静态同层问句检查通过；Runtime 统一验证留到 Batch G/H。
+- 已发现问题：现有 fixture 使用“研判范围 / 周期规则 / 运行闭环”，其中第三项命名仍需在 Batch G1 与黄金页“运行机制”对齐。
+- 剩余任务：Batch C2–H。
+- 下一恢复点：Batch C2，统一 Convergence 各输入的角色尺度与共同结果表达。
