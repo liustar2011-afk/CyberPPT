@@ -32,7 +32,7 @@ def _edge_activity(path: Path, *, size: tuple[int, int] = (96, 48)) -> tuple[lis
         gray = source.convert("L").resize(size, Image.Resampling.LANCZOS)
     edge = gray.filter(ImageFilter.FIND_EDGES)
     width, height = edge.size
-    pixels = list(edge.getdata())
+    pixels = list(edge.get_flattened_data())
     clean: list[int] = []
     for y in range(height):
         for x in range(width):
@@ -45,7 +45,7 @@ def _structure_hash(activity: Sequence[int], width: int, height: int) -> str:
     image = Image.new("L", (width, height))
     image.putdata(activity)
     small = image.resize((8, 8), Image.Resampling.BILINEAR)
-    values = list(small.getdata())
+    values = list(small.get_flattened_data())
     mean = sum(values) / len(values)
     bits = "".join("1" if value >= mean else "0" for value in values)
     return f"{int(bits, 2):016x}"
