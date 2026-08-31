@@ -17,17 +17,15 @@ from .audit_reports import (
     validate_artifact_report,
 )
 from .cli_parser import build_parser as _build_parser
-from .contracts import (
-    check_declared_count,
-    load_json,
-    outline_final_script,
-    validate_final_script,
+from .delivery_commands import (
+    delivery_sync_report,
+    lint_report,
+    outline_report,
+    render_stage02_delivery,
 )
 from .final_quality import collect_final_lint_issues, partition_final_lint_findings
 from .project_scaffold import create_project
 from .project_status import build_project_status, project_profile_for_foundation
-from .render import render_stage02_markdown
-from .text_io import write_text_lf
 
 _project_profile_for_foundation = project_profile_for_foundation
 
@@ -101,26 +99,18 @@ def _final_lint_findings(payload: dict, markdown: str) -> tuple[list[str], list[
 
 
 def _lint(final_path: Path) -> int:
-    payload = load_json(final_path)
-    markdown = render_stage02_markdown(payload)
-    blockers, advisories = _final_lint_findings(payload, markdown)
-    warnings = check_declared_count(payload)
-    status = "failed" if blockers else "passed_with_advisories" if advisories else "passed"
-    _print_report({
-        "kind": "lint",
-        "path": str(final_path.resolve()),
-        "status": status,
-        "issues": blockers,
-        "advisories": advisories,
-        "warnings": warnings,
-    })
-    return 0 if not blockers else 1
+    report, exit_code = lint_report(
+        final_path,
+        final_lint_findings=_final_lint_findings,
+    )
+    _print_report(report)
+    return exit_code
 
 
 def _outline(final_path: Path) -> int:
-    payload = load_json(final_path)
-    _print_report({"kind": "outline", "path": str(final_path.resolve()), "slides": outline_final_script(payload)})
-    return 0
+    report, exit_code = outline_report(final_path)
+    _print_report(report)
+    return exit_code
 
 
 def _new_project(slug: str, base_dir: Path) -> int:
@@ -144,44 +134,26 @@ def _status(project_dir: Path) -> int:
 
 
 def _render(input_path: Path, output_path: Path) -> int:
-    payload = load_json(input_path)
-    issues = validate_final_script(payload)
-    if issues:
-        _print_report({"status": "failed", "issues": issues}, stderr=True)
-        return 1
-    markdown = render_stage02_markdown(payload)
-    lint_blockers, _ = _final_lint_findings(payload, markdown)
-    if lint_blockers:
-        _print_report({"kind": "final-delivery-lint", "status": "failed", "issues": lint_blockers}, stderr=True)
-        return 1
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    write_text_lf(output_path, markdown)
-    print(str(output_path.resolve()))
-    return 0
+    rendered_path, error_report, exit_code = render_stage02_delivery(
+        input_path,
+        output_path,
+        final_lint_findings=_final_lint_findings,
+    )
+    if error_report is not None:
+        _print_report(error_report, stderr=True)
+    elif rendered_path is not None:
+        print(rendered_path)
+    return exit_code
 
 
 def _check_sync(final_path: Path, markdown_path: Path) -> int:
-    payload = load_json(final_path)
-    issues = validate_final_script(payload)
-    if issues:
-        _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "failed", "issues": issues})
-        return 1
-    expected = render_stage02_markdown(payload)
-    lint_blockers, lint_advisories = _final_lint_findings(payload, expected)
-    if lint_blockers:
-        _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": "failed", "issues": lint_blockers, "advisories": lint_advisories})
-        return 1
-    if not markdown_path.exists():
-        issues = [f"{markdown_path} does not exist; run render-stage02 to produce it"]
-    else:
-        actual = markdown_path.read_text(encoding="utf-8")
-        if actual != expected:
-            issues = [f"{markdown_path} does not match a fresh render of {final_path} — re-run render-stage02 rather than hand-editing the Markdown"]
-        else:
-            issues = []
-    status = "failed" if issues else "passed_with_advisories" if lint_advisories else "passed"
-    _print_report({"kind": "delivery-sync", "final": str(final_path.resolve()), "markdown": str(markdown_path.resolve()), "status": status, "issues": issues, "advisories": lint_advisories})
-    return 0 if not issues else 1
+    report, exit_code = delivery_sync_report(
+        final_path,
+        markdown_path,
+        final_lint_findings=_final_lint_findings,
+    )
+    _print_report(report)
+    return exit_code
 
 
 def build_parser():
