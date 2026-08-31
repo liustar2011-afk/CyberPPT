@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from . import contract_rules as _impl
 from . import delivery_contracts as _delivery
+from . import lint_contracts as _lint
 from . import schema_contracts as _schema
 from . import source_trace_contracts as _source_trace
 from . import structural_contracts as _structural
@@ -38,6 +39,10 @@ _FOCUSED_EXPORTS = {
     "outline_final_script": _delivery.outline_final_script,
     "check_onscreen_structure": _structural.check_onscreen_structure,
     "check_full_copy_duplication": _structural.check_full_copy_duplication,
+    "BANNED_PHRASING_PATH": _lint.BANNED_PHRASING_PATH,
+    "load_banned_phrasing": _lint.load_banned_phrasing,
+    "iter_final_script_text_fields": _lint.iter_final_script_text_fields,
+    "lint_final_script": _lint.lint_final_script,
 }
 globals().update(_FOCUSED_EXPORTS)
 
