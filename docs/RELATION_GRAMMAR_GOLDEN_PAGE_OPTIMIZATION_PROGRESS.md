@@ -6,15 +6,14 @@
 
 ## 当前状态
 
-- 当前阶段：Batch D3 — Mapping 修正方向与 Cardinality
+- 当前阶段：Batch E — Onscreen 微语法与 Speaker Notes 去重
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D2
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：修正 Mapping 的方向与 1:1 Cardinality，清理 `↔` 对称表达
+- 下一恢复点：统一 8 页上屏微语法，减少 Speaker Notes 与上屏文字的机械重复
 
 ## 剩余任务
 
-- [ ] Batch D3：Mapping 修正方向与 Cardinality
 - [ ] Batch E：Onscreen 微语法与 Speaker Notes 去重
 - [ ] Batch F：统一视觉结构合同
 - [ ] Batch G1：Golden Page ↔ fixture 映射
@@ -48,6 +47,7 @@
 | Batch C2 Convergence | 完成 | `3ce2b3e5c53677c17ad1bc1dcdf2d1e04dd4faa6` | 输入角色统一为“供给边界 / 需求压力 / 互济缓释 / 波动扰动”，四条输入显式汇入共同结果 | fixture 业务输入不同；Batch G1 对齐 |
 | Batch D1 Flow | 完成 | `b85a5b702f77dc43c88811589fa4d47cd7093ee9` | 三条正向边增加真实交接物，反馈边增加明确回写物；视觉结构保留“顺序衔接 / 反馈回流”关系标签 | fixture 需补交接信息但保持 feedback_loop 解析 |
 | Batch D2 Roadmap | 完成 | `a404c1a253b96ea5e4bc053c9b4b50f635dd53f8` | 固定 Current State S0、S1/S2/S3 新状态、进入条件和 Target State；箭头只表达满足条件后的状态跃迁 | fixture 需补 S0/S1/S2/S3 与进入条件语义；Batch G1 对齐 |
+| Batch D3 Mapping | 完成 | `519f0f22bce685e21c6f2583e9a4641be58cff1a` | 清理 `↔`；固定 `Problem → Response` 单向语义；四组关系显式标注 1:1；视觉结构增加可被 Stage2 adapter 直接解析的“问题回应”关系边 | Batch G1 对齐 fixture；Batch F 统一视觉合同格式 |
 
 ## Batch D2 详细验收
 
@@ -57,3 +57,11 @@
 - Target State S3 已显式：共同输入可复用、跨周期结论可校核、偏差可追溯、复盘可持续回写。
 - 视觉结构使用 `顺序演进｜进入条件：...`，保留 sequence semantics，同时说明状态跃迁依据。
 - 本步仅改黄金页文档；Runtime 回归统一放在 Batch G/H。
+
+## Batch D3 详细验收
+
+- 主论证链已由对称 `↔` 改为单向 `Problem → Response`。
+- 四个 Relation Units 均显式标注 1:1，避免视觉对称被误读为双向作用。
+- Relation Contract 明确：映射方向表示“问题由哪项能力响应”，不代表流程、状态演进或双向影响。
+- 视觉结构新增四条独立 `A → B：问题回应` 关系边，现有 `stage02_relationship_adapter` 可直接恢复为 mapping semantics。
+- 本步未新增任何 Final Script 字段，Cardinality 仅作为黄金页语义约束和可读标记存在。
