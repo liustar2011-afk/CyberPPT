@@ -59,8 +59,16 @@ def _install_common(monkeypatch, tmp_path: Path, events: list[str], rhythm_statu
     images = ImageStageResult(manifest={"pairs": []})
     monkeypatch.setattr(orchestrator, "prepare_preflight", lambda options: context)
     monkeypatch.setattr(orchestrator, "prepare_manifest", lambda context, options: manifest)
-    monkeypatch.setattr(orchestrator, "run_image_stage", lambda context, manifest, options: images)
-    monkeypatch.setattr(orchestrator, "normalize_audited_manifest_images", lambda payload: events.append("normalize"))
+    monkeypatch.setattr(
+        orchestrator,
+        "run_image_stage",
+        lambda context, manifest, options, dependencies=None: images,
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "normalize_audited_manifest_images",
+        lambda payload, **kwargs: events.append("normalize"),
+    )
 
     def rhythm(payload, *, build_dir):
         events.append("rhythm")
