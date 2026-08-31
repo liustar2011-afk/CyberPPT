@@ -6,11 +6,11 @@
 
 ## 总体状态
 
-- 当前阶段：Batch B3 — Causal 收紧真实因果
+- 当前阶段：Batch C1 — Parallel 同层尺度统一
 - 总体状态：进行中
-- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance 分层重构完成；Comparison 无方向对照重构完成
+- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance 分层重构完成；Comparison 无方向对照重构完成；Causal 真实因果链重构完成
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把 AUTHOR/CRITIQUE 的生成式判断硬编码成低精度 lint
-- 下一恢复点：重构 Causal，使每条边都能用明确的“导致/使得/因此”业务语义解释，清理仅凭叙事顺序形成的伪因果
+- 下一恢复点：统一 Parallel 三个兄弟 Relation Units 的业务尺度、命名句法和问句口径
 
 ## 已确认的现状映射
 
@@ -29,7 +29,7 @@
 - [x] Batch A：统一黄金页面模板与 Relation Contract
 - [x] Batch B1：Governance 重构
 - [x] Batch B2：Comparison 重构
-- [ ] Batch B3：Causal 收紧真实因果
+- [x] Batch B3：Causal 收紧真实因果
 - [ ] Batch C1：Parallel 同层尺度统一
 - [ ] Batch C2：Convergence 输入角色优化
 - [ ] Batch D1：Flow 增加真实业务交接物
@@ -136,3 +136,20 @@
 - 已发现问题：现有 Stage2 adapter 的正向 Comparison fixture 依赖 `分散预测模式 → 统一预测体系：对照比较` 才能恢复 `comparison`，与新黄金页的无方向表达不一致；需在 Batch F/G 补充无箭头的 Comparison 结构识别。
 - 剩余任务：Batch B3–H。
 - 下一恢复点：Batch B3，收紧 Causal 的边语义，只保留可明确解释的真实因果。
+
+### Batch B3 — Causal：收缩为逐边可证明的真实因果链
+
+- 状态：完成
+- 完成内容：
+  - 将原“业务对象扩展 → 分析要求增加 → 能力缺口 → 能力升级”叙事链重构为可逐边证明的业务因果链。
+  - 新链固定为“数据口径和版本分散 → 同一指标计算基准不一致 → 跨周期结论难以校核 → 预测偏差难以追溯 → 风险预警难以持续更新”。
+  - 每个 Relation Unit 改写为“前因造成的直接后果”，确保全部边可通过“因为 A，所以 B”测试。
+  - 在视觉结构中加入四条显式 `A → B：因果导致` 关系，便于 Stage2 恢复真实 causal semantics。
+  - 更新 Speaker Notes 与作者自检，移除实施步骤、交接阶段等 Flow / Roadmap 语义。
+- 改动文件：
+  - `.agents/skills/cyberppt-script-workflow/references/golden-page-causal.md`
+- 实现 commit：`b14788dd4d887161419b30c9f20b0f2a17dd8721`
+- 测试结果：静态逐边“因为 A，所以 B”核对通过；Runtime 统一验证留到 Batch G/H。
+- 已发现问题：正向 fixture 的 causal case 已使用“数据口径不一致 → 跨周期结论不可比 → 风险判断难以持续复盘”，方向与新黄金页一致，但节点细度和最终业务影响仍需 Batch G1 对齐。
+- 剩余任务：Batch C1–H。
+- 下一恢复点：Batch C1，统一 Parallel 三个兄弟单元的业务尺度与命名句法。
