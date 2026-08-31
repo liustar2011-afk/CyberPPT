@@ -4,11 +4,11 @@ import ast
 from pathlib import Path
 
 import script_engine.author_contracts as author_contracts
-import script_engine.contract_rules as implementation
 import script_engine.contracts as facade
 import script_engine.delivery_contracts as delivery_contracts
 import script_engine.full_copy_contracts as full_copy_contracts
 import script_engine.lint_contracts as lint_contracts
+import script_engine.onscreen_contracts as onscreen_contracts
 import script_engine.schema_contracts as schema_contracts
 import script_engine.source_trace_contracts as source_trace_contracts
 import script_engine.structural_contracts as structural_contracts
@@ -31,6 +31,12 @@ def test_contracts_facade_routes_focused_domains() -> None:
     assert facade.check_full_copy_structure is full_copy_contracts.check_full_copy_structure
     assert facade.check_full_copy_topic_semantics is full_copy_contracts.check_full_copy_topic_semantics
     assert facade.check_full_copy_parallel_subconclusions is full_copy_contracts.check_full_copy_parallel_subconclusions
+    assert facade.check_onscreen_heading_semantics is onscreen_contracts.check_onscreen_heading_semantics
+    assert facade.check_onscreen_detail_semantics is onscreen_contracts.check_onscreen_detail_semantics
+    assert facade.check_onscreen_projection_structure is onscreen_contracts.check_onscreen_projection_structure
+    assert facade.check_onscreen_hierarchy_punctuation is onscreen_contracts.check_onscreen_hierarchy_punctuation
+    assert facade.check_onscreen_code_context is onscreen_contracts.check_onscreen_code_context
+    assert facade.check_onscreen_core_alignment is onscreen_contracts.check_onscreen_core_alignment
     assert facade.check_speaker_notes_length is delivery_contracts.check_speaker_notes_length
     assert facade.check_declared_count is delivery_contracts.check_declared_count
     assert facade.check_onscreen_terminal_punctuation is delivery_contracts.check_onscreen_terminal_punctuation
@@ -40,11 +46,6 @@ def test_contracts_facade_routes_focused_domains() -> None:
     assert facade.check_full_copy_duplication is structural_contracts.check_full_copy_duplication
 
 
-def test_contracts_facade_keeps_remaining_rules_compatible() -> None:
-    assert facade.check_onscreen_heading_semantics is implementation.check_onscreen_heading_semantics
-    assert facade.check_onscreen_detail_semantics is implementation.check_onscreen_detail_semantics
-
-
 def test_contracts_facade_contains_no_rule_implementation() -> None:
     path = ROOT / "script_engine" / "contracts.py"
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -52,4 +53,4 @@ def test_contracts_facade_contains_no_rule_implementation() -> None:
     classes = [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
     assert functions == []
     assert classes == []
-    assert path.stat().st_size < 3_500
+    assert path.stat().st_size < 4_000
