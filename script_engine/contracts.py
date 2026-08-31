@@ -10,6 +10,7 @@ from . import contract_rules as _impl
 from . import delivery_contracts as _delivery
 from . import schema_contracts as _schema
 from . import source_trace_contracts as _source_trace
+from . import structural_contracts as _structural
 
 for _name, _value in vars(_impl).items():
     if not _name.startswith("__"):
@@ -35,6 +36,8 @@ _FOCUSED_EXPORTS = {
     "check_onscreen_terminal_punctuation": _delivery.check_onscreen_terminal_punctuation,
     "check_onscreen_detail_length": _delivery.check_onscreen_detail_length,
     "outline_final_script": _delivery.outline_final_script,
+    "check_onscreen_structure": _structural.check_onscreen_structure,
+    "check_full_copy_duplication": _structural.check_full_copy_duplication,
 }
 globals().update(_FOCUSED_EXPORTS)
 
