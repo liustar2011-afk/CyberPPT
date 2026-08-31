@@ -8,6 +8,7 @@ import script_engine.contracts as facade
 import script_engine.delivery_contracts as delivery_contracts
 import script_engine.schema_contracts as schema_contracts
 import script_engine.source_trace_contracts as source_trace_contracts
+import script_engine.structural_contracts as structural_contracts
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,12 +26,14 @@ def test_contracts_facade_routes_focused_domains() -> None:
     assert facade.check_onscreen_terminal_punctuation is delivery_contracts.check_onscreen_terminal_punctuation
     assert facade.check_onscreen_detail_length is delivery_contracts.check_onscreen_detail_length
     assert facade.outline_final_script is delivery_contracts.outline_final_script
+    assert facade.check_onscreen_structure is structural_contracts.check_onscreen_structure
+    assert facade.check_full_copy_duplication is structural_contracts.check_full_copy_duplication
 
 
 def test_contracts_facade_keeps_remaining_rules_compatible() -> None:
     assert facade.lint_final_script is implementation.lint_final_script
-    assert facade.check_onscreen_structure is implementation.check_onscreen_structure
-    assert facade.check_full_copy_duplication is implementation.check_full_copy_duplication
+    assert facade.check_author_field_contract is implementation.check_author_field_contract
+    assert facade.check_full_copy_structure is implementation.check_full_copy_structure
 
 
 def test_contracts_facade_contains_no_rule_implementation() -> None:
