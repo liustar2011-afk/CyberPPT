@@ -17,8 +17,6 @@ run_officecli_render_qa = _compat.run_officecli_render_qa
 
 from cyberppt.stage02_production import image_stage as _image_stage
 from cyberppt.stage02_production import orchestrator as _orchestrator
-from cyberppt.stage02_production import reconstruction_stage as _reconstruction_stage
-from cyberppt.stage02_production import delivery_stage as _delivery_stage
 from cyberppt.stage02_production.delivery_stage import _append_ledger, _artifact_record
 from cyberppt.stage02_production.dependencies import Stage02Dependencies
 from cyberppt.stage02_production.manifest_stage import _template_text_lock
@@ -41,32 +39,22 @@ from cyberppt.stage02_production.reconstruction_stage import _run_image_to_edita
 
 
 def _sync_legacy_patch_points() -> None:
-    """Translate the two remaining ImageGen monkey patches into the compat seam."""
+    """Retained historical hook; production no longer mutates module globals."""
 
-    _compat.apply_legacy_patch_set(
-        image_stage=_image_stage,
-        orchestrator=_orchestrator,
-        reconstruction_stage=_reconstruction_stage,
-        delivery_stage=_delivery_stage,
-        patches=_compat.LegacyPatchSet(
-            run_codex_image=run_codex_image,
-            ensure_output_size=ensure_output_size,
-            require_generated=require_generated,
-            reconstruction_build=_run_image_to_editable_svg_build,
-            officecli_render_qa=run_officecli_render_qa,
-            append_ledger=_append_ledger,
-        ),
-    )
+    return None
 
 
 def _generate_manifest_images(*args: Any, **kwargs: Any) -> dict[str, Any]:
-    _sync_legacy_patch_points()
+    kwargs.setdefault("run_codex_image_fn", run_codex_image)
+    kwargs.setdefault("ensure_output_size_fn", ensure_output_size)
     return _image_stage._generate_manifest_images(*args, **kwargs)
 
 
 def _normalize_audited_manifest_images(manifest: dict[str, Any]) -> None:
-    _sync_legacy_patch_points()
-    _image_stage.normalize_audited_manifest_images(manifest)
+    _image_stage.normalize_audited_manifest_images(
+        manifest,
+        ensure_output_size_fn=ensure_output_size,
+    )
 
 
 def run_final_script_pages(
@@ -115,7 +103,6 @@ def run_final_script_pages(
         officecli_render_qa=run_officecli_render_qa,
         append_ledger=_append_ledger,
     )
-    _sync_legacy_patch_points()
     result = _orchestrator.run_production(
         Stage02RunOptions(
             project=project,
