@@ -24,18 +24,25 @@ _AUTHORING_HELPERS = (
     "_authored_relationships_issues",
     "_slide_text",
 )
+_PUBLIC_AUTHORING_HELPERS = tuple(
+    name for name in _AUTHORING_HELPERS if name in legacy_final_script.__all__
+)
 
 
 def test_final_script_runtime_routes_authoring_helpers_to_focused_module() -> None:
     for name in _AUTHORING_HELPERS:
         focused = getattr(final_authoring, name)
         assert getattr(legacy_final_script, name) is focused
+        assert legacy_final_script.audit_final_script.__globals__[name] is focused
+
+    for name in _PUBLIC_AUTHORING_HELPERS:
+        focused = getattr(final_authoring, name)
         assert getattr(runtime, name) is focused
         assert getattr(facade, name) is focused
-        assert legacy_final_script.audit_final_script.__globals__[name] is focused
 
     assert legacy_final_script._STATUS_PRESERVATION_MARKERS is final_authoring._STATUS_PRESERVATION_MARKERS
     assert legacy_final_script._STRUCTURAL_METADATA_PATTERNS is final_authoring._STRUCTURAL_METADATA_PATTERNS
+    assert "_status_strength_preserved" not in runtime.__all__
     assert runtime.audit_final_script is legacy_final_script.audit_final_script
     assert facade.audit_final_script is legacy_final_script.audit_final_script
 
