@@ -14,6 +14,7 @@
 | 73 | `3f86818e99147ec8d062f4eaa340a192e38324f8` | 新增 `analysis_audits/common_contracts.py`，迁移 evidence-fit review、onscreen contract definition 和 onscreen composition definition 四个高层 validator；`common.py` 收缩为无函数/类实现的 compatibility facade，仅组合外部依赖、`common_primitives` 与 `common_contracts`，并保持历史 `__all__`。实现提交：`45e5c80`、`adc4a1c`、`3f86818` |
 | 74 | `186bca9cd44dbc7147a1adff0f9166322a3d5af0` | 将约 15KB 的 `analysis_audits/final_authoring.py` 拆为 `final_authoring_expression.py` 与 `final_authoring_structure.py` 两个 focused authority，分别承载可见表达/机械拼接检查与来源细节/内容覆盖/关系拓扑检查；原 `final_authoring.py` 收缩为 thin compatibility facade，并以对象身份与 AST 门禁锁定职责边界。实现提交：`132f279`、`c0955fb`、`945f154`、`186bca9` |
 | 75 | `4a7f58a02e7220e7dbdd711357ef14566a3f26c0` | 将约 12.6KB 的 `analysis_audits/composed_trace.py` 拆为 `composed_trace_core.py` 与 `composed_trace_priorities.py`，分别承载源面/逐行 trace/硬 finding 与 Critic 页面优先级排序；原 `composed_trace.py` 收缩为静态 compatibility facade，保留历史私有 helper 属性，并保持 trace schema、hard finding 文案和 priority_score 算法不变。实现提交：`0b3101b`、`03d6248`、`b80c5e9`、`4a7f58a` |
+| 76 | `15a3634df13f2422fe2d8bd83bff9312a274e86b` | 正式关闭本轮架构收敛里程碑：新增 Stage 1–29 独立历史归档，将 `ARCHITECTURE_CONVERGENCE_PROGRESS.md` 改为唯一当前状态/恢复入口，明确 Stage 30+、50+、66+ checkpoint 分卷顺序，确认原三项 backlog 已全部关闭，并冻结后续规则——不再按文件大小机械拆分；只有出现真实多权威、隐式 patch、facade 回长业务实现、跨职责耦合或打包/CI 边界回退时才从 Stage 77 重启。实现提交：`20fb16e`、`acc79fd`、`15a3634` |
 
 ## 验证记录
 
@@ -27,3 +28,4 @@
 - 阶段 73 workflow run `33374727992`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；高层 contract validators 迁出并将 `common.py` 收缩为 thin facade 后，历史 wildcard import、对象身份和审计 finding 行为保持兼容。
 - 阶段 74 workflow run `33375411393`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；authoring expression/structure 两个 focused domain 接管后，原 `final_authoring` 公共面、Final Script facade、orchestrator 依赖身份与全部 finding 行为保持兼容。
 - 阶段 75 workflow run `33375703037`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；composed trace core/priority 两个 focused domain 接管后，历史 direct import、私有 helper 属性、trace 输出 schema、硬 finding 与 Critic 排序保持兼容。
+- 阶段 76 workflow run `33376313182`：五个 job 全部 `success`。Linux Python 3.10/3.12 全量 pytest、macOS/Windows wheel smoke 与 OfficeCLI 真实渲染均通过；恢复文档收口没有改变生产代码、打包边界或运行行为，唯一当前入口已明确架构收敛完成并规定后续从 Stage 77 才可重启。
