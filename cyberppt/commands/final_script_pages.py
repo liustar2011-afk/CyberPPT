@@ -20,6 +20,7 @@ from cyberppt.stage02_production import orchestrator as _orchestrator
 from cyberppt.stage02_production import reconstruction_stage as _reconstruction_stage
 from cyberppt.stage02_production import delivery_stage as _delivery_stage
 from cyberppt.stage02_production.delivery_stage import _append_ledger, _artifact_record
+from cyberppt.stage02_production.dependencies import Stage02Dependencies
 from cyberppt.stage02_production.manifest_stage import _template_text_lock
 from cyberppt.stage02_production.models import Stage02RunOptions
 from cyberppt.stage02_production.preflight import (
@@ -139,6 +140,7 @@ def run_final_script_pages(
             allow_script_edit_requested=allow_script_edit,
             allow_prompt_edit=allow_prompt_edit,
             prompt_overrides_dir=prompt_overrides_dir,
-        )
+        ),
+        dependencies=Stage02Dependencies(require_generated=require_generated),
     )
     return result.delivery.summary
