@@ -17,15 +17,25 @@ from scripts.imagegen_pipeline.providers.codex_oauth_image import ensure_output_
 RequireGenerated = Callable[[dict[str, Any]], Any]
 RunCodexImage = Callable[..., Any]
 EnsureOutputSize = Callable[[Any, str], Any]
+StageCallable = Callable[..., Any]
 
 
 @dataclass(frozen=True)
 class Stage02Dependencies:
-    """Runtime callables supplied explicitly to the Stage 02 pipeline."""
+    """Runtime callables supplied explicitly to the Stage 02 pipeline.
+
+    The three optional stage callables use ``None`` to mean "use the module's
+    production default". This avoids circular imports while allowing the
+    historical facade to pass patched implementations without mutating module
+    globals.
+    """
 
     require_generated: RequireGenerated
     run_codex_image: RunCodexImage = run_codex_image
     ensure_output_size: EnsureOutputSize = ensure_output_size
+    reconstruction_build: StageCallable | None = None
+    officecli_render_qa: StageCallable | None = None
+    append_ledger: StageCallable | None = None
 
 
 def default_stage02_dependencies() -> Stage02Dependencies:
@@ -41,5 +51,6 @@ __all__ = [
     "RequireGenerated",
     "RunCodexImage",
     "Stage02Dependencies",
+    "StageCallable",
     "default_stage02_dependencies",
 ]
