@@ -141,15 +141,33 @@ def test_legacy_final_script_is_thin_compatibility_facade() -> None:
     assert "_onscreen_surface" in source
 
 
-def test_final_script_public_facades_use_runtime_router() -> None:
+def test_final_script_runtime_is_static_compatibility_facade() -> None:
+    path = ROOT / "script_engine" / "analysis_audits" / "final_script_runtime.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+
+    implementations = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    ]
+    assert implementations == []
+    assert path.stat().st_size < 5_000
+    assert "from .final_script import (" in source
+    assert "setattr(" not in source
+    assert "globals()[" not in source
+    assert "final_authoring" not in source
+    assert "final_lean" not in source
+    assert "final_onscreen" not in source
+    assert "final_deck" not in source
+    assert "final_orchestrator" not in source
+
+
+def test_final_script_public_facades_use_runtime_facade() -> None:
     package_init = (ROOT / "script_engine" / "analysis_audits" / "__init__.py").read_text(encoding="utf-8")
     compatibility = (ROOT / "script_engine" / "analysis_audit.py").read_text(encoding="utf-8")
-    runtime_source = (ROOT / "script_engine" / "analysis_audits" / "final_script_runtime.py").read_text(encoding="utf-8")
 
     assert "from .final_script_runtime import audit_final_script" in package_init
     assert "from .analysis_audits.final_script_runtime import *" in compatibility
     assert "from .final_script import audit_final_script" not in package_init
     assert "from .analysis_audits.final_script import *" not in compatibility
-    assert "for _focused in (_authoring, _lean, _onscreen, _deck):" in runtime_source
-    assert "_legacy.audit_final_script = _orchestrator.audit_final_script" in runtime_source
-    assert "globals()[_name] = getattr(_legacy, _name)" in runtime_source
