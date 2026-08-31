@@ -20,6 +20,15 @@
 
 阶段之间具有前置条件。每个 Relation Unit 都同时回答“何时进入”和“进入后新增什么可验证状态”。
 
+## Relation Contract
+
+- Node Role：起点状态、阶段状态、进入条件、终点状态。
+- Edge Semantics：上一阶段形成的新状态满足下一阶段前置条件后发生状态跃迁。
+- Direction / Cardinality：S0 → S1 → S2 → S3 的单向状态演进。
+- Invariant：每阶段都必须同时包含进入条件和新状态；新状态必须成为下一阶段的实际前置条件。
+- Confusable With：Flow。
+- Disambiguation Rule：Roadmap 的箭头表示“满足条件后的状态跃迁”；Flow 的箭头表示“真实业务交接”。
+
 ## Relation Units
 
 1. 数据规则贯通：完成核心数据目录、指标口径和版本规则统一后，形成可复用共同输入；
