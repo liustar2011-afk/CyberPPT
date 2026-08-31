@@ -61,6 +61,15 @@ def _markdown_section(text: str, heading: str) -> str:
     return tail.split("\n## ", 1)[0]
 
 
+def _derive_case_relationships(case: AuthoringRelationCase) -> tuple[dict[str, object], ...]:
+    return derive_business_relationships(
+        visual_structure=case.visual_structure,
+        title="统一预测体系",
+        module_titles=case.module_titles,
+        top_level_module_titles=case.module_titles,
+    )
+
+
 def test_fixture_catalog_has_eight_unique_positive_and_negative_cases() -> None:
     assert len(_CORRECT_CASES) == 8
     assert len({case.name for case in _CORRECT_CASES}) == 8
@@ -112,6 +121,25 @@ def test_verified_authoring_relationships_resolve_to_expected_semantic_topology(
 
 
 @pytest.mark.parametrize("case", _CORRECT_CASES, ids=_case_id)
+def test_stage2_adapter_relationships_resolve_to_expected_semantic_topology(
+    case: AuthoringRelationCase,
+) -> None:
+    derived = _derive_case_relationships(case)
+    assert derived, f"Stage2 failed to recover authored relationships for {case.name}"
+
+    result = resolve_semantic_topology(
+        derived,
+        module_count=case.module_count,
+        page_text=case.page_text,
+    )
+
+    assert result["primary_topology"] == case.expected_semantic_topology, (
+        case.name,
+        result,
+    )
+
+
+@pytest.mark.parametrize("case", _CORRECT_CASES, ids=_case_id)
 def test_verified_authoring_relationships_resolve_to_expected_expression_form(
     case: AuthoringRelationCase,
 ) -> None:
@@ -128,12 +156,7 @@ def test_verified_authoring_relationships_resolve_to_expected_expression_form(
 def test_final_script_visual_structure_preserves_relationships_for_stage2(
     case: AuthoringRelationCase,
 ) -> None:
-    derived = derive_business_relationships(
-        visual_structure=case.visual_structure,
-        title="统一预测体系",
-        module_titles=case.module_titles,
-        top_level_module_titles=case.module_titles,
-    )
+    derived = _derive_case_relationships(case)
 
     assert derived, f"Stage2 failed to recover authored relationships for {case.name}"
     assert set(case.module_titles).issubset(_endpoints(derived))
