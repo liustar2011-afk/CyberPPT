@@ -23,6 +23,26 @@
 | 07 | Roadmap | roadmap | [golden-page-roadmap.md](golden-page-roadmap.md) | 起点、阶段、触发条件、新状态 |
 | 08 | Governance / Boundary | governance chain | [golden-page-governance.md](golden-page-governance.md) | 主体、责任、控制机制、受保护结果 |
 
+## Authoring Grammar 与机器语义拓扑的衔接
+
+这张表只用于解释层间关系，不替代运行时代码。AUTHOR 先按业务关系写清语义，再由正式 relationship vocabulary 和 `cyberppt.topology_resolver` 解析 semantic topology；Stage2 的详细表达继续由 `cyberppt.onscreen_expression` 决定。
+
+| Authoring Grammar | 典型 semantic relationship | 常见 semantic topology | 粗粒度 carrier family |
+|---|---|---|---|
+| parallel grouping | `peer_classification` / `classified_as` | `peer_set` | `parallel_set` |
+| directed chain（顺序） | `sequence_before` / `sequence_after` | `sequence` | `directed_flow` |
+| directed chain（因果） | `causes` | `causal_chain` | `directed_flow` / `causal_convergence` |
+| directed chain（依赖） | verified directed dependency chain | `dependency_chain` | `directed_flow` |
+| feedback loop | `feedback` / `feeds_back_to` 等 | `feedback_loop` | `lifecycle_loop` |
+| convergence | 多来源 `supports` / `evidence_supports` 指向同一对象 | `support_convergence` | `causal_convergence` / `conclusion_anchor` |
+| mapping | `problem_response` / `semantic_mapping` / `corresponds_to` | `mapping` | `parallel_set` / `conclusion_anchor` |
+| comparison | `comparison` | `comparison` | `parallel_set` |
+| roadmap | 真实阶段之间的 sequence relationship | `sequence` | `directed_flow` |
+| governance chain | 按实际责任、依赖、映射或顺序关系编码 | 由真实 relationship 解析 | 不预设单一 carrier |
+| bounded decision package | 按建议、条件、边界之间的真实关系编码 | 由真实 relationship 解析 | 不预设单一 carrier |
+
+另有机器语义 topology `containment` 与 `matrix`，分别处理组成/包含关系和明确二维矩阵表面；它们属于 semantic topology 层，不要求 AUTHOR 为了视觉多样性主动套用。当前粗粒度 carrier family 分别复用 `layered_architecture` 与 `parallel_set`，详细版式仍由 Stage2 后续表达层选择。
+
 ## 统一示例结构
 
 每个完整黄金页面均包含：
