@@ -24,9 +24,14 @@ _DIRECTED_RELATIONS = {
     "directed_dependency", "directed_relation", "causes", "transforms_to",
     *_SUPPORT_RELATIONS, *_SEQUENCE_RELATIONS, *_FEEDBACK_RELATIONS,
 }
+_CONFIDENCE_LEVELS = {
+    "high": 1.0,
+    "medium": 0.7,
+    "low": 0.4,
+}
 
 # Candidate topologies are coarse render-carrier families, not detailed
-# Stage2 expressions.  Every semantic topology emitted by this resolver must
+# Stage2 expressions. Every semantic topology emitted by this resolver must
 # map to at least one existing carrier family; detailed expression selection
 # remains in ``cyberppt.onscreen_expression``.
 CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
@@ -35,7 +40,7 @@ CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY = {
     "support_convergence": {"causal_convergence", "conclusion_anchor"},
     "sequence": {"directed_flow"},
     "dependency_chain": {"directed_flow"},
-    # A mapping identifies correspondence.  It does not imply a temporal
+    # A mapping identifies correspondence. It does not imply a temporal
     # sequence; directed_flow remains available only to explicit sequence or
     # verified dependency-chain semantics.
     "mapping": {"parallel_set", "conclusion_anchor"},
@@ -100,9 +105,26 @@ def _relevant_authority(records: Sequence[Mapping[str, object]], relation_names:
     return max(values, key=_authority_rank) if values else "soft"
 
 
+def _confidence_value(value: object) -> float:
+    """Normalize numeric and adapter-style confidence values to 0..1."""
+
+    if isinstance(value, (int, float)):
+        return max(0.0, min(float(value), 1.0))
+
+    text = _text(value).lower()
+    if text in _CONFIDENCE_LEVELS:
+        return _CONFIDENCE_LEVELS[text]
+    if not text:
+        return 0.0
+    try:
+        return max(0.0, min(float(text), 1.0))
+    except ValueError:
+        return 0.0
+
+
 def _relevant_confidence(records: Sequence[Mapping[str, object]], relation_names: set[str]) -> float:
     values = [
-        float(item.get("confidence") or 0.0)
+        _confidence_value(item.get("confidence"))
         for item in records
         if _text(item.get("relation")) in relation_names
     ]
@@ -212,7 +234,7 @@ def resolve_semantic_topology(
     chain = _has_dependency_chain(edges)
     # A verified graph chain may imply a generic dependency carrier, but an
     # explicit sequence relation is stronger semantic evidence and already has
-    # its own topology.  Do not let an equal-scored generic dependency candidate
+    # its own topology. Do not let an equal-scored generic dependency candidate
     # displace ``sequence`` merely because of lexical tie-breaking.
     if chain and not sequence:
         relation_names = directed_names or names
