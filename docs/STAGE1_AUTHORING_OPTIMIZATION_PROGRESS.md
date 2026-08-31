@@ -39,8 +39,8 @@
 | 5 | P1 | Critic / Script Quality：覆盖审计 + 数字对象机械底线 | 已完成 |
 | 6 | P1 | Critic / Script Quality：方向关系审计 + Roadmap completeness | 已完成 |
 | 7 | P1 | Topology：Authoring grammar ↔ machine semantic topology 映射与一致性 | 已完成 |
-| 8 | P2 | Stage1 authoring fixtures：8 类正确案例与典型错误案例 | 进行中 |
-| 9 | P2 | 回归测试：Critic/Lint/topology/Stage1→Stage2 结构保持 | 待开始 |
+| 8 | P2 | Stage1 authoring fixtures：8 类正确案例与典型错误案例 | 已完成 |
+| 9 | P2 | 回归测试：Critic/Lint/topology/Stage1→Stage2 结构保持 | 进行中 |
 | 10 | P2 | 全量验证、文档收口、剩余兼容性问题清理 | 待开始 |
 
 > 批次允许根据仓库实际结构进一步拆小；任何拆分都必须及时更新本表。
@@ -55,7 +55,7 @@
 
 ### Batch 1–2 — P0 AUTHOR Contract 差距审计
 
-结论：当前基线已经覆盖 source meaning → `core_message` → independent arguments + evidence → Full Copy → Onscreen，以及 proposition headings、relation grammar、Speaker Notes 增量规则和 Critic/Rewrite 最早失败点回退，因此不对 71KB 单一运行权威做重复改写。
+当前基线已经覆盖 source meaning → `core_message` → independent arguments + evidence → Full Copy → Onscreen，以及 proposition headings、relation grammar、Speaker Notes 增量规则和 Critic/Rewrite 最早失败点回退，因此不对单一运行权威做重复改写。
 
 Relation Units 只作黄金示例教学标签，映射到 Contract 的 independent arguments / reasoning units，不形成 schema 或第二套 ontology。
 
@@ -63,9 +63,13 @@ Relation Units 只作黄金示例教学标签，映射到 Contract 的 independe
 
 ### Batch 3 — 黄金示例索引与既有样例拆分
 
-完成：`golden-page-script-example.md` 改为 8 类索引；拆出 `golden-page-parallel.md`、`golden-page-flow.md`；统一补齐页面使命、核心结论、主论证链、Argument Topology、Relation Units、Full Copy、Onscreen、视觉结构、Speaker Notes、作者自检。
+完成：`golden-page-script-example.md` 建立 8 类索引；拆出 `golden-page-parallel.md`、`golden-page-flow.md`；统一补齐页面使命、核心结论、主论证链、Argument Topology、Relation Units、Full Copy、Onscreen、视觉结构、Speaker Notes、作者自检。
 
 提交：`82b03204cee5aea82ac25c82c3f7b97e48e9459c`。
+
+兼容修复：GitHub Actions 后续发现既有 `tests/test_onscreen_group_hierarchy.py` 仍把 `golden-page-script-example.md` 当作可解析的两页示例。纯索引版本造成 `script contains no page headings`。已在保留 8 类导航的同时恢复原入口的两页可解析兼容内容，不撤回独立示例结构。
+
+兼容修复提交：`c3d215c373319564aa61cc43100b564dc365b930`。
 
 ### Batch 4 — 补齐六类黄金关系页面
 
@@ -77,64 +81,52 @@ Relation Units 只作黄金示例教学标签，映射到 Contract 的 independe
 
 正式 lint 链路确认使用 `script_engine.final_quality` → `script_engine.lint_contracts`。现有规则已经覆盖抽象/名词式标题、标题缺业务对象、Full Copy/Onscreen 层级、Evidence 层缺失、Core Message 投影偏离、隐藏中间步骤等项目。
 
-新增：
+新增：`script_engine/authoring_quality_contracts.py` 与 `ONSCREEN_NUMBER_WITHOUT_OBJECT`，只拦截无语义标签的近似纯数量；规则接入正式 `lint_final_script()` 并新增回归测试。
 
-- `script_engine/authoring_quality_contracts.py`；
-- `ONSCREEN_NUMBER_WITHOUT_OBJECT`，只拦截 `80%`、`30家`、`3项` 等无语义标签的近似纯数量；
-- 合法日期、有标签数字及带完整业务对象的数字表达保持通过；
-- 规则接入正式 `lint_final_script()`；
-- 新增数字对象回归测试。
-
-提交链：
-
-- `be2a768cc1928e1e793949a8a97301aa36ee1793`
-- `d5277ce7d69fc9337bda5ba492938346fd5485ea`
-- `f5a805ac1877f7694c00ae43e79afd138fee5235`
-- 台账：`fc557be3e0466632158f268669b296801bb90093`
-
-验证限制：GitHub 未为这些 push commits 返回可用 workflow/status；测试代码已入仓，P2 统一纳入可执行回归。
+提交链：`be2a768cc1928e1e793949a8a97301aa36ee1793`、`d5277ce7d69fc9337bda5ba492938346fd5485ea`、`f5a805ac1877f7694c00ae43e79afd138fee5235`、台账 `fc557be3e0466632158f268669b296801bb90093`。
 
 ### Batch 6 — Roadmap completeness 与方向关系覆盖审计
 
-新增确定性规则，仅作用于明确的 `roadmap`、`pyramid-roadmap`、`governance-roadmap`：
+新增确定性规则，仅作用于明确的 `roadmap`、`pyramid-roadmap`、`governance-roadmap`：`ROADMAP_STAGE_LAYER_MISSING`、`ROADMAP_TRIGGER_MISSING`、`ROADMAP_NEW_STATE_MISSING`。普通 `progression` 不强制套 Roadmap 规则。
 
-- `ROADMAP_STAGE_LAYER_MISSING`
-- `ROADMAP_TRIGGER_MISSING`
-- `ROADMAP_NEW_STATE_MISSING`
+方向关系审计确认既有 relationship visibility、page logic carrier、端点与隐藏中间步骤检查已经覆盖 directed flattening 的机械底线，因此未增加第三套低精度判定器。
 
-普通 `progression` 不强制套 Roadmap 规则。方向关系审计确认既有 relationship visibility、page logic carrier、端点与隐藏中间步骤检查已经覆盖 directed flattening 的机械底线，因此未增加第三套低精度判定器。
-
-提交链：
-
-- `067930d3b7fde735374e6927b248d9a688034be3`
-- `dfaee1d134dca8d2406888eb4d1059cd8be5064b`
-- `87358bc5b06056dcde4a15bdc504a9b727b6edb3`
-- 台账：`2ac18dca4723c2adb0d060e887564bbb88a7d12e`
+提交链：`067930d3b7fde735374e6927b248d9a688034be3`、`dfaee1d134dca8d2406888eb4d1059cd8be5064b`、`87358bc5b06056dcde4a15bdc504a9b727b6edb3`、台账 `2ac18dca4723c2adb0d060e887564bbb88a7d12e`。
 
 ### Batch 7 — Authoring grammar 与 machine semantic topology 一致性
 
-审计发现：`cyberppt.topology_resolver` 可以产出 `comparison`、`containment`、`matrix`，但粗粒度 `CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY` 原先缺少这三个键；同时 `cyberppt.onscreen_expression` 已有三类详细表达，因此属于 semantic topology → carrier family 映射缺口，不需要增加新视觉类型。
+补齐 `comparison → parallel_set`、`containment → layered_architecture`、`matrix → parallel_set` 三个 semantic topology → coarse carrier family 缺口；没有增加新的视觉 topology。新增 semantic topology coverage test，并在黄金示例索引加入教学映射表。
 
-完成：
+提交链：`dc37e3abafa184ab4d7fdc79a3bc0d6ced46a83b`、`2e2380b9e894a363219211f3fcb4f6921abe50ab`、`910e8fa86865131e260cbc91aead7a5fc43619d0`、台账 `b614a70950800cf7fd3a654a441e8f8c781229f1`。
 
-- `comparison → parallel_set`
-- `containment → layered_architecture`
-- `matrix → parallel_set`
-- 明确 candidate map 只是粗粒度 render-carrier family，详细 Stage2 expression 仍由 `onscreen_expression` 决定；
-- 新增 `tests/test_topology_semantic_coverage.py`，对 peer、feedback、convergence、sequence、dependency、causal、mapping、layered、comparison、containment、matrix 的代表性 resolver 输出逐一检查候选映射非空；
-- 黄金示例索引新增教学映射表：Authoring grammar → semantic relationship → semantic topology → coarse carrier family；
-- Governance chain 与 bounded decision package 明确按真实关系解析，不强制绑定单一机器 topology；
-- 未在 `script_engine` 引入 Stage2 resolver 依赖，继续保持 Stage1/Stage2 解耦。
+### Batch 8 — Stage1 authoring fixtures
+
+建立 `tests/stage1_authoring/` 回归包，不新增生产 schema。
+
+正确案例：Parallel/MECE、Flow/Feedback、Causal、Convergence、Mapping、Comparison、Roadmap、Governance 共 8 类；每个 fixture 同时记录 Authoring Topology、预期 semantic topology、预期 Stage2 expression form、layout-neutral verified relationships、可解析 `visual_structure` 与模块标题。
+
+错误案例：方向关系被扁平化、假 MECE、孤立 Evidence、父子重复、Mapping 端点缺失、Roadmap 只有阶段名、Governance 主体责任错位、数字缺少业务对象。错误案例明确区分 `lint`、`cross_layer_regression`、`critic`、`critic_existing_contracts`，避免把生成式判断误写成正则规则。
+
+确定性 payload builder 仅为已存在稳定 lint code 的 Roadmap incomplete 与 bare number 两类生成 Final Script 负例；其余保留为语义 fixture。
 
 提交链：
 
-- `dc37e3abafa184ab4d7fdc79a3bc0d6ced46a83b`：补齐 resolver candidate mapping；
-- `2e2380b9e894a363219211f3fcb4f6921abe50ab`：新增 semantic topology coverage tests；
-- `910e8fa86865131e260cbc91aead7a5fc43619d0`：补教学映射表；
+- `b7f38e6a6c2380e86662718b70fb017ab9050b33`：初始化测试包；
+- `1097512c25a36217f802fb547f9a64f56ad2eed4`：8 类正确关系 fixture；
+- `ffe376aa3bfc314774fc53fc3d767d17c753be3d`：8 类错误 fixture；
 - 当前提交：更新进度台账。
+
+验证：本地容器无法解析 `github.com`，不能直接 clone；已改用 GitHub Actions 作为仓库侧权威验证。Batch 3 兼容回归已通过日志定位并提交修复，后续 Batch 9 将持续读取 push workflow 结果和 pytest artifact。
 
 ## 5. 当前剩余工作
 
-下一恢复点：Batch 8。围绕 8 类黄金页面建立 `tests/stage1_authoring/` fixtures / regression cases，优先复用现有 Final Script example 与正式 schema，覆盖：正确案例、方向关系被错误扁平化、假 MECE、孤立 Evidence、模块标题与明细重复、Mapping 两端缺失、Roadmap 只有阶段名无新状态、Governance 责任主体错位。
+下一恢复点：Batch 9。新增聚焦回归测试，至少覆盖：
 
-随后：Batch 9 汇总 Critic/Lint/topology/Stage1→Stage2 结构保持回归；Batch 10 做全量验证、兼容性清理和最终收口。
+1. 8 类正确 fixture → `resolve_semantic_topology`；
+2. 8 类正确 fixture → `resolve_relation_expression`；
+3. Final Script `visual_structure` → Stage2 relationship adapter，确保方向、映射、因果、汇聚与反馈不丢失；
+4. 两类新确定性 lint 负例；
+5. 错误 fixture 的 detection mode 边界，确保 Critic-only 情况不会被误要求新增 lint；
+6. 黄金示例历史入口继续可解析。
+
+Batch 10：读取最终 GitHub Actions 全量结果；修复本轮新增回归；清理重复测试或兼容性问题；更新文档为完成状态并记录最终 HEAD。
