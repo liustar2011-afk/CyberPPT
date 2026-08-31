@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+import script_engine.audit_reports as audit_reports
 import script_engine.cli as cli
 import script_engine.cli_parser as cli_parser
 import script_engine.final_quality as final_quality
@@ -172,3 +173,64 @@ def test_cli_does_not_reimplement_argparse_schema() -> None:
     assert "add_parser(" not in parser_source
     assert "add_argument(" not in parser_source
     assert "_build_parser" in parser_source
+
+
+def test_cli_routes_audit_and_trace_reports_through_focused_module() -> None:
+    assert cli.VALIDATORS is audit_reports.VALIDATORS
+
+    path = ROOT / "script_engine" / "cli.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    wrappers = {
+        node.name: ast.get_source_segment(source, node) or ""
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name in {
+            "_validate",
+            "_audit_foundation",
+            "_audit_plan",
+            "_review_plan",
+            "_audit_final",
+            "_trace_composed",
+            "_check_refs",
+            "_build_source_index",
+        }
+    }
+
+    assert "validate_artifact_report" in wrappers["_validate"]
+    assert "foundation_audit_report" in wrappers["_audit_foundation"]
+    assert "plan_audit_report" in wrappers["_audit_plan"]
+    assert "plan_review_text" in wrappers["_review_plan"]
+    assert "final_audit_report" in wrappers["_audit_final"]
+    assert "composed_trace_report" in wrappers["_trace_composed"]
+    assert "source_refs_report" in wrappers["_check_refs"]
+    assert "build_source_index_report" in wrappers["_build_source_index"]
+
+
+def test_cli_does_not_reimplement_audit_report_dependencies() -> None:
+    path = ROOT / "script_engine" / "cli.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    imported_modules = {
+        node.module
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom) and node.module
+    }
+    contract_imports = {
+        alias.name
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom) and node.module == "contracts"
+        for alias in node.names
+    }
+
+    assert "analysis_audit" not in imported_modules
+    assert "analysis_audits.composed_trace" not in imported_modules
+    assert "plan_review" not in imported_modules
+    assert "source_index" not in imported_modules
+    assert contract_imports.isdisjoint(
+        {
+            "validate_deck_plan",
+            "validate_foundation",
+            "validate_source_refs_coverage",
+        }
+    )
