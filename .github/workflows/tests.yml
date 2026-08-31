@@ -50,6 +50,31 @@ jobs:
           cd /tmp
           python -c "from pathlib import Path; import cyberppt, script_engine, contracts, references, assets; import scripts.imagegen_pipeline.page_manifest; from scripts.image_to_pptx_runtime import stage02_adapter, pptx_animations; from scripts.imagegen_pipeline.style_library import STYLE_LIBRARY_PATH, VISUAL_SYSTEM_PATH; from scripts.image_to_pptx_runtime.pptx_shapes.loader import BUNDLED_DEFINITIONS_PATH, BUNDLED_SHAPE_TYPES_PATH; runtime_dir = Path(stage02_adapter.__file__).resolve().parent; animation_presets = runtime_dir / 'pptx_animation_presets.json'; editor_static = runtime_dir / 'svg_editor' / 'static'; assert STYLE_LIBRARY_PATH.is_file(); assert VISUAL_SYSTEM_PATH.is_file(); assert BUNDLED_DEFINITIONS_PATH.is_file(); assert BUNDLED_SHAPE_TYPES_PATH.is_file(); assert animation_presets.is_file(); assert len(pptx_animations.NATIVE_ANIMATIONS) == 203; assert (editor_static / 'index.html').is_file(); assert (editor_static / 'app.js').is_file(); assert (editor_static / 'style.css').is_file()"
 
+  package-smoke:
+    name: Wheel smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Build wheel without platform runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "build>=1,<2"
+          python -m build --wheel
+      - name: Install wheel without dependencies
+        run: >-
+          python -c "import pathlib, subprocess, sys; wheel=next(pathlib.Path('dist').glob('cyberppt-*.whl')); subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', '--no-deps', str(wheel)])"
+      - name: Verify packaged resources and path handling
+        run: >-
+          python -c "from pathlib import Path; import cyberppt, script_engine, references, contracts, assets; import scripts.imagegen_pipeline as imagegen; from scripts.image_to_pptx_runtime import runtime_root; imagegen_root=Path(imagegen.__file__).resolve().parent; runtime=runtime_root(); assert (imagegen_root/'style_presets'/'cyberppt_default_styles.json').is_file(); assert (runtime/'pptx_animation_presets.json').is_file(); assert (runtime/'pptx_shapes'/'data'/'shape_type_values.txt').is_file(); assert (runtime/'svg_editor'/'static'/'index.html').is_file(); assert (Path(references.__file__).resolve().parent/'visual-system.md').is_file(); assert (Path(contracts.__file__).resolve().parent/'final-script.schema.json').is_file(); assert (Path(assets.__file__).resolve().parent/'palette-samples'/'palette-09.png').is_file()"
+
   officecli-smoke:
     name: OfficeCLI render smoke
     runs-on: ubuntu-latest
