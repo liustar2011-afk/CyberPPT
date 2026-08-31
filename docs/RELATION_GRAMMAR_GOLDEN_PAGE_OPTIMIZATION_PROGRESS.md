@@ -8,13 +8,12 @@
 
 - 当前阶段：Batch E — Onscreen 微语法与 Speaker Notes 去重
 - 总体状态：进行中
-- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1 Parallel
+- 已完成：Step 0、Batch A、Batch B1–B3、Batch C1–C2、Batch D1–D3、Batch E1–E2
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把生成式 AUTHOR / CRITIQUE 判断硬编码成低精度 lint
-- 下一恢复点：Batch E2 Flow，统一“阶段｜产出 / 交接｜内容 / 回写｜内容”微语法，并让备注只解释交接判别与误读风险
+- 下一恢复点：Batch E3 Causal，强化“状态节点｜直接后果”微语法，并让备注只解释因果判别与反事实测试
 
 ## 剩余任务
 
-- [ ] Batch E2：Flow 上屏微语法与备注去重
 - [ ] Batch E3：Causal 上屏微语法与备注去重
 - [ ] Batch E4：Convergence 上屏微语法与备注去重
 - [ ] Batch E5：Mapping 上屏微语法与备注去重
@@ -55,6 +54,7 @@
 | Batch D2 Roadmap | 完成 | `a404c1a253b96ea5e4bc053c9b4b50f635dd53f8` | 固定 Current State S0、S1/S2/S3 新状态、进入条件和 Target State；箭头只表达满足条件后的状态跃迁 | fixture 需补 S0/S1/S2/S3 与进入条件语义；Batch G1 对齐 |
 | Batch D3 Mapping | 完成 | `519f0f22bce685e21c6f2583e9a4641be58cff1a` | 清理 `↔`；固定 `Problem → Response` 单向语义；四组关系显式标注 1:1；视觉结构增加可被 Stage2 adapter 直接解析的“问题回应”关系边 | Batch G1 对齐 fixture；Batch F 统一视觉合同格式 |
 | Batch E1 Parallel | 完成 | `5531a74a7952dd1ea0c3ef9a61e54442050e6751` | 保留“维度名｜建设动作”上屏微语法；Speaker Notes 改为解释同层判别、边界和误读风险，不再按上屏顺序复述三项内容 | 下一步：Flow 微语法 |
+| Batch E2 Flow | 完成 | `72018cefd3fad3f2bc3939babf8ff9c622c30a0f` | 上屏统一为“阶段｜产出 / 交接｜内容 / 回写｜内容”；Speaker Notes 改为解释边级交接、闭环判别和与 Roadmap 的边界 | 下一步：Causal 微语法 |
 
 ## Batch D2 详细验收
 
