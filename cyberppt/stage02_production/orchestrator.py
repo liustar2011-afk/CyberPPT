@@ -95,7 +95,7 @@ def run_production(
             bind_reconstruction_visual_sources(images.manifest)
         write_json(manifest.manifest_path, images.manifest)
     try:
-        reconstruction = run_reconstruction_stage(context, manifest, images, options)
+        reconstruction = run_reconstruction_stage(context, manifest, images, options, deps)
     except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
         expected = _expected_action_result(
             context=context,
@@ -106,7 +106,7 @@ def run_production(
         if expected is not None:
             return expected
         raise
-    delivery = run_delivery_stage(context, manifest, images, reconstruction, options)
+    delivery = run_delivery_stage(context, manifest, images, reconstruction, options, deps)
     return Stage02ProductionResult(
         context=context,
         manifest=manifest,
