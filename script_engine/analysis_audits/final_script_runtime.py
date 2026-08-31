@@ -7,11 +7,13 @@ API stable while making focused modules the runtime authority.
 from __future__ import annotations
 
 from . import final_authoring as _authoring
+from . import final_lean as _lean
 from . import final_script as _legacy
 
 
-for _name in _authoring.__all__:
-    setattr(_legacy, _name, getattr(_authoring, _name))
+for _focused in (_authoring, _lean):
+    for _name in _focused.__all__:
+        setattr(_legacy, _name, getattr(_focused, _name))
 
 for _name in _legacy.__all__:
     globals()[_name] = getattr(_legacy, _name)
