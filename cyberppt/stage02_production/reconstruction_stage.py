@@ -9,6 +9,7 @@ from scripts.imagegen_pipeline.deliverable_prompt import parse_pages
 from scripts.image_to_pptx_runtime.clean_base_generator import prepare_clean_bases
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
 
+from .dependencies import Stage02Dependencies
 from .models import ImageStageResult, ManifestStageResult, ReconstructionStageResult, Stage02BuildContext, Stage02RunOptions
 from .preflight import read_json, sha256_file, write_json
 
@@ -50,6 +51,7 @@ def run_reconstruction_stage(
     manifest_result: ManifestStageResult,
     image_result: ImageStageResult,
     options: Stage02RunOptions,
+    dependencies: Stage02Dependencies | None = None,
 ) -> ReconstructionStageResult:
     status = _initial_status(options)
     if not options.production_build:
@@ -74,7 +76,12 @@ def run_reconstruction_stage(
     current_context["artifacts"]["page_image_pairs"]["sha256"] = sha256_file(manifest_result.manifest_path)
     write_json(manifest_result.build_context_path, current_context)
 
-    build = _run_image_to_editable_svg_build(
+    build_fn = (
+        dependencies.reconstruction_build
+        if dependencies is not None and dependencies.reconstruction_build is not None
+        else _run_image_to_editable_svg_build
+    )
+    build = build_fn(
         project=context.project,
         manifest_path=manifest_result.manifest_path,
         output_dir=context.build_dir,
