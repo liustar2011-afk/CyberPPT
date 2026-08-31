@@ -10,8 +10,8 @@ from collections.abc import Iterator
 from typing import Any
 
 from . import author_contracts as _author
-from . import contract_rules as _legacy
 from . import full_copy_contracts as _full_copy
+from . import onscreen_contracts as _onscreen
 from .schema_contracts import CONTRACTS, load_json
 
 
@@ -119,12 +119,12 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     issues.extend(_full_copy.check_full_copy_structure(final_script))
     issues.extend(_full_copy.check_full_copy_topic_semantics(final_script))
     issues.extend(_full_copy.check_full_copy_parallel_subconclusions(final_script))
-    issues.extend(_legacy.check_onscreen_heading_semantics(final_script))
-    issues.extend(_legacy.check_onscreen_detail_semantics(final_script))
-    issues.extend(_legacy.check_onscreen_projection_structure(final_script))
-    issues.extend(_legacy.check_onscreen_hierarchy_punctuation(final_script))
-    issues.extend(_legacy.check_onscreen_code_context(final_script))
-    issues.extend(_legacy.check_onscreen_core_alignment(final_script))
+    issues.extend(_onscreen.check_onscreen_heading_semantics(final_script))
+    issues.extend(_onscreen.check_onscreen_detail_semantics(final_script))
+    issues.extend(_onscreen.check_onscreen_projection_structure(final_script))
+    issues.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
+    issues.extend(_onscreen.check_onscreen_code_context(final_script))
+    issues.extend(_onscreen.check_onscreen_core_alignment(final_script))
     return issues
 
 
