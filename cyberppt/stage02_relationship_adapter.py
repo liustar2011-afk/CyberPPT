@@ -7,7 +7,9 @@ semantics into its internal ``business_relationships`` model.
 
 The adapter preserves business-semantic families rather than choosing visual
 topology. Explicit arrows are always kept directional, including when their
-Chinese relation label does not match a narrower known family.
+Chinese relation label does not match a narrower known family. Explicit
+comparison pairs use ``A vs B`` so a non-directional comparison never needs a
+fake arrow merely to remain machine-readable.
 """
 from __future__ import annotations
 
@@ -17,6 +19,14 @@ from typing import Iterable
 _ARROW_RE = re.compile(
     r"^\s*(?P<subject>.+?)\s*(?:→|->|⇒)\s*(?P<object>.+?)"
     r"(?:\s*[：:]\s*(?P<label>.+?))?\s*$"
+)
+_COMPARISON_RE = re.compile(
+    r"^\s*(?P<subject>.+?)\s+vs\.?\s+(?P<object>.+?)"
+    r"(?:\s*[：:]\s*(?P<label>.+?))?\s*$",
+    re.I,
+)
+_COMPARISON_FIELD_PREFIX_RE = re.compile(
+    r"^(?:比较对象|对照对象|对象对)\s*[｜|：:]\s*"
 )
 _EVIDENCE_NOTE_RE = re.compile(
     r"\s*[（(]\s*(?:explicit|inferred|speculative)\b[^）)]*[）)]\s*$",
@@ -38,10 +48,10 @@ _LEADING_FIELD_LABEL_RE = re.compile(r"^[-*•]\s*[A-Za-z一-鿿_]{1,12}[：:]\s
 _QUOTE_CHARS = "“”‘’「」『』\"'‘’“”"
 _QUOTE_STRIP_TABLE = {ord(ch): None for ch in _QUOTE_CHARS}
 # A subject or object pulled from free-flowing prose (rather than a
-# dedicated "A → B" line) is only trustworthy when it stays short. Past
-# this length the arrow is almost certainly embedded inside a longer
-# sentence, and matching the whole remainder as one endpoint silently
-# produces a garbled subject/object pair instead of a real relation.
+# dedicated relation line) is only trustworthy when it stays short. Past
+# this length the relation marker is almost certainly embedded inside a longer
+# sentence, and matching the whole remainder as one endpoint silently produces
+# a garbled subject/object pair instead of a real relation.
 _MAX_RELATION_PHRASE_CHARS = 24
 
 
@@ -121,18 +131,7 @@ def _relation_record(
 
 
 def _explicit_arrow_relations(visual_structure: str) -> list[dict[str, object]]:
-    """Extract "A → B" relations from authored visual-structure text.
-
-    Authors may either write one relation per line, or describe several
-    relations inside one prose line (e.g. a "links：..." field listing three
-    connections separated by Chinese semicolons, with quotation marks around
-    the arrowed clause). Matching the whole raw line against ``_ARROW_RE``
-    only handles the first style; on the second it swallows the entire line
-    -- including a leading field label, quote marks, and unrelated trailing
-    clauses -- into one garbled subject/object pair. Splitting each line into
-    clauses and stripping decoration first lets both styles resolve to the
-    same clean relation records.
-    """
+    """Extract ``A → B`` relations from authored visual-structure text."""
 
     relationships: list[dict[str, object]] = []
     seen: set[tuple[str, str, str]] = set()
@@ -164,6 +163,50 @@ def _explicit_arrow_relations(visual_structure: str) -> list[dict[str, object]]:
             seen.add(key)
             relationships.append(
                 _relation_record(subject, object_, label, directional=True)
+            )
+    return relationships
+
+
+def _explicit_comparison_relations(visual_structure: str) -> list[dict[str, object]]:
+    """Extract explicit non-directional ``A vs B`` comparison pairs.
+
+    ``vs`` is intentionally distinct from arrow syntax: comparison is a matched
+    relation under a shared criterion, not a flow, migration, mapping, or state
+    transition.  The optional ``比较对象｜`` prefix keeps the line readable in a
+    visual-structure contract while remaining parseable.
+    """
+
+    relationships: list[dict[str, object]] = []
+    seen: set[tuple[str, str, str]] = set()
+    for raw in str(visual_structure or "").splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        line = _LEADING_FIELD_LABEL_RE.sub("", line, count=1)
+        line = _COMPARISON_FIELD_PREFIX_RE.sub("", line, count=1)
+        for raw_clause in re.split(r"[；;]", line):
+            clause = raw_clause.translate(_QUOTE_STRIP_TABLE).strip()
+            if not clause:
+                continue
+            match = _COMPARISON_RE.match(clause)
+            if not match:
+                continue
+            subject = _clean(match.group("subject"))
+            object_ = _clean(match.group("object"))
+            label = _clean_relation_label(match.group("label") or "对照比较")
+            if not subject or not object_:
+                continue
+            if (
+                len(subject) > _MAX_RELATION_PHRASE_CHARS
+                or len(object_) > _MAX_RELATION_PHRASE_CHARS
+            ):
+                continue
+            key = (subject, object_, label)
+            if key in seen:
+                continue
+            seen.add(key)
+            relationships.append(
+                _relation_record(subject, object_, label, directional=False)
             )
     return relationships
 
@@ -243,6 +286,11 @@ def derive_business_relationships(
     explicit = _explicit_arrow_relations(visual_structure)
     if explicit:
         return tuple(explicit)
+
+    comparisons = _explicit_comparison_relations(visual_structure)
+    if comparisons:
+        return tuple(comparisons)
+
     return tuple(_structural_fallback(
         visual_structure=visual_structure,
         title=title,
