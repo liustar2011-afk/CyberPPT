@@ -107,9 +107,9 @@ jobs:
           report = run_officecli_render_qa(Path("officecli-smoke/fixture.pptx"), qa_dir)
           print(json.dumps(report, ensure_ascii=False, indent=2))
           assert report["passed"] is True
-          page_images = [Path(path) for path in report["page_images"]]
-          assert len(page_images) == 1
-          assert all(path.is_file() and path.stat().st_size > 0 for path in page_images)
+          rendered_pages = [Path(path) for path in report["rendered_pages"]]
+          assert len(rendered_pages) == 1
+          assert all(path.is_file() and path.stat().st_size > 0 for path in rendered_pages)
           assert Path(report["report_path"]).is_file()
           PY
       - name: Upload OfficeCLI smoke artifacts
