@@ -7,6 +7,7 @@ import script_engine.author_contracts as author_contracts
 import script_engine.contract_rules as implementation
 import script_engine.contracts as facade
 import script_engine.delivery_contracts as delivery_contracts
+import script_engine.full_copy_contracts as full_copy_contracts
 import script_engine.lint_contracts as lint_contracts
 import script_engine.schema_contracts as schema_contracts
 import script_engine.source_trace_contracts as source_trace_contracts
@@ -27,6 +28,9 @@ def test_contracts_facade_routes_focused_domains() -> None:
     assert facade.iter_final_script_text_fields is lint_contracts.iter_final_script_text_fields
     assert facade.lint_final_script is lint_contracts.lint_final_script
     assert facade.check_author_field_contract is author_contracts.check_author_field_contract
+    assert facade.check_full_copy_structure is full_copy_contracts.check_full_copy_structure
+    assert facade.check_full_copy_topic_semantics is full_copy_contracts.check_full_copy_topic_semantics
+    assert facade.check_full_copy_parallel_subconclusions is full_copy_contracts.check_full_copy_parallel_subconclusions
     assert facade.check_speaker_notes_length is delivery_contracts.check_speaker_notes_length
     assert facade.check_declared_count is delivery_contracts.check_declared_count
     assert facade.check_onscreen_terminal_punctuation is delivery_contracts.check_onscreen_terminal_punctuation
@@ -37,9 +41,8 @@ def test_contracts_facade_routes_focused_domains() -> None:
 
 
 def test_contracts_facade_keeps_remaining_rules_compatible() -> None:
-    assert facade.check_full_copy_structure is implementation.check_full_copy_structure
-    assert facade.check_full_copy_topic_semantics is implementation.check_full_copy_topic_semantics
     assert facade.check_onscreen_heading_semantics is implementation.check_onscreen_heading_semantics
+    assert facade.check_onscreen_detail_semantics is implementation.check_onscreen_detail_semantics
 
 
 def test_contracts_facade_contains_no_rule_implementation() -> None:
