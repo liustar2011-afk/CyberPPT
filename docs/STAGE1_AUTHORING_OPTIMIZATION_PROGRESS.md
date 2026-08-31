@@ -40,8 +40,8 @@
 | 6 | P1 | Critic / Script Quality：方向关系审计 + Roadmap completeness | 已完成 |
 | 7 | P1 | Topology：Authoring grammar ↔ machine semantic topology 映射与一致性 | 已完成 |
 | 8 | P2 | Stage1 authoring fixtures：8 类正确案例与典型错误案例 | 已完成 |
-| 9 | P2 | 回归测试：Critic/Lint/topology/Stage1→Stage2 结构保持 | 进行中 |
-| 10 | P2 | 全量验证、文档收口、剩余兼容性问题清理 | 待开始 |
+| 9 | P2 | 回归测试：Critic/Lint/topology/Stage1→Stage2 结构保持 | 已完成 |
+| 10 | P2 | 全量验证、文档收口、剩余兼容性问题清理 | 进行中 |
 
 > 批次允许根据仓库实际结构进一步拆小；任何拆分都必须及时更新本表。
 
@@ -107,26 +107,42 @@ Relation Units 只作黄金示例教学标签，映射到 Contract 的 independe
 
 错误案例：方向关系被扁平化、假 MECE、孤立 Evidence、父子重复、Mapping 端点缺失、Roadmap 只有阶段名、Governance 主体责任错位、数字缺少业务对象。错误案例明确区分 `lint`、`cross_layer_regression`、`critic`、`critic_existing_contracts`，避免把生成式判断误写成正则规则。
 
-确定性 payload builder 仅为已存在稳定 lint code 的 Roadmap incomplete 与 bare number 两类生成 Final Script 负例；其余保留为语义 fixture。
+提交链：`b7f38e6a6c2380e86662718b70fb017ab9050b33`、`1097512c25a36217f802fb547f9a64f56ad2eed4`、`ffe376aa3bfc314774fc53fc3d767d17c753be3d`、台账 `092ecafee59231fb9814a225b017207cec3e0ae9`。
 
-提交链：
+### Batch 9 — 跨层回归测试与显式顺序优先级修复
 
-- `b7f38e6a6c2380e86662718b70fb017ab9050b33`：初始化测试包；
-- `1097512c25a36217f802fb547f9a64f56ad2eed4`：8 类正确关系 fixture；
-- `ffe376aa3bfc314774fc53fc3d767d17c753be3d`：8 类错误 fixture；
-- 当前提交：更新进度台账。
-
-验证：本地容器无法解析 `github.com`，不能直接 clone；已改用 GitHub Actions 作为仓库侧权威验证。Batch 3 兼容回归已通过日志定位并提交修复，后续 Batch 9 将持续读取 push workflow 结果和 pytest artifact。
-
-## 5. 当前剩余工作
-
-下一恢复点：Batch 9。新增聚焦回归测试，至少覆盖：
+新增 `tests/stage1_authoring/test_cross_layer_regressions.py`，覆盖：
 
 1. 8 类正确 fixture → `resolve_semantic_topology`；
 2. 8 类正确 fixture → `resolve_relation_expression`；
-3. Final Script `visual_structure` → Stage2 relationship adapter，确保方向、映射、因果、汇聚与反馈不丢失；
-4. 两类新确定性 lint 负例；
-5. 错误 fixture 的 detection mode 边界，确保 Critic-only 情况不会被误要求新增 lint；
-6. 黄金示例历史入口继续可解析。
+3. Final Script `visual_structure` → Stage2 relationship adapter → expression，验证关系端点和表达形态保持；
+4. Roadmap incomplete 与 bare number 两类稳定 lint code；
+5. Critic-only / cross-layer failure fixture 不被误要求新增 regex lint；
+6. 多阶段 Roadmap 显式 sequence 不被通用 dependency chain 抢占 primary topology。
 
-Batch 10：读取最终 GitHub Actions 全量结果；修复本轮新增回归；清理重复测试或兼容性问题；更新文档为完成状态并记录最终 HEAD。
+发现并修复：多阶段 Roadmap 的两条显式 `sequence_before` 会与通用 `dependency_chain` 形成同分候选，并因名称排序把 `dependency_chain` 错选为 primary。现调整为：存在显式 sequence 时不再生成冗余通用 dependency candidate。
+
+提交链：
+
+- `d2dc5f499aeed44a736c62144f9d2b185321009d`：显式 sequence 优先于通用 dependency；
+- `54bf705553e6d3e638d08002970b163e35a80086`：8 类跨层回归测试；
+- 当前提交：关闭 Batch 9 并记录验证结果。
+
+GitHub Actions 验证：workflow run `33395908843`（run #545）整体 `success`。
+
+- Python 3.12：`1851 passed, 8 skipped, 2 warnings, 49 subtests passed`；
+- Python 3.10：pytest、wheel build、wheel import smoke 全部成功；
+- Windows wheel smoke：成功；
+- macOS wheel smoke：成功；
+- OfficeCLI render smoke：成功。
+
+2 条 warning 均来自现有 `page_artifact_spec.py` legacy content-integrity list-order projection，与本轮 Stage1 作者化开发无直接关系，未在本计划内扩大处理范围。
+
+## 5. 当前剩余工作
+
+下一恢复点：Batch 10。
+
+1. 从开发基线 `f2316f8` 到当前 HEAD 做 changed-file / diff 范围审计，确认没有引入第四套 Stage1 权威产物、没有扩大 Final Script schema、没有把 Critic 语义判断硬编码成低精度规则；
+2. 核对新增生产改动与测试、文档是否一一对应，清理明显重复或残留状态；
+3. 更新本文件为全部完成，记录最终 HEAD 和最终 GitHub Actions 验证；
+4. 最终文档提交后再次读取 `main` workflow，确保最终仓库状态可恢复且全绿。
