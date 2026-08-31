@@ -11,6 +11,7 @@ from . import contract_rules as _impl
 from . import delivery_contracts as _delivery
 from . import full_copy_contracts as _full_copy
 from . import lint_contracts as _lint
+from . import onscreen_contracts as _onscreen
 from . import schema_contracts as _schema
 from . import source_trace_contracts as _source_trace
 from . import structural_contracts as _structural
@@ -39,6 +40,12 @@ _FOCUSED_EXPORTS = {
     "check_full_copy_structure": _full_copy.check_full_copy_structure,
     "check_full_copy_topic_semantics": _full_copy.check_full_copy_topic_semantics,
     "check_full_copy_parallel_subconclusions": _full_copy.check_full_copy_parallel_subconclusions,
+    "check_onscreen_heading_semantics": _onscreen.check_onscreen_heading_semantics,
+    "check_onscreen_detail_semantics": _onscreen.check_onscreen_detail_semantics,
+    "check_onscreen_projection_structure": _onscreen.check_onscreen_projection_structure,
+    "check_onscreen_hierarchy_punctuation": _onscreen.check_onscreen_hierarchy_punctuation,
+    "check_onscreen_code_context": _onscreen.check_onscreen_code_context,
+    "check_onscreen_core_alignment": _onscreen.check_onscreen_core_alignment,
     "SPEAKER_NOTES_MIN_CHARS": _delivery.SPEAKER_NOTES_MIN_CHARS,
     "ONSCREEN_DETAIL_PHRASE_MAX_CHARS": _delivery.ONSCREEN_DETAIL_PHRASE_MAX_CHARS,
     "ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS": _delivery.ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS,
