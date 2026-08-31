@@ -1,0 +1,75 @@
+from __future__ import annotations
+
+import ast
+from pathlib import Path
+
+import script_engine.source_index as source_index
+import script_engine.source_reading as source_reading
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_source_index_routes_reading_strategy_through_focused_module() -> None:
+    assert source_index.estimate_reading_load is source_reading.estimate_reading_load
+    assert source_index.recommend_reading_mode is source_reading.recommend_reading_mode
+    assert source_index.default_reading_strategy is source_reading.default_reading_strategy
+
+    sources = [{"source_id": "SRC-1", "path": "sample.md", "sha256": "abc"}]
+    headings = [{"heading_id": "H-1", "title": "标题", "level": 1}]
+    units = [
+        {
+            "unit_id": "SU-1",
+            "source_id": "SRC-1",
+            "kind": "heading",
+            "text": "标题",
+            "heading_id": "H-1",
+            "locator": {},
+        },
+        {
+            "unit_id": "SU-2",
+            "source_id": "SRC-1",
+            "kind": "paragraph",
+            "text": "项目应当明确责任边界和实施计划。",
+            "heading_id": "H-1",
+            "locator": {},
+        },
+    ]
+    payload = source_index.build_source_index_v2(
+        sources=sources,
+        headings=headings,
+        units=units,
+    )
+    expected_load = source_reading.estimate_reading_load(units, sources)
+    expected_recommendation = source_reading.recommend_reading_mode(expected_load)
+    assert payload["reading_load"] == expected_load
+    assert payload["reading_recommendation"] == expected_recommendation
+    assert payload["reading_strategy"] == source_reading.default_reading_strategy(
+        expected_recommendation,
+        headings,
+        units,
+    )
+
+
+def test_source_index_no_longer_owns_reading_strategy_implementation() -> None:
+    path = ROOT / "script_engine" / "source_index.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    function_names = {
+        node.name
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+    }
+    imported_names = {
+        alias.name
+        for node in tree.body
+        if isinstance(node, ast.Import)
+        for alias in node.names
+    }
+
+    assert "estimate_reading_load" not in function_names
+    assert "recommend_reading_mode" not in function_names
+    assert "default_reading_strategy" not in function_names
+    assert "_critical_deep_read_unit_ids" not in function_names
+    assert "math" not in imported_names
+    assert path.stat().st_size < 25_000
