@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from . import contract_rules as _impl
 from . import delivery_contracts as _delivery
+from . import lint_contracts as _lint
 from . import schema_contracts as _schema
 from . import source_trace_contracts as _source_trace
 from . import structural_contracts as _structural
@@ -28,6 +29,10 @@ _FOCUSED_EXPORTS = {
     "FOUNDATION_CITABLE_KEYS": _source_trace.FOUNDATION_CITABLE_KEYS,
     "collect_foundation_source_codes": _source_trace.collect_foundation_source_codes,
     "validate_source_refs_coverage": _source_trace.validate_source_refs_coverage,
+    "BANNED_PHRASING_PATH": _lint.BANNED_PHRASING_PATH,
+    "load_banned_phrasing": _lint.load_banned_phrasing,
+    "iter_final_script_text_fields": _lint.iter_final_script_text_fields,
+    "lint_final_script": _lint.lint_final_script,
     "SPEAKER_NOTES_MIN_CHARS": _delivery.SPEAKER_NOTES_MIN_CHARS,
     "ONSCREEN_DETAIL_PHRASE_MAX_CHARS": _delivery.ONSCREEN_DETAIL_PHRASE_MAX_CHARS,
     "ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS": _delivery.ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS,
