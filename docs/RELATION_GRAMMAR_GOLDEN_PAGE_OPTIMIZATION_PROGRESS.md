@@ -6,11 +6,11 @@
 
 ## 总体状态
 
-- 当前阶段：Batch C2 — Convergence 输入角色优化
+- 当前阶段：Batch D1 — Flow 增加真实业务交接物
 - 总体状态：进行中
-- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance、Comparison、Causal、Parallel 优化完成
+- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance、Comparison、Causal、Parallel、Convergence 优化完成
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把 AUTHOR/CRITIQUE 的生成式判断硬编码成低精度 lint
-- 下一恢复点：优化 Convergence 的输入角色命名，使各输入都以“独立贡献 → 共同结果”的同一语义尺度进入汇聚点
+- 下一恢复点：为 Flow 的每条阶段边补充真实业务交接物和反馈回写物，进一步与 Causal 区分
 
 ## 已确认的现状映射
 
@@ -31,7 +31,7 @@
 - [x] Batch B2：Comparison 重构
 - [x] Batch B3：Causal 收紧真实因果
 - [x] Batch C1：Parallel 同层尺度统一
-- [ ] Batch C2：Convergence 输入角色优化
+- [x] Batch C2：Convergence 输入角色优化
 - [ ] Batch D1：Flow 增加真实业务交接物
 - [ ] Batch D2：Roadmap 增加状态化进入条件与起终点
 - [ ] Batch D3：Mapping 修正方向与 Cardinality
@@ -170,3 +170,20 @@
 - 已发现问题：现有 fixture 使用“研判范围 / 周期规则 / 运行闭环”，其中第三项命名仍需在 Batch G1 与黄金页“运行机制”对齐。
 - 剩余任务：Batch C2–H。
 - 下一恢复点：Batch C2，统一 Convergence 各输入的角色尺度与共同结果表达。
+
+### Batch C2 — Convergence：统一独立输入角色
+
+- 状态：完成
+- 完成内容：
+  - 将原“供给可用能力 / 负荷变化 / 市场互济 / 天气新能源偏差”统一重命名为四类输入角色：供给边界输入、需求压力输入、互济缓释输入、波动扰动输入。
+  - Relation Units 统一采用“输入角色｜该输入对共同结果贡献什么信息”的句法。
+  - 明确四个输入均直接进入“综合供需风险判断”，彼此之间无默认方向或中转关系。
+  - 在视觉结构中增加四条显式 `输入 → 综合供需风险判断：共同支撑` 关系，便于 Stage2 恢复 support convergence。
+  - 更新 Speaker Notes 与作者自检，强化“独立贡献 → 共同结果”的语义。
+- 改动文件：
+  - `.agents/skills/cyberppt-script-workflow/references/golden-page-convergence.md`
+- 实现 commit：`3ce2b3e5c53677c17ad1bc1dcdf2d1e04dd4faa6`
+- 测试结果：静态 N→1 汇聚检查通过；Runtime 统一验证留到 Batch G/H。
+- 已发现问题：现有 fixture 的 Convergence 输入仍为“统一数据口径 / 跨周期分析框架 / 误差复盘机制”，业务场景与黄金页不一致；需在 Batch G1 对齐。
+- 剩余任务：Batch D1–H。
+- 下一恢复点：Batch D1，为 Flow 每条边补充真实业务交接物，形成可验证的阶段交接。
