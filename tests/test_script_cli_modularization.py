@@ -4,6 +4,7 @@ import ast
 from pathlib import Path
 
 import script_engine.cli as cli
+import script_engine.cli_parser as cli_parser
 import script_engine.final_quality as final_quality
 import script_engine.project_scaffold as project_scaffold
 import script_engine.project_status as project_status
@@ -130,3 +131,44 @@ def test_cli_does_not_reimplement_project_status_helpers() -> None:
     assert "_mtime" not in function_names
     assert "_artifact_report" not in function_names
     assert "datetime" not in imported_modules
+
+
+def test_cli_routes_parser_schema_through_focused_module() -> None:
+    cli_built = cli.build_parser()
+    focused = cli_parser.build_parser(cli.VALIDATORS)
+    assert cli_built.prog == focused.prog == "cyberppt-script"
+
+    cli_choices = next(
+        action.choices
+        for action in cli_built._actions
+        if getattr(action, "dest", None) == "command"
+    )
+    focused_choices = next(
+        action.choices
+        for action in focused._actions
+        if getattr(action, "dest", None) == "command"
+    )
+    assert set(cli_choices) == set(focused_choices)
+
+
+def test_cli_does_not_reimplement_argparse_schema() -> None:
+    path = ROOT / "script_engine" / "cli.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    imported_names = {
+        alias.name
+        for node in tree.body
+        if isinstance(node, ast.Import)
+        for alias in node.names
+    }
+    parser_node = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "build_parser"
+    )
+    parser_source = ast.get_source_segment(source, parser_node) or ""
+
+    assert "argparse" not in imported_names
+    assert "add_parser(" not in parser_source
+    assert "add_argument(" not in parser_source
+    assert "_build_parser" in parser_source
