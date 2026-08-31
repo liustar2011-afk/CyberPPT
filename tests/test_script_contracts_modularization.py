@@ -4,6 +4,7 @@ import ast
 from pathlib import Path
 
 import script_engine.author_contracts as author_contracts
+import script_engine.contract_rules as legacy_facade
 import script_engine.contracts as facade
 import script_engine.delivery_contracts as delivery_contracts
 import script_engine.full_copy_contracts as full_copy_contracts
@@ -63,3 +64,18 @@ def test_contracts_facade_has_no_legacy_runtime_fallback() -> None:
     assert "contract_rules" not in imported_modules
     assert "vars(" not in source
     assert path.stat().st_size < 4_000
+
+
+def test_legacy_contract_rules_is_thin_compatibility_facade() -> None:
+    assert legacy_facade.__all__ == facade.__all__
+    for name in facade.__all__:
+        assert getattr(legacy_facade, name) is getattr(facade, name)
+
+    path = ROOT / "script_engine" / "contract_rules.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(path))
+    functions = [node.name for node in tree.body if isinstance(node, ast.FunctionDef)]
+    classes = [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
+    assert functions == []
+    assert classes == []
+    assert path.stat().st_size < 1_500
