@@ -6,11 +6,11 @@
 
 ## 总体状态
 
-- 当前阶段：Batch B1 — Governance 重构
+- 当前阶段：Batch B2 — Comparison 重构
 - 总体状态：进行中
-- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成
+- 已完成：开发分支建立；独立进度台账初始化；8 类黄金页与跨层关系链路完成基线映射；8 页统一 Relation Contract 与横向 Grammar 边界表完成；Governance 分层重构完成
 - 工程边界：不新增 Stage1 authoritative IR；不扩展 Final Script schema；不把 AUTHOR/CRITIQUE 的生成式判断硬编码成低精度 lint
-- 下一恢复点：重构 Governance，使 Actor / Responsibility / Control Mechanism / Protected Outcome 分层明确，共同控制机制不再作为第四个并列责任主体
+- 下一恢复点：重构 Comparison，移除状态差异中的方向箭头，用固定对象 + 固定评价维度表达对照关系
 
 ## 已确认的现状映射
 
@@ -27,7 +27,7 @@
 
 - [x] Step 0：仓库基线盘点与映射
 - [x] Batch A：统一黄金页面模板与 Relation Contract
-- [ ] Batch B1：Governance 重构
+- [x] Batch B1：Governance 重构
 - [ ] Batch B2：Comparison 重构
 - [ ] Batch B3：Causal 收紧真实因果
 - [ ] Batch C1：Parallel 同层尺度统一
@@ -102,3 +102,20 @@
   - Causal 的现有四节点链中仍混有“叙事递进”和“真实因果”，需要进一步收紧。
 - 剩余任务：Batch B1–H。
 - 下一恢复点：Batch B1，先重构 Governance 页面本体，再同步 fixture / adapter 的跨层语义。
+
+### Batch B1 — Governance：分离 Actor 与共同控制层
+
+- 状态：完成
+- 完成内容：
+  - 将 Governance 的 Relation Units 从“四个同层模块”调整为三个真正的责任主体绑定：业务牵头方、数据责任方、分析执行方。
+  - 将会商审校、发布授权、复盘留痕独立为“共同控制机制”，明确其跨主体控制作用。
+  - 单独增加“受保护结果”，将结论口径一致、来源可追溯、过程可复核、变更有记录作为最终治理输出。
+  - 重写上屏层级为“责任主体与责任对象 → 共同控制机制 → 受保护结果”，避免共同控制机制被误读为第四责任主体。
+  - 更新视觉结构和作者自检，明确三条责任线汇入共同治理层。
+- 改动文件：
+  - `.agents/skills/cyberppt-script-workflow/references/golden-page-governance.md`
+- 实现 commit：`1b26d08fdde93e456b7633f1327c6a1d45a53445`
+- 测试结果：静态语义核对通过；本步仅改黄金示例文档，Runtime 测试留到 Batch G/H 统一执行。
+- 已发现问题：现有 `tests/stage1_authoring/fixtures.py` 中 Governance 仍是“使用申请 → 授权决策 → 受控调用 → 审计记录”的通用 dependency chain，与当前黄金页语义不一致，需在 Batch G1 同步。
+- 剩余任务：Batch B2–H。
+- 下一恢复点：Batch B2，修正 Comparison 的“状态差异被箭头误读为方向关系”问题。
