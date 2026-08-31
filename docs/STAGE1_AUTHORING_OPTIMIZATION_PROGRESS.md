@@ -2,30 +2,30 @@
 
 > 开发依据：`CyberPPT Stage1 作者化写作优化开发方案（新版）`
 >
-> 工作方式：按小批次落地；每完成一个批次立即提交；本文件随每个批次同步更新，记录完成内容、验证结果、提交与剩余工作，确保中断后可直接续作。
+> 工作方式：按小批次落地；每完成一个批次立即提交；本文件持续记录完成内容、验证结果、提交和剩余工作，确保任意时点中断后可从仓库恢复。
 
 ## 1. 基线与硬边界
 
-- 开发基线：`main`，启动时 HEAD 为 `f2316f83aa9f5735f6780760a63e3189a7426835`。
+- 开发基线：`main@f2316f83aa9f5735f6780760a63e3189a7426835`。
 - 保持 Stage1 三个正式权威产物：`script/foundation.json`、`script/deck-plan.json`、`script/dist/final-script.md`。
 - Deck Plan 继续保持 v2 lean，不增加 Relation Units、Argument Topology、Onscreen Contract 等预写字段。
 - Final Script 保持现有字段，不新增第四套 Stage1 authoritative IR。
 - AUTHOR/CRITIQUE/REWRITE 的操作性作者规则继续集中在 `authoring-contract.md`。
-- Stage2 继续消费锁定后的最终 `onscreen`，不承担业务文案重写。
+- Stage2 继续消费锁定后的最终 `onscreen` 及关系，不承担业务文案重写。
 - 确定性代码只做机械底线检查，不替代 AUTHOR 的语义与论证判断。
 
 ## 2. 技术判断
 
-结论：`SUPPORT WITH CONDITIONS`。
+结论：`SUPPORT WITH CONDITIONS`，本轮按收敛式实现完成。
 
-实施条件：
+实施口径：
 
 1. Relation Unit 仅作为教学层工作方法，不新增持久化字段或独立权威文件。
 2. `authoring-contract.md` 已使用 independent arguments / reasoning unit、claim–argument–evidence chain 表达同一职责，不再固化第二套同义 ontology。
 3. Authoring grammar 与 machine semantic topology 通过明确映射衔接，不继续增加近义 topology。
 4. Golden Examples 作为参考/回归样例，不成为第四套内容规范。
 5. Critic/Lint 只新增可机械判定规则；作者判断继续由生成式 AUTHOR/CRITIQUE/REWRITE 承担。
-6. 每批先做最小范围核对再提交；发现架构冲突时优先收敛而非扩张。
+6. 发现架构冲突时优先收敛、复用和修兼容，不为满足计划条目重复造规则。
 
 ## 3. 批次计划
 
@@ -41,9 +41,7 @@
 | 7 | P1 | Topology：Authoring grammar ↔ machine semantic topology 映射与一致性 | 已完成 |
 | 8 | P2 | Stage1 authoring fixtures：8 类正确案例与典型错误案例 | 已完成 |
 | 9 | P2 | 回归测试：Critic/Lint/topology/Stage1→Stage2 结构保持 | 已完成 |
-| 10 | P2 | 全量验证、文档收口、剩余兼容性问题清理 | 进行中 |
-
-> 批次允许根据仓库实际结构进一步拆小；任何拆分都必须及时更新本表。
+| 10 | P2 | 全量验证、文档收口、剩余兼容性问题清理 | 已完成 |
 
 ## 4. 已完成记录
 
@@ -55,7 +53,7 @@
 
 ### Batch 1–2 — P0 AUTHOR Contract 差距审计
 
-当前基线已经覆盖 source meaning → `core_message` → independent arguments + evidence → Full Copy → Onscreen，以及 proposition headings、relation grammar、Speaker Notes 增量规则和 Critic/Rewrite 最早失败点回退，因此不对单一运行权威做重复改写。
+当前基线已经覆盖 source meaning → `core_message` → independent arguments + evidence → Full Copy → Onscreen，以及 proposition headings、relation grammar、Speaker Notes 增量规则和 Critic/Rewrite 最早失败点回退，因此未对单一运行权威做重复改写。
 
 Relation Units 只作黄金示例教学标签，映射到 Contract 的 independent arguments / reasoning units，不形成 schema 或第二套 ontology。
 
@@ -67,7 +65,7 @@ Relation Units 只作黄金示例教学标签，映射到 Contract 的 independe
 
 提交：`82b03204cee5aea82ac25c82c3f7b97e48e9459c`。
 
-兼容修复：GitHub Actions 后续发现既有 `tests/test_onscreen_group_hierarchy.py` 仍把 `golden-page-script-example.md` 当作可解析的两页示例。纯索引版本造成 `script contains no page headings`。已在保留 8 类导航的同时恢复原入口的两页可解析兼容内容，不撤回独立示例结构。
+兼容修复：GitHub Actions 后续发现既有 `tests/test_onscreen_group_hierarchy.py` 仍把 `golden-page-script-example.md` 当作可解析的两页示例。纯索引版本造成 `script contains no page headings`。已在保留 8 类导航的同时恢复原入口两页可解析兼容内容，不撤回独立示例结构。
 
 兼容修复提交：`c3d215c373319564aa61cc43100b564dc365b930`。
 
@@ -81,7 +79,7 @@ Relation Units 只作黄金示例教学标签，映射到 Contract 的 independe
 
 正式 lint 链路确认使用 `script_engine.final_quality` → `script_engine.lint_contracts`。现有规则已经覆盖抽象/名词式标题、标题缺业务对象、Full Copy/Onscreen 层级、Evidence 层缺失、Core Message 投影偏离、隐藏中间步骤等项目。
 
-新增：`script_engine/authoring_quality_contracts.py` 与 `ONSCREEN_NUMBER_WITHOUT_OBJECT`，只拦截无语义标签的近似纯数量；规则接入正式 `lint_final_script()` 并新增回归测试。
+新增 `script_engine/authoring_quality_contracts.py` 与 `ONSCREEN_NUMBER_WITHOUT_OBJECT`，只拦截无语义标签的近似纯数量；规则接入正式 `lint_final_script()` 并新增回归测试。
 
 提交链：`be2a768cc1928e1e793949a8a97301aa36ee1793`、`d5277ce7d69fc9337bda5ba492938346fd5485ea`、`f5a805ac1877f7694c00ae43e79afd138fee5235`、台账 `fc557be3e0466632158f268669b296801bb90093`。
 
@@ -111,24 +109,13 @@ Relation Units 只作黄金示例教学标签，映射到 Contract 的 independe
 
 ### Batch 9 — 跨层回归测试与显式顺序优先级修复
 
-新增 `tests/stage1_authoring/test_cross_layer_regressions.py`，覆盖：
+新增 `tests/stage1_authoring/test_cross_layer_regressions.py`，覆盖 8 类正确 fixture 的 semantic topology、relation expression、Final Script `visual_structure` → Stage2 relationship adapter 关系保持，两类稳定 lint 负例，以及 Critic-only / cross-layer fixture 的检测职责边界。
 
-1. 8 类正确 fixture → `resolve_semantic_topology`；
-2. 8 类正确 fixture → `resolve_relation_expression`；
-3. Final Script `visual_structure` → Stage2 relationship adapter → expression，验证关系端点和表达形态保持；
-4. Roadmap incomplete 与 bare number 两类稳定 lint code；
-5. Critic-only / cross-layer failure fixture 不被误要求新增 regex lint；
-6. 多阶段 Roadmap 显式 sequence 不被通用 dependency chain 抢占 primary topology。
+发现并修复：多阶段 Roadmap 的两条显式 `sequence_before` 会与通用 `dependency_chain` 形成同分候选，并因名称排序把 `dependency_chain` 错选为 primary。现调整为存在显式 sequence 时不再生成冗余通用 dependency candidate。
 
-发现并修复：多阶段 Roadmap 的两条显式 `sequence_before` 会与通用 `dependency_chain` 形成同分候选，并因名称排序把 `dependency_chain` 错选为 primary。现调整为：存在显式 sequence 时不再生成冗余通用 dependency candidate。
+提交链：`d2dc5f499aeed44a736c62144f9d2b185321009d`、`54bf705553e6d3e638d08002970b163e35a80086`、台账 `d36899b219d799bd1f2069781a149184ef2b7f71`。
 
-提交链：
-
-- `d2dc5f499aeed44a736c62144f9d2b185321009d`：显式 sequence 优先于通用 dependency；
-- `54bf705553e6d3e638d08002970b163e35a80086`：8 类跨层回归测试；
-- 当前提交：关闭 Batch 9 并记录验证结果。
-
-GitHub Actions 验证：workflow run `33395908843`（run #545）整体 `success`。
+GitHub Actions run `33395908843`（run #545）整体 `success`：
 
 - Python 3.12：`1851 passed, 8 skipped, 2 warnings, 49 subtests passed`；
 - Python 3.10：pytest、wheel build、wheel import smoke 全部成功；
@@ -136,13 +123,30 @@ GitHub Actions 验证：workflow run `33395908843`（run #545）整体 `success`
 - macOS wheel smoke：成功；
 - OfficeCLI render smoke：成功。
 
-2 条 warning 均来自现有 `page_artifact_spec.py` legacy content-integrity list-order projection，与本轮 Stage1 作者化开发无直接关系，未在本计划内扩大处理范围。
+2 条 warning 来自既有 `page_artifact_spec.py` legacy content-integrity list-order projection，与本轮 Stage1 作者化开发无直接关系。
 
-## 5. 当前剩余工作
+### Batch 10 — 全量范围审计与收口
 
-下一恢复点：Batch 10。
+以 `f2316f83aa9f5735f6780760a63e3189a7426835` 为 base、`d36899b219d799bd1f2069781a149184ef2b7f71` 为审计 head 执行 compare：`ahead_by=24`，共 19 个 changed files。
 
-1. 从开发基线 `f2316f8` 到当前 HEAD 做 changed-file / diff 范围审计，确认没有引入第四套 Stage1 权威产物、没有扩大 Final Script schema、没有把 Critic 语义判断硬编码成低精度规则；
-2. 核对新增生产改动与测试、文档是否一一对应，清理明显重复或残留状态；
-3. 更新本文件为全部完成，记录最终 HEAD 和最终 GitHub Actions 验证；
-4. 最终文档提交后再次读取 `main` workflow，确保最终仓库状态可恢复且全绿。
+范围审计结论：
+
+1. 未修改 `contracts/foundation.schema.json`、`contracts/deck-plan.schema.json`、`contracts/final-script.schema.json`，没有扩大 Stage1 schema；
+2. 未新增 `relation-plan.json`、`screen-copy-contract.json`、Argument Topology IR 等第四套 Stage1 authoritative artifact；
+3. 生产代码只涉及 `script_engine/authoring_quality_contracts.py`、`script_engine/lint_contracts.py`、`cyberppt/topology_resolver.py` 三处，其余改动均为黄金示例、开发台账和测试；
+4. 新增 deterministic lint 只覆盖无对象纯数量和显式 Roadmap completeness；假 MECE、Governance 主体责任错位等语义失败继续留给 AUTHOR/CRITIQUE；
+5. topology 改动只补齐既有 semantic topology 的 coarse carrier 映射并修正显式 sequence 优先级，没有新增视觉 topology vocabulary；
+6. Golden Example 历史可解析入口已恢复兼容，同时保留 8 类独立示例；
+7. 正确/错误 fixture、production lint、topology resolver 与 Stage1→Stage2 relationship adapter 已形成可执行回归闭环。
+
+最终代码与测试验证基线：`main@54bf705553e6d3e638d08002970b163e35a80086`，GitHub Actions run #545 全绿；其后的提交仅更新本进度文档。本次提交关闭 Batch 10，提交后再以 `main` workflow 状态作为仓库最终恢复状态验证。
+
+## 5. 剩余工作
+
+本开发计划 0–10 批已全部完成，无阻塞性剩余开发任务。
+
+后续若继续演进，建议作为新计划单独立项，不在本轮继续扩张规则：
+
+- 用真实项目脚本持续补充 fixture 覆盖面；
+- 根据实际误报/漏报数据调整 deterministic lint，而非预先增加规则；
+- 将现有 2 条 legacy content-integrity warning 作为 Stage2 兼容治理议题单独处理。
