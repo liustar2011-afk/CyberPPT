@@ -9,5 +9,6 @@
 | 32 | `d0adcbe652ac459bf96f31753d381764d4cdc404` | No-visual-structure 测试迁移到当前章节名；Style10 alias 与 Style09 归一为同一 art direction，继续逐项验证结构不受旧调用 ID 影响 |
 | 33 | `c61bcf77cbb69988f1568a04b1e7d05549ce424a` | Page-manifest Style09 测试迁移到当前三个合同章节名；保留语义适配、元数据泄漏防护、terminal lock 唯一与 handoff consumed 检查 |
 | 34 | `1e1f9e8ad5a810c26da2afa4ec9f10a444e41a87` | 修复 wheel package-data 漏项：纳入 `scripts/image_to_pptx_runtime/pptx_shapes/data/*`，并强化 repo 外 smoke，显式校验 presetShapeDefinitions.xml 与 shape_type_values.txt |
+| 35 | `fa8370e5260849d54b9f26f2ea0f3be80e85ca73` | 完成 image-to-pptx runtime 数据资源打包：纳入 `pptx_animation_presets.json` 与 `svg_editor/static/*`；repo 外 smoke 新增 203 个原生动画预设加载校验及 SVG Editor 三项静态资源存在性校验 |
 
-阶段 33 后 workflow run `33341756404` 已确认 Python 3.10/3.12 的 pytest 全绿；Python 3.12 精确结果为 1760 passed、8 skipped、22 warnings、49 subtests passed。该 run 唯一失败发生在 wheel 安装后的 repo 外 smoke：`shape_type_values.txt` 未打包。阶段 34 已针对该精确 FileNotFoundError 修复，并同时纳入同目录的 XML/许可/NOTICE 资源。下一步以阶段 34 后 GitHub Actions 同时通过 pytest、wheel build 和 repo 外 import/resource smoke 为准。
+阶段 34 后 workflow run `33342016028` 已再次确认 Python 3.10/3.12 的 pytest 与 wheel build 全绿；Python 3.12 精确结果为 1760 passed、8 skipped、22 warnings、49 subtests passed。Stage34 的 repo 外 smoke 已成功越过 preset-shape 数据加载，随后精确暴露第二个 package-data 漏项：`pptx_animation_presets.json` 未打包。阶段 35 在完整审计 `scripts/image_to_pptx_runtime` 非 Python 运行时资源后，同时纳入动画预设 JSON 和 Flask SVG Editor 实际使用的 `static/index.html`、`static/app.js`、`static/style.css`；下一步以阶段 35 后 GitHub Actions 同时通过 pytest、wheel build 和 repo 外 import/resource smoke 为准。
