@@ -14,6 +14,7 @@
 | 57 | `dfdadc3bc25f35bb804aebb32b981e8d78ec9b8b` | 将 `new-project` 的 slug 规则、目录树创建和非权威产物 `.gitignore` 模板迁入 `project_scaffold.py`；CLI 仅保留异常/成功结果到既有 JSON 输出和退出码的适配，并以架构测试禁止脚手架常量与文件系统实现回流。实现提交：`8e21ae7`、`ea2ff31`、`dfdadc3` |
 | 58 | `1afd0fe944bb03ca09270b0d275254eb8d0bd081` | 将 `status` 的项目布局识别、artifact 校验、Foundation/PLAN/Final 审计、source-index 状态和阶段判定迁入 `project_status.py`；CLI 仅打印 focused evaluator 返回的既有 JSON，并通过 callback 保留 `_final_lint_issues` 动态 monkeypatch 兼容及 profile resolver 身份。实现提交：`e222eef`、`ba1c08f`、`1afd0fe` |
 | 59 | `26506bbc690ed63557d8d7d5d49c3d66bad39344` | 将完整 argparse 命令树、帮助文本、choices、默认值和参数定义迁入 `cli_parser.py`；保留 `cli.build_parser()` 兼容入口，仅向 focused parser schema 传递现有 validation kinds，并以架构测试禁止 argparse 配置回流。实现提交：`8bdf0e2`、`86102f4`、`26506bb` |
+| 60 | `b5e1c1fabd538df39c8e9adf00a38f8b418c2ce0` | 新增 `audit_reports.py`，集中构造 validate、Foundation/PLAN/Final 审计、plan review、composed trace、source refs 和 source-index build 八类命令结果；CLI handler 统一降为“调用 focused builder → 输出 → 返回 exit code”，并移除对 `analysis_audit`、`composed_trace`、`plan_review`、`source_index` 的直接报告组装依赖。实现提交：`1857734`、`4bafe85`、`b5e1c1f` |
 
 ## 验证记录
 
@@ -27,3 +28,4 @@
 - 阶段 57 workflow run `33365981529`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；`new-project` 抽取后非法 slug、重复目录、目录结构、JSON 输出和退出码保持兼容。
 - 阶段 58 workflow run `33366336229`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；`status` 抽取后既有 JSON 字段、中文阶段文案、strict/legacy profile 分支、source-index 行为、advisory monkeypatch 与退出码保持兼容。
 - 阶段 59 workflow run `33366643152`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；parser schema 抽取后全部子命令名称、help、choices、默认值、必填参数、原 `cli.build_parser()` 入口和 CLI 分发行为保持兼容。
+- 阶段 60 workflow run `33367035037`：五个 job 全部 `success`。Linux Python3.10/3.12 全量 pytest、wheel repo 外 smoke、OfficeCLI 真实渲染、macOS/Windows wheel smoke均通过；八类审计/追溯命令迁入 focused report builders 后，报告字段、plan review 文本、source-index 产出路径、退出码及 CLI 分发行为保持兼容。
