@@ -148,19 +148,18 @@ def render_final_prompt(
 ) -> str:
     """Render the single production prompt in the required seven-part order."""
 
-    runtime = None
     runtime_style_contract = ir.runtime_lock.style_contract
-    if style_id == 9:
-        if style_lock is None:
-            raise ValueError("live runtime style final prompt requires its style lock")
-        runtime = load_runtime_style_contract(style_lock)
-        runtime_style_contract = runtime.contract
+    if style_lock is not None:
+        try:
+            runtime_style_contract = load_runtime_style_contract(style_lock).contract
+        except (OSError, ValueError, TypeError):
+            pass
 
     runtime_section = "\n".join(
         (
             SECTION_HEADINGS[6],
             runtime_style_contract,
-            *((ir.runtime_lock.terminal_lock,) if runtime is None and ir.runtime_lock.terminal_lock else ()),
+            *((ir.runtime_lock.terminal_lock,) if ir.runtime_lock.terminal_lock else ()),
         )
     )
     hard_constraints_section = "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints))

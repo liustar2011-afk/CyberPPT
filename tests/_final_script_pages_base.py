@@ -719,18 +719,14 @@ class FinalScriptPagesTests(unittest.TestCase):
             int(page.page_id[1:]): page
             for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
         }
-        from cyberppt.page_artifact_spec import load_project_page_artifact_specs
         from scripts.imagegen_pipeline.imagegen_handoff import compile_page_prompt
 
-        artifact_specs = load_project_page_artifact_specs(project, style_lock=style_lock)
         for page_number in parse_page_blocks(script):
             prompt = project / f"prompt-{page_number}.md"
             prompt.write_text(
                 compile_page_prompt(
                     script_pages[page_number],
                     style_lock,
-                    prompt_compiler="artifact-spec-v2",
-                    artifact_spec=artifact_specs[page_number],
                 ).prompt,
                 encoding="utf-8",
             )
@@ -788,11 +784,10 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn("#12355B", prompt)
             self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
             self.assertNotIn("【页面逻辑｜不上屏】", prompt)
-            self.assertIn("[1. Deliverable]", prompt)
-            self.assertIn("[6. Exact visible text contract]", prompt)
-            self.assertIn("[7. Runtime lock]", prompt)
+            self.assertIn("【完整上屏内容】", prompt)
+            self.assertIn("【视觉风格｜不上屏】", prompt)
             self.assertIn("Do not render title, subtitle, logo, page number, footer, or template frame.", prompt)
-            self.assertEqual("artifact-spec-v2", manifest["prompt_contract"]["compiler"])
+            self.assertEqual("content-first-v1", manifest["prompt_contract"]["compiler"])
             self.assertEqual("态势感知能力要从工具堆叠转向风险闭环", lock["records"][0]["title"])
             self.assertEqual("运营保障机制需要责任、流程和审计同时落地", lock["records"][1]["title"])
             self.assertIn("presentation", lock["records"][0])
@@ -807,7 +802,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn(summary["artifacts"]["template_text_lock"], ledger_paths)
             self.assertIn(summary["artifacts"]["visual_style_lock"], ledger_paths)
 
-    def test_external_script_requires_formal_stage02_gates(self) -> None:
+    def test_external_script_enters_stage02_without_visual_structure_gate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "stage2-only"
@@ -819,17 +814,6 @@ class FinalScriptPagesTests(unittest.TestCase):
                 "组件A：输入与输出关系\n",
                 encoding="utf-8",
             )
-
-            with self.assertRaisesRegex(FileNotFoundError, "visual structure spec"):
-                run_final_script_pages(
-                    project=project,
-                    script=script,
-                    pages_raw="1",
-                    style_id=4,
-                    external_script=True,
-                )
-
-            self._approve_inputs_and_prompts(project, script, external_script=True)
 
             summary = run_final_script_pages(
                 project=project,

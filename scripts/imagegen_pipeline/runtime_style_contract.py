@@ -151,7 +151,7 @@ def enforce_terminal_execution_lock(prompt: str, runtime: RuntimeStyleContract) 
         if pos >= 0:
             body = body[:pos].rstrip()
     if not runtime.terminal_lock:
-        raise ValueError("live runtime style contract has no terminal execution lock")
+        return body
     terminal = runtime.terminal_lock.strip()
     body = _without_terminal_duplicates(body, terminal)
     return f"{body}\n\n{TERMINAL_EXECUTION_HEADING}\n{terminal}\n"

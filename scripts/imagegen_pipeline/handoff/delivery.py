@@ -10,6 +10,7 @@ from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.imagegen_pipeline.build_transaction import atomic_write_text, build_lock
 from scripts.imagegen_pipeline.prompt_compiler import (
     ARTIFACT_PROMPT_COMPILER,
+    DEFAULT_PROMPT_COMPILER,
     PROMPT_COMPILERS,
     validate_prompt_compiler,
 )
@@ -54,7 +55,7 @@ def write_chapter_handoff(
     style_lock: Path,
     pages: list[int],
     batch_name: str,
-    prompt_compiler: str = ARTIFACT_PROMPT_COMPILER,
+    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
     compare_with: str | None = None,
     visual_structure_mode: str = "off",
     text_render_mode: str | None = None,
@@ -75,8 +76,14 @@ def write_chapter_handoff(
     document = parse_script_markdown(script.read_text(encoding="utf-8"))
     by_num = {int(page.page_id[1:]): page for page in document.pages}
     missions = _page_missions(project)
-    visual_contexts = _page_visual_contexts(project)
-    visual_intent_overrides = _page_visual_intent_overrides(project)
+    use_legacy_visual_context = (
+        prompt_compiler != DEFAULT_PROMPT_COMPILER
+        or visual_structure_mode == "review"
+    )
+    visual_contexts = _page_visual_contexts(project) if use_legacy_visual_context else {}
+    visual_intent_overrides = (
+        _page_visual_intent_overrides(project) if use_legacy_visual_context else {}
+    )
     if ARTIFACT_PROMPT_COMPILER in {prompt_compiler, compare_with}:
         from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
 

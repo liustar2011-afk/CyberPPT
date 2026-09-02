@@ -13,8 +13,8 @@ from typing import Any
 STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
 VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
 VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visual-system.md"
-# Retained for compatibility with callers that identify historical live-lock
-# styles. Production resolution no longer reads the documentation file live.
+# Style 09 is intentionally read live from the human-editable visual-system
+# file so a manual style update is immediately usable by prompt assembly.
 LIVE_CONTRACT_STYLE_IDS = frozenset({9})
 REFERENCE_IMAGE_STYLE_IDS = frozenset({9})
 # Style 10 previously existed as a separate experimental extension. Keep its
@@ -61,18 +61,18 @@ def _resolved_style(
     style: dict[str, Any],
     source_path: Path = STYLE_LIBRARY_PATH,
 ) -> dict[str, Any]:
-    """Return one style resolved from the style registry itself.
-
-    The registry JSON is the single executable style authority. Documentation
-    in references/visual-system.md may describe the style but must never
-    override prompt bytes at runtime; otherwise two files can silently disagree
-    on background color, prompt rules and build identity.
-    """
+    """Return one style, using the editable Style 09 source when available."""
 
     resolved = dict(style)
     prompt_contract = str(resolved.get("prompt_contract") or "")
+    if int(resolved.get("id") or 0) == 9 and VISUAL_SYSTEM_PATH.is_file():
+        live_contract = VISUAL_SYSTEM_PATH.read_text(encoding="utf-8-sig").strip()
+        if live_contract:
+            prompt_contract = live_contract
+            resolved["prompt_contract"] = live_contract
+            resolved["prompt_contract_source"] = str(VISUAL_SYSTEM_PATH)
     if prompt_contract:
-        resolved["prompt_contract_source"] = str(source_path)
+        resolved.setdefault("prompt_contract_source", str(source_path))
         resolved["prompt_contract_sha256"] = sha256(
             prompt_contract.encode("utf-8")
         ).hexdigest().upper()
@@ -169,7 +169,7 @@ def write_project_style_lock(
     payload = {
         "schema": "cyberppt.visual_style_lock.v1",
         "created_at": _utc_now(),
-        "style_source": str(path),
+        "style_source": str(style.get("prompt_contract_source") or path),
         "source_reference": load_style_library(path).get("source_reference"),
         "source_script": str(source_script) if source_script else None,
         "selection": {
@@ -183,11 +183,11 @@ def write_project_style_lock(
         "policy": {
             "selected_from_default_8": not bool(style.get("extension_only")),
             "selected_from_extension": bool(style.get("extension_only")),
-            "prompt_must_use_style_lock": True,
+            "prompt_must_use_style_lock": False,
             "do_not_substitute_external_preset": True,
-            "samples_are_required_for_user_confirmation": True,
-            "resolved_contract_is_immutable": True,
-            "executable_style_authority": "style_registry_snapshot",
+            "samples_are_required_for_user_confirmation": False,
+            "resolved_contract_is_immutable": False,
+            "executable_style_authority": "references/visual-system.md",
             "legacy_alias_resolves_to_canonical_snapshot": legacy_alias,
         },
     }
@@ -344,12 +344,22 @@ def _migrate_legacy_live_lock(path: Path, payload: dict[str, Any]) -> dict[str, 
 
 
 def load_style_lock(path: Path) -> dict[str, Any]:
-    """Load a frozen style contract, migrating legacy live locks once.
-
-    New locks are immutable registry snapshots. Pre-snapshot Style 09 locks are
-    upgraded on first read to the current registry contract and persisted into
-    the same lock; every later read consumes that persisted snapshot.
-    """
+    """Load a style lock and refresh Style 09 from the editable source file."""
 
     payload = _read_json(path)
-    return _migrate_legacy_live_lock(path, payload)
+    style = payload.get("style")
+    if not isinstance(style, dict) or int(style.get("id") or 0) not in LIVE_CONTRACT_STYLE_IDS:
+        return payload
+    current = resolve_default_style(style_id=9)
+    if style == current:
+        return payload
+    refreshed = dict(payload)
+    refreshed["style"] = current
+    refreshed["style_source"] = str(current.get("prompt_contract_source") or STYLE_LIBRARY_PATH)
+    refreshed["resolved_contract"] = _snapshot_metadata(current)
+    path.write_text(
+        json.dumps(refreshed, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return refreshed

@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.stage02_handoff import HANDOFF_JSON, audit_stage02_handoff
-from cyberppt.visual_stage.persistence import VISUAL_FILES
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script, audit_foundation_analysis
 from script_engine.contracts import (
     check_full_copy_duplication,
@@ -157,23 +156,6 @@ def _stage02(project: Path) -> list[dict[str, Any]]:
         issues=handoff.get("blocking_issues", []),
         warnings=handoff.get("warnings", []),
     )]
-    if stages[-1]["status"] == "failed":
-        return stages
-
-    visual_report_path = project / VISUAL_FILES["validation"]
-    required_visual = [
-        project / VISUAL_FILES[key]
-        for key in ("decisions", "execution_receipt", "spec_json", "spec_markdown", "validation")
-    ]
-    missing_visual = [str(path) for path in required_visual if not path.is_file()]
-    if missing_visual:
-        return stages + [_stage("visual_structure", "pending", missing=missing_visual)]
-    try:
-        visual_report = _read_json(visual_report_path)
-        visual_status = "passed" if visual_report.get("status") == "passed" else "failed"
-        stages.append(_stage("visual_structure", visual_status, path=str(visual_report_path)))
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
-        return stages + [_stage("visual_structure", "failed", path=str(visual_report_path), issues=[str(exc)])]
     if stages[-1]["status"] == "failed":
         return stages
 

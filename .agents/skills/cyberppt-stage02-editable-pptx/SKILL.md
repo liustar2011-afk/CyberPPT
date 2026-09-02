@@ -29,11 +29,13 @@ The only production route is `.venv/bin/python3 -m cyberppt final-script-pages` 
 `--production-build`; do not construct a final script or `page_image_pairs.json`
 by hand and do not call `run_stage02_reconstruction` directly.
 
-Default chain: audited full image → immutable reconstruction visual-source binding →
-text-free base → high-fidelity authored SVG reconstruction → vendored Quick assembly →
-render and final-visible-text QA. The audited full image is the visual source for the
-editable reconstruction; authored SVG may reconstruct and decompose it but must not
-introduce a second visual design.
+Default chain: final script + current `references/visual-system.md` style → audited
+full image → reconstruction visual-source binding → text-free base → high-fidelity authored SVG
+reconstruction → vendored Quick assembly → render and final-visible-text QA. The
+audited full image is the visual source for the editable reconstruction; authored SVG
+may reconstruct and decompose it but must not introduce a second visual design.
+
+Stage 02 does not require or invoke a separate visual-structure preparation stage.
 
 ## Per-page Quick checkpoint loop
 

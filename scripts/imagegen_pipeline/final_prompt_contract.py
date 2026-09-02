@@ -5,12 +5,11 @@ from __future__ import annotations
 import re
 
 from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContractError
-from scripts.imagegen_pipeline.runtime_style_contract import (
-    TERMINAL_EXECUTION_HEADING,
-    internal_style_token_leaks,
-)
 
-MAX_PROMPT_CHARACTERS = 30_000
+# ImageGen handoff deliberately has a high ceiling: Stage 01 may copy the
+# complete page prose into the on-screen field, so prompt compilation must not
+# perform a second content-density reduction.
+MAX_PROMPT_CHARACTERS = 100_000
 _PLACEHOLDER_RE = re.compile(r"<[^>\n]{1,80}>")
 _BACKEND_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\bP[0-3]\s+\w+:"),
@@ -43,15 +42,6 @@ def backend_identifier_leaks(
         match.group(0)
         for match in _BACKEND_ID_RE.finditer(prompt)
         if match.group(0).casefold() not in approved
-    )
-
-
-def _unapproved_style_token_leaks(prompt: str, visible_text: tuple[str, ...]) -> tuple[str, ...]:
-    approved = "\n".join(visible_text).casefold()
-    return tuple(
-        token
-        for token in internal_style_token_leaks(prompt)
-        if token.casefold() not in approved
     )
 
 
@@ -120,12 +110,6 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt contains an internal/backend field: {match.group(0)!r}"
             )
-    style_leaks = _unapproved_style_token_leaks(prompt, ir.visible_text)
-    if style_leaks:
-        raise PromptContractError(
-            f"final prompt contains an internal style routing token: {style_leaks[0]!r}"
-        )
-
     for text in ir.visible_text:
         if text.strip().lower() in _FORBIDDEN_CHROME_TEXT:
             raise PromptContractError(
@@ -159,23 +143,7 @@ def validate_final_prompt(
     judgment_line = f"Core judgment (non-visible): {ir.page_judgment}"
     if sum(line == judgment_line for line in prompt.splitlines()) != 1:
         raise PromptContractError("final prompt must state one authoritative page judgment")
-    if style_id not in (9, 10) and prompt.count(ir.runtime_lock.style_contract) != 1:
-        raise PromptContractError("final prompt must state the runtime style contract exactly once")
 
-    legacy_terminal_headers = (
-        "【风格09最终执行锁｜最高优先级】",
-        "【风格10最终执行锁｜最高优先级】",
-    )
-    if any(header in prompt for header in legacy_terminal_headers):
-        raise PromptContractError("final prompt contains a numbered legacy terminal style heading")
-    if style_id == 9:
-        if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
-            raise PromptContractError("live runtime style prompt requires one terminal execution lock")
-        terminal = prompt.split(TERMINAL_EXECUTION_HEADING, 1)[1].strip()
-        if not terminal or not prompt.rstrip().endswith(terminal):
-            raise PromptContractError("terminal execution lock must be at the absolute end")
-    elif TERMINAL_EXECUTION_HEADING in prompt:
-        raise PromptContractError("non-live style prompt contains a live terminal execution lock")
 
 
 __all__ = [

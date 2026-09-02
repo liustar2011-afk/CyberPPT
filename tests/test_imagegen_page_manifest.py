@@ -47,8 +47,7 @@ class CyberpptPairManifestTests(_base.CyberpptPairManifestTests):
             )
 
         prompt = manifest["pairs"][0]["full"]["prompt"]
-        self.assertIn("【STYLE09 页面语义适配｜不上屏】", prompt)
-        self.assertIn("语义锚点：统一连接与可信使用共同形成稳定服务", prompt)
+        self.assertNotIn("统一连接与可信使用共同形成稳定服务", prompt)
         self.assertNotIn("【风格09业务场适配器｜不上屏】", prompt)
         self.assertNotIn("Text binding", prompt)
         self.assertNotIn("P04-T01", prompt)
@@ -64,4 +63,4 @@ class CyberpptPairManifestTests(_base.CyberpptPairManifestTests):
         self.assertEqual(1, prompt.count(_base.STYLE09_TERMINAL_LOCK_HEADER))
         self.assertNotIn("### ", prompt.split(_base.STYLE09_TERMINAL_LOCK_HEADER, 1)[1])
         handoff = manifest["pairs"][0]["visual_structure_handoff"]
-        self.assertTrue(handoff["consumed"])
+        self.assertFalse(handoff["consumed"])

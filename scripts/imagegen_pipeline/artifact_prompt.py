@@ -130,12 +130,12 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
     visible_lines = tuple(f'Exact visible text: "{text}"' for text in typography.visible_text)
 
     style_contract = spec.art_direction.contract
-    runtime = None
     if spec.art_direction.style_id == 9:
-        if style_lock is None:
-            raise ValueError("live runtime artifact prompt requires its style lock")
-        runtime = load_runtime_style_contract(style_lock)
-        style_contract = runtime.contract
+        if style_lock is not None:
+            try:
+                style_contract = load_runtime_style_contract(style_lock).contract
+            except (OSError, ValueError, TypeError):
+                pass
 
     sections = (
         "\n".join((

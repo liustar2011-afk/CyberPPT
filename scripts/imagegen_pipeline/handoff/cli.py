@@ -9,9 +9,9 @@ Before any ImageGen call, CyberPPT must:
 Page mission, core meaning, and source-supported content relations are passed before 上屏文字
 so the model can understand the page responsibility without inventing an argument.
 They are context fields, not extra labels to render; the drawable text layer remains 上屏文字.
-The formal artifact-spec-v2 compiler projects the audited Stage 02 handoff, selected visual
-design, exact text contract, and style lock into one nine-section deliverable specification.
-Legacy compilers remain explicitly available for comparison and rollback.
+The default content-first compiler projects the locked final script and selected Style 09
+lock directly into the ImageGen handoff. The artifact-spec-v2 compiler remains explicitly
+available for legacy compatibility and migration callers.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ import argparse
 from pathlib import Path
 
 from scripts.imagegen_pipeline.prompt_compiler import (
-    ARTIFACT_PROMPT_COMPILER,
+    DEFAULT_PROMPT_COMPILER,
     PROMPT_COMPILERS,
     TEXT_RENDER_MODES,
 )
@@ -37,7 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--prompt-compiler",
         choices=PROMPT_COMPILERS,
-        default=ARTIFACT_PROMPT_COMPILER,
+        default=DEFAULT_PROMPT_COMPILER,
     )
     parser.add_argument(
         "--compare-with",

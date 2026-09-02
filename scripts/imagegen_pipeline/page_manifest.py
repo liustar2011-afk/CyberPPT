@@ -252,11 +252,13 @@ def _relationship_aware_canonical_prompts(
             if page_number in pages
         }
 
-    from cyberppt.visual_prompt_consumer import load_visual_design
-
     missions = _page_missions(project_path)
-    contexts = _page_visual_contexts(project_path)
-    overrides = _page_visual_intent_overrides(project_path)
+    # The current production compiler owns the page semantics and consumes the
+    # selected style lock directly. Do not let a stale visual-structure package
+    # become an implicit second authority.
+    use_legacy_visual_context = prompt_compiler != DEFAULT_PROMPT_COMPILER
+    contexts = _page_visual_contexts(project_path) if use_legacy_visual_context else {}
+    overrides = _page_visual_intent_overrides(project_path) if use_legacy_visual_context else {}
     try:
         from cyberppt.stage02_input import input_page_map, load_stage02_input
 
@@ -274,14 +276,15 @@ def _relationship_aware_canonical_prompts(
         if page is None:
             continue
         input_page = input_pages.get(page_number) or {}
-        input_visual = input_page.get("visual_structure") or {}
         page_mission = str(input_page.get("page_mission") or missions.get(page.page_id, ""))
         visual_context = dict(contexts.get(page.page_id) or {})
-        if isinstance(input_visual, dict):
-            if input_visual.get("intent_type"):
-                visual_context["visual_intent_type"] = str(input_visual["intent_type"])
-            if input_visual.get("dominant_carrier"):
-                visual_context["visual_carrier"] = str(input_visual["dominant_carrier"])
+        if prompt_compiler == DEFAULT_PROMPT_COMPILER:
+            # Stage 01 visual notes are not part of the new production route.
+            # Blank only this transient page view; the locked source script is
+            # left untouched for audit and compatibility consumers.
+            from dataclasses import replace
+
+            page = replace(page, visual_structure="")
         compiled = compile_page_prompt(
             page,
             style_lock,
@@ -291,11 +294,7 @@ def _relationship_aware_canonical_prompts(
             prior_decisions=tuple(prior_decisions),
             prior_semantic_carriers=tuple(prior_semantic_carriers),
             visual_structure_mode="off",
-            visual_design=load_visual_design(
-                project_path,
-                page_number,
-                allow_legacy=visual_source in {"auto", "legacy-markdown"},
-            ),
+            visual_design=None,
         )
         canonical[page_number] = compiled.prompt
         if compiled.presentation is not None:
@@ -328,10 +327,8 @@ def build_manifest(
     prompt_overrides_dir: Path | None = None,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
-    if prompt_compiler == ARTIFACT_PROMPT_COMPILER and (
-        project_path is None or style_lock is None
-    ):
-        raise ValueError("artifact-spec-v2 requires project_path and style_lock")
+    if prompt_compiler == ARTIFACT_PROMPT_COMPILER and project_path is None:
+        raise ValueError("artifact-spec-v2 requires project_path")
     if visual_source not in {"auto", "governed-json", "legacy-markdown"}:
         raise ValueError("visual_source must be auto, governed-json, or legacy-markdown")
     if allow_prompt_edit and prompt_overrides_dir is None:
@@ -456,8 +453,6 @@ def build_manifest(
     if require_approved_prompts:
         if project_path is None:
             raise ValueError("per-slide prompt approval requires --project-path")
-        if style_lock is None:
-            raise ValueError("per-slide prompt approval requires a visual style lock")
         if effective_compact_blueprint:
             relationship_aware_prompts = {}
             for page_number in content_page_numbers:
@@ -515,6 +510,9 @@ def build_manifest(
             prompt_source = "direct_prompt_override"
         elif allow_script_edit:
             prompt_source = "direct_script_edit"
+        # The default production compiler consumes the final script and Style
+        # 09 directly. Do not even load legacy visual-structure artifacts for
+        # this route; their presence must not appear as a consumed handoff.
         visual_module = (
             load_visual_prompt_module(
                 project_path,
@@ -522,6 +520,7 @@ def build_manifest(
                 allow_legacy=visual_source in {"auto", "legacy-markdown"},
             )
             if project_path is not None
+            and (prompt_compiler != DEFAULT_PROMPT_COMPILER or effective_compact_blueprint)
             else None
         )
         if effective_compact_blueprint:
@@ -936,9 +935,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     style_lock = args.style_lock.resolve() if args.style_lock else None
     if style_lock is not None and (args.style_id is not None or args.style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
-    if style_lock is None:
-        if args.project_path is None:
-            raise ValueError("--project-path is required when selecting a default CyberPPT style")
+    if style_lock is None and args.project_path is not None:
         style_lock = write_project_style_lock(
             project=args.project_path.resolve(),
             style_id=args.style_id,

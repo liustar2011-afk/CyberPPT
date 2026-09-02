@@ -77,17 +77,15 @@ class VisualPromptConsumerTests(unittest.TestCase):
         self.assertEqual("legacy_markdown", ir.source_mode)
         self.assertEqual("旧版主论题", ir.visual_thesis)
 
-    def test_governed_project_requires_json_and_compatibility_wrapper_keeps_semantics(self) -> None:
+    def test_legacy_visual_artifacts_do_not_gate_stage02_and_json_stays_compatible(self) -> None:
         with TemporaryDirectory() as temp:
             project = Path(temp)
             visual = project / "visual"
             visual.mkdir()
             (project / "manifest.yml").write_text("visual_structure_designer: required\n", encoding="utf-8")
             (visual / "generation-prompts.md").write_text("# Page 6: legacy\n[Structural guidance]\n- Visual thesis: OLD\n", encoding="utf-8")
-            with self.assertRaisesRegex(FileNotFoundError, "required VisualDesignIR is missing"):
-                load_visual_design(project, 6)
-            with self.assertRaisesRegex(FileNotFoundError, "required VisualDesignIR is missing"):
-                load_visual_prompt_module(project, 6)
+            self.assertIsNone(load_visual_design(project, 6))
+            self.assertIsNone(load_visual_prompt_module(project, 6))
 
             (visual / "deck-visual-spec.json").write_text(json.dumps({"pages": [_governed_page()]}, ensure_ascii=False), encoding="utf-8")
             module = load_visual_prompt_module(project, 6)

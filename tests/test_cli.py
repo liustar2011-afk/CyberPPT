@@ -225,7 +225,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("Foundation authoring task", task_output.getvalue())
             self.assertIn("来源证据", task_output.getvalue())
 
-    def test_final_script_pages_requires_stage02_handoff_before_generation(self) -> None:
+    def test_final_script_pages_does_not_require_visual_structure_before_generation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -255,7 +255,7 @@ class CliTests(unittest.TestCase):
                     ]
                 )
 
-        self.assertEqual(2, code)
+        self.assertEqual(0, code)
         self.assertNotIn("Stage 02 handoff", buffer.getvalue())
 
     def test_removed_dual_image_rebuild_command_is_rejected(self) -> None:

@@ -119,8 +119,12 @@ def test_stage02_markdown_uses_compatible_page_heading() -> None:
     assert "- 核心结论：" in markdown
     assert "### 完整文字稿" in markdown
     assert "### 上屏文字" in markdown
-    assert "### 视觉结构" in markdown
+    assert "### 视觉结构" not in markdown
     assert "### 演讲者备注" in markdown
+
+    full_copy = _example()["slides"][0]["full_copy"]
+    assert f"### 完整文字稿\n\n{full_copy}" in markdown
+    assert f"### 上屏文字\n\n{full_copy}" in markdown
 
 def test_stage02_markdown_renders_registered_argument_topologies() -> None:
     payload = copy.deepcopy(_example())
@@ -145,11 +149,11 @@ def test_render_pads_multi_digit_page_number_from_id() -> None:
     markdown = render_stage02_markdown(payload)
     assert "## P12 第十二页" in markdown
 
-def test_render_skips_relationship_missing_from_or_to() -> None:
+def test_render_does_not_promote_relationship_metadata_into_onscreen_copy() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["relationships"] = [{"from": "A", "relation": "有关"}, {"from": "X", "to": "Y", "relation": "因果"}]
     markdown = render_stage02_markdown(payload)
-    assert "X → Y：因果" in markdown
+    assert "X → Y：因果" not in markdown
     assert "A →" not in markdown
 
 def test_render_omits_optional_sections_when_absent() -> None:
@@ -235,38 +239,28 @@ def test_validate_final_script_accepts_optional_subtitle() -> None:
     payload["slides"][0]["subtitle"] = "五层两贯穿"
     assert validate_final_script(payload) == []
 
-def test_render_collapses_embedded_newline_in_onscreen_heading() -> None:
+def test_render_copies_full_copy_verbatim_into_onscreen_section() -> None:
     payload = copy.deepcopy(_example())
-    payload["slides"][0]["onscreen"] = [{"heading": "标题\n换行", "text": "正文"}]
+    payload["slides"][0]["full_copy"] = "完整正文：标题、换行与正文均由同一字段提供。"
     markdown = render_stage02_markdown(payload)
-    assert "- 标题 换行：正文" in markdown
-    assert "标题\n换行" not in markdown
+    full_copy = payload["slides"][0]["full_copy"]
+    assert f"### 上屏文字\n\n{full_copy}" in markdown
 
-def test_render_avoids_double_colon_when_heading_already_ends_with_colon() -> None:
+def test_render_does_not_reformat_full_copy_punctuation() -> None:
     payload = copy.deepcopy(_example())
-    payload["slides"][0]["onscreen"] = [{"heading": "小结：", "text": "正文"}]
+    payload["slides"][0]["full_copy"] = "小结：正文"
     markdown = render_stage02_markdown(payload)
-    assert "- 小结：正文" in markdown
-    assert "：：" not in markdown
+    assert "### 上屏文字\n\n小结：正文" in markdown
 
 
-def test_render_preserves_nested_hierarchy_when_body_has_semantic_label() -> None:
+def test_render_preserves_full_copy_hierarchy_without_structuring_onscreen() -> None:
     payload = copy.deepcopy(_example())
-    payload["slides"][0]["onscreen"] = [
-        {"heading": "标准体系尚未形成统一框架", "text": "专业分布：现有标准分散在多个领域"}
-    ]
+    full_copy = "标准体系尚未形成统一框架\n\n专业分布：现有标准分散在多个领域"
+    payload["slides"][0]["full_copy"] = full_copy
 
     markdown = render_stage02_markdown(payload)
 
-    assert "- 标准体系尚未形成统一框架\n  - 专业分布：现有标准分散在多个领域" in markdown
-    assert "标准体系尚未形成统一框架：专业分布：" not in markdown
-
-    page = parse_script_markdown(markdown).pages[0]
-    assert page.module_titles == (
-        "标准体系尚未形成统一框架",
-        "专业分布",
-    )
-    assert page.top_level_module_titles == ("标准体系尚未形成统一框架",)
+    assert f"### 上屏文字\n\n{full_copy}" in markdown
 
 def test_render_source_refs_omitted_when_absent() -> None:
     payload = {"deck": {"title": "T", "communication_goal": "G"}, "slides": [{"id": "P01", "page_type": "content", "title": "标题", "mission": "m", "core_message": "c", "onscreen": [{"heading": "h"}]}]}

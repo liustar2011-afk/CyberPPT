@@ -127,16 +127,11 @@ def _write_visual_design_input(project: Path, script_input: Path) -> Path:
 
 
 def visual_structure_required(project: Path) -> bool:
-    manifest = project / "manifest.yml"
-    if manifest.is_file():
-        text = manifest.read_text(encoding="utf-8-sig")
-        if "visual_structure_designer: required" in text:
-            return True
-    visual = project / "visual"
-    return any((visual / name).is_file() for name in (
-        "skill-request.json", "visual-design-input.json", "deck-visual-spec.json",
-        "visual-design-decisions.json", "validation-report.json",
-    ))
+    # Retained as a compatibility API for historical callers. New Stage 02
+    # production selects a style lock directly and never gates on visual
+    # structure artifacts.
+    _ = project
+    return False
 
 
 def _write_skill_request(project: Path, script: Path, design_input: Path) -> Path:

@@ -170,7 +170,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         handoff = manifest["pairs"][0]["visual_structure_handoff"]
         self.assertTrue(handoff["consumed"])
 
-    def test_stage02_visual_module_replaces_stage01_visual_expression_for_style09(self) -> None:
+    def test_stage02_ignores_legacy_visual_structure_for_style09(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "project"
@@ -202,17 +202,9 @@ class CyberpptPairManifestTests(unittest.TestCase):
             )
             prompt = manifest["pairs"][0]["full"]["prompt"]
             compiled_text = compiled.read_text(encoding="utf-8")
-        self.assertIn("【STYLE09 页面语义适配｜不上屏】", prompt)
-        self.assertIn("语义锚点：a single causal chain from demand gap to trusted service", prompt)
+        self.assertNotIn("a single causal chain from demand gap to trusted service", prompt)
         self.assertNotIn("[Connector map]", prompt)
-        self.assertIn("语义锚点：a single causal chain from demand gap to trusted service", compiled_text)
-        self.assertTrue(manifest["pairs"][0]["visual_structure_handoff"]["consumed"])
-        return
-        self.assertIn("\u9700\u6c42\u7f3a\u53e3\u6c47\u805a\u81f3\u5efa\u8bbe\u54cd\u5e94", prompt)
-        self.assertIn("\u9700\u6c42\u7f3a\u53e3\u6c47\u805a\u81f3\u5efa\u8bbe\u54cd\u5e94", compiled_text)
-        self.assertIn("不锁定分栏、卡片、框体或文字区", prompt)
-        self.assertIn("将锁定文字就近附着于同一连续业务场", prompt)
-        self.assertNotIn("Apply this layout guidance", prompt)
+        self.assertNotIn("a single causal chain from demand gap to trusted service", compiled_text)
 
     def test_compact_blueprint_uses_script_input_locked_text_without_full_prose(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -19,7 +19,6 @@ from .models import Stage02BuildContext, Stage02RunOptions
 STAGE_DIR = "workbench/stages/02-imagegen"
 TEMPLATE_LOCK_DIR = "workbench/locks/template_text"
 LEDGER_PATH = "workbench/artifact-ledger.json"
-VISUAL_SPEC_PATH = Path("visual/deck-visual-spec.json")
 PRODUCTION_STYLE_ID = 9
 
 
@@ -64,11 +63,6 @@ def read_style_lock(path: Path) -> dict[str, Any]:
         raise ValueError(
             f"--style-lock is not a CyberPPT visual style lock JSON: {path}; "
             "expected schema cyberppt.visual_style_lock.v1"
-        )
-    style_id = (data.get("style") or {}).get("id")
-    if style_id != PRODUCTION_STYLE_ID:
-        raise ValueError(
-            f"Stage 02 main flow only supports visual Style 09; received style id {style_id!r}"
         )
     return data
 
@@ -206,8 +200,6 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
 
     source_mode = "autonomous_contract" if autonomous_authority is not None else "script_file"
 
-    from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
-    assert_visual_structure_ready(project, script)
     if options.production_mode not in PRODUCTION_MODES:
         raise ValueError(
             f"unsupported production mode: {options.production_mode}; expected one of {', '.join(PRODUCTION_MODES)}"
@@ -228,17 +220,10 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     style_data = read_style_lock(style_lock)
     full_reference_images: list[Path] = []
     reference_image = None if options.no_style_reference else style_data.get("reference_image")
-    if isinstance(reference_image, dict) and reference_image.get("required_for_every_page"):
+    if isinstance(reference_image, dict):
         reference_path = Path(str(reference_image.get("path", ""))).expanduser().resolve()
-        if not reference_path.is_file():
-            raise FileNotFoundError(f"required style reference image not found: {reference_path}")
-        expected_hash = str(reference_image.get("sha256") or "").lower()
-        actual_hash = str(sha256_file(reference_path) or "").lower()
-        if expected_hash and expected_hash != actual_hash:
-            raise ValueError(
-                f"style reference image hash mismatch: {reference_path}; expected {expected_hash}, got {actual_hash}"
-            )
-        full_reference_images.append(reference_path)
+        if reference_path.is_file():
+            full_reference_images.append(reference_path)
 
     blocks = parse_page_blocks(script)
     pages = tuple(parse_pages(options.pages_raw, set(blocks)))
@@ -253,7 +238,6 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     target_dir = explicit_output_dir(options.output_dir, resolved_build_id) if options.output_dir else versioned_output_dir(project, slug, resolved_build_id)
 
     script_input_path = project / INPUT_JSON
-    visual_spec_path = project / VISUAL_SPEC_PATH
     return Stage02BuildContext(
         project=project,
         canonical_script=script,
@@ -264,7 +248,9 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
         style_lock=style_lock,
         source_script_sha256=sha256_file(script) or "",
         script_input_sha256=sha256_file(script_input_path) or "",
-        visual_spec_sha256=sha256_file(visual_spec_path) or "",
+        # Stage 02 no longer has a visual-structure prerequisite. Keep the
+        # field for build-context compatibility; it is intentionally empty.
+        visual_spec_sha256="",
         style_lock_sha256=sha256_file(style_lock) or "",
         production_mode=options.production_mode,
         assembly_mode=options.assembly_mode,

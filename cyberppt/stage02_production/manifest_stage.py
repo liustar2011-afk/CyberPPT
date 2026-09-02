@@ -11,7 +11,7 @@ from scripts.imagegen_pipeline.imagegen_handoff import (
     select_page_visual_intent_type,
 )
 from scripts.imagegen_pipeline.page_manifest import build_manifest, output_variants_for_mode
-from cyberppt.script_quality_contract import assert_imagegen_onscreen_readiness, parse_script_path
+from cyberppt.script_quality_contract import parse_script_path
 
 from .identity import input_fingerprint, input_identity_payload
 from .models import ManifestStageResult, Stage02BuildContext, Stage02RunOptions
@@ -33,8 +33,9 @@ def _template_text_lock(
 ) -> Path:
     blocks = parse_page_blocks(script)
     document = parse_script_path(script)
-    if not allow_script_edit:
-        assert_imagegen_onscreen_readiness(document, set(pages))
+    # Complete page prose is now the authoritative Stage 01 on-screen payload.
+    # Stage 02 keeps OCR/text QA, but no longer rejects paragraph-length copy at
+    # this handoff boundary.
     script_pages = {int(page.page_id[1:]): page for page in document.pages}
     records: list[dict[str, Any]] = []
     prior_decisions: list[PresentationDecision] = []
@@ -217,7 +218,10 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
         require_send_approval=options.require_send_approval,
         enforce_prompt_freshness=False,
         compact_blueprint=False,
-        prompt_compiler="artifact-spec-v2",
+        # The production route consumes the locked final script and Style 09
+        # directly. Visual structure is an optional legacy compatibility path,
+        # not a Stage 02 prerequisite.
+        prompt_compiler="content-first-v1",
         allow_script_edit=False,
         allow_prompt_edit=options.allow_prompt_edit,
         prompt_overrides_dir=prompt_overrides_dir,

@@ -1120,14 +1120,14 @@ class VisualStructureStageTests(unittest.TestCase):
             self.assertTrue((project / VISUAL_FILES["design_input"]).exists())
             self.assertTrue((project / "workbench/stages/02-input/script-intake.json").is_file())
 
-    def test_existing_project_with_visual_artifacts_requires_gate(self) -> None:
+    def test_existing_project_with_visual_artifacts_does_not_require_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory) / "project"
             visual = project / "visual"
             visual.mkdir(parents=True)
             (project / "manifest.yml").write_text("mode: lightweight\n", encoding="utf-8")
             (visual / "skill-request.json").write_text("{}\n", encoding="utf-8")
-            self.assertTrue(visual_structure_required(project))
+            self.assertFalse(visual_structure_required(project))
 
     def test_gate_binds_prompt_inputs_and_invalidates_script_change(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1206,7 +1206,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            self.assertIsNotNone(assert_visual_structure_ready(project, script))
+            self.assertIsNone(assert_visual_structure_ready(project, script))
             artifacts["spec_json"].write_text(
                 json.dumps(
                     {
@@ -1225,8 +1225,7 @@ class VisualStructureStageTests(unittest.TestCase):
             (visual / "validation-report.json").write_text(
                 json.dumps(report), encoding="utf-8"
             )
-            with self.assertRaisesRegex(ValueError, "required_text drifted"):
-                assert_visual_structure_ready(project, script)
+            self.assertIsNone(assert_visual_structure_ready(project, script))
             script.write_text(
                 "## 第1页：Title\n"
                 "- 页面类型：内容页\n"

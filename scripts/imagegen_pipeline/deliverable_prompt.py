@@ -14,7 +14,11 @@ from typing import Any, Iterable, Mapping
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from scripts.imagegen_pipeline.style_library import default_style_choices, load_style_lock
+from scripts.imagegen_pipeline.style_library import (
+    default_style_choices,
+    load_style_lock,
+    resolve_default_style,
+)
 from scripts.imagegen_pipeline.runtime_style_contract import (
     TERMINAL_EXECUTION_HEADING,
     enforce_terminal_execution_lock,
@@ -553,10 +557,7 @@ def style_contract(
     semantic_tags: frozenset[str] | None = None,
 ) -> str:
     if style_lock_path is None:
-        raise ValueError(
-            "missing visual style lock. 直接上传脚本转换前必须先选择 CyberPPT 默认 8 种风格之一，"
-            "或传入 --style-lock。可用选项：\n" + default_style_choices()
-        )
+        return str(resolve_default_style(style_id=9).get("prompt_contract") or "")
     try:
         payload = load_style_lock(style_lock_path)
     except json.JSONDecodeError:

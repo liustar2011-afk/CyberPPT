@@ -69,11 +69,11 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
             lines.append(f"- 主论证链：{value}")
         full_copy = sanitize_delivery_prose(slide.get("full_copy"))
         if full_copy: lines.extend(["", "### 完整文字稿", "", full_copy])
-        onscreen = slide.get("onscreen") if isinstance(slide.get("onscreen"), list) else []
-        onscreen_lines = _render_onscreen([item for item in onscreen if isinstance(item, dict)])
-        if onscreen_lines: lines.extend(["", "### 上屏文字", "", *onscreen_lines])
-        visual_lines = _render_visual(slide)
-        if visual_lines: lines.extend(["", "### 视觉结构", "", *visual_lines])
+        # Stage 01 deliberately has one content authority for body copy. Keep
+        # the complete prose verbatim in the visible-copy field so Stage 02
+        # can consume it without a second compression or visual-structure pass.
+        if full_copy:
+            lines.extend(["", "### 上屏文字", "", full_copy])
         notes = sanitize_delivery_prose(slide.get("speaker_notes"))
         if notes: lines.extend(["", "### 演讲者备注", "", notes])
         source_refs = [_text(item) for item in (slide.get("source_refs") or []) if _text(item)]

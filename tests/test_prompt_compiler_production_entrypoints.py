@@ -1,9 +1,9 @@
-"""Lock the known Stage 02 production entry points to artifact-spec-v2.
+"""Lock the known Stage 02 production entry points to content-first-v1.
 
-``scripts.imagegen_pipeline.prompt_compiler.DEFAULT_PROMPT_COMPILER`` stays
-"content-first-v1" on purpose: dozens of existing tests exercise the legacy
-compiler through that shared default. The actual production paths force
-"artifact-spec-v2" explicitly:
+The production paths use the content-first compiler so Stage 02 can consume the
+locked final script and selected Style 09 lock without a visual-structure
+prerequisite. ``artifact-spec-v2`` remains available for explicit legacy
+compatibility tests and migration callers.
 
 - ``scripts/imagegen_pipeline/handoff/cli.py`` (the ``--prompt-compiler`` CLI flag)
 - ``cyberppt/stage02_production/manifest_stage.py`` (the typed Stage 02 manifest stage)
@@ -18,7 +18,7 @@ import ast
 from pathlib import Path
 import unittest
 
-from scripts.imagegen_pipeline.prompt_compiler import ARTIFACT_PROMPT_COMPILER
+from scripts.imagegen_pipeline.prompt_compiler import DEFAULT_PROMPT_COMPILER
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -41,7 +41,7 @@ def _call_kwarg_value(source: str, func_name: str, kwarg: str) -> object:
 
 
 class ProductionEntrypointCompilerTests(unittest.TestCase):
-    def test_stage02_cli_defaults_to_artifact_spec_v2(self) -> None:
+    def test_stage02_cli_defaults_to_content_first_without_visual_structure(self) -> None:
         source = (REPO_ROOT / "scripts/imagegen_pipeline/handoff/cli.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
         found = False
@@ -62,15 +62,15 @@ class ProductionEntrypointCompilerTests(unittest.TestCase):
             )
             self.assertIsNotNone(default_node, "--prompt-compiler has no default=")
             if isinstance(default_node, ast.Name):
-                self.assertEqual("ARTIFACT_PROMPT_COMPILER", default_node.id)
+                self.assertEqual("DEFAULT_PROMPT_COMPILER", default_node.id)
             else:
-                self.assertEqual(ARTIFACT_PROMPT_COMPILER, ast.literal_eval(default_node))
+                self.assertEqual(DEFAULT_PROMPT_COMPILER, ast.literal_eval(default_node))
         self.assertTrue(found, "--prompt-compiler argument not found in handoff/cli.py")
 
-    def test_stage02_manifest_stage_uses_artifact_spec_v2(self) -> None:
+    def test_stage02_manifest_stage_uses_content_first_without_visual_structure(self) -> None:
         source = (REPO_ROOT / "cyberppt/stage02_production/manifest_stage.py").read_text(encoding="utf-8")
         value = _call_kwarg_value(source, "build_manifest", "prompt_compiler")
-        self.assertEqual(ARTIFACT_PROMPT_COMPILER, value)
+        self.assertEqual(DEFAULT_PROMPT_COMPILER, value)
 
 
 if __name__ == "__main__":
