@@ -184,7 +184,7 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
         "\n".join((SECTION_HEADINGS[6], style_contract)),
         "\n".join((
             SECTION_HEADINGS[7],
-            "Only the following business text may be rendered visibly. Preserve every character and the listed order:",
+            "Use the following business text as the semantic source for visible copy. Rewrite it into conclusion-first presentation language as needed while preserving facts, numbers, scope, responsibility, conditions, status and claim strength:",
             _bullets(visible_lines),
             f"Allowed transformations: {', '.join(typography.allowed_transformations) or 'none'}.",
             "Title and subtitle are external PowerPoint text layers and must not appear in this body image.",

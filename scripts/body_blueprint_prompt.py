@@ -65,7 +65,7 @@ def render_body_blueprint_prompt(page: PageBlock, style: dict[str, Any]) -> str:
 【用途】
 生成企业模板正文内容区的高密度视觉蓝图，不是完整 PPT 页面，也不是最终文字成品。最终 PPT 的标题、副标题、蓝线、Logo、页码和页脚由企业模板脚本确定性生成。
 
-【内容锁定】
+【源文案语义输入】
 模板层标题（仅供模板/可编辑文字层提取，不属于正文区图像内容）：{template_title(page)}
 正文区可见内容：
 {body}
@@ -73,13 +73,13 @@ def render_body_blueprint_prompt(page: PageBlock, style: dict[str, Any]) -> str:
 【正文区边界】
 只生成正文内容区画面。不要生成标题、副标题、蓝线、Logo、页脚、页码、母版红线、完整 PPT 外框或任何企业公共元素。上方 Markdown 页标题和模板层标题只作为元数据，不属于图像内容。
 正文区内部必须保持高信息密度，允许使用矩阵、右侧栏、编号 chips、细线分隔、流程轴、分层带、底部 SO WHAT 条和克制线性图标。
-图片中的小字只作为蓝图占位，最终可编辑 PPT 文字必须使用 content-lock / 脚本文本重建。
+图片中的小字只作为蓝图占位；最终可编辑 PPT 文字由 Stage 02 基于脚本事实边界重新组织。
 
 【风格】
 {style_contract(style)}
 
 【结构密度】
-不要生成稀疏卡片页。保留原脚本组件数量、组件关系、网格/流程/卡片结构和底部 SO WHAT 区。
+不要生成稀疏卡片页。可重组组件数量、层级和结构以提升阅读性，但要保留原文事实关系、数字、责任、条件与结论力度。
 {directives}
 
 【质量约束】

@@ -7,7 +7,6 @@ from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks, temp
 from scripts.imagegen_pipeline.imagegen_handoff import (
     PresentationDecision,
     resolve_presentation_decision,
-    select_image_locked_text,
     select_page_visual_intent_type,
 )
 from scripts.imagegen_pipeline.page_manifest import build_manifest, output_variants_for_mode
@@ -67,7 +66,7 @@ def _template_text_lock(
         }
         if presentation is not None:
             record["presentation"] = presentation.to_dict()
-            record["image_locked_text"] = select_image_locked_text(script_page)
+            record["copy_reference"] = script_page.onscreen_text.strip()
             record["editable_body_text"] = script_page.onscreen_text.strip()
         records.append(record)
     payload = {

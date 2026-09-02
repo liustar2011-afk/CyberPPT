@@ -106,6 +106,17 @@ def _ends_with_punctuation_or_symbol(value: str) -> bool:
     return bool(stripped) and unicodedata.category(stripped[-1])[0] in {"P", "S"}
 
 
+def _is_pyramid_prose_module(module: dict[str, Any]) -> bool:
+    """Identify an authored conclusion-first prose block.
+
+    This explicit form keeps Stage 01's full-text, reader-facing pages out of
+    compact-detail gates while preserving those gates for ordinary slide
+    modules.
+    """
+
+    return module.get("format") == "pyramid_prose"
+
+
 def check_onscreen_terminal_punctuation(final_script: dict[str, Any]) -> list[str]:
     """Reject terminal punctuation/symbols in visible content-page copy."""
 
@@ -117,6 +128,7 @@ def check_onscreen_terminal_punctuation(final_script: dict[str, Any]) -> list[st
         for module_index, module in enumerate(slide.get("onscreen") or []):
             if not isinstance(module, dict):
                 continue
+            pyramid_prose = _is_pyramid_prose_module(module)
             fields: list[tuple[str, object]] = [
                 ("heading", module.get("heading")),
                 ("text", module.get("text")),
@@ -126,6 +138,8 @@ def check_onscreen_terminal_punctuation(final_script: dict[str, Any]) -> list[st
                 for item_index, item in enumerate(module.get("items") or [])
             )
             for field, value in fields:
+                if pyramid_prose and field in {"heading", "text"}:
+                    continue
                 if isinstance(value, str) and value.strip() and _ends_with_punctuation_or_symbol(value):
                     issues.append(
                         f"slides.{index} ({slide_id}).onscreen[{module_index}].{field}: "
@@ -156,6 +170,8 @@ def check_onscreen_detail_length(
                 if isinstance(item, str) and item.strip():
                     lines.append((f"items[{item_index}]", item))
             for field, line in lines:
+                if _is_pyramid_prose_module(module) and field == "text":
+                    continue
                 parts = _LABEL_SPLIT_RE.split(line, maxsplit=1)
                 labelled_detail = len(parts) == 2 and bool(parts[1].strip())
                 body = parts[1] if labelled_detail else line

@@ -101,7 +101,8 @@ def test_content_first_prompt_keeps_current_canvas_text_and_template_contracts()
         prompt = facade.build_page_prompt(page, lock)
 
     assert "输出必须严格为 2048×1024 像素（2:1）" in prompt
-    assert "图中所有可读文字只能来自【锁定关键文字】或【完整上屏内容】" in prompt
+    assert "【呈现文案改写授权｜上屏】" in prompt
+    assert "允许改写、提炼、合并、拆分、重排与重设标题层级" in prompt
     assert "不绘制页面标题、副标题、页码、页面序号" in prompt
     assert "### 2. Semantic anchor and composition — hard" in prompt
     assert "【最终视觉执行约束｜最高优先级】" in prompt

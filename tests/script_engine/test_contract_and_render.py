@@ -239,28 +239,56 @@ def test_validate_final_script_accepts_optional_subtitle() -> None:
     payload["slides"][0]["subtitle"] = "五层两贯穿"
     assert validate_final_script(payload) == []
 
-def test_render_copies_full_copy_verbatim_into_onscreen_section() -> None:
+def test_render_uses_full_copy_in_onscreen_section() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["full_copy"] = "完整正文：标题、换行与正文均由同一字段提供。"
+    payload["slides"][0]["onscreen"] = [{"heading": "结构化判断", "items": ["完整正文保留在文字稿中"]}]
     markdown = render_stage02_markdown(payload)
-    full_copy = payload["slides"][0]["full_copy"]
-    assert f"### 上屏文字\n\n{full_copy}" in markdown
+    assert "### 上屏文字\n\n完整正文：标题、换行与正文均由同一字段提供。" in markdown
 
 def test_render_does_not_reformat_full_copy_punctuation() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["full_copy"] = "小结：正文"
     markdown = render_stage02_markdown(payload)
-    assert "### 上屏文字\n\n小结：正文" in markdown
+    assert "### 完整文字稿\n\n小结：正文" in markdown
 
 
-def test_render_preserves_full_copy_hierarchy_without_structuring_onscreen() -> None:
+def test_render_projects_full_copy_into_onscreen_section() -> None:
     payload = copy.deepcopy(_example())
     full_copy = "标准体系尚未形成统一框架\n\n专业分布：现有标准分散在多个领域"
     payload["slides"][0]["full_copy"] = full_copy
+    payload["slides"][0]["onscreen"] = [{"heading": "标准体系需要统一框架", "text": "现有标准分散在多个领域"}]
 
     markdown = render_stage02_markdown(payload)
 
+    assert f"### 完整文字稿\n\n{full_copy}" in markdown
     assert f"### 上屏文字\n\n{full_copy}" in markdown
+
+
+def test_render_ignores_independent_onscreen_projection() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "format": "pyramid_prose",
+        "heading": "标准体系需要统一框架。",
+        "text": "现有标准分散在多个领域。\n\n统一框架将明确专业之间的衔接关系。",
+    }]
+
+    markdown = render_stage02_markdown(payload)
+
+    full_copy = payload["slides"][0]["full_copy"]
+    assert f"### 上屏文字\n\n{full_copy}" in markdown
+
+
+def test_pyramid_prose_is_exempt_from_compact_detail_delivery_rules() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"] = [{
+        "format": "pyramid_prose",
+        "heading": "标准体系需要统一框架。",
+        "text": "现有标准分散在多个领域，且专业之间缺少稳定衔接关系。\n\n统一框架将明确专业之间的关系和使用边界。",
+    }]
+
+    assert check_onscreen_terminal_punctuation(payload) == []
+    assert check_onscreen_detail_length(payload) == []
 
 def test_render_source_refs_omitted_when_absent() -> None:
     payload = {"deck": {"title": "T", "communication_goal": "G"}, "slides": [{"id": "P01", "page_type": "content", "title": "标题", "mission": "m", "core_message": "c", "onscreen": [{"heading": "h"}]}]}

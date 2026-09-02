@@ -53,9 +53,15 @@ pre-authors judgments, modules, evidence dispositions, onscreen contracts,
 visual relations or speaker threads in PLAN.  v1 strict Deck Plans must be
 migrated to v2 lean before entering this workflow.
 
-AUTHOR writes the complete page copy once and copies each content page's
-`full_copy` into `onscreen`. Stage 01 does not run a separate onscreen
-compression, structure-projection, or visual-structure design pass.
+AUTHOR writes `full_copy` as the semantic source for each page, then authors
+`onscreen` as its conclusion-first, reader-facing expression. This is a
+semantic-preserving editorial projection: it opens with the page conclusion,
+then uses complete paragraphs to unfold the supporting reasons, facts and
+implications. It may reorder and clarify the complete copy while retaining
+every material fact, condition, responsibility, number and claim strength.
+Stage 01 uses neither mechanical shortening nor phrase-led condensation;
+dense material is resolved through page mission or pagination rather than
+deleting substantive content.
 High-risk pages compare judgment-led and evidence-led candidates and retain only
 the rewritten winner. These passes occur inside the existing three authoritative
 artifacts; they create no Content Plan, checkpoint, gate receipt or review

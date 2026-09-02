@@ -90,8 +90,8 @@ def test_deliverable_prompt_uses_only_the_single_style_contract_for_style_nine()
     for fragment in _OLD_CHINESE_FRAGMENTS:
         assert fragment not in prompt
     assert "【设计目标与叙事】" not in prompt
-    assert "忠实于【内容锁定】" in prompt
+    assert "基于源文案进行专业改写" in prompt
     assert (
-        "Do not invent section labels like meta headers; only render 上屏文字 modules."
+        "Do not render prompt field labels or meta headers. Rewrite the source copy into conclusion-first visible Chinese while preserving its factual boundary."
         in prompt
     )

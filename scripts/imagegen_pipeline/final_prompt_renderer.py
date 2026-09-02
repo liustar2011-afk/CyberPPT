@@ -148,10 +148,12 @@ def render_final_prompt(
 ) -> str:
     """Render the single production prompt in the required seven-part order."""
 
+    runtime = None
     runtime_style_contract = ir.runtime_lock.style_contract
     if style_lock is not None:
         try:
-            runtime_style_contract = load_runtime_style_contract(style_lock).contract
+            runtime = load_runtime_style_contract(style_lock)
+            runtime_style_contract = runtime.contract
         except (OSError, ValueError, TypeError):
             pass
 
@@ -177,9 +179,9 @@ def render_final_prompt(
                 f"Core judgment (non-visible): {ir.page_judgment}",
                 *(
                     (
-                        "Source-grounded semantic context (non-visible; use for business "
-                        "objects, conditions, boundaries and implications; render only text "
-                        "also present in the exact visible-text whitelist):",
+                            "Source-grounded semantic context (use for business objects, "
+                            "conditions, boundaries and implications; it defines the factual "
+                            "boundary for rewritten visible copy):",
                         ir.semantic_context,
                     )
                     if ir.semantic_context
@@ -218,10 +220,9 @@ def render_final_prompt(
             (
                 SECTION_HEADINGS[5],
                 (
-                    "The exact visible text is declared once inside its semantic group above. "
-                    "Preserve every character and the declared order. Line breaks, grouping, "
-                    "position changes and stronger emphasis before a colon are allowed within "
-                    "the same semantic region; do not duplicate the label elsewhere."
+                    "The source copy is declared inside its semantic group above. Rewrite it "
+                    "into concise, conclusion-first visible copy as needed; preserve factual "
+                    "objects, numbers, conditions, scope, responsibility, status and claim strength."
                 ),
                 *(
                     ()

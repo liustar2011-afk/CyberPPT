@@ -3,12 +3,11 @@ Name: cyberppt
 Version: 0.1.0
 Summary: CyberPPT project tooling for evidence-based, editable consulting PowerPoint workflows.
 Author: CyberPPT maintainers
-License: MIT
+License-Expression: MIT
 Keywords: pptx,codex-skill,consulting,powerpoint,qa
 Classifier: Development Status :: 3 - Alpha
 Classifier: Environment :: Console
 Classifier: Intended Audience :: Developers
-Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3 :: Only
 Classifier: Topic :: Office/Business :: Office Suites
@@ -19,9 +18,19 @@ Requires-Dist: pyyaml
 Requires-Dist: rapidocr-onnxruntime<2,>=1.4
 Requires-Dist: python-pptx
 Requires-Dist: jsonschema<5,>=4
+Requires-Dist: Pillow<13,>=12
+Provides-Extra: source
+Requires-Dist: openpyxl<4,>=3.1; extra == "source"
+Requires-Dist: markitdown<1,>=0.1; extra == "source"
 Provides-Extra: test
 Requires-Dist: pytest<10,>=8; extra == "test"
 Requires-Dist: pytest-cov<7,>=5; extra == "test"
+Provides-Extra: dev
+Requires-Dist: openpyxl<4,>=3.1; extra == "dev"
+Requires-Dist: markitdown<1,>=0.1; extra == "dev"
+Requires-Dist: pytest<10,>=8; extra == "dev"
+Requires-Dist: pytest-cov<7,>=5; extra == "dev"
+Requires-Dist: build<2,>=1; extra == "dev"
 Dynamic: license-file
 
 # CyberPPT
@@ -48,12 +57,11 @@ CyberPPT 的核心不是“套模板”，而是把源材料先转成可审计�
 
 完整流程、人工停点、产物权威关系和 Stage 01 / Stage 02 边界统一见 [CyberPPT 主流程总览](docs/CYBERPPT_WORKFLOW.md)。
 
-普通新项目的 Stage 01 路线为：
+新建且包含正式源材料的 Stage 01 项目默认使用 `strict/legacy` 路线：
+`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow`。
 
-`来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR → CRITIQUE/REWRITE → 最终全稿`
-
-合同、监管、逐事实核验、完整 Source Truth 和旧项目迁移显式使用
-`strict/legacy` 路线：`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow`。
+用户明确选择轻量模式时，使用 `script` 路线：
+`来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR → CRITIQUE/REWRITE → 最终全稿`。
 
 默认流程只在“脚本规划待确认”和“最终脚本已生成”两处停下。AUTHOR 按页回读绑定证据，不重复建立全文语义模型。
 
@@ -147,7 +155,7 @@ Stage 01 的权威内容产物为 `script/foundation.json`、`script/deck-plan.j
 
 `final-script-pages` 默认按 `build_id` 创建新的构建目录，不覆盖既有版本；`workbench/artifact-ledger.json` 以追加方式记录每次产物，并用 `supersedes` 连接同一路径的历史版本。Stage 02 默认走 `image-to-editable-svg` 的可编辑分支：审计 full 图后准备无文字底图，将文字回写为原生 SVG，再组装 PPTX。PPTX 导出必须使用本次运行的明确输出路径，导出工程同时写入 `analysis/export_artifact.json`，续跑不会按文件修改时间猜测旧 PPTX。提示词发送默认 `--prompt-enrich off`，即消费已批准 Prompt 原文；只有明确指定 `deterministic` 或 `send` 才会进行发送时增强。
 
-默认 `script` profile 与合同/监管等 `strict/legacy` profile 的选择、AUTHOR 写作要求和 Stage 02 门禁，以 [主流程总览](docs/CYBERPPT_WORKFLOW.md) 及其路由到的仓库级 Skill 为准；README 不复制阶段细则。
+默认 `strict/legacy` profile 与显式轻量 `script` profile 的选择、AUTHOR 写作要求和 Stage 02 门禁，以 [主流程总览](docs/CYBERPPT_WORKFLOW.md) 及其路由到的仓库级 Skill 为准；README 不复制阶段细则。
 
 常用开发检查：
 

@@ -348,7 +348,6 @@ def build_manifest(
         enrich_result_as_dict,
         resolve_send_prompt,
     )
-    from scripts.imagegen_pipeline.imagegen_handoff import select_image_locked_text
 
     script_pages = {
         int(page.page_id[1:]): page
@@ -653,24 +652,11 @@ def build_manifest(
         if not require_approved_prompts:
             compiled += f"## p{page_number:02d}\n\n{prompt.rstrip()}\n\n"
         variants: dict[str, dict[str, Any]] = {"full": full}
-        required_image_text = [
-            line
-            for line in (
-                "\n".join(artifact_specs[page_number].typography.visible_text)
-                if prompt_compiler == ARTIFACT_PROMPT_COMPILER
-                else select_image_locked_text(script_pages[page_number])
-            ).splitlines()
-            if line.strip()
-        ]
-        allowed_image_text = (
-            "\n".join(required_image_text)
+        image_text_reference = (
+            "\n".join(artifact_specs[page_number].typography.visible_text)
             if prompt_compiler == ARTIFACT_PROMPT_COMPILER
-            else "\n".join(
-                value
-                for value in (script_pages[page_number].onscreen_text, *required_image_text)
-                if str(value).strip()
-            )
-        )
+            else script_pages[page_number].onscreen_text
+        ).strip()
         pairs.append(
             {
                 "page_number": page_number,
@@ -678,7 +664,7 @@ def build_manifest(
                 "title": page.title,
                 "page_script": prompt,
                 "image_text_truth": {
-                    "script_text": allowed_image_text,
+                    "script_text": image_text_reference,
                     "scope": "typo_and_gibberish_only",
                 },
                 "graphic_text_policy": {

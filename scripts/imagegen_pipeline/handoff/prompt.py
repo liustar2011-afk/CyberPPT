@@ -37,9 +37,8 @@ from scripts.imagegen_pipeline.handoff.contracts import (
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_PAGE_MISSION_LABEL,
     CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
-    CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT,
     CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
-    CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT,
+    CONTENT_FIRST_COPY_AUTHORING_CONTRACT,
     EVIDENCE_ID_RE,
     IMAGEGEN_CANVAS_CONTRACT,
     IMAGEGEN_CHROME_BAN_CONTRACT,
@@ -105,12 +104,9 @@ def render_content_first_prompt(
     onscreen_body = _flatten_markdown_tables(
         _clean_onscreen_for_imagegen(page.onscreen_text)
     )
-    locked = select_image_locked_text(page, visual_context)
+    fact_anchors = select_image_locked_text(page, visual_context)
     judgment_for_semantics = page.onscreen_conclusion.strip()
     core_meaning_for_semantics = page.core_message.strip() or page.title.strip()
-    core_in_locked_copy = bool(
-        judgment_for_semantics and judgment_for_semantics in locked
-    )
     visible_judgment = (
         judgment_for_semantics
         if (
@@ -119,10 +115,8 @@ def render_content_first_prompt(
         )
         else ""
     )
-    # A subtitle migration is deliberately non-destructive: the approved body
-    # copy remains the sole visible ImageGen payload.  The full judgment still
-    # guides composition above, but must not be injected into or used to rewrite
-    # 上屏文字.
+    # The complete source copy remains the semantic input. Stage 02 may rewrite
+    # it into a clearer visible hierarchy without changing the protected facts.
     complete_semantics = (
         onscreen_body
         if page.subtitle.strip()
@@ -246,8 +240,8 @@ def render_content_first_prompt(
                 else ""
             ),
             (
-                f"- 关键事实锚点（仅供校验）：{locked}"
-                if locked
+                f"- 关键事实锚点（仅供校验）：{fact_anchors}"
+                if fact_anchors
                 else ""
             ),
             "",
@@ -284,7 +278,7 @@ def render_content_first_prompt(
         nonvisible_semantic_context = (
             [
                 "【非上屏语义边界】",
-                "页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。",
+                "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。",
                 "",
             ]
             if style09_surface
@@ -305,13 +299,11 @@ def render_content_first_prompt(
                 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
                 if judgment_mode == "locked"
                 else (
-                    CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT
-                    if locked
-                    else CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
+                    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
                 )
             ),
             "",
-            CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT,
+            CONTENT_FIRST_COPY_AUTHORING_CONTRACT,
             "",
             CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
             "",
@@ -337,13 +329,6 @@ def render_content_first_prompt(
                 semantic_tags=style09_semantic_tags,
             ),
         ]
-        if locked:
-            semantics_index = parts.index("【完整上屏内容】")
-            parts[semantics_index:semantics_index] = [
-                "【锁定关键文字】",
-                locked,
-                "",
-            ]
     if semantic_composition_contract:
         # Composition guidance is semantic metadata, never visible copy.
         insert_at = 2 if semantic_visual else 3
@@ -518,7 +503,7 @@ def compile_page_prompt(
                 "content.core_meaning",
                 "content.full_semantics",
                 "content.page_logic_contract",
-                "content.locked_key_copy",
+                "content.copy_authoring",
                 "content.complete_page_semantics",
                 "content.independent_reading",
                 "fact.source_boundary",
@@ -542,7 +527,7 @@ def compile_page_prompt(
                 "style_lock": str(style_lock),
             },
             presentation=presentation,
-            image_locked_text=select_image_locked_text(page, visual_context),
+            image_locked_text="",
             editable_body_text=page.onscreen_text.strip(),
             semantic_structure=semantic_structure,
             text_render_mode=resolved_text_render_mode,

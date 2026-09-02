@@ -5,7 +5,6 @@ from pathlib import Path
 from scripts.imagegen_pipeline.prompt_send_enrich import (
     SEND_ENRICH_HEADER,
     apply_deterministic_enrich,
-    assert_locked_text_preserved,
     extract_structure_cue,
     resolve_send_prompt,
 )
@@ -46,15 +45,6 @@ def test_structure_cue_maps_path_and_crosscut() -> None:
     assert "path" in cue.lower() or "crosscut" in cue.lower() or "贯穿" in cue
 
 
-def test_locked_text_gate_rejects_dropped_onscreen() -> None:
-    bad = "【锁定关键文字】\nchanged\n\n【完整上屏内容】\nalso changed\n"
-    try:
-        assert_locked_text_preserved(SAMPLE, bad)
-        raise AssertionError("expected ValueError")
-    except ValueError as exc:
-        assert "locked section" in str(exc)
-
-
 def test_resolve_send_modes(tmp_path: Path) -> None:
     off = resolve_send_prompt(approved_prompt=SAMPLE, mode="off")
     assert SEND_ENRICH_HEADER not in off.prompt
@@ -92,12 +82,10 @@ def test_resolve_send_modes(tmp_path: Path) -> None:
     assert combined.count("01｜三类知识来源") == SAMPLE.count("01｜三类知识来源")
 
 
-def test_resolve_send_prompt_rejects_dropped_locked_text(tmp_path: Path) -> None:
+def test_resolve_send_prompt_allows_reauthored_visible_copy(tmp_path: Path) -> None:
     send_path = tmp_path / "send.md"
     tampered = apply_deterministic_enrich(SAMPLE).replace("01｜三类知识来源", "changed heading")
     send_path.write_text(tampered, encoding="utf-8")
-    try:
-        resolve_send_prompt(approved_prompt=SAMPLE, mode="send", send_final_path=send_path)
-        raise AssertionError("expected ValueError")
-    except ValueError as exc:
-        assert "locked section" in str(exc)
+    result = resolve_send_prompt(approved_prompt=SAMPLE, mode="send", send_final_path=send_path)
+    assert result.used_send_script is True
+    assert SEND_ENRICH_HEADER in result.enrich_block

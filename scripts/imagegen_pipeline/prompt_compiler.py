@@ -35,7 +35,8 @@ def validate_prompt_compiler(name: str) -> str:
 def validate_text_render_mode(name: str) -> str:
     """Validate the separation between visual generation and text rendering.
 
-    ``full_image`` keeps locked text in the generated artifact.
+    ``full_image`` lets ImageGen render Stage 02-authored visible copy in the
+    generated artifact while preserving the supplied semantic boundary.
     ``semantic_visual`` produces a text-light semantic asset for an explicitly
     selected downstream editable-information workflow.
     """

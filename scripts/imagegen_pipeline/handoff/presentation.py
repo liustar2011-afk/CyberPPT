@@ -141,7 +141,7 @@ def render_presentation_contract(
         lines.extend(
             (
                 f"人工版式母题：{page.layout_motif.strip() or decision.layout_motif}。",
-                "人工覆盖不得删除完整上屏内容或改变业务关系。",
+                "人工覆盖可重组和改写呈现文案，但必须保持业务关系、事实边界和结论力度。",
             )
         )
     return "\n".join(lines)

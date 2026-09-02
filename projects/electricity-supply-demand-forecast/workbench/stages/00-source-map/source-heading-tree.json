@@ -1,0 +1,771 @@
+{
+  "schema": "cyberppt.source_heading_tree.v1",
+  "headings": [
+    {
+      "heading_id": "H-5A748D972F-3FB3BB22E323-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "工作摘要",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 20,
+      "unit_id": "SU-5A748D972F-HEADING-917892CDEB40-01",
+      "heading_path": [
+        "工作摘要"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-19E906681F91-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "一、建设背景与形势判断",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 26,
+      "unit_id": "SU-5A748D972F-HEADING-0E0BD5DEF2AB-01",
+      "heading_path": [
+        "一、建设背景与形势判断"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-2F0BEE7D91A0-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（一）电力供需形势研判的复杂性显著提升",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-19E906681F91-01",
+      "source_order": 28,
+      "unit_id": "SU-5A748D972F-HEADING-2505CE3A001B-01",
+      "heading_path": [
+        "一、建设背景与形势判断",
+        "（一）电力供需形势研判的复杂性显著提升"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-8E4E95622C75-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（二）中电联具备推进能力建设的良好基础",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-19E906681F91-01",
+      "source_order": 34,
+      "unit_id": "SU-5A748D972F-HEADING-90763A3EC3A3-01",
+      "heading_path": [
+        "一、建设背景与形势判断",
+        "（二）中电联具备推进能力建设的良好基础"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-E644F15C0D9B-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（三）现有工作需要由分散支撑向体系化能力升级",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-19E906681F91-01",
+      "source_order": 39,
+      "unit_id": "SU-5A748D972F-HEADING-D66FEF0F0D21-01",
+      "heading_path": [
+        "一、建设背景与形势判断",
+        "（三）现有工作需要由分散支撑向体系化能力升级"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-D5BCB2C4C4F7-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（四）建设行业级预测能力体系已具备现实条件",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-19E906681F91-01",
+      "source_order": 46,
+      "unit_id": "SU-5A748D972F-HEADING-3BCBFAD139F1-01",
+      "heading_path": [
+        "一、建设背景与形势判断",
+        "（四）建设行业级预测能力体系已具备现实条件"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-79B7B4BA97DF-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "二、总体定位与建设思路",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 52,
+      "unit_id": "SU-5A748D972F-HEADING-99CB0BF1E1A3-01",
+      "heading_path": [
+        "二、总体定位与建设思路"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-A6AF921EF8CB-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（一）建设面向行业的电力供需形势预测与预警公共能力",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-79B7B4BA97DF-01",
+      "source_order": 54,
+      "unit_id": "SU-5A748D972F-HEADING-85E7A8323610-01",
+      "heading_path": [
+        "二、总体定位与建设思路",
+        "（一）建设面向行业的电力供需形势预测与预警公共能力"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-4223AEEAD73D-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（二）形成覆盖研判、预警、评估和服务的综合能力",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-79B7B4BA97DF-01",
+      "source_order": 58,
+      "unit_id": "SU-5A748D972F-HEADING-8A07B7ED39EC-01",
+      "heading_path": [
+        "二、总体定位与建设思路",
+        "（二）形成覆盖研判、预警、评估和服务的综合能力"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-F525A444EDFA-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（三）按照业务闭环统筹推进能力建设",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-79B7B4BA97DF-01",
+      "source_order": 60,
+      "unit_id": "SU-5A748D972F-HEADING-F63A3E34D79D-01",
+      "heading_path": [
+        "二、总体定位与建设思路",
+        "（三）按照业务闭环统筹推进能力建设"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-63AAECA8ABF5-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（四）坚持业务牵引、稳健建设和安全运行",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-79B7B4BA97DF-01",
+      "source_order": 67,
+      "unit_id": "SU-5A748D972F-HEADING-0361F7D130BE-01",
+      "heading_path": [
+        "二、总体定位与建设思路",
+        "（四）坚持业务牵引、稳健建设和安全运行"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-0A852A5EA65F-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（五）首期聚焦两项核心场景和基础业务闭环",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-79B7B4BA97DF-01",
+      "source_order": 74,
+      "unit_id": "SU-5A748D972F-HEADING-3E8690A332C8-01",
+      "heading_path": [
+        "二、总体定位与建设思路",
+        "（五）首期聚焦两项核心场景和基础业务闭环"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-F6A4CECFCF56-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "三、业务体系与重点场景",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 81,
+      "unit_id": "SU-5A748D972F-HEADING-585F8F36C863-01",
+      "heading_path": [
+        "三、业务体系与重点场景"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-8F0A8A515598-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（一）构建覆盖供需全要素的预测业务体系",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-F6A4CECFCF56-01",
+      "source_order": 83,
+      "unit_id": "SU-5A748D972F-HEADING-DBAEDF4CE6B9-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（一）构建覆盖供需全要素的预测业务体系"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-1B5F040EA756-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "1. 预测对象覆盖需求、供给、平衡、市场、调节和风险六类要素",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-8F0A8A515598-01",
+      "source_order": 85,
+      "unit_id": "SU-5A748D972F-HEADING-94CB1B57A5CF-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（一）构建覆盖供需全要素的预测业务体系",
+        "1. 预测对象覆盖需求、供给、平衡、市场、调节和风险六类要素"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-0A99A9EDBAA1-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "2. 建立年度、季度、月度和重点时段相互衔接的工作周期",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-8F0A8A515598-01",
+      "source_order": 87,
+      "unit_id": "SU-5A748D972F-HEADING-62BA191D1983-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（一）构建覆盖供需全要素的预测业务体系",
+        "2. 建立年度、季度、月度和重点时段相互衔接的工作周期"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-B0B928C573F4-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "3. 形成报告、专报、清单、看板和数据服务相结合的成果体系",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-8F0A8A515598-01",
+      "source_order": 93,
+      "unit_id": "SU-5A748D972F-HEADING-F259582DB18F-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（一）构建覆盖供需全要素的预测业务体系",
+        "3. 形成报告、专报、清单、看板和数据服务相结合的成果体系"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-CDB85E241F9A-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（二）首期建设全国月度季度分析和年度报告自动化两项核心场景",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-F6A4CECFCF56-01",
+      "source_order": 99,
+      "unit_id": "SU-5A748D972F-HEADING-23ED7242679D-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（二）首期建设全国月度季度分析和年度报告自动化两项核心场景"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-F72D1DA5C81E-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "1. 全国月度与季度供需形势分析",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-CDB85E241F9A-01",
+      "source_order": 100,
+      "unit_id": "SU-5A748D972F-HEADING-3D1421A7B7EE-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（二）首期建设全国月度季度分析和年度报告自动化两项核心场景",
+        "1. 全国月度与季度供需形势分析"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-8F22C9D25C09-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "2. 年度供需形势预测报告自动化",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-CDB85E241F9A-01",
+      "source_order": 105,
+      "unit_id": "SU-5A748D972F-HEADING-28891D4B0D1E-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（二）首期建设全国月度季度分析和年度报告自动化两项核心场景",
+        "2. 年度供需形势预测报告自动化"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-FE6EB683CB01-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（三）围绕保供、新能源和新型调节资源有序拓展专题场景",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-F6A4CECFCF56-01",
+      "source_order": 110,
+      "unit_id": "SU-5A748D972F-HEADING-A68CF9C87461-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（三）围绕保供、新能源和新型调节资源有序拓展专题场景"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-43E01BD26222-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（四）按照核心能力形成、专题能力扩展和服务能力深化分步推进",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-F6A4CECFCF56-01",
+      "source_order": 117,
+      "unit_id": "SU-5A748D972F-HEADING-7677219423EC-01",
+      "heading_path": [
+        "三、业务体系与重点场景",
+        "（四）按照核心能力形成、专题能力扩展和服务能力深化分步推进"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-E5887690089F-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "四、能力支撑体系",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 122,
+      "unit_id": "SU-5A748D972F-HEADING-B6E5CA854AD2-01",
+      "heading_path": [
+        "四、能力支撑体系"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-0F9482720EB9-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（一）构建统一可信的数据资源体系",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-E5887690089F-01",
+      "source_order": 124,
+      "unit_id": "SU-5A748D972F-HEADING-6FB9E631371D-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（一）构建统一可信的数据资源体系"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-C60240A7EAEF-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "1. 按照业务重要程度分层组织数据资源",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-0F9482720EB9-01",
+      "source_order": 126,
+      "unit_id": "SU-5A748D972F-HEADING-46DBA1886725-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（一）构建统一可信的数据资源体系",
+        "1. 按照业务重要程度分层组织数据资源"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-1221A0BF9374-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "2. 建立贯穿数据全生命周期的治理规则",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-0F9482720EB9-01",
+      "source_order": 128,
+      "unit_id": "SU-5A748D972F-HEADING-5D8577CFC5CF-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（一）构建统一可信的数据资源体系",
+        "2. 建立贯穿数据全生命周期的治理规则"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-5F6A94D8B7D4-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "3. 形成规则、授权和技术相结合的可信使用机制",
+      "level": 3,
+      "parent_heading_id": "H-5A748D972F-0F9482720EB9-01",
+      "source_order": 135,
+      "unit_id": "SU-5A748D972F-HEADING-356D6402BB77-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（一）构建统一可信的数据资源体系",
+        "3. 形成规则、授权和技术相结合的可信使用机制"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-8116F596151C-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（二）建立多方法协同的预测分析能力",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-E5887690089F-01",
+      "source_order": 137,
+      "unit_id": "SU-5A748D972F-HEADING-8E006B8608E6-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（二）建立多方法协同的预测分析能力"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-1B7CBE4E5882-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（三）完善模型训练、发布和复盘闭环",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-E5887690089F-01",
+      "source_order": 140,
+      "unit_id": "SU-5A748D972F-HEADING-B082D0BE1463-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（三）完善模型训练、发布和复盘闭环"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-81120A54DAF1-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（四）建设面向分析研判和成果生产的智能辅助能力",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-E5887690089F-01",
+      "source_order": 146,
+      "unit_id": "SU-5A748D972F-HEADING-736F9B15D8AE-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（四）建设面向分析研判和成果生产的智能辅助能力"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-FE0944604BFC-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（五）形成知识沉淀和持续改进机制",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-E5887690089F-01",
+      "source_order": 150,
+      "unit_id": "SU-5A748D972F-HEADING-91FF5487D4C1-01",
+      "heading_path": [
+        "四、能力支撑体系",
+        "（五）形成知识沉淀和持续改进机制"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-85FE54328957-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "五、平台与系统能力建设",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 153,
+      "unit_id": "SU-5A748D972F-HEADING-851E01844502-01",
+      "heading_path": [
+        "五、平台与系统能力建设"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-C55417F58DE1-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（一）构建贯通数据、分析和应用的总体架构",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-85FE54328957-01",
+      "source_order": 155,
+      "unit_id": "SU-5A748D972F-HEADING-0AD4201B25F8-01",
+      "heading_path": [
+        "五、平台与系统能力建设",
+        "（一）构建贯通数据、分析和应用的总体架构"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-BED0E9F26B4F-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（二）围绕业务闭环建设核心功能",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-85FE54328957-01",
+      "source_order": 158,
+      "unit_id": "SU-5A748D972F-HEADING-B7E283F68F44-01",
+      "heading_path": [
+        "五、平台与系统能力建设",
+        "（二）围绕业务闭环建设核心功能"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-DA47A014BD19-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（三）加强数据、模型、报告和发布版本的统一管理",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-85FE54328957-01",
+      "source_order": 160,
+      "unit_id": "SU-5A748D972F-HEADING-04546DF48A72-01",
+      "heading_path": [
+        "五、平台与系统能力建设",
+        "（三）加强数据、模型、报告和发布版本的统一管理"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-3A5053275884-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（四）坚持存量复用和分步建设",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-85FE54328957-01",
+      "source_order": 163,
+      "unit_id": "SU-5A748D972F-HEADING-18AED24B5A25-01",
+      "heading_path": [
+        "五、平台与系统能力建设",
+        "（四）坚持存量复用和分步建设"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-29587EBA0F62-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "六、组织机制与实施路径",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 169,
+      "unit_id": "SU-5A748D972F-HEADING-9AF9088877F6-01",
+      "heading_path": [
+        "六、组织机制与实施路径"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-96F6D210D23B-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（一）建立权责清晰的组织体系",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-29587EBA0F62-01",
+      "source_order": 171,
+      "unit_id": "SU-5A748D972F-HEADING-87A7A3C1A18E-01",
+      "heading_path": [
+        "六、组织机制与实施路径",
+        "（一）建立权责清晰的组织体系"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-1FD8F7FE9D7B-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（二）形成常态化业务运行和协同机制",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-29587EBA0F62-01",
+      "source_order": 173,
+      "unit_id": "SU-5A748D972F-HEADING-65429D7C8418-01",
+      "heading_path": [
+        "六、组织机制与实施路径",
+        "（二）形成常态化业务运行和协同机制"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-5926791B342A-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（三）分四个阶段推进能力建设",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-29587EBA0F62-01",
+      "source_order": 180,
+      "unit_id": "SU-5A748D972F-HEADING-0A3445CCEAD0-01",
+      "heading_path": [
+        "六、组织机制与实施路径",
+        "（三）分四个阶段推进能力建设"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-5EBAB7534201-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（四）采取全国总盘与样板验证相结合的推进方式",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-29587EBA0F62-01",
+      "source_order": 182,
+      "unit_id": "SU-5A748D972F-HEADING-AA4A1E57CD72-01",
+      "heading_path": [
+        "六、组织机制与实施路径",
+        "（四）采取全国总盘与样板验证相结合的推进方式"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-817C490B6341-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（五）抓紧做好前100天重点工作",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-29587EBA0F62-01",
+      "source_order": 184,
+      "unit_id": "SU-5A748D972F-HEADING-0E4CDD11EA9F-01",
+      "heading_path": [
+        "六、组织机制与实施路径",
+        "（五）抓紧做好前100天重点工作"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-6B209CB14C5E-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "七、资源保障与风险控制",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 193,
+      "unit_id": "SU-5A748D972F-HEADING-1F67DBA74DC5-01",
+      "heading_path": [
+        "七、资源保障与风险控制"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-04DA166370B6-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（一）统筹配置建设和运行资源",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-6B209CB14C5E-01",
+      "source_order": 195,
+      "unit_id": "SU-5A748D972F-HEADING-F6401B82D223-01",
+      "heading_path": [
+        "七、资源保障与风险控制",
+        "（一）统筹配置建设和运行资源"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-B1CF78981401-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（二）根据建设边界分类测算投资",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-6B209CB14C5E-01",
+      "source_order": 197,
+      "unit_id": "SU-5A748D972F-HEADING-2FC6B86E0C8A-01",
+      "heading_path": [
+        "七、资源保障与风险控制",
+        "（二）根据建设边界分类测算投资"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-1893DEF2A547-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（三）落实数据安全、网络安全和成果发布要求",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-6B209CB14C5E-01",
+      "source_order": 201,
+      "unit_id": "SU-5A748D972F-HEADING-D1F49E6B84EC-01",
+      "heading_path": [
+        "七、资源保障与风险控制",
+        "（三）落实数据安全、网络安全和成果发布要求"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-E84DC43ED754-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（四）加强重点风险全过程控制",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-6B209CB14C5E-01",
+      "source_order": 208,
+      "unit_id": "SU-5A748D972F-HEADING-2338CC434213-01",
+      "heading_path": [
+        "七、资源保障与风险控制",
+        "（四）加强重点风险全过程控制"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-9E41B6D0C0D2-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "（五）建立持续运行和绩效评价机制",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-6B209CB14C5E-01",
+      "source_order": 210,
+      "unit_id": "SU-5A748D972F-HEADING-E0C3200548C0-01",
+      "heading_path": [
+        "七、资源保障与风险控制",
+        "（五）建立持续运行和绩效评价机制"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-A0D82144A289-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "八、需请领导审定事项",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 213,
+      "unit_id": "SU-5A748D972F-HEADING-8AE33AA75201-01",
+      "heading_path": [
+        "八、需请领导审定事项"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-1D31C4C84A14-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "附件一  首期核心指标清单",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 217,
+      "unit_id": "SU-5A748D972F-HEADING-7AE0E5DD1B26-01",
+      "heading_path": [
+        "附件一  首期核心指标清单"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-F4AA5860A32B-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "附件二  数据资源及责任清单",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 219,
+      "unit_id": "SU-5A748D972F-HEADING-24C8BE5204E5-01",
+      "heading_path": [
+        "附件二  数据资源及责任清单"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-53679C0E8BE7-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "数据可获得性和降级使用规则",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-F4AA5860A32B-01",
+      "source_order": 221,
+      "unit_id": "SU-5A748D972F-HEADING-CFFC17FEEDB3-01",
+      "heading_path": [
+        "附件二  数据资源及责任清单",
+        "数据可获得性和降级使用规则"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-B7CBA9513B68-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "附件三  平台功能、模型能力及验收清单",
+      "level": 1,
+      "parent_heading_id": null,
+      "source_order": 224,
+      "unit_id": "SU-5A748D972F-HEADING-D69ECB1FF016-01",
+      "heading_path": [
+        "附件三  平台功能、模型能力及验收清单"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-B72379E194D7-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "模型能力分层建设",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-B7CBA9513B68-01",
+      "source_order": 226,
+      "unit_id": "SU-5A748D972F-HEADING-D85E557E8725-01",
+      "heading_path": [
+        "附件三  平台功能、模型能力及验收清单",
+        "模型能力分层建设"
+      ]
+    },
+    {
+      "heading_id": "H-5A748D972F-2B7DCAF029E2-01",
+      "source_id": "SRC-5A748D972F",
+      "source_path": "source/关于开展电力供需形势预测工作的整体方案_完整重构稿V0.2.docx",
+      "title": "首期成果及验收要点",
+      "level": 2,
+      "parent_heading_id": "H-5A748D972F-B7CBA9513B68-01",
+      "source_order": 228,
+      "unit_id": "SU-5A748D972F-HEADING-86E27597E3C9-01",
+      "heading_path": [
+        "附件三  平台功能、模型能力及验收清单",
+        "首期成果及验收要点"
+      ]
+    }
+  ]
+}

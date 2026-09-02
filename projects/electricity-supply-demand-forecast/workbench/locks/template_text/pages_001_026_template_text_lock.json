@@ -1,0 +1,624 @@
+{
+  "schema": "cyberppt.template_text_lock.v1",
+  "created_at": "2026-09-02T15:11:46+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json",
+  "pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26
+  ],
+  "records": [
+    {
+      "page": 1,
+      "title": "关于开展电力供需形势预测工作的整体方案",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e"
+    },
+    {
+      "page": 2,
+      "title": "目录",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e"
+    },
+    {
+      "page": 3,
+      "title": "第一章 形势判断与建设定位",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e"
+    },
+    {
+      "page": 4,
+      "title": "建设事项与决策范围",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "process_atlas",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "phase candidates: process_atlas, evidence_landscape",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "中电联已形成稳定工作基础\n首期两项核心场景明确建设范围\n首期范围",
+      "editable_body_text": "- 中电联已形成稳定工作基础\n  - 统计报表、月度分析、季度会商构成工作基础\n  - 行业级预测与预警公共能力覆盖全国多时间尺度场景\n- 首期两项核心场景明确建设范围\n  - 首期范围：月季分析与年度报告自动化"
+    },
+    {
+      "page": 5,
+      "title": "供需研判面临的新要求",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "data_visualization"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "供需平衡的约束条件和研判对象正在同步变化，预测工作需由单点年度判断转向多维滚动研判。\n\n电量、负荷、装机和利用小时等相对稳定指标仍是基础，但新能源有效出力、跨区交易、需求响应、储能、电动汽车、气象变化和市场规则已成为影响平衡的重要变量。2025年全国全社会用电量达到103682亿千瓦时，市场交易电量占比达到64.0%，可再生能源装机约占全国电力总装机的60%，供需规模、结构和资源配置方式均在加快变化。\n\n供给侧的可用能力需要从装机规模进一步落实到有效容量、可信出力区间、备用空间和区域互济条件；需求侧需识别极端天气、产业变化和新型负荷带来的短期形态变化，市场侧则需同步观察物理平衡、交易互济和市场信号。\n\n预测成果应由单点结论延展为区间判断、概率分析和情景推演，并由年度趋势判断延展至季度校核、月度滚动和重点时段专题，逐步形成风险清单、区域图谱、专题专报、指标服务和会商支撑等多样化成果。"
+    },
+    {
+      "page": 6,
+      "title": "中电联具备以现有业务启动建设的基础",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "月季年业务机制沉淀历史序列\n行业组织可协调多方数据核实",
+      "editable_body_text": "- 中电联已有业务周期、行业组织网络和数字化探索，可围绕现有体系形成增量能力\n  - 月季年业务机制沉淀历史序列\n  - 行业组织可协调多方数据核实"
+    },
+    {
+      "page": 7,
+      "title": "建设定位、能力目标与首期边界",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "process_atlas",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "phase candidates: process_atlas, evidence_landscape",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "首期以全国和重点区域为层级\n高敏感数据按授权分阶段纳入",
+      "editable_body_text": "- 建设以行业公共研判为定位，以统一业务规则、数据基础、预测研判、成果产品和持续复盘组织首期运行\n  - 首期以全国和重点区域为层级\n  - 高敏感数据按授权分阶段纳入"
+    },
+    {
+      "page": 8,
+      "title": "第二章 业务体系与能力闭环",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e"
+    },
+    {
+      "page": 9,
+      "title": "预测业务以对象、周期和成果产品共同界定边界",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 预测对象、时间尺度和成果产品共同界定业务边界，并将首期能力集中在需求、供给、平衡等核心对象\n  - 预测对象、时间尺度和成果产品三个维度构成\n  - 需求、供给和平衡构成首期核心对象"
+    },
+    {
+      "page": 10,
+      "title": "首期两项核心场景先形成稳定业务闭环",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "data_visualization"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "首期以月季供需分析和年度报告自动化共建运行闭环，在统一口径和审校机制下稳定产出研判成果。\n\n月度、季度分析围绕全社会用电量、分产业和重点行业用电、最大负荷、发电量、装机结构、利用小时、区域平衡、交易互济和气象影响，持续跟踪全国及重点区域的供需变化。业务运行按周期归集统计、发电、装机、交易、宏观和气象信息，统一指标口径和发布时间视图，开展同比环比分析、结构分解、区域比较和主要影响因素识别，形成基准预测、变化区间、风险提示、专家审校、专题会商和月度复盘记录。\n\n年度报告自动化围绕数据量大、图表多、版本多和审校链条长等特点，建立指标、图表、章节与结论的对应关系，形成数据底稿、图表生成、基础文本、审校记录和签发版本。自动化重点承担数据填充、趋势计算、图表更新、格式编排和基础表述生成，年度核心判断、重要风险和政策建议仍由业务人员和专家审定，以人机协同提高生产效率并保持报告的专业性、权威性和发布规范。"
+    },
+    {
+      "page": 11,
+      "title": "专题场景按数据与业务条件有序扩展",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "重点时段与区域风险优先验证\n场景具备数据条件后纳入计划",
+      "editable_body_text": "- 专题场景以首期共性规则为基础，按需求、数据条件和合作基础逐步进入建设计划\n  - 重点时段与区域风险优先验证\n  - 场景具备数据条件后纳入计划"
+    },
+    {
+      "page": 12,
+      "title": "统一可信的数据资源为预测研判提供可追溯输入",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "核心数据形成稳定分析链路\n敏感数据按授权方式受控使用",
+      "editable_body_text": "- 稳定数据链路依赖核心数据优先接入、统一治理和按授权使用的可追溯机制\n  - 核心数据形成稳定分析链路\n  - 敏感数据按授权方式受控使用"
+    },
+    {
+      "page": 13,
+      "title": "多方法预测、成果生产与复盘共同形成能力闭环",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "data_visualization"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 统计分析、模型计算和专家研判共同应用，成果生产与误差复盘推动能力持续改进\n  - 同比环比、趋势外推、回归分析和结构分解形成基准\n  - 专家会商、假设校核和边界确认后形成正式结论"
+    },
+    {
+      "page": 14,
+      "title": "第三章 平台、组织与实施路径",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e"
+    },
+    {
+      "page": 15,
+      "title": "平台建设围绕数据、研判与成果应用贯通",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 平台围绕数据治理、预测研判和成果生产组织业务，并以版本管理和模块扩展保障可追溯运行\n  - 质量校验、指标口径、版本和权限管理保障数据治理\n  - 报告模板、图表生成和人工审校形成成果生产"
+    },
+    {
+      "page": 16,
+      "title": "权责体系与常态化机制保障能力持续运行",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 领导统筹、处室牵头、专班推进、专家支撑和外部合作共同保障能力建设与常态运行\n  - 牵头处室负责业务规则、指标口径和预测研判\n  - 数据准备、质量检查、预测分析、审校和发布构成月度机制"
+    },
+    {
+      "page": 17,
+      "title": "四阶段路线将首期闭环逐步扩展为常态化能力",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "process_atlas",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "phase candidates: process_atlas, evidence_landscape",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "0至3个月重点完成专班组建\n9至18个月进入能力扩展",
+      "editable_body_text": "建设路线以首期闭环为起点，依次完成能力验证、场景拓展和常态运行，形成可复制的服务能力。\n\n0至3个月重点完成专班组建，以及数据、系统、模型和发布流程摸底，形成业务规则、数据目录、指标字典、首期场景方案和原型设计，并交付项目章程、第一版数据目录和指标字典、业务流程、报告模板和原型方案。3至9个月进入一期成型，建设核心数据接入、质量规则、基准预测、模型修正、报告自动化和人工审校流程，形成月度预测和报告生产闭环、年度报告自动化原型、基础看板和复盘机制。\n\n9至18个月进入能力扩展，完善季度滚动、层级一致、区间预测、区域风险展示和重点时段专题能力，并选择样板区域开展验证。18至36个月进入深化运行，结合实际需求拓展新能源、需求响应、储能充电和市场交易等场景，完善持续运营和年度评估，形成可复制场景包、年度模型评估、标准化服务产品和常态化运行机制。"
+    },
+    {
+      "page": 18,
+      "title": "全国总盘与样板验证共同降低扩展不确定性",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "control_room_bridge",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "closed_loop candidates: control_room_bridge, process_atlas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "全国总盘形成月季年分析主闭环\n区域专题样板验证风险分析方法",
+      "editable_body_text": "- 全国总盘先形成统一主业务体系，区域、重点省份和专题样板用于验证可复制的风险研判方法\n  - 全国总盘形成月季年分析主闭环\n  - 区域专题样板验证风险分析方法"
+    },
+    {
+      "page": 19,
+      "title": "前100天以规则、资源和最小可用原型完成启动准备",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 前100天应同步完成任务部署、资源摸底、业务规则、数据清单、原型、合作、任务书和投资校核\n  - 资源摸底形成现状清单与复用清单\n  - 最小原型实现数据导入、审校和版本归档"
+    },
+    {
+      "page": 20,
+      "title": "第四章 资源保障、审定事项与验收边界",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e"
+    },
+    {
+      "page": 21,
+      "title": "资源配置与投资测算需随建设边界分阶段确定",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "存量复用决定首期投入规模\n一期扩展建设形成完整治理能力",
+      "editable_body_text": "- 资源与投资应围绕首期场景和阶段成果配置，规模测算随存量复用、数据范围、平台深度与安全要求确定\n  - 存量复用决定首期投入规模\n  - 一期扩展建设形成完整治理能力"
+    },
+    {
+      "page": 22,
+      "title": "数据安全、成果发布与全过程风险控制共同构成运行底线",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 数据分类分级、最小权限、技术审计、智能工具规范和成果分级发布共同保障运行安全与责任可追溯\n  - 数据分类分级和最小权限限定使用规则\n  - 成果按内部测算、会商研判、领导参阅和对外发布分级管理"
+    },
+    {
+      "page": 23,
+      "title": "启动实施需形成七项领导审定结论",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 为推动电力供需形势预测能力建设由总体设计转入实施，需请领导审定七项事项\n  - 同意将预测工作定位为行业级公共能力建设\n  - 同意两项首期核心场景启动原型建设"
+    },
+    {
+      "page": 24,
+      "title": "指标与数据可得性共同限定场景输出强度",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "数据清单明确字段频率和授权\n替代方式限定成果解释边界",
+      "editable_body_text": "- 场景成果强度由指标口径、数据可得性、授权状态和运行条件共同决定，并应预先设置替代与降级路径\n  - 数据清单明确字段频率和授权\n  - 替代方式限定成果解释边界"
+    },
+    {
+      "page": 25,
+      "title": "首期平台、模型与成果以可运行和可验收为标准",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "- 首期验收以可运行、可审校、可追溯和可复盘为标准，覆盖平台、模型、成果与机制四类输出\n  - 数据导入、质量检查、报告草稿和版本归档联动运行\n  - 模型回测、结果解释和专家审校保留记录"
+    },
+    {
+      "page": 26,
+      "title": "请审定并启动后续细化工作",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_image_pairs.json"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast --script /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/inputs/final-script.md --pages 1-26 --style-lock /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/locks/visual_style_lock.json --assembly-mode editable --output-dir /Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable --build-id 20260902T151146Z-d42a2c462e"
+    }
+  ]
+}
