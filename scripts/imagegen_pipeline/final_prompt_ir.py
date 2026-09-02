@@ -52,7 +52,7 @@ class TextBindingIR:
     """Text ownership for one semantic group.
 
     ``group_id`` and ``text_ids`` are debug-only keys. The renderer uses group
-    order/role and ``exact_text`` but never emits backend identifiers.
+    order/role and the reference text but never emits backend identifiers.
     """
 
     group_id: str
@@ -223,7 +223,7 @@ class FinalPromptIR:
             bound = tuple(text for binding in self.text_bindings for text in binding.exact_text)
             if bound != self.visible_text:
                 raise PromptContractError(
-                    "text bindings must cover exact visible text once and in authoritative order"
+                    "text bindings must cover the reference text once and in authoritative order"
                 )
             group_ids = {group.id for group in self.semantic_groups}
             unknown = [binding.group_id for binding in self.text_bindings if binding.group_id not in group_ids]

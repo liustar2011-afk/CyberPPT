@@ -24,7 +24,6 @@ _BACKEND_ID_RE = re.compile(
     flags=re.IGNORECASE,
 )
 _FORBIDDEN_CHROME_TEXT = frozenset({"标题", "副标题", "页码", "logo", "页眉", "页脚"})
-_VISIBLE_TEXT_RE = re.compile(r'^- Exact visible text: "(.*)"$', flags=re.MULTILINE)
 _GROUP_HEADING_RE = re.compile(r"^Semantic group ([A-Z]|\d+):$", flags=re.MULTILINE)
 
 
@@ -55,13 +54,6 @@ def _validate_text_bindings(prompt: str, ir: FinalPromptIR) -> None:
         )
     if len(group_labels) != len(set(group_labels)):
         raise PromptContractError("final prompt semantic-group labels must be unique")
-    for binding in ir.text_bindings:
-        for text in binding.exact_text:
-            rendered = f'- Exact visible text: "{text}"'
-            if prompt.count(rendered) != 1:
-                raise PromptContractError(
-                    "final prompt must render every bound exact-text item once inside its semantic group"
-                )
     for binding in ir.text_bindings:
         if binding.group_id in prompt:
             raise PromptContractError("final prompt leaked a backend content-root id")
@@ -115,11 +107,6 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt visible text contains excluded chrome content: {text!r}"
             )
-    declared = tuple(_VISIBLE_TEXT_RE.findall(prompt))
-    if declared != ir.visible_text:
-        raise PromptContractError(
-            "final prompt visible text declarations must exactly match the IR text contract"
-        )
     _validate_text_bindings(prompt, ir)
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)

@@ -45,7 +45,7 @@ _RELATION_CREATIVE_LANGUAGE: dict[str, tuple[str, str]] = {
     ),
     "causal": (
         "The stated causes or changes must remain connected to the insufficiency, consequence, "
-        "or resulting judgment that is explicitly present in the locked content.",
+        "or resulting judgment that is explicitly present in the content reference.",
         "Find a visually convincing way to make change and consequence feel connected in one "
         "coherent business world.",
     ),
@@ -190,7 +190,7 @@ def build_semantic_contract(
         exact_facts=extract_exact_facts(onscreen_text),
         forbidden_inferences=(
             "Do not add facts, numbers, organization claims, or conclusions that are not "
-            "present in the locked on-screen text.",
+            "present in the on-screen text reference.",
         ),
     )
 
@@ -198,7 +198,7 @@ def build_semantic_contract(
 def _freedom_for(*, onscreen_text: str, exact_fact_count: int) -> CreativeFreedom:
     text_chars = len(re.sub(r"\s+", "", onscreen_text))
     text_guidance = (
-        "The locked wording is exact. Do not add, paraphrase, shorten, or replace it."
+        "The on-screen wording is a reference. Freely add, paraphrase, shorten, or replace it when that improves the visual expression."
     )
     scene_guidance = (
         "Keep imagery restrained and calm enough that it never competes with the body text."
@@ -206,11 +206,11 @@ def _freedom_for(*, onscreen_text: str, exact_fact_count: int) -> CreativeFreedo
         else "Choose imagery freely when it clarifies the business meaning."
     )
     if exact_fact_count:
-        text_guidance += " Preserve every locked number and unit exactly; generate no extra values."
+        text_guidance += " Keep referenced numbers and units understandable; generate no unrelated values."
     return CreativeFreedom(
         semantic=(
             "Use the page purpose and business meanings as creative context, not as a prescribed "
-            "diagram. Only the locked on-screen wording is mandatory."
+            "diagram. The on-screen wording is creative source material, not a mandatory text lock."
         ),
         text=text_guidance,
         composition=(
@@ -273,13 +273,13 @@ def build_creative_brief(
 def render_creative_brief(brief: CreativeBrief) -> str:
     """Render a concise natural-language brief, not a layout specification."""
 
-    meanings = "; ".join(brief.semantic_contract.required_meanings) or "the locked meanings"
+    meanings = "; ".join(brief.semantic_contract.required_meanings) or "the page meanings"
     lines = [
         "[Page-specific creative brief — context only; do not render these labels or instructions]",
         f"Purpose: {brief.page_purpose or brief.semantic_contract.core_meaning}",
         f"Creative direction: {brief.visual_message}",
         (
-            "Useful meanings already present in the locked on-screen text: "
+            "Useful meanings already present in the on-screen text reference: "
             f"{meanings}. Use them as creative material rather than a required visual checklist."
         ),
         (

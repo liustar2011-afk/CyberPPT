@@ -225,7 +225,7 @@ class PageArtifactSpec:
             binding_text = tuple(binding.text for binding in self.visible_text_bindings)
             if binding_text != self.typography.visible_text:
                 raise ValueError(
-                    "visible text bindings must preserve typography.visible_text exactly and in order"
+                    "visible text bindings must preserve the reference text order"
                 )
             ids = tuple(binding.text_id for binding in self.visible_text_bindings)
             if len(ids) != len(set(ids)):
@@ -380,6 +380,14 @@ def _strings(value: object) -> tuple[str, ...]:
     if not isinstance(value, list):
         return ()
     return tuple(str(item).strip() for item in value if str(item).strip())
+
+
+def _text_lines(value: object) -> tuple[str, ...]:
+    """Read authored on-screen copy as reference lines without rewriting it."""
+
+    if not isinstance(value, str):
+        return ()
+    return tuple(line.rstrip() for line in value.splitlines() if line.strip())
 
 
 def _visual_budget(
@@ -647,25 +655,29 @@ def build_page_artifact_spec(
 
     generation_handoff = visual_page.get("generation_handoff")
     generation_handoff = generation_handoff if isinstance(generation_handoff, dict) else {}
-    visible_text = _strings(generation_handoff.get("required_text"))
-    if not visible_text or visible_text != _body_lock(visual_page):
-        raise ValueError("artifact spec exact text drifted from the audited content lock")
     final_text = visual_page.get("final_text")
     final_text_values = tuple(
         str(item.get("text") or "").strip()
         for item in final_text if isinstance(item, dict)
     ) if isinstance(final_text, list) else ()
-    if final_text_values != visible_text:
-        raise ValueError("artifact spec final text drifted from required text")
+    visible_text = (
+        _text_lines(handoff_page.get("onscreen_text"))
+        or final_text_values
+        or _strings(generation_handoff.get("required_text"))
+    )
+    if not visible_text:
+        raise ValueError("artifact spec requires on-screen text reference")
 
-    content_integrity = visual_page.get("content_integrity")
+    content_integrity = handoff_page.get("content_integrity")
+    if not isinstance(content_integrity, dict):
+        content_integrity = visual_page.get("content_integrity")
     content_nodes = content_integrity.get("nodes") if isinstance(content_integrity, dict) else None
     root_nodes = content_integrity.get("root_nodes") if isinstance(content_integrity, dict) else None
     content_root_count = len(root_nodes) if isinstance(root_nodes, list) else 0
-    visible_text_bindings = _visible_text_bindings(
-        visible_text=visible_text,
-        content_nodes=content_nodes,
-    )
+    # Content-integrity nodes describe the authored script structure. They are
+    # useful for semantic grouping, but they do not bind the model to exact
+    # bitmap wording. Keep the prompt input as plain reference text.
+    visible_text_bindings = ()
     text_id_to_root = {
         str(node.get("text_id")): str(node.get("root_id") or "")
         for node in content_nodes or [] if isinstance(node, dict)

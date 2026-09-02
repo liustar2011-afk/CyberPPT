@@ -17,7 +17,7 @@ from typing import Any, Iterable
 _EXACT_NUMBER_RE = re.compile(
     r"(?<![A-Za-z])(?:\d+(?:\.\d+)?%|\d+(?:\.\d+)?(?:亿|万|千|百)?(?:千瓦时|千瓦|小时|天|月|年))"
 )
-_CONTENT_START = "【内容锁定】"
+_CONTENT_START = "【上屏文字参考】"
 _CONTENT_END = "【构图指令】"
 _COMPOSITION_START = "[Mandatory composition guidance]"
 _CONTENT_FIRST_STARTS = (
@@ -25,6 +25,8 @@ _CONTENT_FIRST_STARTS = (
     "页面任务：",
 )
 _CONTENT_FIRST_ENDS = (
+    "【页面文字表达｜",
+    "【文字表达自由度｜",
     "【结论句要求｜",
     "【结论表达要求｜",
     "【内容与视觉要求｜",

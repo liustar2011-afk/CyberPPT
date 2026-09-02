@@ -11,22 +11,17 @@ IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
 IMAGEGEN_CHROME_BAN_CONTRACT = """【模板层禁绘｜不上屏】
 正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。
 标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。
-【锁定关键文字】【完整上屏内容】中的业务编号与模块名（如 01｜）必须保留；禁止新增与锁定文案无关的序号条、页码章或装饰编号。"""
+上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。"""
 SEMANTIC_VISUAL_CHROME_CONTRACT = """【模板层禁绘｜不上屏】
 正文区图只画业务语义底图，不绘制页面标题、副标题、Logo、页脚、页码、页面序号、母版装饰线或完整正文。正文和事实文字由后续 PPT 可编辑文字层承载。不要把提示词字段名、模块编号、调试信息、伪中文或新增标签画入图片。"""
-CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
-如【锁定关键文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
-允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
-CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【核心意思表达要求｜不上屏】
-本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
-【完整上屏内容】仍须完整表达；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。"""
-CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【核心意思表达要求｜不上屏】
-本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
-【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心意思。"""
-CONTENT_FIRST_SHARED_PREDICATE_CONTRACT = """【并列语义防发散｜不上屏】
-共享谓词、共享限定语、父级说明只保留在原文所属层级，不得自动复制、分配或改写到每个并列子项。除非【完整上屏内容】逐项明确陈述，否则子项只呈现原文已有名称，不得生成“共享谓词 + 子项”的新判断、新标签或新事实。"""
-CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT = """【可读文字白名单｜硬约束】
-图中所有可读文字只能来自【锁定关键文字】或【完整上屏内容】中的原文字符串。页面任务、核心意思、页面逻辑、视觉结构、语义关系、演讲备注及所有“不上屏”区块只决定构图和对象关系；其中任何词句只要未在上屏白名单中逐字出现，就不得渲染、摘录、改写、缩写或组合成标题、中心结论、标签、按钮、图例、流程节点或总结框。允许用场景、对象、位置、连线、色调和视觉焦点表达这些非上屏语义。"""
+CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【页面文字表达｜不上屏】
+上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。"""
+CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
+CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
+CONTENT_FIRST_SHARED_PREDICATE_CONTRACT = """【并列语义组织｜不上屏】
+可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。"""
+CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT = """【文字表达自由度｜不上屏】
+上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。"""
 CONTENT_FIRST_PAGE_MISSION_LABEL = "页面任务："
 CONTENT_FIRST_CORE_MEANING_LABEL = "核心意思："
 # Compatibility alias for extensions importing the old constant.

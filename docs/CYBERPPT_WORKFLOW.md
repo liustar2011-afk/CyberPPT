@@ -255,7 +255,7 @@ Stage 02 采用逐页检查点和同批次恢复：
 
 1. 生成并审计 full 图；可编辑重建分支将通过文字审计的 full 图写入 `reconstruction_visual_source` SHA-256 绑定，作为后续重建的视觉来源。后续阶段可以拆层、清字和重建原生文字，不重新设计已接受的视觉构图；
 2. 从 full 图准备无文字底图，清除计划以 SVG 原生文字重建的区域；
-3. 当前 Codex 主 Agent 直接查看已绑定的归一化 full 图、无字底图、锁定上屏文字和已注册局部图层，在同一画布坐标系中编写完整 authored SVG；该步骤承担高保真重建，不承担第二轮视觉设计。缺少 authored SVG 时生产编排停在该页，完成编写后用同一 build 续跑；
+3. 当前 Codex 主 Agent 直接查看已绑定的归一化 full 图、无字底图、上屏文字参考和已注册局部图层，在同一画布坐标系中编写完整 authored SVG；该步骤承担高保真重建，不承担第二轮视觉设计。缺少 authored SVG 时生产编排停在该页，完成编写后用同一 build 续跑；
 4. 仅对当前页运行可编辑页策略、原生文字坐标、文字样式和 SVG 质量检查，生成该页包装 SVG、单页 Quick PPTX、OfficeCLI PNG 与几何报告；
 5. 渲染前检查 `<text>` 及其全部 `<tspan>` 的坐标连续性；同一文字节点跨列或跨视觉区域跳转时直接阻断。渲染后立即以 `rendered_pending_visual_review` 写回检查点；主 Agent 必须查看该页实际 OfficeCLI PNG，逐项核对布局、字号字重、颜色、换行、中文残留和可读性，机器几何检查不得自动代替看图；
 6. 使用 `.venv/bin/python3 -m cyberppt review-quick-page ...` 把审核结论写入同一个检查点；回执绑定预览 PNG 哈希，预览变化后自动失效。续跑只复用输入未变化、预览仍存在且视觉审核通过的页面；

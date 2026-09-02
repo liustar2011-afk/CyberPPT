@@ -31,13 +31,10 @@ from scripts.imagegen_pipeline.prompt_compiler import (
     validate_prompt_compiler,
     validate_text_render_mode,
 )
-from scripts.imagegen_pipeline.handoff.common import _clean_onscreen_for_imagegen
 from scripts.imagegen_pipeline.handoff.contracts import (
     CONTENT_FIRST_CORE_MEANING_LABEL,
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_PAGE_MISSION_LABEL,
-    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
-    CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT,
     CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
     CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT,
     EVIDENCE_ID_RE,
@@ -63,14 +60,11 @@ from scripts.imagegen_pipeline.handoff.semantics import (
     resolve_page_visual_intent,
 )
 from scripts.imagegen_pipeline.handoff.text import (
-    _flatten_markdown_tables,
     _selected_content_first_style,
     content_lock_text,
-    diagnostic_onscreen_text,
     render_semantic_visual_brief,
     resolve_onscreen_judgment_mode,
     resolve_text_render_mode,
-    select_image_locked_text,
 )
 
 
@@ -101,40 +95,11 @@ def render_content_first_prompt(
     # The core meaning is mandatory semantic context; a visible conclusion is optional.
     judgment_mode = resolve_onscreen_judgment_mode(page, visual_context)
     semantic_visual = text_render_mode == "semantic_visual"
-    onscreen = diagnostic_onscreen_text(page, "content-first-v1")
-    onscreen_body = _flatten_markdown_tables(
-        _clean_onscreen_for_imagegen(page.onscreen_text)
-    )
-    locked = select_image_locked_text(page, visual_context)
-    judgment_for_semantics = page.onscreen_conclusion.strip()
+    onscreen_body = page.onscreen_text.strip()
     core_meaning_for_semantics = page.core_message.strip() or page.title.strip()
-    core_in_locked_copy = bool(
-        judgment_for_semantics and judgment_for_semantics in locked
-    )
-    visible_judgment = (
-        judgment_for_semantics
-        if (
-            judgment_mode == "locked"
-            and not page.subtitle.strip()
-        )
-        else ""
-    )
-    # A subtitle migration is deliberately non-destructive: the approved body
-    # copy remains the sole visible ImageGen payload.  The full judgment still
-    # guides composition above, but must not be injected into or used to rewrite
-    # 上屏文字.
-    complete_semantics = (
-        onscreen_body
-        if page.subtitle.strip()
-        else "\n\n".join(
-            part
-            for part in (
-                visible_judgment,
-                onscreen_body,
-            )
-            if part
-        )
-    )
+    # The script's 上屏文字 is a content reference. Assembly may rewrite it
+    # freely for a readable visual expression; it is not a bitmap whitelist.
+    complete_semantics = onscreen_body
     style09_semantic_tags = _style09_page_semantic_tags(
         PageBlock(page.sequence, page.title, complete_semantics),
         [line for line in complete_semantics.splitlines() if line.strip()],
@@ -245,11 +210,8 @@ def render_content_first_prompt(
                 if page_mission.strip()
                 else ""
             ),
-            (
-                f"- 关键事实锚点（仅供校验）：{locked}"
-                if locked
-                else ""
-            ),
+                "【上屏文字参考】",
+                onscreen_body,
             "",
             SEMANTIC_VISUAL_BRIEF_HEADER,
             semantic_brief,
@@ -301,15 +263,7 @@ def render_content_first_prompt(
             "【完整上屏内容】",
             complete_semantics,
             "",
-            (
-                CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
-                if judgment_mode == "locked"
-                else (
-                    CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT
-                    if locked
-                    else CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
-                )
-            ),
+            CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
             "",
             CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT,
             "",
@@ -337,13 +291,6 @@ def render_content_first_prompt(
                 semantic_tags=style09_semantic_tags,
             ),
         ]
-        if locked:
-            semantics_index = parts.index("【完整上屏内容】")
-            parts[semantics_index:semantics_index] = [
-                "【锁定关键文字】",
-                locked,
-                "",
-            ]
     if semantic_composition_contract:
         # Composition guidance is semantic metadata, never visible copy.
         insert_at = 2 if semantic_visual else 3
@@ -413,7 +360,7 @@ def compile_page_prompt(
                 "name": art_direction.style_name,
                 "style_lock": str(style_lock),
             },
-            image_locked_text="\n".join(artifact_spec.typography.visible_text),
+            image_locked_text="",
             text_render_mode="full_image",
             prompt_ir_version=FINAL_PROMPT_IR_VERSION,
             debug_receipt=debug_receipt,
@@ -542,7 +489,7 @@ def compile_page_prompt(
                 "style_lock": str(style_lock),
             },
             presentation=presentation,
-            image_locked_text=select_image_locked_text(page, visual_context),
+            image_locked_text="",
             editable_body_text=page.onscreen_text.strip(),
             semantic_structure=semantic_structure,
             text_render_mode=resolved_text_render_mode,

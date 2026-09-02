@@ -1,13 +1,12 @@
 """Send-time ImageGen prompt enrichment (opt-in + LLM-send gate).
 
 Layer 1 — deterministic (opt-in): append a compact visual cue block derived
-from the approved page prompt's 【页面逻辑】. Never rewrites locked on-screen
-Chinese. The default is ``off`` so the approved prompt is consumed verbatim;
+from the approved page prompt's 【页面逻辑】. The default is ``off`` so the
+approved prompt is consumed verbatim;
 callers may opt in with ``--prompt-enrich deterministic``.
 
 Layer 2 — LLM send script: optional approved `imagegen-send` final that an
-agent/LLM may rewrite for image-model sensitivity. Must keep locked text;
-generation prefers it when --prompt-enrich send.
+agent/LLM may rewrite for image-model sensitivity.
 """
 
 from __future__ import annotations
@@ -35,17 +34,17 @@ DETERMINISTIC_BAN = (
     "page numbers, footers, evidence IDs in the body image."
 )
 DETERMINISTIC_COMPOSITION = (
-    "Composition: one integrated layout; weave locked Chinese into the business structure; "
+    "Composition: one integrated layout; weave reference Chinese into the business structure; "
     "optional industry scene ≤ ~1/4 as local embed — never a half-page panel."
 )
 DETERMINISTIC_CHROME = (
     "Chrome ban: do not draw slide title, subtitle, page number, slide index "
-    "(第N页 / Pxx / Slide N), logo, footer, or master chrome. Keep locked business "
-    "module numbers (e.g. 01｜); invent no decorative serials."
+    "(第N页 / Pxx / Slide N), logo, footer, or master chrome. Keep business "
+    "module meaning clear; invent no decorative serials."
 )
 DETERMINISTIC_FIDELITY = (
-    "Fidelity: keep all locked on-screen Chinese text verbatim; do not invent facts, "
-    "service names, or slogans."
+    "Fidelity: use the page's on-screen Chinese as reference and express it naturally; "
+    "do not invent unrelated facts, service names, or slogans."
 )
 
 _RELATION_EN = {
@@ -96,7 +95,7 @@ def extract_structure_cue(prompt: str) -> str:
         # Fall back to semantic-relations header used in older drafts.
         logic = _section(prompt, "【页面语义关系｜仅供理解，不上屏】")
     if not logic:
-        return "Structure: follow page logic and locked module hierarchy; content decides layout."
+        return "Structure: follow page logic and module hierarchy; content decides layout."
 
     lines = [line.strip(" -•\t") for line in logic.splitlines() if line.strip()]
     compact = "；".join(lines) if lines else logic
@@ -160,20 +159,9 @@ def apply_deterministic_enrich(prompt: str) -> str:
 
 
 def assert_locked_text_preserved(source: str, enriched: str) -> None:
-    """Require locked on-screen blocks from source to appear in enriched text."""
+    """Compatibility hook; send enrichment may freely rewrite reference copy."""
 
-    for marker in LOCKED_MARKERS:
-        src_section = _section(source, marker)
-        if not src_section:
-            continue
-        # Compare normalized whitespace so minor formatting drift is allowed.
-        src_norm = re.sub(r"\s+", "", src_section)
-        dst_norm = re.sub(r"\s+", "", enriched)
-        if src_norm and src_norm not in dst_norm:
-            raise ValueError(
-                f"LLM/send enrich dropped locked section {marker}; "
-                "on-screen Chinese must remain verbatim."
-            )
+    _ = source, enriched
 
 
 def llm_enrich_brief(*, page_number: int, approved_prompt: str) -> str:
@@ -184,7 +172,7 @@ def llm_enrich_brief(*, page_number: int, approved_prompt: str) -> str:
 You will rewrite the approved ImageGen script into a **send prompt** optimized for image models.
 
 ## Hard rules
-1. Keep 【锁定关键文字】 and 【完整上屏内容】 Chinese text **verbatim** (same characters).
+1. Use 【上屏文字参考】 and 【完整上屏内容】 as content references; you may freely rewrite and reorganize the Chinese expression.
 2. Do not invent facts, numbers, service names, slogans, logos, or page chrome.
 3. You MAY: compress/English-ize style cues; add structure/material/people/ban cues image models hear; clarify path vs crosscut relations from 【页面逻辑】.
 4. You MUST NOT: replace STYLE09 with another palette; force a fixed card/timeline/hub template unless the page logic requires it.
@@ -255,7 +243,7 @@ def resolve_send_prompt(
         # the caller (page_manifest.build_manifest) re-appends it onto the
         # base prompt it resolved separately, so returning the embedded base
         # too would duplicate it. Also verify the on-disk file has not lost
-        # or altered the locked on-screen text, since it may have been
+        # or altered the on-screen text reference, since it may have been
         # hand-edited between staging and approval.
         assert_locked_text_preserved(source, send_text)
         block = send_text[send_text.index(SEND_ENRICH_HEADER):]

@@ -81,7 +81,7 @@ def default_visual_grammar() -> VisualGrammarContract:
         unsupported_summary_rule=(
             "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "
             "Any outcome inferred from the relationships may be expressed only as an unlabeled "
-            "graphical state unless that text is present in the locked on-screen content."
+            "graphical state unless that text is supported by the on-screen content reference."
         ),
     )
 
@@ -96,7 +96,7 @@ def creative_brief_visual_grammar() -> str:
 
     return "\n".join(
         (
-            "- Keep all locked body text clear and readable; do not place it over busy or "
+            "- Keep the on-screen content reference clear and readable; do not place it over busy or "
             "high-contrast imagery.",
             "- Do not split the canvas into a text-only half and an image-only half, and do "
             "not create a separate photo rail or image collage beside the text. Build one "
@@ -112,7 +112,7 @@ def creative_brief_visual_grammar() -> str:
             "- Do not run connectors, decorative lines, or image details through body text.",
             "- Supporting imagery, charts, interface-like forms, and concise auxiliary labels "
             "are allowed when they improve the overall visual idea. They do not need a "
-            "one-to-one mapping to every locked module.",
+            "one-to-one mapping to every reference module.",
             "- Do not repeat the page relationship as a second miniature flow, icon chain, "
             "summary strip, or duplicate diagram. Render supplied relationship or business-meaning "
             "copy once as a calm annotation integrated into the main composition.",
@@ -121,21 +121,18 @@ def creative_brief_visual_grammar() -> str:
             "into a hero object. For abstract system, governance, security, architecture, or operations "
             "pages, interface-like composition is allowed but must not be suggested as the default. "
             "The model may choose it only when the content benefits. All visible text, numbers, "
-            "states, and records must come from the locked content; do not fabricate UI facts or "
+            "states, and records should be grounded in the content reference; do not fabricate UI facts or "
             "default any page to a dashboard.",
             "- Aim for mature restraint: generous quiet space, precise thin strokes, limited deep-blue "
             "mass, flat materials, and almost no shadow. Avoid bevels, heavy drop shadows, 3D badges, "
             "and template-like decoration.",
             "- Use photography only when it directly explains a specific business object. Do not "
             "fill whitespace with generic offices, skylines, campuses, server rooms, or technology scenes.",
-            "- Default to an empty auxiliary-label allowlist. Do not derive or summarize new "
-            "node names, stage names, input/output terms, status words, legends, icon captions, "
-            "side labels, Latin letters, or abbreviations. Unlabeled interface shapes are allowed; "
-            "text-bearing interface tokens remain subject to the allowlist. Auxiliary "
-            "labels may appear only when the upstream script explicitly supplies a non-empty "
-            "allowlist, and then only the allowlisted text may be rendered.",
+            "- Add concise labels, node names, stage names, input/output terms, status words, legends, "
+            "icon captions, side labels, Latin letters, or abbreviations when they improve the page's "
+            "understanding; keep them tied to the content reference and avoid backend self-talk.",
             "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "
             "Any outcome inferred from the relationships may be expressed only as an unlabeled "
-            "graphical state unless that text is present in the locked on-screen content.",
+            "graphical state unless that text is supported by the on-screen content reference.",
         )
     )

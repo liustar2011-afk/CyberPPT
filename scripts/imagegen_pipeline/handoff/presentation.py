@@ -466,7 +466,7 @@ def render_page_logic_contract(
     compilers can set ``include_structure=False`` to keep only the semantic
     relation and avoid turning a reusable style surface into a page-by-page
     infographic recipe. Business meaning stays in ``页面语义关系`` and the
-    locked on-screen text.
+    on-screen text reference.
     """
 
     relation, intent_source = resolve_page_visual_intent(

@@ -1,0 +1,1069 @@
+{
+  "mode": "cyberppt.stage02.editable_pptx.v1",
+  "production_mode": "image-to-editable-svg",
+  "requested_pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "content_page_numbers": [
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    11,
+    12,
+    13,
+    15,
+    16,
+    18,
+    19
+  ],
+  "skipped_pages": [
+    {
+      "page_number": 1,
+      "page_role": "cover",
+      "render_mode": "template",
+      "status": "skipped",
+      "reason": "template_only_page"
+    },
+    {
+      "page_number": 2,
+      "page_role": "agenda",
+      "render_mode": "template",
+      "status": "skipped",
+      "reason": "template_only_page"
+    },
+    {
+      "page_number": 3,
+      "page_role": "section",
+      "render_mode": "template",
+      "status": "skipped",
+      "reason": "template_only_page"
+    },
+    {
+      "page_number": 8,
+      "page_role": "section",
+      "render_mode": "template",
+      "status": "skipped",
+      "reason": "template_only_page"
+    },
+    {
+      "page_number": 14,
+      "page_role": "section",
+      "render_mode": "template",
+      "status": "skipped",
+      "reason": "template_only_page"
+    },
+    {
+      "page_number": 17,
+      "page_role": "section",
+      "render_mode": "template",
+      "status": "skipped",
+      "reason": "template_only_page"
+    },
+    {
+      "page_number": 20,
+      "page_role": "ending",
+      "render_mode": "template",
+      "status": "skipped",
+      "reason": "template_only_page"
+    }
+  ],
+  "output_variants": [
+    "full"
+  ],
+  "text_audit_contract": {
+    "required_before_enhancement": true,
+    "scope": "typo_and_gibberish_only",
+    "max_generation_attempts": 3,
+    "failure_action": "regenerate_image"
+  },
+  "generation_contract": {
+    "mode": "image-to-editable-svg",
+    "owner": "CyberPPT",
+    "slide_canvas": {
+      "width": 2048,
+      "height": 1024
+    },
+    "content_region": {
+      "x": 0,
+      "y": 0,
+      "width": 2048,
+      "height": 1024
+    },
+    "generation_size": {
+      "width": 2048,
+      "height": 1024
+    },
+    "rule": "Generate one audited full content-area image for registered editable-SVG reconstruction; PPT title, subtitle and enterprise chrome are handled by template/export code."
+  },
+  "project_path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002",
+  "source_script": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+  "original_script": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+  "style_lock": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json",
+  "stage02_script_input": {
+    "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+    "schema": "cyberppt.stage02_script_input.v1"
+  },
+  "output_dir": "D:\\CyberPPT\\history-assembly-20260902-style09",
+  "created_at": "2026-09-02T11:02:32.096334+00:00",
+  "prompt_contract": {
+    "approved_prompt_is_source": false,
+    "direct_edit_mode": null,
+    "freshness_enforced": false,
+    "canonical_prompt_is_diagnostic_only": false,
+    "compact_blueprint": false,
+    "compiler": "content-first-v1"
+  },
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 4,
+        "mode": "off",
+        "source_prompt_sha256": "b0e086fe0b931d2204c92d3c7e061013ac4ec7aa9fd3eeace30be21f2144ef8e",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 4008
+      },
+      {
+        "page_number": 5,
+        "mode": "off",
+        "source_prompt_sha256": "44406cd321838c11c133306ff249e259d033017681d2bef32e22a71f9a3fa24b",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3984
+      },
+      {
+        "page_number": 6,
+        "mode": "off",
+        "source_prompt_sha256": "06ff3a8d8a1884a4924401c3012ef99b92181ca41f49f8b07ba5918771917200",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3914
+      },
+      {
+        "page_number": 7,
+        "mode": "off",
+        "source_prompt_sha256": "e1a5705d8691a699f4c242688ec30ed63dafea82916b7648843c39f64aa22f48",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3952
+      },
+      {
+        "page_number": 9,
+        "mode": "off",
+        "source_prompt_sha256": "826a41b326f29e40be134158688ba5e577283186e35500d08eff4e7ed89f6ab7",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3975
+      },
+      {
+        "page_number": 10,
+        "mode": "off",
+        "source_prompt_sha256": "ed0159086d8944ffff706288038bc498d59c2495805095d27710f4747779e4e3",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3932
+      },
+      {
+        "page_number": 11,
+        "mode": "off",
+        "source_prompt_sha256": "4f8f62c360d681f9fe4aa59e568a33c343f9ddf3ce7031045dff281d20c77076",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3872
+      },
+      {
+        "page_number": 12,
+        "mode": "off",
+        "source_prompt_sha256": "70b3d2a44315aa0ad9b754db71f9f9b5df494dd6c3dda0dcbe03cf0b72b5904d",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3940
+      },
+      {
+        "page_number": 13,
+        "mode": "off",
+        "source_prompt_sha256": "4ed5af0087214bea45a763eab7151a74ac916619c4f7793b7b5a36b619fe6231",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3967
+      },
+      {
+        "page_number": 15,
+        "mode": "off",
+        "source_prompt_sha256": "d648c08016ec6ee5cf80413dc790828cf4ccee06439cb662eb6b69879a1178d7",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3954
+      },
+      {
+        "page_number": 16,
+        "mode": "off",
+        "source_prompt_sha256": "bcf19f510dcfc712f956a67525ab09fd4549cc520b86f8f456d3ab6c4e7baae1",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3975
+      },
+      {
+        "page_number": 18,
+        "mode": "off",
+        "source_prompt_sha256": "02ce9f5c37bd3002b0b09aef7c6c7234d25acfa2f524f7f64075981880dcb52a",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3948
+      },
+      {
+        "page_number": 19,
+        "mode": "off",
+        "source_prompt_sha256": "eefbf65d3999c4ec6979c8e66e814ba5af9d000d2a176f86fe5e00d10de45338",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3956
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "page_number": 4,
+      "page_code": "P04",
+      "title": "国家部署与项目依托",
+      "page_script": "【完整上屏内容】\n- 国家建设部署\n  - 《国家数据基础设施建设指引》明确四大建设方向和采集、汇聚、传输、加工、流通、利用、运营、安全八项能力\n  - 2026年完成顶层设计并开展试点，2028年支撑规模化流通和互联互通，2029年基本建成主体结构\n  - 六项技术文件统一参考架构、互联互通、身份、标识、连接器和数据目录要求\n- 制度与流通依据\n  - “数据要素×”行动将绿色低碳纳入重点领域，能源数据分类分级指南形成电力数据治理直接依据\n  - 能源行业数据安全管理办法覆盖安全责任、风险监测和应急处置，可信数据空间行动计划部署可信流通与场景验证\n- 先行先试项目依托\n  - 中电联承担第二批先行先试任务，建设“三统一”、主体接入、数据流通利用和安全保障能力\n  - 标准验证属于任务书四项核心任务之一，八类重点场景为标准研制、应用验证和反馈优化提供实践载体\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 国家建设部署\n  - 《国家数据基础设施建设指引》明确四大建设方向和采集、汇聚、传输、加工、流通、利用、运营、安全八项能力\n  - 2026年完成顶层设计并开展试点，2028年支撑规模化流通和互联互通，2029年基本建成主体结构\n  - 六项技术文件统一参考架构、互联互通、身份、标识、连接器和数据目录要求\n- 制度与流通依据\n  - “数据要素×”行动将绿色低碳纳入重点领域，能源数据分类分级指南形成电力数据治理直接依据\n  - 能源行业数据安全管理办法覆盖安全责任、风险监测和应急处置，可信数据空间行动计划部署可信流通与场景验证\n- 先行先试项目依托\n  - 中电联承担第二批先行先试任务，建设“三统一”、主体接入、数据流通利用和安全保障能力\n  - 标准验证属于任务书四项核心任务之一，八类重点场景为标准研制、应用验证和反馈优化提供实践载体",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p04.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_004_国家部署与项目依托_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_004_国家部署与项目依托_full.png",
+        "prompt": "【完整上屏内容】\n- 国家建设部署\n  - 《国家数据基础设施建设指引》明确四大建设方向和采集、汇聚、传输、加工、流通、利用、运营、安全八项能力\n  - 2026年完成顶层设计并开展试点，2028年支撑规模化流通和互联互通，2029年基本建成主体结构\n  - 六项技术文件统一参考架构、互联互通、身份、标识、连接器和数据目录要求\n- 制度与流通依据\n  - “数据要素×”行动将绿色低碳纳入重点领域，能源数据分类分级指南形成电力数据治理直接依据\n  - 能源行业数据安全管理办法覆盖安全责任、风险监测和应急处置，可信数据空间行动计划部署可信流通与场景验证\n- 先行先试项目依托\n  - 中电联承担第二批先行先试任务，建设“三统一”、主体接入、数据流通利用和安全保障能力\n  - 标准验证属于任务书四项核心任务之一，八类重点场景为标准研制、应用验证和反馈优化提供实践载体\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "364bd3d8122a4dbc73e3265bc0c0fd97376f109ff5e65054d8b1eb1f060e315d",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "b0e086fe0b931d2204c92d3c7e061013ac4ec7aa9fd3eeace30be21f2144ef8e",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 4008
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "364bd3d8122a4dbc73e3265bc0c0fd97376f109ff5e65054d8b1eb1f060e315d",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_004_国家部署与项目依托_full.png"
+      }
+    },
+    {
+      "page_number": 5,
+      "page_code": "P05",
+      "title": "行业转型与研究任务",
+      "page_script": "【完整上屏内容】\n- 转型基础\n  - 国家电网以数据要素和数字技术建设新型电力系统数字支撑体系\n  - 南方电网以“基座、数据、创新、安全、AI”五大能力支撑电网、服务、运营、产业“四位一体”转型，并形成“2421”战略路径\n  - 企业已积累数据架构、平台建设、资产管理和业务应用经验，行业实践基础逐步成熟\n- 体系化需求与研究任务\n  - 现有标准分散于安全、交易、统计编码和信息模型等领域，多层级制定主体之间衔接不足、覆盖不均\n  - 算力电力协同、虚拟电厂、多能互补、新型储能等场景持续提出接口、交互、服务和安全标准需求\n  - 研究需完成现状差距梳理、七大类体系构建、重点标准排序和分阶段实施设计，服务标准立项、研制、实施与验证\n  - 标准供给范围贯通发输变配用调专业链条，覆盖数据全生命周期和电力全产业链\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 转型基础\n  - 国家电网以数据要素和数字技术建设新型电力系统数字支撑体系\n  - 南方电网以“基座、数据、创新、安全、AI”五大能力支撑电网、服务、运营、产业“四位一体”转型，并形成“2421”战略路径\n  - 企业已积累数据架构、平台建设、资产管理和业务应用经验，行业实践基础逐步成熟\n- 体系化需求与研究任务\n  - 现有标准分散于安全、交易、统计编码和信息模型等领域，多层级制定主体之间衔接不足、覆盖不均\n  - 算力电力协同、虚拟电厂、多能互补、新型储能等场景持续提出接口、交互、服务和安全标准需求\n  - 研究需完成现状差距梳理、七大类体系构建、重点标准排序和分阶段实施设计，服务标准立项、研制、实施与验证\n  - 标准供给范围贯通发输变配用调专业链条，覆盖数据全生命周期和电力全产业链",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p05.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_005_行业转型与研究任务_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_005_行业转型与研究任务_full.png",
+        "prompt": "【完整上屏内容】\n- 转型基础\n  - 国家电网以数据要素和数字技术建设新型电力系统数字支撑体系\n  - 南方电网以“基座、数据、创新、安全、AI”五大能力支撑电网、服务、运营、产业“四位一体”转型，并形成“2421”战略路径\n  - 企业已积累数据架构、平台建设、资产管理和业务应用经验，行业实践基础逐步成熟\n- 体系化需求与研究任务\n  - 现有标准分散于安全、交易、统计编码和信息模型等领域，多层级制定主体之间衔接不足、覆盖不均\n  - 算力电力协同、虚拟电厂、多能互补、新型储能等场景持续提出接口、交互、服务和安全标准需求\n  - 研究需完成现状差距梳理、七大类体系构建、重点标准排序和分阶段实施设计，服务标准立项、研制、实施与验证\n  - 标准供给范围贯通发输变配用调专业链条，覆盖数据全生命周期和电力全产业链\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "5b29fda07ab6d657a086c3513302856e371ce962d1f2a4dc803770f07d61c204",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "44406cd321838c11c133306ff249e259d033017681d2bef32e22a71f9a3fa24b",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3984
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "5b29fda07ab6d657a086c3513302856e371ce962d1f2a4dc803770f07d61c204",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_005_行业转型与研究任务_full.png"
+      }
+    },
+    {
+      "page_number": 6,
+      "page_code": "P06",
+      "title": "政策标准与行业实践基础",
+      "page_script": "【完整上屏内容】\n- 国家政策与标准基础\n  - 建设指引确立四大方向和八项能力，六项技术文件统一架构、互联互通、身份、标识、连接器和目录要求\n  - GB/T 13016提供标准体系构建原则、分析方法和编制程序\n  - 能源行业数据分类分级指南形成电力数据分类分级的直接制度依据\n- 电力行业标准与实践基础\n  - DL/T 890衔接IEC 61970/61968，以公共信息模型和组件接口规范支撑电力系统信息交换\n  - 电力行业数据安全、交易数据分类分级、统计编码和企业间数据交换接口已有标准基础\n  - 可靠性数据治理、中电联归口管理和年度标准计划构成持续研制的组织渠道\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 国家政策与标准基础\n  - 建设指引确立四大方向和八项能力，六项技术文件统一架构、互联互通、身份、标识、连接器和目录要求\n  - GB/T 13016提供标准体系构建原则、分析方法和编制程序\n  - 能源行业数据分类分级指南形成电力数据分类分级的直接制度依据\n- 电力行业标准与实践基础\n  - DL/T 890衔接IEC 61970/61968，以公共信息模型和组件接口规范支撑电力系统信息交换\n  - 电力行业数据安全、交易数据分类分级、统计编码和企业间数据交换接口已有标准基础\n  - 可靠性数据治理、中电联归口管理和年度标准计划构成持续研制的组织渠道",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p06.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_006_政策标准与行业实践基础_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_006_政策标准与行业实践基础_full.png",
+        "prompt": "【完整上屏内容】\n- 国家政策与标准基础\n  - 建设指引确立四大方向和八项能力，六项技术文件统一架构、互联互通、身份、标识、连接器和目录要求\n  - GB/T 13016提供标准体系构建原则、分析方法和编制程序\n  - 能源行业数据分类分级指南形成电力数据分类分级的直接制度依据\n- 电力行业标准与实践基础\n  - DL/T 890衔接IEC 61970/61968，以公共信息模型和组件接口规范支撑电力系统信息交换\n  - 电力行业数据安全、交易数据分类分级、统计编码和企业间数据交换接口已有标准基础\n  - 可靠性数据治理、中电联归口管理和年度标准计划构成持续研制的组织渠道\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "2a59d98526e1dae4e574335e2a877d9da6ecc87cb1325462fc796714f676ed0f",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "06ff3a8d8a1884a4924401c3012ef99b92181ca41f49f8b07ba5918771917200",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3914
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "2a59d98526e1dae4e574335e2a877d9da6ecc87cb1325462fc796714f676ed0f",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_006_政策标准与行业实践基础_full.png"
+      }
+    },
+    {
+      "page_number": 7,
+      "page_code": "P07",
+      "title": "标准化建设主要差距",
+      "page_script": "【完整上屏内容】\n- 统一框架与基础供给短板\n  - 统一框架：安全、交易、信息模型、统计编码等标准分散制定，国家、行业、团体和企业标准的层级与衔接关系尚未明确\n  - 基础通用：目录、标识、身份认证、接口协议等国家共性要求尚未形成完整的电力行业实施细则\n  - 资源治理：分类分级已有基础，数据目录、元数据、数据字典、数据质量和资产管理规则仍不健全\n- 资源、场景与协同短板\n  - 新兴场景：虚拟电厂、多能互补、新型储能、车网互动和算力电力协同的数据接口与服务标准供给滞后\n  - 实施协同：企业数据架构和管理实践走在标准制定前面，成熟成果向行业标准转化的机制仍需完善\n  - 建设重点需同步覆盖体系结构、基础规则、资源治理、场景供给和实施反馈五个方面\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 统一框架与基础供给短板\n  - 统一框架：安全、交易、信息模型、统计编码等标准分散制定，国家、行业、团体和企业标准的层级与衔接关系尚未明确\n  - 基础通用：目录、标识、身份认证、接口协议等国家共性要求尚未形成完整的电力行业实施细则\n  - 资源治理：分类分级已有基础，数据目录、元数据、数据字典、数据质量和资产管理规则仍不健全\n- 资源、场景与协同短板\n  - 新兴场景：虚拟电厂、多能互补、新型储能、车网互动和算力电力协同的数据接口与服务标准供给滞后\n  - 实施协同：企业数据架构和管理实践走在标准制定前面，成熟成果向行业标准转化的机制仍需完善\n  - 建设重点需同步覆盖体系结构、基础规则、资源治理、场景供给和实施反馈五个方面",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p07.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_007_标准化建设主要差距_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_007_标准化建设主要差距_full.png",
+        "prompt": "【完整上屏内容】\n- 统一框架与基础供给短板\n  - 统一框架：安全、交易、信息模型、统计编码等标准分散制定，国家、行业、团体和企业标准的层级与衔接关系尚未明确\n  - 基础通用：目录、标识、身份认证、接口协议等国家共性要求尚未形成完整的电力行业实施细则\n  - 资源治理：分类分级已有基础，数据目录、元数据、数据字典、数据质量和资产管理规则仍不健全\n- 资源、场景与协同短板\n  - 新兴场景：虚拟电厂、多能互补、新型储能、车网互动和算力电力协同的数据接口与服务标准供给滞后\n  - 实施协同：企业数据架构和管理实践走在标准制定前面，成熟成果向行业标准转化的机制仍需完善\n  - 建设重点需同步覆盖体系结构、基础规则、资源治理、场景供给和实施反馈五个方面\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "71a211007222220dea6bab9d3b61b40a83d9c53c7602fbc73b945333dbb8a92e",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "e1a5705d8691a699f4c242688ec30ed63dafea82916b7648843c39f64aa22f48",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3952
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "71a211007222220dea6bab9d3b61b40a83d9c53c7602fbc73b945333dbb8a92e",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_007_标准化建设主要差距_full.png"
+      }
+    },
+    {
+      "page_number": 9,
+      "page_code": "P09",
+      "title": "标准体系构建方法",
+      "page_script": "【完整上屏内容】\n- 构建原则\n  - 顶层对接：概念、架构和术语与国家数据基础设施协调一致\n  - 任务牵引：对应“三统一”、主体接入、数据流通利用和安全保障能力\n  - 行业适配：覆盖发输变配用调专业链条，体现实时性、专业性和高安全要求\n  - 体系完整、急用先行、开放协同：明确边界与层级，优先补齐迫切标准并衔接国际规则\n- 方法与总体框架\n  - 国家坐标：数据流通利用、算力底座、网络支撑、安全防护四大方向与八项全生命周期能力\n  - 任务坐标：先行先试项目确定的“三统一”、主体接入、流通利用和安全保障能力\n  - 行业坐标：电力专业链条、现有标准基础和数字化场景共同确定行业适配边界\n  - 三组坐标交叉映射为基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类体系\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 构建原则\n  - 顶层对接：概念、架构和术语与国家数据基础设施协调一致\n  - 任务牵引：对应“三统一”、主体接入、数据流通利用和安全保障能力\n  - 行业适配：覆盖发输变配用调专业链条，体现实时性、专业性和高安全要求\n  - 体系完整、急用先行、开放协同：明确边界与层级，优先补齐迫切标准并衔接国际规则\n- 方法与总体框架\n  - 国家坐标：数据流通利用、算力底座、网络支撑、安全防护四大方向与八项全生命周期能力\n  - 任务坐标：先行先试项目确定的“三统一”、主体接入、流通利用和安全保障能力\n  - 行业坐标：电力专业链条、现有标准基础和数字化场景共同确定行业适配边界\n  - 三组坐标交叉映射为基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类体系",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p09.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_009_标准体系构建方法_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_009_标准体系构建方法_full.png",
+        "prompt": "【完整上屏内容】\n- 构建原则\n  - 顶层对接：概念、架构和术语与国家数据基础设施协调一致\n  - 任务牵引：对应“三统一”、主体接入、数据流通利用和安全保障能力\n  - 行业适配：覆盖发输变配用调专业链条，体现实时性、专业性和高安全要求\n  - 体系完整、急用先行、开放协同：明确边界与层级，优先补齐迫切标准并衔接国际规则\n- 方法与总体框架\n  - 国家坐标：数据流通利用、算力底座、网络支撑、安全防护四大方向与八项全生命周期能力\n  - 任务坐标：先行先试项目确定的“三统一”、主体接入、流通利用和安全保障能力\n  - 行业坐标：电力专业链条、现有标准基础和数字化场景共同确定行业适配边界\n  - 三组坐标交叉映射为基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类体系\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "1960d7f912c3b79e012832b5eb347b51e9f6f63f38e97590a8488e8eb0f91998",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "826a41b326f29e40be134158688ba5e577283186e35500d08eff4e7ed89f6ab7",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3975
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "1960d7f912c3b79e012832b5eb347b51e9f6f63f38e97590a8488e8eb0f91998",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_009_标准体系构建方法_full.png"
+      }
+    },
+    {
+      "page_number": 10,
+      "page_code": "P10",
+      "title": "基础通用与数据资源标准",
+      "page_script": "【完整上屏内容】\n- 基础通用标准\n  - A1 术语与概念：统一电力数据基础设施定义，衔接国家参考架构术语体系\n  - A2 参考架构：制定电力行业实施细则，明确行业能力与国家架构的映射关系\n  - A3 标识与目录：形成电力数据标识管理和目录描述规则，落实国家统一要求\n- 数据资源标准\n  - B1 分类分级：将能源行业三级分类分级规则落实到电力品种和发输变配用调各环节\n  - B2 数据字典与元数据：规范电力设备、电网拓扑、量测数据等核心对象定义\n  - B3 数据质量：建立覆盖生成、采集、存储、使用全过程的评价指标和核查要求\n  - B4 数据资产管理：规范登记、评估和入表，衔接数据管理能力成熟度要求\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 基础通用标准\n  - A1 术语与概念：统一电力数据基础设施定义，衔接国家参考架构术语体系\n  - A2 参考架构：制定电力行业实施细则，明确行业能力与国家架构的映射关系\n  - A3 标识与目录：形成电力数据标识管理和目录描述规则，落实国家统一要求\n- 数据资源标准\n  - B1 分类分级：将能源行业三级分类分级规则落实到电力品种和发输变配用调各环节\n  - B2 数据字典与元数据：规范电力设备、电网拓扑、量测数据等核心对象定义\n  - B3 数据质量：建立覆盖生成、采集、存储、使用全过程的评价指标和核查要求\n  - B4 数据资产管理：规范登记、评估和入表，衔接数据管理能力成熟度要求",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p10.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_010_基础通用与数据资源标准_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_010_基础通用与数据资源标准_full.png",
+        "prompt": "【完整上屏内容】\n- 基础通用标准\n  - A1 术语与概念：统一电力数据基础设施定义，衔接国家参考架构术语体系\n  - A2 参考架构：制定电力行业实施细则，明确行业能力与国家架构的映射关系\n  - A3 标识与目录：形成电力数据标识管理和目录描述规则，落实国家统一要求\n- 数据资源标准\n  - B1 分类分级：将能源行业三级分类分级规则落实到电力品种和发输变配用调各环节\n  - B2 数据字典与元数据：规范电力设备、电网拓扑、量测数据等核心对象定义\n  - B3 数据质量：建立覆盖生成、采集、存储、使用全过程的评价指标和核查要求\n  - B4 数据资产管理：规范登记、评估和入表，衔接数据管理能力成熟度要求\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "19dd5d0d60d76009f6cf21a07ff3f430442d00fe5bd9a4d3d8766692e0deba68",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "ed0159086d8944ffff706288038bc498d59c2495805095d27710f4747779e4e3",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3932
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "19dd5d0d60d76009f6cf21a07ff3f430442d00fe5bd9a4d3d8766692e0deba68",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_010_基础通用与数据资源标准_full.png"
+      }
+    },
+    {
+      "page_number": 11,
+      "page_code": "P11",
+      "title": "技术设施与互联互通标准",
+      "page_script": "【完整上屏内容】\n- 技术设施标准\n  - C1 感知与终端：规范电力物联网终端和智能传感装置的数据接入条件\n  - C2 存储与计算：覆盖电力数据存储、算力资源调度和算力电力协同技术要求\n  - C3 平台与中台：制定电力大数据平台、数据中台技术导则和功能规范\n- 互联互通标准\n  - D1 接口协议：形成电力数据接入连接器要求并衔接国家技术文件\n  - D2 信息模型：继承DL/T 890并扩展数据基础设施场景\n  - D3 身份与接入管理：落实电力行业主体登记、身份认证、授权和接入规则\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 技术设施标准\n  - C1 感知与终端：规范电力物联网终端和智能传感装置的数据接入条件\n  - C2 存储与计算：覆盖电力数据存储、算力资源调度和算力电力协同技术要求\n  - C3 平台与中台：制定电力大数据平台、数据中台技术导则和功能规范\n- 互联互通标准\n  - D1 接口协议：形成电力数据接入连接器要求并衔接国家技术文件\n  - D2 信息模型：继承DL/T 890并扩展数据基础设施场景\n  - D3 身份与接入管理：落实电力行业主体登记、身份认证、授权和接入规则",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p11.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_011_技术设施与互联互通标准_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_011_技术设施与互联互通标准_full.png",
+        "prompt": "【完整上屏内容】\n- 技术设施标准\n  - C1 感知与终端：规范电力物联网终端和智能传感装置的数据接入条件\n  - C2 存储与计算：覆盖电力数据存储、算力资源调度和算力电力协同技术要求\n  - C3 平台与中台：制定电力大数据平台、数据中台技术导则和功能规范\n- 互联互通标准\n  - D1 接口协议：形成电力数据接入连接器要求并衔接国家技术文件\n  - D2 信息模型：继承DL/T 890并扩展数据基础设施场景\n  - D3 身份与接入管理：落实电力行业主体登记、身份认证、授权和接入规则\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "e3013ce3053c11e419043ba0cb6131f1393c53dede03f9cf85c001aaa3277471",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "4f8f62c360d681f9fe4aa59e568a33c343f9ddf3ce7031045dff281d20c77076",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3872
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "e3013ce3053c11e419043ba0cb6131f1393c53dede03f9cf85c001aaa3277471",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_011_技术设施与互联互通标准_full.png"
+      }
+    },
+    {
+      "page_number": 12,
+      "page_code": "P12",
+      "title": "应用服务、安全保障与管理规范",
+      "page_script": "【完整上屏内容】\n- 应用服务与安全保障\n  - E1 数据流通交易：规范电力数据流通、共享和交易，衔接交易数据安全要求\n  - E2 新兴场景应用：覆盖虚拟电厂、多能互补、新型储能、车网互动和算力电力协同接口与服务\n  - E3 公共服务：规范可靠性数据、统计数据等公共服务数据发布与共享\n  - F1—F3 安全保障：覆盖总体要求、采集传输存储使用销毁全生命周期，以及跨企业、跨行业、跨境流通安全\n- 管理规范\n  - G1 治理机制：明确电力数据治理组织、职责和流程\n  - G2 标准化协同管理：规范标准立项、归口管理、实施评估和技术组织职责分工\n  - 应用服务明确业务用途，安全保障规定运行边界，管理规范提供持续治理机制\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 应用服务与安全保障\n  - E1 数据流通交易：规范电力数据流通、共享和交易，衔接交易数据安全要求\n  - E2 新兴场景应用：覆盖虚拟电厂、多能互补、新型储能、车网互动和算力电力协同接口与服务\n  - E3 公共服务：规范可靠性数据、统计数据等公共服务数据发布与共享\n  - F1—F3 安全保障：覆盖总体要求、采集传输存储使用销毁全生命周期，以及跨企业、跨行业、跨境流通安全\n- 管理规范\n  - G1 治理机制：明确电力数据治理组织、职责和流程\n  - G2 标准化协同管理：规范标准立项、归口管理、实施评估和技术组织职责分工\n  - 应用服务明确业务用途，安全保障规定运行边界，管理规范提供持续治理机制",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p12.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_012_应用服务_安全保障与管理规范_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_012_应用服务_安全保障与管理规范_full.png",
+        "prompt": "【完整上屏内容】\n- 应用服务与安全保障\n  - E1 数据流通交易：规范电力数据流通、共享和交易，衔接交易数据安全要求\n  - E2 新兴场景应用：覆盖虚拟电厂、多能互补、新型储能、车网互动和算力电力协同接口与服务\n  - E3 公共服务：规范可靠性数据、统计数据等公共服务数据发布与共享\n  - F1—F3 安全保障：覆盖总体要求、采集传输存储使用销毁全生命周期，以及跨企业、跨行业、跨境流通安全\n- 管理规范\n  - G1 治理机制：明确电力数据治理组织、职责和流程\n  - G2 标准化协同管理：规范标准立项、归口管理、实施评估和技术组织职责分工\n  - 应用服务明确业务用途，安全保障规定运行边界，管理规范提供持续治理机制\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "5989344fd9aedb5076c8c12c091fd0ac2c358d26d9bbcd330bf056bff421bcab",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "70b3d2a44315aa0ad9b754db71f9f9b5df494dd6c3dda0dcbe03cf0b72b5904d",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3940
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "5989344fd9aedb5076c8c12c091fd0ac2c358d26d9bbcd330bf056bff421bcab",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_012_应用服务_安全保障与管理规范_full.png"
+      }
+    },
+    {
+      "page_number": 13,
+      "page_code": "P13",
+      "title": "体系支撑与任务能力映射",
+      "page_script": "【完整上屏内容】\n- 体系支撑关系\n  - 共性支撑：A类统一术语、架构、标识和目录，F类建立总体、全生命周期和跨域安全边界\n  - 专业核心：B类落实电力数据资源治理，D类继承信息模型并规范跨主体互联互通\n  - 场景应用：C类提供终端、算力和平台载体，E类覆盖流通交易、新兴场景和公共服务\n  - 持续运行：G类明确治理机制、标准立项、归口管理和实施评估\n- 任务能力映射\n  - “三统一”能力：A3标识与目录、D3身份与接入管理共同支撑统一目录、统一身份和统一标识\n  - 主体接入能力：D1接入连接器与D3身份接入共同规范连接和授权\n  - 数据流通利用能力：E1数据流通交易与E2新兴场景应用形成业务规则\n  - 安全保障能力：F类标准覆盖总体要求、全生命周期安全和跨域安全\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 体系支撑关系\n  - 共性支撑：A类统一术语、架构、标识和目录，F类建立总体、全生命周期和跨域安全边界\n  - 专业核心：B类落实电力数据资源治理，D类继承信息模型并规范跨主体互联互通\n  - 场景应用：C类提供终端、算力和平台载体，E类覆盖流通交易、新兴场景和公共服务\n  - 持续运行：G类明确治理机制、标准立项、归口管理和实施评估\n- 任务能力映射\n  - “三统一”能力：A3标识与目录、D3身份与接入管理共同支撑统一目录、统一身份和统一标识\n  - 主体接入能力：D1接入连接器与D3身份接入共同规范连接和授权\n  - 数据流通利用能力：E1数据流通交易与E2新兴场景应用形成业务规则\n  - 安全保障能力：F类标准覆盖总体要求、全生命周期安全和跨域安全",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p13.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_013_体系支撑与任务能力映射_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_013_体系支撑与任务能力映射_full.png",
+        "prompt": "【完整上屏内容】\n- 体系支撑关系\n  - 共性支撑：A类统一术语、架构、标识和目录，F类建立总体、全生命周期和跨域安全边界\n  - 专业核心：B类落实电力数据资源治理，D类继承信息模型并规范跨主体互联互通\n  - 场景应用：C类提供终端、算力和平台载体，E类覆盖流通交易、新兴场景和公共服务\n  - 持续运行：G类明确治理机制、标准立项、归口管理和实施评估\n- 任务能力映射\n  - “三统一”能力：A3标识与目录、D3身份与接入管理共同支撑统一目录、统一身份和统一标识\n  - 主体接入能力：D1接入连接器与D3身份接入共同规范连接和授权\n  - 数据流通利用能力：E1数据流通交易与E2新兴场景应用形成业务规则\n  - 安全保障能力：F类标准覆盖总体要求、全生命周期安全和跨域安全\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "84098583489c75dcd9ce1eb80c8d0976017eb15c75983d6ac7fc7663bd85e5e8",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "4ed5af0087214bea45a763eab7151a74ac916619c4f7793b7b5a36b619fe6231",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3967
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "84098583489c75dcd9ce1eb80c8d0976017eb15c75983d6ac7fc7663bd85e5e8",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_013_体系支撑与任务能力映射_full.png"
+      }
+    },
+    {
+      "page_number": 15,
+      "page_code": "P15",
+      "title": "重点标准研制优先级",
+      "page_script": "【完整上屏内容】\n- 重点标准优先级\n  - 第一优先级｜上位依据明确：参考架构实施细则、分类分级实施细则、标识管理规范、目录描述规范，尽快启动立项\n  - 第二优先级｜规模建设关键基础：数据字典与元数据、数据质量、接入连接器、全生命周期安全标准，与第一优先级衔接推进\n  - 第三优先级｜技术和模式仍在演进：虚拟电厂、多能互补、算力电力协同、数据资产评估与入表标准，先开展团体标准和场景验证\n- 场景验证协同\n  - 验证场景覆盖行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购和数据产品服务\n  - 标准研制同步进入项目建设和场景运营，使用验证结果修订接口、流程、安全和服务规则\n  - 成熟成果由团体标准逐步转化为行业标准或国家标准\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 重点标准优先级\n  - 第一优先级｜上位依据明确：参考架构实施细则、分类分级实施细则、标识管理规范、目录描述规范，尽快启动立项\n  - 第二优先级｜规模建设关键基础：数据字典与元数据、数据质量、接入连接器、全生命周期安全标准，与第一优先级衔接推进\n  - 第三优先级｜技术和模式仍在演进：虚拟电厂、多能互补、算力电力协同、数据资产评估与入表标准，先开展团体标准和场景验证\n- 场景验证协同\n  - 验证场景覆盖行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购和数据产品服务\n  - 标准研制同步进入项目建设和场景运营，使用验证结果修订接口、流程、安全和服务规则\n  - 成熟成果由团体标准逐步转化为行业标准或国家标准",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p15.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_015_重点标准研制优先级_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_015_重点标准研制优先级_full.png",
+        "prompt": "【完整上屏内容】\n- 重点标准优先级\n  - 第一优先级｜上位依据明确：参考架构实施细则、分类分级实施细则、标识管理规范、目录描述规范，尽快启动立项\n  - 第二优先级｜规模建设关键基础：数据字典与元数据、数据质量、接入连接器、全生命周期安全标准，与第一优先级衔接推进\n  - 第三优先级｜技术和模式仍在演进：虚拟电厂、多能互补、算力电力协同、数据资产评估与入表标准，先开展团体标准和场景验证\n- 场景验证协同\n  - 验证场景覆盖行业治理、市场运行、绿色低碳、科技创新、信用评价、设备可靠性、燃料采购和数据产品服务\n  - 标准研制同步进入项目建设和场景运营，使用验证结果修订接口、流程、安全和服务规则\n  - 成熟成果由团体标准逐步转化为行业标准或国家标准\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "8ba1a01f0bd0ab437e021f2d29df3d1c12a94ff5d39042661b53d0d869a57bc8",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "d648c08016ec6ee5cf80413dc790828cf4ccee06439cb662eb6b69879a1178d7",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3954
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "8ba1a01f0bd0ab437e021f2d29df3d1c12a94ff5d39042661b53d0d869a57bc8",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_015_重点标准研制优先级_full.png"
+      }
+    },
+    {
+      "page_number": 16,
+      "page_code": "P16",
+      "title": "标准体系分阶段实施",
+      "page_script": "【完整上屏内容】\n- 近期阶段\n  - 目标：完成标准体系顶层设计并正式发布框架\n  - 标准供给：完成第一优先级标准立项和研制，推动参考架构、标识、目录与国家技术文件对接\n  - 项目验证：支撑“三统一”能力和年度标准验证，选择具备条件的电网企业和区域开展应用试点\n- 中期阶段\n  - 目标：形成支撑数据规模化流通的标准供给能力\n  - 标准供给：完成第二优先级标准发布实施，覆盖主要电网、发电和售电企业\n  - 评估优化：配合主体接入和流通利用能力建设，建立实施评估与场景反馈机制\n- 远期阶段\n  - 目标：基本建成七大类标准协同配套的主体结构\n  - 成熟转化：推动第三优先级标准由试点成果向行业标准或国家标准转化\n  - 体系衔接：形成可交付、可验证、可运营成果，实现与国家标准体系全面衔接\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 近期阶段\n  - 目标：完成标准体系顶层设计并正式发布框架\n  - 标准供给：完成第一优先级标准立项和研制，推动参考架构、标识、目录与国家技术文件对接\n  - 项目验证：支撑“三统一”能力和年度标准验证，选择具备条件的电网企业和区域开展应用试点\n- 中期阶段\n  - 目标：形成支撑数据规模化流通的标准供给能力\n  - 标准供给：完成第二优先级标准发布实施，覆盖主要电网、发电和售电企业\n  - 评估优化：配合主体接入和流通利用能力建设，建立实施评估与场景反馈机制\n- 远期阶段\n  - 目标：基本建成七大类标准协同配套的主体结构\n  - 成熟转化：推动第三优先级标准由试点成果向行业标准或国家标准转化\n  - 体系衔接：形成可交付、可验证、可运营成果，实现与国家标准体系全面衔接",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p16.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_016_标准体系分阶段实施_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_016_标准体系分阶段实施_full.png",
+        "prompt": "【完整上屏内容】\n- 近期阶段\n  - 目标：完成标准体系顶层设计并正式发布框架\n  - 标准供给：完成第一优先级标准立项和研制，推动参考架构、标识、目录与国家技术文件对接\n  - 项目验证：支撑“三统一”能力和年度标准验证，选择具备条件的电网企业和区域开展应用试点\n- 中期阶段\n  - 目标：形成支撑数据规模化流通的标准供给能力\n  - 标准供给：完成第二优先级标准发布实施，覆盖主要电网、发电和售电企业\n  - 评估优化：配合主体接入和流通利用能力建设，建立实施评估与场景反馈机制\n- 远期阶段\n  - 目标：基本建成七大类标准协同配套的主体结构\n  - 成熟转化：推动第三优先级标准由试点成果向行业标准或国家标准转化\n  - 体系衔接：形成可交付、可验证、可运营成果，实现与国家标准体系全面衔接\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "a0250587a019fb3fb6330bf2e429b6414d28d3b847f9d7a079171124cf33a614",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "bcf19f510dcfc712f956a67525ab09fd4549cc520b86f8f456d3ab6c4e7baae1",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3975
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "a0250587a019fb3fb6330bf2e429b6414d28d3b847f9d7a079171124cf33a614",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_016_标准体系分阶段实施_full.png"
+      }
+    },
+    {
+      "page_number": 18,
+      "page_code": "P18",
+      "title": "标准体系建设保障机制",
+      "page_script": "【完整上屏内容】\n- 组织与机制保障\n  - 中电联牵头统筹电网、发电、售电企业以及科研机构和高校，明确专业方向职责分工\n  - 建立标准立项、起草、审查、发布、复审全流程协作机制，与先行先试项目一体部署、一体推进\n  - 衔接年度能源行业标准计划、国家建设进度和分类分级制度实施要求\n  - 建立实施跟踪、效果评估和问题反馈机制，依据项目与场景结果动态优化体系\n- 资源与国际标准衔接\n  - 统筹企业和科研机构标准化力量，加大专项经费和人才队伍投入\n  - 推动企业数据架构、数据资产管理和平台建设成熟成果转化为行业标准或团体标准\n  - 持续跟踪IEC 61970、IEC 61968等国际标准，开展信息模型和互联互通对标并参与国际标准化工作\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 组织与机制保障\n  - 中电联牵头统筹电网、发电、售电企业以及科研机构和高校，明确专业方向职责分工\n  - 建立标准立项、起草、审查、发布、复审全流程协作机制，与先行先试项目一体部署、一体推进\n  - 衔接年度能源行业标准计划、国家建设进度和分类分级制度实施要求\n  - 建立实施跟踪、效果评估和问题反馈机制，依据项目与场景结果动态优化体系\n- 资源与国际标准衔接\n  - 统筹企业和科研机构标准化力量，加大专项经费和人才队伍投入\n  - 推动企业数据架构、数据资产管理和平台建设成熟成果转化为行业标准或团体标准\n  - 持续跟踪IEC 61970、IEC 61968等国际标准，开展信息模型和互联互通对标并参与国际标准化工作",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p18.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_018_标准体系建设保障机制_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_018_标准体系建设保障机制_full.png",
+        "prompt": "【完整上屏内容】\n- 组织与机制保障\n  - 中电联牵头统筹电网、发电、售电企业以及科研机构和高校，明确专业方向职责分工\n  - 建立标准立项、起草、审查、发布、复审全流程协作机制，与先行先试项目一体部署、一体推进\n  - 衔接年度能源行业标准计划、国家建设进度和分类分级制度实施要求\n  - 建立实施跟踪、效果评估和问题反馈机制，依据项目与场景结果动态优化体系\n- 资源与国际标准衔接\n  - 统筹企业和科研机构标准化力量，加大专项经费和人才队伍投入\n  - 推动企业数据架构、数据资产管理和平台建设成熟成果转化为行业标准或团体标准\n  - 持续跟踪IEC 61970、IEC 61968等国际标准，开展信息模型和互联互通对标并参与国际标准化工作\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "e0193e5f8fe76ab10c622a0f6f05b65f81618df30640343d3aa1df89346230ed",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "02ce9f5c37bd3002b0b09aef7c6c7234d25acfa2f524f7f64075981880dcb52a",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3948
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "e0193e5f8fe76ab10c622a0f6f05b65f81618df30640343d3aa1df89346230ed",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_018_标准体系建设保障机制_full.png"
+      }
+    },
+    {
+      "page_number": 19,
+      "page_code": "P19",
+      "title": "研究结论与后续工作",
+      "page_script": "【完整上屏内容】\n- 研究结论\n  - 形成基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类标准体系\n  - 明确各类二级子体系、重点标准方向及其与“三统一”、主体接入、流通利用、安全保障能力的映射\n  - 形成三级重点标准优先级和近期、中期、远期三阶段实施路径\n  - 建立标准研制、项目建设、场景验证、实施评估和动态优化的协同推进关系\n- 后续工作\n  - 持续跟踪国家数据基础设施建设和能源行业制度进展，动态完善标准体系框架\n  - 加快第一优先级标准立项研制，依托先行先试场景开展应用验证\n  - 强化标准实施评估和问题反馈，将成熟实践及时转化为行业标准、团体标准或国家标准\n  - 将研究成果纳入先行先试项目整体建设进度统筹推进\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "- 研究结论\n  - 形成基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类标准体系\n  - 明确各类二级子体系、重点标准方向及其与“三统一”、主体接入、流通利用、安全保障能力的映射\n  - 形成三级重点标准优先级和近期、中期、远期三阶段实施路径\n  - 建立标准研制、项目建设、场景验证、实施评估和动态优化的协同推进关系\n- 后续工作\n  - 持续跟踪国家数据基础设施建设和能源行业制度进展，动态完善标准体系框架\n  - 加快第一优先级标准立项研制，依托先行先试场景开展应用验证\n  - 强化标准实施评估和问题反馈，将成熟实践及时转化为行业标准、团体标准或国家标准\n  - 将研究成果纳入先行先试项目整体建设进度统筹推进",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "D:\\CyberPPT\\history-assembly-20260902-style09\\prompts\\p19.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\stages\\02-input\\script-intake.json",
+      "full": {
+        "filename": "page_019_研究结论与后续工作_full.png",
+        "path": "D:\\CyberPPT\\history-assembly-20260902-style09\\page_019_研究结论与后续工作_full.png",
+        "prompt": "【完整上屏内容】\n- 研究结论\n  - 形成基础通用、数据资源、技术设施、互联互通、应用服务、安全保障、管理规范七大类标准体系\n  - 明确各类二级子体系、重点标准方向及其与“三统一”、主体接入、流通利用、安全保障能力的映射\n  - 形成三级重点标准优先级和近期、中期、远期三阶段实施路径\n  - 建立标准研制、项目建设、场景验证、实施评估和动态优化的协同推进关系\n- 后续工作\n  - 持续跟踪国家数据基础设施建设和能源行业制度进展，动态完善标准体系框架\n  - 加快第一优先级标准立项研制，依托先行先试场景开展应用验证\n  - 强化标准实施评估和问题反馈，将成熟实践及时转化为行业标准、团体标准或国家标准\n  - 将研究成果纳入先行先试项目整体建设进度统筹推进\n\n【页面文字表达｜不上屏】\n上屏文字是本页的内容参考，不是逐字锁定稿。模型可以调整句式、换行、层级、分组和表达方式，让文字自然融入画面；页面使命、业务对象、关键事实和关系应保持可理解。\n\n【文字表达自由度｜不上屏】\n上屏文字、页面使命、核心意思和业务关系共同作为内容参考。允许大模型自由改写、提炼、扩写必要的解释、调整顺序和设置可读标签，使页面表达完整并适合视觉呈现；不得把提示词字段名、来源编号、调试信息或流程自述画入图片。\n\n【并列语义组织｜不上屏】\n可以根据页面逻辑重组共享谓词、限定语、父级说明和并列子项，使读者能够自然理解分组关系；表达应围绕本页已有业务对象、事实和关系展开。\n\n【非上屏语义边界】\n页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n上屏文字仅作为业务内容参考；可以根据页面使命、业务关系和视觉风格自由改写、重组和组织文字表达。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nUse the supplied onscreen content as the semantic reference. Preserve its business objects, facts, relationships and necessary boundaries, while allowing natural rewriting, regrouping, line breaking and readable labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or the supplied content.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "7add3f1ee921e451bf966050237d9063d2260eb843fdec58dd97340468f91f82",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "eefbf65d3999c4ec6979c8e66e814ba5af9d000d2a176f86fe5e00d10de45338",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 3956
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "7add3f1ee921e451bf966050237d9063d2260eb843fdec58dd97340468f91f82",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Pending",
+        "last_error": "Missing expected CyberPPT image file: D:\\CyberPPT\\history-assembly-20260902-style09\\page_019_研究结论与后续工作_full.png"
+      }
+    }
+  ],
+  "source_mode": "script_file",
+  "source_script_sha256": "38a194ef546d83f0922ff712c320f7a991b4bebb83037aea68f94d4f16cc39d2",
+  "run_id": "history-style09-20260902",
+  "input_fingerprint": "143630d6f69540a0b091e8e6759bf109b44dc13ef6891aca19a8ee3963f21587",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "38a194ef546d83f0922ff712c320f7a991b4bebb83037aea68f94d4f16cc39d2",
+    "script_input_sha256": "a8216a386f98a980294cf86bcdb3a77b973d4487e1a44d0b1531ce076f5df517",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "cdc026342d02bed38564da6fc59e304b96cb7fb112b02bdcef072f7d5ca6ac33",
+    "pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  }
+}

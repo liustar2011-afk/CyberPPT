@@ -20,11 +20,11 @@ from scripts.imagegen_pipeline.style_library import (
 
 
 def content_lock_text(page: ScriptPage, page_mission: str = "") -> str:
-    """Build prompt context followed by the drawable 上屏文字 layer."""
+    """Build prompt context followed by the drawable 上屏文字 reference."""
 
     if page.page_type != "content":
         raise ValueError(f"page {page.page_id} is {page.page_type}; no body ImageGen handoff")
-    onscreen = _clean_onscreen_for_imagegen(page.onscreen_text)
+    onscreen = page.onscreen_text.strip()
     context: list[str] = [
         "[Prompt context] 页面使命 / Page mission（用于理解本页要回答的问题；不要把字段名或说明文字画出来）",
         page_mission.strip() or "未提供页面使命",
@@ -60,12 +60,10 @@ def diagnostic_onscreen_text(
     page: ScriptPage,
     prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
 ) -> str:
-    """Return the text layer the selected compiler is required to preserve."""
+    """Return the authored on-screen text used as the model's content reference."""
 
     if prompt_compiler == "content-first-v1":
-        body = _flatten_markdown_tables(
-            _clean_onscreen_for_imagegen(page.onscreen_text)
-        )
+        body = page.onscreen_text.strip()
         return "\n\n".join(
             part for part in (page.onscreen_judgment.strip(), body) if part
         )
