@@ -497,7 +497,12 @@ def parse_script_markdown(
     for sequence, heading, body in _page_sections(text):
         fields = _field_blocks(body)
         page_type = _normalize_page_type(fields.get("页面类型", ""))
-        onscreen = fields.get("上屏文字", "")
+        full_prose = fields.get("完整文字稿", "").strip()
+        # Stage 01's current contract projects the complete page copy into the
+        # onscreen field.  Historical frontend scripts may still carry a short
+        # summary under ``上屏文字``; use the complete copy when available so
+        # Stage 02 assembly does not silently discard the page text.
+        onscreen = full_prose or fields.get("上屏文字", "").strip()
         module_lines: list[tuple[str, int]] = []
         if page_type == "content":
             for line in onscreen.splitlines():
@@ -537,7 +542,7 @@ def parse_script_markdown(
                     or fields.get("主判断")
                     or fields.get("页面命题", "")
                 ).strip(),
-                full_prose=fields.get("完整文字稿", "").strip(),
+                full_prose=full_prose,
                 prose_paragraph_map=_parse_prose_paragraph_map(
                     fields.get("完整文字稿段落映射", "")
                 ),

@@ -332,6 +332,329 @@
       "build_id": "history-style09-frontend-20260902",
       "artifact_id": "artifact-7f09a514ebd6df0223f5",
       "created_at": "2026-09-02T11:06:36+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-20",
+      "path": "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\final-script_cyberppt_deliverable_p1_p20.md",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 1-20 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy --build-id history-style09-frontend-full-copy-20260902",
+      "sha256": "1549300b9edb1ab3543b645e9f461ef1610c9ce60aad41ff09e6d5492527c46d",
+      "updated_at": "2026-09-02T11:09:05+00:00",
+      "build_id": "history-style09-frontend-full-copy-20260902",
+      "artifact_id": "artifact-c419ca5801be39cfd702",
+      "created_at": "2026-09-02T11:09:05+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-20",
+      "path": "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\page_image_pairs.json",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\final-script_cyberppt_deliverable_p1_p20.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 1-20 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy --build-id history-style09-frontend-full-copy-20260902",
+      "sha256": "70f75c7f5fc1473a5a20d4dcacedded39434c62217178a58d4a825c295afbab3",
+      "updated_at": "2026-09-02T11:09:05+00:00",
+      "build_id": "history-style09-frontend-full-copy-20260902",
+      "artifact_id": "artifact-09592dee22e1fa05196c",
+      "created_at": "2026-09-02T11:09:05+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-20",
+      "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_001_020_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\page_image_pairs.json"
+      ],
+      "supersedes": [
+        "artifact-bd42613549ef11aed5af"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 1-20 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy --build-id history-style09-frontend-full-copy-20260902",
+      "sha256": "f247d76fe3cdeb49501fbaac5cac5575b3d2346592fd9efac955c08eeafc0640",
+      "updated_at": "2026-09-02T11:09:05+00:00",
+      "build_id": "history-style09-frontend-full-copy-20260902",
+      "artifact_id": "artifact-34d6b35f32753bef5f57",
+      "created_at": "2026-09-02T11:09:05+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-20",
+      "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md"
+      ],
+      "supersedes": [
+        "artifact-fa2f39f40f4f551b6225"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 1-20 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy --build-id history-style09-frontend-full-copy-20260902",
+      "sha256": "9d0252690d2605d4555e87636a0bdef3b62e8fb75fd6d00284d16ddc01d29eb9",
+      "updated_at": "2026-09-02T11:09:05+00:00",
+      "build_id": "history-style09-frontend-full-copy-20260902",
+      "artifact_id": "artifact-cb334c3c79532662b5c2",
+      "created_at": "2026-09-02T11:09:05+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-20",
+      "path": "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\pages_001_020_final_script_pages_run.json",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\final-script_cyberppt_deliverable_p1_p20.md",
+        "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_001_020_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 1-20 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy --build-id history-style09-frontend-full-copy-20260902",
+      "sha256": "8e3d675031c61740d47bf26d6eb258542ade83f39af2c828152061eb331bae30",
+      "updated_at": "2026-09-02T11:09:05+00:00",
+      "build_id": "history-style09-frontend-full-copy-20260902",
+      "artifact_id": "artifact-ee6c98ad0b7a19381689",
+      "created_at": "2026-09-02T11:09:05+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-20",
+      "path": "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\build_context.json",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\final-script_cyberppt_deliverable_p1_p20.md",
+        "D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_001_020_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 1-20 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\history-assembly-20260902-style09-frontend-full-copy --build-id history-style09-frontend-full-copy-20260902",
+      "sha256": "86a11b71694f5b6a965d1536f366db6eb0645c5ef02e7dfdbf899434d0afcbfb",
+      "updated_at": "2026-09-02T11:09:05+00:00",
+      "build_id": "history-style09-frontend-full-copy-20260902",
+      "artifact_id": "artifact-02bb6bb3a474ca9f7a56",
+      "created_at": "2026-09-02T11:09:05+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "4",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p04\\final-script_cyberppt_deliverable_p4_p4.md",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 4 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p04 --build-id imagegen-test-frontend-p04-20260902 --generate-images",
+      "sha256": "23b8096adc3b29070a34c55bb762c5710f554ca58d6a3d4fecb5d2d83ecfa983",
+      "updated_at": "2026-09-02T11:12:13+00:00",
+      "build_id": "imagegen-test-frontend-p04-20260902",
+      "artifact_id": "artifact-c1951ceb2d18bf99627c",
+      "created_at": "2026-09-02T11:12:13+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "4",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p04\\page_image_pairs.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\imagegen-test-20260902-p04\\final-script_cyberppt_deliverable_p4_p4.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 4 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p04 --build-id imagegen-test-frontend-p04-20260902 --generate-images",
+      "sha256": "f79d8122c797c96264cff02c6f6974779cca1ad008233aaa67b140ea2e0fcdee",
+      "updated_at": "2026-09-02T11:12:13+00:00",
+      "build_id": "imagegen-test-frontend-p04-20260902",
+      "artifact_id": "artifact-631651b73025e92ca5c5",
+      "created_at": "2026-09-02T11:12:13+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "4",
+      "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_004_004_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p04\\page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 4 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p04 --build-id imagegen-test-frontend-p04-20260902 --generate-images",
+      "sha256": "cad8ea6c2e18c380802de515dfce31220cae2ebbee5515369342d10f2aa2cd9e",
+      "updated_at": "2026-09-02T11:12:13+00:00",
+      "build_id": "imagegen-test-frontend-p04-20260902",
+      "artifact_id": "artifact-f777f6fd41bf8fcbc6ec",
+      "created_at": "2026-09-02T11:12:13+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "4",
+      "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md"
+      ],
+      "supersedes": [
+        "artifact-cb334c3c79532662b5c2"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 4 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p04 --build-id imagegen-test-frontend-p04-20260902 --generate-images",
+      "sha256": "df37f452af15a07e07185777546489ccff0c4bf30bff30041eb233da0fa85d46",
+      "updated_at": "2026-09-02T11:12:13+00:00",
+      "build_id": "imagegen-test-frontend-p04-20260902",
+      "artifact_id": "artifact-7174cd09943a9988d287",
+      "created_at": "2026-09-02T11:12:13+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "4",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p04\\pages_004_004_final_script_pages_run.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\imagegen-test-20260902-p04\\final-script_cyberppt_deliverable_p4_p4.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p04\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_004_004_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 4 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p04 --build-id imagegen-test-frontend-p04-20260902 --generate-images",
+      "sha256": "bd44988c683bb21b7156a030de393adbd4bfff055ba347a0c310300b7f18736b",
+      "updated_at": "2026-09-02T11:12:13+00:00",
+      "build_id": "imagegen-test-frontend-p04-20260902",
+      "artifact_id": "artifact-ba90d3ec57c0e85f6f92",
+      "created_at": "2026-09-02T11:12:13+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "4",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p04\\build_context.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p04\\final-script_cyberppt_deliverable_p4_p4.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p04\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_004_004_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 4 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p04 --build-id imagegen-test-frontend-p04-20260902 --generate-images",
+      "sha256": "048b0b1845eaada21b859e19f6b93edfba611bed3a5667fb4ffea651222b3f95",
+      "updated_at": "2026-09-02T11:12:13+00:00",
+      "build_id": "imagegen-test-frontend-p04-20260902",
+      "artifact_id": "artifact-c9c995fe37dcfa2bd5fb",
+      "created_at": "2026-09-02T11:12:13+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "5-8",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\final-script_cyberppt_deliverable_p5_p8.md",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 5,7,8 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08 --build-id imagegen-test-frontend-p05-p07-p08-20260902 --generate-images",
+      "sha256": "839215b4f589477923965ae9c92d56d539cd054d490b7a7a029cf908a8200a35",
+      "updated_at": "2026-09-02T11:18:17+00:00",
+      "build_id": "imagegen-test-frontend-p05-p07-p08-20260902",
+      "artifact_id": "artifact-ffd2fa67de67e7dccc3c",
+      "created_at": "2026-09-02T11:18:17+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "5-8",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\page_image_pairs.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\final-script_cyberppt_deliverable_p5_p8.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 5,7,8 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08 --build-id imagegen-test-frontend-p05-p07-p08-20260902 --generate-images",
+      "sha256": "1eb421a0a4c639ea59982824fb31625b2f8b630a29f4279396ab54bab2d3a966",
+      "updated_at": "2026-09-02T11:18:17+00:00",
+      "build_id": "imagegen-test-frontend-p05-p07-p08-20260902",
+      "artifact_id": "artifact-24f1316d4dadb0c7ebf1",
+      "created_at": "2026-09-02T11:18:17+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "5-8",
+      "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_005_007_008_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 5,7,8 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08 --build-id imagegen-test-frontend-p05-p07-p08-20260902 --generate-images",
+      "sha256": "ee29f523d7c6d22fbf0555fcb014b26d645b8d4c20cb18702282839067ff3ea2",
+      "updated_at": "2026-09-02T11:18:17+00:00",
+      "build_id": "imagegen-test-frontend-p05-p07-p08-20260902",
+      "artifact_id": "artifact-3f98edef635e98519a87",
+      "created_at": "2026-09-02T11:18:17+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "5-8",
+      "path": "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md"
+      ],
+      "supersedes": [
+        "artifact-7174cd09943a9988d287"
+      ],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 5,7,8 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08 --build-id imagegen-test-frontend-p05-p07-p08-20260902 --generate-images",
+      "sha256": "6a890cc8345b4275c2839c7f889967d27305d652bfad49cf7a659733976cc828",
+      "updated_at": "2026-09-02T11:18:17+00:00",
+      "build_id": "imagegen-test-frontend-p05-p07-p08-20260902",
+      "artifact_id": "artifact-725c51c5623d8f74dc9c",
+      "created_at": "2026-09-02T11:18:17+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "5-8",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\pages_005_007_008_final_script_pages_run.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\final-script_cyberppt_deliverable_p5_p8.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_005_007_008_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 5,7,8 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08 --build-id imagegen-test-frontend-p05-p07-p08-20260902 --generate-images",
+      "sha256": "13ebcb8f366eea6378234b89fa833d02b29881136584940b78237c117583aaf1",
+      "updated_at": "2026-09-02T11:18:17+00:00",
+      "build_id": "imagegen-test-frontend-p05-p07-p08-20260902",
+      "artifact_id": "artifact-42615e3fcfa27a990dc1",
+      "created_at": "2026-09-02T11:18:17+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "5-8",
+      "path": "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\build_context.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\final-script_cyberppt_deliverable_p5_p8.md",
+        "D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\template_text\\pages_005_007_008_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002 --script D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\inputs\\final-script.md --pages 5,7,8 --style-lock D:\\CyberPPT\\projects\\power-data-infrastructure-standard-system-research-20260828-002\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\imagegen-test-20260902-p05-p07-p08 --build-id imagegen-test-frontend-p05-p07-p08-20260902 --generate-images",
+      "sha256": "f30586fa3ed75eeafe2911f23e46c07ee427d3b5f93d5875747939807d83c004",
+      "updated_at": "2026-09-02T11:18:17+00:00",
+      "build_id": "imagegen-test-frontend-p05-p07-p08-20260902",
+      "artifact_id": "artifact-e7772edab809f1142156",
+      "created_at": "2026-09-02T11:18:17+00:00"
     }
   ]
 }

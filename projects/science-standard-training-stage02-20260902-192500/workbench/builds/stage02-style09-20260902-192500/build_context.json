@@ -1,0 +1,46 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "style09-science-training-20260902-192500",
+  "run_id": "style09-science-training-20260902-192500",
+  "input_fingerprint": "748ead12ff5c90d55b78a42e1f0b8d17dabce786bfd5d7218fe9429f75a95792",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "38a48c85aa82bf5feae171424ad1d59df42753b7f0b8cee1e7c26c7851e596a9",
+    "script_input_sha256": "88ee579688abb39080359c6b07e889cd256caaf0aeb7841028305f9a8ad28be1",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "faf7cfc9438406b6bcc1df6894b2ccbdfae5e0c80e1f9cced27ad1b59210711d",
+    "pages": [
+      1,
+      2
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": true
+  },
+  "created_at": "2026-09-02T11:28:34+00:00",
+  "project": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500",
+  "source_script": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md",
+  "source_script_sha256": "38a48c85aa82bf5feae171424ad1d59df42753b7f0b8cee1e7c26c7851e596a9",
+  "style_lock": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json",
+  "style_lock_sha256": "faf7cfc9438406b6bcc1df6894b2ccbdfae5e0c80e1f9cced27ad1b59210711d",
+  "page_set": [
+    1,
+    2
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "allow_script_edit": false,
+  "allow_prompt_edit": true,
+  "prompt_overrides_dir": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\prompt-overrides",
+  "stage": "02-production-build",
+  "status": "in_progress",
+  "artifacts": {
+    "page_image_pairs": {
+      "path": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\page_image_pairs.json",
+      "sha256": "853834070a4961437d684e7e573ee054f303cb812215d7921a8958d6b7d2de02"
+    }
+  }
+}

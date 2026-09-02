@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.imagegen_attempt_request.v1",
+  "page_number": 4,
+  "variant": "full",
+  "attempt": 1,
+  "prompt_path": "D:\\CyberPPT\\imagegen-test-20260902-p04\\prompts\\attempts\\page-004-full-attempt-01-sent.txt",
+  "prompt_sha256": "be24f72c5f733d448fd1ae1a20e35b0e265b2a4c0442ae08e63c22f401082fbd",
+  "base_prompt_sha256": "be24f72c5f733d448fd1ae1a20e35b0e265b2a4c0442ae08e63c22f401082fbd",
+  "prompt_chars": 4162,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "size": "2048x1024",
+  "input_images": [
+    "D:\\CyberPPT\\assets\\palette-samples\\palette-09.png"
+  ],
+  "correction_retry": false,
+  "original_prompt": null,
+  "failed_image": null,
+  "correction_issues": []
+}

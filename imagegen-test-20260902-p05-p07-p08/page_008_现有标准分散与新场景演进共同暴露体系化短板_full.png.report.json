@@ -1,0 +1,71 @@
+{
+  "mode": "chart_heavy",
+  "input": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-togs9fqo\\input.png",
+  "output": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-togs9fqo\\output.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-togs9fqo\\input.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 3518.3493,
+    "edge_density": 0.081307,
+    "near_white_ratio": 0.306549,
+    "noise_estimate": 0.0,
+    "blockiness_score": 0.9845,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help."
+    ]
+  },
+  "after": {
+    "file": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-togs9fqo\\output.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 3861.6307,
+    "edge_density": 0.078117,
+    "near_white_ratio": 0.315586,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0674,
+    "notes": []
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.996749,
+    "normalized_mean_abs_delta": 0.00924,
+    "edge_recall": 0.998351,
+    "edge_precision": 0.94607
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "ppt_page",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "C:\\Users\\Liuxing\\AppData\\Local\\Temp\\cyberppt-enhance-togs9fqo\\input.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 3518.3493,
+      "edge_density": 0.081307,
+      "near_white_ratio": 0.306549,
+      "noise_estimate": 0.0,
+      "blockiness_score": 0.9845,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "cyberppt.final_script_pages_run.v1",
+  "build_id": "style09-science-training-20260902-192500",
+  "created_at": "2026-09-02T11:27:19+00:00",
+  "project": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500",
+  "source_script": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md",
+  "source_script_sha256": "38a48c85aa82bf5feae171424ad1d59df42753b7f0b8cee1e7c26c7851e596a9",
+  "pages": [
+    1,
+    2
+  ],
+  "stage": "02-blueprint-image-to-editable-svg",
+  "source_mode": "script_file",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "autonomous_contract": null,
+  "project_created": false,
+  "status": "blueprint_created",
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "editable_pptx_route": "stage02-quick-image-to-pptx",
+  "artifacts": {
+    "compiled_deliverable_prompt": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\final-script_cyberppt_deliverable_p1_p2.md",
+    "page_image_pairs": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\page_image_pairs.json",
+    "template_text_lock": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\template_text\\pages_001_002_template_text_lock.json",
+    "visual_style_lock": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json",
+    "output_dir": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500",
+    "image_ppt_output_dir": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\editable_svg",
+    "reconstruction_inventory": null,
+    "svg_output": null,
+    "reconstruction_quality": null,
+    "delivery_readiness": null,
+    "exported_pptx": null,
+    "exported_pptx_by_mode": null,
+    "officecli_render_qa": null,
+    "semantic_plan_dir": null,
+    "build_context": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\build_context.json"
+  },
+  "next_steps": [
+    "Generate the audited 2:1 full image, then publish the selected image, editable SVG, or both template-assembled PPTX routes.",
+    "Provide the completed high-fidelity authored SVG, then use the vendored Quick runtime for editable export."
+  ],
+  "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500 --script D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md --pages 1-2 --style-lock D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500 --build-id style09-science-training-20260902-192500",
+  "rebuild": null,
+  "image_to_editable_svg_build": null,
+  "image_generation": null,
+  "clean_base_generation": null,
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 1,
+        "mode": "off",
+        "source_prompt_sha256": "0c146992a02b70f92e729b13fed44c0d9d849bd4417ac35a785b7ce2e4221483",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 4960
+      },
+      {
+        "page_number": 2,
+        "mode": "off",
+        "source_prompt_sha256": "741c2d061ee082c8ea9e568e555c50c429056b1197ec7a1407892f8f89e99915",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 4641
+      }
+    ]
+  },
+  "tool_consumption": {},
+  "production_readiness": null
+}

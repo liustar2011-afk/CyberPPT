@@ -1,0 +1,111 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "ledger_revision": 2,
+  "artifacts": [
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-2",
+      "path": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\final-script_cyberppt_deliverable_p1_p2.md",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500 --script D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md --pages 1-2 --style-lock D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500 --build-id style09-science-training-20260902-192500",
+      "sha256": "7dfeb2111f2093996b60f7e45807957a06336d36b835e23a4fb58773c31a985a",
+      "updated_at": "2026-09-02T11:27:19+00:00",
+      "build_id": "style09-science-training-20260902-192500",
+      "artifact_id": "artifact-5aad149e640daa8f8049",
+      "created_at": "2026-09-02T11:27:19+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-2",
+      "path": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\page_image_pairs.json",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\final-script_cyberppt_deliverable_p1_p2.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500 --script D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md --pages 1-2 --style-lock D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500 --build-id style09-science-training-20260902-192500",
+      "sha256": "50c5d166cd13b55505ce26715016757d10c8702a175eed6ffa8ead5b6a9f16f7",
+      "updated_at": "2026-09-02T11:27:19+00:00",
+      "build_id": "style09-science-training-20260902-192500",
+      "artifact_id": "artifact-23f8c7f52404fe690830",
+      "created_at": "2026-09-02T11:27:19+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-2",
+      "path": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\template_text\\pages_001_002_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500 --script D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md --pages 1-2 --style-lock D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500 --build-id style09-science-training-20260902-192500",
+      "sha256": "df71f6f0061d48de1092c5afca49c01a80d0e1531a4bdaddc13caad0dfc00011",
+      "updated_at": "2026-09-02T11:27:19+00:00",
+      "build_id": "style09-science-training-20260902-192500",
+      "artifact_id": "artifact-ccc17e15be2bbfcac2df",
+      "created_at": "2026-09-02T11:27:19+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-2",
+      "path": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500 --script D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md --pages 1-2 --style-lock D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500 --build-id style09-science-training-20260902-192500",
+      "sha256": "172e5dd884fdefa6e92781e302b26cc08a19409705636a53facc2522637cf825",
+      "updated_at": "2026-09-02T11:27:19+00:00",
+      "build_id": "style09-science-training-20260902-192500",
+      "artifact_id": "artifact-c580cd34cd549e6a03da",
+      "created_at": "2026-09-02T11:27:19+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-2",
+      "path": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\pages_001_002_final_script_pages_run.json",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\final-script_cyberppt_deliverable_p1_p2.md",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\template_text\\pages_001_002_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500 --script D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md --pages 1-2 --style-lock D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500 --build-id style09-science-training-20260902-192500",
+      "sha256": "5cbf250385534cd282b91b5b826bc4653e0d5d9cc1e0f9e80607786162cd4f51",
+      "updated_at": "2026-09-02T11:27:19+00:00",
+      "build_id": "style09-science-training-20260902-192500",
+      "artifact_id": "artifact-f27238cad03ac6717940",
+      "created_at": "2026-09-02T11:27:19+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1-2",
+      "path": "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\build_context.json",
+      "status": "blueprint_created",
+      "depends_on": [
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\final-script_cyberppt_deliverable_p1_p2.md",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500\\page_image_pairs.json",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\template_text\\pages_001_002_template_text_lock.json",
+        "D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python -m cyberppt final-script-pages D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500 --script D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\inputs\\final-script.md --pages 1-2 --style-lock D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\locks\\visual_style_lock.json --production-mode image-to-editable-svg --assembly-mode editable --output-dir D:\\CyberPPT\\projects\\science-standard-training-stage02-20260902-192500\\workbench\\builds\\stage02-style09-20260902-192500 --build-id style09-science-training-20260902-192500",
+      "sha256": "7e15fc9f48e4e3ff4e756261c9361a4e25a462decbf23c54664deec1d2419470",
+      "updated_at": "2026-09-02T11:27:19+00:00",
+      "build_id": "style09-science-training-20260902-192500",
+      "artifact_id": "artifact-8715a08679309454942a",
+      "created_at": "2026-09-02T11:27:19+00:00"
+    }
+  ]
+}
