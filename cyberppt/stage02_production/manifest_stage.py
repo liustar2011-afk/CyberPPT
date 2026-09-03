@@ -10,6 +10,11 @@ from scripts.imagegen_pipeline.imagegen_handoff import (
     select_page_visual_intent_type,
 )
 from scripts.imagegen_pipeline.page_manifest import build_manifest, output_variants_for_mode
+from scripts.image_to_pptx_runtime.clean_base_policy import (
+    ALGORITHM_VERSION as CLEAN_BASE_ALGORITHM_VERSION,
+    SCHEMA as CLEAN_BASE_SCHEMA,
+    is_reusable_clean_base,
+)
 from cyberppt.script_quality_contract import parse_script_path
 
 from .identity import input_fingerprint, input_identity_payload
@@ -117,22 +122,43 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
         prior_pair = prior_pairs.get(int(pair.get("page_number")))
         if not isinstance(prior_pair, dict):
             continue
-        prior_authoring_svg = Path(str(prior_pair.get("authoring_svg") or ""))
         prior_graphic_text_policy = prior_pair.get("graphic_text_policy")
-        if prior_authoring_svg.is_file():
-            pair["authoring_svg"] = str(prior_authoring_svg)
-        prior_clean_base = prior_pair.get("clean_base")
-        if isinstance(prior_clean_base, dict) and prior_clean_base.get("status") == "complete":
-            pair["clean_base"] = prior_clean_base
         if (
             isinstance(prior_graphic_text_policy, dict)
             and prior_graphic_text_policy.get("status") == "complete"
             and prior_graphic_text_policy.get("empty_container_check") == "passed"
         ):
             pair["graphic_text_policy"] = prior_graphic_text_policy
-        prior_quick_checkpoint = prior_pair.get("quick_page_checkpoint")
-        if isinstance(prior_quick_checkpoint, dict):
-            pair["quick_page_checkpoint"] = prior_quick_checkpoint
+
+        # Clean-base and authored-SVG checkpoints are reusable only when the
+        # current full image, complete policy, algorithm and actual pixel QA
+        # all bind together.  A stale or self-reported receipt is left on
+        # disk for history, while the audited full-image variant below can
+        # still be retained.
+        prior_clean_base = prior_pair.get("clean_base")
+        current_full = (pair.get("full") or {}).get("path") if isinstance(pair.get("full"), dict) else None
+        clean_reusable = is_reusable_clean_base(
+            prior_clean_base,
+            full_image=Path(str(current_full or "")),
+            graphic_text_policy=pair.get("graphic_text_policy") if isinstance(pair.get("graphic_text_policy"), dict) else {},
+        )
+        if clean_reusable:
+            pair["clean_base"] = prior_clean_base
+            prior_authoring_svg = Path(str(prior_pair.get("authoring_svg") or ""))
+            if prior_authoring_svg.is_file():
+                pair["authoring_svg"] = str(prior_authoring_svg)
+            prior_quick_checkpoint = prior_pair.get("quick_page_checkpoint")
+            if isinstance(prior_quick_checkpoint, dict):
+                pair["quick_page_checkpoint"] = prior_quick_checkpoint
+        else:
+            pair["clean_base"] = {
+                "schema": CLEAN_BASE_SCHEMA,
+                "status": "required",
+                "algorithm_version": CLEAN_BASE_ALGORITHM_VERSION,
+                "note": "Prior clean-base or authored-SVG checkpoint failed current binding/QA validation and must be regenerated.",
+            }
+            pair.pop("authoring_svg", None)
+            pair.pop("quick_page_checkpoint", None)
         for variant in output_variants_for_mode(production_mode):
             current_item = pair.get(variant) or {}
             prior_item = prior_pair.get(variant) or {}
@@ -144,10 +170,26 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
                 bool(current_prompt_sha)
                 and current_prompt_sha in {generated_prompt_sha, prior_prompt_sha}
             )
+            prior_full_sha = ""
+            if variant == "full":
+                prior_full_sha = str(
+                    prior_item.get("sha256")
+                    or (
+                        prior_item.get("reconstruction_visual_source") or {}
+                    ).get("sha256")
+                    or ""
+                )
+            current_path = Path(str(current_item.get("path") or ""))
+            same_full_bytes = (
+                variant != "full"
+                or not prior_full_sha
+                or (current_path.is_file() and sha256_file(current_path) == prior_full_sha)
+            )
             if (
                 prior_path == Path(str(current_item.get("path") or ""))
                 and prior_path.is_file()
                 and same_prompt
+                and same_full_bytes
                 and (prior_item.get("text_audit") or {}).get("valid") is True
             ):
                 current_item["status"] = "Generated"
@@ -155,6 +197,8 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
                 if generated_prompt_sha or prior_prompt_sha:
                     current_item["generated_prompt_sha256"] = generated_prompt_sha or prior_prompt_sha
                 current_item["text_audit"] = prior_item["text_audit"]
+                if variant == "full" and prior_full_sha:
+                    current_item["sha256"] = prior_full_sha
 
 
 def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None) -> None:

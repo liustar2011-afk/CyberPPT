@@ -675,9 +675,10 @@ def build_manifest(
                     "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export.",
                 },
                 "clean_base": {
-                    "schema": "cyberppt.stage02.clean_base.v2",
+                    "schema": "cyberppt.stage02.clean_base.v3",
                     "status": "required",
-                    "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly.",
+                    "algorithm_version": "masked-text-clearance-v3",
+                    "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item, compute pixel-difference QA, and pass the clean-base visual checks before editable PPTX assembly.",
                 },
                 "prompt_file": str(prompt_file),
                 **({"reference_images": reference_images} if reference_images else {}),

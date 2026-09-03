@@ -1,0 +1,93 @@
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+from PIL import Image
+
+from scripts.image_to_pptx_runtime.final_visible_text_qa import audit_final_visible_text
+from cyberppt.stage02_production.delivery_stage import _run_final_visible_text_qa
+
+
+def test_final_visible_text_qa_passes_declared_svg_text_and_authorized_graphic_text(tmp_path: Path) -> None:
+    image = tmp_path / "preview.png"
+    Image.new("RGB", (160, 90), "white").save(image)
+
+    report = audit_final_visible_text(
+        image,
+        expected_texts=["登记编目"],
+        authorized_image_texts=["品牌字样"],
+        ocr_runner=lambda _path: [
+            {"text": "登记", "bbox": [[1, 1], [20, 1], [20, 10], [1, 10]]},
+            {"text": "品牌字样", "bbox": [[30, 1], [60, 1], [60, 10], [30, 10]]},
+        ],
+    )
+
+    assert report["valid"] is True
+    assert report["unexpected_chinese"] == []
+
+
+def test_final_visible_text_qa_blocks_unowned_residual_chinese(tmp_path: Path) -> None:
+    image = tmp_path / "preview.png"
+    Image.new("RGB", (160, 90), "white").save(image)
+
+    report = audit_final_visible_text(
+        image,
+        expected_texts=["登记编目"],
+        ocr_runner=lambda _path: [
+            {"text": "登记编目伪字", "bbox": [[1, 1], [60, 1], [60, 10], [1, 10]]},
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["status"] == "failed"
+    assert report["unexpected_chinese"][0]["chinese_run"] == "登记编目伪字"
+
+
+def test_final_visible_text_qa_fails_closed_when_ocr_is_unavailable(tmp_path: Path) -> None:
+    image = tmp_path / "preview.png"
+    Image.new("RGB", (160, 90), "white").save(image)
+
+    def unavailable(_path: Path):
+        raise RuntimeError("missing OCR")
+
+    report = audit_final_visible_text(
+        image,
+        expected_texts=[],
+        ocr_runner=unavailable,
+    )
+
+    assert report["valid"] is False
+    assert report["checks"]["ocr_executed"] is False
+
+
+def test_final_visible_text_qa_fails_closed_on_invalid_ocr_observations(tmp_path: Path) -> None:
+    image = tmp_path / "preview.png"
+    Image.new("RGB", (160, 90), "white").save(image)
+
+    report = audit_final_visible_text(
+        image,
+        expected_texts=[],
+        ocr_runner=lambda _path: ["self-reported pass"],  # type: ignore[list-item]
+    )
+
+    assert report["valid"] is False
+    assert report["checks"]["ocr_executed"] is False
+
+
+def test_delivery_final_visible_text_qa_rejects_a_passed_renderer_receipt_without_renders(tmp_path: Path) -> None:
+    context = SimpleNamespace(build_dir=tmp_path, canonical_script=tmp_path / "script.md")
+    manifest_result = SimpleNamespace(page_numbers=(1,), manifest={"pairs": []})
+
+    with pytest.raises(RuntimeError, match="requires rendered pages"):
+        _run_final_visible_text_qa(
+            context=context,
+            manifest_result=manifest_result,
+            reports={
+                "editable": {
+                    "schema": "cyberppt.officecli_render_qa.v1",
+                    "passed": True,
+                    "report_path": str(tmp_path / "officecli.json"),
+                }
+            },
+        )

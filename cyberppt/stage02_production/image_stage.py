@@ -99,6 +99,7 @@ def bind_reconstruction_visual_sources(manifest: dict[str, Any]) -> list[dict[st
             "sha256": sha256(full_path.read_bytes()).hexdigest(),
             "immutable_visual_composition": True,
         }
+        full["sha256"] = binding["sha256"]
         full["reconstruction_visual_source"] = binding
         bound.append({"page_number": pair.get("page_number"), **binding})
     manifest["visual_truth_policy"] = {

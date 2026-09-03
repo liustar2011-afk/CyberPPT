@@ -37,7 +37,11 @@ from .native_text_geometry import (
 )
 from .review import write_review
 from .quick_page_review import quick_visual_review_passes
-from .clean_base_policy import SCHEMA as CLEAN_BASE_SCHEMA
+from .clean_base_policy import (
+    ALGORITHM_VERSION as CLEAN_BASE_ALGORITHM_VERSION,
+    SCHEMA as CLEAN_BASE_SCHEMA,
+)
+from .final_visible_text_qa import audit_final_visible_text
 from .svg_quality.checker import SVGQualityChecker
 from .template_assembly import (
     assemble_brand_page_svg,
@@ -109,7 +113,7 @@ def _quick_page_binding(
         "runtime_style_lock_sha256": _sha256(style_lock) if style_lock is not None and style_lock.is_file() else "",
         "native_text_style_profile": NATIVE_TEXT_STYLE_PROFILE,
         "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".intra-text-v1",
-        "clean_base_policy_schema": CLEAN_BASE_SCHEMA + ".verified-pixel-mask-v13",
+        "clean_base_policy_schema": CLEAN_BASE_SCHEMA + "." + CLEAN_BASE_ALGORITHM_VERSION,
         "authored_svg_preflight_schema": AUTHORED_SVG_PREFLIGHT_SCHEMA,
     }
 
@@ -122,6 +126,9 @@ def _current_quick_checkpoint(checkpoint: object, binding: Mapping[str, str]) ->
         "visual_review_failed",
         "passed",
     } or checkpoint.get("binding") != dict(binding):
+        return False
+    visible_text_qa = checkpoint.get("final_visible_text_qa")
+    if not isinstance(visible_text_qa, Mapping) or visible_text_qa.get("valid") is not True:
         return False
     required = (
         checkpoint.get("target_svg"),
@@ -156,6 +163,36 @@ def _script_lines(script: Path, page_number: int) -> list[str]:
     if page is None:
         raise ValueError(f"final script has no page {page_number}")
     return [item for item in page.text.splitlines() if item.strip()]
+
+
+def _preview_visible_text_contract(
+    pair: Mapping[str, Any],
+    *,
+    title: str,
+    page_number: int,
+) -> tuple[list[str], list[str]]:
+    expected: list[str] = [title, "中国电力企业联合会", str(page_number)]
+    authorized_image_texts: list[str] = []
+    full = pair.get("full") if isinstance(pair.get("full"), Mapping) else {}
+    debug = full.get("debug_receipt") if isinstance(full.get("debug_receipt"), Mapping) else {}
+    expected.extend(str(item) for item in debug.get("visible_text", []) if str(item).strip())
+    policy = pair.get("graphic_text_policy") if isinstance(pair.get("graphic_text_policy"), Mapping) else {}
+    raw_items = policy.get("items") if isinstance(policy.get("items"), list) else []
+    for item in raw_items:
+        if not isinstance(item, Mapping):
+            continue
+        text = str(item.get("text") or item.get("observed_text") or "").strip()
+        if not text:
+            continue
+        if item.get("treatment") == "native_text":
+            expected.append(text)
+        elif item.get("treatment") == "preserved_in_image" or (
+            item.get("treatment") == "decorative_glyph"
+            and isinstance(item.get("visual_review"), Mapping)
+            and item["visual_review"].get("status") == "passed"
+        ):
+            authorized_image_texts.append(text)
+    return expected, authorized_image_texts
 
 
 def _require_audited_pairs(manifest: Mapping[str, Any], requested_pages: list[int]) -> list[dict[str, Any]]:
@@ -336,6 +373,28 @@ def run_stage02_reconstruction(
                 checkpoint = pair.get("quick_page_checkpoint")
                 if _current_quick_checkpoint(checkpoint, binding):
                     assert isinstance(checkpoint, Mapping)
+                    expected_visible, authorized_image_texts = _preview_visible_text_contract(
+                        manifest_pair,
+                        title=title_by_page[page_number],
+                        page_number=page_number,
+                    )
+                    visible_text_qa = audit_final_visible_text(
+                        Path(str(checkpoint["preview_png"])),
+                        expected_texts=expected_visible,
+                        authorized_image_texts=authorized_image_texts,
+                    )
+                    if not visible_text_qa["valid"]:
+                        failed_checkpoint = dict(checkpoint)
+                        failed_checkpoint["status"] = "failed"
+                        failed_checkpoint["final_visible_text_qa"] = visible_text_qa
+                        failed_checkpoint["resume"] = "reused_final_visible_text_qa_failed"
+                        manifest_pair["quick_page_checkpoint"] = failed_checkpoint
+                        _write_json(manifest_file, manifest)
+                        page_failures.append(
+                            f"p{page_number:02d}: final visible-text QA failed on checkpoint reuse: "
+                            f"{visible_text_qa.get('unexpected_chinese') or visible_text_qa.get('error')}"
+                        )
+                        continue
                     if not quick_visual_review_passes(checkpoint):
                         pending_checkpoint = dict(checkpoint)
                         pending_checkpoint["status"] = (
@@ -354,6 +413,7 @@ def run_stage02_reconstruction(
                     preflight_report = dict(checkpoint.get("authored_svg_preflight") or preflight_report)
                     checkpoint_payload = dict(checkpoint)
                     checkpoint_payload["resume"] = "reused"
+                    checkpoint_payload["final_visible_text_qa"] = visible_text_qa
                 else:
                     page_validation = validate_editable_page(
                         clean_base=pair.get("clean_base"),
@@ -407,9 +467,19 @@ def run_stage02_reconstruction(
                         raise ValueError("single-page Quick preview was not rendered")
                     if not preview_geometry["valid"]:
                         raise ValueError("single-page Quick preview failed geometry QA")
+                    expected_visible, authorized_image_texts = _preview_visible_text_contract(
+                        manifest_pair,
+                        title=title_by_page[page_number],
+                        page_number=page_number,
+                    )
+                    visible_text_qa = audit_final_visible_text(
+                        preview_png,
+                        expected_texts=expected_visible,
+                        authorized_image_texts=authorized_image_texts,
+                    )
                     checkpoint_payload = {
                         "schema": "cyberppt.stage02.quick_page_checkpoint.v1",
-                        "status": "rendered_pending_visual_review",
+                        "status": "rendered_pending_visual_review" if visible_text_qa["valid"] else "failed",
                         "binding": binding,
                         "target_svg": str(target),
                         "preview_svg": str(wrapper),
@@ -421,10 +491,17 @@ def run_stage02_reconstruction(
                         "native_text_geometry": geometry_report,
                         "native_text_style": style_report,
                         "svg_quality": quality_report,
+                        "final_visible_text_qa": visible_text_qa,
                         "resume": "rendered",
                     }
                     manifest_pair["quick_page_checkpoint"] = checkpoint_payload
                     _write_json(manifest_file, manifest)
+                    if not visible_text_qa["valid"]:
+                        page_failures.append(
+                            f"p{page_number:02d}: final visible-text QA failed: "
+                            f"{visible_text_qa.get('unexpected_chinese') or visible_text_qa.get('error')}"
+                        )
+                        continue
                     page_failures.append(f"p{page_number:02d}: rendered preview awaits visual review: {preview_png}")
                     continue
 

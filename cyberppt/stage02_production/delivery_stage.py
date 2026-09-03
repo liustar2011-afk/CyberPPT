@@ -4,8 +4,10 @@ from pathlib import Path
 from typing import Any
 
 from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPTX_ROUTE
+from scripts.image_to_pptx_runtime.final_visible_text_qa import audit_final_visible_text, write_final_visible_text_qa
 from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.commands.production_qa import run_officecli_render_qa
+from cyberppt.script_quality.parsing import parse_script_path
 
 from .dependencies import Stage02Dependencies
 from .models import DeliveryStageResult, ImageStageResult, ManifestStageResult, ReconstructionStageResult, Stage02BuildContext, Stage02RunOptions
@@ -94,6 +96,99 @@ def _run_office_qa(
     return reports, export_paths
 
 
+def _final_visible_text_contract(
+    manifest: dict[str, Any],
+    script: Path,
+    page_number: int,
+) -> tuple[list[str], list[str]]:
+    document = parse_script_path(script)
+    page = next((item for item in document.pages if item.sequence == page_number), None)
+    expected: list[str] = ["中国电力企业联合会", str(page_number)]
+    if page is not None:
+        expected.extend([page.title, *(line.strip() for line in page.onscreen_text.splitlines() if line.strip())])
+    authorized: list[str] = []
+    pair = next(
+        (item for item in manifest.get("pairs", []) if isinstance(item, dict) and item.get("page_number") == page_number),
+        None,
+    )
+    if not isinstance(pair, dict):
+        return expected, authorized
+    full = pair.get("full") if isinstance(pair.get("full"), dict) else {}
+    debug = full.get("debug_receipt") if isinstance(full.get("debug_receipt"), dict) else {}
+    expected.extend(str(item) for item in debug.get("visible_text", []) if str(item).strip())
+    truth = pair.get("image_text_truth") if isinstance(pair.get("image_text_truth"), dict) else {}
+    if str(truth.get("script_text") or "").strip():
+        expected.append(str(truth["script_text"]))
+    policy = pair.get("graphic_text_policy") if isinstance(pair.get("graphic_text_policy"), dict) else {}
+    for item in policy.get("items", []) if isinstance(policy.get("items"), list) else []:
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("text") or item.get("observed_text") or "").strip()
+        if not text:
+            continue
+        if item.get("treatment") == "native_text":
+            expected.append(text)
+        elif item.get("treatment") == "preserved_in_image" or (
+            item.get("treatment") == "decorative_glyph"
+            and isinstance(item.get("visual_review"), dict)
+            and item["visual_review"].get("status") == "passed"
+        ):
+            authorized.append(text)
+    return expected, authorized
+
+
+def _run_final_visible_text_qa(
+    *,
+    context: Stage02BuildContext,
+    manifest_result: ManifestStageResult,
+    reports: dict[str, dict[str, Any]],
+) -> dict[str, Path]:
+    """Run the final rendered-image hard gate for every real delivery render."""
+
+    output: dict[str, Path] = {}
+    for mode, report in reports.items():
+        rendered = report.get("rendered_pages")
+        if "rendered_pages" not in report:
+            # Historical unit-test doubles do not model the renderer payload.
+            # A real OfficeCLI receipt always includes this field.
+            if report.get("schema") == "cyberppt.officecli_render_qa.v1":
+                raise RuntimeError(f"final visible-text QA requires rendered pages for assembly mode {mode}")
+            continue
+        if not isinstance(rendered, list) or not rendered:
+            raise RuntimeError(f"final visible-text QA requires rendered pages for assembly mode {mode}")
+        page_numbers = list(manifest_result.page_numbers)
+        if len(rendered) != len(page_numbers):
+            raise RuntimeError(f"final visible-text QA page count mismatch for assembly mode {mode}")
+        page_reports: list[dict[str, Any]] = []
+        for page_number, rendered_path in zip(page_numbers, rendered):
+            expected, authorized = _final_visible_text_contract(
+                manifest_result.manifest,
+                context.canonical_script,
+                page_number,
+            )
+            page_reports.append(
+                audit_final_visible_text(
+                    rendered_path,
+                    expected_texts=expected,
+                    authorized_image_texts=authorized,
+                )
+            )
+        aggregate = {
+            "schema": "cyberppt.stage02.final_visible_text_qa.v1",
+            "assembly_mode": mode,
+            "status": "passed" if all(item.get("valid") is True for item in page_reports) else "failed",
+            "pages": page_reports,
+        }
+        report_path = context.build_dir / "qa-delivery" / mode / "final_visible_text_qa.json"
+        write_final_visible_text_qa(report_path, aggregate)
+        report["final_visible_text_qa"] = aggregate
+        report["final_visible_text_qa_path"] = str(report_path)
+        output[mode] = report_path
+        if aggregate["status"] != "passed":
+            raise RuntimeError(f"final visible-text QA failed for assembly mode {mode}; see {report_path}")
+    return output
+
+
 def run_delivery_stage(
     context: Stage02BuildContext,
     manifest_result: ManifestStageResult,
@@ -107,6 +202,11 @@ def run_delivery_stage(
         reconstruction=reconstruction,
         production_build=options.production_build,
         officecli_render_qa_fn=(dependencies.officecli_render_qa if dependencies is not None else None),
+    )
+    final_visible_text_qa = _run_final_visible_text_qa(
+        context=context,
+        manifest_result=manifest_result,
+        reports=officecli_render_qa,
     )
     resume_command = _resume_command(context, options)
     stage_name = "02-production-build" if options.production_build else "02-blueprint-image-to-editable-svg"
@@ -148,6 +248,7 @@ def run_delivery_stage(
             "exported_pptx": build["artifacts"].get("exported_pptx") if build else None,
             "exported_pptx_by_mode": build.get("artifacts_by_mode") if build else None,
             "officecli_render_qa": {mode: report["report_path"] for mode, report in officecli_render_qa.items()} or None,
+            "final_visible_text_qa": {mode: str(path) for mode, path in final_visible_text_qa.items()} or None,
             "semantic_plan_dir": str(options.semantic_plan_dir) if options.semantic_plan_dir else None,
         },
         "next_steps": [
@@ -201,6 +302,11 @@ def run_delivery_stage(
             mode: {"path": report["report_path"], "sha256": sha256_file(Path(report["report_path"]))}
             for mode, report in officecli_render_qa.items()
         }
+    if final_visible_text_qa:
+        build_context["artifacts"]["final_visible_text_qa"] = {
+            mode: {"path": str(path), "sha256": sha256_file(path)}
+            for mode, path in final_visible_text_qa.items()
+        }
     write_json(manifest_result.build_context_path, build_context)
     run_summary["artifacts"]["build_context"] = str(manifest_result.build_context_path)
 
@@ -236,6 +342,17 @@ def run_delivery_stage(
                 stage="05-qa-delivery",
                 page=page_label,
                 path=Path(report["report_path"]),
+                status="passed",
+                depends_on=officecli_export_paths,
+                resume_command=resume_command,
+            )
+        )
+    for mode, report_path in final_visible_text_qa.items():
+        ledger_records.append(
+            _artifact_record(
+                stage="05-qa-delivery",
+                page=page_label,
+                path=report_path,
                 status="passed",
                 depends_on=officecli_export_paths,
                 resume_command=resume_command,

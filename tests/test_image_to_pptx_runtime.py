@@ -4,12 +4,15 @@ import json
 from hashlib import sha256
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from scripts.image_to_pptx_runtime import assert_internal_runtime
 from scripts.image_to_pptx_runtime.graphic_text_policy import validate_graphic_text_policy
 from scripts.image_to_pptx_runtime.clean_base_policy import (
+    ALGORITHM_VERSION as CLEAN_BASE_ALGORITHM_VERSION,
     SCHEMA as CLEAN_BASE_SCHEMA,
+    compute_visual_diff_report,
+    graphic_text_policy_sha256,
     validate_clean_base,
 )
 from scripts.image_to_pptx_runtime import editable_page_validation
@@ -114,34 +117,53 @@ def _hash(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
 
 
-def _clean_base_contract(full: Path, clean: Path, *, text: str = "登记编目") -> dict[str, object]:
+def _clean_base_contract(
+    full: Path,
+    clean: Path,
+    *,
+    text: str = "登记编目",
+    policy: dict[str, object] | None = None,
+) -> dict[str, object]:
+    active_policy = policy or _graphic_text_policy(
+        items=[{"id": "label-1", "text": text, "treatment": "native_text"}]
+    )
+    regions = [
+        {
+            "policy_id": "label-1",
+            "text": text,
+            "bbox": [30, 50, 180, 100],
+            "clearance_bbox": [24, 44, 186, 106],
+            "method": "flat-surface-rebuild",
+            "clearability": {"status": "clearable"},
+        }
+    ]
+    full_hash = _hash(full)
+    clean_hash = _hash(clean)
+    policy_hash = graphic_text_policy_sha256(active_policy)
+    visual = compute_visual_diff_report(
+        full,
+        clean,
+        regions,
+        source_sha256=full_hash,
+        clean_base_sha256=clean_hash,
+        policy_sha256=policy_hash,
+        max_outside_fraction=0.01,
+    )
+    visual["post_clean_ocr"] = {"executed": True, "status": "passed", "residual": []}
+    visual["checks"]["post_clean_ocr"] = "diagnostic"
     return {
         "schema": CLEAN_BASE_SCHEMA,
         "status": "complete",
         "path": str(clean),
-        "source_sha256": _hash(full),
-        "sha256": _hash(clean),
+        "source_sha256": full_hash,
+        "sha256": clean_hash,
+        "algorithm_version": CLEAN_BASE_ALGORITHM_VERSION,
+        "graphic_text_policy_sha256": policy_hash,
         "removal_scope": "native_text_only",
-        "clearance_padding_px": 6,
+        "clearance_padding_px": 0,
         "max_outside_mask_changed_fraction": 0.01,
-        "cleaned_text_regions": [
-            {
-                "policy_id": "label-1",
-                "text": text,
-                "bbox": [30, 50, 180, 100],
-                "method": "flat-surface-rebuild",
-                "clearability": {"status": "clearable"},
-            }
-        ],
-        "visual_diff_report": {
-            "status": "passed",
-            "checks": {
-                "text_removal": "passed",
-                "background_continuity": "passed",
-                "outside_mask_preserved": "passed",
-                "post_clean_ocr": "passed",
-            },
-        },
+        "cleaned_text_regions": regions,
+        "visual_diff_report": visual,
     }
 
 
@@ -387,12 +409,16 @@ def test_clean_base_policy_recomputes_outside_mask_diff_for_reference_edit(tmp_p
 def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path, monkeypatch) -> None:
     _stub_quick_preview_renderer(monkeypatch)
     source = tmp_path / "source.png"
-    Image.new("RGB", (400, 200), "white").save(source)
+    source_image = Image.new("RGB", (400, 200), "white")
+    source_draw = ImageDraw.Draw(source_image)
+    for offset in (0, 11, 22, 33):
+        source_draw.rectangle((40 + offset, 65, 45 + offset, 80), fill="#12355B")
+    source_image.save(source)
     clean = tmp_path / "clean-base.png"
-    clean_image = Image.new("RGB", (400, 200), "white")
-    for x in range(30, 180):
-        for y in range(50, 100):
-            clean_image.putpixel((x, y), (250, 250, 250))
+    clean_image = source_image.copy()
+    clean_draw = ImageDraw.Draw(clean_image)
+    for offset in (0, 11, 22, 33):
+        clean_draw.rectangle((40 + offset, 65, 45 + offset, 80), fill="white")
     clean_image.save(clean)
     script = tmp_path / "script.md"
     script.write_text("## 第1页：标题\n登记编目\n", encoding="utf-8")
@@ -437,7 +463,6 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                             },
                         },
                         "authoring_svg": str(authored),
-                        "clean_base": _clean_base_contract(source, clean),
                         "graphic_text_policy": _graphic_text_policy(
                             items=[
                                 {
@@ -449,6 +474,22 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                                     "locator": {"coverage": 1.0, "similarity": 1.0},
                                 }
                             ]
+                        ),
+                        "clean_base": _clean_base_contract(
+                            source,
+                            clean,
+                            policy=_graphic_text_policy(
+                                items=[
+                                    {
+                                        "id": "label-1",
+                                        "text": "登记编目",
+                                        "treatment": "native_text",
+                                        "bbox": [30, 50, 180, 100],
+                                        "layout_lines": [{"text": "登记编目", "bbox": [30, 50, 180, 100]}],
+                                        "locator": {"coverage": 1.0, "similarity": 1.0},
+                                    }
+                                ]
+                            ),
                         ),
                     }
                 ],
@@ -533,12 +574,16 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
 def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: Path, monkeypatch) -> None:
     _stub_quick_preview_renderer(monkeypatch)
     source = tmp_path / "source.png"
-    Image.new("RGB", (400, 200), "white").save(source)
+    source_image = Image.new("RGB", (400, 200), "white")
+    source_draw = ImageDraw.Draw(source_image)
+    for offset in (0, 11, 22, 33):
+        source_draw.rectangle((40 + offset, 65, 45 + offset, 80), fill="#12355B")
+    source_image.save(source)
     clean = tmp_path / "clean-base.png"
-    clean_image = Image.new("RGB", (400, 200), "white")
-    for x in range(30, 180):
-        for y in range(50, 100):
-            clean_image.putpixel((x, y), (250, 250, 250))
+    clean_image = source_image.copy()
+    clean_draw = ImageDraw.Draw(clean_image)
+    for offset in (0, 11, 22, 33):
+        clean_draw.rectangle((40 + offset, 65, 45 + offset, 80), fill="white")
     clean_image.save(clean)
     authored = _policy_svg(tmp_path)
     authored.write_text(
@@ -591,7 +636,7 @@ def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: P
                             },
                         },
                         "authoring_svg": str(tmp_path / "missing.svg"),
-                        "clean_base": _clean_base_contract(source, clean),
+                        "clean_base": _clean_base_contract(source, clean, policy=policy),
                         "graphic_text_policy": policy,
                     },
                     {
@@ -609,7 +654,7 @@ def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: P
                             },
                         },
                         "authoring_svg": str(authored),
-                        "clean_base": _clean_base_contract(source, clean),
+                        "clean_base": _clean_base_contract(source, clean, policy=policy),
                         "graphic_text_policy": policy,
                     },
                 ],

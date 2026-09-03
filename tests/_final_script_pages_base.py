@@ -926,7 +926,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         build.assert_called_once()
         render_qa.assert_called_once()
         self.assertEqual(
-            "cyberppt.stage02.clean_base_generation.v1",
+            "cyberppt.stage02.clean_base_generation.v2",
             summary["clean_base_generation"]["schema"],
         )
         self.assertIsNone(summary["rebuild"])

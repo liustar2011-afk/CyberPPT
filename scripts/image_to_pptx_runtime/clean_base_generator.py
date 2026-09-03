@@ -9,9 +9,15 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Mapping
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
-from .clean_base_policy import SCHEMA
+from .clean_base_policy import (
+    ALGORITHM_VERSION,
+    SCHEMA,
+    compute_visual_diff_report,
+    graphic_text_policy_sha256,
+    is_reusable_clean_base,
+)
 from scripts.imagegen_pipeline.providers.codex_oauth_image import raw_output_path, run_codex_image
 _GLYPH_DISTANCE_THRESHOLD = 20
 _CLEARANCE_PADDING_PX = 6
@@ -307,6 +313,10 @@ def _post_clean_ocr(image_path: Path, regions: list[dict[str, Any]]) -> tuple[bo
         from cyberppt.image_text_gate import _rapidocr
 
         observations = _rapidocr(image_path)
+        if not isinstance(observations, list) or any(
+            not isinstance(item, Mapping) for item in observations
+        ):
+            return False, [{"error": "post-clean OCR returned an invalid observation list"}]
     except Exception as exc:  # A missing OCR dependency must block automatic approval.
         return False, [{"error": f"post-clean OCR unavailable: {exc}"}]
     residual: list[dict[str, Any]] = []
@@ -317,7 +327,14 @@ def _post_clean_ocr(image_path: Path, regions: list[dict[str, Any]]) -> tuple[bo
         if observed_box is None:
             continue
         for region in regions:
-            if _boxes_overlap(observed_box, region["bbox"]):
+            raw_region_box = region.get("clearance_bbox") or region.get("bbox")
+            if not isinstance(raw_region_box, (list, tuple)) or len(raw_region_box) != 4:
+                continue
+            try:
+                region_box = tuple(int(round(float(value))) for value in raw_region_box)
+            except (TypeError, ValueError):
+                continue
+            if _boxes_overlap(observed_box, region_box):
                 residual.append(
                     {
                         "policy_id": region["policy_id"],
@@ -458,30 +475,25 @@ def _reference_edit_clean_base(source: Path, destination: Path, regions: list[di
     for region in regions:
         padded = _declared_clearance_bbox(original, region)
         region["clearance_bbox"] = padded
-        padded_area = (padded[2] - padded[0]) * (padded[3] - padded[1])
-        padded_surface = (
-            _flat_surface_color(original, padded) or _dominant_surface_color(original, padded)
-            if padded_area <= 120_000
-            else None
-        )
-        if padded_surface is not None:
-            rebuilt.paste(padded_surface, padded)
-            continue
         assessment = _assess_text_clearability(
             original,
             text=region["text"],
             box=region["bbox"],
         )
+        region["clearability"] = assessment
         surface = assessment.get("surface_color")
         if assessment.get("status") == "clearable" and isinstance(surface, list):
-            _erase_glyph_pixels(
+            changed = _erase_glyph_pixels(
                 source=original,
                 destination=rebuilt,
                 box=region["bbox"],
                 surface=tuple(int(value) for value in surface),
             )
-        else:
-            fallback.append({**region, "paste_bbox": padded})
+            if changed:
+                region["method"] = "flat-surface-rebuild"
+                region["clearability"] = assessment
+                continue
+        fallback.append({**region, "paste_bbox": padded})
     if fallback:
         requested = "\n".join(
             f"- region {item['policy_id']} at {list(item['paste_bbox'])}: remove the editable text {item['text']!r}"
@@ -505,9 +517,15 @@ def _reference_edit_clean_base(source: Path, destination: Path, regions: list[di
         )
         with Image.open(raw_destination) as edited:
             edited_rgb = edited.convert("RGB").resize(source_size, Image.Resampling.LANCZOS)
+        # The reference model supplies background pixels, but it never owns
+        # the composition.  Composite only declared clearance masks so every
+        # pixel outside them remains byte-for-byte from the audited full image.
+        mask = Image.new("L", source_size, 0)
+        mask_draw = ImageDraw.Draw(mask)
         for region in fallback:
-            left, top, right, bottom = region["paste_bbox"]
-            rebuilt.paste(edited_rgb.crop((left, top, right, bottom)), (left, top))
+            mask_draw.rectangle(region["paste_bbox"], fill=255)
+            region["method"] = "reference-image-reconstruction"
+        rebuilt.paste(edited_rgb, (0, 0), mask)
         raw_destination.unlink(missing_ok=True)
         raw_output_path(raw_destination).unlink(missing_ok=True)
     rebuilt.save(destination)
@@ -539,7 +557,7 @@ def prepare_clean_bases(
         page_number = int(pair.get("page_number") or 0)
         existing = pair.get("clean_base")
         full = pair.get("full") if isinstance(pair.get("full"), Mapping) else {}
-        full_path = Path(str(full.get("path") or "")).expanduser()
+        full_path = Path(str(full.get("path") or "")).expanduser().resolve()
         policy = pair.get("graphic_text_policy") if isinstance(pair.get("graphic_text_policy"), Mapping) else {}
         if not full_path.is_file():
             results.append({"page_number": page_number, "status": "auto_failed", "errors": ["audited full image is missing"]})
@@ -559,24 +577,12 @@ def prepare_clean_bases(
         if errors or not regions:
             results.append({"page_number": page_number, "status": "auto_failed", "errors": errors or ["no native_text regions were declared"]})
             continue
-        if (
-            isinstance(existing, Mapping)
-            and existing.get("schema") == SCHEMA
-            and existing.get("status") == "complete"
-            and existing.get("coordinate_space") == "full-image-pixels.v3"
-            and existing.get("coordinate_binding") == policy.get("coordinate_binding")
-            and (existing.get("visual_diff_report") or {}).get("method")
-            == "masked-hybrid-reconstruction-v13"
+        policy_hash = graphic_text_policy_sha256(policy)
+        if is_reusable_clean_base(
+            existing,
+            full_image=full_path,
+            graphic_text_policy=policy,
         ):
-            existing["cleaned_text_regions"] = [
-                {
-                    "policy_id": region["policy_id"],
-                    "text": region["text"],
-                    "bbox": list(_declared_clearance_bbox(image, region)),
-                    "method": "reference-image-reconstruction",
-                }
-                for region in regions
-            ]
             results.append({"page_number": page_number, "status": "reused", "path": existing.get("path")})
             continue
         destination = assets / f"page_{page_number:03d}_clean_base.png"
@@ -585,38 +591,54 @@ def prepare_clean_bases(
             {
                 "policy_id": region["policy_id"],
                 "text": region["text"],
-                "bbox": list(region.get("clearance_bbox") or region["bbox"]),
-                "method": "reference-image-reconstruction",
+                "bbox": list(region["bbox"]),
+                "clearance_bbox": list(region.get("clearance_bbox") or region["bbox"]),
+                "method": region.get("method") or "masked-inpainting",
+                "clearability": region.get("clearability") or {"status": "not_assessed"},
             }
             for region in regions
         ]
+        clean_hash = _sha256(destination)
+        visual_report = compute_visual_diff_report(
+            full_path,
+            destination,
+            clean_regions,
+            padding=0,
+            max_outside_fraction=0.0,
+            source_sha256=_sha256(full_path),
+            clean_base_sha256=clean_hash,
+            policy_sha256=policy_hash,
+        )
+        ocr_passed, ocr_residual = _post_clean_ocr(destination, clean_regions)
+        ocr_status = "passed" if ocr_passed else (
+            "unavailable" if any(item.get("error") for item in ocr_residual) else "residual"
+        )
+        visual_report["post_clean_ocr"] = {
+            "executed": True,
+            "status": ocr_status,
+            "residual": ocr_residual,
+        }
+        visual_report["checks"]["post_clean_ocr"] = "diagnostic"
+        clean_status = "complete" if visual_report.get("status") == "passed" and ocr_status == "passed" else "failed"
         pair["clean_base"] = {
             "schema": SCHEMA,
-            "status": "complete",
+            "status": clean_status,
             "path": str(destination),
             "source_sha256": _sha256(full_path),
-            "sha256": _sha256(destination),
+            "sha256": clean_hash,
+            "algorithm_version": ALGORITHM_VERSION,
+            "graphic_text_policy_sha256": policy_hash,
             "removal_scope": "native_text_only",
-            "coordinate_space": "full-image-pixels.v3",
+            "coordinate_space": "full-image-pixels.v4",
             "coordinate_binding": dict(policy.get("coordinate_binding") or {}),
-            "clearance_padding_px": _CLEARANCE_PADDING_PX,
-            "max_outside_mask_changed_fraction": 0.01,
+            "clearance_padding_px": 0,
+            "max_outside_mask_changed_fraction": 0.0,
             "cleaned_text_regions": clean_regions,
-            "visual_diff_report": {
-                "status": "passed",
-                "method": "masked-hybrid-reconstruction-v13",
-                "checks": {
-                    "text_removal": "passed",
-                    "background_continuity": "passed",
-                    "outside_mask_preserved": "passed",
-                    "post_clean_ocr": "diagnostic",
-                },
-                "post_clean_ocr": {"status": "not_run", "residual": []},
-            },
+            "visual_diff_report": visual_report,
         }
-        results.append({"page_number": page_number, "status": "complete", "path": str(destination), "regions": clean_regions})
+        results.append({"page_number": page_number, "status": clean_status, "path": str(destination), "regions": clean_regions, "visual_diff_report": visual_report})
     report = {
-        "schema": "cyberppt.stage02.clean_base_generation.v1",
+        "schema": "cyberppt.stage02.clean_base_generation.v2",
         "status": "complete" if results and all(item["status"] in {"complete", "reused"} for item in results) else "auto_failed",
         "pages": results,
     }
