@@ -92,6 +92,7 @@ def run_final_script_pages(
     allow_prompt_edit: bool = False,
     prompt_overrides_dir: Path | None = None,
     reuse_audited_images_from: Path | None = None,
+    approved_full_image: Path | None = None,
 ) -> dict[str, Any]:
     _ = lightweight_stage01_confirmed, rebuild_args, style_id, style_name
     if run_rebuild:
@@ -137,6 +138,7 @@ def run_final_script_pages(
             allow_prompt_edit=allow_prompt_edit,
             prompt_overrides_dir=prompt_overrides_dir,
             reuse_audited_images_from=reuse_audited_images_from,
+            approved_full_image=approved_full_image,
         ),
         dependencies=dependencies,
     )

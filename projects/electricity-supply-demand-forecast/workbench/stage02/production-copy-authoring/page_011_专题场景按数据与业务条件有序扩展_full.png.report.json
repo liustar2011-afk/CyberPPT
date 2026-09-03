@@ -1,0 +1,75 @@
+{
+  "mode": "chart_heavy",
+  "input": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_011_专题场景按数据与业务条件有序扩展_full.png",
+  "output": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_011_专题场景按数据与业务条件有序扩展_full.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_011_专题场景按数据与业务条件有序扩展_full.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 3918.1676,
+    "edge_density": 0.101849,
+    "near_white_ratio": 0.559548,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0094,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help.",
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_011_专题场景按数据与业务条件有序扩展_full.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 4216.5189,
+    "edge_density": 0.097735,
+    "near_white_ratio": 0.561091,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0013,
+    "notes": [
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.996348,
+    "normalized_mean_abs_delta": 0.011297,
+    "edge_recall": 0.998224,
+    "edge_precision": 0.951338
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "ppt_page",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_011_专题场景按数据与业务条件有序扩展_full.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 3918.1676,
+      "edge_density": 0.101849,
+      "near_white_ratio": 0.559548,
+      "noise_estimate": 0.0,
+      "blockiness_score": 1.0094,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help.",
+        "Large near-white area detected; white-background protection is recommended."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

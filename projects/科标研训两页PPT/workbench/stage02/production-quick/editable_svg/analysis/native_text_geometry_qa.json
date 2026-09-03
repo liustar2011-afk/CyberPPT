@@ -1,0 +1,30 @@
+{
+  "schema": "cyberppt.native_text_geometry_qa.v1",
+  "qa_only": true,
+  "pages": [
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 1,
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    },
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 2,
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/editable_svg/image_to_pptx_runtime/svg_output/02.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    }
+  ],
+  "valid": true,
+  "review_required": false
+}

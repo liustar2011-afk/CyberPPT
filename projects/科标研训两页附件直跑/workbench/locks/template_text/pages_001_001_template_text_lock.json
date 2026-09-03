@@ -1,0 +1,37 @@
+{
+  "schema": "cyberppt.template_text_lock.v1",
+  "created_at": "2026-09-03T13:55:48+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/visual_style_lock.json",
+  "pages": [
+    1
+  ],
+  "records": [
+    {
+      "page": 1,
+      "title": "创新业务6-1：科技项目及课题研究",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_image_pairs.json"
+      ],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑' --script '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved' --build-id kebiaoyanxun-user-approved-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "presentation": {
+        "layout_motif": "evidence_landscape",
+        "scene_role": "no_scene",
+        "source": "auto",
+        "reason": "judgment_evidence candidates: evidence_landscape, decision_canvas",
+        "visual_medium": "editorial_typographic"
+      },
+      "copy_reference": "双方可在电力领域数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、人工智能工具与评测、能算碳综合服务等五个方向，开展科技项目和课题研究合作。\n\n**（一）电力领域数据基础设施建设**\n\n合作可围绕数据基础设施参考架构、接入连接器、可信流通及多主体运营机制等开展联合研究。中电联作为国家数据基础设施行业节点，可组织跨企业构建验证环境，提供行业级验证条件。\n\n**（二）高质量数据集评测标注与资产评估**\n\n合作可围绕数据标注、数据集加工、质量评测与资产评估的方法及工具开展研究，并探索测评互认与价值释放机制。中电联是专注电力行业的数据集建设第三方机构，已联合多家网省公司完成多类数据集建设与评测案例，具备专家团队与标准体系支撑。\n\n**（三）电力数据安全风险评估**\n\n合作可围绕数据分类分级、全生命周期与流通安全规则开展研究，联合验证风险评估工具及脱敏、水印等技防工具的适用性。中电联依据数据安全法及能源行业相关法规，已研发相应评估与技防工具并在国网多省份落地应用。\n\n**（四）人工智能工具与评测**\n\n合作可围绕模型适配、场景能力、安全可信等维度联合研发自动化评测工具，验证业务智能助手与数据治理工具的应用效果。中电联已构建行业能力、场景能力、基础能力三级评测体系，并与中科院等机构合作，在多家网省公司落地应用。\n\n**（五）能算碳综合服务**\n\n合作可围绕碳排放核算、碳资产开发、能效优化与零碳园区管理开展工具与机制研究。中电联依托1700余家会员单位资源和23年行业积累，承担电力碳足迹数据库建设任务，在碳核算核查、零碳园区、电算协同等方向已有可复制案例。\n\n除上述方向外，如贵单位另有科技项目储备或研究选题，可结合实际共同研究，择优推进合作。",
+      "editable_body_text": "双方可在电力领域数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、人工智能工具与评测、能算碳综合服务等五个方向，开展科技项目和课题研究合作。\n\n**（一）电力领域数据基础设施建设**\n\n合作可围绕数据基础设施参考架构、接入连接器、可信流通及多主体运营机制等开展联合研究。中电联作为国家数据基础设施行业节点，可组织跨企业构建验证环境，提供行业级验证条件。\n\n**（二）高质量数据集评测标注与资产评估**\n\n合作可围绕数据标注、数据集加工、质量评测与资产评估的方法及工具开展研究，并探索测评互认与价值释放机制。中电联是专注电力行业的数据集建设第三方机构，已联合多家网省公司完成多类数据集建设与评测案例，具备专家团队与标准体系支撑。\n\n**（三）电力数据安全风险评估**\n\n合作可围绕数据分类分级、全生命周期与流通安全规则开展研究，联合验证风险评估工具及脱敏、水印等技防工具的适用性。中电联依据数据安全法及能源行业相关法规，已研发相应评估与技防工具并在国网多省份落地应用。\n\n**（四）人工智能工具与评测**\n\n合作可围绕模型适配、场景能力、安全可信等维度联合研发自动化评测工具，验证业务智能助手与数据治理工具的应用效果。中电联已构建行业能力、场景能力、基础能力三级评测体系，并与中科院等机构合作，在多家网省公司落地应用。\n\n**（五）能算碳综合服务**\n\n合作可围绕碳排放核算、碳资产开发、能效优化与零碳园区管理开展工具与机制研究。中电联依托1700余家会员单位资源和23年行业积累，承担电力碳足迹数据库建设任务，在碳核算核查、零碳园区、电算协同等方向已有可复制案例。\n\n除上述方向外，如贵单位另有科技项目储备或研究选题，可结合实际共同研究，择优推进合作。"
+    }
+  ]
+}

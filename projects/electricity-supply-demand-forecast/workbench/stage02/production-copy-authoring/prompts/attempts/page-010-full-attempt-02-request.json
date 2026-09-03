@@ -1,0 +1,35 @@
+{
+  "schema": "cyberppt.imagegen_attempt_request.v1",
+  "page_number": 10,
+  "variant": "full",
+  "attempt": 2,
+  "prompt_path": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/prompts/attempts/page-010-full-attempt-02-sent.txt",
+  "prompt_sha256": "50a60ffac3ff941577b77bb803150db406c4ad2ca2e8ee49e725684da003a22a",
+  "base_prompt_sha256": "5c8c3005904a20e18f6eb6c6f98b4c9714c4cb9778c4846f4b13d953777850e1",
+  "prompt_chars": 4576,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "size": "2048x1024",
+  "input_images": [
+    "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_010_首期两项核心场景先形成稳定业务闭环_full.attempt-01-text-audit-failed.png",
+    "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_010_首期两项核心场景先形成稳定业务闭环_full.attempt-01-text-audit-failed-text-audit-region-01.png",
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+  ],
+  "correction_retry": true,
+  "original_prompt": "【完整上屏内容】\n首期建设应以月度、季度供需形势分析为主闭环，并以年度报告自动化提升成果生产效率；两项场景共用数据口径、历史序列和审校机制，形成从滚动研判到成果发布、误差复盘的稳定运行体系。\n月度、季度分析围绕全社会用电量、分产业和重点行业用电、最大负荷、发电量、装机结构、利用小时、区域平衡、交易互济和气象影响，持续跟踪全国及重点区域的供需变化。业务运行按周期归集统计、发电、装机、交易、宏观和气象信息，统一指标口径和发布时间视图，开展同比环比分析、结构分解、区域比较和主要影响因素识别，形成基准预测、变化区间、风险提示、专家审校、专题会商和月度复盘记录。\n年度报告自动化围绕数据量大、图表多、版本多和审校链条长等特点，建立指标、图表、章节与结论的对应关系，形成数据底稿、图表生成、基础文本、审校记录和签发版本。自动化重点承担数据填充、趋势计算、图表更新、格式编排和基础表述生成，年度核心判断、重要风险和政策建议仍由业务人员和专家审定，以人机协同提高生产效率并保持报告的专业性、权威性和发布规范。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+  "failed_image": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_010_首期两项核心场景先形成稳定业务闭环_full.attempt-01-text-audit-failed.png",
+  "correction_issues": [
+    {
+      "type": "typo",
+      "expected": "专家审校",
+      "observed": "专家审核",
+      "evidence": "底部流程标签中实际字形为“专家审核”，末字为“核”，不是参考中的“校”。",
+      "bbox": [
+        453,
+        386,
+        527,
+        411
+      ]
+    }
+  ]
+}

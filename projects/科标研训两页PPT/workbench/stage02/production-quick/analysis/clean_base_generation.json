@@ -1,0 +1,3686 @@
+{
+  "schema": "cyberppt.stage02.clean_base_generation.v2",
+  "status": "auto_failed",
+  "pages": [
+    {
+      "page_number": 1,
+      "status": "failed",
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/authoring/assets/page_001_clean_base.png",
+      "regions": [
+        {
+          "policy_id": "quick-001-001",
+          "text": "一、科技项目（四个方向）",
+          "bbox": [
+            109,
+            20,
+            653,
+            81
+          ],
+          "clearance_bbox": [
+            103,
+            14,
+            659,
+            87
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.175,
+            "component_count": 46
+          }
+        },
+        {
+          "policy_id": "quick-001-002",
+          "text": "聚焦数据构建、模型评测、安全评估与可信流通，研发工具能力，形成可对外提供的工具产品和测评服务，支撑电力行业数字化与数据要素安全高效利用。",
+          "bbox": [
+            60,
+            83,
+            1676,
+            115
+          ],
+          "clearance_bbox": [
+            54,
+            77,
+            1682,
+            121
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.3036,
+            "component_count": 225
+          }
+        },
+        {
+          "policy_id": "quick-001-003",
+          "text": "01",
+          "bbox": [
+            56,
+            142,
+            118,
+            184
+          ],
+          "clearance_bbox": [
+            50,
+            136,
+            124,
+            190
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.765
+          }
+        },
+        {
+          "policy_id": "quick-001-004",
+          "text": "高质量数据集智能构建",
+          "bbox": [
+            133,
+            137,
+            425,
+            176
+          ],
+          "clearance_bbox": [
+            127,
+            131,
+            431,
+            182
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              244
+            ],
+            "foreground_share": 0.3289,
+            "component_count": 24
+          }
+        },
+        {
+          "policy_id": "quick-001-005",
+          "text": "与自动化测评",
+          "bbox": [
+            133,
+            168,
+            308,
+            207
+          ],
+          "clearance_bbox": [
+            127,
+            162,
+            314,
+            213
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              249,
+              245
+            ],
+            "foreground_share": 0.3116,
+            "component_count": 32
+          }
+        },
+        {
+          "policy_id": "quick-001-006",
+          "text": "研发智能标注、数据增强、自动质检、",
+          "bbox": [
+            61,
+            398,
+            410,
+            426
+          ],
+          "clearance_bbox": [
+            55,
+            392,
+            416,
+            432
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.3123,
+            "component_count": 42
+          }
+        },
+        {
+          "policy_id": "quick-001-007",
+          "text": "质量诊断和自动化测评工具，覆盖数据",
+          "bbox": [
+            61,
+            425,
+            410,
+            453
+          ],
+          "clearance_bbox": [
+            55,
+            419,
+            416,
+            459
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-008",
+          "text": "集构建与评价全链条。",
+          "bbox": [
+            61,
+            452,
+            266,
+            480
+          ],
+          "clearance_bbox": [
+            55,
+            446,
+            272,
+            486
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.3152,
+            "component_count": 23
+          }
+        },
+        {
+          "policy_id": "quick-001-009",
+          "text": "中电联具备专业规则制定、典型数据集",
+          "bbox": [
+            61,
+            484,
+            410,
+            512
+          ],
+          "clearance_bbox": [
+            55,
+            478,
+            416,
+            518
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              245
+            ],
+            "foreground_share": 0.3505,
+            "component_count": 39
+          }
+        },
+        {
+          "policy_id": "quick-001-010",
+          "text": "积累、测评体系建设和应用场景组织基",
+          "bbox": [
+            61,
+            511,
+            410,
+            539
+          ],
+          "clearance_bbox": [
+            55,
+            505,
+            416,
+            545
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.3469,
+            "component_count": 41
+          }
+        },
+        {
+          "policy_id": "quick-001-011",
+          "text": "础条件。",
+          "bbox": [
+            61,
+            538,
+            143,
+            566
+          ],
+          "clearance_bbox": [
+            55,
+            532,
+            149,
+            572
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.2687,
+            "component_count": 4
+          }
+        },
+        {
+          "policy_id": "quick-001-012",
+          "text": "02",
+          "bbox": [
+            487,
+            142,
+            549,
+            184
+          ],
+          "clearance_bbox": [
+            481,
+            136,
+            555,
+            190
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.7224
+          }
+        },
+        {
+          "policy_id": "quick-001-013",
+          "text": "电力大模型与智能体",
+          "bbox": [
+            560,
+            137,
+            822,
+            176
+          ],
+          "clearance_bbox": [
+            554,
+            131,
+            828,
+            182
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.293,
+            "component_count": 21
+          }
+        },
+        {
+          "policy_id": "quick-001-014",
+          "text": "行业评测",
+          "bbox": [
+            560,
+            168,
+            677,
+            207
+          ],
+          "clearance_bbox": [
+            554,
+            162,
+            683,
+            213
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-015",
+          "text": "研发模型适配、场景能力、安全可信、",
+          "bbox": [
+            487,
+            398,
+            836,
+            426
+          ],
+          "clearance_bbox": [
+            481,
+            392,
+            842,
+            432
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.2957,
+            "component_count": 42
+          }
+        },
+        {
+          "policy_id": "quick-001-016",
+          "text": "智能体效果等维度的自动化评测工具，",
+          "bbox": [
+            487,
+            425,
+            836,
+            453
+          ],
+          "clearance_bbox": [
+            481,
+            419,
+            842,
+            459
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-017",
+          "text": "提供系统化评价手段。",
+          "bbox": [
+            487,
+            452,
+            692,
+            480
+          ],
+          "clearance_bbox": [
+            481,
+            446,
+            698,
+            486
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.3064,
+            "component_count": 25
+          }
+        },
+        {
+          "policy_id": "quick-001-018",
+          "text": "中电联具备跨模型、跨专业、跨单位统",
+          "bbox": [
+            487,
+            484,
+            836,
+            512
+          ],
+          "clearance_bbox": [
+            481,
+            478,
+            842,
+            518
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.3271,
+            "component_count": 35
+          }
+        },
+        {
+          "policy_id": "quick-001-019",
+          "text": "一基准验证优势，提升评测结论可比性",
+          "bbox": [
+            487,
+            511,
+            836,
+            539
+          ],
+          "clearance_bbox": [
+            481,
+            505,
+            842,
+            545
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.3097,
+            "component_count": 49
+          }
+        },
+        {
+          "policy_id": "quick-001-020",
+          "text": "和通用性。",
+          "bbox": [
+            487,
+            538,
+            590,
+            566
+          ],
+          "clearance_bbox": [
+            481,
+            532,
+            596,
+            572
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              245
+            ],
+            "foreground_share": 0.2902,
+            "component_count": 12
+          }
+        },
+        {
+          "policy_id": "quick-001-021",
+          "text": "03",
+          "bbox": [
+            895,
+            142,
+            957,
+            184
+          ],
+          "clearance_bbox": [
+            889,
+            136,
+            963,
+            190
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.7289
+          }
+        },
+        {
+          "policy_id": "quick-001-022",
+          "text": "数据安全风险",
+          "bbox": [
+            967,
+            137,
+            1142,
+            176
+          ],
+          "clearance_bbox": [
+            961,
+            131,
+            1148,
+            182
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.3062,
+            "component_count": 14
+          }
+        },
+        {
+          "policy_id": "quick-001-023",
+          "text": "智能评估",
+          "bbox": [
+            967,
+            168,
+            1084,
+            207
+          ],
+          "clearance_bbox": [
+            961,
+            162,
+            1090,
+            213
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-024",
+          "text": "研发风险识别、规则匹配、能力评分、",
+          "bbox": [
+            887,
+            398,
+            1236,
+            426
+          ],
+          "clearance_bbox": [
+            881,
+            392,
+            1242,
+            432
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-025",
+          "text": "问题诊断和整改推荐的工具体系，支撑",
+          "bbox": [
+            887,
+            425,
+            1236,
+            453
+          ],
+          "clearance_bbox": [
+            881,
+            419,
+            1242,
+            459
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-026",
+          "text": "企业自评估与自诊断。",
+          "bbox": [
+            887,
+            452,
+            1092,
+            480
+          ],
+          "clearance_bbox": [
+            881,
+            446,
+            1098,
+            486
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.2833,
+            "component_count": 34
+          }
+        },
+        {
+          "policy_id": "quick-001-027",
+          "text": "中电联在数据安全成熟度评估和治理项",
+          "bbox": [
+            887,
+            484,
+            1236,
+            512
+          ],
+          "clearance_bbox": [
+            881,
+            478,
+            1242,
+            518
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.348,
+            "component_count": 32
+          }
+        },
+        {
+          "policy_id": "quick-001-028",
+          "text": "目中积累了评价指标、风险规则和典型",
+          "bbox": [
+            887,
+            511,
+            1236,
+            539
+          ],
+          "clearance_bbox": [
+            881,
+            505,
+            1242,
+            545
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-029",
+          "text": "案例，可转化为评估模型支撑研发。",
+          "bbox": [
+            887,
+            538,
+            1215,
+            566
+          ],
+          "clearance_bbox": [
+            881,
+            532,
+            1221,
+            572
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              245
+            ],
+            "foreground_share": 0.3,
+            "component_count": 29
+          }
+        },
+        {
+          "policy_id": "quick-001-030",
+          "text": "04",
+          "bbox": [
+            1249,
+            142,
+            1311,
+            184
+          ],
+          "clearance_bbox": [
+            1243,
+            136,
+            1317,
+            190
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.7231
+          }
+        },
+        {
+          "policy_id": "quick-001-031",
+          "text": "多主体数据可信共享",
+          "bbox": [
+            1320,
+            137,
+            1582,
+            176
+          ],
+          "clearance_bbox": [
+            1314,
+            131,
+            1588,
+            182
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.2872,
+            "component_count": 17
+          }
+        },
+        {
+          "policy_id": "quick-001-032",
+          "text": "与受控利用",
+          "bbox": [
+            1320,
+            168,
+            1466,
+            207
+          ],
+          "clearance_bbox": [
+            1314,
+            162,
+            1472,
+            213
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              244
+            ],
+            "foreground_share": 0.3361,
+            "component_count": 31
+          }
+        },
+        {
+          "policy_id": "quick-001-033",
+          "text": "研究可信连接、授权控制、数据可用不",
+          "bbox": [
+            1242,
+            398,
+            1591,
+            426
+          ],
+          "clearance_bbox": [
+            1236,
+            392,
+            1597,
+            432
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-034",
+          "text": "可见、安全调用和审计追溯等关键技术，",
+          "bbox": [
+            1242,
+            425,
+            1611,
+            453
+          ],
+          "clearance_bbox": [
+            1236,
+            419,
+            1617,
+            459
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-035",
+          "text": "满足多主体共享的安全可控要求。",
+          "bbox": [
+            1242,
+            452,
+            1550,
+            480
+          ],
+          "clearance_bbox": [
+            1236,
+            446,
+            1556,
+            486
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.3072,
+            "component_count": 32
+          }
+        },
+        {
+          "policy_id": "quick-001-036",
+          "text": "中电联可依托电力数据基础设施建设跨",
+          "bbox": [
+            1242,
+            484,
+            1591,
+            512
+          ],
+          "clearance_bbox": [
+            1236,
+            478,
+            1597,
+            518
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.3576,
+            "component_count": 45
+          }
+        },
+        {
+          "policy_id": "quick-001-037",
+          "text": "企业验证环境，为可信流通技术提供行",
+          "bbox": [
+            1242,
+            511,
+            1591,
+            539
+          ],
+          "clearance_bbox": [
+            1236,
+            505,
+            1597,
+            545
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.312,
+            "component_count": 38
+          }
+        },
+        {
+          "policy_id": "quick-001-038",
+          "text": "业级验证条件。",
+          "bbox": [
+            1242,
+            538,
+            1386,
+            566
+          ],
+          "clearance_bbox": [
+            1236,
+            532,
+            1392,
+            572
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              245
+            ],
+            "foreground_share": 0.2857,
+            "component_count": 11
+          }
+        },
+        {
+          "policy_id": "quick-001-039",
+          "text": "共性价值",
+          "bbox": [
+            1754,
+            113,
+            1880,
+            155
+          ],
+          "clearance_bbox": [
+            1748,
+            107,
+            1886,
+            161
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              0,
+              40,
+              92
+            ],
+            "foreground_share": 0.3997,
+            "component_count": 9
+          }
+        },
+        {
+          "policy_id": "quick-001-040",
+          "text": "• 推动技术成果转化为工具产品",
+          "bbox": [
+            1648,
+            179,
+            2004,
+            211
+          ],
+          "clearance_bbox": [
+            1642,
+            173,
+            2010,
+            217
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              234,
+              237,
+              241
+            ],
+            "foreground_share": 0.3108,
+            "component_count": 91
+          }
+        },
+        {
+          "policy_id": "quick-001-041",
+          "text": "和测评服务",
+          "bbox": [
+            1678,
+            211,
+            1797,
+            243
+          ],
+          "clearance_bbox": [
+            1672,
+            205,
+            1803,
+            249
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              233,
+              237,
+              240
+            ],
+            "foreground_share": 0.4286,
+            "component_count": 30
+          }
+        },
+        {
+          "policy_id": "quick-001-042",
+          "text": "• 构建覆盖技术研发—验证评测—",
+          "bbox": [
+            1648,
+            261,
+            2028,
+            293
+          ],
+          "clearance_bbox": [
+            1642,
+            255,
+            2034,
+            299
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              234,
+              238,
+              241
+            ],
+            "foreground_share": 0.3122,
+            "component_count": 103
+          }
+        },
+        {
+          "policy_id": "quick-001-043",
+          "text": "场景应用的完整闭环",
+          "bbox": [
+            1678,
+            293,
+            1892,
+            325
+          ],
+          "clearance_bbox": [
+            1672,
+            287,
+            1898,
+            331
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              234,
+              237,
+              240
+            ],
+            "foreground_share": 0.3842,
+            "component_count": 43
+          }
+        },
+        {
+          "policy_id": "quick-001-044",
+          "text": "• 支撑电力行业数字化转型与数",
+          "bbox": [
+            1648,
+            343,
+            2004,
+            375
+          ],
+          "clearance_bbox": [
+            1642,
+            337,
+            2010,
+            381
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              234,
+              238,
+              241
+            ],
+            "foreground_share": 0.3239,
+            "component_count": 98
+          }
+        },
+        {
+          "policy_id": "quick-001-045",
+          "text": "据要素价值释放",
+          "bbox": [
+            1678,
+            375,
+            1844,
+            407
+          ],
+          "clearance_bbox": [
+            1672,
+            369,
+            1850,
+            413
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              234,
+              237,
+              240
+            ],
+            "foreground_share": 0.4106,
+            "component_count": 44
+          }
+        },
+        {
+          "policy_id": "quick-001-046",
+          "text": "二、课题研究（四个课题）",
+          "bbox": [
+            111,
+            588,
+            655,
+            649
+          ],
+          "clearance_bbox": [
+            105,
+            582,
+            661,
+            655
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              249,
+              245
+            ],
+            "foreground_share": 0.2116,
+            "component_count": 89
+          }
+        },
+        {
+          "policy_id": "quick-001-047",
+          "text": "围绕机制设计与路径研究，打通标准、测评、估值、流通和应用全流程，为行业规范化管理与价值释放提供系统支撑。",
+          "bbox": [
+            86,
+            644,
+            1322,
+            676
+          ],
+          "clearance_bbox": [
+            80,
+            638,
+            1328,
+            682
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.2891,
+            "component_count": 175
+          }
+        },
+        {
+          "policy_id": "quick-001-048",
+          "text": "01",
+          "bbox": [
+            55,
+            693,
+            115,
+            734
+          ],
+          "clearance_bbox": [
+            49,
+            687,
+            121,
+            740
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.5711
+          }
+        },
+        {
+          "policy_id": "quick-001-049",
+          "text": "高质量数据集测评互认",
+          "bbox": [
+            121,
+            690,
+            369,
+            723
+          ],
+          "clearance_bbox": [
+            115,
+            684,
+            375,
+            729
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              245
+            ],
+            "foreground_share": 0.3653,
+            "component_count": 38
+          }
+        },
+        {
+          "policy_id": "quick-001-050",
+          "text": "与价值释放机制",
+          "bbox": [
+            121,
+            717,
+            295,
+            750
+          ],
+          "clearance_bbox": [
+            115,
+            711,
+            301,
+            756
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-051",
+          "text": "研究质量评价、测评互认、价值评估、授权使用、",
+          "bbox": [
+            61,
+            882,
+            489,
+            908
+          ],
+          "clearance_bbox": [
+            55,
+            876,
+            495,
+            914
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-052",
+          "text": "流通交易和模型应用等环节的机制设计，解决价",
+          "bbox": [
+            61,
+            908,
+            469,
+            934
+          ],
+          "clearance_bbox": [
+            55,
+            902,
+            475,
+            940
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.3319,
+            "component_count": 43
+          }
+        },
+        {
+          "policy_id": "quick-001-053",
+          "text": "值释放不畅问题。",
+          "bbox": [
+            61,
+            934,
+            217,
+            960
+          ],
+          "clearance_bbox": [
+            55,
+            928,
+            223,
+            966
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-054",
+          "text": "中电联贯通标准、测评、估值、流通和应用各",
+          "bbox": [
+            61,
+            964,
+            450,
+            990
+          ],
+          "clearance_bbox": [
+            55,
+            958,
+            456,
+            996
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.3449,
+            "component_count": 65
+          }
+        },
+        {
+          "policy_id": "quick-001-055",
+          "text": "环节，为机制研究提供全流程实践支撑。",
+          "bbox": [
+            61,
+            990,
+            411,
+            1016
+          ],
+          "clearance_bbox": [
+            55,
+            984,
+            417,
+            1022
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.0129,
+            "component_count": 35
+          }
+        },
+        {
+          "policy_id": "quick-001-056",
+          "text": "02",
+          "bbox": [
+            477,
+            693,
+            537,
+            734
+          ],
+          "clearance_bbox": [
+            471,
+            687,
+            543,
+            740
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.5553
+          }
+        },
+        {
+          "policy_id": "quick-001-057",
+          "text": "电力大模型与智能体行业评价",
+          "bbox": [
+            548,
+            690,
+            871,
+            723
+          ],
+          "clearance_bbox": [
+            542,
+            684,
+            877,
+            729
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              249,
+              245
+            ],
+            "foreground_share": 0.3179,
+            "component_count": 53
+          }
+        },
+        {
+          "policy_id": "quick-001-058",
+          "text": "及应用准入机制",
+          "bbox": [
+            548,
+            717,
+            722,
+            750
+          ],
+          "clearance_bbox": [
+            542,
+            711,
+            728,
+            756
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-059",
+          "text": "研究行业适配、业务效果、安全可信、应用准入",
+          "bbox": [
+            466,
+            882,
+            874,
+            908
+          ],
+          "clearance_bbox": [
+            460,
+            876,
+            880,
+            914
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-060",
+          "text": "和持续评价等方面的方法体系，支撑规范化管理。",
+          "bbox": [
+            466,
+            908,
+            894,
+            934
+          ],
+          "clearance_bbox": [
+            460,
+            902,
+            900,
+            940
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-061",
+          "text": "中电联组织电网企业、发电企业、装备制造企业",
+          "bbox": [
+            466,
+            946,
+            874,
+            972
+          ],
+          "clearance_bbox": [
+            460,
+            940,
+            880,
+            978
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.3265,
+            "component_count": 63
+          }
+        },
+        {
+          "policy_id": "quick-001-062",
+          "text": "和科研机构共同参与验证，形成跨主体的行业评",
+          "bbox": [
+            466,
+            970,
+            874,
+            996
+          ],
+          "clearance_bbox": [
+            460,
+            964,
+            880,
+            1002
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.1618,
+            "component_count": 19
+          }
+        },
+        {
+          "policy_id": "quick-001-063",
+          "text": "价体系，增强结果代表性。",
+          "bbox": [
+            466,
+            992,
+            699,
+            1018
+          ],
+          "clearance_bbox": [
+            460,
+            986,
+            705,
+            1024
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "no distinct text-like foreground pixels",
+            "foreground_share": 0.0
+          }
+        },
+        {
+          "policy_id": "quick-001-064",
+          "text": "03",
+          "bbox": [
+            898,
+            693,
+            958,
+            734
+          ],
+          "clearance_bbox": [
+            892,
+            687,
+            964,
+            740
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.5626
+          }
+        },
+        {
+          "policy_id": "quick-001-065",
+          "text": "电力数据资产价值评估",
+          "bbox": [
+            969,
+            690,
+            1217,
+            723
+          ],
+          "clearance_bbox": [
+            963,
+            684,
+            1223,
+            729
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              245
+            ],
+            "foreground_share": 0.3088,
+            "component_count": 39
+          }
+        },
+        {
+          "policy_id": "quick-001-066",
+          "text": "与市场化流通机制",
+          "bbox": [
+            969,
+            717,
+            1168,
+            750
+          ],
+          "clearance_bbox": [
+            963,
+            711,
+            1174,
+            756
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-067",
+          "text": "研究数据盘点、质酬评价、价值测算、资产入表、",
+          "bbox": [
+            888,
+            882,
+            1316,
+            908
+          ],
+          "clearance_bbox": [
+            882,
+            876,
+            1322,
+            914
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-068",
+          "text": "产品设计、登记交易和运营等数据资产化全流程。",
+          "bbox": [
+            888,
+            908,
+            1316,
+            934
+          ],
+          "clearance_bbox": [
+            882,
+            902,
+            1322,
+            940
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-069",
+          "text": "中电联依托数据资产化项目和价值测算标准研究，",
+          "bbox": [
+            888,
+            946,
+            1316,
+            972
+          ],
+          "clearance_bbox": [
+            882,
+            940,
+            1322,
+            978
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.3412,
+            "component_count": 33
+          }
+        },
+        {
+          "policy_id": "quick-001-070",
+          "text": "通过真实项目检验估值方法、入表路径和流通",
+          "bbox": [
+            888,
+            970,
+            1277,
+            996
+          ],
+          "clearance_bbox": [
+            882,
+            964,
+            1283,
+            1002
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.0758,
+            "component_count": 10
+          }
+        },
+        {
+          "policy_id": "quick-001-071",
+          "text": "路径。",
+          "bbox": [
+            888,
+            992,
+            946,
+            1018
+          ],
+          "clearance_bbox": [
+            882,
+            986,
+            952,
+            1024
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "no distinct text-like foreground pixels",
+            "foreground_share": 0.0
+          }
+        },
+        {
+          "policy_id": "quick-001-072",
+          "text": "04",
+          "bbox": [
+            1246,
+            693,
+            1306,
+            734
+          ],
+          "clearance_bbox": [
+            1240,
+            687,
+            1312,
+            740
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.5675
+          }
+        },
+        {
+          "policy_id": "quick-001-073",
+          "text": "电力数据基础设施场景运营",
+          "bbox": [
+            1301,
+            690,
+            1599,
+            723
+          ],
+          "clearance_bbox": [
+            1295,
+            684,
+            1605,
+            729
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              250,
+              248,
+              244
+            ],
+            "foreground_share": 0.346,
+            "component_count": 42
+          }
+        },
+        {
+          "policy_id": "quick-001-074",
+          "text": "与多方协同机制",
+          "bbox": [
+            1301,
+            717,
+            1475,
+            750
+          ],
+          "clearance_bbox": [
+            1295,
+            711,
+            1481,
+            756
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-075",
+          "text": "研究授权、计量、定价、结算、收益分配、安全",
+          "bbox": [
+            1242,
+            882,
+            1650,
+            908
+          ],
+          "clearance_bbox": [
+            1236,
+            876,
+            1656,
+            914
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-076",
+          "text": "责任等要素在多主体运营中的机制设计。",
+          "bbox": [
+            1242,
+            908,
+            1592,
+            934
+          ],
+          "clearance_bbox": [
+            1236,
+            902,
+            1598,
+            940
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-077",
+          "text": "中电联组织数据提供方、业务方、使用方和平台",
+          "bbox": [
+            1242,
+            946,
+            1650,
+            972
+          ],
+          "clearance_bbox": [
+            1236,
+            940,
+            1656,
+            978
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground touches the clearance boundary like a structural frame",
+            "foreground_share": 0.3473
+          }
+        },
+        {
+          "policy_id": "quick-001-078",
+          "text": "方在真实场景中验证运营规则，检验机制设计的",
+          "bbox": [
+            1242,
+            970,
+            1650,
+            996
+          ],
+          "clearance_bbox": [
+            1236,
+            964,
+            1656,
+            1002
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              249,
+              248,
+              244
+            ],
+            "foreground_share": 0.1523,
+            "component_count": 13
+          }
+        },
+        {
+          "policy_id": "quick-001-079",
+          "text": "可操作性和适用性。",
+          "bbox": [
+            1242,
+            992,
+            1417,
+            1018
+          ],
+          "clearance_bbox": [
+            1236,
+            986,
+            1423,
+            1024
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "no distinct text-like foreground pixels",
+            "foreground_share": 0.0
+          }
+        },
+        {
+          "policy_id": "quick-001-080",
+          "text": "适用与协同",
+          "bbox": [
+            1739,
+            641,
+            1895,
+            683
+          ],
+          "clearance_bbox": [
+            1733,
+            635,
+            1901,
+            689
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground occupies too much of the clearance region",
+            "foreground_share": 0.8617
+          }
+        },
+        {
+          "policy_id": "quick-001-081",
+          "text": "除上述方向外，如贵单位另有科技",
+          "bbox": [
+            1713,
+            722,
+            2037,
+            751
+          ],
+          "clearance_bbox": [
+            1707,
+            716,
+            2043,
+            757
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "local surface is not planar enough for safe text reconstruction"
+          }
+        },
+        {
+          "policy_id": "quick-001-082",
+          "text": "项目储备或重点研究选题，可结合",
+          "bbox": [
+            1713,
+            750,
+            2037,
+            779
+          ],
+          "clearance_bbox": [
+            1707,
+            744,
+            2043,
+            785
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              234,
+              237,
+              241
+            ],
+            "foreground_share": 0.3114,
+            "component_count": 43
+          }
+        },
+        {
+          "policy_id": "quick-001-083",
+          "text": "实际情况共同研究，择优推进项目",
+          "bbox": [
+            1713,
+            778,
+            2037,
+            807
+          ],
+          "clearance_bbox": [
+            1707,
+            772,
+            2043,
+            813
+          ],
+          "method": "flat-surface-rebuild",
+          "clearability": {
+            "status": "clearable",
+            "surface_color": [
+              234,
+              238,
+              241
+            ],
+            "foreground_share": 0.047,
+            "component_count": 8
+          }
+        },
+        {
+          "policy_id": "quick-001-084",
+          "text": "合作。",
+          "bbox": [
+            1713,
+            806,
+            1778,
+            835
+          ],
+          "clearance_bbox": [
+            1707,
+            800,
+            1784,
+            841
+          ],
+          "method": "masked-inpainting",
+          "clearability": {
+            "status": "rejected",
+            "reason": "foreground touches the clearance boundary like a structural frame",
+            "foreground_share": 0.4509
+          }
+        }
+      ],
+      "visual_diff_report": {
+        "schema": "cyberppt.stage02.clean_base.visual_diff.v2",
+        "qa_origin": "computed",
+        "algorithm_version": "masked-text-clearance-v3",
+        "source_sha256": "f9eeb72ad24a57bcd058e9190459c2ebe5efdb6c377139fb80166b8ffa50e9ae",
+        "clean_base_sha256": "6847ab983e66e3713fc4664416728f0cf01feb8b20610e7725ef14524291f726",
+        "graphic_text_policy_sha256": "fda2a54ecb09d0bdf8b6371a7473d8dd4029eff7ff4625fdc2f4e8455d27af9e",
+        "checks": {
+          "text_removal": "passed",
+          "background_continuity": "failed",
+          "outside_mask_preserved": "passed",
+          "no_abnormal_solid_blocks": "failed",
+          "post_clean_ocr": "diagnostic"
+        },
+        "metrics": {
+          "canvas": [
+            2048,
+            1024
+          ],
+          "declared_region_count": 84,
+          "valid_clearance_region_count": 84,
+          "changed_pixels": 421933,
+          "changed_pixels_inside_mask": 421933,
+          "changed_pixels_outside_mask": 0,
+          "outside_changed_fraction": 0.0,
+          "max_outside_changed_fraction": 0.0,
+          "changed_regions": 84,
+          "abnormal_solid_block_count": 34,
+          "regions": [
+            {
+              "index": 0,
+              "clearance_bbox": [
+                103,
+                14,
+                659,
+                87
+              ],
+              "area": 40588,
+              "changed_pixels": 5806,
+              "changed_fraction": 0.143047,
+              "component_count": 46,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 1,
+              "clearance_bbox": [
+                54,
+                77,
+                1682,
+                121
+              ],
+              "area": 71632,
+              "changed_pixels": 15699,
+              "changed_fraction": 0.219162,
+              "component_count": 225,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 2,
+              "clearance_bbox": [
+                50,
+                136,
+                124,
+                190
+              ],
+              "area": 3996,
+              "changed_pixels": 3075,
+              "changed_fraction": 0.76952,
+              "component_count": 12,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 3,
+              "clearance_bbox": [
+                127,
+                131,
+                431,
+                182
+              ],
+              "area": 15504,
+              "changed_pixels": 4100,
+              "changed_fraction": 0.264448,
+              "component_count": 37,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 4,
+              "clearance_bbox": [
+                127,
+                162,
+                314,
+                213
+              ],
+              "area": 9537,
+              "changed_pixels": 2886,
+              "changed_fraction": 0.302611,
+              "component_count": 29,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 5,
+              "clearance_bbox": [
+                55,
+                392,
+                416,
+                432
+              ],
+              "area": 14440,
+              "changed_pixels": 7249,
+              "changed_fraction": 0.502008,
+              "component_count": 13,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 6,
+              "clearance_bbox": [
+                55,
+                419,
+                416,
+                459
+              ],
+              "area": 14440,
+              "changed_pixels": 14235,
+              "changed_fraction": 0.985803,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 14235,
+                  "bbox": [
+                    55,
+                    419,
+                    416,
+                    459
+                  ],
+                  "fill_ratio": 0.9858
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "clearance_bbox": [
+                55,
+                446,
+                272,
+                486
+              ],
+              "area": 8680,
+              "changed_pixels": 4306,
+              "changed_fraction": 0.496083,
+              "component_count": 4,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 8,
+              "clearance_bbox": [
+                55,
+                478,
+                416,
+                518
+              ],
+              "area": 14440,
+              "changed_pixels": 4171,
+              "changed_fraction": 0.28885,
+              "component_count": 64,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 9,
+              "clearance_bbox": [
+                55,
+                505,
+                416,
+                545
+              ],
+              "area": 14440,
+              "changed_pixels": 3854,
+              "changed_fraction": 0.266898,
+              "component_count": 81,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 10,
+              "clearance_bbox": [
+                55,
+                532,
+                149,
+                572
+              ],
+              "area": 3760,
+              "changed_pixels": 620,
+              "changed_fraction": 0.164894,
+              "component_count": 7,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 11,
+              "clearance_bbox": [
+                481,
+                136,
+                555,
+                190
+              ],
+              "area": 3996,
+              "changed_pixels": 3280,
+              "changed_fraction": 0.820821,
+              "component_count": 8,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 3249,
+                  "bbox": [
+                    481,
+                    136,
+                    555,
+                    190
+                  ],
+                  "fill_ratio": 0.8131
+                }
+              ]
+            },
+            {
+              "index": 12,
+              "clearance_bbox": [
+                554,
+                131,
+                828,
+                182
+              ],
+              "area": 13974,
+              "changed_pixels": 4259,
+              "changed_fraction": 0.30478,
+              "component_count": 28,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 13,
+              "clearance_bbox": [
+                554,
+                162,
+                683,
+                213
+              ],
+              "area": 6579,
+              "changed_pixels": 5777,
+              "changed_fraction": 0.878097,
+              "component_count": 13,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 5741,
+                  "bbox": [
+                    554,
+                    162,
+                    683,
+                    213
+                  ],
+                  "fill_ratio": 0.8726
+                }
+              ]
+            },
+            {
+              "index": 14,
+              "clearance_bbox": [
+                481,
+                392,
+                842,
+                432
+              ],
+              "area": 14440,
+              "changed_pixels": 7010,
+              "changed_fraction": 0.485457,
+              "component_count": 14,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 15,
+              "clearance_bbox": [
+                481,
+                419,
+                842,
+                459
+              ],
+              "area": 14440,
+              "changed_pixels": 14082,
+              "changed_fraction": 0.975208,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 14082,
+                  "bbox": [
+                    481,
+                    419,
+                    840,
+                    459
+                  ],
+                  "fill_ratio": 0.9806
+                }
+              ]
+            },
+            {
+              "index": 16,
+              "clearance_bbox": [
+                481,
+                446,
+                698,
+                486
+              ],
+              "area": 8680,
+              "changed_pixels": 4240,
+              "changed_fraction": 0.488479,
+              "component_count": 9,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 17,
+              "clearance_bbox": [
+                481,
+                478,
+                842,
+                518
+              ],
+              "area": 14440,
+              "changed_pixels": 3796,
+              "changed_fraction": 0.262881,
+              "component_count": 73,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 18,
+              "clearance_bbox": [
+                481,
+                505,
+                842,
+                545
+              ],
+              "area": 14440,
+              "changed_pixels": 3524,
+              "changed_fraction": 0.244044,
+              "component_count": 84,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 19,
+              "clearance_bbox": [
+                481,
+                532,
+                596,
+                572
+              ],
+              "area": 4600,
+              "changed_pixels": 840,
+              "changed_fraction": 0.182609,
+              "component_count": 15,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 20,
+              "clearance_bbox": [
+                889,
+                136,
+                963,
+                190
+              ],
+              "area": 3996,
+              "changed_pixels": 3107,
+              "changed_fraction": 0.777528,
+              "component_count": 9,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 21,
+              "clearance_bbox": [
+                961,
+                131,
+                1148,
+                182
+              ],
+              "area": 9537,
+              "changed_pixels": 3409,
+              "changed_fraction": 0.35745,
+              "component_count": 17,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 22,
+              "clearance_bbox": [
+                961,
+                162,
+                1090,
+                213
+              ],
+              "area": 6579,
+              "changed_pixels": 5859,
+              "changed_fraction": 0.890561,
+              "component_count": 10,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 5846,
+                  "bbox": [
+                    961,
+                    162,
+                    1090,
+                    213
+                  ],
+                  "fill_ratio": 0.8886
+                }
+              ]
+            },
+            {
+              "index": 23,
+              "clearance_bbox": [
+                881,
+                392,
+                1242,
+                432
+              ],
+              "area": 14440,
+              "changed_pixels": 12597,
+              "changed_fraction": 0.872368,
+              "component_count": 18,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 12306,
+                  "bbox": [
+                    884,
+                    392,
+                    1200,
+                    432
+                  ],
+                  "fill_ratio": 0.9736
+                }
+              ]
+            },
+            {
+              "index": 24,
+              "clearance_bbox": [
+                881,
+                419,
+                1242,
+                459
+              ],
+              "area": 14440,
+              "changed_pixels": 12627,
+              "changed_fraction": 0.874446,
+              "component_count": 24,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 12317,
+                  "bbox": [
+                    883,
+                    419,
+                    1203,
+                    459
+                  ],
+                  "fill_ratio": 0.9623
+                }
+              ]
+            },
+            {
+              "index": 25,
+              "clearance_bbox": [
+                881,
+                446,
+                1098,
+                486
+              ],
+              "area": 8680,
+              "changed_pixels": 4104,
+              "changed_fraction": 0.472811,
+              "component_count": 15,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 26,
+              "clearance_bbox": [
+                881,
+                478,
+                1242,
+                518
+              ],
+              "area": 14440,
+              "changed_pixels": 7140,
+              "changed_fraction": 0.49446,
+              "component_count": 24,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 27,
+              "clearance_bbox": [
+                881,
+                505,
+                1242,
+                545
+              ],
+              "area": 14440,
+              "changed_pixels": 11164,
+              "changed_fraction": 0.77313,
+              "component_count": 47,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 10860,
+                  "bbox": [
+                    884,
+                    505,
+                    1200,
+                    545
+                  ],
+                  "fill_ratio": 0.8592
+                }
+              ]
+            },
+            {
+              "index": 28,
+              "clearance_bbox": [
+                881,
+                532,
+                1221,
+                572
+              ],
+              "area": 13600,
+              "changed_pixels": 4586,
+              "changed_fraction": 0.337206,
+              "component_count": 73,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 29,
+              "clearance_bbox": [
+                1243,
+                136,
+                1317,
+                190
+              ],
+              "area": 3996,
+              "changed_pixels": 3160,
+              "changed_fraction": 0.790791,
+              "component_count": 9,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 30,
+              "clearance_bbox": [
+                1314,
+                131,
+                1588,
+                182
+              ],
+              "area": 13974,
+              "changed_pixels": 3309,
+              "changed_fraction": 0.236797,
+              "component_count": 33,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 31,
+              "clearance_bbox": [
+                1314,
+                162,
+                1472,
+                213
+              ],
+              "area": 8058,
+              "changed_pixels": 2499,
+              "changed_fraction": 0.310127,
+              "component_count": 34,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 32,
+              "clearance_bbox": [
+                1236,
+                392,
+                1597,
+                432
+              ],
+              "area": 14440,
+              "changed_pixels": 13483,
+              "changed_fraction": 0.933726,
+              "component_count": 3,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 13476,
+                  "bbox": [
+                    1238,
+                    392,
+                    1582,
+                    432
+                  ],
+                  "fill_ratio": 0.9794
+                }
+              ]
+            },
+            {
+              "index": 33,
+              "clearance_bbox": [
+                1236,
+                419,
+                1617,
+                459
+              ],
+              "area": 15240,
+              "changed_pixels": 13439,
+              "changed_fraction": 0.881824,
+              "component_count": 7,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 13430,
+                  "bbox": [
+                    1237,
+                    419,
+                    1582,
+                    459
+                  ],
+                  "fill_ratio": 0.9732
+                }
+              ]
+            },
+            {
+              "index": 34,
+              "clearance_bbox": [
+                1236,
+                446,
+                1556,
+                486
+              ],
+              "area": 12800,
+              "changed_pixels": 6219,
+              "changed_fraction": 0.485859,
+              "component_count": 14,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 35,
+              "clearance_bbox": [
+                1236,
+                478,
+                1597,
+                518
+              ],
+              "area": 14440,
+              "changed_pixels": 4103,
+              "changed_fraction": 0.284141,
+              "component_count": 76,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 36,
+              "clearance_bbox": [
+                1236,
+                505,
+                1597,
+                545
+              ],
+              "area": 14440,
+              "changed_pixels": 3739,
+              "changed_fraction": 0.258934,
+              "component_count": 95,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 37,
+              "clearance_bbox": [
+                1236,
+                532,
+                1392,
+                572
+              ],
+              "area": 6240,
+              "changed_pixels": 1174,
+              "changed_fraction": 0.188141,
+              "component_count": 20,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 38,
+              "clearance_bbox": [
+                1748,
+                107,
+                1886,
+                161
+              ],
+              "area": 7452,
+              "changed_pixels": 2115,
+              "changed_fraction": 0.283816,
+              "component_count": 9,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 39,
+              "clearance_bbox": [
+                1642,
+                173,
+                2010,
+                217
+              ],
+              "area": 16192,
+              "changed_pixels": 3541,
+              "changed_fraction": 0.218688,
+              "component_count": 91,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 40,
+              "clearance_bbox": [
+                1672,
+                205,
+                1803,
+                249
+              ],
+              "area": 5764,
+              "changed_pixels": 1845,
+              "changed_fraction": 0.32009,
+              "component_count": 57,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 41,
+              "clearance_bbox": [
+                1642,
+                255,
+                2034,
+                299
+              ],
+              "area": 17248,
+              "changed_pixels": 3803,
+              "changed_fraction": 0.220489,
+              "component_count": 107,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 42,
+              "clearance_bbox": [
+                1672,
+                287,
+                1898,
+                331
+              ],
+              "area": 9944,
+              "changed_pixels": 2694,
+              "changed_fraction": 0.270917,
+              "component_count": 60,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 43,
+              "clearance_bbox": [
+                1642,
+                337,
+                2010,
+                381
+              ],
+              "area": 16192,
+              "changed_pixels": 4007,
+              "changed_fraction": 0.247468,
+              "component_count": 124,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 44,
+              "clearance_bbox": [
+                1672,
+                369,
+                1850,
+                413
+              ],
+              "area": 7832,
+              "changed_pixels": 2181,
+              "changed_fraction": 0.278473,
+              "component_count": 44,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 45,
+              "clearance_bbox": [
+                105,
+                582,
+                661,
+                655
+              ],
+              "area": 40588,
+              "changed_pixels": 8676,
+              "changed_fraction": 0.213758,
+              "component_count": 99,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 46,
+              "clearance_bbox": [
+                80,
+                638,
+                1328,
+                682
+              ],
+              "area": 54912,
+              "changed_pixels": 11455,
+              "changed_fraction": 0.208606,
+              "component_count": 176,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 47,
+              "clearance_bbox": [
+                49,
+                687,
+                121,
+                740
+              ],
+              "area": 3816,
+              "changed_pixels": 3476,
+              "changed_fraction": 0.910901,
+              "component_count": 6,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 3468,
+                  "bbox": [
+                    49,
+                    687,
+                    121,
+                    740
+                  ],
+                  "fill_ratio": 0.9088
+                }
+              ]
+            },
+            {
+              "index": 48,
+              "clearance_bbox": [
+                115,
+                684,
+                375,
+                729
+              ],
+              "area": 11700,
+              "changed_pixels": 5909,
+              "changed_fraction": 0.505043,
+              "component_count": 12,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 5693,
+                  "bbox": [
+                    115,
+                    693,
+                    313,
+                    729
+                  ],
+                  "fill_ratio": 0.7987
+                }
+              ]
+            },
+            {
+              "index": 49,
+              "clearance_bbox": [
+                115,
+                711,
+                301,
+                756
+              ],
+              "area": 8370,
+              "changed_pixels": 8347,
+              "changed_fraction": 0.997252,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 8347,
+                  "bbox": [
+                    115,
+                    711,
+                    301,
+                    756
+                  ],
+                  "fill_ratio": 0.9973
+                }
+              ]
+            },
+            {
+              "index": 50,
+              "clearance_bbox": [
+                55,
+                876,
+                495,
+                914
+              ],
+              "area": 16720,
+              "changed_pixels": 15220,
+              "changed_fraction": 0.910287,
+              "component_count": 3,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 13865,
+                  "bbox": [
+                    55,
+                    876,
+                    428,
+                    914
+                  ],
+                  "fill_ratio": 0.9782
+                }
+              ]
+            },
+            {
+              "index": 51,
+              "clearance_bbox": [
+                55,
+                902,
+                475,
+                940
+              ],
+              "area": 15960,
+              "changed_pixels": 8650,
+              "changed_fraction": 0.54198,
+              "component_count": 6,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 6148,
+                  "bbox": [
+                    55,
+                    902,
+                    427,
+                    923
+                  ],
+                  "fill_ratio": 0.787
+                }
+              ]
+            },
+            {
+              "index": 52,
+              "clearance_bbox": [
+                55,
+                928,
+                223,
+                966
+              ],
+              "area": 6384,
+              "changed_pixels": 6304,
+              "changed_fraction": 0.987469,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 6304,
+                  "bbox": [
+                    55,
+                    928,
+                    223,
+                    966
+                  ],
+                  "fill_ratio": 0.9875
+                }
+              ]
+            },
+            {
+              "index": 53,
+              "clearance_bbox": [
+                55,
+                958,
+                456,
+                996
+              ],
+              "area": 15238,
+              "changed_pixels": 4862,
+              "changed_fraction": 0.319071,
+              "component_count": 49,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 54,
+              "clearance_bbox": [
+                55,
+                984,
+                417,
+                1022
+              ],
+              "area": 13756,
+              "changed_pixels": 1115,
+              "changed_fraction": 0.081056,
+              "component_count": 31,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 55,
+              "clearance_bbox": [
+                471,
+                687,
+                543,
+                740
+              ],
+              "area": 3816,
+              "changed_pixels": 3433,
+              "changed_fraction": 0.899633,
+              "component_count": 8,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 3413,
+                  "bbox": [
+                    471,
+                    687,
+                    543,
+                    740
+                  ],
+                  "fill_ratio": 0.8944
+                }
+              ]
+            },
+            {
+              "index": 56,
+              "clearance_bbox": [
+                542,
+                684,
+                877,
+                729
+              ],
+              "area": 15075,
+              "changed_pixels": 6302,
+              "changed_fraction": 0.418043,
+              "component_count": 23,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 57,
+              "clearance_bbox": [
+                542,
+                711,
+                728,
+                756
+              ],
+              "area": 8370,
+              "changed_pixels": 8365,
+              "changed_fraction": 0.999403,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 8365,
+                  "bbox": [
+                    542,
+                    711,
+                    728,
+                    756
+                  ],
+                  "fill_ratio": 0.9994
+                }
+              ]
+            },
+            {
+              "index": 58,
+              "clearance_bbox": [
+                460,
+                876,
+                880,
+                914
+              ],
+              "area": 15960,
+              "changed_pixels": 14537,
+              "changed_fraction": 0.91084,
+              "component_count": 8,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 14282,
+                  "bbox": [
+                    464,
+                    876,
+                    854,
+                    914
+                  ],
+                  "fill_ratio": 0.9637
+                }
+              ]
+            },
+            {
+              "index": 59,
+              "clearance_bbox": [
+                460,
+                902,
+                900,
+                940
+              ],
+              "area": 16720,
+              "changed_pixels": 15081,
+              "changed_fraction": 0.901974,
+              "component_count": 15,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 14315,
+                  "bbox": [
+                    464,
+                    902,
+                    847,
+                    940
+                  ],
+                  "fill_ratio": 0.9836
+                }
+              ]
+            },
+            {
+              "index": 60,
+              "clearance_bbox": [
+                460,
+                940,
+                880,
+                978
+              ],
+              "area": 15960,
+              "changed_pixels": 4205,
+              "changed_fraction": 0.263471,
+              "component_count": 85,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 61,
+              "clearance_bbox": [
+                460,
+                964,
+                880,
+                1002
+              ],
+              "area": 15960,
+              "changed_pixels": 3190,
+              "changed_fraction": 0.199875,
+              "component_count": 62,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 62,
+              "clearance_bbox": [
+                460,
+                986,
+                705,
+                1024
+              ],
+              "area": 9310,
+              "changed_pixels": 1072,
+              "changed_fraction": 0.115145,
+              "component_count": 26,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 63,
+              "clearance_bbox": [
+                892,
+                687,
+                964,
+                740
+              ],
+              "area": 3816,
+              "changed_pixels": 3502,
+              "changed_fraction": 0.917715,
+              "component_count": 4,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 3497,
+                  "bbox": [
+                    892,
+                    687,
+                    964,
+                    740
+                  ],
+                  "fill_ratio": 0.9164
+                }
+              ]
+            },
+            {
+              "index": 64,
+              "clearance_bbox": [
+                963,
+                684,
+                1223,
+                729
+              ],
+              "area": 11700,
+              "changed_pixels": 5867,
+              "changed_fraction": 0.501453,
+              "component_count": 10,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 65,
+              "clearance_bbox": [
+                963,
+                711,
+                1174,
+                756
+              ],
+              "area": 9495,
+              "changed_pixels": 9402,
+              "changed_fraction": 0.990205,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 9402,
+                  "bbox": [
+                    963,
+                    711,
+                    1174,
+                    756
+                  ],
+                  "fill_ratio": 0.9902
+                }
+              ]
+            },
+            {
+              "index": 66,
+              "clearance_bbox": [
+                882,
+                876,
+                1322,
+                914
+              ],
+              "area": 16720,
+              "changed_pixels": 15403,
+              "changed_fraction": 0.921232,
+              "component_count": 18,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 11844,
+                  "bbox": [
+                    882,
+                    876,
+                    1210,
+                    914
+                  ],
+                  "fill_ratio": 0.9503
+                },
+                {
+                  "pixels": 3300,
+                  "bbox": [
+                    1230,
+                    876,
+                    1322,
+                    914
+                  ],
+                  "fill_ratio": 0.9439
+                }
+              ]
+            },
+            {
+              "index": 67,
+              "clearance_bbox": [
+                882,
+                902,
+                1322,
+                940
+              ],
+              "area": 16720,
+              "changed_pixels": 15239,
+              "changed_fraction": 0.911423,
+              "component_count": 19,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 11752,
+                  "bbox": [
+                    883,
+                    902,
+                    1205,
+                    940
+                  ],
+                  "fill_ratio": 0.9604
+                },
+                {
+                  "pixels": 3229,
+                  "bbox": [
+                    1230,
+                    902,
+                    1322,
+                    940
+                  ],
+                  "fill_ratio": 0.9236
+                }
+              ]
+            },
+            {
+              "index": 68,
+              "clearance_bbox": [
+                882,
+                940,
+                1322,
+                978
+              ],
+              "area": 16720,
+              "changed_pixels": 6625,
+              "changed_fraction": 0.396232,
+              "component_count": 34,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 3182,
+                  "bbox": [
+                    1236,
+                    940,
+                    1322,
+                    978
+                  ],
+                  "fill_ratio": 0.9737
+                }
+              ]
+            },
+            {
+              "index": 69,
+              "clearance_bbox": [
+                882,
+                964,
+                1283,
+                1002
+              ],
+              "area": 15238,
+              "changed_pixels": 2263,
+              "changed_fraction": 0.14851,
+              "component_count": 34,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 70,
+              "clearance_bbox": [
+                882,
+                986,
+                952,
+                1024
+              ],
+              "area": 2660,
+              "changed_pixels": 219,
+              "changed_fraction": 0.082331,
+              "component_count": 1,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 71,
+              "clearance_bbox": [
+                1240,
+                687,
+                1312,
+                740
+              ],
+              "area": 3816,
+              "changed_pixels": 3494,
+              "changed_fraction": 0.915618,
+              "component_count": 6,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 3488,
+                  "bbox": [
+                    1240,
+                    687,
+                    1312,
+                    740
+                  ],
+                  "fill_ratio": 0.914
+                }
+              ]
+            },
+            {
+              "index": 72,
+              "clearance_bbox": [
+                1295,
+                684,
+                1605,
+                729
+              ],
+              "area": 13950,
+              "changed_pixels": 6365,
+              "changed_fraction": 0.456272,
+              "component_count": 21,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 73,
+              "clearance_bbox": [
+                1295,
+                711,
+                1481,
+                756
+              ],
+              "area": 8370,
+              "changed_pixels": 8339,
+              "changed_fraction": 0.996296,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 8339,
+                  "bbox": [
+                    1295,
+                    711,
+                    1481,
+                    756
+                  ],
+                  "fill_ratio": 0.9963
+                }
+              ]
+            },
+            {
+              "index": 74,
+              "clearance_bbox": [
+                1236,
+                876,
+                1656,
+                914
+              ],
+              "area": 15960,
+              "changed_pixels": 13991,
+              "changed_fraction": 0.876629,
+              "component_count": 5,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 13056,
+                  "bbox": [
+                    1236,
+                    876,
+                    1585,
+                    914
+                  ],
+                  "fill_ratio": 0.9845
+                }
+              ]
+            },
+            {
+              "index": 75,
+              "clearance_bbox": [
+                1236,
+                902,
+                1598,
+                940
+              ],
+              "area": 13756,
+              "changed_pixels": 12999,
+              "changed_fraction": 0.944969,
+              "component_count": 2,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 12998,
+                  "bbox": [
+                    1236,
+                    902,
+                    1584,
+                    940
+                  ],
+                  "fill_ratio": 0.9829
+                }
+              ]
+            },
+            {
+              "index": 76,
+              "clearance_bbox": [
+                1236,
+                940,
+                1656,
+                978
+              ],
+              "area": 15960,
+              "changed_pixels": 13760,
+              "changed_fraction": 0.862155,
+              "component_count": 4,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 12752,
+                  "bbox": [
+                    1236,
+                    940,
+                    1584,
+                    978
+                  ],
+                  "fill_ratio": 0.9643
+                }
+              ]
+            },
+            {
+              "index": 77,
+              "clearance_bbox": [
+                1236,
+                964,
+                1656,
+                1002
+              ],
+              "area": 15960,
+              "changed_pixels": 6473,
+              "changed_fraction": 0.405576,
+              "component_count": 13,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 78,
+              "clearance_bbox": [
+                1236,
+                986,
+                1423,
+                1024
+              ],
+              "area": 7106,
+              "changed_pixels": 662,
+              "changed_fraction": 0.093161,
+              "component_count": 43,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 79,
+              "clearance_bbox": [
+                1733,
+                635,
+                1901,
+                689
+              ],
+              "area": 9072,
+              "changed_pixels": 7596,
+              "changed_fraction": 0.837302,
+              "component_count": 18,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 7522,
+                  "bbox": [
+                    1733,
+                    635,
+                    1901,
+                    687
+                  ],
+                  "fill_ratio": 0.861
+                }
+              ]
+            },
+            {
+              "index": 80,
+              "clearance_bbox": [
+                1707,
+                716,
+                2043,
+                757
+              ],
+              "area": 13776,
+              "changed_pixels": 8757,
+              "changed_fraction": 0.635671,
+              "component_count": 55,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 81,
+              "clearance_bbox": [
+                1707,
+                744,
+                2043,
+                785
+              ],
+              "area": 13776,
+              "changed_pixels": 5301,
+              "changed_fraction": 0.3848,
+              "component_count": 64,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 82,
+              "clearance_bbox": [
+                1707,
+                772,
+                2043,
+                813
+              ],
+              "area": 13776,
+              "changed_pixels": 1580,
+              "changed_fraction": 0.114692,
+              "component_count": 46,
+              "abnormal_solid_blocks": []
+            },
+            {
+              "index": 83,
+              "clearance_bbox": [
+                1707,
+                800,
+                1784,
+                841
+              ],
+              "area": 3157,
+              "changed_pixels": 3138,
+              "changed_fraction": 0.993982,
+              "component_count": 1,
+              "abnormal_solid_blocks": [
+                {
+                  "pixels": 3138,
+                  "bbox": [
+                    1707,
+                    800,
+                    1784,
+                    841
+                  ],
+                  "fill_ratio": 0.994
+                }
+              ]
+            }
+          ]
+        },
+        "status": "failed",
+        "post_clean_ocr": {
+          "executed": true,
+          "status": "residual",
+          "residual": [
+            {
+              "policy_id": "quick-001-081",
+              "observed_text": "除上述方向外如贵单位另有科技",
+              "bbox": [
+                1713,
+                700,
+                1982,
+                718
+              ]
+            },
+            {
+              "policy_id": "quick-001-053",
+              "observed_text": "平估值济通和应田冬",
+              "bbox": [
+                219,
+                950,
+                411,
+                968
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

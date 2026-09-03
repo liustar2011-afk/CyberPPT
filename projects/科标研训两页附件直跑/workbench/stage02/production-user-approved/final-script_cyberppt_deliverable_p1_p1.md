@@ -1,0 +1,73 @@
+## p01
+
+【完整上屏内容】
+双方可在电力领域数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、人工智能工具与评测、能算碳综合服务等五个方向，开展科技项目和课题研究合作。
+**（一）电力领域数据基础设施建设**
+合作可围绕数据基础设施参考架构、接入连接器、可信流通及多主体运营机制等开展联合研究。中电联作为国家数据基础设施行业节点，可组织跨企业构建验证环境，提供行业级验证条件。
+**（二）高质量数据集评测标注与资产评估**
+合作可围绕数据标注、数据集加工、质量评测与资产评估的方法及工具开展研究，并探索测评互认与价值释放机制。中电联是专注电力行业的数据集建设第三方机构，已联合多家网省公司完成多类数据集建设与评测案例，具备专家团队与标准体系支撑。
+**（三）电力数据安全风险评估**
+合作可围绕数据分类分级、全生命周期与流通安全规则开展研究，联合验证风险评估工具及脱敏、水印等技防工具的适用性。中电联依据数据安全法及能源行业相关法规，已研发相应评估与技防工具并在国网多省份落地应用。
+**（四）人工智能工具与评测**
+合作可围绕模型适配、场景能力、安全可信等维度联合研发自动化评测工具，验证业务智能助手与数据治理工具的应用效果。中电联已构建行业能力、场景能力、基础能力三级评测体系，并与中科院等机构合作，在多家网省公司落地应用。
+**（五）能算碳综合服务**
+合作可围绕碳排放核算、碳资产开发、能效优化与零碳园区管理开展工具与机制研究。中电联依托1700余家会员单位资源和23年行业积累，承担电力碳足迹数据库建设任务，在碳核算核查、零碳园区、电算协同等方向已有可复制案例。
+除上述方向外，如贵单位另有科技项目储备或研究选题，可结合实际共同研究，择优推进合作。
+
+【核心意思表达要求｜不上屏】
+可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。
+
+【呈现文案改写授权｜上屏】
+以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。
+改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。
+
+【并列语义防发散｜不上屏】
+改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。
+
+【非上屏语义边界】
+页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。
+
+
+
+
+
+
+
+【输出尺寸｜不上屏】
+最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。
+
+【模板层禁绘｜不上屏】
+正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。
+标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。
+禁止新增与业务内容无关的序号条、页码章或装饰编号。
+
+
+
+【视觉风格｜不上屏】
+视觉风格09：纯白 + 深蓝领导汇报
+
+Palette: white #FFFFFF, deep blue #12355B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.
+
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
+
+Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.
+
+Rewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.
+
+Prefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.
+
+Prefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.
+
+Use icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.
+
+Do not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.
+
+Screens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
+
+Use broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
+
+Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
+
+People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
+
+Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.

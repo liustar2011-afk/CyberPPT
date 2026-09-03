@@ -1,0 +1,3229 @@
+{
+  "mode": "cyberppt.stage02.editable_pptx.v1",
+  "production_mode": "image-to-editable-svg",
+  "requested_pages": [
+    1,
+    2
+  ],
+  "content_page_numbers": [
+    1,
+    2
+  ],
+  "skipped_pages": [],
+  "output_variants": [
+    "full"
+  ],
+  "text_audit_contract": {
+    "required_before_enhancement": true,
+    "scope": "typo_and_gibberish_only",
+    "max_generation_attempts": 3,
+    "failure_action": "regenerate_image"
+  },
+  "generation_contract": {
+    "mode": "image-to-editable-svg",
+    "owner": "CyberPPT",
+    "slide_canvas": {
+      "width": 2048,
+      "height": 1024
+    },
+    "content_region": {
+      "x": 0,
+      "y": 0,
+      "width": 2048,
+      "height": 1024
+    },
+    "generation_size": {
+      "width": 2048,
+      "height": 1024
+    },
+    "rule": "Generate one audited full content-area image for registered editable-SVG reconstruction; PPT title, subtitle and enterprise chrome are handled by template/export code."
+  },
+  "project_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/inputs/final-script.md",
+  "original_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/inputs/final-script.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/locks/visual_style_lock.json",
+  "stage02_script_input": {
+    "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stages/02-input/script-intake.json",
+    "schema": "cyberppt.stage02_script_input.v1"
+  },
+  "output_dir": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production",
+  "created_at": "2026-09-03T03:30:34.197130+00:00",
+  "prompt_contract": {
+    "approved_prompt_is_source": false,
+    "direct_edit_mode": null,
+    "freshness_enforced": false,
+    "canonical_prompt_is_diagnostic_only": false,
+    "compact_blueprint": false,
+    "compiler": "content-first-v1"
+  },
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 1,
+        "mode": "off",
+        "source_prompt_sha256": "c14ca709231474a73b8553d3f28a69949fa31a77d893e13bb58a916c8efcdb95",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 5161
+      },
+      {
+        "page_number": 2,
+        "mode": "off",
+        "source_prompt_sha256": "790e47132e914cbd309359096fa5c1ece1cd99871f94ad4d67d8c864e2a77985",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 4804
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "page_number": 1,
+      "page_code": "P01",
+      "title": "创新业务6-1：科技项目及课题研究",
+      "page_script": "【完整上屏内容】\n**一、科技项目**\n **（一）高质量数据集智能构建与自动化测评**\n 高质量数据集智能构建与自动化测评方向，合作重点是研发智能标注、数据增强、自动质检、质量诊断和自动化测评工具，形成覆盖数据集构建与评价全链条的技术支撑。中电联在专业规则制定、典型数据集积累、测评体系建设和应用场景组织方面具备基础条件，可将上述资源与合作研发的工具能力相结合，推动技术成果转化为可对外提供的工具产品和测评服务。\n **（二）电力大模型与智能体行业评测**\n 电力大模型与智能体行业评测方向，合作内容涵盖模型适配、场景能力、安全可信、智能体效果等维度的自动化评测工具研发，为电力行业大模型与智能体应用提供系统化评价手段。中电联可发挥组织跨模型、跨专业、跨单位统一基准验证的优势，通过统一基准检验评测工具和评测结果，提升评测结论在行业内的可比性和通用性。\n **（三）数据安全风险智能评估**\n 数据安全风险智能评估方向，合作重点是研发覆盖风险识别、规则匹配、能力评分、问题诊断和整改推荐的工具体系，支撑企业开展数据安全风险的自评估与自诊断。中电联在数据安全成熟度评估和治理类项目实施过程中积累了相应的评价指标、风险规则和典型问题案例，可将其转化为评估模型，为工具研发提供方法基础和内容支撑。\n **（四）多主体数据可信共享与受控利用**\n 多主体数据可信共享与受控利用方向，合作内容包括可信连接、授权控制、数据可用不可见、安全调用和审计追溯等关键技术的研究，服务于多主体间数据共享中的安全可控要求。中电联可依托电力数据基础设施建设跨企业的验证环境，为可信流通相关技术提供行业级验证条件，支撑技术方案在实际业务场景中的检验和完善。\n **二、课题研究**\n **（一）高质量数据集测评互认与价值释放机制**\n 高质量数据集测评互认与价值释放机制课题，研究内容涉及质量评价、测评互认、价值评估、授权使用、流通交易和模型应用等环节的机制设计，目标是解决数据集从建设到应用过程中价值释放不畅的问题。中电联可发挥贯通标准、测评、估值、流通和应用各环节的综合优势，打通数据集建设方、测评方和应用方之间的协同链条，为机制研究提供全流程实践支撑。\n **（二）电力大模型与智能体行业评价及应用准入机制**\n 电力大模型与智能体行业评价及应用准入机制课题，重点研究行业适配、业务效果、安全可信、应用准入和持续评价等方面的方法体系，为电力行业大模型与智能体应用的规范化管理提供依据。中电联可组织电网企业、发电企业、装备制造企业和科研机构共同参与验证，形成适用于跨主体的行业评价体系，增强评价结果的行业代表性。\n **（三）电力数据资产价值评估与市场化流通机制**\n 电力数据资产价值评估与市场化流通机制课题，研究范围覆盖数据盘点、质量评价、价值测算、资产入表、产品设计、登记交易和运营等数据资产化全流程环节。中电联依托已开展的数据资产化项目和价值测算相关标准研究工作，可通过真实项目对估值方法、入表路径和流通路径进行检验，为课题研究提供实证基础。\n **（四）电力数据基础设施场景运营与多方协同机制**\n 电力数据基础设施场景运营与多方协同机制课题，研究内容包括授权、计量、定价、结算、收益分配、安全责任等要素在多主体运营中的机制设计。中电联可组织数据提供方、业务方、使用方和平台方在真实场景中共同验证运营规则，检验机制设计的可操作性和适用性。\n 除上述方向外，如贵单位另有科技项目储备或重点研究选题，可结合实际情况共同研究，择优推进项目合作。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "**一、科技项目**\n\n  **（一）高质量数据集智能构建与自动化测评**\n\n  高质量数据集智能构建与自动化测评方向，合作重点是研发智能标注、数据增强、自动质检、质量诊断和自动化测评工具，形成覆盖数据集构建与评价全链条的技术支撑。中电联在专业规则制定、典型数据集积累、测评体系建设和应用场景组织方面具备基础条件，可将上述资源与合作研发的工具能力相结合，推动技术成果转化为可对外提供的工具产品和测评服务。\n\n  **（二）电力大模型与智能体行业评测**\n\n  电力大模型与智能体行业评测方向，合作内容涵盖模型适配、场景能力、安全可信、智能体效果等维度的自动化评测工具研发，为电力行业大模型与智能体应用提供系统化评价手段。中电联可发挥组织跨模型、跨专业、跨单位统一基准验证的优势，通过统一基准检验评测工具和评测结果，提升评测结论在行业内的可比性和通用性。\n\n  **（三）数据安全风险智能评估**\n\n  数据安全风险智能评估方向，合作重点是研发覆盖风险识别、规则匹配、能力评分、问题诊断和整改推荐的工具体系，支撑企业开展数据安全风险的自评估与自诊断。中电联在数据安全成熟度评估和治理类项目实施过程中积累了相应的评价指标、风险规则和典型问题案例，可将其转化为评估模型，为工具研发提供方法基础和内容支撑。\n\n  **（四）多主体数据可信共享与受控利用**\n\n  多主体数据可信共享与受控利用方向，合作内容包括可信连接、授权控制、数据可用不可见、安全调用和审计追溯等关键技术的研究，服务于多主体间数据共享中的安全可控要求。中电联可依托电力数据基础设施建设跨企业的验证环境，为可信流通相关技术提供行业级验证条件，支撑技术方案在实际业务场景中的检验和完善。\n\n  **二、课题研究**\n\n  **（一）高质量数据集测评互认与价值释放机制**\n\n  高质量数据集测评互认与价值释放机制课题，研究内容涉及质量评价、测评互认、价值评估、授权使用、流通交易和模型应用等环节的机制设计，目标是解决数据集从建设到应用过程中价值释放不畅的问题。中电联可发挥贯通标准、测评、估值、流通和应用各环节的综合优势，打通数据集建设方、测评方和应用方之间的协同链条，为机制研究提供全流程实践支撑。\n\n  **（二）电力大模型与智能体行业评价及应用准入机制**\n\n  电力大模型与智能体行业评价及应用准入机制课题，重点研究行业适配、业务效果、安全可信、应用准入和持续评价等方面的方法体系，为电力行业大模型与智能体应用的规范化管理提供依据。中电联可组织电网企业、发电企业、装备制造企业和科研机构共同参与验证，形成适用于跨主体的行业评价体系，增强评价结果的行业代表性。\n\n  **（三）电力数据资产价值评估与市场化流通机制**\n\n  电力数据资产价值评估与市场化流通机制课题，研究范围覆盖数据盘点、质量评价、价值测算、资产入表、产品设计、登记交易和运营等数据资产化全流程环节。中电联依托已开展的数据资产化项目和价值测算相关标准研究工作，可通过真实项目对估值方法、入表路径和流通路径进行检验，为课题研究提供实证基础。\n\n  **（四）电力数据基础设施场景运营与多方协同机制**\n\n  电力数据基础设施场景运营与多方协同机制课题，研究内容包括授权、计量、定价、结算、收益分配、安全责任等要素在多主体运营中的机制设计。中电联可组织数据提供方、业务方、使用方和平台方在真实场景中共同验证运营规则，检验机制设计的可操作性和适用性。\n\n  除上述方向外，如贵单位另有科技项目储备或重点研究选题，可结合实际情况共同研究，择优推进项目合作。",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/prompts/p01.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stages/02-input/script-intake.json",
+      "full": {
+        "filename": "page_001_创新业务6_1_科技项目及课题研究_full.png",
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.png",
+        "prompt": "【完整上屏内容】\n**一、科技项目**\n **（一）高质量数据集智能构建与自动化测评**\n 高质量数据集智能构建与自动化测评方向，合作重点是研发智能标注、数据增强、自动质检、质量诊断和自动化测评工具，形成覆盖数据集构建与评价全链条的技术支撑。中电联在专业规则制定、典型数据集积累、测评体系建设和应用场景组织方面具备基础条件，可将上述资源与合作研发的工具能力相结合，推动技术成果转化为可对外提供的工具产品和测评服务。\n **（二）电力大模型与智能体行业评测**\n 电力大模型与智能体行业评测方向，合作内容涵盖模型适配、场景能力、安全可信、智能体效果等维度的自动化评测工具研发，为电力行业大模型与智能体应用提供系统化评价手段。中电联可发挥组织跨模型、跨专业、跨单位统一基准验证的优势，通过统一基准检验评测工具和评测结果，提升评测结论在行业内的可比性和通用性。\n **（三）数据安全风险智能评估**\n 数据安全风险智能评估方向，合作重点是研发覆盖风险识别、规则匹配、能力评分、问题诊断和整改推荐的工具体系，支撑企业开展数据安全风险的自评估与自诊断。中电联在数据安全成熟度评估和治理类项目实施过程中积累了相应的评价指标、风险规则和典型问题案例，可将其转化为评估模型，为工具研发提供方法基础和内容支撑。\n **（四）多主体数据可信共享与受控利用**\n 多主体数据可信共享与受控利用方向，合作内容包括可信连接、授权控制、数据可用不可见、安全调用和审计追溯等关键技术的研究，服务于多主体间数据共享中的安全可控要求。中电联可依托电力数据基础设施建设跨企业的验证环境，为可信流通相关技术提供行业级验证条件，支撑技术方案在实际业务场景中的检验和完善。\n **二、课题研究**\n **（一）高质量数据集测评互认与价值释放机制**\n 高质量数据集测评互认与价值释放机制课题，研究内容涉及质量评价、测评互认、价值评估、授权使用、流通交易和模型应用等环节的机制设计，目标是解决数据集从建设到应用过程中价值释放不畅的问题。中电联可发挥贯通标准、测评、估值、流通和应用各环节的综合优势，打通数据集建设方、测评方和应用方之间的协同链条，为机制研究提供全流程实践支撑。\n **（二）电力大模型与智能体行业评价及应用准入机制**\n 电力大模型与智能体行业评价及应用准入机制课题，重点研究行业适配、业务效果、安全可信、应用准入和持续评价等方面的方法体系，为电力行业大模型与智能体应用的规范化管理提供依据。中电联可组织电网企业、发电企业、装备制造企业和科研机构共同参与验证，形成适用于跨主体的行业评价体系，增强评价结果的行业代表性。\n **（三）电力数据资产价值评估与市场化流通机制**\n 电力数据资产价值评估与市场化流通机制课题，研究范围覆盖数据盘点、质量评价、价值测算、资产入表、产品设计、登记交易和运营等数据资产化全流程环节。中电联依托已开展的数据资产化项目和价值测算相关标准研究工作，可通过真实项目对估值方法、入表路径和流通路径进行检验，为课题研究提供实证基础。\n **（四）电力数据基础设施场景运营与多方协同机制**\n 电力数据基础设施场景运营与多方协同机制课题，研究内容包括授权、计量、定价、结算、收益分配、安全责任等要素在多主体运营中的机制设计。中电联可组织数据提供方、业务方、使用方和平台方在真实场景中共同验证运营规则，检验机制设计的可操作性和适用性。\n 除上述方向外，如贵单位另有科技项目储备或重点研究选题，可结合实际情况共同研究，择优推进项目合作。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "6e1ce8e0cd77e9c115bc2e566fab5255c33dd2a206336be5cdc70d5f5932b291",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "c14ca709231474a73b8553d3f28a69949fa31a77d893e13bb58a916c8efcdb95",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 5161
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "6e1ce8e0cd77e9c115bc2e566fab5255c33dd2a206336be5cdc70d5f5932b291",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Generated",
+        "generated_at": "2026-09-03T03:35:36+00:00",
+        "generated_prompt_sha256": "6e1ce8e0cd77e9c115bc2e566fab5255c33dd2a206336be5cdc70d5f5932b291",
+        "text_audit": {
+          "schema": "cyberppt.generated_image_text_audit.v2",
+          "valid": true,
+          "scope": "typo_and_gibberish_only",
+          "image": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.png",
+          "image_size": [
+            1774,
+            887
+          ],
+          "issues": [],
+          "observed_text": [
+            "一、科技项目",
+            "高质量数据集智能构建与自动化测评",
+            "电力大模型与智能体行业评测",
+            "数据安全风险智能评估",
+            "多主体数据可信共享与受控利用",
+            "二、课题研究",
+            "高质量数据集测评互认与价值释放机制",
+            "电力大模型与智能体行业评价及应用准入机制",
+            "电力数据资产价值评估与市场化流通机制",
+            "电力数据基础设施场景运营与多方协同机制",
+            "除上述方向外，如贵单位另有科技项目储备或重点研究选题，可结合实际情况共同研究，择优推进项目合作。"
+          ],
+          "ocr_items": [
+            {
+              "text": "高质量数据集智能构建与自动化测评",
+              "confidence": 0.9949404187500477,
+              "bbox": [
+                [
+                  309.0,
+                  39.0
+                ],
+                [
+                  688.0,
+                  39.0
+                ],
+                [
+                  688.0,
+                  64.0
+                ],
+                [
+                  309.0,
+                  64.0
+                ]
+              ]
+            },
+            {
+              "text": "数据安全风险智能评估",
+              "confidence": 0.9946787059307098,
+              "bbox": [
+                [
+                  1054.0,
+                  39.0
+                ],
+                [
+                  1292.0,
+                  39.0
+                ],
+                [
+                  1292.0,
+                  64.0
+                ],
+                [
+                  1054.0,
+                  64.0
+                ]
+              ]
+            },
+            {
+              "text": "研发智能标注、数据增强、自动质检、质量诊断和自动化测评",
+              "confidence": 0.9988666309250726,
+              "bbox": [
+                [
+                  271.0,
+                  79.0
+                ],
+                [
+                  730.0,
+                  79.0
+                ],
+                [
+                  730.0,
+                  99.0
+                ],
+                [
+                  271.0,
+                  99.0
+                ]
+              ]
+            },
+            {
+              "text": "研发覆盖风险识别、规则匹配、能力评分、问题诊断和整改推荐",
+              "confidence": 0.994573535663741,
+              "bbox": [
+                [
+                  1017.0,
+                  79.0
+                ],
+                [
+                  1481.0,
+                  79.0
+                ],
+                [
+                  1481.0,
+                  99.0
+                ],
+                [
+                  1017.0,
+                  99.0
+                ]
+              ]
+            },
+            {
+              "text": "、科技项目",
+              "confidence": 0.9996201038360596,
+              "bbox": [
+                [
+                  100.0,
+                  97.0
+                ],
+                [
+                  222.0,
+                  97.0
+                ],
+                [
+                  222.0,
+                  128.0
+                ],
+                [
+                  100.0,
+                  128.0
+                ]
+              ]
+            },
+            {
+              "text": "工具，形成覆盖数据集构建与评价全链条的技术支撑。",
+              "confidence": 0.9979105293750763,
+              "bbox": [
+                [
+                  272.0,
+                  106.0
+                ],
+                [
+                  670.0,
+                  106.0
+                ],
+                [
+                  670.0,
+                  126.0
+                ],
+                [
+                  272.0,
+                  126.0
+                ]
+              ]
+            },
+            {
+              "text": "的工具体系，支撑企业自评估与自诊断。",
+              "confidence": 0.9980960819456313,
+              "bbox": [
+                [
+                  1018.0,
+                  106.0
+                ],
+                [
+                  1313.0,
+                  106.0
+                ],
+                [
+                  1313.0,
+                  126.0
+                ],
+                [
+                  1018.0,
+                  126.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联具备专业规则制定、典型数据集积累、测评体系建设和",
+              "confidence": 0.9991020383658232,
+              "bbox": [
+                [
+                  272.0,
+                  139.0
+                ],
+                [
+                  732.0,
+                  139.0
+                ],
+                [
+                  732.0,
+                  158.0
+                ],
+                [
+                  272.0,
+                  158.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联在数据安全成熟度评估和治理项目中积累评价指标、",
+              "confidence": 0.9945869239477011,
+              "bbox": [
+                [
+                  1018.0,
+                  139.0
+                ],
+                [
+                  1451.0,
+                  139.0
+                ],
+                [
+                  1451.0,
+                  158.0
+                ],
+                [
+                  1018.0,
+                  158.0
+                ]
+              ]
+            },
+            {
+              "text": "应用场景组织基础，推动工具产品和测评服务落地。",
+              "confidence": 0.9979306822237761,
+              "bbox": [
+                [
+                  272.0,
+                  164.0
+                ],
+                [
+                  650.0,
+                  164.0
+                ],
+                [
+                  650.0,
+                  184.0
+                ],
+                [
+                  272.0,
+                  184.0
+                ]
+              ]
+            },
+            {
+              "text": "风险规则和典型问题案例，转化为评估模型并提供支撑。",
+              "confidence": 0.9982099056243896,
+              "bbox": [
+                [
+                  1018.0,
+                  164.0
+                ],
+                [
+                  1435.0,
+                  164.0
+                ],
+                [
+                  1435.0,
+                  184.0
+                ],
+                [
+                  1018.0,
+                  184.0
+                ]
+              ]
+            },
+            {
+              "text": "聚焦数据构建、模型评测、",
+              "confidence": 0.9942083160082499,
+              "bbox": [
+                [
+                  29.0,
+                  174.0
+                ],
+                [
+                  228.0,
+                  174.0
+                ],
+                [
+                  228.0,
+                  197.0
+                ],
+                [
+                  29.0,
+                  197.0
+                ]
+              ]
+            },
+            {
+              "text": "安全评估与可信流通，",
+              "confidence": 0.9668072044849396,
+              "bbox": [
+                [
+                  30.0,
+                  204.0
+                ],
+                [
+                  191.0,
+                  204.0
+                ],
+                [
+                  191.0,
+                  227.0
+                ],
+                [
+                  30.0,
+                  227.0
+                ]
+              ]
+            },
+            {
+              "text": "以工兵研发世动技术成果",
+              "confidence": 0.8133496371182528,
+              "bbox": [
+                [
+                  27.0,
+                  229.0
+                ],
+                [
+                  222.0,
+                  232.0
+                ],
+                [
+                  221.0,
+                  256.0
+                ],
+                [
+                  27.0,
+                  252.0
+                ]
+              ]
+            },
+            {
+              "text": "电力大模型与智能体行业评测",
+              "confidence": 0.9984656113844651,
+              "bbox": [
+                [
+                  308.0,
+                  235.0
+                ],
+                [
+                  617.0,
+                  235.0
+                ],
+                [
+                  617.0,
+                  260.0
+                ],
+                [
+                  308.0,
+                  260.0
+                ]
+              ]
+            },
+            {
+              "text": "多主体数据可信共享与受控利用",
+              "confidence": 0.9979412811143058,
+              "bbox": [
+                [
+                  1053.0,
+                  235.0
+                ],
+                [
+                  1387.0,
+                  235.0
+                ],
+                [
+                  1387.0,
+                  260.0
+                ],
+                [
+                  1053.0,
+                  260.0
+                ]
+              ]
+            },
+            {
+              "text": "转化为可对外提供的工具",
+              "confidence": 0.9802032871679827,
+              "bbox": [
+                [
+                  27.0,
+                  253.0
+                ],
+                [
+                  222.0,
+                  259.0
+                ],
+                [
+                  221.0,
+                  284.0
+                ],
+                [
+                  26.0,
+                  279.0
+                ]
+              ]
+            },
+            {
+              "text": "产品和评测服务。",
+              "confidence": 0.9991641715168953,
+              "bbox": [
+                [
+                  26.0,
+                  282.0
+                ],
+                [
+                  165.0,
+                  285.0
+                ],
+                [
+                  164.0,
+                  312.0
+                ],
+                [
+                  25.0,
+                  309.0
+                ]
+              ]
+            },
+            {
+              "text": "覆盖模型适配、场景能力、安全可信、智能体效果等维度，",
+              "confidence": 0.9956573798106267,
+              "bbox": [
+                [
+                  271.0,
+                  275.0
+                ],
+                [
+                  703.0,
+                  275.0
+                ],
+                [
+                  703.0,
+                  295.0
+                ],
+                [
+                  271.0,
+                  295.0
+                ]
+              ]
+            },
+            {
+              "text": "研究可信连接、授权控制、数据可用不可见、安全调用和审计",
+              "confidence": 0.9976223972108629,
+              "bbox": [
+                [
+                  1017.0,
+                  274.0
+                ],
+                [
+                  1472.0,
+                  274.0
+                ],
+                [
+                  1472.0,
+                  294.0
+                ],
+                [
+                  1017.0,
+                  294.0
+                ]
+              ]
+            },
+            {
+              "text": "研发自动化评测工具，提供系统化评价手段。",
+              "confidence": 0.9991491794586181,
+              "bbox": [
+                [
+                  272.0,
+                  302.0
+                ],
+                [
+                  602.0,
+                  302.0
+                ],
+                [
+                  602.0,
+                  322.0
+                ],
+                [
+                  272.0,
+                  322.0
+                ]
+              ]
+            },
+            {
+              "text": "追溯等关键技术，服务多主体间安全可控的数据共享。",
+              "confidence": 0.9933750058213869,
+              "bbox": [
+                [
+                  1017.0,
+                  302.0
+                ],
+                [
+                  1419.0,
+                  302.0
+                ],
+                [
+                  1419.0,
+                  322.0
+                ],
+                [
+                  1017.0,
+                  322.0
+                ]
+              ]
+            },
+            {
+              "text": "数据",
+              "confidence": 0.9978854358196259,
+              "bbox": [
+                [
+                  1647.0,
+                  323.0
+                ],
+                [
+                  1688.0,
+                  323.0
+                ],
+                [
+                  1688.0,
+                  348.0
+                ],
+                [
+                  1647.0,
+                  348.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联具备跨模型、跨专业、跨单位统一基准验证优势，",
+              "confidence": 0.9957353639602661,
+              "bbox": [
+                [
+                  272.0,
+                  335.0
+                ],
+                [
+                  682.0,
+                  335.0
+                ],
+                [
+                  682.0,
+                  354.0
+                ],
+                [
+                  272.0,
+                  354.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联可依托电力数据基础设施建设跨企业验证环境，",
+              "confidence": 0.9963636671503385,
+              "bbox": [
+                [
+                  1018.0,
+                  334.0
+                ],
+                [
+                  1416.0,
+                  334.0
+                ],
+                [
+                  1416.0,
+                  353.0
+                ],
+                [
+                  1018.0,
+                  353.0
+                ]
+              ]
+            },
+            {
+              "text": "可信流通",
+              "confidence": 0.9935671389102936,
+              "bbox": [
+                [
+                  1648.0,
+                  344.0
+                ],
+                [
+                  1712.0,
+                  344.0
+                ],
+                [
+                  1712.0,
+                  367.0
+                ],
+                [
+                  1648.0,
+                  367.0
+                ]
+              ]
+            },
+            {
+              "text": "提升评测结论的可比性和通用性。",
+              "confidence": 0.9990206797917683,
+              "bbox": [
+                [
+                  270.0,
+                  359.0
+                ],
+                [
+                  516.0,
+                  359.0
+                ],
+                [
+                  516.0,
+                  379.0
+                ],
+                [
+                  270.0,
+                  379.0
+                ]
+              ]
+            },
+            {
+              "text": "支撑相关技术在实际业务场景中检验和完善。",
+              "confidence": 0.9976309061050415,
+              "bbox": [
+                [
+                  1018.0,
+                  360.0
+                ],
+                [
+                  1346.0,
+                  360.0
+                ],
+                [
+                  1346.0,
+                  380.0
+                ],
+                [
+                  1018.0,
+                  380.0
+                ]
+              ]
+            },
+            {
+              "text": "高质量数据集测评互认与价值释放机制",
+              "confidence": 0.9978402923135197,
+              "bbox": [
+                [
+                  305.0,
+                  451.0
+                ],
+                [
+                  676.0,
+                  451.0
+                ],
+                [
+                  676.0,
+                  480.0
+                ],
+                [
+                  305.0,
+                  480.0
+                ]
+              ]
+            },
+            {
+              "text": "电力数据资产价值评估与市场化流通机制",
+              "confidence": 0.9932657877604166,
+              "bbox": [
+                [
+                  1057.0,
+                  454.0
+                ],
+                [
+                  1442.0,
+                  454.0
+                ],
+                [
+                  1442.0,
+                  477.0
+                ],
+                [
+                  1057.0,
+                  477.0
+                ]
+              ]
+            },
+            {
+              "text": "昆二、误",
+              "confidence": 0.6767762079834938,
+              "bbox": [
+                [
+                  34.0,
+                  491.0
+                ],
+                [
+                  138.0,
+                  491.0
+                ],
+                [
+                  138.0,
+                  538.0
+                ],
+                [
+                  34.0,
+                  538.0
+                ]
+              ]
+            },
+            {
+              "text": "课题研究",
+              "confidence": 0.997344970703125,
+              "bbox": [
+                [
+                  122.0,
+                  499.0
+                ],
+                [
+                  223.0,
+                  499.0
+                ],
+                [
+                  223.0,
+                  530.0
+                ],
+                [
+                  122.0,
+                  530.0
+                ]
+              ]
+            },
+            {
+              "text": "研究质量评价、测评互认、价值评估、授权使用、流通交易和",
+              "confidence": 0.999331655325713,
+              "bbox": [
+                [
+                  268.0,
+                  495.0
+                ],
+                [
+                  721.0,
+                  495.0
+                ],
+                [
+                  721.0,
+                  515.0
+                ],
+                [
+                  268.0,
+                  515.0
+                ]
+              ]
+            },
+            {
+              "text": "覆盖数据盘点、质量评价、价值测算、资产入表、产品设计、",
+              "confidence": 0.9994546748973705,
+              "bbox": [
+                [
+                  1018.0,
+                  495.0
+                ],
+                [
+                  1451.0,
+                  495.0
+                ],
+                [
+                  1451.0,
+                  515.0
+                ],
+                [
+                  1018.0,
+                  515.0
+                ]
+              ]
+            },
+            {
+              "text": "数据资产评估报告",
+              "confidence": 0.9837486520409584,
+              "bbox": [
+                [
+                  1521.0,
+                  502.0
+                ],
+                [
+                  1652.0,
+                  479.0
+                ],
+                [
+                  1656.0,
+                  499.0
+                ],
+                [
+                  1524.0,
+                  522.0
+                ]
+              ]
+            },
+            {
+              "text": "模型应用等机制，解决数据集价值释放不畅问题。",
+              "confidence": 0.9982792220332406,
+              "bbox": [
+                [
+                  270.0,
+                  521.0
+                ],
+                [
+                  628.0,
+                  521.0
+                ],
+                [
+                  628.0,
+                  541.0
+                ],
+                [
+                  270.0,
+                  541.0
+                ]
+              ]
+            },
+            {
+              "text": "测评报告",
+              "confidence": 0.9710967838764191,
+              "bbox": [
+                [
+                  843.0,
+                  517.0
+                ],
+                [
+                  915.0,
+                  532.0
+                ],
+                [
+                  911.0,
+                  553.0
+                ],
+                [
+                  838.0,
+                  537.0
+                ]
+              ]
+            },
+            {
+              "text": "欧搬集",
+              "confidence": 0.5209468851486841,
+              "bbox": [
+                [
+                  858.0,
+                  512.0
+                ],
+                [
+                  913.0,
+                  519.0
+                ],
+                [
+                  911.0,
+                  537.0
+                ],
+                [
+                  856.0,
+                  530.0
+                ]
+              ]
+            },
+            {
+              "text": "登记交易和运营等资产化全流程环节。",
+              "confidence": 0.9990828878739301,
+              "bbox": [
+                [
+                  1018.0,
+                  520.0
+                ],
+                [
+                  1292.0,
+                  520.0
+                ],
+                [
+                  1292.0,
+                  540.0
+                ],
+                [
+                  1018.0,
+                  540.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联通标准、测评、估值、流通和应用各环节，打通建设方、",
+              "confidence": 0.9970112698418754,
+              "bbox": [
+                [
+                  270.0,
+                  551.0
+                ],
+                [
+                  721.0,
+                  551.0
+                ],
+                [
+                  721.0,
+                  571.0
+                ],
+                [
+                  270.0,
+                  571.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联依托数据资产化项目和价值测算标准研究，通过真实项目",
+              "confidence": 0.9976282290049961,
+              "bbox": [
+                [
+                  1019.0,
+                  549.0
+                ],
+                [
+                  1474.0,
+                  549.0
+                ],
+                [
+                  1474.0,
+                  569.0
+                ],
+                [
+                  1019.0,
+                  569.0
+                ]
+              ]
+            },
+            {
+              "text": "围绕机制设计与验证，",
+              "confidence": 0.9958132743835449,
+              "bbox": [
+                [
+                  31.0,
+                  576.0
+                ],
+                [
+                  192.0,
+                  576.0
+                ],
+                [
+                  192.0,
+                  599.0
+                ],
+                [
+                  31.0,
+                  599.0
+                ]
+              ]
+            },
+            {
+              "text": "测评方和应用方协同链条，提供全流程实践支撑。",
+              "confidence": 0.9987135854634371,
+              "bbox": [
+                [
+                  269.0,
+                  577.0
+                ],
+                [
+                  628.0,
+                  577.0
+                ],
+                [
+                  628.0,
+                  597.0
+                ],
+                [
+                  269.0,
+                  597.0
+                ]
+              ]
+            },
+            {
+              "text": "检验估值方法、入表路径和流通路径。",
+              "confidence": 0.9986117797739366,
+              "bbox": [
+                [
+                  1018.0,
+                  576.0
+                ],
+                [
+                  1293.0,
+                  576.0
+                ],
+                [
+                  1293.0,
+                  596.0
+                ],
+                [
+                  1018.0,
+                  596.0
+                ]
+              ]
+            },
+            {
+              "text": "贯通标准、测评、估值、",
+              "confidence": 0.998254272070798,
+              "bbox": [
+                [
+                  31.0,
+                  603.0
+                ],
+                [
+                  211.0,
+                  603.0
+                ],
+                [
+                  211.0,
+                  626.0
+                ],
+                [
+                  31.0,
+                  626.0
+                ]
+              ]
+            },
+            {
+              "text": "流通与应用，提供",
+              "confidence": 0.999577134847641,
+              "bbox": [
+                [
+                  30.0,
+                  633.0
+                ],
+                [
+                  172.0,
+                  633.0
+                ],
+                [
+                  172.0,
+                  655.0
+                ],
+                [
+                  30.0,
+                  655.0
+                ]
+              ]
+            },
+            {
+              "text": "电力大模型与智能体行业评价及应用准入机制",
+              "confidence": 0.9990497559309006,
+              "bbox": [
+                [
+                  304.0,
+                  639.0
+                ],
+                [
+                  716.0,
+                  639.0
+                ],
+                [
+                  716.0,
+                  664.0
+                ],
+                [
+                  304.0,
+                  664.0
+                ]
+              ]
+            },
+            {
+              "text": "电力数据基础设施场景运营与多方协同机制",
+              "confidence": 0.9961335502172771,
+              "bbox": [
+                [
+                  1056.0,
+                  641.0
+                ],
+                [
+                  1449.0,
+                  641.0
+                ],
+                [
+                  1449.0,
+                  663.0
+                ],
+                [
+                  1056.0,
+                  663.0
+                ]
+              ]
+            },
+            {
+              "text": "全流程实践支撑。",
+              "confidence": 0.9975465163588524,
+              "bbox": [
+                [
+                  30.0,
+                  661.0
+                ],
+                [
+                  162.0,
+                  661.0
+                ],
+                [
+                  162.0,
+                  684.0
+                ],
+                [
+                  30.0,
+                  684.0
+                ]
+              ]
+            },
+            {
+              "text": "研究行业适配、业务效果、安全可信、应用准入和持续评价等",
+              "confidence": 0.9988016464092113,
+              "bbox": [
+                [
+                  269.0,
+                  679.0
+                ],
+                [
+                  720.0,
+                  679.0
+                ],
+                [
+                  720.0,
+                  699.0
+                ],
+                [
+                  269.0,
+                  699.0
+                ]
+              ]
+            },
+            {
+              "text": "研究授权、计量、定价、结算、收益分配、安全责任等要素在",
+              "confidence": 0.9981848707905522,
+              "bbox": [
+                [
+                  1017.0,
+                  679.0
+                ],
+                [
+                  1468.0,
+                  679.0
+                ],
+                [
+                  1468.0,
+                  699.0
+                ],
+                [
+                  1017.0,
+                  699.0
+                ]
+              ]
+            },
+            {
+              "text": "方法体系，为规范化管理提供依据。",
+              "confidence": 0.9994412325322628,
+              "bbox": [
+                [
+                  269.0,
+                  705.0
+                ],
+                [
+                  528.0,
+                  705.0
+                ],
+                [
+                  528.0,
+                  725.0
+                ],
+                [
+                  269.0,
+                  725.0
+                ]
+              ]
+            },
+            {
+              "text": "多主体运营中的机制设计。",
+              "confidence": 0.9995899250109991,
+              "bbox": [
+                [
+                  1016.0,
+                  705.0
+                ],
+                [
+                  1208.0,
+                  705.0
+                ],
+                [
+                  1208.0,
+                  725.0
+                ],
+                [
+                  1016.0,
+                  725.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联可组织电网企业、发电企业、装备制造企业和科研机构",
+              "confidence": 0.999584087619075,
+              "bbox": [
+                [
+                  270.0,
+                  736.0
+                ],
+                [
+                  718.0,
+                  736.0
+                ],
+                [
+                  718.0,
+                  755.0
+                ],
+                [
+                  270.0,
+                  755.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联可组织数据提供方、业务方、使用方和平台方在真实场景",
+              "confidence": 0.9987856660570417,
+              "bbox": [
+                [
+                  1017.0,
+                  735.0
+                ],
+                [
+                  1474.0,
+                  735.0
+                ],
+                [
+                  1474.0,
+                  753.0
+                ],
+                [
+                  1017.0,
+                  753.0
+                ]
+              ]
+            },
+            {
+              "text": "共同参与验证，形成适用于跨主体的行业评价体系。",
+              "confidence": 0.9992700037748917,
+              "bbox": [
+                [
+                  269.0,
+                  760.0
+                ],
+                [
+                  637.0,
+                  760.0
+                ],
+                [
+                  637.0,
+                  780.0
+                ],
+                [
+                  269.0,
+                  780.0
+                ]
+              ]
+            },
+            {
+              "text": "验证运营规则，检验机制设计的可操作性和适用性。",
+              "confidence": 0.9982822407846865,
+              "bbox": [
+                [
+                  1017.0,
+                  762.0
+                ],
+                [
+                  1380.0,
+                  762.0
+                ],
+                [
+                  1380.0,
+                  779.0
+                ],
+                [
+                  1017.0,
+                  779.0
+                ]
+              ]
+            },
+            {
+              "text": "除上述方向外，如贵单位另有科技项目储备或重点研究选题，可结合实际情况共同研究，择优推进项目合作。",
+              "confidence": 0.9975262358784676,
+              "bbox": [
+                [
+                  122.0,
+                  829.0
+                ],
+                [
+                  1127.0,
+                  830.0
+                ],
+                [
+                  1127.0,
+                  855.0
+                ],
+                [
+                  122.0,
+                  854.0
+                ]
+              ]
+            }
+          ],
+          "summary": "未发现已出现文字存在明确错字或乱码。",
+          "required_action": null,
+          "page_number": 1,
+          "attempt": 3,
+          "normalized_image_size": [
+            2048,
+            1024
+          ]
+        },
+        "visual_signature": {
+          "schema": "cyberppt.full_image_visual_signature.v1",
+          "page_number": 1,
+          "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.png",
+          "source_sha256": "b74d4b786abcf27fe714c8266e20c920b7a3f9b4d2598174911889fed23955f0",
+          "visual_medium": "unspecified",
+          "gravity": {
+            "x": 0.4906,
+            "y": 0.4972,
+            "horizontal": "center",
+            "vertical": "middle"
+          },
+          "density": "dense",
+          "density_score": 68.7433,
+          "skeleton_3x3": "111111111",
+          "skeleton_shares": [
+            0.1131,
+            0.1212,
+            0.1099,
+            0.1107,
+            0.1202,
+            0.0966,
+            0.1098,
+            0.1263,
+            0.0921
+          ],
+          "structure_hash": "64587f486e7e7ef8"
+        },
+        "reconstruction_visual_source": {
+          "authority": "audited_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.png",
+          "sha256": "b74d4b786abcf27fe714c8266e20c920b7a3f9b4d2598174911889fed23955f0",
+          "immutable_visual_composition": true
+        }
+      }
+    },
+    {
+      "page_number": 2,
+      "page_code": "P02",
+      "title": "创新业务6-2：标准及培训服务",
+      "page_script": "【完整上屏内容】\n**一、标准建设**\n **（一）数据流通质量与价值评估**\n 数据流通质量与价值评估方向，合作内容为研制数据流通质量评估和数据产品价值测算相关标准，并同步开展指标设计和场景验证工作。中电联在该领域已牵头开展标准研制，可组织数据供给方、使用方、评估方和平台方共同参与验证，推动企业实践经验转化并进入行业规则体系。\n **（二）高质量数据集质量评估与数据标注**\n 高质量数据集质量评估与数据标注方向，研究内容涵盖质量指标、标注流程、质量控制、成果验收和场景适配要求等标准要素。中电联可衔接国家标准编制工作并组织电力场景验证，推动企业数据集建设成果进入测评互认和应用推广链条。\n **（三）数据基础设施与互联互通**\n 数据基础设施与互联互通方向，合作内容围绕参考架构、数据标识与目录、接入连接器、身份接入等要素开展标准研制。中电联依托国家数据基础设施建设在电力领域的先行先试工作和行业节点地位，可对企业提出的架构方案、接口方案和连接器方案开展验证。\n **（四）数据分类分级与安全保障**\n 数据分类分级与安全保障方向，研究内容包括数据分类分级、数据质量、全生命周期安全和跨主体流通安全等方面的实施规则。中电联可组织电网、发电等多类主体开展场景验证，形成支撑跨企业数据流通的安全边界和行业要求。\n **二、专业培训**\n **（一）高质量数据集建设与测评**\n 高质量数据集建设与测评培训，培训内容包括数据规划、专业标注、质量控制、测评认证和案例实训等环节。中电联可组织标准起草人员、测评实践人员和电力专业专家联合授课，使课程内容直接服务于企业数据集建设的实际需要。\n **（二）大模型与智能体应用评测**\n 大模型与智能体应用评测培训，培训内容涵盖场景设计、模型能力、智能体效果、安全可信和持续评价等方面。中电联依托自身评测实践积累，可结合电网、发电、新能源等实际业务场景开展案例化实训，增强培训内容的针对性。\n **（三）数据资产评估与流通**\n 数据资产评估与流通培训，培训内容包括数据盘点、质量评价、价值测算、资产入表、登记上架和流通运营等环节。中电联可贯通业务、财务、评估和交易各环节，采用在央企国企数据资产化项目中形成的方法开展授课。\n **（四）可信数据空间与数据安全**\n 可信数据空间与数据安全培训，培训内容涉及可信连接、身份接入、授权使用、受控调用、安全评估和审计追溯等方面。中电联可结合电力数据基础设施建设和数据安全相关项目经验，面向建设人员和运营人员开展场景化培训。\n 除上述方向外，如贵单位拟参与或牵头相关标准项目，或有其他专业培训需求，亦可结合实际情况共同策划推进。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "**一、标准建设**\n\n  **（一）数据流通质量与价值评估**\n\n  数据流通质量与价值评估方向，合作内容为研制数据流通质量评估和数据产品价值测算相关标准，并同步开展指标设计和场景验证工作。中电联在该领域已牵头开展标准研制，可组织数据供给方、使用方、评估方和平台方共同参与验证，推动企业实践经验转化并进入行业规则体系。\n\n  **（二）高质量数据集质量评估与数据标注**\n\n  高质量数据集质量评估与数据标注方向，研究内容涵盖质量指标、标注流程、质量控制、成果验收和场景适配要求等标准要素。中电联可衔接国家标准编制工作并组织电力场景验证，推动企业数据集建设成果进入测评互认和应用推广链条。\n\n  **（三）数据基础设施与互联互通**\n\n  数据基础设施与互联互通方向，合作内容围绕参考架构、数据标识与目录、接入连接器、身份接入等要素开展标准研制。中电联依托国家数据基础设施建设在电力领域的先行先试工作和行业节点地位，可对企业提出的架构方案、接口方案和连接器方案开展验证。\n\n  **（四）数据分类分级与安全保障**\n\n  数据分类分级与安全保障方向，研究内容包括数据分类分级、数据质量、全生命周期安全和跨主体流通安全等方面的实施规则。中电联可组织电网、发电等多类主体开展场景验证，形成支撑跨企业数据流通的安全边界和行业要求。\n\n  **二、专业培训**\n\n  **（一）高质量数据集建设与测评**\n\n  高质量数据集建设与测评培训，培训内容包括数据规划、专业标注、质量控制、测评认证和案例实训等环节。中电联可组织标准起草人员、测评实践人员和电力专业专家联合授课，使课程内容直接服务于企业数据集建设的实际需要。\n\n  **（二）大模型与智能体应用评测**\n\n  大模型与智能体应用评测培训，培训内容涵盖场景设计、模型能力、智能体效果、安全可信和持续评价等方面。中电联依托自身评测实践积累，可结合电网、发电、新能源等实际业务场景开展案例化实训，增强培训内容的针对性。\n\n  **（三）数据资产评估与流通**\n\n  数据资产评估与流通培训，培训内容包括数据盘点、质量评价、价值测算、资产入表、登记上架和流通运营等环节。中电联可贯通业务、财务、评估和交易各环节，采用在央企国企数据资产化项目中形成的方法开展授课。\n\n  **（四）可信数据空间与数据安全**\n\n  可信数据空间与数据安全培训，培训内容涉及可信连接、身份接入、授权使用、受控调用、安全评估和审计追溯等方面。中电联可结合电力数据基础设施建设和数据安全相关项目经验，面向建设人员和运营人员开展场景化培训。\n\n  除上述方向外，如贵单位拟参与或牵头相关标准项目，或有其他专业培训需求，亦可结合实际情况共同策划推进。",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.clean_base.v2",
+        "status": "required",
+        "note": "Prepare a text-free base by locally repairing only declared native_text regions; record one bounded repair per policy item and pass the clean-base visual checks before editable PPTX assembly."
+      },
+      "prompt_file": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/prompts/p02.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stages/02-input/script-intake.json",
+      "full": {
+        "filename": "page_002_创新业务6_2_标准及培训服务_full.png",
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_002_创新业务6_2_标准及培训服务_full.png",
+        "prompt": "【完整上屏内容】\n**一、标准建设**\n **（一）数据流通质量与价值评估**\n 数据流通质量与价值评估方向，合作内容为研制数据流通质量评估和数据产品价值测算相关标准，并同步开展指标设计和场景验证工作。中电联在该领域已牵头开展标准研制，可组织数据供给方、使用方、评估方和平台方共同参与验证，推动企业实践经验转化并进入行业规则体系。\n **（二）高质量数据集质量评估与数据标注**\n 高质量数据集质量评估与数据标注方向，研究内容涵盖质量指标、标注流程、质量控制、成果验收和场景适配要求等标准要素。中电联可衔接国家标准编制工作并组织电力场景验证，推动企业数据集建设成果进入测评互认和应用推广链条。\n **（三）数据基础设施与互联互通**\n 数据基础设施与互联互通方向，合作内容围绕参考架构、数据标识与目录、接入连接器、身份接入等要素开展标准研制。中电联依托国家数据基础设施建设在电力领域的先行先试工作和行业节点地位，可对企业提出的架构方案、接口方案和连接器方案开展验证。\n **（四）数据分类分级与安全保障**\n 数据分类分级与安全保障方向，研究内容包括数据分类分级、数据质量、全生命周期安全和跨主体流通安全等方面的实施规则。中电联可组织电网、发电等多类主体开展场景验证，形成支撑跨企业数据流通的安全边界和行业要求。\n **二、专业培训**\n **（一）高质量数据集建设与测评**\n 高质量数据集建设与测评培训，培训内容包括数据规划、专业标注、质量控制、测评认证和案例实训等环节。中电联可组织标准起草人员、测评实践人员和电力专业专家联合授课，使课程内容直接服务于企业数据集建设的实际需要。\n **（二）大模型与智能体应用评测**\n 大模型与智能体应用评测培训，培训内容涵盖场景设计、模型能力、智能体效果、安全可信和持续评价等方面。中电联依托自身评测实践积累，可结合电网、发电、新能源等实际业务场景开展案例化实训，增强培训内容的针对性。\n **（三）数据资产评估与流通**\n 数据资产评估与流通培训，培训内容包括数据盘点、质量评价、价值测算、资产入表、登记上架和流通运营等环节。中电联可贯通业务、财务、评估和交易各环节，采用在央企国企数据资产化项目中形成的方法开展授课。\n **（四）可信数据空间与数据安全**\n 可信数据空间与数据安全培训，培训内容涉及可信连接、身份接入、授权使用、受控调用、安全评估和审计追溯等方面。中电联可结合电力数据基础设施建设和数据安全相关项目经验，面向建设人员和运营人员开展场景化培训。\n 除上述方向外，如贵单位拟参与或牵头相关标准项目，或有其他专业培训需求，亦可结合实际情况共同策划推进。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "7400f245938da1c384776e3f62c22de940126f637f2cb52ac9bf0760dd67176b",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "790e47132e914cbd309359096fa5c1ece1cd99871f94ad4d67d8c864e2a77985",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 4804
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "7400f245938da1c384776e3f62c22de940126f637f2cb52ac9bf0760dd67176b",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Generated",
+        "generated_at": "2026-09-03T03:40:30+00:00",
+        "generated_prompt_sha256": "7400f245938da1c384776e3f62c22de940126f637f2cb52ac9bf0760dd67176b",
+        "text_audit": {
+          "schema": "cyberppt.generated_image_text_audit.v2",
+          "valid": true,
+          "scope": "typo_and_gibberish_only",
+          "image": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_002_创新业务6_2_标准及培训服务_full.png",
+          "image_size": [
+            1774,
+            887
+          ],
+          "issues": [],
+          "observed_text": [
+            "一、标准建设",
+            "数据流通质量与价值评估",
+            "高质量数据集质量评估与数据标注",
+            "数据基础设施与互联互通",
+            "数据分类分级与安全保障",
+            "二、专业培训",
+            "高质量数据集建设与测评",
+            "大模型与智能体应用评测",
+            "数据资产评估与流通",
+            "可信数据空间与数据安全"
+          ],
+          "ocr_items": [
+            {
+              "text": "01",
+              "confidence": 0.995031088590622,
+              "bbox": [
+                [
+                  243.0,
+                  34.0
+                ],
+                [
+                  261.0,
+                  34.0
+                ],
+                [
+                  261.0,
+                  46.0
+                ],
+                [
+                  243.0,
+                  46.0
+                ]
+              ]
+            },
+            {
+              "text": "数据流通质量与价值评估",
+              "confidence": 0.9966741095889698,
+              "bbox": [
+                [
+                  292.0,
+                  25.0
+                ],
+                [
+                  568.0,
+                  25.0
+                ],
+                [
+                  568.0,
+                  50.0
+                ],
+                [
+                  292.0,
+                  50.0
+                ]
+              ]
+            },
+            {
+              "text": "研制数据流通质量评估和数据产品价值测算相关标准，并同步开展指标设计和场景验证。",
+              "confidence": 0.9981785095655001,
+              "bbox": [
+                [
+                  294.0,
+                  60.0
+                ],
+                [
+                  926.0,
+                  60.0
+                ],
+                [
+                  926.0,
+                  80.0
+                ],
+                [
+                  294.0,
+                  80.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联已牵头开展标准研居标准研制，可组供给方、使用方、评估方和平台方共同参与验证，",
+              "confidence": 0.9828928527308674,
+              "bbox": [
+                [
+                  292.0,
+                  81.0
+                ],
+                [
+                  941.0,
+                  80.0
+                ],
+                [
+                  941.0,
+                  103.0
+                ],
+                [
+                  292.0,
+                  104.0
+                ]
+              ]
+            },
+            {
+              "text": "推动企业实践经验转化并入行业规则体系系。",
+              "confidence": 0.9959387093782425,
+              "bbox": [
+                [
+                  291.0,
+                  103.0
+                ],
+                [
+                  618.0,
+                  105.0
+                ],
+                [
+                  618.0,
+                  128.0
+                ],
+                [
+                  291.0,
+                  126.0
+                ]
+              ]
+            },
+            {
+              "text": "一、标准建设",
+              "confidence": 0.9945513606071472,
+              "bbox": [
+                [
+                  35.0,
+                  122.0
+                ],
+                [
+                  183.0,
+                  122.0
+                ],
+                [
+                  183.0,
+                  151.0
+                ],
+                [
+                  35.0,
+                  151.0
+                ]
+              ]
+            },
+            {
+              "text": "高质量数据集质量评估与数据标注",
+              "confidence": 0.9937430540720622,
+              "bbox": [
+                [
+                  292.0,
+                  150.0
+                ],
+                [
+                  669.0,
+                  148.0
+                ],
+                [
+                  669.0,
+                  175.0
+                ],
+                [
+                  292.0,
+                  176.0
+                ]
+              ]
+            },
+            {
+              "text": "围绕数据流通与",
+              "confidence": 0.9976631232670375,
+              "bbox": [
+                [
+                  38.0,
+                  177.0
+                ],
+                [
+                  176.0,
+                  177.0
+                ],
+                [
+                  176.0,
+                  200.0
+                ],
+                [
+                  38.0,
+                  200.0
+                ]
+              ]
+            },
+            {
+              "text": "研究质量指标、标注流程、质量控制、成果验收和场景适配要求等标准要素。",
+              "confidence": 0.9978262519135195,
+              "bbox": [
+                [
+                  294.0,
+                  182.0
+                ],
+                [
+                  846.0,
+                  182.0
+                ],
+                [
+                  846.0,
+                  202.0
+                ],
+                [
+                  294.0,
+                  202.0
+                ]
+              ]
+            },
+            {
+              "text": "数据基础设施，",
+              "confidence": 0.9971310581479754,
+              "bbox": [
+                [
+                  37.0,
+                  207.0
+                ],
+                [
+                  164.0,
+                  209.0
+                ],
+                [
+                  164.0,
+                  233.0
+                ],
+                [
+                  36.0,
+                  231.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联可街接国家标准编制工作并组织电力场景验证，推动企业数据集建设成果",
+              "confidence": 0.9888075266565596,
+              "bbox": [
+                [
+                  294.0,
+                  205.0
+                ],
+                [
+                  872.0,
+                  205.0
+                ],
+                [
+                  872.0,
+                  225.0
+                ],
+                [
+                  294.0,
+                  225.0
+                ]
+              ]
+            },
+            {
+              "text": "数据流通质量与价值评估",
+              "confidence": 0.9965640956705267,
+              "bbox": [
+                [
+                  1061.0,
+                  199.0
+                ],
+                [
+                  1278.0,
+                  199.0
+                ],
+                [
+                  1278.0,
+                  222.0
+                ],
+                [
+                  1061.0,
+                  222.0
+                ]
+              ]
+            },
+            {
+              "text": "高质量数据集质量评估与数据标注",
+              "confidence": 0.9975993951161702,
+              "bbox": [
+                [
+                  1407.0,
+                  200.0
+                ],
+                [
+                  1699.0,
+                  200.0
+                ],
+                [
+                  1699.0,
+                  220.0
+                ],
+                [
+                  1407.0,
+                  220.0
+                ]
+              ]
+            },
+            {
+              "text": "进入测评互认和应用推广链条。",
+              "confidence": 0.9984808266162872,
+              "bbox": [
+                [
+                  293.0,
+                  228.0
+                ],
+                [
+                  518.0,
+                  228.0
+                ],
+                [
+                  518.0,
+                  247.0
+                ],
+                [
+                  293.0,
+                  247.0
+                ]
+              ]
+            },
+            {
+              "text": "指标设计·场景验证",
+              "confidence": 0.9989763365851508,
+              "bbox": [
+                [
+                  1093.0,
+                  224.0
+                ],
+                [
+                  1246.0,
+                  224.0
+                ],
+                [
+                  1246.0,
+                  244.0
+                ],
+                [
+                  1093.0,
+                  244.0
+                ]
+              ]
+            },
+            {
+              "text": "质量指标·标注流程·质量控制",
+              "confidence": 0.9953744794641223,
+              "bbox": [
+                [
+                  1435.0,
+                  224.0
+                ],
+                [
+                  1670.0,
+                  224.0
+                ],
+                [
+                  1670.0,
+                  244.0
+                ],
+                [
+                  1435.0,
+                  244.0
+                ]
+              ]
+            },
+            {
+              "text": "研制标准并开展",
+              "confidence": 0.995631217956543,
+              "bbox": [
+                [
+                  37.0,
+                  241.0
+                ],
+                [
+                  176.0,
+                  241.0
+                ],
+                [
+                  176.0,
+                  264.0
+                ],
+                [
+                  37.0,
+                  264.0
+                ]
+              ]
+            },
+            {
+              "text": "场景验证，推动",
+              "confidence": 0.9986529520579747,
+              "bbox": [
+                [
+                  37.0,
+                  272.0
+                ],
+                [
+                  177.0,
+                  272.0
+                ],
+                [
+                  177.0,
+                  295.0
+                ],
+                [
+                  37.0,
+                  295.0
+                ]
+              ]
+            },
+            {
+              "text": "03",
+              "confidence": 0.9989923238754272,
+              "bbox": [
+                [
+                  240.0,
+                  274.0
+                ],
+                [
+                  268.0,
+                  274.0
+                ],
+                [
+                  268.0,
+                  294.0
+                ],
+                [
+                  240.0,
+                  294.0
+                ]
+              ]
+            },
+            {
+              "text": "数据基础设施与互联互通",
+              "confidence": 0.9983886588703502,
+              "bbox": [
+                [
+                  291.0,
+                  270.0
+                ],
+                [
+                  568.0,
+                  270.0
+                ],
+                [
+                  568.0,
+                  296.0
+                ],
+                [
+                  291.0,
+                  296.0
+                ]
+              ]
+            },
+            {
+              "text": "成果进入行业",
+              "confidence": 0.999276469151179,
+              "bbox": [
+                [
+                  37.0,
+                  304.0
+                ],
+                [
+                  157.0,
+                  304.0
+                ],
+                [
+                  157.0,
+                  328.0
+                ],
+                [
+                  37.0,
+                  328.0
+                ]
+              ]
+            },
+            {
+              "text": "围绕参考架构、数据标识与目录、接入连接器、身份接入等要素开展标准研制。",
+              "confidence": 0.9955960205623082,
+              "bbox": [
+                [
+                  294.0,
+                  303.0
+                ],
+                [
+                  861.0,
+                  303.0
+                ],
+                [
+                  861.0,
+                  323.0
+                ],
+                [
+                  294.0,
+                  323.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联依托国家数据基础设施建设在电力领域的先行先试工作和行业节点地位，",
+              "confidence": 0.9970782671655928,
+              "bbox": [
+                [
+                  293.0,
+                  325.0
+                ],
+                [
+                  861.0,
+                  325.0
+                ],
+                [
+                  861.0,
+                  345.0
+                ],
+                [
+                  293.0,
+                  345.0
+                ]
+              ]
+            },
+            {
+              "text": "规则体系。",
+              "confidence": 0.9998903036117553,
+              "bbox": [
+                [
+                  36.0,
+                  332.0
+                ],
+                [
+                  129.0,
+                  335.0
+                ],
+                [
+                  129.0,
+                  362.0
+                ],
+                [
+                  35.0,
+                  359.0
+                ]
+              ]
+            },
+            {
+              "text": "可对企业提出的架构方案、接口方案和连接器方案开展验证。",
+              "confidence": 0.9986879008787649,
+              "bbox": [
+                [
+                  293.0,
+                  347.0
+                ],
+                [
+                  730.0,
+                  347.0
+                ],
+                [
+                  730.0,
+                  367.0
+                ],
+                [
+                  293.0,
+                  367.0
+                ]
+              ]
+            },
+            {
+              "text": "04",
+              "confidence": 0.999710887670517,
+              "bbox": [
+                [
+                  240.0,
+                  389.0
+                ],
+                [
+                  269.0,
+                  389.0
+                ],
+                [
+                  269.0,
+                  409.0
+                ],
+                [
+                  240.0,
+                  409.0
+                ]
+              ]
+            },
+            {
+              "text": "数据分类分级与安全保障",
+              "confidence": 0.9986083453351801,
+              "bbox": [
+                [
+                  290.0,
+                  386.0
+                ],
+                [
+                  567.0,
+                  386.0
+                ],
+                [
+                  567.0,
+                  412.0
+                ],
+                [
+                  290.0,
+                  412.0
+                ]
+              ]
+            },
+            {
+              "text": "研究数据分类分级、数据质量、全生命周期安全和跨主体流通安全等方面的实施规则。",
+              "confidence": 0.9989472596268905,
+              "bbox": [
+                [
+                  294.0,
+                  418.0
+                ],
+                [
+                  910.0,
+                  418.0
+                ],
+                [
+                  910.0,
+                  438.0
+                ],
+                [
+                  294.0,
+                  438.0
+                ]
+              ]
+            },
+            {
+              "text": "数据基础设施与互联互通",
+              "confidence": 0.9973380294713107,
+              "bbox": [
+                [
+                  1052.0,
+                  427.0
+                ],
+                [
+                  1270.0,
+                  427.0
+                ],
+                [
+                  1270.0,
+                  446.0
+                ],
+                [
+                  1052.0,
+                  446.0
+                ]
+              ]
+            },
+            {
+              "text": "数据分类分级与安全保障",
+              "confidence": 0.9987379854375665,
+              "bbox": [
+                [
+                  1441.0,
+                  426.0
+                ],
+                [
+                  1661.0,
+                  426.0
+                ],
+                [
+                  1661.0,
+                  448.0
+                ],
+                [
+                  1441.0,
+                  448.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联可组织电网、发电等多类主体开展场景验证，形成支撑跨企业数据流通的",
+              "confidence": 0.9935471160071236,
+              "bbox": [
+                [
+                  294.0,
+                  440.0
+                ],
+                [
+                  872.0,
+                  440.0
+                ],
+                [
+                  872.0,
+                  459.0
+                ],
+                [
+                  294.0,
+                  459.0
+                ]
+              ]
+            },
+            {
+              "text": "参考架构·标识目录·接入连接器·身份接入",
+              "confidence": 0.9916193008422851,
+              "bbox": [
+                [
+                  1002.0,
+                  450.0
+                ],
+                [
+                  1335.0,
+                  450.0
+                ],
+                [
+                  1335.0,
+                  470.0
+                ],
+                [
+                  1002.0,
+                  470.0
+                ]
+              ]
+            },
+            {
+              "text": "分类分级·全生命周期安全·跨主体流通安全",
+              "confidence": 0.9935809969902039,
+              "bbox": [
+                [
+                  1383.0,
+                  450.0
+                ],
+                [
+                  1717.0,
+                  450.0
+                ],
+                [
+                  1717.0,
+                  470.0
+                ],
+                [
+                  1383.0,
+                  470.0
+                ]
+              ]
+            },
+            {
+              "text": "安全边界和行业要求。",
+              "confidence": 0.999773520231247,
+              "bbox": [
+                [
+                  293.0,
+                  462.0
+                ],
+                [
+                  453.0,
+                  462.0
+                ],
+                [
+                  453.0,
+                  482.0
+                ],
+                [
+                  293.0,
+                  482.0
+                ]
+              ]
+            },
+            {
+              "text": "01",
+              "confidence": 0.9974357485771179,
+              "bbox": [
+                [
+                  240.0,
+                  527.0
+                ],
+                [
+                  267.0,
+                  527.0
+                ],
+                [
+                  267.0,
+                  545.0
+                ],
+                [
+                  240.0,
+                  545.0
+                ]
+              ]
+            },
+            {
+              "text": "高质量数据集建设与测评",
+              "confidence": 0.9969933954152194,
+              "bbox": [
+                [
+                  287.0,
+                  526.0
+                ],
+                [
+                  535.0,
+                  526.0
+                ],
+                [
+                  535.0,
+                  548.0
+                ],
+                [
+                  287.0,
+                  548.0
+                ]
+              ]
+            },
+            {
+              "text": "02",
+              "confidence": 0.998479038476944,
+              "bbox": [
+                [
+                  614.0,
+                  527.0
+                ],
+                [
+                  642.0,
+                  527.0
+                ],
+                [
+                  642.0,
+                  545.0
+                ],
+                [
+                  614.0,
+                  545.0
+                ]
+              ]
+            },
+            {
+              "text": "大模型与智能体应用评测",
+              "confidence": 0.9960744760253213,
+              "bbox": [
+                [
+                  658.0,
+                  525.0
+                ],
+                [
+                  905.0,
+                  525.0
+                ],
+                [
+                  905.0,
+                  547.0
+                ],
+                [
+                  658.0,
+                  547.0
+                ]
+              ]
+            },
+            {
+              "text": "03",
+              "confidence": 0.999094158411026,
+              "bbox": [
+                [
+                  978.0,
+                  526.0
+                ],
+                [
+                  1007.0,
+                  526.0
+                ],
+                [
+                  1007.0,
+                  545.0
+                ],
+                [
+                  978.0,
+                  545.0
+                ]
+              ]
+            },
+            {
+              "text": "数据资产评估与流通",
+              "confidence": 0.9945333533816867,
+              "bbox": [
+                [
+                  1023.0,
+                  524.0
+                ],
+                [
+                  1228.0,
+                  524.0
+                ],
+                [
+                  1228.0,
+                  549.0
+                ],
+                [
+                  1023.0,
+                  549.0
+                ]
+              ]
+            },
+            {
+              "text": "04",
+              "confidence": 0.9993577897548676,
+              "bbox": [
+                [
+                  1354.0,
+                  526.0
+                ],
+                [
+                  1383.0,
+                  526.0
+                ],
+                [
+                  1383.0,
+                  544.0
+                ],
+                [
+                  1354.0,
+                  544.0
+                ]
+              ]
+            },
+            {
+              "text": "可信数据空间与数据安全",
+              "confidence": 0.9978425882079385,
+              "bbox": [
+                [
+                  1402.0,
+                  526.0
+                ],
+                [
+                  1648.0,
+                  526.0
+                ],
+                [
+                  1648.0,
+                  548.0
+                ],
+                [
+                  1402.0,
+                  548.0
+                ]
+              ]
+            },
+            {
+              "text": "培训内容：数据规划、专业标注、质量控制、",
+              "confidence": 0.9991120159626007,
+              "bbox": [
+                [
+                  234.0,
+                  562.0
+                ],
+                [
+                  557.0,
+                  562.0
+                ],
+                [
+                  557.0,
+                  582.0
+                ],
+                [
+                  234.0,
+                  582.0
+                ]
+              ]
+            },
+            {
+              "text": "培训内容：场景设计、模型能力、智能体效果、",
+              "confidence": 0.9952079994337899,
+              "bbox": [
+                [
+                  608.0,
+                  562.0
+                ],
+                [
+                  938.0,
+                  562.0
+                ],
+                [
+                  938.0,
+                  582.0
+                ],
+                [
+                  608.0,
+                  582.0
+                ]
+              ]
+            },
+            {
+              "text": "培训内容：数据盘点、质量评价、价值测算、",
+              "confidence": 0.9985897213220596,
+              "bbox": [
+                [
+                  973.0,
+                  562.0
+                ],
+                [
+                  1295.0,
+                  562.0
+                ],
+                [
+                  1295.0,
+                  582.0
+                ],
+                [
+                  973.0,
+                  582.0
+                ]
+              ]
+            },
+            {
+              "text": "培训内容：可信连接、身份接入、授权使用、",
+              "confidence": 0.9990495324134827,
+              "bbox": [
+                [
+                  1352.0,
+                  562.0
+                ],
+                [
+                  1678.0,
+                  562.0
+                ],
+                [
+                  1678.0,
+                  582.0
+                ],
+                [
+                  1352.0,
+                  582.0
+                ]
+              ]
+            },
+            {
+              "text": "二、专业培训",
+              "confidence": 0.9994401931762695,
+              "bbox": [
+                [
+                  34.0,
+                  594.0
+                ],
+                [
+                  183.0,
+                  596.0
+                ],
+                [
+                  182.0,
+                  627.0
+                ],
+                [
+                  33.0,
+                  625.0
+                ]
+              ]
+            },
+            {
+              "text": "测评认证、案例实训等环节。",
+              "confidence": 0.9996220882122333,
+              "bbox": [
+                [
+                  233.0,
+                  588.0
+                ],
+                [
+                  442.0,
+                  588.0
+                ],
+                [
+                  442.0,
+                  608.0
+                ],
+                [
+                  233.0,
+                  608.0
+                ]
+              ]
+            },
+            {
+              "text": "安全可信、持续评价等方面。",
+              "confidence": 0.9981325773092417,
+              "bbox": [
+                [
+                  608.0,
+                  588.0
+                ],
+                [
+                  815.0,
+                  588.0
+                ],
+                [
+                  815.0,
+                  605.0
+                ],
+                [
+                  608.0,
+                  605.0
+                ]
+              ]
+            },
+            {
+              "text": "资产入表、登记上架、流通运营等环节。",
+              "confidence": 0.9985418518384298,
+              "bbox": [
+                [
+                  973.0,
+                  587.0
+                ],
+                [
+                  1264.0,
+                  587.0
+                ],
+                [
+                  1264.0,
+                  607.0
+                ],
+                [
+                  973.0,
+                  607.0
+                ]
+              ]
+            },
+            {
+              "text": "受控调用、安全评估、审计追溯等方面。",
+              "confidence": 0.9590664472844865,
+              "bbox": [
+                [
+                  1353.0,
+                  589.0
+                ],
+                [
+                  1644.0,
+                  589.0
+                ],
+                [
+                  1644.0,
+                  606.0
+                ],
+                [
+                  1353.0,
+                  606.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联组织标准起草人员、测评实践人员和",
+              "confidence": 0.9995546591909308,
+              "bbox": [
+                [
+                  234.0,
+                  615.0
+                ],
+                [
+                  551.0,
+                  615.0
+                ],
+                [
+                  551.0,
+                  635.0
+                ],
+                [
+                  234.0,
+                  635.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联结合电网、发电、新能源等实际业务",
+              "confidence": 0.999669749485819,
+              "bbox": [
+                [
+                  608.0,
+                  615.0
+                ],
+                [
+                  925.0,
+                  615.0
+                ],
+                [
+                  925.0,
+                  635.0
+                ],
+                [
+                  608.0,
+                  635.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联贯通业务、财务、评估和交易各环节，",
+              "confidence": 0.999405562877655,
+              "bbox": [
+                [
+                  973.0,
+                  614.0
+                ],
+                [
+                  1294.0,
+                  614.0
+                ],
+                [
+                  1294.0,
+                  634.0
+                ],
+                [
+                  973.0,
+                  634.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联结合电力数据基础设施建设和数据安全",
+              "confidence": 0.9988546729087829,
+              "bbox": [
+                [
+                  1352.0,
+                  614.0
+                ],
+                [
+                  1688.0,
+                  614.0
+                ],
+                [
+                  1688.0,
+                  634.0
+                ],
+                [
+                  1352.0,
+                  634.0
+                ]
+              ]
+            },
+            {
+              "text": "覆盖数据建设、",
+              "confidence": 0.9953245605741229,
+              "bbox": [
+                [
+                  37.0,
+                  642.0
+                ],
+                [
+                  165.0,
+                  642.0
+                ],
+                [
+                  165.0,
+                  666.0
+                ],
+                [
+                  37.0,
+                  666.0
+                ]
+              ]
+            },
+            {
+              "text": "电力专业专家联合授课，服务企业实际需要。",
+              "confidence": 0.9985051423311233,
+              "bbox": [
+                [
+                  234.0,
+                  639.0
+                ],
+                [
+                  555.0,
+                  641.0
+                ],
+                [
+                  555.0,
+                  660.0
+                ],
+                [
+                  234.0,
+                  659.0
+                ]
+              ]
+            },
+            {
+              "text": "场景开展案例化实训，增强培训针对性。",
+              "confidence": 0.9988920953538682,
+              "bbox": [
+                [
+                  608.0,
+                  641.0
+                ],
+                [
+                  899.0,
+                  641.0
+                ],
+                [
+                  899.0,
+                  660.0
+                ],
+                [
+                  608.0,
+                  660.0
+                ]
+              ]
+            },
+            {
+              "text": "采用在央企国企数据资产化项目中形成的方法。",
+              "confidence": 0.9961299016362145,
+              "bbox": [
+                [
+                  974.0,
+                  640.0
+                ],
+                [
+                  1311.0,
+                  640.0
+                ],
+                [
+                  1311.0,
+                  656.0
+                ],
+                [
+                  974.0,
+                  656.0
+                ]
+              ]
+            },
+            {
+              "text": "项目经验，面向建设人员和运营人员培训。",
+              "confidence": 0.9980816056853846,
+              "bbox": [
+                [
+                  1352.0,
+                  640.0
+                ],
+                [
+                  1661.0,
+                  640.0
+                ],
+                [
+                  1661.0,
+                  659.0
+                ],
+                [
+                  1352.0,
+                  659.0
+                ]
+              ]
+            },
+            {
+              "text": "评测、资产化和",
+              "confidence": 0.9994349309376308,
+              "bbox": [
+                [
+                  36.0,
+                  672.0
+                ],
+                [
+                  176.0,
+                  672.0
+                ],
+                [
+                  176.0,
+                  696.0
+                ],
+                [
+                  36.0,
+                  696.0
+                ]
+              ]
+            },
+            {
+              "text": "数据盘点",
+              "confidence": 0.8026814684271812,
+              "bbox": [
+                [
+                  1172.0,
+                  679.0
+                ],
+                [
+                  1228.0,
+                  681.0
+                ],
+                [
+                  1227.0,
+                  702.0
+                ],
+                [
+                  1171.0,
+                  700.0
+                ]
+              ]
+            },
+            {
+              "text": "O",
+              "confidence": 0.5851052403450012,
+              "bbox": [
+                [
+                  1247.0,
+                  687.0
+                ],
+                [
+                  1256.0,
+                  687.0
+                ],
+                [
+                  1256.0,
+                  698.0
+                ],
+                [
+                  1247.0,
+                  698.0
+                ]
+              ]
+            },
+            {
+              "text": "安全空间等领域，",
+              "confidence": 0.9937943816184998,
+              "bbox": [
+                [
+                  37.0,
+                  704.0
+                ],
+                [
+                  180.0,
+                  704.0
+                ],
+                [
+                  180.0,
+                  727.0
+                ],
+                [
+                  37.0,
+                  727.0
+                ]
+              ]
+            },
+            {
+              "text": "可信数据空间",
+              "confidence": 0.9865872164567312,
+              "bbox": [
+                [
+                  1483.0,
+                  696.0
+                ],
+                [
+                  1576.0,
+                  698.0
+                ],
+                [
+                  1575.0,
+                  719.0
+                ],
+                [
+                  1483.0,
+                  717.0
+                ]
+              ]
+            },
+            {
+              "text": "以案例化实训",
+              "confidence": 0.9990494847297668,
+              "bbox": [
+                [
+                  37.0,
+                  732.0
+                ],
+                [
+                  159.0,
+                  735.0
+                ],
+                [
+                  159.0,
+                  761.0
+                ],
+                [
+                  36.0,
+                  759.0
+                ]
+              ]
+            },
+            {
+              "text": "资产入表",
+              "confidence": 0.9921667873859406,
+              "bbox": [
+                [
+                  1173.0,
+                  737.0
+                ],
+                [
+                  1227.0,
+                  742.0
+                ],
+                [
+                  1225.0,
+                  763.0
+                ],
+                [
+                  1171.0,
+                  758.0
+                ]
+              ]
+            },
+            {
+              "text": "提升实战能力。",
+              "confidence": 0.9993065084729876,
+              "bbox": [
+                [
+                  36.0,
+                  766.0
+                ],
+                [
+                  164.0,
+                  766.0
+                ],
+                [
+                  164.0,
+                  790.0
+                ],
+                [
+                  36.0,
+                  790.0
+                ]
+              ]
+            },
+            {
+              "text": "油酒运警",
+              "confidence": 0.589594341814518,
+              "bbox": [
+                [
+                  1173.0,
+                  764.0
+                ],
+                [
+                  1227.0,
+                  771.0
+                ],
+                [
+                  1224.0,
+                  792.0
+                ],
+                [
+                  1170.0,
+                  785.0
+                ]
+              ]
+            },
+            {
+              "text": "除上述方向外，如贵单位拟参与或牵头相关标准项目，或有其他专业培训需求，亦可结合实际情况共同策划推进。",
+              "confidence": 0.998875972032547,
+              "bbox": [
+                [
+                  93.0,
+                  842.0
+                ],
+                [
+                  1153.0,
+                  843.0
+                ],
+                [
+                  1153.0,
+                  869.0
+                ],
+                [
+                  93.0,
+                  868.0
+                ]
+              ]
+            }
+          ],
+          "summary": "未发现已出现文字中存在明确错字或乱码。",
+          "required_action": null,
+          "page_number": 2,
+          "attempt": 3,
+          "normalized_image_size": [
+            2048,
+            1024
+          ]
+        },
+        "visual_signature": {
+          "schema": "cyberppt.full_image_visual_signature.v1",
+          "page_number": 2,
+          "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_002_创新业务6_2_标准及培训服务_full.png",
+          "source_sha256": "5b739f74d4de966053c2f0b12709888ec8baeb2173300e46b877ba9e1d21d2b1",
+          "visual_medium": "unspecified",
+          "gravity": {
+            "x": 0.4944,
+            "y": 0.5289,
+            "horizontal": "center",
+            "vertical": "middle"
+          },
+          "density": "dense",
+          "density_score": 63.6992,
+          "skeleton_3x3": "111111111",
+          "skeleton_shares": [
+            0.106,
+            0.0932,
+            0.1055,
+            0.1232,
+            0.1065,
+            0.1095,
+            0.1282,
+            0.11,
+            0.1179
+          ],
+          "structure_hash": "00676660ffee6efe"
+        },
+        "reconstruction_visual_source": {
+          "authority": "audited_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_002_创新业务6_2_标准及培训服务_full.png",
+          "sha256": "5b739f74d4de966053c2f0b12709888ec8baeb2173300e46b877ba9e1d21d2b1",
+          "immutable_visual_composition": true
+        }
+      }
+    }
+  ],
+  "source_mode": "script_file",
+  "source_script_sha256": "160fb19641c1a0b1c71aa0cd639df41dab16a7355b5951e4227c68dca42ac0ee",
+  "run_id": "ke-biao-yan-xun-v1",
+  "input_fingerprint": "6f15b7eabbaa1cf104ebf726a8e047b4918329bee2d932e6bb17519c43e992d9",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "160fb19641c1a0b1c71aa0cd639df41dab16a7355b5951e4227c68dca42ac0ee",
+    "script_input_sha256": "2ce5f0e2386b4d79f3526fe2df57756ede052913dde19ee43986727f67227709",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "ce40bbc156a726a968184652cc4767049eeb7262314b8dbf249571cb9d3c8a45",
+    "pages": [
+      1,
+      2
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "full_image_deck_rhythm_qa": {
+    "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+    "status": "passed",
+    "receipt_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/qa/full_image_deck_rhythm_qa.json",
+    "receipt_sha256": "da6a7f8b14b4b5501d65782a26162c4fba40db00d948f0f723cdbac33e290d9c",
+    "contact_sheet_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/qa/full_image_contact_sheet.png",
+    "contact_sheet_sha256": "1b2442fc8d17b31056919467bc868f3dd52c0d825243d67fabe32367e174edf2",
+    "page_count": 2,
+    "blocker_count": 0,
+    "warning_count": 0,
+    "authority_gate": "before_reconstruction_visual_source_binding"
+  },
+  "visual_truth_policy": {
+    "authority": "audited_full_image",
+    "scope": "editable_reconstruction",
+    "rule": "downstream reconstruction may decompose or rebuild text but must preserve the accepted visual composition",
+    "bound_pages": [
+      1,
+      2
+    ]
+  },
+  "stage02_state": {
+    "schema": "cyberppt.stage02_build_state.v1",
+    "state": "needs_action",
+    "pages": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image",
+        "error": null
+      },
+      {
+        "page": 2,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image",
+        "error": null
+      }
+    ],
+    "actions": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image"
+      },
+      {
+        "page": 2,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image"
+      }
+    ],
+    "failures": []
+  }
+}

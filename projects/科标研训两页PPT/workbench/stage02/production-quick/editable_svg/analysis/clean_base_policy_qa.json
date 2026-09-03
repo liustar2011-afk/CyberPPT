@@ -1,0 +1,17 @@
+{
+  "schema": "cyberppt.stage02.clean_base_policy_qa.v1",
+  "pages": [
+    {
+      "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+      "page_number": 1,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+      "page_number": 2,
+      "valid": true,
+      "errors": []
+    }
+  ]
+}

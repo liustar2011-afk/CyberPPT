@@ -1,0 +1,30 @@
+{
+  "image": {
+    "schema": "cyberppt.dual_image.text_content_qa.v1",
+    "valid": true,
+    "order_sensitive": false,
+    "allow_fragmented_actual": true,
+    "checks": {
+      "text_count_matches": true,
+      "pptx_text_matches_expected": true
+    },
+    "expected_texts": [
+      "创新业务6-1：科技项目及课题研究",
+      "创新业务6-2：标准及培训服务",
+      "中国电力企业联合会",
+      "中国电力企业联合会",
+      "1",
+      "2"
+    ],
+    "actual_texts": [
+      "创新业务6-1：科技项目及课题研究",
+      "中国电力企业联合会",
+      "1",
+      "创新业务6-2：标准及培训服务",
+      "中国电力企业联合会",
+      "2"
+    ],
+    "mismatches": [],
+    "error_count": 0
+  }
+}

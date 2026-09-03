@@ -1,0 +1,66 @@
+{
+  "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+  "status": "passed",
+  "contact_sheet": {
+    "schema": "cyberppt.full_image_contact_sheet.v1",
+    "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/qa/full_image_contact_sheet.png",
+    "sha256": "7cd7b94418b02d3cd2e8980178fe87f3c9324b58bc9388778810aa72686f44be",
+    "page_count": 1,
+    "pages": [
+      {
+        "page_number": 1,
+        "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_001_创新业务6_1_科技项目及课题研究_full.png",
+        "source_sha256": "280bbd243d52f19338a33bfe412c96b4dcace61dcb8693e1ffee9e2b0b53215e"
+      }
+    ],
+    "thumbnail_size": [
+      480,
+      240
+    ],
+    "columns": 4,
+    "sheet_size": [
+      2048,
+      300
+    ]
+  },
+  "signatures": [
+    {
+      "schema": "cyberppt.full_image_visual_signature.v1",
+      "page_number": 1,
+      "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_001_创新业务6_1_科技项目及课题研究_full.png",
+      "source_sha256": "280bbd243d52f19338a33bfe412c96b4dcace61dcb8693e1ffee9e2b0b53215e",
+      "visual_medium": "unspecified",
+      "gravity": {
+        "x": 0.4706,
+        "y": 0.4727,
+        "horizontal": "center",
+        "vertical": "middle"
+      },
+      "density": "dense",
+      "density_score": 55.6098,
+      "skeleton_3x3": "110111111",
+      "skeleton_shares": [
+        0.1267,
+        0.1315,
+        0.0585,
+        0.1485,
+        0.1626,
+        0.1183,
+        0.081,
+        0.0845,
+        0.0884
+      ],
+      "structure_hash": "7878ffbefefe2b00"
+    }
+  ],
+  "audit": {
+    "schema": "cyberppt.full_image_deck_rhythm_qa.v1",
+    "status": "passed",
+    "page_count": 1,
+    "findings": [],
+    "blocker_count": 0,
+    "warning_count": 0,
+    "review_basis": "actual_full_image_edge_activity_plus_audited_visual_medium"
+  },
+  "authority_gate": "before_reconstruction_visual_source_binding"
+}

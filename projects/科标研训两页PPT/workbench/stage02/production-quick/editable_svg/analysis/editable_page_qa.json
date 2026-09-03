@@ -1,0 +1,1065 @@
+{
+  "schema": "cyberppt.stage02.editable_page_qa.v1",
+  "pages": [
+    {
+      "schema": "cyberppt.stage02.editable_page_qa.v1",
+      "page_number": 1,
+      "valid": true,
+      "clean_base": {
+        "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+        "page_number": 1,
+        "valid": true,
+        "errors": []
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "page_number": 1,
+        "valid": true,
+        "status": "complete",
+        "items": [
+          {
+            "id": "p1-line-001",
+            "text": "一、科技项目（四个方向）",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-002",
+            "text": "聚焦数据构建、模型评测、安全评估与可信流通，研发工具能力，形成可对外提供的工具产品和测评服务，支撑电力行业数字化与数据要素安全高效利用。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-003",
+            "text": "01",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-004",
+            "text": "02",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-005",
+            "text": "03",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-006",
+            "text": "04",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-007",
+            "text": "高质量数据集智能构建",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-008",
+            "text": "与自动化测评",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-009",
+            "text": "电力大模型与智能体",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-010",
+            "text": "行业评测",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-011",
+            "text": "数据安全风险",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-012",
+            "text": "智能评估",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-013",
+            "text": "多主体数据可信共享",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-014",
+            "text": "与受控利用",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-015",
+            "text": "研发智能标注、数据增强、自动质检、",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-016",
+            "text": "质量诊断和自动化测评工具，覆盖数据",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-017",
+            "text": "集构建与评价全链条。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-018",
+            "text": "中电联具备专业规则制定、典型数据集",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-019",
+            "text": "积累、测评体系建设和应用场景组织基",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-020",
+            "text": "础条件。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-021",
+            "text": "研发模型适配、场景能力、安全可信、",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-022",
+            "text": "智能体效果等维度的自动化评测工具，",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-023",
+            "text": "提供系统化评价手段。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-024",
+            "text": "中电联具备跨模型、跨专业、跨单位统",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-025",
+            "text": "一基准验证优势，提升评测结论可比性",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-026",
+            "text": "和通用性。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-027",
+            "text": "研发风险识别、规则匹配、能力评分、",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-028",
+            "text": "问题诊断和整改推荐的工具体系，支撑",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-029",
+            "text": "企业自评估与自诊断。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-030",
+            "text": "中电联在数据安全成熟度评估和治理项",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-031",
+            "text": "目中积累了评价指标、风险规则和典型",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-032",
+            "text": "案例，可转化为评估模型支撑研发。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-033",
+            "text": "研究可信连接、授权控制、数据可用不",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-034",
+            "text": "可见、安全调用和审计追溯等关键技术，",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-035",
+            "text": "满足多主体共享的安全可控要求。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-036",
+            "text": "中电联可依托电力数据基础设施建设跨",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-037",
+            "text": "企业验证环境，为可信流通技术提供行",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-038",
+            "text": "业级验证条件。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-039",
+            "text": "共性价值",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-040",
+            "text": "推动技术成果转化为工具产品",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-041",
+            "text": "和测评服务",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-042",
+            "text": "构建覆盖技术研发—验证评测—",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-043",
+            "text": "场景应用的完整闭环",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-044",
+            "text": "支撑电力行业数字化转型与数",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-045",
+            "text": "据要素价值释放",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-046",
+            "text": "二、课题研究（四个课题）",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-047",
+            "text": "围绕机制设计与路径研究，打通标准、测评、估值、流通和应用全流程，为行业规范化管理与价值释放提供系统支撑。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-048",
+            "text": "01",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-049",
+            "text": "02",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-050",
+            "text": "03",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-051",
+            "text": "04",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-052",
+            "text": "高质量数据集测评互认",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-053",
+            "text": "与价值释放机制",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-054",
+            "text": "电力大模型与智能体行业评价",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-055",
+            "text": "及应用准入机制",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-056",
+            "text": "电力数据资产价值评估",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-057",
+            "text": "与市场化流通机制",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-058",
+            "text": "电力数据基础设施场景运营",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-059",
+            "text": "与多方协同机制",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-060",
+            "text": "研究质量评价、测评互认、价值评估、授权使用、",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-061",
+            "text": "流通交易和模型应用等环节的机制设计，解决价",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-062",
+            "text": "值释放不畅问题。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-063",
+            "text": "中电联贯通标准、测评、估值、流通和应用各",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-064",
+            "text": "环节，为机制研究提供全流程实践支撑。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-065",
+            "text": "研究行业适配、业务效果、安全可信、应用准入",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-066",
+            "text": "和持续评价等方面的方法体系，支撑规范化管理。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-067",
+            "text": "中电联组织电网企业、发电企业、装备制造企业",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-068",
+            "text": "和科研机构共同参与验证，形成跨主体的行业评",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-069",
+            "text": "价体系，增强结果代表性。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-070",
+            "text": "研究数据盘点、质量评价、价值测算、",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-071",
+            "text": "资产入表、产品设计、登记交易和运营",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-072",
+            "text": "等数据资产化全流程。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-073",
+            "text": "中电联依托数据资产化项目和价值测算",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-074",
+            "text": "标准研究，通过真实项目检验估值方法、",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-075",
+            "text": "入表路径和流通路径。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-076",
+            "text": "研究授权、计量、定价、结算、收益分配、安全",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-077",
+            "text": "责任等要素在多主体运营中的机制设计。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-078",
+            "text": "中电联组织数据提供方、业务方、使用方和平台",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-079",
+            "text": "方在真实场景中验证运营规则，检验机制设计的",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-080",
+            "text": "可操作性和适用性。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-081",
+            "text": "适用与协同",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-082",
+            "text": "除上述方向外，如贵单位另有",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-083",
+            "text": "科技项目储备或重点研究选题，",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-084",
+            "text": "可结合实际情况共同研究，",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p1-line-085",
+            "text": "择优推进项目合作。",
+            "treatment": "native_text",
+            "valid": true
+          }
+        ],
+        "native_svg_texts": [
+          "一、科技项目（四个方向）",
+          "聚焦数据构建、模型评测、安全评估与可信流通，研发工具能力，形成可对外提供的工具产品和测评服务，支撑电力行业数字化与数据要素安全高效利用。",
+          "01",
+          "02",
+          "03",
+          "04",
+          "高质量数据集智能构建",
+          "与自动化测评",
+          "电力大模型与智能体",
+          "行业评测",
+          "数据安全风险",
+          "智能评估",
+          "多主体数据可信共享",
+          "与受控利用",
+          "研发智能标注、数据增强、自动质检、",
+          "质量诊断和自动化测评工具，覆盖数据",
+          "集构建与评价全链条。",
+          "中电联具备专业规则制定、典型数据集",
+          "积累、测评体系建设和应用场景组织基",
+          "础条件。",
+          "研发模型适配、场景能力、安全可信、",
+          "智能体效果等维度的自动化评测工具，",
+          "提供系统化评价手段。",
+          "中电联具备跨模型、跨专业、跨单位统",
+          "一基准验证优势，提升评测结论可比性",
+          "和通用性。",
+          "研发风险识别、规则匹配、能力评分、",
+          "问题诊断和整改推荐的工具体系，支撑",
+          "企业自评估与自诊断。",
+          "中电联在数据安全成熟度评估和治理项",
+          "目中积累了评价指标、风险规则和典型",
+          "案例，可转化为评估模型支撑研发。",
+          "研究可信连接、授权控制、数据可用不",
+          "可见、安全调用和审计追溯等关键技术，",
+          "满足多主体共享的安全可控要求。",
+          "中电联可依托电力数据基础设施建设跨",
+          "企业验证环境，为可信流通技术提供行",
+          "业级验证条件。",
+          "共性价值",
+          "推动技术成果转化为工具产品",
+          "和测评服务",
+          "构建覆盖技术研发—验证评测—",
+          "场景应用的完整闭环",
+          "支撑电力行业数字化转型与数",
+          "据要素价值释放",
+          "二、课题研究（四个课题）",
+          "围绕机制设计与路径研究，打通标准、测评、估值、流通和应用全流程，为行业规范化管理与价值释放提供系统支撑。",
+          "01",
+          "02",
+          "03",
+          "04",
+          "高质量数据集测评互认",
+          "与价值释放机制",
+          "电力大模型与智能体行业评价",
+          "及应用准入机制",
+          "电力数据资产价值评估",
+          "与市场化流通机制",
+          "电力数据基础设施场景运营",
+          "与多方协同机制",
+          "研究质量评价、测评互认、价值评估、授权使用、",
+          "流通交易和模型应用等环节的机制设计，解决价",
+          "值释放不畅问题。",
+          "中电联贯通标准、测评、估值、流通和应用各",
+          "环节，为机制研究提供全流程实践支撑。",
+          "研究行业适配、业务效果、安全可信、应用准入",
+          "和持续评价等方面的方法体系，支撑规范化管理。",
+          "中电联组织电网企业、发电企业、装备制造企业",
+          "和科研机构共同参与验证，形成跨主体的行业评",
+          "价体系，增强结果代表性。",
+          "研究数据盘点、质量评价、价值测算、",
+          "资产入表、产品设计、登记交易和运营",
+          "等数据资产化全流程。",
+          "中电联依托数据资产化项目和价值测算",
+          "标准研究，通过真实项目检验估值方法、",
+          "入表路径和流通路径。",
+          "研究授权、计量、定价、结算、收益分配、安全",
+          "责任等要素在多主体运营中的机制设计。",
+          "中电联组织数据提供方、业务方、使用方和平台",
+          "方在真实场景中验证运营规则，检验机制设计的",
+          "可操作性和适用性。",
+          "适用与协同",
+          "除上述方向外，如贵单位另有",
+          "科技项目储备或重点研究选题，",
+          "可结合实际情况共同研究，",
+          "择优推进项目合作。"
+        ],
+        "image_layer_count": 2,
+        "errors": []
+      },
+      "svg_text_count": 85,
+      "image_layer_count": 2,
+      "errors": []
+    },
+    {
+      "schema": "cyberppt.stage02.editable_page_qa.v1",
+      "page_number": 2,
+      "valid": true,
+      "clean_base": {
+        "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+        "page_number": 2,
+        "valid": true,
+        "errors": []
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "page_number": 2,
+        "valid": true,
+        "status": "complete",
+        "items": [
+          {
+            "id": "p2-line-001",
+            "text": "一、标准建设",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-002",
+            "text": "（一）数据流通质量与价值评估",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-003",
+            "text": "（二）高质量数据集质量评估与数据标注",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-004",
+            "text": "（三）数据基础设施与互联互通",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-005",
+            "text": "（四）数据分类分级与安全保障",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-006",
+            "text": "研制数据流通质量评估和数据产品",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-007",
+            "text": "价值测算相关标准，并同步开展指",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-008",
+            "text": "标设计和场景验证工作。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-009",
+            "text": "研究质量指标、标注流程、质量控制、",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-010",
+            "text": "成果验收和场景适配要求等标准要素。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-011",
+            "text": "围绕参考架构、数据标识与目录、接入",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-012",
+            "text": "连接器、身份接入等要素开展标准研制。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-013",
+            "text": "研究数据分类分级、数据质量、全生命周",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-014",
+            "text": "期安全和跨主体流通安全等方面的实施规",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-015",
+            "text": "则。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-016",
+            "text": "中电联已牵头开展标准研制，可组织数据",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-017",
+            "text": "供给方、使用方、评估方和平台方共同参",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-018",
+            "text": "与验证，推动企业实践经验转化并进入行",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-019",
+            "text": "业规则体系。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-020",
+            "text": "中电联可衔接国家标准编制工作并组织",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-021",
+            "text": "电力场景验证，推动企业数据集建设成",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-022",
+            "text": "果进入测评互认和应用推广链条。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-023",
+            "text": "中电联依托国家数据基础设施建设在电",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-024",
+            "text": "力领域的先行先试工作和行业节点地位，",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-025",
+            "text": "可对企业提出的架构方案、接口方案和",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-026",
+            "text": "连接器方案开展验证。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-027",
+            "text": "中电联可组织电网、发电等多类主体开展",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-028",
+            "text": "场景验证，形成支撑跨企业数据流通的安",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-029",
+            "text": "全边界和行业要求。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-030",
+            "text": "行业标准文件",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-031",
+            "text": "编制说明与验证记录",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-032",
+            "text": "二、专业培训",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-033",
+            "text": "（一）高质量数据集建设与测评",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-034",
+            "text": "（二）大模型与智能体应用评测",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-035",
+            "text": "（三）数据资产评估与流通",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-036",
+            "text": "（四）可信数据空间与数据安全",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-037",
+            "text": "培训内容包括数据规划、专业标注、质量",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-038",
+            "text": "控制、测评认证和案例实训等环节。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-039",
+            "text": "培训内容涵盖场景设计、模型能力、智能",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-040",
+            "text": "体效果、安全可信和持续评价等方面。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-041",
+            "text": "培训内容包括数据盘点、质量评价、价值",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-042",
+            "text": "测算、资产入表、登记上架和流通运营等",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-043",
+            "text": "环节。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-044",
+            "text": "培训内容涉及可信连接、身份接入、授权",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-045",
+            "text": "使用、受控调用、安全评估和审计追溯等",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-046",
+            "text": "方面。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-047",
+            "text": "中电联可组织标准起草人员、测评实践人",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-048",
+            "text": "员和电力专业专家联合授课，使课程内容",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-049",
+            "text": "直接服务于企业数据集建设的实际需要。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-050",
+            "text": "中电联依托自身评测实践积累，可结合电",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-051",
+            "text": "网、发电、新能源等实际业务场景开展案",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-052",
+            "text": "例化实训，增强培训内容的针对性。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-053",
+            "text": "中电联可贯通业务、财务、评估和交易各",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-054",
+            "text": "环节，采用在央企国企数据资产化项目中",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-055",
+            "text": "形成的方法开展授课。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-056",
+            "text": "中电联可结合电力数据基础设施建设和数",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-057",
+            "text": "据安全相关项目经验，面向建设人员和运",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-058",
+            "text": "营人员开展场景化培训。",
+            "treatment": "native_text",
+            "valid": true
+          },
+          {
+            "id": "p2-line-059",
+            "text": "除上述方向外，如贵单位拟参与或牵头相关标准项目，或有其他专业培训需求，亦可结合实际情况共同策划推进。",
+            "treatment": "native_text",
+            "valid": true
+          }
+        ],
+        "native_svg_texts": [
+          "一、标准建设",
+          "（一）数据流通质量与价值评估",
+          "（二）高质量数据集质量评估与数据标注",
+          "（三）数据基础设施与互联互通",
+          "（四）数据分类分级与安全保障",
+          "研制数据流通质量评估和数据产品",
+          "价值测算相关标准，并同步开展指",
+          "标设计和场景验证工作。",
+          "研究质量指标、标注流程、质量控制、",
+          "成果验收和场景适配要求等标准要素。",
+          "围绕参考架构、数据标识与目录、接入",
+          "连接器、身份接入等要素开展标准研制。",
+          "研究数据分类分级、数据质量、全生命周",
+          "期安全和跨主体流通安全等方面的实施规",
+          "则。",
+          "中电联已牵头开展标准研制，可组织数据",
+          "供给方、使用方、评估方和平台方共同参",
+          "与验证，推动企业实践经验转化并进入行",
+          "业规则体系。",
+          "中电联可衔接国家标准编制工作并组织",
+          "电力场景验证，推动企业数据集建设成",
+          "果进入测评互认和应用推广链条。",
+          "中电联依托国家数据基础设施建设在电",
+          "力领域的先行先试工作和行业节点地位，",
+          "可对企业提出的架构方案、接口方案和",
+          "连接器方案开展验证。",
+          "中电联可组织电网、发电等多类主体开展",
+          "场景验证，形成支撑跨企业数据流通的安",
+          "全边界和行业要求。",
+          "行业标准文件",
+          "编制说明与验证记录",
+          "二、专业培训",
+          "（一）高质量数据集建设与测评",
+          "（二）大模型与智能体应用评测",
+          "（三）数据资产评估与流通",
+          "（四）可信数据空间与数据安全",
+          "培训内容包括数据规划、专业标注、质量",
+          "控制、测评认证和案例实训等环节。",
+          "培训内容涵盖场景设计、模型能力、智能",
+          "体效果、安全可信和持续评价等方面。",
+          "培训内容包括数据盘点、质量评价、价值",
+          "测算、资产入表、登记上架和流通运营等",
+          "环节。",
+          "培训内容涉及可信连接、身份接入、授权",
+          "使用、受控调用、安全评估和审计追溯等",
+          "方面。",
+          "中电联可组织标准起草人员、测评实践人",
+          "员和电力专业专家联合授课，使课程内容",
+          "直接服务于企业数据集建设的实际需要。",
+          "中电联依托自身评测实践积累，可结合电",
+          "网、发电、新能源等实际业务场景开展案",
+          "例化实训，增强培训内容的针对性。",
+          "中电联可贯通业务、财务、评估和交易各",
+          "环节，采用在央企国企数据资产化项目中",
+          "形成的方法开展授课。",
+          "中电联可结合电力数据基础设施建设和数",
+          "据安全相关项目经验，面向建设人员和运",
+          "营人员开展场景化培训。",
+          "除上述方向外，如贵单位拟参与或牵头相关标准项目，或有其他专业培训需求，亦可结合实际情况共同策划推进。"
+        ],
+        "image_layer_count": 1,
+        "errors": []
+      },
+      "svg_text_count": 59,
+      "image_layer_count": 1,
+      "errors": []
+    }
+  ]
+}

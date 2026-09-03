@@ -1,0 +1,56 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "ke-biao-yan-xun-quick-v1",
+  "created_at": "2026-09-03T08:16:41+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/inputs/final-script.md",
+  "source_script_sha256": "160fb19641c1a0b1c71aa0cd639df41dab16a7355b5951e4227c68dca42ac0ee",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "2f349e5846578bf7a6b5c69a1a5b7c51b655fcaad0d80b6fab2254151bfa48ad",
+  "page_set": [
+    1,
+    2
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "editable_pptx_route": "stage02-quick-image-to-pptx",
+  "stage": "02-production-build",
+  "source_mode": "script_file",
+  "autonomous_contract": null,
+  "project_created": false,
+  "status": "production_ready",
+  "artifacts": {
+    "compiled_deliverable_prompt": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/final-script_cyberppt_deliverable_p1_p2.md",
+      "sha256": "771cffba2d300b4ae46aebac2439c31b237cd5463137c08f029ecb2a10e97e97"
+    },
+    "page_image_pairs": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/page_image_pairs.json",
+      "sha256": "cec4a772e824da434685adce9d9cada1c145beee93422cc4d1b3b5d97ae6724d"
+    },
+    "template_text_lock": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/locks/template_text/pages_001_002_template_text_lock.json",
+      "sha256": "608682941012324f2656977efc7dc873d738fbf2f43723b67201338658033e21"
+    },
+    "visual_style_lock": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/locks/visual_style_lock.json",
+      "sha256": "2f349e5846578bf7a6b5c69a1a5b7c51b655fcaad0d80b6fab2254151bfa48ad"
+    },
+    "exported_pptx": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/editable_svg/exports/editable_svg.pptx",
+      "sha256": "f29f6dfadbe21782fc4d3b8db46cf3331764c36b8e315d391636912a69d49ead"
+    },
+    "officecli_render_qa": {
+      "editable": {
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/qa-delivery/editable/officecli_render_qa.json",
+        "sha256": "c74bd7436a7a864eb88bcf2fd8a883afbd1766327aaf0be9ba1a1028b5da6702"
+      }
+    },
+    "final_visible_text_qa": {
+      "editable": {
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/qa-delivery/editable/final_visible_text_qa.json",
+        "sha256": "721e9d9b430adb1c4d3b30f54444f7849b86e993f93f13b933a0228226c4a5b4"
+      }
+    }
+  }
+}

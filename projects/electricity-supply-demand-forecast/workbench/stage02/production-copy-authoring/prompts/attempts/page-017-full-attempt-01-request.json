@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.imagegen_attempt_request.v1",
+  "page_number": 17,
+  "variant": "full",
+  "attempt": 1,
+  "prompt_path": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/prompts/attempts/page-017-full-attempt-01-sent.txt",
+  "prompt_sha256": "7dc83e22f9a994988e6ef2d158a71e620196603ae38e3f41b547aa8cdad817eb",
+  "base_prompt_sha256": "7dc83e22f9a994988e6ef2d158a71e620196603ae38e3f41b547aa8cdad817eb",
+  "prompt_chars": 4140,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "size": "2048x1024",
+  "input_images": [
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+  ],
+  "correction_retry": false,
+  "original_prompt": null,
+  "failed_image": null,
+  "correction_issues": []
+}

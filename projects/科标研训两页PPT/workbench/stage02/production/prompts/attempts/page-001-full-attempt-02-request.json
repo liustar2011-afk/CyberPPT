@@ -1,0 +1,35 @@
+{
+  "schema": "cyberppt.imagegen_attempt_request.v1",
+  "page_number": 1,
+  "variant": "full",
+  "attempt": 2,
+  "prompt_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/prompts/attempts/page-001-full-attempt-02-sent.txt",
+  "prompt_sha256": "92efeb17e1e7aa2c9c5c02c6bd6fc5808c5d1f700096401a1046a7feab2116fb",
+  "base_prompt_sha256": "6e1ce8e0cd77e9c115bc2e566fab5255c33dd2a206336be5cdc70d5f5932b291",
+  "prompt_chars": 5588,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "size": "2048x1024",
+  "input_images": [
+    "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.attempt-01-text-audit-failed.png",
+    "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.attempt-01-text-audit-failed-text-audit-region-01.png",
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+  ],
+  "correction_retry": true,
+  "original_prompt": "【完整上屏内容】\n**一、科技项目**\n **（一）高质量数据集智能构建与自动化测评**\n 高质量数据集智能构建与自动化测评方向，合作重点是研发智能标注、数据增强、自动质检、质量诊断和自动化测评工具，形成覆盖数据集构建与评价全链条的技术支撑。中电联在专业规则制定、典型数据集积累、测评体系建设和应用场景组织方面具备基础条件，可将上述资源与合作研发的工具能力相结合，推动技术成果转化为可对外提供的工具产品和测评服务。\n **（二）电力大模型与智能体行业评测**\n 电力大模型与智能体行业评测方向，合作内容涵盖模型适配、场景能力、安全可信、智能体效果等维度的自动化评测工具研发，为电力行业大模型与智能体应用提供系统化评价手段。中电联可发挥组织跨模型、跨专业、跨单位统一基准验证的优势，通过统一基准检验评测工具和评测结果，提升评测结论在行业内的可比性和通用性。\n **（三）数据安全风险智能评估**\n 数据安全风险智能评估方向，合作重点是研发覆盖风险识别、规则匹配、能力评分、问题诊断和整改推荐的工具体系，支撑企业开展数据安全风险的自评估与自诊断。中电联在数据安全成熟度评估和治理类项目实施过程中积累了相应的评价指标、风险规则和典型问题案例，可将其转化为评估模型，为工具研发提供方法基础和内容支撑。\n **（四）多主体数据可信共享与受控利用**\n 多主体数据可信共享与受控利用方向，合作内容包括可信连接、授权控制、数据可用不可见、安全调用和审计追溯等关键技术的研究，服务于多主体间数据共享中的安全可控要求。中电联可依托电力数据基础设施建设跨企业的验证环境，为可信流通相关技术提供行业级验证条件，支撑技术方案在实际业务场景中的检验和完善。\n **二、课题研究**\n **（一）高质量数据集测评互认与价值释放机制**\n 高质量数据集测评互认与价值释放机制课题，研究内容涉及质量评价、测评互认、价值评估、授权使用、流通交易和模型应用等环节的机制设计，目标是解决数据集从建设到应用过程中价值释放不畅的问题。中电联可发挥贯通标准、测评、估值、流通和应用各环节的综合优势，打通数据集建设方、测评方和应用方之间的协同链条，为机制研究提供全流程实践支撑。\n **（二）电力大模型与智能体行业评价及应用准入机制**\n 电力大模型与智能体行业评价及应用准入机制课题，重点研究行业适配、业务效果、安全可信、应用准入和持续评价等方面的方法体系，为电力行业大模型与智能体应用的规范化管理提供依据。中电联可组织电网企业、发电企业、装备制造企业和科研机构共同参与验证，形成适用于跨主体的行业评价体系，增强评价结果的行业代表性。\n **（三）电力数据资产价值评估与市场化流通机制**\n 电力数据资产价值评估与市场化流通机制课题，研究范围覆盖数据盘点、质量评价、价值测算、资产入表、产品设计、登记交易和运营等数据资产化全流程环节。中电联依托已开展的数据资产化项目和价值测算相关标准研究工作，可通过真实项目对估值方法、入表路径和流通路径进行检验，为课题研究提供实证基础。\n **（四）电力数据基础设施场景运营与多方协同机制**\n 电力数据基础设施场景运营与多方协同机制课题，研究内容包括授权、计量、定价、结算、收益分配、安全责任等要素在多主体运营中的机制设计。中电联可组织数据提供方、业务方、使用方和平台方在真实场景中共同验证运营规则，检验机制设计的可操作性和适用性。\n 除上述方向外，如贵单位另有科技项目储备或重点研究选题，可结合实际情况共同研究，择优推进项目合作。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：象牙白 + 深蓝领导汇报\n\nPalette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+  "failed_image": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.attempt-01-text-audit-failed.png",
+  "correction_issues": [
+    {
+      "type": "typo",
+      "expected": "工具",
+      "observed": "器具",
+      "evidence": "左上蓝色侧栏底部文字中，参考应为“工具产品”，实际字形为有效汉字“器具产品”。",
+      "bbox": [
+        30,
+        294,
+        103,
+        315
+      ]
+    }
+  ]
+}

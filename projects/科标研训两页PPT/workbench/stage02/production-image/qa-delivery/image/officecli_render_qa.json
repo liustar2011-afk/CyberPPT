@@ -1,0 +1,19 @@
+{
+  "schema": "cyberppt.officecli_render_qa.v1",
+  "pptx": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-image/editable_svg/exports/template_image.pptx",
+  "officecli": {
+    "version": "1.0.145",
+    "asset": "officecli-mac-arm64",
+    "repository_path": "/Volumes/DOC/CyberPPT/.tools/officecli/v1.0.145/officecli-mac-arm64",
+    "installed": false,
+    "executable": null,
+    "source": null,
+    "detected_version": null
+  },
+  "geometry": null,
+  "rendered_pages": [],
+  "passed": false,
+  "failures": [
+    "officecli_not_installed"
+  ]
+}

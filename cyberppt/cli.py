@@ -493,6 +493,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
                 Path(args.reuse_audited_images_from)
                 if args.reuse_audited_images_from else None
             ),
+            approved_full_image=Path(args.approved_full_image) if args.approved_full_image else None,
             blueprint_only=args.blueprint_only,
             no_style_reference=args.no_style_reference,
             skip_image_text_audit=args.skip_image_text_audit,
@@ -987,6 +988,10 @@ def build_parser() -> argparse.ArgumentParser:
             "Import same-script, text-audited full images from an official Stage 02 "
             "manifest for editable or dual Quick reconstruction; images are not regenerated."
         ),
+    )
+    final_script_pages_parser.add_argument(
+        "--approved-full-image",
+        help="Import a user-approved local full image, re-audit it, then use it as the current build's visual authority.",
     )
     final_script_pages_parser.add_argument(
         "--build-id",

@@ -1,0 +1,71 @@
+{
+  "mode": "chart_heavy",
+  "input": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_016_权责体系与常态化机制保障能力持续运行_full.png",
+  "output": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_016_权责体系与常态化机制保障能力持续运行_full.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_016_权责体系与常态化机制保障能力持续运行_full.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 4070.3701,
+    "edge_density": 0.077955,
+    "near_white_ratio": 0.318676,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0116,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_016_权责体系与常态化机制保障能力持续运行_full.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 4488.1399,
+    "edge_density": 0.07498,
+    "near_white_ratio": 0.329354,
+    "noise_estimate": 0.0,
+    "blockiness_score": 0.9652,
+    "notes": []
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.995726,
+    "normalized_mean_abs_delta": 0.010112,
+    "edge_recall": 0.994412,
+    "edge_precision": 0.950421
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "ppt_page",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_016_权责体系与常态化机制保障能力持续运行_full.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 4070.3701,
+      "edge_density": 0.077955,
+      "near_white_ratio": 0.318676,
+      "noise_estimate": 0.0,
+      "blockiness_score": 1.0116,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

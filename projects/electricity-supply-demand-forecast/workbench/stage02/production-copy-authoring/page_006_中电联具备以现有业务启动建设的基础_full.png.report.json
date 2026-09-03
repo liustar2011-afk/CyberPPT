@@ -1,0 +1,75 @@
+{
+  "mode": "chart_heavy",
+  "input": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_006_中电联具备以现有业务启动建设的基础_full.png",
+  "output": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_006_中电联具备以现有业务启动建设的基础_full.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_006_中电联具备以现有业务启动建设的基础_full.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 4067.1199,
+    "edge_density": 0.094442,
+    "near_white_ratio": 0.522677,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0297,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help.",
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_006_中电联具备以现有业务启动建设的基础_full.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 4444.7562,
+    "edge_density": 0.093516,
+    "near_white_ratio": 0.525716,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0082,
+    "notes": [
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.996206,
+    "normalized_mean_abs_delta": 0.01112,
+    "edge_recall": 0.997824,
+    "edge_precision": 0.939251
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "ppt_page",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_006_中电联具备以现有业务启动建设的基础_full.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 4067.1199,
+      "edge_density": 0.094442,
+      "near_white_ratio": 0.522677,
+      "noise_estimate": 0.0,
+      "blockiness_score": 1.0297,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help.",
+        "Large near-white area detected; white-background protection is recommended."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

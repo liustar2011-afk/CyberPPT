@@ -1,0 +1,46 @@
+{
+  "schema": "cyberppt.stage02.authored_svg_preflight_qa.v1",
+  "pages": [
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 1,
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/authoring/page_001_rebuilt.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 85,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/authoring/assets/page_001_reference_base.png",
+        "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/authoring/assets/page_001_handshake.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    },
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 2,
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/authoring/page_002_rebuilt.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 59,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-quick/authoring/assets/page_002_reference_base.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    }
+  ]
+}

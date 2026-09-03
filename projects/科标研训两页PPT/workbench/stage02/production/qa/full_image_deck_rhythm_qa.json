@@ -1,0 +1,99 @@
+{
+  "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+  "status": "passed",
+  "contact_sheet": {
+    "schema": "cyberppt.full_image_contact_sheet.v1",
+    "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/qa/full_image_contact_sheet.png",
+    "sha256": "1b2442fc8d17b31056919467bc868f3dd52c0d825243d67fabe32367e174edf2",
+    "page_count": 2,
+    "pages": [
+      {
+        "page_number": 1,
+        "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.png",
+        "source_sha256": "b74d4b786abcf27fe714c8266e20c920b7a3f9b4d2598174911889fed23955f0"
+      },
+      {
+        "page_number": 2,
+        "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_002_创新业务6_2_标准及培训服务_full.png",
+        "source_sha256": "5b739f74d4de966053c2f0b12709888ec8baeb2173300e46b877ba9e1d21d2b1"
+      }
+    ],
+    "thumbnail_size": [
+      480,
+      240
+    ],
+    "columns": 4,
+    "sheet_size": [
+      2048,
+      300
+    ]
+  },
+  "signatures": [
+    {
+      "schema": "cyberppt.full_image_visual_signature.v1",
+      "page_number": 1,
+      "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_001_创新业务6_1_科技项目及课题研究_full.png",
+      "source_sha256": "b74d4b786abcf27fe714c8266e20c920b7a3f9b4d2598174911889fed23955f0",
+      "visual_medium": "unspecified",
+      "gravity": {
+        "x": 0.4906,
+        "y": 0.4972,
+        "horizontal": "center",
+        "vertical": "middle"
+      },
+      "density": "dense",
+      "density_score": 68.7433,
+      "skeleton_3x3": "111111111",
+      "skeleton_shares": [
+        0.1131,
+        0.1212,
+        0.1099,
+        0.1107,
+        0.1202,
+        0.0966,
+        0.1098,
+        0.1263,
+        0.0921
+      ],
+      "structure_hash": "64587f486e7e7ef8"
+    },
+    {
+      "schema": "cyberppt.full_image_visual_signature.v1",
+      "page_number": 2,
+      "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production/page_002_创新业务6_2_标准及培训服务_full.png",
+      "source_sha256": "5b739f74d4de966053c2f0b12709888ec8baeb2173300e46b877ba9e1d21d2b1",
+      "visual_medium": "unspecified",
+      "gravity": {
+        "x": 0.4944,
+        "y": 0.5289,
+        "horizontal": "center",
+        "vertical": "middle"
+      },
+      "density": "dense",
+      "density_score": 63.6992,
+      "skeleton_3x3": "111111111",
+      "skeleton_shares": [
+        0.106,
+        0.0932,
+        0.1055,
+        0.1232,
+        0.1065,
+        0.1095,
+        0.1282,
+        0.11,
+        0.1179
+      ],
+      "structure_hash": "00676660ffee6efe"
+    }
+  ],
+  "audit": {
+    "schema": "cyberppt.full_image_deck_rhythm_qa.v1",
+    "status": "passed",
+    "page_count": 2,
+    "findings": [],
+    "blocker_count": 0,
+    "warning_count": 0,
+    "review_basis": "actual_full_image_edge_activity_plus_audited_visual_medium"
+  },
+  "authority_gate": "before_reconstruction_visual_source_binding"
+}

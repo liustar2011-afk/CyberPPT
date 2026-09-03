@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.imagegen_attempt_request.v1",
+  "page_number": 1,
+  "variant": "full",
+  "attempt": 1,
+  "prompt_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-new-script/prompts/attempts/page-001-full-attempt-01-sent.txt",
+  "prompt_sha256": "7f4f427b5ee0c2d0eb6b99d2833e3a41b72f16a2071aebeab1c19a54de95a96b",
+  "base_prompt_sha256": "7f4f427b5ee0c2d0eb6b99d2833e3a41b72f16a2071aebeab1c19a54de95a96b",
+  "prompt_chars": 4432,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "size": "2048x1024",
+  "input_images": [
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+  ],
+  "correction_retry": false,
+  "original_prompt": null,
+  "failed_image": null,
+  "correction_issues": []
+}

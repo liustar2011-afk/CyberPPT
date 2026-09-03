@@ -1,0 +1,105 @@
+【完整上屏内容】
+预测分析坚持统计分析、模型计算和专家研判相结合，形成基准预测、滚动修正、情景分析、风险判断和原因解释相互衔接的体系。首期具备同比环比、趋势外推、回归分析、季节调整和结构分解等基础能力，并逐步使用机器学习识别非线性关系、变量交互和结构变化，对基准结果进行修正和组合。
+模型结果先进入内部测算与业务审校，经过专家会商、假设校核和边界确认后形成正式结论。智能辅助服务于信息处理、分析解释和成果生产，使用范围随安全、准确性和成效逐步扩展；指标口径库、历史数据集、事件案例库、模型版本库、报告模板库和误差复盘库与业务周期关联，支持历史回放和方法迭代。
+
+【核心意思表达要求｜不上屏】
+可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。
+
+【呈现文案改写授权｜上屏】
+以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。
+改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。
+
+【并列语义防发散｜不上屏】
+改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。
+
+【非上屏语义边界】
+页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。
+
+
+
+
+
+
+
+【输出尺寸｜不上屏】
+最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。
+
+【模板层禁绘｜不上屏】
+正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。
+标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。
+禁止新增与业务内容无关的序号条、页码章或装饰编号。
+
+
+
+【视觉风格｜不上屏】
+视觉风格09：象牙白 + 深蓝领导汇报
+
+Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
+
+Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.
+
+Rewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.
+
+Prefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.
+
+Prefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.
+
+Use icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.
+
+Do not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.
+
+Screens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
+
+Use broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
+
+Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
+
+People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
+
+Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.
+
+
+文字纠错重绘（最高优先级）：
+第一张输入图片是上一轮生成但文字审计未通过的原图。随后的输入图片是按 bbox 截取的错字局部放大图；请以整图为基础、以局部图逐字校正，保持其构图、配色、视觉层级、图形关系及所有无关文字不变。
+只纠正下列已确认的错字或乱码；expected 是正确写法，observed 是原图中的错误写法，bbox 是错误位置（如有）：
+[
+  {
+    "type": "typo",
+    "expected": "业务审校",
+    "observed": "业务审核",
+    "evidence": "正文流程段落中写成“内部测算与业务审核”，其中“审核”为有效汉字但与参考“审校”不符。",
+    "bbox": [
+      384,
+      112,
+      424,
+      137
+    ]
+  },
+  {
+    "type": "typo",
+    "expected": "业务审校",
+    "observed": "业务审核",
+    "evidence": "流程卡片标题写成“内部测算与业务审核”，其中“审核”为有效汉字但与参考“审校”不符。",
+    "bbox": [
+      421,
+      0,
+      469,
+      28
+    ]
+  },
+  {
+    "type": "typo",
+    "expected": "报告模板",
+    "observed": "报告模版",
+    "evidence": "报告模板库缩略图封面文字写成“报告模版”，其中“版”为有效汉字但与参考“板”不符。",
+    "bbox": [
+      292,
+      309,
+      356,
+      332
+    ]
+  }
+]
+不得忽略、改写或扩展纠错清单，不得借机调整其他内容。所有纠错项必须按 expected 准确呈现。

@@ -1,0 +1,78 @@
+{
+  "mode": "chart_heavy",
+  "input": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage/page_001_创新业务6_1_科技项目及课题研究_full.png",
+  "output": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage/page_001_创新业务6_1_科技项目及课题研究_full.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage/page_001_创新业务6_1_科技项目及课题研究_full.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 7614.9139,
+    "edge_density": 0.121058,
+    "near_white_ratio": 0.64886,
+    "noise_estimate": 1.4826,
+    "blockiness_score": 1.0363,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help.",
+      "Large near-white area detected; white-background protection is recommended.",
+      "High edge density detected; use conservative denoise to protect text/lines."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage/page_001_创新业务6_1_科技项目及课题研究_full.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 8504.9877,
+    "edge_density": 0.120996,
+    "near_white_ratio": 0.657166,
+    "noise_estimate": 1.4826,
+    "blockiness_score": 1.0247,
+    "notes": [
+      "Large near-white area detected; white-background protection is recommended.",
+      "High edge density detected; use conservative denoise to protect text/lines."
+    ]
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.993662,
+    "normalized_mean_abs_delta": 0.015741,
+    "edge_recall": 0.998204,
+    "edge_precision": 0.935498
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "ppt_page",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage/page_001_创新业务6_1_科技项目及课题研究_full.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 7614.9139,
+      "edge_density": 0.121058,
+      "near_white_ratio": 0.64886,
+      "noise_estimate": 1.4826,
+      "blockiness_score": 1.0363,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help.",
+        "Large near-white area detected; white-background protection is recommended.",
+        "High edge density detected; use conservative denoise to protect text/lines."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

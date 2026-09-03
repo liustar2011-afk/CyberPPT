@@ -1,0 +1,46 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "ke-biao-yan-xun-image-v1",
+  "run_id": "ke-biao-yan-xun-image-v1",
+  "input_fingerprint": "558fceb2c9d0183d01224bacd48bea1f3fe2ebdbb3701a9238e460f9cf7e1e0f",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "160fb19641c1a0b1c71aa0cd639df41dab16a7355b5951e4227c68dca42ac0ee",
+    "script_input_sha256": "2ce5f0e2386b4d79f3526fe2df57756ede052913dde19ee43986727f67227709",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "2618065f925861083422402a1c595acb344683cb8a983fa534f27ad0faee63aa",
+    "pages": [
+      1,
+      2
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "image",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "created_at": "2026-09-03T03:42:17+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/inputs/final-script.md",
+  "source_script_sha256": "160fb19641c1a0b1c71aa0cd639df41dab16a7355b5951e4227c68dca42ac0ee",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "2618065f925861083422402a1c595acb344683cb8a983fa534f27ad0faee63aa",
+  "page_set": [
+    1,
+    2
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "image",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "stage": "02-production-build",
+  "status": "in_progress",
+  "artifacts": {
+    "page_image_pairs": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页PPT/workbench/stage02/production-image/page_image_pairs.json",
+      "sha256": "10ee8e1041fd9bef1e59458f58f399f9557a0f6df3eb7418888197cd254ebb93"
+    }
+  }
+}

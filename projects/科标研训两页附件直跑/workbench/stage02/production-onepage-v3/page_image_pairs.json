@@ -1,0 +1,1090 @@
+{
+  "mode": "cyberppt.stage02.editable_pptx.v1",
+  "production_mode": "image-to-editable-svg",
+  "requested_pages": [
+    1
+  ],
+  "content_page_numbers": [
+    1
+  ],
+  "skipped_pages": [],
+  "output_variants": [
+    "full"
+  ],
+  "text_audit_contract": {
+    "required_before_enhancement": true,
+    "scope": "typo_and_gibberish_only",
+    "max_generation_attempts": 3,
+    "failure_action": "regenerate_image"
+  },
+  "generation_contract": {
+    "mode": "image-to-editable-svg",
+    "owner": "CyberPPT",
+    "slide_canvas": {
+      "width": 2048,
+      "height": 1024
+    },
+    "content_region": {
+      "x": 0,
+      "y": 0,
+      "width": 2048,
+      "height": 1024
+    },
+    "generation_size": {
+      "width": 2048,
+      "height": 1024
+    },
+    "rule": "Generate one audited full content-area image for registered editable-SVG reconstruction; PPT title, subtitle and enterprise chrome are handled by template/export code."
+  },
+  "project_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
+  "original_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/visual_style_lock.json",
+  "stage02_script_input": {
+    "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stages/02-input/script-intake.json",
+    "schema": "cyberppt.stage02_script_input.v1"
+  },
+  "output_dir": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3",
+  "created_at": "2026-09-03T11:16:02.321634+00:00",
+  "prompt_contract": {
+    "approved_prompt_is_source": false,
+    "direct_edit_mode": null,
+    "freshness_enforced": false,
+    "canonical_prompt_is_diagnostic_only": false,
+    "compact_blueprint": false,
+    "compiler": "content-first-v1"
+  },
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 1,
+        "mode": "off",
+        "source_prompt_sha256": "eb54ec71f17d64ca9135845ddf6a3b2889d0acc6645f6eb28c09256f816d747c",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 4323
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "page_number": 1,
+      "page_code": "P01",
+      "title": "创新业务6-1：科技项目及课题研究",
+      "page_script": "【完整上屏内容】\n双方可围绕以下五个方向开展科技项目和课题研究合作，并结合实际项目储备择优推进。\n**01｜电力领域数据基础设施建设**\n围绕参考架构、数据标识与目录、接入连接器、可信连接及安全调用开展研究，并探索授权、计量、定价、结算等多主体运营机制。中电联可组织跨企业构建验证环境，为相关方案提供行业级验证条件。\n**02｜高质量数据集评测标注与资产评估**\n围绕数据标注、加工、质量测评与资产评估全流程方法和工具开展研究，覆盖变电、输电、电碳因子核算等场景。中电联具备数据集建设与评测案例、专家团队、标准体系及算力支撑，可贯通数据加工、测评与资产评估服务。\n**03｜电力数据安全风险评估**\n围绕分类分级、全生命周期安全和跨主体流通安全开展研究，联合验证风险识别、能力评分、问题诊断、脱敏与防泄漏工具。中电联已形成覆盖管理、处理活动、技术和个人信息保护四维度的评估工具，并在国网多省份应用。\n**04｜人工智能工具与评测**\n围绕模型适配、场景能力、安全可信和智能体效果开展自动化评测工具研发，并验证业务智能助手与源端数据治理工具。中电联已构建行业、场景和基础能力三级评测架构，形成多家网省公司应用经验。\n**05｜能算碳综合服务**\n围绕碳排放核算、碳减排与资产开发、能效优化及零碳园区开展工具与机制研究，验证碳足迹因子、碳资产交易、能碳管控和电算协同场景。中电联依托1700余家会员单位、23年行业数据积累及多省碳核算实践，具备成果推广基础。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：纯白 + 深蓝领导汇报\n\nPalette: white #FFFFFF, deep blue #12355B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "双方可围绕以下五个方向开展科技项目和课题研究合作，并结合实际项目储备择优推进。\n\n**01｜电力领域数据基础设施建设**\n\n围绕参考架构、数据标识与目录、接入连接器、可信连接及安全调用开展研究，并探索授权、计量、定价、结算等多主体运营机制。中电联可组织跨企业构建验证环境，为相关方案提供行业级验证条件。\n\n**02｜高质量数据集评测标注与资产评估**\n\n围绕数据标注、加工、质量测评与资产评估全流程方法和工具开展研究，覆盖变电、输电、电碳因子核算等场景。中电联具备数据集建设与评测案例、专家团队、标准体系及算力支撑，可贯通数据加工、测评与资产评估服务。\n\n**03｜电力数据安全风险评估**\n\n围绕分类分级、全生命周期安全和跨主体流通安全开展研究，联合验证风险识别、能力评分、问题诊断、脱敏与防泄漏工具。中电联已形成覆盖管理、处理活动、技术和个人信息保护四维度的评估工具，并在国网多省份应用。\n\n**04｜人工智能工具与评测**\n\n围绕模型适配、场景能力、安全可信和智能体效果开展自动化评测工具研发，并验证业务智能助手与源端数据治理工具。中电联已构建行业、场景和基础能力三级评测架构，形成多家网省公司应用经验。\n\n**05｜能算碳综合服务**\n\n围绕碳排放核算、碳减排与资产开发、能效优化及零碳园区开展工具与机制研究，验证碳足迹因子、碳资产交易、能碳管控和电算协同场景。中电联依托1700余家会员单位、23年行业数据积累及多省碳核算实践，具备成果推广基础。",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.authored_clean_base.v1",
+        "status": "required",
+        "note": "Prepare reference-edited local layers and register-quick-page; resume the same build."
+      },
+      "prompt_file": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3/prompts/p01.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stages/02-input/script-intake.json",
+      "full": {
+        "filename": "page_001_创新业务6_1_科技项目及课题研究_full.png",
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3/page_001_创新业务6_1_科技项目及课题研究_full.png",
+        "prompt": "【完整上屏内容】\n双方可围绕以下五个方向开展科技项目和课题研究合作，并结合实际项目储备择优推进。\n**01｜电力领域数据基础设施建设**\n围绕参考架构、数据标识与目录、接入连接器、可信连接及安全调用开展研究，并探索授权、计量、定价、结算等多主体运营机制。中电联可组织跨企业构建验证环境，为相关方案提供行业级验证条件。\n**02｜高质量数据集评测标注与资产评估**\n围绕数据标注、加工、质量测评与资产评估全流程方法和工具开展研究，覆盖变电、输电、电碳因子核算等场景。中电联具备数据集建设与评测案例、专家团队、标准体系及算力支撑，可贯通数据加工、测评与资产评估服务。\n**03｜电力数据安全风险评估**\n围绕分类分级、全生命周期安全和跨主体流通安全开展研究，联合验证风险识别、能力评分、问题诊断、脱敏与防泄漏工具。中电联已形成覆盖管理、处理活动、技术和个人信息保护四维度的评估工具，并在国网多省份应用。\n**04｜人工智能工具与评测**\n围绕模型适配、场景能力、安全可信和智能体效果开展自动化评测工具研发，并验证业务智能助手与源端数据治理工具。中电联已构建行业、场景和基础能力三级评测架构，形成多家网省公司应用经验。\n**05｜能算碳综合服务**\n围绕碳排放核算、碳减排与资产开发、能效优化及零碳园区开展工具与机制研究，验证碳足迹因子、碳资产交易、能碳管控和电算协同场景。中电联依托1700余家会员单位、23年行业数据积累及多省碳核算实践，具备成果推广基础。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：纯白 + 深蓝领导汇报\n\nPalette: white #FFFFFF, deep blue #12355B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "f948ece39d190d0f5c20485eb1ea16deb573930c85ac954460cf5842e40d4563",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "eb54ec71f17d64ca9135845ddf6a3b2889d0acc6645f6eb28c09256f816d747c",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 4323
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "f948ece39d190d0f5c20485eb1ea16deb573930c85ac954460cf5842e40d4563",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Generated",
+        "generated_at": "2026-09-03T11:18:37+00:00",
+        "generated_prompt_sha256": "f948ece39d190d0f5c20485eb1ea16deb573930c85ac954460cf5842e40d4563",
+        "text_audit": {
+          "schema": "cyberppt.generated_image_text_audit.v2",
+          "valid": true,
+          "scope": "typo_and_gibberish_only",
+          "image": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3/page_001_创新业务6_1_科技项目及课题研究_full.png",
+          "image_size": [
+            1774,
+            887
+          ],
+          "issues": [],
+          "observed_text": [
+            "围绕五类方向 形成项目储备 择优推进合作",
+            "科技项目 / 课题研究",
+            "以数据基础设施、数据资产、安全评估、人工智能评测、能算碳服务为重点，联合开展方法、工具、机制与场景验证研究。",
+            "01 电力领域数据基础设施建设",
+            "研究参考架构、数据标识与目录、接入连接器、可信连接及安全调用；探索授权、计量、定价、结算等多主体运营机制。",
+            "中电联可组织跨企业验证环境，提供行业级验证条件。",
+            "02 高质量数据集评测标注与资产评估",
+            "研究数据标注、加工、质量测评与资产评估全流程方法和工具，覆盖变电、输电、电碳因子核算等场景。",
+            "中电联具备案例、专家、标准体系及算力支撑，可贯通加工、测评与资产评估服务。",
+            "03 电力数据安全风险评估",
+            "研究分类分级、全生命周期安全和跨主体流通安全；联合验证风险识别、能力评分、问题诊断、脱敏与防泄漏工具。",
+            "中电联已形成覆盖管理、处理活动、技术和个人信息保护四维度的评估工具，并在国网多省份应用。",
+            "04 人工智能工具与评测",
+            "围绕模型适配、场景能力、安全可信和智能体效果，研发自动化评测工具；验证业务智能助手与源端数据治理工具。",
+            "中电联已构建行业、场景和基础能力三级评测架构，形成多家网省公司应用经验。",
+            "05 能算碳综合服务",
+            "研究碳排放核算、碳减排与资产开发、能效优化及零碳园区工具与机制；验证碳足迹因子、碳资产交易、能碳管控和电算协同场景。",
+            "中电联依托1700余家会员单位、23年行业数据积累及多省碳核算实践，具备成果推广基础。",
+            "推进原则：结合实际项目储备，按成熟度、验证条件与应用价值择优推进。"
+          ],
+          "ocr_items": [
+            {
+              "text": "以数据基础设施、数据资产、安全评估、人工智能评测、能算碳服务为重点，联合开展方法、工具、机制与场景验证研究。",
+              "confidence": 0.9989878601498074,
+              "bbox": [
+                [
+                  423.0,
+                  49.0
+                ],
+                [
+                  1623.0,
+                  50.0
+                ],
+                [
+                  1623.0,
+                  76.0
+                ],
+                [
+                  423.0,
+                  75.0
+                ]
+              ]
+            },
+            {
+              "text": "电力领域数据基础设施建设",
+              "confidence": 0.9979939609766006,
+              "bbox": [
+                [
+                  444.0,
+                  134.0
+                ],
+                [
+                  759.0,
+                  134.0
+                ],
+                [
+                  759.0,
+                  160.0
+                ],
+                [
+                  444.0,
+                  160.0
+                ]
+              ]
+            },
+            {
+              "text": "02",
+              "confidence": 0.9995429813861847,
+              "bbox": [
+                [
+                  1073.0,
+                  131.0
+                ],
+                [
+                  1124.0,
+                  131.0
+                ],
+                [
+                  1124.0,
+                  165.0
+                ],
+                [
+                  1073.0,
+                  165.0
+                ]
+              ]
+            },
+            {
+              "text": "高质量数据集评测标注与资产评估",
+              "confidence": 0.9985484480857849,
+              "bbox": [
+                [
+                  1137.0,
+                  133.0
+                ],
+                [
+                  1526.0,
+                  133.0
+                ],
+                [
+                  1526.0,
+                  162.0
+                ],
+                [
+                  1137.0,
+                  162.0
+                ]
+              ]
+            },
+            {
+              "text": "研究参考架构、数据标识与目录、接入连接器、",
+              "confidence": 0.9974743865785145,
+              "bbox": [
+                [
+                  379.0,
+                  194.0
+                ],
+                [
+                  732.0,
+                  194.0
+                ],
+                [
+                  732.0,
+                  217.0
+                ],
+                [
+                  379.0,
+                  217.0
+                ]
+              ]
+            },
+            {
+              "text": "研究数据标注、加工、质量测评与资产评估",
+              "confidence": 0.9997271299362183,
+              "bbox": [
+                [
+                  1072.0,
+                  194.0
+                ],
+                [
+                  1411.0,
+                  194.0
+                ],
+                [
+                  1411.0,
+                  217.0
+                ],
+                [
+                  1072.0,
+                  217.0
+                ]
+              ]
+            },
+            {
+              "text": "可信连接及安全调用；探索授权、计量、定价、",
+              "confidence": 0.9968425319308326,
+              "bbox": [
+                [
+                  381.0,
+                  226.0
+                ],
+                [
+                  738.0,
+                  226.0
+                ],
+                [
+                  738.0,
+                  246.0
+                ],
+                [
+                  381.0,
+                  246.0
+                ]
+              ]
+            },
+            {
+              "text": "全流程方法和工具，覆盖变电、输电、电碳",
+              "confidence": 0.9989332776320609,
+              "bbox": [
+                [
+                  1073.0,
+                  226.0
+                ],
+                [
+                  1409.0,
+                  226.0
+                ],
+                [
+                  1409.0,
+                  246.0
+                ],
+                [
+                  1073.0,
+                  246.0
+                ]
+              ]
+            },
+            {
+              "text": "围绕五类方向",
+              "confidence": 0.9981657962004343,
+              "bbox": [
+                [
+                  49.0,
+                  247.0
+                ],
+                [
+                  287.0,
+                  250.0
+                ],
+                [
+                  287.0,
+                  292.0
+                ],
+                [
+                  48.0,
+                  290.0
+                ]
+              ]
+            },
+            {
+              "text": "结算等多主体运营机制。",
+              "confidence": 0.9996148131110452,
+              "bbox": [
+                [
+                  378.0,
+                  254.0
+                ],
+                [
+                  565.0,
+                  254.0
+                ],
+                [
+                  565.0,
+                  277.0
+                ],
+                [
+                  378.0,
+                  277.0
+                ]
+              ]
+            },
+            {
+              "text": "因子核算等场景。",
+              "confidence": 0.9991540238261223,
+              "bbox": [
+                [
+                  1071.0,
+                  253.0
+                ],
+                [
+                  1207.0,
+                  253.0
+                ],
+                [
+                  1207.0,
+                  276.0
+                ],
+                [
+                  1071.0,
+                  276.0
+                ]
+              ]
+            },
+            {
+              "text": "形成项目储备",
+              "confidence": 0.9982311824957529,
+              "bbox": [
+                [
+                  46.0,
+                  313.0
+                ],
+                [
+                  288.0,
+                  315.0
+                ],
+                [
+                  288.0,
+                  358.0
+                ],
+                [
+                  45.0,
+                  356.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联可组织跨企业验证环境，提供",
+              "confidence": 0.9997551999986172,
+              "bbox": [
+                [
+                  378.0,
+                  307.0
+                ],
+                [
+                  658.0,
+                  307.0
+                ],
+                [
+                  658.0,
+                  330.0
+                ],
+                [
+                  378.0,
+                  330.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联具备案例、专家、标准体系及算力支撑，",
+              "confidence": 0.998696730250404,
+              "bbox": [
+                [
+                  1073.0,
+                  307.0
+                ],
+                [
+                  1416.0,
+                  308.0
+                ],
+                [
+                  1416.0,
+                  331.0
+                ],
+                [
+                  1072.0,
+                  330.0
+                ]
+              ]
+            },
+            {
+              "text": "沪洲记亲装",
+              "confidence": 0.5013681471347808,
+              "bbox": [
+                [
+                  1492.0,
+                  312.0
+                ],
+                [
+                  1544.0,
+                  318.0
+                ],
+                [
+                  1542.0,
+                  335.0
+                ],
+                [
+                  1490.0,
+                  329.0
+                ]
+              ]
+            },
+            {
+              "text": "行业级验证条件。",
+              "confidence": 0.9998805895447731,
+              "bbox": [
+                [
+                  378.0,
+                  339.0
+                ],
+                [
+                  514.0,
+                  339.0
+                ],
+                [
+                  514.0,
+                  361.0
+                ],
+                [
+                  378.0,
+                  361.0
+                ]
+              ]
+            },
+            {
+              "text": "可贯通加工、测评与资产评估服务。",
+              "confidence": 0.999639242887497,
+              "bbox": [
+                [
+                  1073.0,
+                  338.0
+                ],
+                [
+                  1348.0,
+                  339.0
+                ],
+                [
+                  1348.0,
+                  361.0
+                ],
+                [
+                  1072.0,
+                  360.0
+                ]
+              ]
+            },
+            {
+              "text": "择优推进合作",
+              "confidence": 0.9974267582098643,
+              "bbox": [
+                [
+                  46.0,
+                  381.0
+                ],
+                [
+                  290.0,
+                  381.0
+                ],
+                [
+                  290.0,
+                  424.0
+                ],
+                [
+                  46.0,
+                  424.0
+                ]
+              ]
+            },
+            {
+              "text": "03电力数据安全风险评估",
+              "confidence": 0.9992373238007227,
+              "bbox": [
+                [
+                  785.0,
+                  425.0
+                ],
+                [
+                  1164.0,
+                  425.0
+                ],
+                [
+                  1164.0,
+                  460.0
+                ],
+                [
+                  785.0,
+                  460.0
+                ]
+              ]
+            },
+            {
+              "text": "研究分类分级、全生命周期安全和跨主体流通安全；联合验证风险识别、能力评分、问题诊断、脱敏与防泄漏工具。",
+              "confidence": 0.9991790932767531,
+              "bbox": [
+                [
+                  575.0,
+                  471.0
+                ],
+                [
+                  1498.0,
+                  471.0
+                ],
+                [
+                  1498.0,
+                  494.0
+                ],
+                [
+                  575.0,
+                  494.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联已形成覆管理、处理活动、技术和个人信息保护四维度的评估工具，并在国网多省份应用。",
+              "confidence": 0.9985655005588088,
+              "bbox": [
+                [
+                  626.0,
+                  500.0
+                ],
+                [
+                  1422.0,
+                  501.0
+                ],
+                [
+                  1422.0,
+                  524.0
+                ],
+                [
+                  626.0,
+                  523.0
+                ]
+              ]
+            },
+            {
+              "text": "科技项目／课题研究",
+              "confidence": 0.9688884748352898,
+              "bbox": [
+                [
+                  54.0,
+                  548.0
+                ],
+                [
+                  282.0,
+                  551.0
+                ],
+                [
+                  282.0,
+                  580.0
+                ],
+                [
+                  53.0,
+                  578.0
+                ]
+              ]
+            },
+            {
+              "text": "04人工智能工具与评测",
+              "confidence": 0.9988842498172413,
+              "bbox": [
+                [
+                  379.0,
+                  556.0
+                ],
+                [
+                  684.0,
+                  556.0
+                ],
+                [
+                  684.0,
+                  592.0
+                ],
+                [
+                  379.0,
+                  592.0
+                ]
+              ]
+            },
+            {
+              "text": "05",
+              "confidence": 0.9997574687004089,
+              "bbox": [
+                [
+                  1064.0,
+                  556.0
+                ],
+                [
+                  1120.0,
+                  556.0
+                ],
+                [
+                  1120.0,
+                  591.0
+                ],
+                [
+                  1064.0,
+                  591.0
+                ]
+              ]
+            },
+            {
+              "text": "能算碳综合服务",
+              "confidence": 0.9992834414754596,
+              "bbox": [
+                [
+                  1131.0,
+                  558.0
+                ],
+                [
+                  1322.0,
+                  558.0
+                ],
+                [
+                  1322.0,
+                  588.0
+                ],
+                [
+                  1131.0,
+                  588.0
+                ]
+              ]
+            },
+            {
+              "text": "围绕模型适配、场景能力、安全可信和智能体效果，",
+              "confidence": 0.9931967724924502,
+              "bbox": [
+                [
+                  379.0,
+                  609.0
+                ],
+                [
+                  746.0,
+                  609.0
+                ],
+                [
+                  746.0,
+                  632.0
+                ],
+                [
+                  379.0,
+                  632.0
+                ]
+              ]
+            },
+            {
+              "text": "研究碳排放核算、碳减排与资产开发、能效化",
+              "confidence": 0.9995986223220825,
+              "bbox": [
+                [
+                  1064.0,
+                  609.0
+                ],
+                [
+                  1411.0,
+                  609.0
+                ],
+                [
+                  1411.0,
+                  632.0
+                ],
+                [
+                  1064.0,
+                  632.0
+                ]
+              ]
+            },
+            {
+              "text": "研发自动化评测工具；验证业务智能助手与源端",
+              "confidence": 0.9949514213062468,
+              "bbox": [
+                [
+                  379.0,
+                  641.0
+                ],
+                [
+                  736.0,
+                  641.0
+                ],
+                [
+                  736.0,
+                  660.0
+                ],
+                [
+                  379.0,
+                  660.0
+                ]
+              ]
+            },
+            {
+              "text": "及零碳园区工具与机制；验证碳足迹因子、碳",
+              "confidence": 0.996082866191864,
+              "bbox": [
+                [
+                  1065.0,
+                  641.0
+                ],
+                [
+                  1410.0,
+                  641.0
+                ],
+                [
+                  1410.0,
+                  660.0
+                ],
+                [
+                  1065.0,
+                  660.0
+                ]
+              ]
+            },
+            {
+              "text": "算法评估表",
+              "confidence": 0.9935885190963745,
+              "bbox": [
+                [
+                  878.0,
+                  657.0
+                ],
+                [
+                  953.0,
+                  674.0
+                ],
+                [
+                  948.0,
+                  693.0
+                ],
+                [
+                  874.0,
+                  677.0
+                ]
+              ]
+            },
+            {
+              "text": "数据治理工具。",
+              "confidence": 0.9993263568196978,
+              "bbox": [
+                [
+                  377.0,
+                  669.0
+                ],
+                [
+                  491.0,
+                  669.0
+                ],
+                [
+                  491.0,
+                  692.0
+                ],
+                [
+                  377.0,
+                  692.0
+                ]
+              ]
+            },
+            {
+              "text": "资产交易、能碳管控和电算协同场景。",
+              "confidence": 0.9994757771492004,
+              "bbox": [
+                [
+                  1063.0,
+                  669.0
+                ],
+                [
+                  1346.0,
+                  669.0
+                ],
+                [
+                  1346.0,
+                  692.0
+                ],
+                [
+                  1063.0,
+                  692.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联已构建行业、场景和基础能力三级评测架构，",
+              "confidence": 0.9980872247530066,
+              "bbox": [
+                [
+                  377.0,
+                  710.0
+                ],
+                [
+                  747.0,
+                  710.0
+                ],
+                [
+                  747.0,
+                  733.0
+                ],
+                [
+                  377.0,
+                  733.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联依托1700余家会员单位、23年行业",
+              "confidence": 0.9995788676398141,
+              "bbox": [
+                [
+                  1064.0,
+                  711.0
+                ],
+                [
+                  1377.0,
+                  711.0
+                ],
+                [
+                  1377.0,
+                  734.0
+                ],
+                [
+                  1064.0,
+                  734.0
+                ]
+              ]
+            },
+            {
+              "text": "形成多家网省公司应用经验。",
+              "confidence": 0.9992018296168401,
+              "bbox": [
+                [
+                  377.0,
+                  740.0
+                ],
+                [
+                  587.0,
+                  740.0
+                ],
+                [
+                  587.0,
+                  763.0
+                ],
+                [
+                  377.0,
+                  763.0
+                ]
+              ]
+            },
+            {
+              "text": "数据积累及多省碳核算实验，具备成果推广基础。",
+              "confidence": 0.9982181110165336,
+              "bbox": [
+                [
+                  1063.0,
+                  740.0
+                ],
+                [
+                  1421.0,
+                  740.0
+                ],
+                [
+                  1421.0,
+                  763.0
+                ],
+                [
+                  1063.0,
+                  763.0
+                ]
+              ]
+            },
+            {
+              "text": "推进原则：结合实际项目储备，按成熟度、验证条件与应用价值择优推进。",
+              "confidence": 0.9962067766623064,
+              "bbox": [
+                [
+                  540.0,
+                  817.0
+                ],
+                [
+                  1273.0,
+                  817.0
+                ],
+                [
+                  1273.0,
+                  842.0
+                ],
+                [
+                  540.0,
+                  842.0
+                ]
+              ]
+            }
+          ],
+          "summary": "未发现明确错字或乱码。",
+          "required_action": null,
+          "page_number": 1,
+          "attempt": 1,
+          "normalized_image_size": [
+            2048,
+            1024
+          ]
+        },
+        "visual_signature": {
+          "schema": "cyberppt.full_image_visual_signature.v1",
+          "page_number": 1,
+          "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3/page_001_创新业务6_1_科技项目及课题研究_full.png",
+          "source_sha256": "1379a40f8148be97b534e3dd9555d8d457dcf8f81f1de9dc60188fa4d1c85fb8",
+          "visual_medium": "unspecified",
+          "gravity": {
+            "x": 0.5266,
+            "y": 0.4819,
+            "horizontal": "center",
+            "vertical": "middle"
+          },
+          "density": "dense",
+          "density_score": 50.5408,
+          "skeleton_3x3": "111111011",
+          "skeleton_shares": [
+            0.1029,
+            0.1244,
+            0.1289,
+            0.1055,
+            0.127,
+            0.0988,
+            0.0691,
+            0.1397,
+            0.1037
+          ],
+          "structure_hash": "2e67ffd91c7c2f18"
+        },
+        "sha256": "1379a40f8148be97b534e3dd9555d8d457dcf8f81f1de9dc60188fa4d1c85fb8",
+        "reconstruction_visual_source": {
+          "authority": "audited_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3/page_001_创新业务6_1_科技项目及课题研究_full.png",
+          "sha256": "1379a40f8148be97b534e3dd9555d8d457dcf8f81f1de9dc60188fa4d1c85fb8",
+          "immutable_visual_composition": true
+        }
+      },
+      "quick_page_checkpoint": {
+        "schema": "cyberppt.stage02.quick_page_checkpoint.v1",
+        "status": "failed",
+        "error": "requires a hand-authored SVG from the image-to-PPTX runtime"
+      }
+    }
+  ],
+  "source_mode": "script_file",
+  "source_script_sha256": "52ddc6af144160ab97966b3e47dd81746a0faddcf6325845630d3bce71aa1e32",
+  "run_id": "kebiaoyanxun-attachment-onepage-v3",
+  "input_fingerprint": "079f96cbb345a9293c9a0f199ae68c96c27e96d5951281b2ade08eeb583e39ef",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "52ddc6af144160ab97966b3e47dd81746a0faddcf6325845630d3bce71aa1e32",
+    "script_input_sha256": "392af7bf9bc2652df7f568a0a3065d61220158fe2fe9247ad5e807a423c46700",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "16b63cbae610e4e346bb9180c83b3cf00fe1bccda884361147375f45692dabe6",
+    "pages": [
+      1
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "full_image_deck_rhythm_qa": {
+    "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+    "status": "passed",
+    "receipt_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3/qa/full_image_deck_rhythm_qa.json",
+    "receipt_sha256": "ba797db53446c7b4476d0173d2270a28f304454b05cf03d82297812d5a45cd89",
+    "contact_sheet_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-onepage-v3/qa/full_image_contact_sheet.png",
+    "contact_sheet_sha256": "2120a64b298df3e63f7a3479a6f24e15d1e7ca9fc7a36f3ecf4ba6a3b1bd1e84",
+    "page_count": 1,
+    "blocker_count": 0,
+    "warning_count": 0,
+    "authority_gate": "before_reconstruction_visual_source_binding"
+  },
+  "visual_truth_policy": {
+    "authority": "audited_full_image",
+    "scope": "editable_reconstruction",
+    "rule": "downstream reconstruction may decompose or rebuild text but must preserve the accepted visual composition",
+    "bound_pages": [
+      1
+    ]
+  },
+  "stage02_state": {
+    "schema": "cyberppt.stage02_build_state.v1",
+    "state": "needs_action",
+    "pages": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image",
+        "error": null
+      }
+    ],
+    "actions": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image"
+      }
+    ],
+    "failures": []
+  }
+}

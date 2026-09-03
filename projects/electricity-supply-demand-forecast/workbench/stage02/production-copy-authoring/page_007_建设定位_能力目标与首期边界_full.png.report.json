@@ -1,0 +1,71 @@
+{
+  "mode": "chart_heavy",
+  "input": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_007_建设定位_能力目标与首期边界_full.png",
+  "output": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_007_建设定位_能力目标与首期边界_full.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_007_建设定位_能力目标与首期边界_full.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 3626.4722,
+    "edge_density": 0.088801,
+    "near_white_ratio": 0.135648,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0345,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_007_建设定位_能力目标与首期边界_full.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 4001.5491,
+    "edge_density": 0.089093,
+    "near_white_ratio": 0.142512,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0174,
+    "notes": []
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.99677,
+    "normalized_mean_abs_delta": 0.010594,
+    "edge_recall": 0.99777,
+    "edge_precision": 0.920451
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "scene_plus_text",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-copy-authoring/page_007_建设定位_能力目标与首期边界_full.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 3626.4722,
+      "edge_density": 0.088801,
+      "near_white_ratio": 0.135648,
+      "noise_estimate": 0.0,
+      "blockiness_score": 1.0345,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

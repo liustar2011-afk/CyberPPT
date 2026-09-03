@@ -18,6 +18,33 @@ from .models import ImageStageResult, ManifestStageResult, Stage02BuildContext, 
 from .preflight import utc_now, write_json
 
 
+def _import_user_approved_full_image(context: Stage02BuildContext, manifest: dict[str, Any], source: Path) -> dict[str, Any]:
+    """Copy and freshly audit a user-confirmed full image into this build."""
+    if not source.is_file():
+        raise FileNotFoundError(f"approved full image not found: {source}")
+    if len(manifest.get("pairs") or []) != 1:
+        raise ValueError("--approved-full-image currently requires exactly one selected page")
+    pair = manifest["pairs"][0]
+    full = pair.get("full") if isinstance(pair.get("full"), dict) else {}
+    target = Path(str(full.get("path") or ""))
+    if not target:
+        raise ValueError("approved full image target is missing")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, target)
+    ensure_output_size(target, str(full.get("canvas") or "2048x1024"))
+    from cyberppt.image_text_gate import audit_generated_image_text
+    audit = audit_generated_image_text(target, script_text=str(pair.get("page_script") or ""))
+    if audit.get("valid") is not True:
+        raise RuntimeError(f"approved full image failed text audit: {audit.get('issues')}")
+    full.update({
+        "status": "Generated", "generated_at": utc_now(),
+        "generated_prompt_sha256": full.get("prompt_sha256"), "text_audit": audit,
+        "sha256": sha256(target.read_bytes()).hexdigest(),
+        "user_approved_import": {"source": str(source.resolve()), "source_sha256": sha256(source.read_bytes()).hexdigest()},
+    })
+    return {"imported": str(target), "text_audit": audit}
+
+
 def _image_size(path: Path) -> list[int] | None:
     try:
         with Image.open(path) as image:
@@ -458,6 +485,10 @@ def run_image_stage(
     deps = dependencies or default_stage02_dependencies()
     manifest = manifest_result.manifest
     generation = None
+    if options.approved_full_image is not None:
+        generation = _import_user_approved_full_image(context, manifest, options.approved_full_image.expanduser().resolve())
+        write_json(manifest_result.manifest_path, manifest)
+        return ImageStageResult(manifest=manifest, generation=generation)
     if options.generate_images:
         generation = _generate_manifest_images(
             manifest,
