@@ -247,7 +247,7 @@ def visible_deliverable_lines(page: PageBlock) -> list[str]:
             index
             for index, line in enumerate(raw_lines)
             if re.match(
-                r"^\s*(?:-\s*)?(?:#{1,6}\s*)?上屏文字(?:（[^）]*）)?[：:]?\s*$",
+                r"^\s*(?:-\s*)?(?:#{1,6}\s*)?上屏文字(?:（严格锁定）)?[：:]?\s*$",
                 line,
             )
         ),
@@ -266,16 +266,36 @@ def visible_deliverable_lines(page: PageBlock) -> list[str]:
                 break
             selected.append(raw)
         raw_lines = selected
-    # Keep the authored 上屏文字 as the model's content reference. Assembly
-    # must not silently normalize, deduplicate, shorten, or otherwise rewrite
-    # the user's copy before the model gets a chance to express it.
-    return [raw.rstrip() for raw in raw_lines if raw.strip() and not FENCE_RE.match(raw)]
+    lines: list[str] = []
+    seen: set[str] = set()
+    for raw in raw_lines:
+        if _drop_line(raw):
+            continue
+        cleaned = _clean_line(raw)
+        if not cleaned:
+            continue
+        key = re.sub(r"\s+", "", cleaned)
+        if key not in seen:
+            lines.append(cleaned)
+            seen.add(key)
+    return lines
 
 
 def exact_visible_deliverable_lines(page: PageBlock) -> list[str]:
-    """Compatibility alias for the unmodified 上屏文字 reference."""
+    """Preserve controlled handoff text exactly for creative-brief compilation.
 
-    return visible_deliverable_lines(page)
+    ``imagegen_handoff.content_lock_text`` has already removed backend-only
+    fields.  The legacy cleaner performs useful compatibility normalization but
+    also removes meaningful punctuation such as ``——``.  The new compiler keeps
+    every non-empty controlled line verbatim.
+    """
+
+    lines: list[str] = []
+    for raw in page.text.splitlines():
+        line = raw.strip()
+        if line and not FENCE_RE.match(line):
+            lines.append(line)
+    return lines
 
 
 def _clean_structure_directive(line: str) -> str:
@@ -562,14 +582,14 @@ def _creative_brief_style_contract(
     contract = style_contract(style_lock_path, semantic_tags=semantic_tags)
     contract = re.sub(
         r"允许根据画面容量压缩、取舍和重组文字，但不得改变原意，?",
-        "以上屏文字为内容参考，可自由压缩、改写、重组和组织表达，",
+        "完整、准确呈现锁定的上屏文字，不得压缩、删减、改写或重组，",
         contract,
     )
     contract = re.sub(
         r"(?:may|can)\s+(?:compress|shorten|summarize|paraphrase)[^.]*\.",
         (
-            "Use the on-screen text as reference; freely compress, shorten, summarize, paraphrase, "
-            "or reorganize it for a clear visual expression."
+            "Render the locked on-screen text completely and exactly; do not compress, "
+            "shorten, summarize, paraphrase, or reorganize it."
         ),
         contract,
         flags=re.I,
@@ -577,9 +597,9 @@ def _creative_brief_style_contract(
     contract = re.sub(
         r"factual numbers and labels must be verified and remain editable\.?",
         (
-            "Keep factual numbers and labels understandable. Auxiliary visuals may contain "
+            "Keep every locked factual number and label exact. Auxiliary visuals may contain "
             "supporting words or non-evidentiary labels, but must not present invented numbers "
-            "or claims as established facts."
+            "or claims as locked facts."
         ),
         contract,
         flags=re.I,
@@ -591,7 +611,7 @@ def _creative_brief_style_contract(
         (
             "Auxiliary imagery may use clear supporting words, interface text, chart labels, "
             "or document-like wording when it improves the visual idea. This auxiliary text "
-            "does not need to duplicate the reference wording, but must not masquerade as a new "
+            "does not need to duplicate the locked wording, but must not masquerade as a new "
             "factual number, organization claim, or unsupported conclusion."
         ),
         contract,
@@ -602,21 +622,21 @@ def _creative_brief_style_contract(
         r"directly clarifies a nearby business object\.",
         (
             "Auxiliary imagery may use concise supporting text when it improves the overall "
-            "visual idea. It does not need a one-to-one mapping to the reference modules."
+            "visual idea. It does not need a one-to-one mapping to the locked modules."
         ),
         contract,
         flags=re.I,
     )
     contract = re.sub(
         r"Keep real organization and person names in the editable text layer only\.",
-        "Do not introduce unrelated organization or person names beyond the page's business meaning.",
+        "Do not introduce organization or person names beyond the locked on-screen text.",
         contract,
         flags=re.I,
     )
     contract = re.sub(
         r"Generic, non-location-specific facilities, layered workspaces, control consoles, "
         r"equipment rooms, and industrial scenes may be used as (?:restrained )?illustrative "
-        r"carriers when they map to the page content\.",
+        r"carriers when they map to the locked content\.",
         (
             "Choose scenes, visual metaphors, facilities, workspaces, control environments, "
             "industrial imagery, or abstract editorial forms freely according to the strongest "
@@ -638,20 +658,20 @@ def _creative_brief_style_contract(
     contract = re.sub(
         r"在不改变原脚本结构的前提下，",
         (
-            "上屏文字仅作内容参考；不要求沿用原始列表、卡片、栏位或段落"
+            "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
             "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥；"
         ),
         contract,
     )
     creative_layout_freedom = (
-        "上屏文字仅作内容参考；不要求沿用原始列表、卡片、栏位或段落"
+        "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
         "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥。"
     )
     if "不要求沿用原始列表、卡片、栏位或段落排布形式" not in contract:
         contract = f"{contract}\n\n{creative_layout_freedom}"
     required_guardrails = (
-        "Auxiliary imagery may use clear supporting words, interface text, chart labels, or document-like wording when it improves the visual idea. This auxiliary text does not need to duplicate the reference wording, but must not masquerade as a new factual number, organization claim, or unsupported conclusion.",
-        "Do not introduce unrelated organization or person names beyond the page's business meaning.",
+        "Auxiliary imagery may use clear supporting words, interface text, chart labels, or document-like wording when it improves the visual idea. This auxiliary text does not need to duplicate the locked wording, but must not masquerade as a new factual number, organization claim, or unsupported conclusion.",
+        "Do not introduce organization or person names beyond the locked on-screen text.",
         "Schematic screens, charts, maps, time bands, interface-like structures, and their supporting labels may organize the composition freely;",
     )
     for guardrail in required_guardrails:
@@ -786,7 +806,11 @@ def render_prompt(
     include_style_contract: bool = True,
 ) -> str:
     creative_brief = compiler_version == "creative-brief-v1"
-    content_lines = visible_deliverable_lines(page)
+    content_lines = (
+        exact_visible_deliverable_lines(page)
+        if creative_brief
+        else _filter_imagegen_content_lines(visible_deliverable_lines(page))
+    )
     style09_semantic_tags = _style09_page_semantic_tags(page, content_lines)
     resolved_text_render_mode = _resolve_text_render_mode(style_lock_path, text_render_mode)
     semantic_visual = resolved_text_render_mode == "semantic_visual"
@@ -835,7 +859,7 @@ def render_prompt(
         (
             "【事实语义参考｜仅供理解，不在图内排版】"
             if semantic_visual
-            else "【上屏文字参考】"
+            else "【源文案语义输入】"
         ),
         body,
         (
@@ -848,14 +872,16 @@ def render_prompt(
         "画布 2048×1024（2:1）。只生成正文内容区成稿图。",
         "不要生成页面标题、副标题、Logo、页脚、页码或任何页面外框。",
         "No evidence IDs, watermarks, debug marks, or placeholders.",
-        "Do not invent backend or meta section labels; compose readable text modules from the content reference and page semantics.",
+        "Do not render prompt field labels or meta headers. Rewrite the source copy into conclusion-first visible Chinese while preserving its factual boundary.",
         ]
     )
     if not semantic_visual:
         parts.extend(
             [
-                "上屏文字仅作内容参考；允许根据页面使命、业务关系和风格自由改写、重组、提炼并组织成适合画面的可读文字。",
-                "可在不改变本页业务含义的前提下设置必要的短标题、标签、说明和流程节点；不得渲染提示词字段名、来源编号、调试信息或流程自述。",
+                "可将源文案改写为结论、标题、标签、流程节点或正文；保持业务对象、数字、时间、范围、责任、条件、状态和结论力度准确，不得新增分类或事实。",
+                "改写并列内容时，保留父级与子项的实际适用范围；共享谓词、共享限定语和父级说明不能被误写成每个子项都已单独具备的事实。",
+                "避免把同一内容以正文和拆分标签机械重复呈现；根据页面使命选择最清晰的层级表达。",
+                "任何按业务语义选择的视觉载体都可承载经过改写的可见文字；空间不足时优先减少视觉元素或扩大文字区，避免微型文字。",
             ]
         )
     if visual_grammar:
@@ -874,7 +900,7 @@ def render_prompt(
             (
                 "忠实于【事实语义参考】表达业务对象、动作和关系；不要把参考短语逐字排版进图片。"
                 if semantic_visual
-                else "以【上屏文字参考】和页面业务语义为内容基础；允许大模型自由表达、改写和组织文字。"
+            else "基于源文案进行专业改写：核心模块、关键数字与业务术语须保持事实准确；可使用更清晰的同义表达，避免伪文字。"
             ),
         ]
     )

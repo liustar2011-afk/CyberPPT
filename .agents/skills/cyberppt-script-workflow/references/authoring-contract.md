@@ -61,10 +61,12 @@ Run these steps in order for every content page:
    declare the page's primary reading form, one visible conclusion, its
    top-level information roles and the decisive proof retained for each role.
    Apply the density-and-heading preflight in 2.6 before drafting modules.
-7. **Make an editorial selection and project the structure.** Select the decisive
-   visible argument, then execute the mandatory onscreen structure-projection
-   pass in 3.3. Do not proportionally shorten every paragraph, keep one bullet
-   per source fact or rediscover a different page logic during compression.
+7. **Choose the onscreen reading mode and project the structure.** Use the
+   mandatory onscreen structure-projection pass in 3.3. Default compact mode
+   selects decisive visible arguments; an explicit `pyramid_prose` mode opens
+   with the page conclusion and retains complete supporting paragraphs. Do not
+   proportionally shorten every paragraph, keep one bullet per source fact or
+   rediscover a different page logic during editing.
 8. **Build visible hierarchy and close semantics.** Apply `one page, one
    conclusion; one level, one question; peers, one dimension; children, added
    evidence; different levels, visible relationships`. A normal content module
@@ -139,12 +141,11 @@ improving hierarchy and reading order.
 
 Onscreen consumption is complete when the visible layer carries the paragraph's
 leading judgment, the decisive facts or relations that make it understandable,
-and every condition or qualifier that materially changes its strength. It may
-omit subordinate examples, repeated evidence and supplementary proof. It fails
-when it keeps only the named objects but drops what the paragraph says about
-them, or when it drops one input, relation or condition that the page conclusion
-depends on. Critic must compare `full_copy` and `onscreen` by semantic role, not
-by word overlap or item count.
+and every condition or qualifier that materially changes its strength. Compact
+mode may omit subordinate examples, repeated evidence and supplementary proof.
+When the user requests conclusion-first complete prose, use `pyramid_prose` and
+retain the full argument paragraphs after the leading conclusion. Critic compares
+`full_copy` and `onscreen` by semantic role, not by word overlap or item count.
 
 Do not replace strong source statements with author-created dimensions such as
 “建设内容、阶段进度、技术规则”, or collapse an issued policy, fixed milestone,
@@ -222,10 +223,11 @@ conditions or results; do not force either grammar onto every paragraph.
 
 ### 2.4 Judgment-led prose quality
 
-`full_copy` and `onscreen` serve different reading depths, but they share one
+`full_copy` and `onscreen` can serve different reading depths and share one
 authoring standard: each must help the audience acquire a specific business
-understanding, not merely retain a complete inventory of source materials. Apply
-the following tests to both layers before delivery:
+understanding, not merely retain a complete inventory of source materials. In
+`pyramid_prose`, onscreen preserves the complete argument after its leading
+conclusion. Apply the following tests to both layers before delivery:
 
 1. **Audience takeaway.** A reader must be able to state, in one sentence, what
    has changed, what it means, or what decision follows. A page title names a
@@ -590,6 +592,19 @@ only the evidence a silent reader needs to understand why it holds. Visual brevi
 never overrides source meaning, and source availability never requires equal
 visible rank for every fact.
 
+#### Conclusion-first complete-prose mode
+
+When the user asks for complete prose, conclusion-first reading or a Pyramid
+expression without shortening, author one `pyramid_prose` onscreen module. Its
+`heading` is the page's complete conclusion; its `text` retains the complete
+supporting argument in natural paragraphs. The page therefore reads as
+`conclusion → independent argument paragraphs → source facts and qualifications`.
+Reorder paragraphs or add a transition only when it improves the reasoning order
+without changing source meaning. Resolve an unreadable density through page scope,
+pagination or Stage 02 layout rather than by turning the paragraphs into phrases.
+This explicit form is an alternative to compact module selection; its punctuation
+and paragraph length are intentional and do not enter compact-detail gates.
+
 Module headings carry business meaning by stating the object and its action,
 status, role or judgment. A normal module heading must be independently
 intelligible in silent reading. Prefer `主语 + 谓词 + 对象/状态`; do not let a
@@ -771,7 +786,9 @@ Execute this pass after the full-copy structure is stable and before visible
 wording is finalized for every content page. This is a semantic projection and
 editorial selection pass, not proportional abbreviation, paragraph-to-bullet
 conversion or a second page-planning stage. It creates no new project artifact,
-authoring field, receipt or user gate.
+authoring field, receipt or user gate. In `pyramid_prose` mode, project the full
+argument as complete paragraphs after the visible conclusion instead of selecting
+compact modules and child details.
 
 1. **Lock the invariant logic skeleton.** Carry forward `core_message`, the
    retained argument order, each argument's decisive evidence, every material

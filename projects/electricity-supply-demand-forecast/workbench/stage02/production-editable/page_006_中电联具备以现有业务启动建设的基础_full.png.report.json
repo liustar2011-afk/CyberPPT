@@ -1,0 +1,71 @@
+{
+  "mode": "chart_heavy",
+  "input": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_006_中电联具备以现有业务启动建设的基础_full.png",
+  "output": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_006_中电联具备以现有业务启动建设的基础_full.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_006_中电联具备以现有业务启动建设的基础_full.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 1255.3665,
+    "edge_density": 0.05863,
+    "near_white_ratio": 0.13962,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0336,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_006_中电联具备以现有业务启动建设的基础_full.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 1531.0168,
+    "edge_density": 0.061744,
+    "near_white_ratio": 0.142696,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0286,
+    "notes": []
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.99782,
+    "normalized_mean_abs_delta": 0.006308,
+    "edge_recall": 0.995803,
+    "edge_precision": 0.868658
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "scene_plus_text",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_006_中电联具备以现有业务启动建设的基础_full.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 1255.3665,
+      "edge_density": 0.05863,
+      "near_white_ratio": 0.13962,
+      "noise_estimate": 0.0,
+      "blockiness_score": 1.0336,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

@@ -20,8 +20,23 @@ def _render_onscreen(sections: list[dict[str, Any]]) -> list[str]:
     lines: list[str] = []
     for section in sections:
         heading = _single_line(section.get("heading")).rstrip("：:")
-        body = _single_line(section.get("text"))
+        raw_body = _text(section.get("text"))
+        body = _single_line(raw_body)
         items = [_single_line(item) for item in (section.get("items") or []) if _text(item)]
+        paragraphs = [paragraph.strip() for paragraph in re.split(r"\n\s*\n", raw_body) if paragraph.strip()]
+        if section.get("format") == "pyramid_prose":
+            if heading:
+                lines.append(heading)
+            if heading and paragraphs:
+                lines.append("")
+            for paragraph_index, paragraph in enumerate(paragraphs):
+                if paragraph_index:
+                    lines.append("")
+                lines.append(paragraph)
+            if items:
+                lines.append("")
+                lines.extend(f"- {item}" for item in items)
+            continue
         if heading and body and DETAIL_LABEL_RE.match(body):
             lines.extend([f"- {heading}", f"  - {body}"])
         elif heading and body: lines.append(f"- {heading}：{body}")
@@ -69,9 +84,9 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
             lines.append(f"- 主论证链：{value}")
         full_copy = sanitize_delivery_prose(slide.get("full_copy"))
         if full_copy: lines.extend(["", "### 完整文字稿", "", full_copy])
-        # Stage 01 deliberately has one content authority for body copy. Keep
-        # the complete prose verbatim in the visible-copy field so Stage 02
-        # can consume it without a second compression or visual-structure pass.
+        # Stage 01 has one authoritative body-copy contract: the complete
+        # prose is the visible-copy payload consumed at the Stage 02 boundary.
+        # Do not substitute a second, independently authored onscreen module.
         if full_copy:
             lines.extend(["", "### 上屏文字", "", full_copy])
         notes = sanitize_delivery_prose(slide.get("speaker_notes"))

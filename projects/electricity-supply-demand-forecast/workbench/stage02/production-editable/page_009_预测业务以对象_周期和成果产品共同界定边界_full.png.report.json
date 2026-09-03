@@ -1,0 +1,71 @@
+{
+  "mode": "chart_heavy",
+  "input": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_009_预测业务以对象_周期和成果产品共同界定边界_full.png",
+  "output": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_009_预测业务以对象_周期和成果产品共同界定边界_full.png",
+  "super_resolution_backend": "builtin",
+  "ai_super_resolution_used": false,
+  "super_resolution_metadata": {},
+  "text_guard_enabled": false,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_009_预测业务以对象_周期和成果产品共同界定边界_full.png",
+    "width": 1774,
+    "height": 887,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 3018.5224,
+    "edge_density": 0.060135,
+    "near_white_ratio": 0.053052,
+    "noise_estimate": 0.0,
+    "blockiness_score": 0.9624,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_009_预测业务以对象_周期和成果产品共同界定边界_full.png",
+    "width": 2048,
+    "height": 1024,
+    "aspect_ratio": 2.0,
+    "sharpness_laplacian_variance": 3231.2917,
+    "edge_density": 0.059922,
+    "near_white_ratio": 0.066417,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0277,
+    "notes": []
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.997295,
+    "normalized_mean_abs_delta": 0.007523,
+    "edge_recall": 0.997276,
+    "edge_precision": 0.921474
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "scene_plus_text",
+    "selected_mode": "chart_heavy",
+    "selected_backend": "builtin",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/projects/electricity-supply-demand-forecast/workbench/stage02/production-editable/page_009_预测业务以对象_周期和成果产品共同界定边界_full.png",
+      "width": 1774,
+      "height": 887,
+      "aspect_ratio": 2.0,
+      "sharpness_laplacian_variance": 3018.5224,
+      "edge_density": 0.060135,
+      "near_white_ratio": 0.053052,
+      "noise_estimate": 0.0,
+      "blockiness_score": 0.9624,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help."
+      ]
+    },
+    "backend_status": {
+      "ncnn": null,
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}

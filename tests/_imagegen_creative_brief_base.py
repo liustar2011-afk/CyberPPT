@@ -15,7 +15,6 @@ from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.imagegen_pipeline.imagegen_handoff import (
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
-    CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
@@ -192,9 +191,9 @@ def test_visual_structure_review_mode_is_explicit_and_auditable() -> None:
     assert "[Mandatory composition guidance]" in compiled.prompt
     assert "- Reading path:" in compiled.prompt
     assert "- Dominant visual carrier:" in compiled.prompt
-    assert compiled.prompt.index("【锁定关键文字】") < compiled.prompt.index(
+    assert compiled.prompt.index("【完整上屏内容】") < compiled.prompt.index(
         "[Mandatory composition guidance]"
-    ) < compiled.prompt.index("【完整上屏内容】")
+    ) < compiled.prompt.index("【呈现文案改写授权｜上屏】")
     assert metadata["semantic_structure"]["mode"] == "review"
     assert len(metadata["semantic_structure"]["visual_carrier"]["candidates"]) == 3
     assert "semantic_structure.composition" in metadata["injected_rule_ids"]
@@ -293,12 +292,9 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    locked = prompt.split("【锁定关键文字】", 1)[1].split(
-        "【完整上屏内容】", 1
-    )[0]
     semantics = prompt.split("【完整上屏内容】", 1)[1]
-    assert page.onscreen_judgment not in locked
-    assert "数据治理｜质量与授权" in locked
+    assert "【锁定关键文字】" not in prompt
+    assert "【呈现文案改写授权｜上屏】" in prompt
     assert "数据治理" in semantics
 
 
@@ -470,16 +466,9 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_typ
             "prompt_contract"
         ]
 
-    assert "如【锁定关键文字】含正文结论句" in prompt
-    assert "不得通栏放大" in prompt
-    assert "标题竖线、横线等装饰" in prompt
-    terminal_lock = style_contract.split("【风格09最终执行锁｜最高优先级】", 1)[1]
-    typography_lock = terminal_lock.strip().splitlines()[-1]
-    composition_lock = "Create a clear primary focus and legible first-to-second-level hierarchy."
-    assert style_contract.count(typography_lock) == 1
-    assert prompt.count(typography_lock) == 1
-    assert style_contract.count(composition_lock) == 1
-    assert prompt.count(composition_lock) == 1
+    assert "将【完整上屏内容】改写为结论先行、层级清晰的页面表达" in prompt
+    assert "【锁定关键文字】" not in prompt
+    assert "Rewrite the supplied source copy into concise, conclusion-first Chinese presentation text." in style_contract
     assert "1.6—1.8倍" not in prompt
     assert "1.25—1.4倍" not in prompt
 
@@ -542,7 +531,7 @@ def test_content_first_records_presentation_and_editable_body() -> None:
         "evidence_landscape", "control_room_bridge", "process_atlas",
         "decision_canvas", "layered_system",
     }
-    assert metadata["image_locked_text"] == select_image_locked_text(page)
+    assert "image_locked_text" not in metadata
     assert metadata["editable_body_text"] == page.onscreen_text.strip()
     assert "【版式与场景策略｜不上屏】" not in compiled.prompt
 
@@ -597,7 +586,7 @@ def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> Non
     assert "\n【锁定关键文字】\n" not in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
     assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
-    assert "不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句" in prompt
+    assert "可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句" in prompt
 
 
 def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
@@ -622,7 +611,7 @@ def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
         prompt = build_page_prompt(page, lock, page_mission="如何治理多源知识")
 
     assert page.core_message not in prompt
-    assert "页面任务与核心意思已在上游用于推导语义关系" in prompt
+    assert "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题" in prompt
     assert "【页面逻辑｜不上屏】" in prompt
     assert "主导关系：路径转化。" in prompt
     assert "判断—证据" not in prompt
@@ -657,9 +646,9 @@ def test_v2_composition_relation_routes_without_inventing_judgment_evidence() ->
 
     assert compiled.relation == "hierarchy_support"
     assert "核心意思：" not in compiled.prompt
-    assert "页面任务与核心意思已在上游用于推导语义关系" in compiled.prompt
-    assert "共享谓词、共享限定语、父级说明只保留在原文所属层级" in compiled.prompt
-    assert "其中任何词句只要未在上屏白名单中逐字出现，就不得渲染" in compiled.prompt
+    assert "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题" in compiled.prompt
+    assert "改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围" in compiled.prompt
+    assert "【呈现文案改写授权｜上屏】" in compiled.prompt
     assert "composed_of" in compiled.prompt
     assert "判断—证据" not in compiled.prompt
 
@@ -1042,22 +1031,19 @@ def test_script_parses_visual_carrier_field() -> None:
     assert page.visual_carrier == "连续叙事主视觉；不得逐项配图标。"
 
 
-def test_semantic_only_still_locks_business_module_labels() -> None:
+def test_semantic_only_allows_stage02_copy_authoring() -> None:
     page = replace(
         _page(),
         onscreen_judgment_mode="semantic_only",
         onscreen_text="**行业公共能力**\n- 服务行业共性需求",
         module_titles=("行业公共能力",),
     )
-    locked = locked_onscreen_text(page)
-    assert page.onscreen_judgment not in locked
-    assert "行业公共能力" in locked
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
-    assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt
-    assert "中的每一项都必须逐字准确" not in prompt
-    assert "【完整上屏内容】仍须完整表达" in prompt
+    assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
+    assert "【呈现文案改写授权｜上屏】" in prompt
+    assert "允许改写、提炼、合并、拆分、重排与重设标题层级" in prompt
 
 
 def test_style_nine_compiles_short_refinement_signature() -> None:
@@ -1108,7 +1094,7 @@ def test_locked_judgment_is_not_repeated_in_complete_page_semantics() -> None:
     assert prompt.count(page.onscreen_judgment.strip()) == 1
 
 
-def test_semantic_only_numeric_fact_is_locked_but_not_called_a_conclusion() -> None:
+def test_semantic_only_numeric_fact_is_available_for_stage02_copy_authoring() -> None:
     page = replace(
         _page(),
         onscreen_judgment_mode="semantic_only",
@@ -1118,10 +1104,10 @@ def test_semantic_only_numeric_fact_is_locked_but_not_called_a_conclusion() -> N
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【锁定关键文字】" in prompt
+    assert "【锁定关键文字】" not in prompt
     assert "2025年完成率 95%" in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
-    assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt
+    assert "【呈现文案改写授权｜上屏】" in prompt
 
 
 def test_outline_context_can_select_semantic_only_without_page_specific_code() -> None:

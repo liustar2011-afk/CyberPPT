@@ -19,7 +19,7 @@ SECTION_HEADINGS = (
     "[3. Dominant relationship and reading path]",
     "[4. Semantic groups]",
     "[5. Composition skeleton and visual responsibility]",
-    "[6. Text reference / 文字表达参考]",
+    "[6. Exact visible text contract]",
     "[7. Runtime lock]",
 )
 
@@ -63,6 +63,8 @@ def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
                     "keep each level-3 item visibly attached to its preceding level-2 heading. Preserve three "
                     "distinct reading ranks; do not flatten them into peer cards or body copy."
                 )
+            lines.append("- exact visible text assigned to this group:")
+            lines.extend(f'- Exact visible text: "{text}"' for text in binding.exact_text)
             level_path = " → ".join(str(level) for level in levels)
             lines.append(f"- hierarchy: levels {level_path}; keep this group's text together in one coherent visual region.")
     return tuple(lines)
@@ -104,7 +106,7 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
                 "Region " + str(index) + ": "
                 + f"role {region.role.replace('_', ' ')}; anchor {region.anchor.replace('_', ' ')}; "
                 + f"relative share about {round(region.weight * 100)}%; span {region.span.replace('_', ' ')}; "
-                + f"priority {region.priority.replace('_', ' ')}; may use on-screen reference item(s) {ownership_text}."
+                + f"priority {region.priority.replace('_', ' ')}; owns exact visible-text item(s) {ownership_text}."
             )
         for relation in graph.relations:
             source = public_region[relation.source]
@@ -177,9 +179,9 @@ def render_final_prompt(
                 f"Core judgment (non-visible): {ir.page_judgment}",
                 *(
                     (
-                        "Source-grounded semantic context (non-visible; use for business "
-                        "objects, conditions, boundaries and implications; use it as semantic "
-                        "context for the model's own visual wording):",
+                            "Source-grounded semantic context (use for business objects, "
+                            "conditions, boundaries and implications; it defines the factual "
+                            "boundary for rewritten visible copy):",
                         ir.semantic_context,
                     )
                     if ir.semantic_context
@@ -217,10 +219,16 @@ def render_final_prompt(
         "\n".join(
             (
                 SECTION_HEADINGS[5],
-                "The following on-screen copy is a content reference, not a locked text contract. "
-                "Rewrite, reorder, group, shorten or expand it as needed for a clear visual expression. "
-                "Keep the page's business meaning and style direction understandable; do not render backend fields.",
-                *(f'- Reference text: "{text}"' for text in ir.visible_text),
+                (
+                    "The source copy is declared inside its semantic group above. Rewrite it "
+                    "into concise, conclusion-first visible copy as needed; preserve factual "
+                    "objects, numbers, conditions, scope, responsibility, status and claim strength."
+                ),
+                *(
+                    ()
+                    if ir.text_bindings
+                    else tuple(f'- Exact visible text: "{text}"' for text in ir.visible_text)
+                ),
             )
         ),
     )

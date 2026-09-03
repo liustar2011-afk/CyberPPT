@@ -1,2 +1,6 @@
+assets
+contracts
 cyberppt
+references
 script_engine
+scripts

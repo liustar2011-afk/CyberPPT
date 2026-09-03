@@ -43,7 +43,7 @@ SECTION_HEADINGS = (
     "[5. Visual carrier / 视觉载体｜不上屏]",
     "[6. Composition / 空间组织｜不上屏]",
     "[7. Art direction / 视觉语言｜不上屏]",
-    "[8. Typography & text reference / 文字表达参考]",
+    "[8. Typography & exact text / 文字资产合同]",
     "[9. Hard constraints / 硬约束]",
 )
 
@@ -127,15 +127,13 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
     )
     evidence_lines = tuple(f"{item.priority} {item.kind}: {item.summary}" for item in spec.evidence)
     relationship_lines = tuple(_relationship_line(relationship) for relationship in spec.relationships)
-    visible_lines = tuple(f'Reference text: "{text}"' for text in typography.visible_text)
+    visible_lines = tuple(f'Exact visible text: "{text}"' for text in typography.visible_text)
 
     style_contract = spec.art_direction.contract
-    runtime = None
     if spec.art_direction.style_id == 9:
         if style_lock is not None:
             try:
-                runtime = load_runtime_style_contract(style_lock)
-                style_contract = runtime.contract
+                style_contract = load_runtime_style_contract(style_lock).contract
             except (OSError, ValueError, TypeError):
                 pass
 
@@ -163,7 +161,7 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
             _bullets(evidence_lines),
             "Authoritative business relationships:",
             _bullets(relationship_lines),
-            "These facts guide the visual logic; section 8 provides copy reference for free model expression.",
+            "These facts govern the visual logic; the exact visible wording is defined only in section 8.",
         )),
         "\n".join((
             SECTION_HEADINGS[4],
@@ -186,9 +184,9 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
         "\n".join((SECTION_HEADINGS[6], style_contract)),
         "\n".join((
             SECTION_HEADINGS[7],
-            "Use the following on-screen copy as a content reference. Rewrite, reorder, group, shorten or expand it as needed for a clear visual expression:",
+            "Use the following business text as the semantic source for visible copy. Rewrite it into conclusion-first presentation language as needed while preserving facts, numbers, scope, responsibility, conditions, status and claim strength:",
             _bullets(visible_lines),
-            "Allowed transformations: free expression within the page's business meaning and selected visual style.",
+            f"Allowed transformations: {', '.join(typography.allowed_transformations) or 'none'}.",
             "Title and subtitle are external PowerPoint text layers and must not appear in this body image.",
         )),
         "\n".join((
@@ -234,23 +232,31 @@ def assert_artifact_prompt_contract(
     ]
     if unapproved_style:
         raise ValueError(f"artifact prompt contains an internal style routing token: {unapproved_style[0]!r}")
+    if expected_visible_text:
+        declarations = tuple(re.findall(r'^- Exact visible text: "(.*)"$', prompt, flags=re.MULTILINE))
+        if declarations != expected_visible_text:
+            raise ValueError(
+                "artifact prompt visible text declarations must exactly match the audited text contract"
+            )
     legacy_headers = (
         "【风格09最终执行锁｜最高优先级】",
         "【风格10最终执行锁｜最高优先级】",
     )
     if any(header in prompt for header in legacy_headers):
         raise ValueError("artifact prompt contains a numbered legacy terminal style heading")
-    if style_id == 9 and TERMINAL_EXECUTION_HEADING in prompt:
+    if style_id == 9:
+        if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
+            raise ValueError("live runtime artifact prompt requires one terminal execution lock")
         terminal = prompt.split(TERMINAL_EXECUTION_HEADING, 1)[1].strip()
-        if prompt.count(TERMINAL_EXECUTION_HEADING) != 1 or not terminal or not prompt.rstrip().endswith(terminal):
-            raise ValueError("terminal execution block must be at the absolute end")
+        if not terminal or not prompt.rstrip().endswith(terminal):
+            raise ValueError("terminal execution lock must be at the absolute end")
     elif TERMINAL_EXECUTION_HEADING in prompt:
         raise ValueError("non-live artifact prompt contains a live terminal execution lock")
 
 
 def _avoid_judgment_repeat(text: str, page_judgment: str) -> str:
     if page_judgment and page_judgment in text:
-        return text.replace(page_judgment, "结果节点（页面判断）")
+        return text.replace(page_judgment, "结果节点（页面判断已锁定）")
     return text
 
 
@@ -276,7 +282,7 @@ def _semantic_groups(
     for root_id, role in required_roots:
         if root_id not in buckets:
             buckets[root_id] = [
-                "Keep the on-screen content reference assigned to this semantic group coherent."
+                "Preserve the locked content assigned to this semantic group as one coherent unit."
             ]
             order.append(root_id)
             kind_by_key[root_id] = role or "content"
@@ -502,7 +508,7 @@ def _micro_visual_freedom_ir(spec: PageArtifactSpec) -> MicroVisualFreedomIR | N
         forbidden=(
             "Do not merge or split macro regions.",
             "Do not change macro region roles, anchors, relative emphasis or semantic order in a way that changes meaning.",
-            "Place and organize the on-screen text reference freely within the business meaning of each macro region.",
+            "Do not move exact visible text from its assigned macro region to another region.",
             "Do not change the focus policy or promote a peer item into a result or judgment.",
             "Do not change relationship type or direction, or invent stronger causality, hierarchy or sequence than the source supports.",
             "Do not leave the allowed visual media or violate the scene policy.",
@@ -591,7 +597,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                     "Follow the authoritative macro region structure: preserve region roles, anchors, relative weights and inter-region relationships; do not replace it with a different macro layout. Region-internal arrangement remains free."
                     if has_region_graph
                     else
-                    "Choose the spatial composition from the semantic context, on-screen text reference and style contract; do not inherit a fixed card, lane, matrix, scene or connector recipe from upstream planning."
+                    "Choose the spatial composition from the semantic context, exact visible text and style contract; do not inherit a fixed card, lane, matrix, scene or connector recipe from upstream planning."
                 ),
                 primary_focus=spec.composition.primary_focus or page_judgment,
                 visual_responsibility=(

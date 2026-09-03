@@ -348,6 +348,7 @@ def build_manifest(
         enrich_result_as_dict,
         resolve_send_prompt,
     )
+
     script_pages = {
         int(page.page_id[1:]): page
         for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
@@ -651,9 +652,11 @@ def build_manifest(
         if not require_approved_prompts:
             compiled += f"## p{page_number:02d}\n\n{prompt.rstrip()}\n\n"
         variants: dict[str, dict[str, Any]] = {"full": full}
-        # Image text is only a reference for typo/gibberish observation.  It is
-        # never a required or locked bitmap copy contract.
-        allowed_image_text = script_pages[page_number].onscreen_text.strip()
+        image_text_reference = (
+            "\n".join(artifact_specs[page_number].typography.visible_text)
+            if prompt_compiler == ARTIFACT_PROMPT_COMPILER
+            else script_pages[page_number].onscreen_text
+        ).strip()
         pairs.append(
             {
                 "page_number": page_number,
@@ -661,7 +664,7 @@ def build_manifest(
                 "title": page.title,
                 "page_script": prompt,
                 "image_text_truth": {
-                    "script_text": allowed_image_text,
+                    "script_text": image_text_reference,
                     "scope": "typo_and_gibberish_only",
                 },
                 "graphic_text_policy": {

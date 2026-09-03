@@ -2,11 +2,12 @@
 
 Layer 1 — deterministic (opt-in): append a compact visual cue block derived
 from the approved page prompt's 【页面逻辑】. The default is ``off`` so the
-approved prompt is consumed verbatim;
-callers may opt in with ``--prompt-enrich deterministic``.
+approved prompt is consumed verbatim; callers may opt in with
+``--prompt-enrich deterministic``.
 
 Layer 2 — LLM send script: optional approved `imagegen-send` final that an
-agent/LLM may rewrite for image-model sensitivity.
+agent/LLM may rewrite for image-model sensitivity and visible-copy expression.
+Generation prefers it when --prompt-enrich send.
 """
 
 from __future__ import annotations
@@ -18,7 +19,6 @@ from typing import Any
 
 
 SEND_ENRICH_HEADER = "【Send enrich｜不上屏】"
-LOCKED_MARKERS = ("【锁定关键文字】", "【完整上屏内容】")
 
 DETERMINISTIC_MATERIALS = (
     "Materials: flat editorial — ivory paper, matte ink, hairline rules, quiet color fields; "
@@ -34,17 +34,16 @@ DETERMINISTIC_BAN = (
     "page numbers, footers, evidence IDs in the body image."
 )
 DETERMINISTIC_COMPOSITION = (
-    "Composition: one integrated layout; weave reference Chinese into the business structure; "
+    "Composition: one integrated layout; weave the rewritten Chinese copy into the business structure; "
     "optional industry scene ≤ ~1/4 as local embed — never a half-page panel."
 )
 DETERMINISTIC_CHROME = (
     "Chrome ban: do not draw slide title, subtitle, page number, slide index "
-    "(第N页 / Pxx / Slide N), logo, footer, or master chrome. Keep business "
-    "module meaning clear; invent no decorative serials."
+    "(第N页 / Pxx / Slide N), logo, footer, or master chrome. Invent no decorative serials."
 )
 DETERMINISTIC_FIDELITY = (
-    "Fidelity: use the page's on-screen Chinese as reference and express it naturally; "
-    "do not invent unrelated facts, service names, or slogans."
+    "Fidelity: rewrite visible Chinese for clarity while preserving business objects, "
+    "numbers, conditions, scope, responsibility, status and claim strength; do not invent facts, service names, or slogans."
 )
 
 _RELATION_EN = {
@@ -95,7 +94,7 @@ def extract_structure_cue(prompt: str) -> str:
         # Fall back to semantic-relations header used in older drafts.
         logic = _section(prompt, "【页面语义关系｜仅供理解，不上屏】")
     if not logic:
-        return "Structure: follow page logic and module hierarchy; content decides layout."
+        return "Structure: follow page logic and locked module hierarchy; content decides layout."
 
     lines = [line.strip(" -•\t") for line in logic.splitlines() if line.strip()]
     compact = "；".join(lines) if lines else logic
@@ -158,12 +157,6 @@ def apply_deterministic_enrich(prompt: str) -> str:
     return f"{base.rstrip()}\n\n{block}\n"
 
 
-def assert_locked_text_preserved(source: str, enriched: str) -> None:
-    """Compatibility hook; send enrichment may freely rewrite reference copy."""
-
-    _ = source, enriched
-
-
 def llm_enrich_brief(*, page_number: int, approved_prompt: str) -> str:
     """Instruction brief for an agent/LLM that rewrites the send prompt."""
 
@@ -172,8 +165,8 @@ def llm_enrich_brief(*, page_number: int, approved_prompt: str) -> str:
 You will rewrite the approved ImageGen script into a **send prompt** optimized for image models.
 
 ## Hard rules
-1. Use 【上屏文字参考】 and 【完整上屏内容】 as content references; you may freely rewrite and reorganize the Chinese expression.
-2. Do not invent facts, numbers, service names, slogans, logos, or page chrome.
+1. You MAY rewrite the visible Chinese from 【完整上屏内容】 into conclusion-first, professional presentation copy.
+2. Preserve business objects, numbers, dates, scope, responsibility, conditions, status and claim strength; do not invent facts, service names, slogans, logos, or page chrome.
 3. You MAY: compress/English-ize style cues; add structure/material/people/ban cues image models hear; clarify path vs crosscut relations from 【页面逻辑】.
 4. You MUST NOT: replace STYLE09 with another palette; force a fixed card/timeline/hub template unless the page logic requires it.
 5. Output only the full send prompt body (no markdown commentary).
@@ -242,10 +235,8 @@ def resolve_send_prompt(
         # internal combination step. Extract only the block portion here —
         # the caller (page_manifest.build_manifest) re-appends it onto the
         # base prompt it resolved separately, so returning the embedded base
-        # too would duplicate it. Also verify the on-disk file has not lost
-        # or altered the on-screen text reference, since it may have been
-        # hand-edited between staging and approval.
-        assert_locked_text_preserved(source, send_text)
+        # too would duplicate it. The approved send prompt may author its own
+        # visible-copy expression under the Stage 02 semantic contract.
         block = send_text[send_text.index(SEND_ENRICH_HEADER):]
         return SendEnrichResult(
             prompt=source,

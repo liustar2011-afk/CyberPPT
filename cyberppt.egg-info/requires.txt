@@ -2,6 +2,18 @@ pyyaml
 rapidocr-onnxruntime<2,>=1.4
 python-pptx
 jsonschema<5,>=4
+Pillow<13,>=12
+
+[dev]
+openpyxl<4,>=3.1
+markitdown<1,>=0.1
+pytest<10,>=8
+pytest-cov<7,>=5
+build<2,>=1
+
+[source]
+openpyxl<4,>=3.1
+markitdown<1,>=0.1
 
 [test]
 pytest<10,>=8

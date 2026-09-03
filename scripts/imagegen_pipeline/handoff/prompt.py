@@ -31,12 +31,14 @@ from scripts.imagegen_pipeline.prompt_compiler import (
     validate_prompt_compiler,
     validate_text_render_mode,
 )
+from scripts.imagegen_pipeline.handoff.common import _clean_onscreen_for_imagegen
 from scripts.imagegen_pipeline.handoff.contracts import (
     CONTENT_FIRST_CORE_MEANING_LABEL,
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_PAGE_MISSION_LABEL,
+    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
     CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
-    CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT,
+    CONTENT_FIRST_COPY_AUTHORING_CONTRACT,
     EVIDENCE_ID_RE,
     IMAGEGEN_CANVAS_CONTRACT,
     IMAGEGEN_CHROME_BAN_CONTRACT,
@@ -60,11 +62,14 @@ from scripts.imagegen_pipeline.handoff.semantics import (
     resolve_page_visual_intent,
 )
 from scripts.imagegen_pipeline.handoff.text import (
+    _flatten_markdown_tables,
     _selected_content_first_style,
     content_lock_text,
+    diagnostic_onscreen_text,
     render_semantic_visual_brief,
     resolve_onscreen_judgment_mode,
     resolve_text_render_mode,
+    select_image_locked_text,
 )
 
 
@@ -95,11 +100,35 @@ def render_content_first_prompt(
     # The core meaning is mandatory semantic context; a visible conclusion is optional.
     judgment_mode = resolve_onscreen_judgment_mode(page, visual_context)
     semantic_visual = text_render_mode == "semantic_visual"
-    onscreen_body = page.onscreen_text.strip()
+    onscreen = diagnostic_onscreen_text(page, "content-first-v1")
+    onscreen_body = _flatten_markdown_tables(
+        _clean_onscreen_for_imagegen(page.onscreen_text)
+    )
+    fact_anchors = select_image_locked_text(page, visual_context)
+    judgment_for_semantics = page.onscreen_conclusion.strip()
     core_meaning_for_semantics = page.core_message.strip() or page.title.strip()
-    # The script's 上屏文字 is a content reference. Assembly may rewrite it
-    # freely for a readable visual expression; it is not a bitmap whitelist.
-    complete_semantics = onscreen_body
+    visible_judgment = (
+        judgment_for_semantics
+        if (
+            judgment_mode == "locked"
+            and not page.subtitle.strip()
+        )
+        else ""
+    )
+    # The complete source copy remains the semantic input. Stage 02 may rewrite
+    # it into a clearer visible hierarchy without changing the protected facts.
+    complete_semantics = (
+        onscreen_body
+        if page.subtitle.strip()
+        else "\n\n".join(
+            part
+            for part in (
+                visible_judgment,
+                onscreen_body,
+            )
+            if part
+        )
+    )
     style09_semantic_tags = _style09_page_semantic_tags(
         PageBlock(page.sequence, page.title, complete_semantics),
         [line for line in complete_semantics.splitlines() if line.strip()],
@@ -210,8 +239,11 @@ def render_content_first_prompt(
                 if page_mission.strip()
                 else ""
             ),
-                "【上屏文字参考】",
-                onscreen_body,
+            (
+                f"- 关键事实锚点（仅供校验）：{fact_anchors}"
+                if fact_anchors
+                else ""
+            ),
             "",
             SEMANTIC_VISUAL_BRIEF_HEADER,
             semantic_brief,
@@ -246,7 +278,7 @@ def render_content_first_prompt(
         nonvisible_semantic_context = (
             [
                 "【非上屏语义边界】",
-                "页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。",
+                "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。",
                 "",
             ]
             if style09_surface
@@ -263,9 +295,15 @@ def render_content_first_prompt(
             "【完整上屏内容】",
             complete_semantics,
             "",
-            CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
+            (
+                CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
+                if judgment_mode == "locked"
+                else (
+                    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
+                )
+            ),
             "",
-            CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT,
+            CONTENT_FIRST_COPY_AUTHORING_CONTRACT,
             "",
             CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
             "",
@@ -360,7 +398,7 @@ def compile_page_prompt(
                 "name": art_direction.style_name,
                 "style_lock": str(style_lock),
             },
-            image_locked_text="",
+            image_locked_text="\n".join(artifact_spec.typography.visible_text),
             text_render_mode="full_image",
             prompt_ir_version=FINAL_PROMPT_IR_VERSION,
             debug_receipt=debug_receipt,
@@ -465,7 +503,7 @@ def compile_page_prompt(
                 "content.core_meaning",
                 "content.full_semantics",
                 "content.page_logic_contract",
-                "content.locked_key_copy",
+                "content.copy_authoring",
                 "content.complete_page_semantics",
                 "content.independent_reading",
                 "fact.source_boundary",

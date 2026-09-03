@@ -96,7 +96,7 @@ def prepare_imagegen_send(
         "pages": pages,
         "items": items,
         "next_steps": [
-            "Optional: edit send draft using the llm-brief (keep locked Chinese verbatim).",
+            "Optional: edit send draft using the llm-brief; visible Chinese may be rewritten within the Stage 02 semantic boundary.",
             "python -m cyberppt stage-script <project> --slide N --kind imagegen-send --phase final --source <send draft or edited file>",
             "python -m cyberppt approve-script <project> --slide N --kind imagegen-send",
             "python -m cyberppt final-script-pages ... --generate-images --prompt-enrich send",
