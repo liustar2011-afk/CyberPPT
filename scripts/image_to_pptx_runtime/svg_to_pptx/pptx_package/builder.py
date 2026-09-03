@@ -3909,6 +3909,18 @@ def _as_dict(value: Any) -> dict[str, Any]:
 def _create_writable_work_dir(output_path: Path) -> Path:
     """Create a real writable work directory for PPTX assembly."""
     parents = [output_path.parent, Path.cwd(), Path(tempfile.gettempdir())]
+    # The package is unpacked below this directory before it is repacked.  On
+    # Windows, a deep checkpoint/output path can therefore exceed the legacy
+    # MAX_PATH limit even though creating the work directory itself succeeds.
+    # Prefer a short local candidate in that case; the final PPTX remains at
+    # the caller-requested output path.
+    if os.name == "nt":
+        package_suffix = (
+            "\\.pptx-build-00000000-" + "0" * 32
+            + "\\pptx_content\\ppt\\slideMasters\\_rels\\slideMaster1.xml.rels"
+        )
+        if len(str(output_path.parent)) + len(package_suffix) >= 240:
+            parents = [Path.cwd(), Path(tempfile.gettempdir()), output_path.parent]
     seen: set[str] = set()
     errors: list[str] = []
 

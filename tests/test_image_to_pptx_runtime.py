@@ -737,3 +737,17 @@ def test_quick_split_text_flow_keeps_visual_tspan_rows_editable(tmp_path: Path) 
         text_flow="split",
     )
     assert pptx_texts(output) == ["第一行", "第二行"]
+
+
+def test_pptx_builder_uses_short_work_dir_for_windows_deep_output(tmp_path: Path, monkeypatch) -> None:
+    from scripts.image_to_pptx_runtime.svg_to_pptx.pptx_package import builder
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(builder.os, "name", "nt")
+    output = tmp_path / ("deep-" + "x" * 260) / "editable.pptx"
+
+    work_dir = builder._create_writable_work_dir(output)
+    try:
+        assert work_dir.parent == tmp_path.resolve()
+    finally:
+        work_dir.rmdir()
