@@ -1,7 +1,12 @@
-import { chromium } from "playwright";
+import { createRequire } from "node:module";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+// Resolve from the repository first, while also honoring NODE_PATH supplied
+// by the bundled desktop runtime during isolated production rendering.
+const require = createRequire(import.meta.url);
+const { chromium } = require("playwright");
 
 export const DEFAULT_PLAYWRIGHT_BROWSER = "chromium";
 export const DEFAULT_PLAYWRIGHT_HEADLESS = true;

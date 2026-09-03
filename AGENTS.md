@@ -16,7 +16,8 @@
 - 处理任何 CyberPPT 源材料、Source Truth、语义模型、脚本规划、页面脚本或视觉生产任务，先阅读 [docs/CYBERPPT_WORKFLOW.md](docs/CYBERPPT_WORKFLOW.md)。该文件是全流程总览和检索入口。
 - `AGENTS.md` 负责仓库级硬约束；各 `.agents/skills/*/SKILL.md` 负责阶段细则。不要通过拼接多个 Skill 的局部说明自行重建主流程。
 - 新建且包含正式源材料的 Stage 01 项目默认使用 `strict/legacy` profile：`.agents/skills/cyberppt-source-foundation/SKILL.md` → `business-semantic-understanding` → `project-foundation` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。`script` profile 仅在用户明确选择轻量路径时使用：`prepare-source-context` → `prepare-script-foundation --profile script` → `.agents/skills/cyberppt-script-understand/SKILL.md` → `foundation.json` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
-- 对任何“图转可编辑 PPT”“按图复刻 PPT”“图片/截图转 PPTX”请求，必须调用 `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md`，并通过 `python -m cyberppt final-script-pages --production-build` 进入生产。禁止手写最终脚本或 `page_image_pairs.json` 后直调 `scripts.image_to_pptx_runtime.stage02_adapter.run_stage02_reconstruction`；该 adapter 只消费正式编排产生且仍有效的 build context。
+- 对任何 Stage 02 制作、重制、图转 PPT、套用模板、母版修复或重新组装请求，必须调用 `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md`，并通过 `.venv/bin/python3 -m cyberppt final-script-pages --production-build` 进入生产。正式适配器同时验证当前进程的编排调用与磁盘 build context；单独持有有效旧记录仍不得直调适配器。
+- Stage 02 出现缺资产、待 SVG 编写、待看图或失败时，只执行当前状态要求的动作，并按当前运行记录的 `resume_command` 回到同一入口。禁止通过临时 Python/JS 导出脚本、直接调用底层 PPTX builder、直接改最终 PPTX 包或合并单页 PPTX 来代替正式生产；不得为绕过失败而另开批次。底层工具可用于单元测试和隔离诊断，其输出不得直接作为正式交付。修复生成逻辑后，仍由正式入口重新生成和验收。
 
 ## 独立技术判断（硬规则）
 

@@ -13,7 +13,7 @@ from .models import (
 from .preflight import prepare_preflight, read_json, write_json
 from .reconstruction_stage import run_reconstruction_stage
 from .rhythm_stage import run_full_image_rhythm_stage
-from .state import classify_manifest
+from .state import _production_invocation, classify_manifest
 
 
 def _expected_action_result(*, context, manifest, images, error: Exception) -> Stage02ProductionResult | None:
@@ -98,8 +98,12 @@ def run_production(
             bind_reconstruction_visual_sources(images.manifest)
         write_json(manifest.manifest_path, images.manifest)
     try:
-        reconstruction = run_reconstruction_stage(context, manifest, images, options, deps)
+        with _production_invocation(context):
+            reconstruction = run_reconstruction_stage(context, manifest, images, options, deps)
     except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
+        # The adapter persists each page immediately. Reload before classifying
+        # or writing expected actions so we cannot overwrite newer checkpoints.
+        images.manifest.update(read_json(manifest.manifest_path))
         expected = _expected_action_result(
             context=context,
             manifest=manifest,

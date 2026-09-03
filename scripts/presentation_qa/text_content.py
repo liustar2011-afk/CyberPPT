@@ -18,7 +18,9 @@ def _normalize(value: str) -> str:
     return value.replace("\r\n", "\n").replace("\r", "\n").replace("\u3000", " ").strip()
 
 
-def pptx_texts(path: Path) -> list[str]:
+def pptx_texts(path: Path, *, include_inherited: bool = False) -> list[str]:
+    if include_inherited:
+        return _inherited_pptx_texts(path)
     texts: list[str] = []
     with zipfile.ZipFile(path) as package:
         slide_names = sorted(
@@ -35,6 +37,44 @@ def pptx_texts(path: Path) -> list[str]:
                         current.append(node.text)
                 if current:
                     texts.append(_normalize("".join(current)))
+    return texts
+
+
+def _inherited_pptx_texts(path: Path) -> list[str]:
+    """Read visible native text through each slide's actual Layout/Master links.
+
+    Master fields use the consuming slide number. Layout/master placeholders
+    define frames; only their slide-local instances contribute visible text.
+    """
+    from scripts.image_to_pptx_runtime.pptx_to_svg.ooxml_loader import (
+        OoxmlPackage, inherited_shape_visibility,
+    )
+
+    def native_text(node, slide_number: int) -> str:
+        if node.tag == f"{{{NS['a']}}}fld" and node.get("type") == "slidenum":
+            return str(slide_number)
+        if node.tag == f"{{{NS['a']}}}t":
+            return node.text or ""
+        return "".join(native_text(child, slide_number) for child in node)
+
+    texts: list[str] = []
+    with OoxmlPackage(path) as package:
+        for slide in package.iter_slides():
+            show_layout, show_master = inherited_shape_visibility(slide)
+            for part, inherited in ((slide.master if show_master else None, True),
+                                    (slide.layout if show_layout else None, True),
+                                    (slide.part, False)):
+                if part is None:
+                    continue
+                for shape in part.xml.findall(".//p:sp", NS):
+                    if inherited and shape.find("p:nvSpPr/p:nvPr/p:ph", NS) is not None:
+                        continue
+                    props = shape.find("p:nvSpPr/p:cNvPr", NS)
+                    if props is not None and props.get("hidden") in {"1", "true"}:
+                        continue
+                    value = _normalize(native_text(shape, package.first_slide_number + slide.index - 1))
+                    if value:
+                        texts.append(value)
     return texts
 
 
@@ -89,6 +129,7 @@ def build_text_content_qa(
     *,
     order_sensitive: bool = True,
     allow_fragmented_actual: bool = False,
+    include_inherited: bool = False,
 ) -> dict:
     """Compare the exported PPTX's actual editable text against expected content.
 
@@ -102,7 +143,7 @@ def build_text_content_qa(
     canonical text sequence.
     """
     expected = [_normalize(text) for text in expected_texts if _normalize(text)]
-    actual = pptx_texts(pptx_path)
+    actual = pptx_texts(pptx_path, include_inherited=include_inherited)
     mismatches = []
     if order_sensitive:
         for index in range(max(len(expected), len(actual))):

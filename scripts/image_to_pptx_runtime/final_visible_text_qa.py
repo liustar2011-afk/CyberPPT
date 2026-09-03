@@ -83,6 +83,11 @@ def audit_final_visible_text(
     allowed: list[str] = []
     for item in (*report["expected_texts"], *report["authorized_image_texts"]):
         allowed.extend(_chinese_runs(item))
+        # OCR can join Chinese runs by reading an authored em/en dash as 一.
+        # Only declared dash positions gain this exact alias; ordinary Chinese
+        # is never deleted/replaced and native PPTX text is checked separately.
+        if "—" in item or "–" in item:
+            allowed.extend(_chinese_runs(item.translate(str.maketrans({"—": "一", "–": "一"}))))
     unexpected: list[dict[str, Any]] = []
     for observation in observations:
         if not isinstance(observation, Mapping):

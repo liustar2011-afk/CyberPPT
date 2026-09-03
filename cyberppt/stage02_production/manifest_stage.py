@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -9,7 +10,7 @@ from scripts.imagegen_pipeline.imagegen_handoff import (
     resolve_presentation_decision,
     select_page_visual_intent_type,
 )
-from scripts.imagegen_pipeline.page_manifest import build_manifest, output_variants_for_mode
+from scripts.imagegen_pipeline.page_manifest import build_manifest, output_variants_for_mode, write_manifest_artifacts
 from scripts.image_to_pptx_runtime.clean_base_policy import (
     ALGORITHM_VERSION as CLEAN_BASE_ALGORITHM_VERSION,
     SCHEMA as CLEAN_BASE_SCHEMA,
@@ -34,6 +35,7 @@ def _template_text_lock(
     build_id: str,
     assembly_mode: str = "editable",
     allow_script_edit: bool = False,
+    resume_command: str,
 ) -> Path:
     blocks = parse_page_blocks(script)
     document = parse_script_path(script)
@@ -62,12 +64,7 @@ def _template_text_lock(
             "source": str(script),
             "approved": True,
             "depends_on": [str(script), str(manifest_path)],
-            "resume_command": (
-                "python -m cyberppt final-script-pages "
-                f"{project} --script {script} --pages {pages_raw}"
-                + (f" --style-lock {style_lock}" if style_lock else "")
-                + f" --assembly-mode {assembly_mode} --output-dir {output_dir} --build-id {build_id}"
-            ),
+            "resume_command": resume_command,
         }
         if presentation is not None:
             record["presentation"] = presentation.to_dict()
@@ -157,7 +154,18 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
                 "algorithm_version": CLEAN_BASE_ALGORITHM_VERSION,
                 "note": "Prior clean-base or authored-SVG checkpoint failed current binding/QA validation and must be regenerated.",
             }
-            pair.pop("authoring_svg", None)
+            # Keep authored work available for local repair and re-registration.
+            # An invalid layer contract cannot reach assembly or retain review.
+            prior_authoring_svg = Path(str(prior_pair.get("authoring_svg") or ""))
+            policy_complete = (
+                isinstance(pair.get("graphic_text_policy"), dict)
+                and pair["graphic_text_policy"].get("status") == "complete"
+                and pair["graphic_text_policy"].get("empty_container_check") == "passed"
+            )
+            if policy_complete and prior_authoring_svg.is_file():
+                pair["authoring_svg"] = str(prior_authoring_svg)
+            else:
+                pair.pop("authoring_svg", None)
             pair.pop("quick_page_checkpoint", None)
         for variant in output_variants_for_mode(production_mode):
             current_item = pair.get(variant) or {}
@@ -242,6 +250,87 @@ def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dic
     ]
 
 
+def _import_audited_full_images(
+    *,
+    manifest: dict[str, Any],
+    source_manifest_path: Path,
+    selected_pages: tuple[int, ...],
+) -> None:
+    """Bind audited full images from a prior official Stage 02 manifest.
+
+    This intentionally imports only full images that retain the same locked
+    script, production mode, compiled prompt, and passed text-audit evidence.
+    It supports the explicit image-to-Quick conversion path without treating a
+    changed assembly mode as a resumable build identity.
+    """
+
+    source_path = source_manifest_path.expanduser().resolve()
+    if not source_path.is_file():
+        raise FileNotFoundError(f"audited image manifest is missing: {source_path}")
+    source = read_json(source_path)
+    if source.get("source_script_sha256") != manifest.get("source_script_sha256"):
+        raise ValueError("audited image manifest targets a different final script")
+    if source.get("production_mode") != manifest.get("production_mode"):
+        raise ValueError("audited image manifest uses a different production mode")
+
+    source_pairs = {
+        int(pair.get("page_number")): pair
+        for pair in source.get("pairs", [])
+        if isinstance(pair, dict) and str(pair.get("page_number") or "").isdigit()
+    }
+    target_pairs = {
+        int(pair.get("page_number")): pair
+        for pair in manifest.get("pairs", [])
+        if isinstance(pair, dict) and str(pair.get("page_number") or "").isdigit()
+    }
+    validated = []
+    for page_number in selected_pages:
+        source_pair = source_pairs.get(page_number)
+        target_pair = target_pairs.get(page_number)
+        source_full = source_pair.get("full") if isinstance(source_pair, dict) else None
+        target_full = target_pair.get("full") if isinstance(target_pair, dict) else None
+        if not isinstance(source_full, dict) or not isinstance(target_full, dict):
+            raise ValueError(f"page {page_number} is missing its full-image record")
+        if (source_full.get("text_audit") or {}).get("valid") is not True:
+            raise ValueError(f"page {page_number} has no passed full-image text audit")
+        if source_full.get("prompt_sha256") != target_full.get("prompt_sha256"):
+            raise ValueError(f"page {page_number} full-image prompt differs from the requested build")
+        source_image = Path(str(source_full.get("path") or "")).expanduser().resolve()
+        target_image = Path(str(target_full.get("path") or "")).expanduser().resolve()
+        if not source_image.is_file():
+            raise FileNotFoundError(f"page {page_number} audited full image is missing: {source_image}")
+        source_hash = sha256_file(source_image)
+        bound_hash = source_full.get("sha256") or (source_full.get("reconstruction_visual_source") or {}).get("sha256")
+        if not bound_hash or source_hash != bound_hash:
+            raise ValueError(f"page {page_number} source image no longer matches its audited hash")
+        if source_full.get("status") != "Generated" or source_full.get("generated_prompt_sha256", source_full.get("prompt_sha256")) != source_full.get("prompt_sha256"):
+            raise ValueError(f"page {page_number} source audit is not current for its prompt")
+        validated.append((page_number, source_full, target_full, source_image, target_image))
+    # Validate every source before touching any existing target image.
+    for page_number, source_full, target_full, source_image, target_image in validated:
+        target_image.parent.mkdir(parents=True, exist_ok=True)
+        if source_image != target_image:
+            shutil.copy2(source_image, target_image)
+        image_sha256 = sha256_file(target_image)
+        if not image_sha256:
+            raise ValueError(f"page {page_number} copied full image cannot be hashed")
+        target_full["status"] = "Generated"
+        target_full["generated_at"] = source_full.get("generated_at")
+        target_full["generated_prompt_sha256"] = str(source_full.get("generated_prompt_sha256") or source_full.get("prompt_sha256"))
+        target_full["text_audit"] = source_full["text_audit"]
+        target_full["sha256"] = image_sha256
+        target_full["reused_from"] = {
+            "manifest": str(source_path),
+            "image": str(source_image),
+            "image_sha256": sha256_file(source_image),
+            "source_assembly_mode": source.get("assembly_mode"),
+        }
+    manifest["audited_full_image_import"] = {
+        "manifest": str(source_path),
+        "pages": list(selected_pages),
+    }
+
+
 def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -> ManifestStageResult:
     target_dir = context.build_dir
     prior_manifest_path = target_dir / "page_image_pairs.json"
@@ -268,6 +357,7 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
         allow_script_edit=False,
         allow_prompt_edit=options.allow_prompt_edit,
         prompt_overrides_dir=prompt_overrides_dir,
+        persist=False,
     )
     manifest["source_mode"] = context.source_mode
     manifest["source_script"] = str(context.canonical_script)
@@ -277,7 +367,25 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
     manifest["input_identity"] = identity_payload
     _reuse_prior_artifacts(manifest=manifest, prior_manifest=prior_manifest, production_mode=context.production_mode)
     _retain_audited_prior_pairs(manifest=manifest, prior_manifest=prior_manifest)
-    write_json(manifest_path, manifest)
+    if context.assembly_mode in {"editable", "both"}:
+        from scripts.image_to_pptx_runtime.authored_layers import SCHEMA as AUTHORED_SCHEMA
+        for pair in manifest.get("pairs", []):
+            if (pair.get("clean_base") or {}).get("status") != "complete":
+                pair["clean_base"] = {
+                    "schema": AUTHORED_SCHEMA, "status": "required",
+                    "note": "Prepare reference-edited local layers and register-quick-page; resume the same build.",
+                }
+    if options.reuse_audited_images_from is not None:
+        if context.assembly_mode not in {"editable", "both"}:
+            raise ValueError("--reuse-audited-images-from requires --assembly-mode editable or both")
+        _import_audited_full_images(
+            manifest=manifest,
+            source_manifest_path=options.reuse_audited_images_from,
+            selected_pages=tuple(page_numbers),
+        )
+    write_manifest_artifacts(manifest, manifest_path, compiled_script)
+    from .delivery_stage import _resume_command
+
     lock_path = _template_text_lock(
         project=context.project,
         script=context.canonical_script,
@@ -289,6 +397,7 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
         build_id=context.build_id,
         assembly_mode=context.assembly_mode,
         allow_script_edit=False,
+        resume_command=_resume_command(context, options),
     )
     build_context_path = target_dir / "build_context.json"
     write_json(

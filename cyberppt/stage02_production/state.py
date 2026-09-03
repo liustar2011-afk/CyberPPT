@@ -10,8 +10,39 @@ from __future__ import annotations
 
 import argparse
 import json
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Mapping
+
+from .models import Stage02BuildContext
+
+
+_active_production: ContextVar[Stage02BuildContext | None] = ContextVar("stage02_production", default=None)
+
+
+@contextmanager
+def _production_invocation(context: Stage02BuildContext):
+    """Invocation-local guard, owned by the orchestrator; never a disk receipt."""
+    token = _active_production.set(context)
+    try:
+        yield
+    finally:
+        _active_production.reset(token)
+
+
+def require_production_invocation(*, project, manifest_path, output_dir, requested_pages, assembly_mode) -> None:
+    context = _active_production.get()
+    if context is None:
+        raise ValueError("STAGE02_OFFICIAL_ENTRY_REQUIRED: use .venv/bin/python3 -m cyberppt final-script-pages --production-build; a build_context.json alone cannot authorize direct adapter calls")
+    if (
+        Path(project).resolve() != context.project.resolve()
+        or Path(manifest_path).resolve() != (context.build_dir / "page_image_pairs.json").resolve()
+        or Path(output_dir).resolve() != (context.build_dir / "editable_svg").resolve()
+        or tuple(requested_pages) != context.selected_pages
+        or assembly_mode != context.assembly_mode
+    ):
+        raise ValueError("STAGE02_INVOCATION_MISMATCH: project, build directory, pages and assembly mode must match the active production run")
 
 
 READY_FOR_IMAGE = "ready_for_image_generation"
@@ -58,6 +89,13 @@ def classify_page(pair: Mapping[str, Any]) -> dict[str, Any]:
             "state": NEEDS_SVG_AUTHORING,
             "action": "author_svg_from_audited_full_image",
             "error": None,
+        }
+
+    clean = pair.get("clean_base") or {}
+    if clean.get("schema") == "cyberppt.stage02.authored_clean_base.v1" and clean.get("status") != "complete":
+        return {
+            "page": page_number, "state": NEEDS_SVG_AUTHORING,
+            "action": "prepare_reference_edited_layers_and_register_quick_page", "error": None,
         }
 
     if checkpoint_status == "rendered_pending_visual_review":

@@ -202,3 +202,67 @@ def test_template_pptx_embeds_notes_by_svg_stem(tmp_path: Path) -> None:
         ]
         assert len(note_parts) == 1
         assert "这一页说明总体定位。" in package.read(note_parts[0]).decode("utf-8")
+
+
+@pytest.mark.parametrize("mode", ["editable", "image"])
+def test_content_chrome_is_shared_master_with_dynamic_page_field(tmp_path: Path, mode: str) -> None:
+    source = tmp_path / "body.svg"
+    source.write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">'
+                      '<text x="20" y="50" font-size="18">页面正文</text></svg>', encoding="utf-8")
+    body_image = tmp_path / "body.png"
+    Image.new("RGB", (400, 200), "white").save(body_image)
+    wrappers = []
+    for n in (1, 2):
+        wrapper = tmp_path / "svg_output" / f"p{n:02d}.svg"
+        assemble_template_svg(source=source, output=wrapper, title=f"页面标题{n}",
+                              page_number=n, mode=mode, body_image=body_image)
+        wrappers.append(wrapper)
+    output = tmp_path / "deck.pptx"
+    assemble_template_pptx(wrappers, output)
+    from scripts.presentation_qa.text_content import pptx_texts
+    inherited_text = pptx_texts(output, include_inherited=True)
+    assert inherited_text.count("中国电力企业联合会") == 2
+    assert inherited_text.count("1") == 1
+    assert inherited_text.count("2") == 1
+    assert "中国电力企业联合会" not in pptx_texts(output)
+    ns = {"p": "http://schemas.openxmlformats.org/presentationml/2006/main",
+          "a": "http://schemas.openxmlformats.org/drawingml/2006/main"}
+    with zipfile.ZipFile(output) as package:
+        masters = [p for p in package.namelist() if p.startswith("ppt/slideMasters/slideMaster") and p.endswith(".xml")]
+        assert len(masters) == 1
+        master = ET.fromstring(package.read(masters[0]))
+        assert "中国电力企业联合会" in "".join(master.itertext())
+        assert len(master.findall(".//p:pic", ns)) == 1
+        assert len(master.findall(".//a:fld[@type='slidenum']", ns)) == 1
+        for n in (1, 2):
+            slide = ET.fromstring(package.read(f"ppt/slides/slide{n}.xml"))
+            visible_text = "".join(slide.itertext())
+            assert f"页面标题{n}" in visible_text
+            assert "中国电力企业联合会" not in visible_text
+            assert not slide.findall(".//a:fld[@type='slidenum']", ns)
+            assert len(slide.findall(".//p:pic", ns)) == (1 if mode == "image" else 0)
+            assert not slide.findall(".//a:srgbClr[@val='8B0000']", ns)
+            if mode == "editable":
+                assert "页面正文" in visible_text
+
+
+def test_structured_export_accepts_mixed_brand_pages_and_repeated_chapters(tmp_path: Path) -> None:
+    wrappers = []
+    roles = ["cover", "contents", "chapter", "chapter", "closing"]
+    for number, role in enumerate(roles, 1):
+        wrapper = tmp_path / "svg_output" / f"p{number:02d}.svg"
+        assemble_brand_page_svg(output=wrapper, role=role,
+                                onscreen_lines=[f"标题{number}", "内容说明"],
+                                page_number=number)
+        wrappers.append(wrapper)
+    output = tmp_path / "mixed.pptx"
+    assemble_template_pptx(wrappers, output)
+    with zipfile.ZipFile(output) as package:
+        masters = [p for p in package.namelist()
+                   if p.startswith("ppt/slideMasters/slideMaster") and p.endswith(".xml")]
+        assert len(masters) == 4
+        for number in range(1, 6):
+            slide_xml = package.read(f"ppt/slides/slide{number}.xml").decode()
+            assert "内容说明" in slide_xml
+            if roles[number - 1] != "contents":
+                assert f"标题{number}" in slide_xml

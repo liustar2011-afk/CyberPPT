@@ -119,20 +119,26 @@ truth; write the locked truth into the authored SVG.
   glyph, bounding box and a passed `non_semantic_glyph` visual review. It must
   not be rebuilt as SVG text or used for ordinary readable wording.
 
-For every `native_text` item, record one exact bounded clearance region linked by
-its policy id. Repair only that region with `flat-surface-rebuild`,
-`local-background-reconstruction`, or `masked-inpainting`. OCR-region whiteout is
-not an acceptable final repair method.
+Use native reference-image editing to prepare the same-canvas text-free base.
+Inspect the source first. Preserve composition, graphic identity and background
+continuity; use exact source crops for identity-sensitive photos or graphics.
+Inspect every derived raster layer and the recomposed SVG before registration.
+Do not use OCR-box whiteout or the legacy automatic masked clean-base generator.
+Pixel identity outside a text mask is not the acceptance rule for reference edits.
 
-The clean-base review must pass three image-integrity checks: the declared
-clearance regions change, background continuity is restored, and pixels outside
-the declared clearance mask stay within tolerance. Reference-image reconstruction
-is not exempt: generated pixels may be written back only inside declared masks,
-while every outside pixel must come from the audited full image; validation must
-recompute the pixel difference instead of trusting the manifest receipt. Post-clean OCR is diagnostic
-evidence for the clearance operation. It must not independently require zero OCR
-residuals or trigger image regeneration after the source full image has passed
-its Chinese-character gate.
+Complete the graphic-text policy from observed source regions, without estimating
+region widths from character counts. Author explicit line coordinates and set
+`data-cyberppt-native-text-style="locked"` on the SVG root so native export preserves
+the author's typography. Register the inspected local assets using
+`register-quick-page` as described in the continuation reference. The command
+binds source, base, SVG, all image layers and policy to the review; changes require
+fresh review. It does not author pages or make visual decisions.
+
+This workflow and its runtime are fully local to CyberPPT. Do not import another
+project's completed SVGs or invoke an external Quick backend. The official
+`final-script-pages` route consumes reviewed layers and never calls the old
+automatic cleaner. Historical v3 receipts remain readable for existing projects.
+Post-clean OCR remains diagnostic; final rendered-page review decides release.
 
 The release decision belongs after SVG rewrite and PPTX render. Check the final
 visible result for wrong Chinese characters and pseudo-Chinese only. Ignore

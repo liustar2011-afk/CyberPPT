@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import shlex
 from typing import Any
 
 from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPTX_ROUTE
@@ -43,18 +44,30 @@ def _append_ledger(project: Path, records: list[dict[str, Any]], *, build_id: st
 
 def _resume_command(context: Stage02BuildContext, options: Stage02RunOptions) -> str:
     if context.autonomous_contract is not None:
-        return f"python -m cyberppt run-autonomous {context.autonomous_contract} --resume"
-    prompt_overrides_dir = options.prompt_overrides_dir.expanduser().resolve() if options.prompt_overrides_dir else None
-    return (
-        f"python -m cyberppt final-script-pages {context.project} --script {context.canonical_script} "
-        f"--pages {context.pages_raw} --style-lock {context.style_lock} --production-mode {context.production_mode} "
-        f"--assembly-mode {context.assembly_mode} --output-dir {context.build_dir} --build-id {context.build_id}"
-        + (" --generate-images" if options.generate_images else "")
-        + (" --production-build" if options.production_build else "")
-        + (" --allow-script-edit" if options.allow_script_edit_requested else "")
-        + (" --allow-prompt-edit" if options.allow_prompt_edit else "")
-        + (f" --prompt-overrides-dir {prompt_overrides_dir}" if prompt_overrides_dir else "")
-    )
+        return shlex.join([".venv/bin/python3", "-m", "cyberppt", "run-autonomous", str(context.autonomous_contract), "--resume"])
+    args = [".venv/bin/python3", "-m", "cyberppt", "final-script-pages", str(context.project),
+            "--script", str(context.canonical_script), "--pages", context.pages_raw,
+            "--style-lock", str(context.style_lock), "--production-mode", context.production_mode,
+            "--assembly-mode", context.assembly_mode, "--output-dir", str(context.build_dir),
+            "--build-id", context.build_id, "--image-model", options.image_model,
+            "--image-quality", options.image_quality, "--image-timeout", str(options.image_timeout),
+            "--prompt-enrich", options.prompt_enrich]
+    for enabled, flag in (
+        (options.generate_images or options.production_build, "--generate-images"),
+        (options.production_build, "--production-build"),
+        (options.allow_script_edit_requested, "--allow-script-edit"),
+        (options.allow_prompt_edit, "--allow-prompt-edit"),
+        (options.no_style_reference, "--no-style-reference"),
+        (options.require_send_approval, "--require-send-approval"),
+    ):
+        if enabled:
+            args.append(flag)
+    for path, flag in ((options.prompt_overrides_dir, "--prompt-overrides-dir"),
+                       (options.reuse_audited_images_from, "--reuse-audited-images-from")):
+        if path is not None:
+            args.extend([flag, str(path.expanduser().resolve())])
+    # Force-redraw and audit bypasses are never inherited by a normal resume.
+    return shlex.join(args)
 
 
 def _run_office_qa(

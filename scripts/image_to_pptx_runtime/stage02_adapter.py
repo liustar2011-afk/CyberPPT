@@ -68,7 +68,9 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, value: Mapping[str, Any]) -> None:
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    temporary.replace(path)
 
 
 def _sha256(path: Path) -> str:
@@ -101,7 +103,14 @@ def _quick_page_binding(
     clean = Path(str((pair.get("clean_base") or {}).get("path") or ""))
     full_audit = (pair.get("full") or {}).get("text_audit") or {}
     root_qa = full_audit.get("content_root_qa") if isinstance(full_audit, Mapping) else None
+    # Include actual foreground/crop bytes, not just paths in the SVG or receipt.
+    from .authored_layers import local_svg_assets
+    from .template_assembly import TEMPLATE_ASSEMBLY_PROFILE
+    layer_root = (pair.get("clean_base") or {}).get("build_root")
+    assets = local_svg_assets(authored, Path(layer_root) if layer_root else authored.parent.parent)
     return {
+        "template_assembly_profile": TEMPLATE_ASSEMBLY_PROFILE,
+        "layer_assets_sha256": _json_sha256({str(p): _sha256(p) for p in assets}),
         "authoring_svg_sha256": _sha256(authored),
         "full_image_sha256": _sha256(full),
         "reconstruction_visual_source_sha256": str((((pair.get("full") or {}).get("reconstruction_visual_source") or {}).get("sha256") or "")),
@@ -112,7 +121,7 @@ def _quick_page_binding(
         "template_contract_sha256": _json_sha256(template_contract.get("rules") or {}),
         "runtime_style_lock_sha256": _sha256(style_lock) if style_lock is not None and style_lock.is_file() else "",
         "native_text_style_profile": NATIVE_TEXT_STYLE_PROFILE,
-        "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".intra-text-v1",
+        "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".locked-intra-text-v2",
         "clean_base_policy_schema": CLEAN_BASE_SCHEMA + "." + CLEAN_BASE_ALGORITHM_VERSION,
         "authored_svg_preflight_schema": AUTHORED_SVG_PREFLIGHT_SCHEMA,
     }
@@ -220,9 +229,15 @@ def _copy_relative_svg_assets(source: Path, target: Path) -> None:
         asset = (source.parent / href).resolve()
         if not asset.is_file():
             raise FileNotFoundError(f"authored SVG layer is missing: {asset}")
-        destination = (target.parent / href).resolve()
+        # Page-scoped, content-addressed names prevent two pages' base.png or
+        # photo.png from overwriting each other in the shared Quick workspace.
+        relative = Path("..") / "images" / "layers" / target.stem / (_sha256(asset) + asset.suffix)
+        destination = (target.parent / relative).resolve()
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(asset, destination)
+        node.set("href", relative.as_posix())
+        node.attrib.pop("{http://www.w3.org/1999/xlink}href", None)
+    ET.ElementTree(root).write(target, encoding="utf-8", xml_declaration=False)
 
 
 def _validate_body_image(source: Path, page_number: int, *, expected_size: tuple[int, int] | None = None) -> tuple[int, int]:
@@ -275,6 +290,7 @@ def _run_text_qa(export: Path, expected: list[str]) -> dict[str, Any]:
         expected,
         order_sensitive=False,
         allow_fragmented_actual=True,
+        include_inherited=True,
     )
     if not report["valid"]:
         raise ValueError(f"exported PPTX native text differs from the approved script: {export}")
@@ -298,6 +314,12 @@ def run_stage02_reconstruction(
     requested_pages: list[int],
     assembly_mode: str = "editable",
 ) -> dict[str, Any]:
+    from cyberppt.stage02_production.state import require_production_invocation
+
+    require_production_invocation(
+        project=project, manifest_path=manifest_path, output_dir=output_dir,
+        requested_pages=requested_pages, assembly_mode=assembly_mode,
+    )
     assert_internal_runtime()
     if assembly_mode not in {"image", "editable", "both"}:
         raise ValueError("assembly_mode must be image, editable, or both")
@@ -324,7 +346,7 @@ def run_stage02_reconstruction(
     needs_image = assembly_mode in {"image", "both"}
     quick = None
     if needs_editable:
-        validate_reconstruction_visual_authority(manifest, require_clean_base=True)
+        validate_reconstruction_visual_authority(manifest, require_clean_base=False)
         quick = create_quick_project(
             output / "image_to_pptx_runtime",
             pages=pages,
@@ -358,6 +380,12 @@ def run_stage02_reconstruction(
             try:
                 if not authored.is_file():
                     raise ValueError("requires a hand-authored SVG from the image-to-PPTX runtime")
+                from .authored_layers import SCHEMA as AUTHORED_LAYERS_SCHEMA
+                clean_contract = pair.get("clean_base") or {}
+                if (clean_contract.get("schema") == AUTHORED_LAYERS_SCHEMA
+                        and clean_contract.get("status") == "complete"
+                        and Path(str(clean_contract.get("build_root") or "")).resolve() != manifest_file.parent):
+                    raise ValueError("registered layers belong to another production build")
                 preflight_report = validate_authored_svg_preflight(authored, page_number=page_number)
                 if preflight_report.get("valid") is not True:
                     raise ValueError(
@@ -582,16 +610,20 @@ def run_stage02_reconstruction(
             structural_lines[number], title_by_page[number], script_pages[number].page_type
         )
 
-    expected = [
-        str(text)
-        for pair in pairs
-        for text in ((pair.get("full") or {}).get("debug_receipt") or {}).get("visible_text", [])
-        if str(text).strip()
-    ]
-    for policy in graphic_text_policy:
-        for item in policy.get("items", []):
-            if item.get("treatment") == "native_text" and item.get("text") not in expected:
-                expected.append(str(item["text"]))
+    expected: list[str] = []
+    for pair in pairs:
+        page_expected = [
+            str(text) for text in ((pair.get("full") or {}).get("debug_receipt") or {}).get("visible_text", [])
+            if str(text).strip()
+        ]
+        # Keep repeated wording on different pages. A deck-wide deduplication
+        # incorrectly treats the second page's native text as unexpected.
+        if not page_expected:
+            page_expected = [
+                str(item["text"]) for item in (pair.get("graphic_text_policy") or {}).get("items", [])
+                if item.get("treatment") == "native_text" and item.get("text")
+            ]
+        expected.extend(page_expected)
     chrome_expected = [
         *(title_by_page[number] for number, _ in pages),
         *("中国电力企业联合会" for _ in pages),

@@ -27,6 +27,24 @@ def test_final_visible_text_qa_passes_declared_svg_text_and_authorized_graphic_t
     assert report["unexpected_chinese"] == []
 
 
+def test_final_visible_text_qa_accepts_dash_ocr_alias_only_at_declared_positions(tmp_path: Path) -> None:
+    image = tmp_path / "preview.png"
+    Image.new("RGB", (160, 90), "white").save(image)
+    expected = ["技术研发—验证评测—场景应用"]
+    for observed, valid in [
+        ("技术研发一验证评测一场景应用", True),
+        ("技术研发一验证评测—场景应用", True),
+        ("技术一研发验证评测场景应用", False),
+        ("技术研发一验证评测一场景应用伪字", False),
+    ]:
+        report = audit_final_visible_text(image, expected_texts=expected,
+            ocr_runner=lambda _path: [{"text": observed}])
+        assert report["valid"] is valid
+    report = audit_final_visible_text(image, expected_texts=["技术研发验证评测"],
+        ocr_runner=lambda _path: [{"text": "技术研发一验证评测"}])
+    assert report["valid"] is False
+
+
 def test_final_visible_text_qa_blocks_unowned_residual_chinese(tmp_path: Path) -> None:
     image = tmp_path / "preview.png"
     Image.new("RGB", (160, 90), "white").save(image)

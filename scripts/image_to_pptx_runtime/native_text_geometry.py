@@ -251,16 +251,23 @@ def analyze_native_text_geometry(
             "warnings": [str(exc)],
         }
     if root.get(LOCKED_STYLE_ATTR) == "locked":
+        # A style lock preserves authored metrics; it does not waive structural
+        # checks on explicit tspan coordinates.
+        structural_warnings = [
+            f"{_text(''.join(node.itertext()))}: {issue}"
+            for node in _text_nodes(root)
+            for issue in _intra_text_geometry(node, _font_size(node))[2]
+        ]
         return {
             "schema": SCHEMA,
             "page_number": page_number,
             "path": str(svg_path),
-            "status": "skipped",
-            "valid": True,
-            "review_required": False,
-            "reason": "authored SVG explicitly locks native text styling and geometry",
+            "status": "invalid" if structural_warnings else "skipped",
+            "valid": not structural_warnings,
+            "review_required": bool(structural_warnings),
+            "reason": "authored styling retained; explicit tspan structure checked",
             "items": [],
-            "warnings": [],
+            "warnings": structural_warnings,
         }
 
     view_x, view_y, view_width, view_height, pixel_width, pixel_height = _svg_canvas(root)

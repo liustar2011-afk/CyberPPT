@@ -39,6 +39,7 @@ class Stage02RunOptions:
     allow_script_edit_requested: bool = False
     allow_prompt_edit: bool = False
     prompt_overrides_dir: Path | None = None
+    reuse_audited_images_from: Path | None = None
 
 
 @dataclass(frozen=True)

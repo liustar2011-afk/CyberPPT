@@ -325,6 +325,7 @@ def build_manifest(
     allow_script_edit: bool = False,
     allow_prompt_edit: bool = False,
     prompt_overrides_dir: Path | None = None,
+    persist: bool = True,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
     if prompt_compiler == ARTIFACT_PROMPT_COMPILER and project_path is None:
@@ -603,7 +604,6 @@ def build_manifest(
         stem = _page_stem(page_number, page.title)
         prompt_file = output_dir / "prompts" / f"p{page_number:02d}.txt"
         prompt = prompt.rstrip() + "\n"
-        atomic_write_text(prompt_file, prompt)
         full_path = output_dir / f"{stem}_full.png"
         artifact_ir_fields: dict[str, Any] = {}
         if prompt_compiler == ARTIFACT_PROMPT_COMPILER and prompt_source != "direct_prompt_override":
@@ -696,20 +696,6 @@ def build_manifest(
             }
         )
 
-    # The compiled deliverable must be the exact prompt collection consumed
-    # by the image manifest, including visual-structure handoff and send-time
-    # deterministic enrichment.  Do not leave a pre-handoff audit artifact.
-    compiled = "\n\n".join(
-        f"## p{int(pair['page_number']):02d}\n\n{str((pair.get('full') or {}).get('prompt', '')).strip()}"
-        for pair in pairs
-    ) + ("\n" if pairs else "")
-    with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
-        atomic_write_text(compiled_script, compiled)
-
-    if not require_approved_prompts:
-        with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
-            atomic_write_text(compiled_script, compiled.rstrip() + "\n")
-
     manifest = {
         "mode": "cyberppt.stage02.editable_pptx.v1",
         "production_mode": production_mode,
@@ -771,9 +757,23 @@ def build_manifest(
         "pairs": pairs,
     }
     manifest_path = output_dir / "page_image_pairs.json"
-    with build_lock(output_dir, f"pair-manifest-{manifest_path.stem}"):
-        atomic_write_json(manifest_path, manifest)
+    if persist:
+        write_manifest_artifacts(manifest, manifest_path, compiled_script)
     return manifest, manifest_path, compiled_script, page_numbers
+
+
+def write_manifest_artifacts(manifest: dict[str, Any], manifest_path: Path, compiled_script: Path) -> None:
+    """Publish only after compilation and production reuse validation succeed."""
+    pairs = manifest.get("pairs", [])
+    compiled = "\n\n".join(
+        f"## p{int(pair['page_number']):02d}\n\n{str(pair['full']['prompt']).strip()}"
+        for pair in pairs
+    ) + "\n"
+    with build_lock(manifest_path.parent, f"pair-manifest-{manifest_path.stem}"):
+        for pair in pairs:
+            atomic_write_text(Path(pair["prompt_file"]), str(pair["full"]["prompt"]).rstrip() + "\n")
+        atomic_write_text(compiled_script, compiled)
+        atomic_write_json(manifest_path, manifest)
 
 
 def require_generated(manifest: dict[str, Any]) -> None:

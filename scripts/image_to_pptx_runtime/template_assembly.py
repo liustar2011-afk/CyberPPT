@@ -18,6 +18,7 @@ from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr
 
 from .svg_to_pptx.pptx_package.builder import create_pptx_with_native_svg
+from .svg_to_pptx.drawingml.theme_fonts import MasterTextStyleSpec
 
 
 CANVAS_WIDTH = 1280
@@ -25,6 +26,7 @@ CANVAS_HEIGHT = 720
 TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "assets" / "presentation-templates" / "cec-lightweight"
 TEMPLATE_BACKGROUND = "#FFFFFF"
 TEMPLATE_FONT_FAMILY = "Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif"
+TEMPLATE_ASSEMBLY_PROFILE = "cec-structured-master-v1"
 
 
 def load_template_contract(template_dir: Path | None = None) -> dict:
@@ -96,9 +98,9 @@ def _render_chrome(
     header = (rules.get("content_regions") or {}).get("body_header_region") or {}
     title_y = float(header.get("y", 16)) + 31
     lines = [
-        f'<rect x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" fill="{TEMPLATE_BACKGROUND}"/>',
-        f'<rect x="0" y="{top.get("y", 84)}" width="{CANVAS_WIDTH}" height="{top.get("height", 3)}" fill={quoteattr(str(top.get("fill", "#8B0000")))}/>',
-        f'<image x="{logo.get("x", 1050)}" y="{logo.get("y", 13)}" width="{logo.get("width", 210)}" height="{logo.get("height", 70)}" href={quoteattr(logo_href)} preserveAspectRatio="xMidYMid meet"/>',
+        f'<rect id="masterBackground" data-pptx-layer="master" x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" fill="{TEMPLATE_BACKGROUND}"/>',
+        f'<rect id="topDivider" data-pptx-layer="master" x="0" y="{top.get("y", 84)}" width="{CANVAS_WIDTH}" height="{top.get("height", 3)}" fill={quoteattr(str(top.get("fill", "#8B0000")))}/>',
+        f'<image id="companyLogo" data-pptx-layer="master" x="{logo.get("x", 1050)}" y="{logo.get("y", 13)}" width="{logo.get("width", 210)}" height="{logo.get("height", 70)}" href={quoteattr(logo_href)} preserveAspectRatio="xMidYMid meet"/>',
         f'<text x="{header.get("x", 58)}" y="{title_y:g}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="32" font-weight="700" fill="#123B66">{xml_escape(title)}</text>',
     ]
     if subtitle.strip():
@@ -107,12 +109,14 @@ def _render_chrome(
         )
     lines.extend(
         [
-            f'<rect x="0" y="{footer.get("y", 698)}" width="{CANVAS_WIDTH}" height="{footer.get("height", 22)}" fill={quoteattr(str(footer.get("fill", "#123B66")))}/>',
-            f'<text x="{org.get("x", 58)}" y="{org.get("y", 709)}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="{org.get("font_size", 9)}" fill={quoteattr(str(org.get("fill", "#FFFFFF")))}>{xml_escape(str(org.get("text", "中国电力企业联合会")))}</text>',
-            f'<text x="{number.get("x", 1240)}" y="{number.get("y", 709)}" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="{number.get("font_size", 9)}" fill={quoteattr(str(number.get("fill", "#FFFFFF")))}>{int(page_number)}</text>',
+            f'<rect id="footerBar" data-pptx-layer="master" x="0" y="{footer.get("y", 698)}" width="{CANVAS_WIDTH}" height="{footer.get("height", 22)}" fill={quoteattr(str(footer.get("fill", "#123B66")))}/>',
+            f'<text id="footerCompany" data-pptx-layer="master" x="{org.get("x", 58)}" y="{org.get("y", 709)}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="{org.get("font_size", 9)}" fill={quoteattr(str(org.get("fill", "#FFFFFF")))}>{xml_escape(str(org.get("text", "中国电力企业联合会")))}</text>',
+            f'<text id="pageNumber" data-pptx-layer="master" x="{number.get("x", 1240)}" y="{number.get("y", 709)}" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="{number.get("font_size", 9)}" fill={quoteattr(str(number.get("fill", "#FFFFFF")))}>{int(page_number)}</text>',
         ]
     )
-    return lines
+    return [line for line in lines if 'data-pptx-layer="master"' in line] + [
+        line for line in lines if 'data-pptx-layer="master"' not in line
+    ]
 
 
 _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?")
@@ -161,26 +165,39 @@ def _materialize_body_scale(element: ET.Element, *, scale_x: float, scale_y: flo
     preserves the same visual geometry while keeping native text editable.
     """
 
+    tag = _local_tag(element)
     transform = element.get("transform")
     if transform:
-        raise ValueError(
-            f"Quick authoring SVG element {_local_tag(element)!r} has a source transform; "
-            "template assembly requires untransformed 2:1 authoring geometry"
-        )
-    tag = _local_tag(element)
+        rotation = re.fullmatch(r"\s*rotate\(\s*([^()]*)\s*\)\s*", transform)
+        args = rotation.group(1).replace(",", " ").split() if rotation else []
+        if (tag == "text" and len(args) in {1, 3}
+                and all(_NUMBER_RE.fullmatch(value) for value in args)
+                and math.isclose(scale_x, scale_y)):
+            # Uniform scaling retains the angle and scales the rotation pivot.
+            angle = float(args[0])
+            pivot = (float(args[1]) * scale_x, float(args[2]) * scale_y) if len(args) == 3 else (0, 0)
+            element.set("transform", f"rotate({angle:g} {pivot[0]:.12g} {pivot[1]:.12g})")
+        else:
+            raise ValueError(
+                f"Quick authoring SVG element {tag!r} has a source transform; "
+                "template assembly requires untransformed 2:1 geometry or uniformly scaled text rotation"
+            )
+    if tag == "path":
+        # Paths keep their original metrics: the matrix scales geometry/stroke.
+        element.set("transform", f"matrix({scale_x:.12g} 0 0 {scale_y:.12g} 0 0)")
+        return
+    # Presentation attributes also live on groups and are inherited by text.
+    # Scale every explicit declaration once, before recursing into containers.
+    for name, axis in _GEOMETRY_SCALE_ATTRS.items():
+        if tag in {"g", "defs", "clipPath", "mask", "symbol"} and name not in {"font-size", "letter-spacing", "word-spacing"}:
+            continue
+        value = element.get(name)
+        if value is not None:
+            element.set(name, _scaled_numbers(value, scale_x if axis == "x" else scale_y))
     if tag in {"g", "defs", "clipPath", "mask", "symbol"}:
         for child in list(element):
             _materialize_body_scale(child, scale_x=scale_x, scale_y=scale_y)
         return
-    if tag == "path":
-        # Path data is not safely scalable with a generic number substitution
-        # because arc flags and command parameters have different meanings.
-        element.set("transform", f"matrix({scale_x:.12g} 0 0 {scale_y:.12g} 0 0)")
-        return
-    for name, axis in _GEOMETRY_SCALE_ATTRS.items():
-        value = element.get(name)
-        if value is not None:
-            element.set(name, _scaled_numbers(value, scale_x if axis == "x" else scale_y))
     points = element.get("points")
     if points is not None:
         values = [float(value) for value in _NUMBER_RE.findall(points)]
@@ -258,7 +275,7 @@ def assemble_template_svg(
     logo_target = _asset_copy(root, output.parent.parent)
     logo_href = Path("..").joinpath("images", logo_target.name).as_posix()
     elements = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" viewBox="0 0 {CANVAS_WIDTH} {CANVAS_HEIGHT}" data-template-assembly="cec-lightweight">'
+        f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" viewBox="0 0 {CANVAS_WIDTH} {CANVAS_HEIGHT}" data-template-assembly="cec-lightweight" data-pptx-master="cec-content" data-pptx-master-name="CEC Content Master" data-pptx-layout="cec-content" data-pptx-layout-name="CEC Content">'
     ]
     elements.extend(_render_chrome(rules=rules, logo_href=logo_href, title=title, subtitle=subtitle, page_number=page_number))
     if mode == "image":
@@ -268,7 +285,7 @@ def assemble_template_svg(
         image_target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(body_image, image_target)
         image_href = Path("..").joinpath("images", image_target.name).as_posix()
-        insert_at = 1 + 4 + (1 if subtitle.strip() else 0)
+        insert_at = len(elements)
         elements.insert(
             insert_at,
             f'<image x="{body_x:g}" y="{body_y:g}" width="{body_width:g}" height="{body_height:g}" href={quoteattr(image_href)} preserveAspectRatio="none"/>',
@@ -285,7 +302,7 @@ def assemble_template_svg(
             *copied,
             "</g>",
         ]
-        insert_at = 1 + 4 + (1 if subtitle.strip() else 0)
+        insert_at = len(elements)
         elements[insert_at:insert_at] = body_group
     elements.append("</svg>\n")
     output.write_text("\n".join(elements), encoding="utf-8", newline="\n")
@@ -320,23 +337,36 @@ def assemble_brand_page_svg(
         return target.name
 
     def template_chrome() -> str:
-        rules = loaded["rules"]
-        master = rules.get("master_elements") or {}
-        top = master.get("top_divider") or {}
-        footer = master.get("footer_bar") or {}
-        logo = master.get("logo") or {}
-        org = master.get("footer_company_text") or {}
-        number = master.get("footer_page_num") or {}
-        logo_href = copy_asset("logo.png")
-        return "\n".join(
-            [
-                f'<rect x="0" y="{top.get("y", 84)}" width="{CANVAS_WIDTH}" height="{top.get("height", 3)}" fill={quoteattr(str(top.get("fill", "#8B0000")))}/>',
-                f'<image x="{logo.get("x", 1050)}" y="{logo.get("y", 13)}" width="{logo.get("width", 210)}" height="{logo.get("height", 70)}" href={quoteattr(logo_href)} preserveAspectRatio="xMidYMid meet"/>',
-                f'<rect x="0" y="{footer.get("y", 698)}" width="{CANVAS_WIDTH}" height="{footer.get("height", 22)}" fill={quoteattr(str(footer.get("fill", "#123B66")))}/>',
-                f'<text x="{org.get("x", 58)}" y="{org.get("y", 709)}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="{org.get("font_size", 9)}" fill={quoteattr(str(org.get("fill", "#FFFFFF")))}>{xml_escape(str(org.get("text", "中国电力企业联合会")))}</text>',
-                f'<text x="{number.get("x", 1240)}" y="{number.get("y", 709)}" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="{number.get("font_size", 9)}" fill={quoteattr(str(number.get("fill", "#FFFFFF")))}>{int(page_number or 0)}</text>',
-            ]
-        )
+        return "\n".join(_render_chrome(
+            rules=loaded["rules"], logo_href=copy_asset("logo.png"),
+            title="", subtitle="", page_number=int(page_number or 0),
+        )[1:6])
+
+    def write_brand_svg(markup: str) -> None:
+        # Separate master families keep cover/navigation art independent from
+        # content-page chrome, while all variants use the structured exporter.
+        root = ET.fromstring(markup)
+        for key, value in {
+            "data-pptx-master": f"cec-{role}",
+            "data-pptx-master-name": f"CEC {role.title()} Master",
+            "data-pptx-layout": f"cec-{role}",
+            "data-pptx-layout-name": f"CEC {role.title()}",
+        }.items():
+            root.set(key, value)
+        for index, child in enumerate(root):
+            if (_local_tag(child) in {"rect", "image"}
+                    and child.get("x", "0") == "0" and child.get("y", "0") == "0"
+                    and child.get("width") == str(CANVAS_WIDTH)
+                    and child.get("height") == str(CANVAS_HEIGHT)):
+                child.set("id", child.get("id") or f"brandBackground{index}")
+                child.set("data-pptx-layer", "master")
+        definitions = [child for child in root if _local_tag(child) == "defs"]
+        master = [child for child in root if child.get("data-pptx-layer") == "master"]
+        content = [child for child in root if child not in definitions and child not in master]
+        root[:] = definitions + master + content
+        ET.register_namespace("", "http://www.w3.org/2000/svg")
+        ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
+        output.write_text(ET.tostring(root, encoding="unicode") + "\n", encoding="utf-8")
 
     if role == "cover":
         copy_asset("cover_bg.jpg")
@@ -344,7 +374,7 @@ def assemble_brand_page_svg(
         template = template.replace("{{TITLE}}", xml_escape(lines[0] if lines else ""))
         template = template.replace("{{AUTHOR}}", xml_escape(lines[1] if len(lines) > 1 else ""))
         template = template.replace("{{DATE}}", xml_escape(lines[2] if len(lines) > 2 else ""))
-        output.write_text(template, encoding="utf-8", newline="\n")
+        write_brand_svg(template)
         return output
 
     if role in {"contents", "chapter"}:
@@ -377,7 +407,7 @@ def assemble_brand_page_svg(
             template = template.replace("{{SECTION_TITLE}}", xml_escape(section_title))
             template = template.replace("{{SECTION_SUBTITLE}}", xml_escape(subtitle))
         template = template.replace("</svg>", f"{template_chrome()}\n</svg>")
-        output.write_text(template, encoding="utf-8", newline="\n")
+        write_brand_svg(template)
         return output
 
     # The ending page can carry a project-specific decision request, so its
@@ -399,7 +429,7 @@ def assemble_brand_page_svg(
         ]
     )
     elements.append("</svg>\n")
-    output.write_text("\n".join(elements), encoding="utf-8", newline="\n")
+    write_brand_svg("\n".join(elements))
     return output
 
 
@@ -413,7 +443,9 @@ def assemble_template_pptx(svg_files: list[Path], output: Path, *, notes: dict[s
         verbose=False,
         use_compat_mode=False,
         use_native_shapes=True,
-        pptx_structure="flat",
+        pptx_structure="structured",
+        # Defaults for new inherited text; authored page metrics stay explicit.
+        master_text_style_spec=MasterTextStyleSpec(title_hpt=2400, body_hpt=1350),
         text_flow="split",
         notes=notes,
         enable_notes=notes is not None,

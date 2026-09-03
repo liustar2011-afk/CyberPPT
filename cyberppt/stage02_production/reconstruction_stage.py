@@ -6,7 +6,6 @@ from typing import Any
 
 from cyberppt.reconstruction_visual_authority import validate_reconstruction_visual_authority
 from scripts.imagegen_pipeline.deliverable_prompt import parse_pages
-from scripts.image_to_pptx_runtime.clean_base_generator import prepare_clean_bases
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
 
 from .dependencies import Stage02Dependencies
@@ -63,13 +62,9 @@ def run_reconstruction_stage(
         # The accepted full image is the only visual authority entering editable
         # reconstruction. Verify it before any text-only clean-base derivation.
         validate_reconstruction_visual_authority(manifest, require_clean_base=False)
-        clean_base_generation = prepare_clean_bases(
-            manifest,
-            output_dir=context.build_dir / "authoring" / "assets",
-        )
-        # A clean base may remove only native-text pixels; it must remain bound
-        # to the exact same audited full-image SHA that Stage 02 froze.
-        validate_reconstruction_visual_authority(manifest, require_clean_base=True)
+        # The main agent prepares reference-edited layers in this build and
+        # registers them with register-quick-page. Never run the legacy masked
+        # cleaner here. Per-page validation below preserves partial progress.
         write_json(manifest_result.manifest_path, manifest)
 
     current_context = read_json(manifest_result.build_context_path)
@@ -88,6 +83,7 @@ def run_reconstruction_stage(
         pages_raw=context.pages_raw,
         assembly_mode=context.assembly_mode,
     )
+    manifest.update(read_json(manifest_result.manifest_path))
     production_readiness = build["delivery_readiness"]
     tool_consumption = production_readiness["tool_consumption"]
     return ReconstructionStageResult(

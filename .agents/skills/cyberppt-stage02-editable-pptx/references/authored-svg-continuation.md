@@ -13,8 +13,8 @@ Use this reference only for the `editable` and `both` assembly branches after au
 
 For each selected pair:
 
-1. Inspect the normalized full image, locked visible text, visual design decision, clean-base requirements and registered local assets.
-2. Write `<output-dir>/authoring/page_NNN.svg` on the full-image canvas. Preserve the exact `width`, `height` and `viewBox`; the current production canvas is normally `2048 × 1024`.
+1. Inspect the normalized full image and locked visible text. Use native reference-image editing to remove readable text while retaining graphic identity, geometry, colors and composition. Save the same-canvas base inside `<output-dir>/authoring/`. Extract exact source crops for photos or identity graphics when needed; inspect every derived image. Do not call the legacy automatic cleaner or read assets from an external project.
+2. Write `<output-dir>/authoring/page_NNN.svg` on the full-image canvas. Preserve the exact `width`, `height` and `viewBox`; the current production canvas is normally `2048 × 1024`. Set root `data-cyberppt-native-text-style="locked"` and use relative local image references within this build.
 3. Reconstruct the complete page with native SVG geometry, text and verified local image layers. Include each locked text item exactly once. Preserve explicit coordinates, font size, weight, color, wrapping and z-order.
 4. Keep the audited full image out of the authored SVG. Local cropped or registered assets may be referenced when their identity and page role are verified.
 5. Inspect the SVG as a rendered page before registration. Cross-region `<tspan>` jumps, missing locked text, residual Chinese from the base, empty containers and unreadable text require page-local repair.
@@ -23,17 +23,25 @@ For each selected pair:
 
 Update only the current pair:
 
-- Set `authoring_svg` to the absolute SVG path.
 - Complete `graphic_text_policy` with schema `cyberppt.image_to_pptx.graphic_text_policy.v1`, the page number, `status: complete`, `empty_container_check: passed`, coordinate binding to the audited full image, and one classified item for every readable graphic-text region.
 - Use `native_text` for ordinary readable text and include a unique id, exact text, `source_visible: true`, a bounded full-canvas bbox and its authored line layout.
 - Use `preserved_in_image` and `decorative_glyph` only under the main Skill's evidence and visual-review rules.
-- Keep `clean_base` unchanged when it is still `required`. The official rerun generates or validates the clean base from the completed policy and authored SVG; do not fabricate a completion receipt.
+- After actual layer and SVG inspection, register the page with the command below. Supply the SHA-256 of the exact source inspected. The command validates the authored inputs and records their current hashes; the four passed decisions must come from visual inspection. It records `authoring_svg` and `clean_base` in the current pair. Do not fabricate a completion receipt.
+
+```bash
+.venv/bin/python3 -m cyberppt register-quick-page <output-dir>/page_image_pairs.json \
+  --page 1 --svg <output-dir>/authoring/page_001.svg \
+  --clean-base <output-dir>/authoring/assets/page_001_clean_base.png \
+  --source-sha256 <inspected-full-image-sha256> --reviewer codex-main \
+  --source-layout passed --graphic-identity passed \
+  --text-removed passed --background-continuity passed
+```
 
 Do not create a separate manifest, call the adapter directly, or replace the current final script.
 
 ## Resume and review
 
-Rerun the original `.venv/bin/python3 -m cyberppt final-script-pages ...` command with the same build ID, output directory, `--generate-images`, `--production-build`, production mode and assembly mode. The orchestrator preserves valid authored SVG and policy fields, prepares the clean base, and continues page-local Quick QA.
+Rerun the original `.venv/bin/python3 -m cyberppt final-script-pages ...` command with the same build ID, output directory, `--generate-images`, `--production-build`, production mode and assembly mode. The orchestrator preserves valid authored SVG and policy fields, validates registered layers, and continues page-local Quick QA. It does not generate a clean base. A changed base, source crop, SVG or policy requires inspection and registration again.
 
 For every rendered preview:
 

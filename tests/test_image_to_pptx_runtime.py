@@ -86,7 +86,7 @@ def test_stage02_adapter_requires_audited_hand_authored_svg(tmp_path: Path) -> N
     try:
         run_stage02_reconstruction(project=tmp_path, manifest_path=manifest, output_dir=tmp_path / "out", requested_pages=[1])
     except ValueError as exc:
-        assert "final-script-pages orchestration evidence" in str(exc)
+        assert "STAGE02_OFFICIAL_ENTRY_REQUIRED" in str(exc)
     else:
         raise AssertionError("production adapter must reject direct invocation")
 
@@ -407,6 +407,8 @@ def test_clean_base_policy_recomputes_outside_mask_diff_for_reference_edit(tmp_p
 
 
 def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path, monkeypatch) -> None:
+    # Adapter unit test; the actual invocation gate is covered through the CLI integration.
+    monkeypatch.setattr("cyberppt.stage02_production.state.require_production_invocation", lambda **_: None)
     _stub_quick_preview_renderer(monkeypatch)
     source = tmp_path / "source.png"
     source_image = Image.new("RGB", (400, 200), "white")
@@ -572,6 +574,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
 
 
 def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr("cyberppt.stage02_production.state.require_production_invocation", lambda **_: None)
     _stub_quick_preview_renderer(monkeypatch)
     source = tmp_path / "source.png"
     source_image = Image.new("RGB", (400, 200), "white")
@@ -785,10 +788,12 @@ def test_quick_split_text_flow_keeps_visual_tspan_rows_editable(tmp_path: Path) 
 
 
 def test_pptx_builder_uses_short_work_dir_for_windows_deep_output(tmp_path: Path, monkeypatch) -> None:
+    from types import SimpleNamespace
     from scripts.image_to_pptx_runtime.svg_to_pptx.pptx_package import builder
 
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(builder.os, "name", "nt")
+    # Patch only the builder's view, keeping pathlib and pytest on the host OS.
+    monkeypatch.setattr(builder, "os", SimpleNamespace(name="nt", getpid=builder.os.getpid))
     output = tmp_path / ("deep-" + "x" * 260) / "editable.pptx"
 
     work_dir = builder._create_writable_work_dir(output)

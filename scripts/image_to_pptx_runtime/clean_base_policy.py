@@ -347,6 +347,14 @@ def is_reusable_clean_base(
 ) -> bool:
     """Allow reuse only after current-pixel and binding checks pass."""
 
+    from .authored_layers import SCHEMA as AUTHORED_SCHEMA, validate_authored_layers
+    if isinstance(clean_base, Mapping) and clean_base.get("schema") == AUTHORED_SCHEMA:
+        return validate_authored_layers(
+            clean_base, full_image=full_image,
+            authored_svg=str(clean_base.get("authoring_svg") or ""),
+            graphic_text_policy=graphic_text_policy, page_number=0,
+        )["valid"]
+
     if not isinstance(clean_base, Mapping):
         return False
     base_path = Path(str(clean_base.get("path") or "")).expanduser().resolve()
@@ -420,6 +428,13 @@ def validate_clean_base(
     image_hrefs: list[str] | None = None,
 ) -> dict[str, Any]:
     """Require a distinct text-free base and native reconstruction of its text."""
+
+    from .authored_layers import SCHEMA as AUTHORED_SCHEMA, validate_authored_layers
+    if isinstance(clean_base, Mapping) and clean_base.get("schema") == AUTHORED_SCHEMA:
+        return validate_authored_layers(
+            clean_base, full_image=full_image, authored_svg=authored_svg,
+            graphic_text_policy=graphic_text_policy, page_number=page_number,
+        )
 
     full_path = Path(full_image).expanduser().resolve()
     svg_path = Path(authored_svg).expanduser().resolve()

@@ -489,6 +489,10 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             allow_script_edit=args.allow_script_edit,
             allow_prompt_edit=args.allow_prompt_edit,
             prompt_overrides_dir=Path(args.prompt_overrides_dir) if args.prompt_overrides_dir else None,
+            reuse_audited_images_from=(
+                Path(args.reuse_audited_images_from)
+                if args.reuse_audited_images_from else None
+            ),
             blueprint_only=args.blueprint_only,
             no_style_reference=args.no_style_reference,
             skip_image_text_audit=args.skip_image_text_audit,
@@ -497,6 +501,22 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _register_quick_page_command(args: argparse.Namespace) -> int:
+    from scripts.image_to_pptx_runtime.authored_layers import REVIEW_CHECKS, register_quick_page
+    try:
+        result = register_quick_page(
+            Path(args.manifest), page_number=args.page, authored_svg=Path(args.svg),
+            clean_base=Path(args.clean_base), source_sha256=args.source_sha256,
+            reviewer=args.reviewer, checks={name: getattr(args, name) for name in REVIEW_CHECKS},
+            notes=args.notes,
+        )
+    except (OSError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -871,6 +891,20 @@ def build_parser() -> argparse.ArgumentParser:
     image_to_editable_svg_parser.add_argument("reconstruction_args", nargs=argparse.REMAINDER)
     image_to_editable_svg_parser.set_defaults(func=_image_to_editable_svg_command)
 
+    quick_register_parser = subparsers.add_parser(
+        "register-quick-page", help="Register reviewed local SVG and reference-edited layers in an active production build.",
+    )
+    quick_register_parser.add_argument("manifest")
+    quick_register_parser.add_argument("--page", type=int, required=True)
+    quick_register_parser.add_argument("--svg", required=True)
+    quick_register_parser.add_argument("--clean-base", required=True)
+    quick_register_parser.add_argument("--source-sha256", required=True)
+    quick_register_parser.add_argument("--reviewer", required=True)
+    quick_register_parser.add_argument("--notes", default="")
+    for check in ("source-layout", "graphic-identity", "text-removed", "background-continuity"):
+        quick_register_parser.add_argument(f"--{check}", choices=("passed", "failed"), required=True)
+    quick_register_parser.set_defaults(func=_register_quick_page_command)
+
     quick_review_parser = subparsers.add_parser(
         "review-quick-page",
         help="Record a human visual review bound to an exact Stage 02 Quick preview PNG.",
@@ -947,6 +981,13 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument("--style-id", type=int, help=argparse.SUPPRESS)
     final_script_pages_parser.add_argument("--style-name", help=argparse.SUPPRESS)
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
+    final_script_pages_parser.add_argument(
+        "--reuse-audited-images-from",
+        help=(
+            "Import same-script, text-audited full images from an official Stage 02 "
+            "manifest for editable or dual Quick reconstruction; images are not regenerated."
+        ),
+    )
     final_script_pages_parser.add_argument(
         "--build-id",
         help="Stable build identifier used for resumable, versioned Stage 02 outputs.",
