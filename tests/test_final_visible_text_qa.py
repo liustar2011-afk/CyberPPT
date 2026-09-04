@@ -109,3 +109,22 @@ def test_delivery_final_visible_text_qa_rejects_a_passed_renderer_receipt_withou
                 }
             },
         )
+
+
+def test_delivery_final_visible_text_qa_skips_unowned_text_gate_for_picture_ppt(tmp_path: Path) -> None:
+    context = SimpleNamespace(build_dir=tmp_path, canonical_script=tmp_path / "script.md")
+    manifest_result = SimpleNamespace(page_numbers=(1,), manifest={"pairs": []})
+
+    result = _run_final_visible_text_qa(
+        context=context,
+        manifest_result=manifest_result,
+        reports={
+            "image": {
+                "schema": "cyberppt.officecli_render_qa.v1",
+                "passed": True,
+                "report_path": str(tmp_path / "officecli.json"),
+            }
+        },
+    )
+
+    assert result == {}

@@ -175,10 +175,18 @@ def _run_final_visible_text_qa(
     manifest_result: ManifestStageResult,
     reports: dict[str, dict[str, Any]],
 ) -> dict[str, Path]:
-    """Run the final rendered-image hard gate for every real delivery render."""
+    """Run the residual-text ownership gate for editable delivery renders.
+
+    Picture-PPT pages keep the generated-image typo/gibberish audit as their
+    text gate.  They intentionally permit source-grounded rewritten copy, so
+    treating every rewritten Chinese run as unowned text would exceed that
+    branch's review scope.
+    """
 
     output: dict[str, Path] = {}
     for mode, report in reports.items():
+        if mode == "image":
+            continue
         rendered = report.get("rendered_pages")
         if "rendered_pages" not in report:
             # Historical unit-test doubles do not model the renderer payload.
