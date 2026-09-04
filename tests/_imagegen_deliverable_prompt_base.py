@@ -23,6 +23,7 @@ from scripts.imagegen_pipeline.style_library import (
     resolve_default_style,
     write_project_style_lock,
 )
+from cyberppt.script_quality.parsing import parse_script_markdown
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -201,6 +202,26 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertEqual(sorted(pages), [2, 3])
         self.assertEqual("核心结论", pages[2].title)
         self.assertEqual("环境变化", pages[3].title)
+
+    def test_parse_supports_unnumbered_single_page_markdown(self) -> None:
+        manuscript = (
+            "# 标题\n\n"
+            "电力领域数据基础设施总体架构\n\n"
+            "# 内容\n\n"
+            "平台总体架构自下而上分为五层。\n"
+        )
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "script.md"
+            script.write_text(manuscript, encoding="utf-8")
+            pages = parse_page_blocks(script)
+
+        parsed = parse_script_markdown(manuscript)
+        self.assertEqual([1], sorted(pages))
+        self.assertEqual("电力领域数据基础设施总体架构", pages[1].title)
+        self.assertEqual("平台总体架构自下而上分为五层。", pages[1].text)
+        self.assertEqual(1, len(parsed.pages))
+        self.assertEqual("电力领域数据基础设施总体架构", parsed.pages[0].title)
+        self.assertEqual("平台总体架构自下而上分为五层。", parsed.pages[0].onscreen_text)
 
     def test_compile_removes_evidence_caveats_and_placeholder_language(self) -> None:
         with TemporaryDirectory() as directory:

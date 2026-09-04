@@ -269,6 +269,7 @@ def _relationship_aware_canonical_prompts(
     # The final compiler owns content, Stage 02 semantics, and the selected
     # style together.  Nothing is appended after approval.
     canonical: dict[int, str] = {}
+    source_blocks = parse_page_blocks(script)
     prior_decisions: list[Any] = []
     prior_semantic_carriers: list[str] = []
     for page_number in page_numbers:
@@ -278,6 +279,18 @@ def _relationship_aware_canonical_prompts(
         input_page = input_pages.get(page_number) or {}
         page_mission = str(input_page.get("page_mission") or missions.get(page.page_id, ""))
         visual_context = dict(contexts.get(page.page_id) or {})
+        if not page.onscreen_text.strip():
+            # Bare Markdown manuscripts may not use Stage 01 field labels.
+            # Preserve their body as the source text for the normal compiler.
+            from dataclasses import replace
+
+            source_block = source_blocks.get(page_number)
+            if source_block is not None:
+                page = replace(
+                    page,
+                    onscreen_text=source_block.text.strip(),
+                    raw_onscreen_text=source_block.text.strip(),
+                )
         if prompt_compiler == DEFAULT_PROMPT_COMPILER:
             # Stage 01 visual notes are not part of the new production route.
             # Blank only this transient page view; the locked source script is
@@ -291,6 +304,7 @@ def _relationship_aware_canonical_prompts(
             page_mission=page_mission,
             visual_context=visual_context,
             visual_intent_override=overrides.get(page.page_id),
+            prompt_compiler=prompt_compiler,
             prior_decisions=tuple(prior_decisions),
             prior_semantic_carriers=tuple(prior_semantic_carriers),
             visual_structure_mode="off",

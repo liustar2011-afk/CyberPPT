@@ -1,4 +1,4 @@
-"""Lock the known Stage 02 production entry points to content-first-v1.
+"""Lock the known Stage 02 production compiler routing.
 
 The production paths use the content-first compiler so Stage 02 can consume the
 locked final script and selected Style 09 lock without a visual-structure
@@ -67,10 +67,21 @@ class ProductionEntrypointCompilerTests(unittest.TestCase):
                 self.assertEqual(DEFAULT_PROMPT_COMPILER, ast.literal_eval(default_node))
         self.assertTrue(found, "--prompt-compiler argument not found in handoff/cli.py")
 
-    def test_stage02_manifest_stage_uses_content_first_without_visual_structure(self) -> None:
+    def test_stage02_manifest_uses_content_first_for_external_scripts(self) -> None:
         source = (REPO_ROOT / "cyberppt/stage02_production/manifest_stage.py").read_text(encoding="utf-8")
-        value = _call_kwarg_value(source, "build_manifest", "prompt_compiler")
-        self.assertEqual(DEFAULT_PROMPT_COMPILER, value)
+        tree = ast.parse(source)
+        value = None
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            name = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", None)
+            if name != "build_manifest":
+                continue
+            value = next((keyword.value for keyword in node.keywords if keyword.arg == "prompt_compiler"), None)
+            if value is not None:
+                break
+        self.assertIsInstance(value, ast.Constant)
+        self.assertEqual(DEFAULT_PROMPT_COMPILER, value.value)
 
 
 if __name__ == "__main__":

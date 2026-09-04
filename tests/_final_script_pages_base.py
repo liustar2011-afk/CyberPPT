@@ -825,21 +825,29 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             context = json.loads(Path(summary["artifacts"]["build_context"]).read_text(encoding="utf-8"))
+            prompt = manifest["pairs"][0]["full"]["prompt"]
 
-        self.assertEqual("script_file", summary["source_mode"])
+        self.assertEqual("external_script", summary["source_mode"])
         self.assertFalse(summary["project_created"])
-        self.assertEqual("script_file", context["source_mode"])
+        self.assertEqual("external_script", context["source_mode"])
         self.assertFalse(context["project_created"])
         self.assertEqual("stage2-only", Path(summary["project"]).name)
         self.assertEqual(
             summary["source_script"],
             str((project / INPUT_SCRIPT_PATH).resolve()),
         )
-        self.assertEqual("script_file", manifest["source_mode"])
+        self.assertEqual("external_script", manifest["source_mode"])
         self.assertEqual(summary["source_script_sha256"], manifest["source_script_sha256"])
         self.assertFalse(manifest["prompt_contract"]["approved_prompt_is_source"])
+        self.assertEqual("content-first-v1", manifest["prompt_contract"]["compiler"])
+        self.assertIn("本页结论：外部脚本可以直接进入 Stage 02。", prompt)
+        self.assertIn("组件A：输入与输出关系", prompt)
+        self.assertNotIn("原文" + "锁定规则", prompt)
+        self.assertNotIn("逐字、完整并保持" + "原有顺序呈现", prompt)
+        self.assertIn("页面任务", prompt)
+        self.assertIn("页面逻辑", prompt)
         self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
-        self.assertNotIn("--external-script", summary["resume_command"])
+        self.assertIn("--external-script", summary["resume_command"])
 
     def test_uses_configured_default_style_without_explicit_style_lock(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

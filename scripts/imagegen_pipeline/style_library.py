@@ -12,16 +12,16 @@ from typing import Any
 
 STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
 VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
-VISUAL_SYSTEM_PATH = Path(__file__).resolve().parents[2] / "references" / "visual-system.md"
-# Style 09 is intentionally read live from the human-editable visual-system
-# file so a manual style update is immediately usable by prompt assembly.
-LIVE_CONTRACT_STYLE_IDS = frozenset({9})
-REFERENCE_IMAGE_STYLE_IDS = frozenset({9})
-# Style 10 previously existed as a separate experimental extension. Keep its
-# numeric entry point as a compatibility alias only; it must resolve to the
-# canonical Style 09 registry snapshot so there is still one executable visual
-# authority and one reference image.
-LEGACY_STYLE_ID_ALIASES = {10: 9}
+VISUAL_SYSTEM_PATHS = {
+    9: Path(__file__).resolve().parents[2] / "references" / "visual-system.md",
+    10: Path(__file__).resolve().parents[2] / "references" / "visual-system-10.md",
+}
+# Styles 09 and 10 are intentionally read live from their respective
+# human-editable visual-system files so a manual style update is immediately
+# usable by prompt assembly.
+LIVE_CONTRACT_STYLE_IDS = frozenset(VISUAL_SYSTEM_PATHS)
+REFERENCE_IMAGE_STYLE_IDS = frozenset({9, 10})
+LEGACY_STYLE_ID_ALIASES: dict[int, int] = {}
 LEGACY_STYLE_NAME_ALIASES = {
     "light_tech_business_dense": 9,
     "ivory_deep_blue_semantic_scene": 9,
@@ -61,16 +61,18 @@ def _resolved_style(
     style: dict[str, Any],
     source_path: Path = STYLE_LIBRARY_PATH,
 ) -> dict[str, Any]:
-    """Return one style, using the editable Style 09 source when available."""
+    """Return one style, using its editable visual-system source when available."""
 
     resolved = dict(style)
     prompt_contract = str(resolved.get("prompt_contract") or "")
-    if int(resolved.get("id") or 0) == 9 and VISUAL_SYSTEM_PATH.is_file():
-        live_contract = VISUAL_SYSTEM_PATH.read_text(encoding="utf-8-sig").strip()
+    style_id = int(resolved.get("id") or 0)
+    visual_system_path = VISUAL_SYSTEM_PATHS.get(style_id)
+    if visual_system_path and visual_system_path.is_file():
+        live_contract = visual_system_path.read_text(encoding="utf-8-sig").strip()
         if live_contract:
             prompt_contract = live_contract
             resolved["prompt_contract"] = live_contract
-            resolved["prompt_contract_source"] = str(VISUAL_SYSTEM_PATH)
+            resolved["prompt_contract_source"] = str(visual_system_path)
     if prompt_contract:
         resolved.setdefault("prompt_contract_source", str(source_path))
         resolved["prompt_contract_sha256"] = sha256(
@@ -157,8 +159,7 @@ def write_project_style_lock(
     path: Path = STYLE_LIBRARY_PATH,
 ) -> Path:
     # Resolve the executable registry exactly once when the lock is created.
-    # Production consumers then use the stored snapshot verbatim. Legacy Style
-    # 10 callers are mapped to Style 09 before this snapshot is written.
+    # Production consumers then use the stored snapshot verbatim.
     style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
     legacy_alias = bool(
         style.get("legacy_alias_from_style_id") is not None
@@ -187,7 +188,9 @@ def write_project_style_lock(
             "do_not_substitute_external_preset": True,
             "samples_are_required_for_user_confirmation": False,
             "resolved_contract_is_immutable": False,
-            "executable_style_authority": "references/visual-system.md",
+            "executable_style_authority": str(
+                style.get("prompt_contract_source") or STYLE_LIBRARY_PATH
+            ),
             "legacy_alias_resolves_to_canonical_snapshot": legacy_alias,
         },
     }
@@ -259,16 +262,19 @@ def _load_live_extension_contract(style_id: int) -> str:
         raise ValueError(
             f"live extension contract is not defined for style {style_id}: {style_id}"
         )
-    if not VISUAL_SYSTEM_PATH.is_file():
+    visual_system_path = VISUAL_SYSTEM_PATHS[style_id]
+    if not visual_system_path.is_file():
         raise FileNotFoundError(
-            f"Style {style_id:02d} source file is missing: {VISUAL_SYSTEM_PATH}"
+            f"Style {style_id:02d} source file is missing: {visual_system_path}"
         )
-    text = VISUAL_SYSTEM_PATH.read_text(encoding="utf-8-sig")
+    text = visual_system_path.read_text(encoding="utf-8-sig")
     marker = f"## 扩展风格{style_id}："
     start = text.find(marker)
     if start < 0:
+        if style_id == 10:
+            return text.strip()
         raise ValueError(
-            f"Style {style_id:02d} section is missing from documentation: {VISUAL_SYSTEM_PATH}"
+            f"Style {style_id:02d} section is missing from documentation: {visual_system_path}"
         )
     tail_start = start + len(marker)
     next_heading = re.search(r"(?m)^[ \t]{0,3}##[ \t]+", text[tail_start:])
@@ -286,7 +292,7 @@ def _apply_live_extension_contract(style: dict[str, Any]) -> None:
 
     contract = _load_live_extension_contract(int(style["id"]))
     style["prompt_contract"] = contract
-    style["prompt_contract_source"] = str(VISUAL_SYSTEM_PATH)
+    style["prompt_contract_source"] = str(VISUAL_SYSTEM_PATHS[int(style["id"])])
     style["prompt_contract_sha256"] = sha256(
         contract.encode("utf-8")
     ).hexdigest().upper()
@@ -344,13 +350,13 @@ def _migrate_legacy_live_lock(path: Path, payload: dict[str, Any]) -> dict[str, 
 
 
 def load_style_lock(path: Path) -> dict[str, Any]:
-    """Load a style lock and refresh Style 09 from the editable source file."""
+    """Load a style lock and refresh its editable extension contract."""
 
     payload = _read_json(path)
     style = payload.get("style")
     if not isinstance(style, dict) or int(style.get("id") or 0) not in LIVE_CONTRACT_STYLE_IDS:
         return payload
-    current = resolve_default_style(style_id=9)
+    current = resolve_default_style(style_id=int(style["id"]))
     if style == current:
         return payload
     refreshed = dict(payload)

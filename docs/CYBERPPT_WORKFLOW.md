@@ -224,7 +224,7 @@ Stage 02 制作、重制、模板/母版修复及重新组装均通过同一个 
 
 使用已确认的项目内或外部脚本，Stage 02 直接接收 `--script <path>` 指向的最终脚本文件，并在自身工作区建立输入快照。Stage 02 不读取 Stage 01 的 Foundation、Deck Plan、Source Truth、Outline 或流程状态。
 
-Stage 02 不区分项目内脚本、外部脚本或人工脚本。所有输入均按普通 `script_file` 处理，并复制到 Stage 02 自有路径 `workbench/inputs/final-script.md` 作为运行快照；原始文件路径仅用于来源记录和变更检测，不改变运行分支。原始文件暂时不可用时，仅在 Stage 02 已有快照及其字节哈希仍有效时允许续跑。
+Stage 02 将所有输入复制到自有路径 `workbench/inputs/final-script.md` 作为运行快照。显式使用 `--external-script` 时，输入标记为 `external_script`，以保留外部来源身份、变更检测和续跑绑定；其可见表达使用与项目内脚本相同的 content-first 合同，可在事实边界内重组、提炼和改写。原始文件暂时不可用时，仅在 Stage 02 已有快照及其字节哈希仍有效时允许续跑。
 
 ### 2. Stage 02 script input
 

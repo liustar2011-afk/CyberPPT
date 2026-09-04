@@ -23,6 +23,7 @@ def input_identity_payload(context: Stage02BuildContext, options: Stage02RunOpti
         "script_input_sha256": context.script_input_sha256,
         "visual_spec_sha256": context.visual_spec_sha256,
         "style_lock_sha256": context.style_lock_sha256,
+        "source_mode": context.source_mode,
         "pages": list(context.selected_pages),
         "production_mode": context.production_mode,
         "assembly_mode": context.assembly_mode,

@@ -169,6 +169,28 @@
       "background_image_rule": "Optional for Style 9: a light, low-contrast, localized background image or industry-scene crop may add material depth. Generally keep it within about one-quarter of the content area. Never a half-page scenic panel, never a left/right or top/bottom 50/50 text-vs-image split, and never a background photo + foreground text-block layout.",
       "content_visual_rule": "先保证上屏文字参考得到舒展、清晰的表达，再区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色。",
       "density_rule": "保持政企领导汇报所需的信息密度；当已批准页面语义明显比上屏摘要包含更多数字、限定条件、授权边界或运行事实时，升级为高密度编辑型媒介，将已批准事实组织为主文、旁注、事实条或边界注释。不得用四条摘要、单一大色块或大面积空白代替信息，也不得退化为卡片墙。"
+    },
+    {
+      "id": 10,
+      "slug": "ivory_deep_blue_scene_copy",
+      "name": "纯白 + 深蓝领导汇报（风格09复制版）",
+      "extension_only": true,
+      "colors": {
+        "background": "#F7F6F0",
+        "title": "#101820",
+        "body": "#303030",
+        "secondary": "#6F7275",
+        "divider": "#C9CDD1",
+        "accent": "#12355B"
+      },
+      "scenario": "政企领导汇报、演讲辅助；flat editorial / integrated composition",
+      "sample": "assets/palette-samples/palette-09.png",
+      "imagegen_signature": [],
+      "prompt_contract": "See references/visual-system-10.md.",
+      "scope_rule": "本风格只约束色彩、材质、字体、线条、留白、视觉节奏和高级编辑式气质，不预设页面必须使用场景、插画、照片、图标、三维物件或任何固定媒介。",
+      "background_image_rule": "Optional for Style 10: a light, low-contrast, localized background image or industry-scene crop may add material depth. Generally keep it within about one-quarter of the content area. Never a half-page scenic panel, never a left/right or top/bottom 50/50 text-vs-image split, and never a background photo + foreground text-block layout.",
+      "content_visual_rule": "先保证上屏文字参考得到舒展、清晰的表达，再区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色。",
+      "density_rule": "保持政企领导汇报所需的信息密度；当已批准页面语义明显比上屏摘要包含更多数字、限定条件、授权边界或运行事实时，升级为高密度编辑型媒介，将已批准事实组织为主文、旁注、事实条或边界注释。不得用四条摘要、单一大色块或大面积空白代替信息，也不得退化为卡片墙。"
     }
   ]
 }

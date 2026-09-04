@@ -30,6 +30,7 @@ from scripts.imagegen_pipeline.visual_grammar import (
     default_visual_grammar,
 )
 from cyberppt.script_quality_contract import strip_authoring_group_marker
+from cyberppt.script_quality.parsing import unnumbered_markdown_page
 
 
 PAGE_HEADING_RE = re.compile(
@@ -76,6 +77,12 @@ def _collapse_text(value: Any) -> str:
 def parse_page_blocks(script_path: Path) -> dict[int, PageBlock]:
     text = script_path.read_text(encoding="utf-8")
     matches = list(PAGE_HEADING_RE.finditer(text))
+    if not matches:
+        plain_page = unnumbered_markdown_page(text)
+        if plain_page is None:
+            return {}
+        title, body = plain_page
+        return {1: PageBlock(page_number=1, title=title, text=body)}
     pages: dict[int, PageBlock] = {}
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)

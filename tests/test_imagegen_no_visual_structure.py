@@ -66,12 +66,18 @@ class StructureStyleDecouplingTests(_base.StructureStyleDecouplingTests):
                 visual_source_sha256="b" * 64,
             )
 
-        # Style10 is now a compatibility alias, so both calls must project the
-        # same canonical Style09 art direction as well as the same structure.
-        self.assertEqual(spec9.art_direction, spec10.art_direction)
-        self.assertEqual(9, spec9.art_direction.style_id)
-        self.assertEqual(9, spec10.art_direction.style_id)
-
+        # Style10 is independently selectable while retaining Style09's
+        # source-derived visual grammar.
+        self.assertEqual(spec9.art_direction.style_id, 9)
+        self.assertEqual(spec10.art_direction.style_id, 10)
+        self.assertIn(
+            "Palette: ivory #F7F6F0, deep blue #12355B",
+            spec10.art_direction.contract,
+        )
+        self.assertNotIn(
+            "Keep all locked Chinese text complete.",
+            spec10.art_direction.contract,
+        )
         self.assertEqual(spec9.deliverable, spec10.deliverable)
         self.assertEqual(spec9.communication_goal, spec10.communication_goal)
         self.assertEqual(spec9.visual_thesis, spec10.visual_thesis)

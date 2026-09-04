@@ -66,6 +66,35 @@ def test_prior_audited_full_is_not_reused_when_prompt_changes(tmp_path: Path) ->
     assert "text_audit" not in current["pairs"][0]["full"]
 
 
+def test_same_run_does_not_reuse_across_external_source_mode(tmp_path: Path) -> None:
+    image = tmp_path / "p4.png"
+    image.write_bytes(b"image")
+    current = {
+        "run_id": "same-run",
+        "source_mode": "external_script",
+        "prompt_contract": {"compiler": "content-first-v1"},
+        "source_script_sha256": "script",
+        "production_mode": "image-to-editable-svg",
+        "input_fingerprint": "external",
+        "pairs": [_pair(image, prompt_sha="verbatim")],
+    }
+    prior_pair = _pair(image, prompt_sha="content-first")
+    prior_pair["full"].update({"generated_prompt_sha256": "content-first", "text_audit": {"valid": True}})
+    prior = {
+        "run_id": "same-run",
+        "source_mode": "script_file",
+        "prompt_contract": {"compiler": "content-first-v1"},
+        "source_script_sha256": "script",
+        "production_mode": "image-to-editable-svg",
+        "input_fingerprint": "local",
+        "pairs": [prior_pair],
+    }
+
+    _reuse_prior_artifacts(manifest=current, prior_manifest=prior, production_mode="image-to-editable-svg")
+
+    assert "text_audit" not in current["pairs"][0]["full"]
+
+
 def test_prior_audited_full_is_not_reused_when_bound_image_bytes_change(tmp_path: Path) -> None:
     image = tmp_path / "p4.png"
     image.write_bytes(b"new-image-bytes")

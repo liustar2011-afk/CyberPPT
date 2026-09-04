@@ -940,8 +940,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--external-script",
         action="store_true",
         help=(
-            "Compatibility metadata flag. External scripts require a current Stage 02 handoff "
-            "and visual-structure audit."
+            "Mark an external manuscript as a traceable Stage 02 input; it uses the standard content-first presentation contract."
         ),
     )
     final_script_pages_parser.add_argument(

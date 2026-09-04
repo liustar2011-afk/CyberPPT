@@ -14,6 +14,9 @@ PAGE_HEADING_RE = re.compile(
     r"^##\s+(?:(?:第(\d+)页[：:](.+?)|P(\d+)\s+(.+?)))\s*$",
     re.MULTILINE,
 )
+SINGLE_PAGE_TITLE_MARKER_RE = re.compile(r"^#\s*标题\s*$")
+SINGLE_PAGE_CONTENT_MARKER_RE = re.compile(r"^#\s*内容\s*$")
+SINGLE_PAGE_TITLE_RE = re.compile(r"^#\s+(.+?)\s*$")
 FIELD_RE = re.compile(r"^-\s*([^：:\n]+)[：:]\s*(.*)$")
 HEADING_FIELD_RE = re.compile(r"^###\s+(.+?)\s*$")
 NON_ONSCREEN_VISUAL_HEADING_RE = re.compile(r"^【视觉结构[，,]\s*不上屏】\s*$")
@@ -186,8 +189,69 @@ def _normalize_page_type(value: str) -> str:
     return "content"
 
 
+def unnumbered_markdown_page(text: str) -> tuple[str, str] | None:
+    """Return a single title/body page for a plain Markdown manuscript.
+
+    Stage 02 also accepts a one-page external manuscript written as ``# 标题``
+    followed by its title and ``# 内容`` followed by its body.  Page numbers
+    remain required to express a multi-page manuscript, so this fallback is
+    intentionally limited to one page.
+    """
+
+    lines = text.splitlines()
+    first = next((index for index, line in enumerate(lines) if line.strip()), None)
+    if first is None:
+        return None
+
+    marker = SINGLE_PAGE_TITLE_MARKER_RE.match(lines[first].strip())
+    if marker:
+        title_index = next(
+            (index for index in range(first + 1, len(lines)) if lines[index].strip()),
+            None,
+        )
+        if title_index is None:
+            return None
+        title = lines[title_index].strip()
+        content_marker = next(
+            (
+                index
+                for index in range(title_index + 1, len(lines))
+                if SINGLE_PAGE_CONTENT_MARKER_RE.match(lines[index].strip())
+            ),
+            None,
+        )
+        body = "\n".join(lines[(content_marker + 1 if content_marker is not None else title_index + 1) :]).strip()
+    else:
+        heading = SINGLE_PAGE_TITLE_RE.match(lines[first].strip())
+        if heading is None:
+            return None
+        title = heading.group(1).strip()
+        body = "\n".join(lines[first + 1 :]).strip()
+
+    return (title, body) if title and body else None
+
+
 def _page_sections(text: str) -> list[tuple[int, str, str]]:
     matches = list(PAGE_HEADING_RE.finditer(text))
+    if not matches:
+        plain_page = unnumbered_markdown_page(text)
+        if plain_page is None:
+            return []
+        title, body = plain_page
+        return [
+            (
+                1,
+                title,
+                "\n".join(
+                    (
+                        "- 页面类型：内容",
+                        f"- 页面标题：{title}",
+                        "- 完整文字稿：",
+                        body,
+                    )
+                ),
+            )
+        ]
     return [
         (
             int(match.group(1) or match.group(3)),

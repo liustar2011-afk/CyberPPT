@@ -37,6 +37,15 @@ may reconstruct and decompose it but must not introduce a second visual design.
 
 Stage 02 does not require or invoke a separate visual-structure preparation stage.
 
+When the user supplies an external manuscript, invoke the formal entry with
+`--external-script`. External scripts use the same content-first presentation
+authoring contract as other Stage 02 inputs: visible copy may be reorganized,
+condensed and rewritten into a clearer hierarchy while preserving the script's
+business objects, factual relationships, numbers, conditions, status and
+conclusion strength. The manifest, input identity, build context and resume
+command must retain `source_mode: external_script` so the external source and
+its semantic boundary remain traceable.
+
 ## Per-page Quick checkpoint loop
 
 Process authored pages as individual quality transactions. For each content

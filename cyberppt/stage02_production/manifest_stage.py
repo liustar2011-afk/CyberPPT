@@ -107,13 +107,32 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
         return
     same_source = prior_manifest.get("source_script_sha256") == manifest["source_script_sha256"]
     same_mode = prior_manifest.get("production_mode") == manifest.get("production_mode")
+    prior_source_mode = str(prior_manifest.get("source_mode") or "script_file")
+    current_source_mode = str(manifest.get("source_mode") or "script_file")
+    prior_compiler = str(
+        (prior_manifest.get("prompt_contract") or {}).get("compiler")
+        or "content-first-v1"
+    )
+    current_compiler = str(
+        (manifest.get("prompt_contract") or {}).get("compiler")
+        or "content-first-v1"
+    )
+    same_prompt_contract = (
+        prior_source_mode == current_source_mode
+        and prior_compiler == current_compiler
+    )
     same_identity, legacy_identity_mode = _recovery_identity_compatible(manifest, prior_manifest)
     # An approved local image is a delivery input rather than a semantic page
     # input.  Its import may update the run fingerprint while a resumed build
     # still has the same run id, locked script, and production mode.  Preserve
     # its registered authored layers so the formal resume can reach Quick.
     same_run = bool(manifest.get("run_id") and manifest.get("run_id") == prior_manifest.get("run_id"))
-    if not (same_source and same_mode and (same_identity or same_run)):
+    if not (
+        same_source
+        and same_mode
+        and same_prompt_contract
+        and (same_identity or same_run)
+    ):
         return
     prior_pairs = {
         int(pair.get("page_number")): pair
@@ -365,9 +384,6 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
         require_send_approval=options.require_send_approval,
         enforce_prompt_freshness=False,
         compact_blueprint=False,
-        # The production route consumes the locked final script and Style 09
-        # directly. Visual structure is an optional legacy compatibility path,
-        # not a Stage 02 prerequisite.
         prompt_compiler="content-first-v1",
         allow_script_edit=False,
         allow_prompt_edit=options.allow_prompt_edit,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 from cyberppt.stage02_production.identity import input_fingerprint
@@ -42,3 +43,11 @@ def test_input_fingerprint_changes_with_output_affecting_options(tmp_path: Path)
     high = Stage02RunOptions(project=tmp_path, script=tmp_path / "script.md", pages_raw="1-2", image_quality="high")
     low = Stage02RunOptions(project=tmp_path, script=tmp_path / "script.md", pages_raw="1-2", image_quality="low")
     assert input_fingerprint(context, high) != input_fingerprint(context, low)
+
+
+def test_input_fingerprint_changes_with_external_script_contract(tmp_path: Path) -> None:
+    local = _context(tmp_path, build_id="run-a")
+    external = replace(local, source_mode="external_script")
+    options = Stage02RunOptions(project=tmp_path, script=tmp_path / "script.md", pages_raw="1-2")
+
+    assert input_fingerprint(local, options) != input_fingerprint(external, options)

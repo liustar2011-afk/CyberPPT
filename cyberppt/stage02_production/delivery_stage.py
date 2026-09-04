@@ -56,6 +56,7 @@ def _resume_command(context: Stage02BuildContext, options: Stage02RunOptions) ->
     for enabled, flag in (
         (options.generate_images or options.production_build, "--generate-images"),
         (options.production_build, "--production-build"),
+        (context.source_mode == "external_script", "--external-script"),
         (options.allow_script_edit_requested, "--allow-script-edit"),
         (options.allow_prompt_edit, "--allow-prompt-edit"),
         (options.no_style_reference, "--no-style-reference"),

@@ -198,7 +198,13 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
             raise ValueError("autonomous contract production mode does not match the contract")
         validate_source_boundary(autonomous_authority)
 
-    source_mode = "autonomous_contract" if autonomous_authority is not None else "script_file"
+    source_mode = (
+        "autonomous_contract"
+        if autonomous_authority is not None
+        else "external_script"
+        if options.external_script
+        else "script_file"
+    )
 
     if options.production_mode not in PRODUCTION_MODES:
         raise ValueError(

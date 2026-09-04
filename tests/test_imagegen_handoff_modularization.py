@@ -123,10 +123,8 @@ def test_compiled_prompt_metadata_uses_current_compiler_and_style09() -> None:
     assert "pure white background #FFFFFF" in compiled.prompt
 
 
-def test_legacy_style10_alias_does_not_create_second_facade_authority() -> None:
-    style9 = resolve_default_style(style_id=9)
+def test_style10_uses_its_own_copied_visual_contract() -> None:
     style10 = resolve_default_style(style_id=10)
 
-    assert style10["id"] == 9
-    assert style10["prompt_contract_sha256"] == style9["prompt_contract_sha256"]
-    assert style10["legacy_alias_from_style_id"] == 10
+    assert style10["id"] == 10
+    assert style10["prompt_contract_source"].endswith("references/visual-system-10.md")
