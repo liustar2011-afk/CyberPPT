@@ -8,23 +8,10 @@ import re
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
 最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。"""
-IMAGEGEN_CHROME_BAN_CONTRACT = """【模板层禁绘｜不上屏】
-正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。
-标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。
-禁止新增与业务内容无关的序号条、页码章或装饰编号。"""
-SEMANTIC_VISUAL_CHROME_CONTRACT = """【模板层禁绘｜不上屏】
+SEMANTIC_VISUAL_CHROME_CONTRACT = """【语义视觉画面边界｜不上屏】
 正文区图只画业务语义底图，不绘制页面标题、副标题、Logo、页脚、页码、页面序号、母版装饰线或完整正文。正文和事实文字由后续 PPT 可编辑文字层承载。不要把提示词字段名、模块编号、调试信息、伪中文或新增标签画入图片。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
 将【完整上屏内容】改写为结论先行、层级清晰的页面表达。可提炼正文结论、重组段落、合并重复信息并调整标题层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
-CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【核心意思表达要求｜不上屏】
-可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。"""
-CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【核心意思表达要求｜不上屏】
-可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。"""
-CONTENT_FIRST_SHARED_PREDICATE_CONTRACT = """【并列语义防发散｜不上屏】
-改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。"""
-CONTENT_FIRST_COPY_AUTHORING_CONTRACT = """【呈现文案改写授权｜上屏】
-以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。
-改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。"""
 CONTENT_FIRST_PAGE_MISSION_LABEL = "页面任务："
 CONTENT_FIRST_CORE_MEANING_LABEL = "核心意思："
 # Compatibility alias for extensions importing the old constant.

@@ -14,7 +14,6 @@ except ModuleNotFoundError as exc:
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.imagegen_pipeline.imagegen_handoff import (
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
-    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
@@ -193,7 +192,14 @@ def test_visual_structure_review_mode_is_explicit_and_auditable() -> None:
     assert "- Dominant visual carrier:" in compiled.prompt
     assert compiled.prompt.index("【完整上屏内容】") < compiled.prompt.index(
         "[Mandatory composition guidance]"
-    ) < compiled.prompt.index("【呈现文案改写授权｜上屏】")
+    )
+    for label in (
+        "【核心意思表达要求｜不上屏】",
+        "【呈现文案改写授权｜上屏】",
+        "【并列语义防发散｜不上屏】",
+        "【非上屏语义边界】",
+    ):
+        assert label not in compiled.prompt
     assert metadata["semantic_structure"]["mode"] == "review"
     assert len(metadata["semantic_structure"]["visual_carrier"]["candidates"]) == 3
     assert "semantic_structure.composition" in metadata["injected_rule_ids"]
@@ -294,7 +300,7 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
 
     semantics = prompt.split("【完整上屏内容】", 1)[1]
     assert "【锁定关键文字】" not in prompt
-    assert "【呈现文案改写授权｜上屏】" in prompt
+    assert "【呈现文案改写授权｜上屏】" not in prompt
     assert "数据治理" in semantics
 
 
@@ -585,8 +591,7 @@ def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> Non
 
     assert "\n【锁定关键文字】\n" not in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
-    assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
-    assert "可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句" in prompt
+    assert "【核心意思表达要求｜不上屏】" not in prompt
 
 
 def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
@@ -646,9 +651,9 @@ def test_v2_composition_relation_routes_without_inventing_judgment_evidence() ->
 
     assert compiled.relation == "hierarchy_support"
     assert "核心意思：" not in compiled.prompt
-    assert "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题" in compiled.prompt
-    assert "改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围" in compiled.prompt
-    assert "【呈现文案改写授权｜上屏】" in compiled.prompt
+    assert "【非上屏语义边界】" not in compiled.prompt
+    assert "【并列语义防发散｜不上屏】" not in compiled.prompt
+    assert "【呈现文案改写授权｜上屏】" not in compiled.prompt
     assert "composed_of" in compiled.prompt
     assert "判断—证据" not in compiled.prompt
 
@@ -1041,9 +1046,8 @@ def test_semantic_only_allows_stage02_copy_authoring() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
-    assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
-    assert "【呈现文案改写授权｜上屏】" in prompt
-    assert "允许改写、提炼、合并、拆分、重排与重设标题层级" in prompt
+    assert "【核心意思表达要求｜不上屏】" not in prompt
+    assert "【呈现文案改写授权｜上屏】" not in prompt
 
 
 def test_style_nine_compiles_short_refinement_signature() -> None:
@@ -1107,7 +1111,7 @@ def test_semantic_only_numeric_fact_is_available_for_stage02_copy_authoring() ->
     assert "【锁定关键文字】" not in prompt
     assert "2025年完成率 95%" in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
-    assert "【呈现文案改写授权｜上屏】" in prompt
+    assert "【呈现文案改写授权｜上屏】" not in prompt
 
 
 def test_outline_context_can_select_semantic_only_without_page_specific_code() -> None:

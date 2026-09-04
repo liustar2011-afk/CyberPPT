@@ -36,12 +36,8 @@ from scripts.imagegen_pipeline.handoff.contracts import (
     CONTENT_FIRST_CORE_MEANING_LABEL,
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_PAGE_MISSION_LABEL,
-    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
-    CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
-    CONTENT_FIRST_COPY_AUTHORING_CONTRACT,
     EVIDENCE_ID_RE,
     IMAGEGEN_CANVAS_CONTRACT,
-    IMAGEGEN_CHROME_BAN_CONTRACT,
     SEMANTIC_VISUAL_BRIEF_HEADER,
     SEMANTIC_VISUAL_CHROME_CONTRACT,
     SEMANTIC_VISUAL_FACTS_HEADER,
@@ -276,11 +272,7 @@ def render_content_first_prompt(
         ]
     else:
         nonvisible_semantic_context = (
-            [
-                "【非上屏语义边界】",
-                "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。",
-                "",
-            ]
+            []
             if style09_surface
             else [
                 CONTENT_FIRST_PAGE_MISSION_LABEL,
@@ -298,14 +290,8 @@ def render_content_first_prompt(
             (
                 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
                 if judgment_mode == "locked"
-                else (
-                    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
-                )
+                else ""
             ),
-            "",
-            CONTENT_FIRST_COPY_AUTHORING_CONTRACT,
-            "",
-            CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
             "",
             *nonvisible_semantic_context,
             (
@@ -319,8 +305,6 @@ def render_content_first_prompt(
             presentation_contract,
             "",
             IMAGEGEN_CANVAS_CONTRACT,
-            "",
-            IMAGEGEN_CHROME_BAN_CONTRACT,
             "",
             stage02_semantic_adapter.strip(),
             "",

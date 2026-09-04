@@ -86,7 +86,7 @@ def test_facade_and_modular_prompt_builder_are_behaviorally_identical_for_style0
 
     assert via_facade == via_module
     assert "2048×1024" in via_facade
-    assert "【模板层禁绘｜不上屏】" in via_facade
+    assert "【模板层禁绘｜不上屏】" not in via_facade
     assert "pure white background #FFFFFF" in via_facade
     assert "01｜数据治理" in via_facade
     assert "02｜运行结果" in via_facade
@@ -101,9 +101,11 @@ def test_content_first_prompt_keeps_current_canvas_text_and_template_contracts()
         prompt = facade.build_page_prompt(page, lock)
 
     assert "输出必须严格为 2048×1024 像素（2:1）" in prompt
-    assert "【呈现文案改写授权｜上屏】" in prompt
-    assert "允许改写、提炼、合并、拆分、重排与重设标题层级" in prompt
-    assert "不绘制页面标题、副标题、页码、页面序号" in prompt
+    assert "【呈现文案改写授权｜上屏】" not in prompt
+    assert "【核心意思表达要求｜不上屏】" not in prompt
+    assert "【并列语义防发散｜不上屏】" not in prompt
+    assert "【非上屏语义边界】" not in prompt
+    assert "正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号" not in prompt
     assert "### 2. Semantic anchor and composition — hard" in prompt
     assert "【最终视觉执行约束｜最高优先级】" in prompt
 
