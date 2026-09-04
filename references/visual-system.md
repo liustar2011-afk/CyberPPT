@@ -1,6 +1,6 @@
 视觉风格09：纯白 + 深蓝领导汇报
 
-Palette: white #FFFFFF, deep blue #12355B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.
+Palette: white #FFFFFF, deep blue #12355B, muted amber #D9772B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1. Use deep blue for primary relationships and conclusions. Reserve muted amber only for risks, exceptions, constraints, pending status, and occasional decision-critical emphasis; never use it as a category color or decorative accent.
 
 Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
 

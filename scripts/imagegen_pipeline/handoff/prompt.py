@@ -211,7 +211,9 @@ def render_content_first_prompt(
         )
     )
     presentation_contract = (
-        render_presentation_contract(page, presentation)
+        render_presentation_contract(
+            page, presentation, style_id=9 if style09_surface else None
+        )
         if presentation.source == "script"
         else ""
     )

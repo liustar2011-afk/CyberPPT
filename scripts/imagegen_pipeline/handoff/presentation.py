@@ -21,6 +21,7 @@ STYLE_COLOR_LABELS = (
     ("secondary", "次级文字"),
     ("divider", "线条与分隔"),
     ("accent", "强调色"),
+    ("secondary_accent", "次强调色"),
 )
 
 # ImageGen must receive the governing Style 09 text-first constraints, not only
@@ -99,6 +100,8 @@ class PresentationDecision:
 def render_presentation_contract(
     page: ScriptPage,
     decision: PresentationDecision,
+    *,
+    style_id: int | None = None,
 ) -> str:
     medium_contracts = {
         "editorial_typographic": (
@@ -127,6 +130,23 @@ def render_presentation_contract(
             "禁止等距三维组件堆叠、科技发光和软件架构图。"
         ),
     }
+    if style_id == 9:
+        medium_contracts = {
+            **medium_contracts,
+            "editorial_typographic": (
+                "采用编辑排版型媒介：以准确中文排版、尺度、位置、间距、对齐、密度和留白表达关系。"
+                "只允许一处克制的深蓝形面、局部数据纹理或抽象材料层作为视觉重心。"
+                "禁止技术面板、光束、四栏结构和物件隐喻。"
+            ),
+            "editorial_dense": (
+                "采用高密度编辑媒介：完整保留正文、数字、限定条件与业务边界，使用主文、旁注、事实条和层级缩进组织信息。"
+                "允许两到三个不等权信息区，但禁止大面积无效留白、单一大色块、四条摘要替代全文和四栏均分。"
+            ),
+            "spatial_system": (
+                "采用浅层空间系统媒介：仅表达真实存在的部署、区域或设施关系，"
+                "禁止等距三维组件堆叠和科技发光。"
+            ),
+        }
     lines = [
         (
             "【人工版式覆盖｜不上屏】"

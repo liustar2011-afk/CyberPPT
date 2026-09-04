@@ -16,6 +16,7 @@ def test_style_nine_sample_is_available_and_matches_runtime_registry() -> None:
     assert style["name"] == "纯白 + 深蓝领导汇报"
     assert style["colors"]["background"] == "#FFFFFF"
     assert style["colors"]["accent"] == "#12355B"
+    assert style["colors"]["secondary_accent"] == "#D9772B"
     assert sample == ROOT / "assets" / "palette-samples" / "palette-09.png"
     assert sample.exists()
     with Image.open(sample) as image:
