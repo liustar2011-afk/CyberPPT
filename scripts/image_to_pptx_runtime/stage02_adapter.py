@@ -105,11 +105,14 @@ def _quick_page_binding(
     root_qa = full_audit.get("content_root_qa") if isinstance(full_audit, Mapping) else None
     # Include actual foreground/crop bytes, not just paths in the SVG or receipt.
     from .authored_layers import local_svg_assets
+    from .runtime_provenance import CONVERSION_CONTRACT_VERSION, UPSTREAM_COMMIT
     from .template_assembly import TEMPLATE_ASSEMBLY_PROFILE
     layer_root = (pair.get("clean_base") or {}).get("build_root")
     assets = local_svg_assets(authored, Path(layer_root) if layer_root else authored.parent.parent)
     return {
         "template_assembly_profile": TEMPLATE_ASSEMBLY_PROFILE,
+        "quick_runtime_upstream_commit": UPSTREAM_COMMIT,
+        "quick_conversion_contract_version": CONVERSION_CONTRACT_VERSION,
         "layer_assets_sha256": _json_sha256({str(p): _sha256(p) for p in assets}),
         "authoring_svg_sha256": _sha256(authored),
         "full_image_sha256": _sha256(full),
@@ -119,7 +122,11 @@ def _quick_page_binding(
         "graphic_text_policy_sha256": _json_sha256(pair.get("graphic_text_policy") or {}),
         "content_root_qa_sha256": _json_sha256(root_qa or {}),
         "template_contract_sha256": _json_sha256(template_contract.get("rules") or {}),
-        "runtime_style_lock_sha256": _sha256(style_lock) if style_lock is not None and style_lock.is_file() else "",
+        # The runtime style-lock receipt is refreshed for each formal run and
+        # carries volatile metadata.  It does not alter an authored SVG or the
+        # template contract, so including its raw file hash would invalidate a
+        # visually identical Quick checkpoint on every resume.
+        "runtime_style_lock_sha256": "",
         "native_text_style_profile": NATIVE_TEXT_STYLE_PROFILE,
         "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".locked-intra-text-v2",
         "clean_base_policy_schema": CLEAN_BASE_SCHEMA + "." + CLEAN_BASE_ALGORITHM_VERSION,
@@ -182,6 +189,18 @@ def _preview_visible_text_contract(
 ) -> tuple[list[str], list[str]]:
     expected: list[str] = [title, "中国电力企业联合会", str(page_number)]
     authorized_image_texts: list[str] = []
+    authored_svg = Path(str(pair.get("authoring_svg") or ""))
+    if authored_svg.is_file():
+        try:
+            root = ET.parse(authored_svg).getroot()
+            expected.extend(
+                "".join(node.itertext()).strip()
+                for node in root.iter()
+                if node.tag.rsplit("}", 1)[-1] == "text" and "".join(node.itertext()).strip()
+            )
+        except (OSError, ET.ParseError):
+            # Authored SVG preflight reports the file-level failure separately.
+            pass
     full = pair.get("full") if isinstance(pair.get("full"), Mapping) else {}
     debug = full.get("debug_receipt") if isinstance(full.get("debug_receipt"), Mapping) else {}
     expected.extend(str(item) for item in debug.get("visible_text", []) if str(item).strip())
@@ -612,10 +631,23 @@ def run_stage02_reconstruction(
 
     expected: list[str] = []
     for pair in pairs:
-        page_expected = [
-            str(text) for text in ((pair.get("full") or {}).get("debug_receipt") or {}).get("visible_text", [])
-            if str(text).strip()
-        ]
+        authored_svg = Path(str(pair.get("authoring_svg") or ""))
+        page_expected: list[str] = []
+        if authored_svg.is_file():
+            try:
+                root = ET.parse(authored_svg).getroot()
+                page_expected = [
+                    "".join(node.itertext()).strip().lstrip("• ").strip()
+                    for node in root.iter()
+                    if node.tag.rsplit("}", 1)[-1] == "text" and "".join(node.itertext()).strip()
+                ]
+            except (OSError, ET.ParseError):
+                page_expected = []
+        if not page_expected:
+            page_expected = [
+                str(text) for text in ((pair.get("full") or {}).get("debug_receipt") or {}).get("visible_text", [])
+                if str(text).strip()
+            ]
         # Keep repeated wording on different pages. A deck-wide deduplication
         # incorrectly treats the second page's native text as unexpected.
         if not page_expected:

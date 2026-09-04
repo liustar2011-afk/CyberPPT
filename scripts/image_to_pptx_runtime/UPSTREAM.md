@@ -2,9 +2,10 @@
 
 本目录内的 Quick 转换运行时直接同步自 `ppt-master`，交付和运行均不依赖外部仓库。
 
-- 上游同步版本：`53c9c2a5e9f1a49096324fba4f95833649c6a0f4`
+- 上游同步版本：`c40028bdef80bc12470231cee27d5aee91ba3b1c`
 - 上游相对位置：`skills/ppt-master/scripts/`
-- 维护原则：内置运行时独立维护，保留来源归属；已包含本仓库的换行和 Windows 长路径修复，不承诺与后续上游版本逐字节一致。
+- 维护原则：按功能边界同步上游模块，保留来源归属；CyberPPT 适配层独立维护，不承诺整棵运行时与上游逐字节一致。
+- 本次同步范围：段落/tspan 归一化、CJK 文字测量、SVG 文字边界检查及 `text_measure.py`；转换 trace 在两仓库使用同一文字几何字段合同。
 - 打包例外：`attribution_guard.py`、`console_encoding.py` 保留本仓库包内资源定位方式，避免回指外部 Skill 目录。
 - CyberPPT 自有入口：`__init__.py`、`quick.py`、`stage02_adapter.py` 以及文字策略、清底策略、模板组装和可编辑页验证模块。
 

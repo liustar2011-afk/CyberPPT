@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 1280 720" data-template-assembly="cec-lightweight" data-pptx-master="cec-content" data-pptx-master-name="CEC Content Master" data-pptx-layout="cec-content" data-pptx-layout-name="CEC Content">
+<rect id="masterBackground" data-pptx-layer="master" x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<rect id="topDivider" data-pptx-layer="master" x="0" y="84" width="1280" height="3" fill="#8B0000"/>
+<image id="companyLogo" data-pptx-layer="master" x="1050" y="13" width="210" height="70" href="../images/logo.png" preserveAspectRatio="xMidYMid meet"/>
+<rect id="footerBar" data-pptx-layer="master" x="0" y="698" width="1280" height="22" fill="#123B66"/>
+<text id="footerCompany" data-pptx-layer="master" x="58" y="712" font-family="Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif" font-size="9" fill="#FFFFFF">中国电力企业联合会</text>
+<text id="pageNumber" data-pptx-layer="master" x="1240" y="712" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="9" fill="#FFFFFF">1</text>
+<text x="58" y="47" font-family="Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif" font-size="32" font-weight="700" fill="#123B66">创新业务6-1：科技项目及课题研究</text>
+<g id="quick-body" transform="translate(33 89)">
+<image xmlns="http://www.w3.org/2000/svg" href="../images/layers/01/9f5b8a2df02a060b9b8e86ba64649d5cbb32ddd6b09592d2064e09d0835c0e58.png" x="0" y="0" width="1214" height="607" />
+  
+<g xmlns="http://www.w3.org/2000/svg" fill="#12355B" font-family="PingFang SC" font-weight="700">
+    <text x="168.940429688" y="64.01953125" font-size="27.267578125">双方将在五个方向开展科技项目和课题研究合作</text>
+    <text x="30.82421875" y="187.31640625" font-size="16.59765625" fill="#FFFFFF">01</text><text x="69.3544921875" y="180.203125" font-size="16.59765625">电力领域</text><text x="69.3544921875" y="201.54296875" font-size="16.59765625">数据基础设施建设</text>
+    <text x="222.290039062" y="187.31640625" font-size="16.59765625" fill="#FFFFFF">02</text><text x="262.598632812" y="180.203125" font-size="16.59765625">高质量数据集</text><text x="262.598632812" y="201.54296875" font-size="16.59765625">评测标注与资产评估</text>
+    <text x="417.905273438" y="187.31640625" font-size="16.59765625" fill="#FFFFFF">03</text><text x="457.028320312" y="180.203125" font-size="16.59765625">电力数据</text><text x="457.028320312" y="201.54296875" font-size="16.59765625">安全风险评估</text>
+    <text x="608.778320312" y="187.31640625" font-size="16.59765625" fill="#FFFFFF">04</text><text x="647.901367188" y="180.203125" font-size="16.59765625">人工智能</text><text x="647.901367188" y="201.54296875" font-size="16.59765625">工具与评测</text>
+    <text x="800.244140625" y="187.31640625" font-size="16.59765625" fill="#FFFFFF">05</text><text x="839.3671875" y="180.203125" font-size="16.59765625">能算碳</text><text x="839.3671875" y="201.54296875" font-size="16.59765625">综合服务</text>
+    <text x="997.637695312" y="148.193359375" font-size="18.3759765625">开放协同，择优推进</text><text x="1053.95117188" y="323.061523438" font-size="26.08203125">1700+</text><text x="1052.17285156" y="409.013671875" font-size="26.08203125">23年</text><text x="1055.13671875" y="494.965820312" font-size="19.5615234375">承担建设任务</text>
+  </g>
+  
+<g xmlns="http://www.w3.org/2000/svg" fill="#303030" font-family="PingFang SC" font-size="10.669921875">
+    <text x="168.940429688" y="94.84375" font-size="10.669921875">围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、</text><text x="168.940429688" y="112.626953125" font-size="10.669921875">人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。</text>
+    <text x="28.453125" y="385.302734375">• 围绕数据基础设施参考架构、</text><text x="38.5302734375" y="397.158203125">接入连接器、可信流通及多</text><text x="38.5302734375" y="409.013671875">主体运营机制开展联合研究。</text><text x="28.453125" y="444.580078125">• 中电联作为国家数据基础设</text><text x="38.5302734375" y="456.435546875">施行业节点，可组织跨企业构</text><text x="38.5302734375" y="468.291015625">建验证环境，提供行业级验证</text><text x="38.5302734375" y="480.146484375">条件。</text>
+    <text x="219.326171875" y="385.302734375">• 围绕数据标注、数据集加工、</text><text x="229.403320312" y="397.158203125">质量评测与资产评估的方法及</text><text x="229.403320312" y="409.013671875">工具开展研究，并探索测评互</text><text x="229.403320312" y="420.869140625">认与价值释放机制。</text><text x="219.326171875" y="456.435546875">• 已联合多家网省公司完成多</text><text x="229.403320312" y="468.291015625">类数据集建设与评测案例，具</text><text x="229.403320312" y="480.146484375">备专家团队与标准体系支撑。</text>
+    <text x="410.791992188" y="385.302734375">• 围绕数据分类分级、全生命</text><text x="420.869140625" y="397.158203125">周期与流通安全规则开展研究，</text><text x="420.869140625" y="409.013671875">联合验证风险评估及脱敏、水</text><text x="420.869140625" y="420.869140625">印等技防工具的适用性。</text><text x="410.791992188" y="456.435546875">• 已研发相应评估与技防工具，</text><text x="420.869140625" y="468.291015625">并在国网多省份落地应用。</text>
+    <text x="600.479492188" y="385.302734375">• 围绕模型适配、场景能力、</text><text x="612.927734375" y="397.158203125">安全可信等维度联合研发自动</text><text x="612.927734375" y="409.013671875">化评测工具，验证业务智能助</text><text x="612.927734375" y="420.869140625">手与数据治理工具应用效果。</text><text x="600.479492188" y="456.435546875">• 已构建行业、场景、基础能力</text><text x="612.927734375" y="468.291015625">三级评测体系，在多家网省公</text><text x="612.927734375" y="480.146484375">司落地应用。</text>
+    <text x="791.9453125" y="385.302734375">• 围绕碳排放核算、碳资产开发、</text><text x="803.80078125" y="397.158203125">能效优化与零碳园区管理开展</text><text x="803.80078125" y="409.013671875">工具与机制研究。</text><text x="791.9453125" y="444.580078125">• 依托1700余家会员单位资源</text><text x="803.80078125" y="456.435546875">和23年行业积累，承担电力碳</text><text x="803.80078125" y="468.291015625">足迹数据库建设任务。</text>
+    <text x="997.044921875" y="189.6875" font-size="8.8916015625">除上述方向外，如贵单位另有科技项目储备</text><text x="997.044921875" y="203.321289062" font-size="8.8916015625">或研究选题，可结合实际共同研究，择优推进。</text><text x="1053.95117188" y="343.80859375" font-size="10.669921875">会员单位资源</text><text x="1052.17285156" y="429.760742188" font-size="10.669921875">行业积累</text><text x="1055.13671875" y="518.676757812" font-size="10.669921875">电力碳足迹数据库</text>
+  </g>
+
+</g>
+</svg>

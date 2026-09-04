@@ -4,13 +4,13 @@
   "contact_sheet": {
     "schema": "cyberppt.full_image_contact_sheet.v1",
     "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/qa/full_image_contact_sheet.png",
-    "sha256": "7cd7b94418b02d3cd2e8980178fe87f3c9324b58bc9388778810aa72686f44be",
+    "sha256": "0197d2e36c03c2cb5bbc3b12adfe9929bfe8c5f31b524c9291ace17908fdac00",
     "page_count": 1,
     "pages": [
       {
         "page_number": 1,
         "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_001_创新业务6_1_科技项目及课题研究_full.png",
-        "source_sha256": "280bbd243d52f19338a33bfe412c96b4dcace61dcb8693e1ffee9e2b0b53215e"
+        "source_sha256": "e5135ca681e900b3011e23bfa1c444da9211297a5b56ab1f09f39349c9f2f3a3"
       }
     ],
     "thumbnail_size": [
@@ -28,29 +28,29 @@
       "schema": "cyberppt.full_image_visual_signature.v1",
       "page_number": 1,
       "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_001_创新业务6_1_科技项目及课题研究_full.png",
-      "source_sha256": "280bbd243d52f19338a33bfe412c96b4dcace61dcb8693e1ffee9e2b0b53215e",
+      "source_sha256": "e5135ca681e900b3011e23bfa1c444da9211297a5b56ab1f09f39349c9f2f3a3",
       "visual_medium": "unspecified",
       "gravity": {
-        "x": 0.4706,
-        "y": 0.4727,
+        "x": 0.4699,
+        "y": 0.4715,
         "horizontal": "center",
         "vertical": "middle"
       },
       "density": "dense",
-      "density_score": 55.6098,
-      "skeleton_3x3": "110111111",
+      "density_score": 54.878,
+      "skeleton_3x3": "110111011",
       "skeleton_shares": [
         0.1267,
-        0.1315,
-        0.0585,
-        0.1485,
-        0.1626,
+        0.132,
+        0.0583,
+        0.1503,
+        0.1638,
         0.1183,
-        0.081,
-        0.0845,
-        0.0884
+        0.0797,
+        0.083,
+        0.0879
       ],
-      "structure_hash": "7878ffbefefe2b00"
+      "structure_hash": "7878fffefefe2b00"
     }
   ],
   "audit": {

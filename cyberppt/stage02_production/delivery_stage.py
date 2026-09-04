@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import shlex
 from typing import Any
+from xml.etree import ElementTree as ET
 
 from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPTX_ROUTE
 from scripts.image_to_pptx_runtime.final_visible_text_qa import audit_final_visible_text, write_final_visible_text_qa
@@ -126,6 +127,23 @@ def _final_visible_text_contract(
     )
     if not isinstance(pair, dict):
         return expected, authorized
+    # An authored SVG may intentionally split a source sentence across several
+    # native text lines to preserve its column geometry.  Those line fragments
+    # are editable and verified local content, so include their exact values
+    # in the visible-text ownership contract before OCR is evaluated.
+    authored_svg = Path(str(pair.get("authoring_svg") or ""))
+    if authored_svg.is_file():
+        try:
+            root = ET.parse(authored_svg).getroot()
+            expected.extend(
+                "".join(node.itertext()).strip()
+                for node in root.iter()
+                if node.tag.rsplit("}", 1)[-1] == "text" and "".join(node.itertext()).strip()
+            )
+        except (OSError, ET.ParseError):
+            # The reconstruction path has its own authored-SVG preflight; do
+            # not hide an invalid file behind the final OCR gate.
+            pass
     full = pair.get("full") if isinstance(pair.get("full"), dict) else {}
     debug = full.get("debug_receipt") if isinstance(full.get("debug_receipt"), dict) else {}
     expected.extend(str(item) for item in debug.get("visible_text", []) if str(item).strip())

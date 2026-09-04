@@ -1,67 +1,55 @@
 {
   "schema": "cyberppt.build_context.v1",
   "build_id": "kebiaoyanxun-user-approved-v1",
-  "run_id": "kebiaoyanxun-user-approved-v1",
-  "input_fingerprint": "cf5ffc02f22619bffffb807d40c0001e221ad68ed674d1422b9524db17a9fc41",
-  "input_identity": {
-    "schema": "cyberppt.stage02_input_identity.v1",
-    "source_script_sha256": "9f2f66f38524e7eeb679c79e6f57145383d115ec1e8ec37fc33658adc58baa35",
-    "script_input_sha256": "b94f8819155c157db217b88e95ffbb2988deb20c5f6c8bf30a7281348d42ef93",
-    "visual_spec_sha256": "",
-    "style_lock_sha256": "c2b9dd717c064d3cb5c98b1b4f6cf2a1343a25a9c8d28cfd34d4405b1f5df565",
-    "pages": [
-      1
-    ],
-    "production_mode": "image-to-editable-svg",
-    "assembly_mode": "editable",
-    "image_model": "gpt-image-2",
-    "image_quality": "high",
-    "prompt_enrich": "off",
-    "allow_prompt_edit": false
-  },
-  "created_at": "2026-09-03T13:55:48+00:00",
+  "created_at": "2026-09-04T03:17:06+00:00",
   "project": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑",
   "source_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
   "source_script_sha256": "9f2f66f38524e7eeb679c79e6f57145383d115ec1e8ec37fc33658adc58baa35",
   "style_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/visual_style_lock.json",
-  "style_lock_sha256": "c2b9dd717c064d3cb5c98b1b4f6cf2a1343a25a9c8d28cfd34d4405b1f5df565",
+  "style_lock_sha256": "fb9881a7401c27802942b42f2b20f48d673fe09317e83aadf09bd34a7a1cdebe",
   "page_set": [
     1
   ],
   "production_mode": "image-to-editable-svg",
   "assembly_mode": "editable",
-  "allow_script_edit": false,
-  "allow_prompt_edit": false,
-  "prompt_overrides_dir": null,
+  "editable_pptx_route": "stage02-quick-image-to-pptx",
   "stage": "02-production-build",
-  "status": "needs_action",
+  "source_mode": "script_file",
+  "autonomous_contract": null,
+  "project_created": false,
+  "status": "production_ready",
   "artifacts": {
+    "compiled_deliverable_prompt": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/final-script_cyberppt_deliverable_p1_p1.md",
+      "sha256": "0ae7ae934b282ba465e9ea536fd1a7f8f1cdc90391a5e552d77c9be59460d3fe"
+    },
     "page_image_pairs": {
       "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_image_pairs.json",
-      "sha256": "37a6551d8e0ea939fa123f8f4cd4e7a0d01122c739affa98871b33f3e0f56815"
+      "sha256": "ed3de80aceb269e3d726c4b194ce44786099adf631bf4bd9beba10d7b9880d0e"
     },
-    "needs_action": {
-      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/stage02_needs_action.json"
+    "template_text_lock": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/template_text/pages_001_001_template_text_lock.json",
+      "sha256": "7dc483e1f662b6e49391a4234045f889b7bf26033e24c6a57179ca243fd0f8bc"
+    },
+    "visual_style_lock": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/visual_style_lock.json",
+      "sha256": "fb9881a7401c27802942b42f2b20f48d673fe09317e83aadf09bd34a7a1cdebe"
+    },
+    "exported_pptx": {
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx",
+      "sha256": "f5e7e917670d57553ee5c4eb759519893080b40972ae8d591561698a436a98dd"
+    },
+    "officecli_render_qa": {
+      "editable": {
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/qa-delivery/editable/officecli_render_qa.json",
+        "sha256": "9bef9ded9c892699b51b3861fcc25a0caf2696bdafab2028a48b57e63a67de38"
+      }
+    },
+    "final_visible_text_qa": {
+      "editable": {
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/qa-delivery/editable/final_visible_text_qa.json",
+        "sha256": "89b7f852e82c9d968c12ca62cf9d16280f18814eeeeee84796414f1b1c7c0c8f"
+      }
     }
-  },
-  "stage02_state": {
-    "schema": "cyberppt.stage02_build_state.v1",
-    "state": "needs_action",
-    "pages": [
-      {
-        "page": 1,
-        "state": "needs_svg_authoring",
-        "action": "author_svg_from_audited_full_image",
-        "error": null
-      }
-    ],
-    "actions": [
-      {
-        "page": 1,
-        "state": "needs_svg_authoring",
-        "action": "author_svg_from_audited_full_image"
-      }
-    ],
-    "failures": []
   }
 }

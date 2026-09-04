@@ -108,7 +108,12 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
     same_source = prior_manifest.get("source_script_sha256") == manifest["source_script_sha256"]
     same_mode = prior_manifest.get("production_mode") == manifest.get("production_mode")
     same_identity, legacy_identity_mode = _recovery_identity_compatible(manifest, prior_manifest)
-    if not (same_source and same_mode and same_identity):
+    # An approved local image is a delivery input rather than a semantic page
+    # input.  Its import may update the run fingerprint while a resumed build
+    # still has the same run id, locked script, and production mode.  Preserve
+    # its registered authored layers so the formal resume can reach Quick.
+    same_run = bool(manifest.get("run_id") and manifest.get("run_id") == prior_manifest.get("run_id"))
+    if not (same_source and same_mode and (same_identity or same_run)):
         return
     prior_pairs = {
         int(pair.get("page_number")): pair
@@ -139,6 +144,13 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
             full_image=Path(str(current_full or "")),
             graphic_text_policy=pair.get("graphic_text_policy") if isinstance(pair.get("graphic_text_policy"), dict) else {},
         )
+        # The high-fidelity authored-SVG route records its own complete layer
+        # contract through register-quick-page.  A same-build resume must keep
+        # that checked contract available for the adapter to validate; the
+        # legacy masked-base reuse predicate above is intentionally stricter
+        # and otherwise discards the Quick checkpoint on every resume.
+        if not clean_reusable and same_run:
+            clean_reusable = True
         if clean_reusable:
             pair["clean_base"] = prior_clean_base
             prior_authoring_svg = Path(str(prior_pair.get("authoring_svg") or ""))
@@ -207,6 +219,9 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
                 current_item["text_audit"] = prior_item["text_audit"]
                 if variant == "full" and prior_full_sha:
                     current_item["sha256"] = prior_full_sha
+                    prior_authority = prior_item.get("reconstruction_visual_source")
+                    if isinstance(prior_authority, dict):
+                        current_item["reconstruction_visual_source"] = prior_authority
 
 
 def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dict[str, Any] | None) -> None:

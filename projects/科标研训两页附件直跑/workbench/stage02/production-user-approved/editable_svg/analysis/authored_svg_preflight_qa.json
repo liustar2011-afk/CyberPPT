@@ -1,0 +1,25 @@
+{
+  "schema": "cyberppt.stage02.authored_svg_preflight_qa.v1",
+  "pages": [
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 1,
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/page_001.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 60,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/assets/page_001_clean_base_unsharpened.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    }
+  ]
+}

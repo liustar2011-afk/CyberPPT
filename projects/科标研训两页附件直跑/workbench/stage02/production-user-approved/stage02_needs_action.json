@@ -5,19 +5,21 @@
   "actions": [
     {
       "page": 1,
-      "state": "needs_svg_authoring",
-      "action": "author_svg_from_audited_full_image"
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/page_checkpoints/p01/render/slide-1.png"
     }
   ],
   "pages": [
     {
       "page": 1,
-      "state": "needs_svg_authoring",
-      "action": "author_svg_from_audited_full_image",
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/page_checkpoints/p01/render/slide-1.png",
       "error": null
     }
   ],
-  "source_error": "Stage 02 per-page Quick validation failed; passed pages were checkpointed: p01: requires a hand-authored SVG from the image-to-PPTX runtime",
+  "source_error": "Stage 02 per-page Quick validation failed; passed pages were checkpointed: p01: rendered preview awaits visual review: /Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/page_checkpoints/p01/render/slide-1.png",
   "manifest": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_image_pairs.json",
   "resume_rule": "Complete the listed page actions, then rerun final-script-pages with the same build id and output directory."
 }

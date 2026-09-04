@@ -1248,6 +1248,34 @@ def _build_source_shape_id_map(root: ET.Element) -> dict[tuple[str, str], int]:
 def _geometry_trace_metadata(elem: ET.Element, result: ShapeResult) -> dict[str, Any]:
     """Describe the native geometry decision for conversion diagnostics."""
     xml = result.xml.lstrip()
+    if elem.tag.replace(f'{{{SVG_NS}}}', '') == 'text':
+        font_sizes_hpt = sorted({
+            int(value)
+            for value in re.findall(r'<a:(?:rPr|defRPr)\b[^>]*\bsz="(\d+)"', xml)
+        })
+        source_attributes = {
+            name: elem.get(name)
+            for name in (
+                'x',
+                'y',
+                'font-size',
+                'font-family',
+                'font-weight',
+                'text-anchor',
+                'transform',
+                'data-pptx-frame',
+                'data-pptx-bounds',
+            )
+            if elem.get(name) is not None
+        }
+        return {
+            'output_geometry': 'text',
+            'fidelity': 'native-normalized',
+            'source_text': ''.join(elem.itertext()),
+            'source_attributes': source_attributes,
+            'output_font_sizes_hundredth_points': font_sizes_hpt,
+            'output_font_sizes_pt': [value / 100 for value in font_sizes_hpt],
+        }
     if xml.startswith('<p:grpSp>'):
         return {'output_geometry': 'group', 'fidelity': 'visual-only'}
     if xml.startswith('<p:pic>'):

@@ -18,6 +18,19 @@ from .models import ImageStageResult, ManifestStageResult, Stage02BuildContext, 
 from .preflight import utc_now, write_json
 
 
+def _normalize_user_approved_full_image(path: Path, canvas: str) -> None:
+    """Resize a user-approved source without applying the enhancement pipeline."""
+    match = re.fullmatch(r"\s*(\d+)x(\d+)\s*", canvas)
+    if match is None:
+        raise ValueError(f"invalid approved-image canvas: {canvas!r}")
+    target_size = (int(match.group(1)), int(match.group(2)))
+    if _image_size(path) == list(target_size):
+        return
+    with Image.open(path) as image:
+        mode = "RGBA" if "A" in image.getbands() else "RGB"
+        image.convert(mode).resize(target_size, Image.Resampling.LANCZOS).save(path, format="PNG")
+
+
 def _import_user_approved_full_image(context: Stage02BuildContext, manifest: dict[str, Any], source: Path) -> dict[str, Any]:
     """Copy and freshly audit a user-confirmed full image into this build."""
     if not source.is_file():
@@ -31,7 +44,7 @@ def _import_user_approved_full_image(context: Stage02BuildContext, manifest: dic
         raise ValueError("approved full image target is missing")
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, target)
-    ensure_output_size(target, str(full.get("canvas") or "2048x1024"))
+    _normalize_user_approved_full_image(target, str(full.get("canvas") or "2048x1024"))
     from cyberppt.image_text_gate import audit_generated_image_text
     audit = audit_generated_image_text(target, script_text=str(pair.get("page_script") or ""))
     if audit.get("valid") is not True:
@@ -340,7 +353,14 @@ def _generate_manifest_images(
                         source_size = _image_size(audit_source)
                         if source_size is not None:
                             audit["image_size"] = source_size
-                resize_image(output_path, str(item.get("canvas") or "2048x1024"))
+                canvas = str(item.get("canvas") or "2048x1024")
+                match = re.fullmatch(r"\s*(\d+)x(\d+)\s*", canvas)
+                expected_size = [int(match.group(1)), int(match.group(2))] if match else None
+                # A passed full image is the visual authority for authored layers.
+                # Re-running the enhancer on an already-normalized reusable file
+                # changes its bytes and invalidates the clean-base binding.
+                if expected_size is None or _image_size(output_path) != expected_size:
+                    resize_image(output_path, canvas)
                 if audit is not None:
                     normalized_size = _image_size(output_path)
                     if normalized_size is not None:

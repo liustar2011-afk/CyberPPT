@@ -1,0 +1,1886 @@
+{
+  "schema": "cyberppt.final_script_pages_run.v1",
+  "build_id": "kebiaoyanxun-user-approved-v1",
+  "created_at": "2026-09-04T03:17:06+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
+  "source_script_sha256": "9f2f66f38524e7eeb679c79e6f57145383d115ec1e8ec37fc33658adc58baa35",
+  "pages": [
+    1
+  ],
+  "stage": "02-production-build",
+  "source_mode": "script_file",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "autonomous_contract": null,
+  "project_created": false,
+  "status": "production_ready",
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "editable_pptx_route": "stage02-quick-image-to-pptx",
+  "artifacts": {
+    "compiled_deliverable_prompt": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/final-script_cyberppt_deliverable_p1_p1.md",
+    "page_image_pairs": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_image_pairs.json",
+    "template_text_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/template_text/pages_001_001_template_text_lock.json",
+    "visual_style_lock": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/visual_style_lock.json",
+    "output_dir": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved",
+    "image_ppt_output_dir": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg",
+    "reconstruction_inventory": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/reconstruction_inventory.json",
+    "svg_output": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output",
+    "reconstruction_quality": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis",
+    "delivery_readiness": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/image-to-pptx-result.json",
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx",
+    "exported_pptx_by_mode": {
+      "editable": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+    },
+    "officecli_render_qa": {
+      "editable": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/qa-delivery/editable/officecli_render_qa.json"
+    },
+    "final_visible_text_qa": {
+      "editable": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/qa-delivery/editable/final_visible_text_qa.json"
+    },
+    "semantic_plan_dir": null,
+    "build_context": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/build_context.json"
+  },
+  "next_steps": [
+    "Generate the audited 2:1 full image, then publish the selected image, editable SVG, or both template-assembled PPTX routes.",
+    "Provide the completed high-fidelity authored SVG, then use the vendored Quick runtime for editable export."
+  ],
+  "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑' --script '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved' --build-id kebiaoyanxun-user-approved-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+  "rebuild": null,
+  "image_to_editable_svg_build": {
+    "schema": "cyberppt.image_to_pptx.stage02.v1",
+    "status": "production_ready",
+    "assembly_mode": "editable",
+    "runtime_project": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime",
+    "svg_roster": [
+      "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg"
+    ],
+    "svg_quality": [
+      {
+        "file": "01.svg",
+        "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+        "exists": true,
+        "errors": [],
+        "warnings": [
+          "Reference SVG: detected 2 visible root-level <g> module(s) without explicit data-pptx-bounds (<g>; <g>); every final-page/template root <g> declares its root-coordinate layout subcanvas even when it also carries data-pptx-frame or native chart/table coordinates",
+          "Detected 13 paragraph-like line run(s) split across sibling <text> elements (<g> x=117.0, y=304.0..340.0, 2 lines; <g> x=443.0, y=304.0..340.0, 2 lines; <g> x=285.0, y=160.0..190.0, 2 lines; +10 more). If each run is one prose paragraph, combine it into one <text>: keep its first line as direct text and use direct <tspan> children with the parent x and positive relative dy values for later lines. An all-<tspan> form may start with dy=\"0\". Keep semantically independent text frames separate.",
+          "Top-level visible <g> #2 has no id; object-level animation config cannot reference it",
+          "Top-level visible <g> #3 has no id; object-level animation config cannot reference it",
+          "1 ungrouped top-level Slide-local element(s) in svg_output (<image> #1); group only logical content units in a top-level <g id=\"...\">. Keep genuine static page framing as a root primitive and declare a supported data-pptx-role such as \"background\" or \"decoration\"",
+          "page SVG is missing root data-pptx-page-role"
+        ],
+        "info": {
+          "viewbox": "0 0 2048 1024",
+          "fonts": [
+            "PingFang SC"
+          ],
+          "text_elements": 0,
+          "tspan_elements": 0
+        },
+        "passed": true,
+        "source_sha256": "16f8fb8dc7d503aed2d6ece680b0877a8e410b04c693d4d772da3deab40cdbbf"
+      }
+    ],
+    "visual_review": {
+      "schema": "cyberppt.image_to_pptx.visual_review.v1",
+      "issues": [],
+      "requires_rebuild": false,
+      "valid": true,
+      "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json"
+    },
+    "artifacts": {
+      "reconstruction_inventory": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/reconstruction_inventory.json",
+      "svg_output": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output",
+      "reconstruction_quality": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis",
+      "authored_svg_preflight_qa": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/authored_svg_preflight_qa.json",
+      "native_text_style_qa": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_style_qa.json",
+      "native_text_geometry_qa": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_geometry_qa.json",
+      "text_content_qa": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/text_content_qa.json",
+      "editable_page_qa": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/editable_page_qa.json",
+      "clean_base_policy_qa": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/clean_base_policy_qa.json",
+      "graphic_text_policy_qa": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/graphic_text_policy_qa.json",
+      "render_compare": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json",
+      "exported_pptx": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx",
+      "delivery_readiness": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/image-to-pptx-result.json"
+    },
+    "artifacts_by_mode": {
+      "editable": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+    },
+    "reports": {
+      "reconstruction_inventory": {
+        "valid": true
+      },
+      "reconstruction_quality": {
+        "valid": true,
+        "pages": [
+          {
+            "file": "01.svg",
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+            "exists": true,
+            "errors": [],
+            "warnings": [
+              "Reference SVG: detected 2 visible root-level <g> module(s) without explicit data-pptx-bounds (<g>; <g>); every final-page/template root <g> declares its root-coordinate layout subcanvas even when it also carries data-pptx-frame or native chart/table coordinates",
+              "Detected 13 paragraph-like line run(s) split across sibling <text> elements (<g> x=117.0, y=304.0..340.0, 2 lines; <g> x=443.0, y=304.0..340.0, 2 lines; <g> x=285.0, y=160.0..190.0, 2 lines; +10 more). If each run is one prose paragraph, combine it into one <text>: keep its first line as direct text and use direct <tspan> children with the parent x and positive relative dy values for later lines. An all-<tspan> form may start with dy=\"0\". Keep semantically independent text frames separate.",
+              "Top-level visible <g> #2 has no id; object-level animation config cannot reference it",
+              "Top-level visible <g> #3 has no id; object-level animation config cannot reference it",
+              "1 ungrouped top-level Slide-local element(s) in svg_output (<image> #1); group only logical content units in a top-level <g id=\"...\">. Keep genuine static page framing as a root primitive and declare a supported data-pptx-role such as \"background\" or \"decoration\"",
+              "page SVG is missing root data-pptx-page-role"
+            ],
+            "info": {
+              "viewbox": "0 0 2048 1024",
+              "fonts": [
+                "PingFang SC"
+              ],
+              "text_elements": 0,
+              "tspan_elements": 0
+            },
+            "passed": true,
+            "source_sha256": "16f8fb8dc7d503aed2d6ece680b0877a8e410b04c693d4d772da3deab40cdbbf"
+          }
+        ]
+      },
+      "svg_output": {
+        "valid": true
+      },
+      "authored_svg_preflight": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.authored_svg_preflight.v1",
+            "page_number": 1,
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/page_001.svg",
+            "view_box": [
+              0.0,
+              0.0,
+              2048.0,
+              1024.0
+            ],
+            "text_count": 60,
+            "text_id_count": 0,
+            "referenced_assets": [
+              "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/assets/page_001_clean_base_unsharpened.png"
+            ],
+            "valid": true,
+            "errors": [],
+            "warnings": [],
+            "diagnostic_only_warnings": true
+          }
+        ]
+      },
+      "native_text_style": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.native_text_style.v1",
+            "profile": "locked",
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+            "text_count": 60,
+            "changed": false,
+            "split_label_count": 0,
+            "styled_heading_count": 0,
+            "preserved_locked": true
+          }
+        ]
+      },
+      "native_text_geometry": {
+        "valid": true,
+        "qa_only": true,
+        "pages": [
+          {
+            "schema": "cyberppt.native_text_geometry_qa.v1",
+            "page_number": 1,
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+            "status": "skipped",
+            "valid": true,
+            "review_required": false,
+            "reason": "authored styling retained; explicit tspan structure checked",
+            "items": [],
+            "warnings": []
+          }
+        ],
+        "review_required": false
+      },
+      "text_content_qa": {
+        "editable": {
+          "schema": "cyberppt.dual_image.text_content_qa.v1",
+          "valid": true,
+          "order_sensitive": false,
+          "allow_fragmented_actual": true,
+          "checks": {
+            "text_count_matches": true,
+            "pptx_text_matches_expected": true
+          },
+          "expected_texts": [
+            "双方将在五个方向开展科技项目和课题研究合作",
+            "01",
+            "电力领域",
+            "数据基础设施建设",
+            "02",
+            "高质量数据集",
+            "评测标注与资产评估",
+            "03",
+            "电力数据",
+            "安全风险评估",
+            "04",
+            "人工智能",
+            "工具与评测",
+            "05",
+            "能算碳",
+            "综合服务",
+            "开放协同，择优推进",
+            "1700+",
+            "23年",
+            "承担建设任务",
+            "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+            "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+            "围绕数据基础设施参考架构、",
+            "接入连接器、可信流通及多",
+            "主体运营机制开展联合研究。",
+            "中电联作为国家数据基础设",
+            "施行业节点，可组织跨企业构",
+            "建验证环境，提供行业级验证",
+            "条件。",
+            "围绕数据标注、数据集加工、",
+            "质量评测与资产评估的方法及",
+            "工具开展研究，并探索测评互",
+            "认与价值释放机制。",
+            "已联合多家网省公司完成多",
+            "类数据集建设与评测案例，具",
+            "备专家团队与标准体系支撑。",
+            "围绕数据分类分级、全生命",
+            "周期与流通安全规则开展研究，",
+            "联合验证风险评估及脱敏、水",
+            "印等技防工具的适用性。",
+            "已研发相应评估与技防工具，",
+            "并在国网多省份落地应用。",
+            "围绕模型适配、场景能力、",
+            "安全可信等维度联合研发自动",
+            "化评测工具，验证业务智能助",
+            "手与数据治理工具应用效果。",
+            "已构建行业、场景、基础能力",
+            "三级评测体系，在多家网省公",
+            "司落地应用。",
+            "围绕碳排放核算、碳资产开发、",
+            "能效优化与零碳园区管理开展",
+            "工具与机制研究。",
+            "依托1700余家会员单位资源",
+            "和23年行业积累，承担电力碳",
+            "足迹数据库建设任务。",
+            "除上述方向外，如贵单位另有科技项目储备",
+            "或研究选题，可结合实际共同研究，择优推进。",
+            "会员单位资源",
+            "行业积累",
+            "电力碳足迹数据库",
+            "创新业务6-1：科技项目及课题研究",
+            "中国电力企业联合会",
+            "1"
+          ],
+          "actual_texts": [
+            "中国电力企业联合会",
+            "1",
+            "创新业务6-1：科技项目及课题研究",
+            "双方将在五个方向开展科技项目和课题研究合作",
+            "01",
+            "电力领域",
+            "数据基础设施建设",
+            "02",
+            "高质量数据集",
+            "评测标注与资产评估",
+            "03",
+            "电力数据",
+            "安全风险评估",
+            "04",
+            "人工智能",
+            "工具与评测",
+            "05",
+            "能算碳",
+            "综合服务",
+            "开放协同，择优推进",
+            "1700+",
+            "23年",
+            "承担建设任务",
+            "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+            "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+            "围绕数据基础设施参考架构、",
+            "接入连接器、可信流通及多",
+            "主体运营机制开展联合研究。",
+            "中电联作为国家数据基础设",
+            "施行业节点，可组织跨企业构",
+            "建验证环境，提供行业级验证",
+            "条件。",
+            "围绕数据标注、数据集加工、",
+            "质量评测与资产评估的方法及",
+            "工具开展研究，并探索测评互",
+            "认与价值释放机制。",
+            "已联合多家网省公司完成多",
+            "类数据集建设与评测案例，具",
+            "备专家团队与标准体系支撑。",
+            "围绕数据分类分级、全生命",
+            "周期与流通安全规则开展研究，",
+            "联合验证风险评估及脱敏、水",
+            "印等技防工具的适用性。",
+            "已研发相应评估与技防工具，",
+            "并在国网多省份落地应用。",
+            "围绕模型适配、场景能力、",
+            "安全可信等维度联合研发自动",
+            "化评测工具，验证业务智能助",
+            "手与数据治理工具应用效果。",
+            "已构建行业、场景、基础能力",
+            "三级评测体系，在多家网省公",
+            "司落地应用。",
+            "围绕碳排放核算、碳资产开发、",
+            "能效优化与零碳园区管理开展",
+            "工具与机制研究。",
+            "依托1700余家会员单位资源",
+            "和23年行业积累，承担电力碳",
+            "足迹数据库建设任务。",
+            "除上述方向外，如贵单位另有科技项目储备",
+            "或研究选题，可结合实际共同研究，择优推进。",
+            "会员单位资源",
+            "行业积累",
+            "电力碳足迹数据库"
+          ],
+          "mismatches": [],
+          "error_count": 0
+        }
+      },
+      "editable_page": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.stage02.editable_page_qa.v1",
+            "page_number": 1,
+            "valid": true,
+            "clean_base": {
+              "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+              "page_number": 1,
+              "valid": true,
+              "errors": []
+            },
+            "graphic_text_policy": {
+              "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+              "page_number": 1,
+              "valid": true,
+              "status": "complete",
+              "items": [
+                {
+                  "id": "title",
+                  "text": "双方将在五个方向开展科技项目和课题研究合作",
+                  "treatment": "native_text",
+                  "valid": true
+                },
+                {
+                  "id": "sidebar-title",
+                  "text": "开放协同，择优推进",
+                  "treatment": "native_text",
+                  "valid": true
+                },
+                {
+                  "id": "task-title",
+                  "text": "承担建设任务",
+                  "treatment": "native_text",
+                  "valid": true
+                }
+              ],
+              "native_svg_texts": [
+                "双方将在五个方向开展科技项目和课题研究合作",
+                "01",
+                "电力领域",
+                "数据基础设施建设",
+                "02",
+                "高质量数据集",
+                "评测标注与资产评估",
+                "03",
+                "电力数据",
+                "安全风险评估",
+                "04",
+                "人工智能",
+                "工具与评测",
+                "05",
+                "能算碳",
+                "综合服务",
+                "开放协同，择优推进",
+                "1700+",
+                "23年",
+                "承担建设任务",
+                "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+                "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+                "• 围绕数据基础设施参考架构、",
+                "接入连接器、可信流通及多",
+                "主体运营机制开展联合研究。",
+                "• 中电联作为国家数据基础设",
+                "施行业节点，可组织跨企业构",
+                "建验证环境，提供行业级验证",
+                "条件。",
+                "• 围绕数据标注、数据集加工、",
+                "质量评测与资产评估的方法及",
+                "工具开展研究，并探索测评互",
+                "认与价值释放机制。",
+                "• 已联合多家网省公司完成多",
+                "类数据集建设与评测案例，具",
+                "备专家团队与标准体系支撑。",
+                "• 围绕数据分类分级、全生命",
+                "周期与流通安全规则开展研究，",
+                "联合验证风险评估及脱敏、水",
+                "印等技防工具的适用性。",
+                "• 已研发相应评估与技防工具，",
+                "并在国网多省份落地应用。",
+                "• 围绕模型适配、场景能力、",
+                "安全可信等维度联合研发自动",
+                "化评测工具，验证业务智能助",
+                "手与数据治理工具应用效果。",
+                "• 已构建行业、场景、基础能力",
+                "三级评测体系，在多家网省公",
+                "司落地应用。",
+                "• 围绕碳排放核算、碳资产开发、",
+                "能效优化与零碳园区管理开展",
+                "工具与机制研究。",
+                "• 依托1700余家会员单位资源",
+                "和23年行业积累，承担电力碳",
+                "足迹数据库建设任务。",
+                "除上述方向外，如贵单位另有科技项目储备",
+                "或研究选题，可结合实际共同研究，择优推进。",
+                "会员单位资源",
+                "行业积累",
+                "电力碳足迹数据库"
+              ],
+              "image_layer_count": 1,
+              "errors": []
+            },
+            "svg_text_count": 60,
+            "image_layer_count": 1,
+            "errors": []
+          }
+        ]
+      },
+      "clean_base_policy": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+            "page_number": 1,
+            "valid": true,
+            "errors": []
+          }
+        ]
+      },
+      "graphic_text_policy": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+            "page_number": 1,
+            "valid": true,
+            "status": "complete",
+            "items": [
+              {
+                "id": "title",
+                "text": "双方将在五个方向开展科技项目和课题研究合作",
+                "treatment": "native_text",
+                "valid": true
+              },
+              {
+                "id": "sidebar-title",
+                "text": "开放协同，择优推进",
+                "treatment": "native_text",
+                "valid": true
+              },
+              {
+                "id": "task-title",
+                "text": "承担建设任务",
+                "treatment": "native_text",
+                "valid": true
+              }
+            ],
+            "native_svg_texts": [
+              "双方将在五个方向开展科技项目和课题研究合作",
+              "01",
+              "电力领域",
+              "数据基础设施建设",
+              "02",
+              "高质量数据集",
+              "评测标注与资产评估",
+              "03",
+              "电力数据",
+              "安全风险评估",
+              "04",
+              "人工智能",
+              "工具与评测",
+              "05",
+              "能算碳",
+              "综合服务",
+              "开放协同，择优推进",
+              "1700+",
+              "23年",
+              "承担建设任务",
+              "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+              "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+              "• 围绕数据基础设施参考架构、",
+              "接入连接器、可信流通及多",
+              "主体运营机制开展联合研究。",
+              "• 中电联作为国家数据基础设",
+              "施行业节点，可组织跨企业构",
+              "建验证环境，提供行业级验证",
+              "条件。",
+              "• 围绕数据标注、数据集加工、",
+              "质量评测与资产评估的方法及",
+              "工具开展研究，并探索测评互",
+              "认与价值释放机制。",
+              "• 已联合多家网省公司完成多",
+              "类数据集建设与评测案例，具",
+              "备专家团队与标准体系支撑。",
+              "• 围绕数据分类分级、全生命",
+              "周期与流通安全规则开展研究，",
+              "联合验证风险评估及脱敏、水",
+              "印等技防工具的适用性。",
+              "• 已研发相应评估与技防工具，",
+              "并在国网多省份落地应用。",
+              "• 围绕模型适配、场景能力、",
+              "安全可信等维度联合研发自动",
+              "化评测工具，验证业务智能助",
+              "手与数据治理工具应用效果。",
+              "• 已构建行业、场景、基础能力",
+              "三级评测体系，在多家网省公",
+              "司落地应用。",
+              "• 围绕碳排放核算、碳资产开发、",
+              "能效优化与零碳园区管理开展",
+              "工具与机制研究。",
+              "• 依托1700余家会员单位资源",
+              "和23年行业积累，承担电力碳",
+              "足迹数据库建设任务。",
+              "除上述方向外，如贵单位另有科技项目储备",
+              "或研究选题，可结合实际共同研究，择优推进。",
+              "会员单位资源",
+              "行业积累",
+              "电力碳足迹数据库"
+            ],
+            "image_layer_count": 1,
+            "errors": []
+          }
+        ]
+      },
+      "render_compare": {
+        "valid": true,
+        "review": {
+          "schema": "cyberppt.image_to_pptx.visual_review.v1",
+          "issues": [],
+          "requires_rebuild": false,
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json"
+        }
+      },
+      "exported_pptx": {
+        "valid": true
+      },
+      "exported_pptx_by_mode": {
+        "editable": {
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+        }
+      }
+    },
+    "text_content_qa": {
+      "editable": {
+        "schema": "cyberppt.dual_image.text_content_qa.v1",
+        "valid": true,
+        "order_sensitive": false,
+        "allow_fragmented_actual": true,
+        "checks": {
+          "text_count_matches": true,
+          "pptx_text_matches_expected": true
+        },
+        "expected_texts": [
+          "双方将在五个方向开展科技项目和课题研究合作",
+          "01",
+          "电力领域",
+          "数据基础设施建设",
+          "02",
+          "高质量数据集",
+          "评测标注与资产评估",
+          "03",
+          "电力数据",
+          "安全风险评估",
+          "04",
+          "人工智能",
+          "工具与评测",
+          "05",
+          "能算碳",
+          "综合服务",
+          "开放协同，择优推进",
+          "1700+",
+          "23年",
+          "承担建设任务",
+          "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+          "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+          "围绕数据基础设施参考架构、",
+          "接入连接器、可信流通及多",
+          "主体运营机制开展联合研究。",
+          "中电联作为国家数据基础设",
+          "施行业节点，可组织跨企业构",
+          "建验证环境，提供行业级验证",
+          "条件。",
+          "围绕数据标注、数据集加工、",
+          "质量评测与资产评估的方法及",
+          "工具开展研究，并探索测评互",
+          "认与价值释放机制。",
+          "已联合多家网省公司完成多",
+          "类数据集建设与评测案例，具",
+          "备专家团队与标准体系支撑。",
+          "围绕数据分类分级、全生命",
+          "周期与流通安全规则开展研究，",
+          "联合验证风险评估及脱敏、水",
+          "印等技防工具的适用性。",
+          "已研发相应评估与技防工具，",
+          "并在国网多省份落地应用。",
+          "围绕模型适配、场景能力、",
+          "安全可信等维度联合研发自动",
+          "化评测工具，验证业务智能助",
+          "手与数据治理工具应用效果。",
+          "已构建行业、场景、基础能力",
+          "三级评测体系，在多家网省公",
+          "司落地应用。",
+          "围绕碳排放核算、碳资产开发、",
+          "能效优化与零碳园区管理开展",
+          "工具与机制研究。",
+          "依托1700余家会员单位资源",
+          "和23年行业积累，承担电力碳",
+          "足迹数据库建设任务。",
+          "除上述方向外，如贵单位另有科技项目储备",
+          "或研究选题，可结合实际共同研究，择优推进。",
+          "会员单位资源",
+          "行业积累",
+          "电力碳足迹数据库",
+          "创新业务6-1：科技项目及课题研究",
+          "中国电力企业联合会",
+          "1"
+        ],
+        "actual_texts": [
+          "中国电力企业联合会",
+          "1",
+          "创新业务6-1：科技项目及课题研究",
+          "双方将在五个方向开展科技项目和课题研究合作",
+          "01",
+          "电力领域",
+          "数据基础设施建设",
+          "02",
+          "高质量数据集",
+          "评测标注与资产评估",
+          "03",
+          "电力数据",
+          "安全风险评估",
+          "04",
+          "人工智能",
+          "工具与评测",
+          "05",
+          "能算碳",
+          "综合服务",
+          "开放协同，择优推进",
+          "1700+",
+          "23年",
+          "承担建设任务",
+          "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+          "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+          "围绕数据基础设施参考架构、",
+          "接入连接器、可信流通及多",
+          "主体运营机制开展联合研究。",
+          "中电联作为国家数据基础设",
+          "施行业节点，可组织跨企业构",
+          "建验证环境，提供行业级验证",
+          "条件。",
+          "围绕数据标注、数据集加工、",
+          "质量评测与资产评估的方法及",
+          "工具开展研究，并探索测评互",
+          "认与价值释放机制。",
+          "已联合多家网省公司完成多",
+          "类数据集建设与评测案例，具",
+          "备专家团队与标准体系支撑。",
+          "围绕数据分类分级、全生命",
+          "周期与流通安全规则开展研究，",
+          "联合验证风险评估及脱敏、水",
+          "印等技防工具的适用性。",
+          "已研发相应评估与技防工具，",
+          "并在国网多省份落地应用。",
+          "围绕模型适配、场景能力、",
+          "安全可信等维度联合研发自动",
+          "化评测工具，验证业务智能助",
+          "手与数据治理工具应用效果。",
+          "已构建行业、场景、基础能力",
+          "三级评测体系，在多家网省公",
+          "司落地应用。",
+          "围绕碳排放核算、碳资产开发、",
+          "能效优化与零碳园区管理开展",
+          "工具与机制研究。",
+          "依托1700余家会员单位资源",
+          "和23年行业积累，承担电力碳",
+          "足迹数据库建设任务。",
+          "除上述方向外，如贵单位另有科技项目储备",
+          "或研究选题，可结合实际共同研究，择优推进。",
+          "会员单位资源",
+          "行业积累",
+          "电力碳足迹数据库"
+        ],
+        "mismatches": [],
+        "error_count": 0
+      }
+    },
+    "release_gate": {
+      "valid": true,
+      "manual_adjustments": "local_only"
+    },
+    "delivery_readiness": {
+      "schema": "cyberppt.stage02.production_readiness.v1",
+      "stage": "02-production-build",
+      "status": "production_ready",
+      "valid": true,
+      "checks": {
+        "all_required_tools_consumed": true,
+        "all_consumed_reports_pass": true,
+        "blocking_count": 0
+      },
+      "tool_consumption": {
+        "reconstruction_inventory": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/reconstruction_inventory.json"
+        },
+        "svg_output": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output"
+        },
+        "reconstruction_quality": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis"
+        },
+        "authored_svg_preflight_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/authored_svg_preflight_qa.json"
+        },
+        "native_text_style_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_style_qa.json"
+        },
+        "native_text_geometry_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_geometry_qa.json"
+        },
+        "text_content_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/text_content_qa.json"
+        },
+        "editable_page_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/editable_page_qa.json"
+        },
+        "clean_base_policy_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/clean_base_policy_qa.json"
+        },
+        "graphic_text_policy_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/graphic_text_policy_qa.json"
+        },
+        "render_compare": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json"
+        },
+        "exported_pptx": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+        }
+      },
+      "blocking_errors": [],
+      "reports": {
+        "reconstruction_inventory": {
+          "valid": true
+        },
+        "reconstruction_quality": {
+          "valid": true,
+          "pages": [
+            {
+              "file": "01.svg",
+              "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+              "exists": true,
+              "errors": [],
+              "warnings": [
+                "Reference SVG: detected 2 visible root-level <g> module(s) without explicit data-pptx-bounds (<g>; <g>); every final-page/template root <g> declares its root-coordinate layout subcanvas even when it also carries data-pptx-frame or native chart/table coordinates",
+                "Detected 13 paragraph-like line run(s) split across sibling <text> elements (<g> x=117.0, y=304.0..340.0, 2 lines; <g> x=443.0, y=304.0..340.0, 2 lines; <g> x=285.0, y=160.0..190.0, 2 lines; +10 more). If each run is one prose paragraph, combine it into one <text>: keep its first line as direct text and use direct <tspan> children with the parent x and positive relative dy values for later lines. An all-<tspan> form may start with dy=\"0\". Keep semantically independent text frames separate.",
+                "Top-level visible <g> #2 has no id; object-level animation config cannot reference it",
+                "Top-level visible <g> #3 has no id; object-level animation config cannot reference it",
+                "1 ungrouped top-level Slide-local element(s) in svg_output (<image> #1); group only logical content units in a top-level <g id=\"...\">. Keep genuine static page framing as a root primitive and declare a supported data-pptx-role such as \"background\" or \"decoration\"",
+                "page SVG is missing root data-pptx-page-role"
+              ],
+              "info": {
+                "viewbox": "0 0 2048 1024",
+                "fonts": [
+                  "PingFang SC"
+                ],
+                "text_elements": 0,
+                "tspan_elements": 0
+              },
+              "passed": true,
+              "source_sha256": "16f8fb8dc7d503aed2d6ece680b0877a8e410b04c693d4d772da3deab40cdbbf"
+            }
+          ]
+        },
+        "svg_output": {
+          "valid": true
+        },
+        "authored_svg_preflight": {
+          "valid": true,
+          "pages": [
+            {
+              "schema": "cyberppt.authored_svg_preflight.v1",
+              "page_number": 1,
+              "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/page_001.svg",
+              "view_box": [
+                0.0,
+                0.0,
+                2048.0,
+                1024.0
+              ],
+              "text_count": 60,
+              "text_id_count": 0,
+              "referenced_assets": [
+                "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/assets/page_001_clean_base_unsharpened.png"
+              ],
+              "valid": true,
+              "errors": [],
+              "warnings": [],
+              "diagnostic_only_warnings": true
+            }
+          ]
+        },
+        "native_text_style": {
+          "valid": true,
+          "pages": [
+            {
+              "schema": "cyberppt.native_text_style.v1",
+              "profile": "locked",
+              "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+              "text_count": 60,
+              "changed": false,
+              "split_label_count": 0,
+              "styled_heading_count": 0,
+              "preserved_locked": true
+            }
+          ]
+        },
+        "native_text_geometry": {
+          "valid": true,
+          "qa_only": true,
+          "pages": [
+            {
+              "schema": "cyberppt.native_text_geometry_qa.v1",
+              "page_number": 1,
+              "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+              "status": "skipped",
+              "valid": true,
+              "review_required": false,
+              "reason": "authored styling retained; explicit tspan structure checked",
+              "items": [],
+              "warnings": []
+            }
+          ],
+          "review_required": false
+        },
+        "text_content_qa": {
+          "editable": {
+            "schema": "cyberppt.dual_image.text_content_qa.v1",
+            "valid": true,
+            "order_sensitive": false,
+            "allow_fragmented_actual": true,
+            "checks": {
+              "text_count_matches": true,
+              "pptx_text_matches_expected": true
+            },
+            "expected_texts": [
+              "双方将在五个方向开展科技项目和课题研究合作",
+              "01",
+              "电力领域",
+              "数据基础设施建设",
+              "02",
+              "高质量数据集",
+              "评测标注与资产评估",
+              "03",
+              "电力数据",
+              "安全风险评估",
+              "04",
+              "人工智能",
+              "工具与评测",
+              "05",
+              "能算碳",
+              "综合服务",
+              "开放协同，择优推进",
+              "1700+",
+              "23年",
+              "承担建设任务",
+              "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+              "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+              "围绕数据基础设施参考架构、",
+              "接入连接器、可信流通及多",
+              "主体运营机制开展联合研究。",
+              "中电联作为国家数据基础设",
+              "施行业节点，可组织跨企业构",
+              "建验证环境，提供行业级验证",
+              "条件。",
+              "围绕数据标注、数据集加工、",
+              "质量评测与资产评估的方法及",
+              "工具开展研究，并探索测评互",
+              "认与价值释放机制。",
+              "已联合多家网省公司完成多",
+              "类数据集建设与评测案例，具",
+              "备专家团队与标准体系支撑。",
+              "围绕数据分类分级、全生命",
+              "周期与流通安全规则开展研究，",
+              "联合验证风险评估及脱敏、水",
+              "印等技防工具的适用性。",
+              "已研发相应评估与技防工具，",
+              "并在国网多省份落地应用。",
+              "围绕模型适配、场景能力、",
+              "安全可信等维度联合研发自动",
+              "化评测工具，验证业务智能助",
+              "手与数据治理工具应用效果。",
+              "已构建行业、场景、基础能力",
+              "三级评测体系，在多家网省公",
+              "司落地应用。",
+              "围绕碳排放核算、碳资产开发、",
+              "能效优化与零碳园区管理开展",
+              "工具与机制研究。",
+              "依托1700余家会员单位资源",
+              "和23年行业积累，承担电力碳",
+              "足迹数据库建设任务。",
+              "除上述方向外，如贵单位另有科技项目储备",
+              "或研究选题，可结合实际共同研究，择优推进。",
+              "会员单位资源",
+              "行业积累",
+              "电力碳足迹数据库",
+              "创新业务6-1：科技项目及课题研究",
+              "中国电力企业联合会",
+              "1"
+            ],
+            "actual_texts": [
+              "中国电力企业联合会",
+              "1",
+              "创新业务6-1：科技项目及课题研究",
+              "双方将在五个方向开展科技项目和课题研究合作",
+              "01",
+              "电力领域",
+              "数据基础设施建设",
+              "02",
+              "高质量数据集",
+              "评测标注与资产评估",
+              "03",
+              "电力数据",
+              "安全风险评估",
+              "04",
+              "人工智能",
+              "工具与评测",
+              "05",
+              "能算碳",
+              "综合服务",
+              "开放协同，择优推进",
+              "1700+",
+              "23年",
+              "承担建设任务",
+              "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+              "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+              "围绕数据基础设施参考架构、",
+              "接入连接器、可信流通及多",
+              "主体运营机制开展联合研究。",
+              "中电联作为国家数据基础设",
+              "施行业节点，可组织跨企业构",
+              "建验证环境，提供行业级验证",
+              "条件。",
+              "围绕数据标注、数据集加工、",
+              "质量评测与资产评估的方法及",
+              "工具开展研究，并探索测评互",
+              "认与价值释放机制。",
+              "已联合多家网省公司完成多",
+              "类数据集建设与评测案例，具",
+              "备专家团队与标准体系支撑。",
+              "围绕数据分类分级、全生命",
+              "周期与流通安全规则开展研究，",
+              "联合验证风险评估及脱敏、水",
+              "印等技防工具的适用性。",
+              "已研发相应评估与技防工具，",
+              "并在国网多省份落地应用。",
+              "围绕模型适配、场景能力、",
+              "安全可信等维度联合研发自动",
+              "化评测工具，验证业务智能助",
+              "手与数据治理工具应用效果。",
+              "已构建行业、场景、基础能力",
+              "三级评测体系，在多家网省公",
+              "司落地应用。",
+              "围绕碳排放核算、碳资产开发、",
+              "能效优化与零碳园区管理开展",
+              "工具与机制研究。",
+              "依托1700余家会员单位资源",
+              "和23年行业积累，承担电力碳",
+              "足迹数据库建设任务。",
+              "除上述方向外，如贵单位另有科技项目储备",
+              "或研究选题，可结合实际共同研究，择优推进。",
+              "会员单位资源",
+              "行业积累",
+              "电力碳足迹数据库"
+            ],
+            "mismatches": [],
+            "error_count": 0
+          }
+        },
+        "editable_page": {
+          "valid": true,
+          "pages": [
+            {
+              "schema": "cyberppt.stage02.editable_page_qa.v1",
+              "page_number": 1,
+              "valid": true,
+              "clean_base": {
+                "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+                "page_number": 1,
+                "valid": true,
+                "errors": []
+              },
+              "graphic_text_policy": {
+                "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+                "page_number": 1,
+                "valid": true,
+                "status": "complete",
+                "items": [
+                  {
+                    "id": "title",
+                    "text": "双方将在五个方向开展科技项目和课题研究合作",
+                    "treatment": "native_text",
+                    "valid": true
+                  },
+                  {
+                    "id": "sidebar-title",
+                    "text": "开放协同，择优推进",
+                    "treatment": "native_text",
+                    "valid": true
+                  },
+                  {
+                    "id": "task-title",
+                    "text": "承担建设任务",
+                    "treatment": "native_text",
+                    "valid": true
+                  }
+                ],
+                "native_svg_texts": [
+                  "双方将在五个方向开展科技项目和课题研究合作",
+                  "01",
+                  "电力领域",
+                  "数据基础设施建设",
+                  "02",
+                  "高质量数据集",
+                  "评测标注与资产评估",
+                  "03",
+                  "电力数据",
+                  "安全风险评估",
+                  "04",
+                  "人工智能",
+                  "工具与评测",
+                  "05",
+                  "能算碳",
+                  "综合服务",
+                  "开放协同，择优推进",
+                  "1700+",
+                  "23年",
+                  "承担建设任务",
+                  "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+                  "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+                  "• 围绕数据基础设施参考架构、",
+                  "接入连接器、可信流通及多",
+                  "主体运营机制开展联合研究。",
+                  "• 中电联作为国家数据基础设",
+                  "施行业节点，可组织跨企业构",
+                  "建验证环境，提供行业级验证",
+                  "条件。",
+                  "• 围绕数据标注、数据集加工、",
+                  "质量评测与资产评估的方法及",
+                  "工具开展研究，并探索测评互",
+                  "认与价值释放机制。",
+                  "• 已联合多家网省公司完成多",
+                  "类数据集建设与评测案例，具",
+                  "备专家团队与标准体系支撑。",
+                  "• 围绕数据分类分级、全生命",
+                  "周期与流通安全规则开展研究，",
+                  "联合验证风险评估及脱敏、水",
+                  "印等技防工具的适用性。",
+                  "• 已研发相应评估与技防工具，",
+                  "并在国网多省份落地应用。",
+                  "• 围绕模型适配、场景能力、",
+                  "安全可信等维度联合研发自动",
+                  "化评测工具，验证业务智能助",
+                  "手与数据治理工具应用效果。",
+                  "• 已构建行业、场景、基础能力",
+                  "三级评测体系，在多家网省公",
+                  "司落地应用。",
+                  "• 围绕碳排放核算、碳资产开发、",
+                  "能效优化与零碳园区管理开展",
+                  "工具与机制研究。",
+                  "• 依托1700余家会员单位资源",
+                  "和23年行业积累，承担电力碳",
+                  "足迹数据库建设任务。",
+                  "除上述方向外，如贵单位另有科技项目储备",
+                  "或研究选题，可结合实际共同研究，择优推进。",
+                  "会员单位资源",
+                  "行业积累",
+                  "电力碳足迹数据库"
+                ],
+                "image_layer_count": 1,
+                "errors": []
+              },
+              "svg_text_count": 60,
+              "image_layer_count": 1,
+              "errors": []
+            }
+          ]
+        },
+        "clean_base_policy": {
+          "valid": true,
+          "pages": [
+            {
+              "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+              "page_number": 1,
+              "valid": true,
+              "errors": []
+            }
+          ]
+        },
+        "graphic_text_policy": {
+          "valid": true,
+          "pages": [
+            {
+              "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+              "page_number": 1,
+              "valid": true,
+              "status": "complete",
+              "items": [
+                {
+                  "id": "title",
+                  "text": "双方将在五个方向开展科技项目和课题研究合作",
+                  "treatment": "native_text",
+                  "valid": true
+                },
+                {
+                  "id": "sidebar-title",
+                  "text": "开放协同，择优推进",
+                  "treatment": "native_text",
+                  "valid": true
+                },
+                {
+                  "id": "task-title",
+                  "text": "承担建设任务",
+                  "treatment": "native_text",
+                  "valid": true
+                }
+              ],
+              "native_svg_texts": [
+                "双方将在五个方向开展科技项目和课题研究合作",
+                "01",
+                "电力领域",
+                "数据基础设施建设",
+                "02",
+                "高质量数据集",
+                "评测标注与资产评估",
+                "03",
+                "电力数据",
+                "安全风险评估",
+                "04",
+                "人工智能",
+                "工具与评测",
+                "05",
+                "能算碳",
+                "综合服务",
+                "开放协同，择优推进",
+                "1700+",
+                "23年",
+                "承担建设任务",
+                "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+                "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+                "• 围绕数据基础设施参考架构、",
+                "接入连接器、可信流通及多",
+                "主体运营机制开展联合研究。",
+                "• 中电联作为国家数据基础设",
+                "施行业节点，可组织跨企业构",
+                "建验证环境，提供行业级验证",
+                "条件。",
+                "• 围绕数据标注、数据集加工、",
+                "质量评测与资产评估的方法及",
+                "工具开展研究，并探索测评互",
+                "认与价值释放机制。",
+                "• 已联合多家网省公司完成多",
+                "类数据集建设与评测案例，具",
+                "备专家团队与标准体系支撑。",
+                "• 围绕数据分类分级、全生命",
+                "周期与流通安全规则开展研究，",
+                "联合验证风险评估及脱敏、水",
+                "印等技防工具的适用性。",
+                "• 已研发相应评估与技防工具，",
+                "并在国网多省份落地应用。",
+                "• 围绕模型适配、场景能力、",
+                "安全可信等维度联合研发自动",
+                "化评测工具，验证业务智能助",
+                "手与数据治理工具应用效果。",
+                "• 已构建行业、场景、基础能力",
+                "三级评测体系，在多家网省公",
+                "司落地应用。",
+                "• 围绕碳排放核算、碳资产开发、",
+                "能效优化与零碳园区管理开展",
+                "工具与机制研究。",
+                "• 依托1700余家会员单位资源",
+                "和23年行业积累，承担电力碳",
+                "足迹数据库建设任务。",
+                "除上述方向外，如贵单位另有科技项目储备",
+                "或研究选题，可结合实际共同研究，择优推进。",
+                "会员单位资源",
+                "行业积累",
+                "电力碳足迹数据库"
+              ],
+              "image_layer_count": 1,
+              "errors": []
+            }
+          ]
+        },
+        "render_compare": {
+          "valid": true,
+          "review": {
+            "schema": "cyberppt.image_to_pptx.visual_review.v1",
+            "issues": [],
+            "requires_rebuild": false,
+            "valid": true,
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json"
+          }
+        },
+        "exported_pptx": {
+          "valid": true
+        },
+        "exported_pptx_by_mode": {
+          "editable": {
+            "valid": true,
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+          }
+        }
+      }
+    }
+  },
+  "image_generation": {
+    "backend": "codex_oauth_image",
+    "production_mode": "image-to-editable-svg",
+    "generated": [],
+    "skipped": [
+      "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/page_001_创新业务6_1_科技项目及课题研究_full.png"
+    ],
+    "failed": [],
+    "dry_run": false,
+    "text_audit_skipped": false,
+    "full_reference_images": [
+      "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+    ],
+    "text_audits": [],
+    "imagegen_attempts": []
+  },
+  "clean_base_generation": null,
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 1,
+        "mode": "off",
+        "source_prompt_sha256": "e1b7eb508085013382fec70f9a2dc3214614b0e40d82d9d4d206cff1c7111c90",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 4431
+      }
+    ]
+  },
+  "tool_consumption": {
+    "reconstruction_inventory": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/reconstruction_inventory.json"
+    },
+    "svg_output": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output"
+    },
+    "reconstruction_quality": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis"
+    },
+    "authored_svg_preflight_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/authored_svg_preflight_qa.json"
+    },
+    "native_text_style_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_style_qa.json"
+    },
+    "native_text_geometry_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_geometry_qa.json"
+    },
+    "text_content_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/text_content_qa.json"
+    },
+    "editable_page_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/editable_page_qa.json"
+    },
+    "clean_base_policy_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/clean_base_policy_qa.json"
+    },
+    "graphic_text_policy_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/graphic_text_policy_qa.json"
+    },
+    "render_compare": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json"
+    },
+    "exported_pptx": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+    }
+  },
+  "production_readiness": {
+    "schema": "cyberppt.stage02.production_readiness.v1",
+    "stage": "02-production-build",
+    "status": "production_ready",
+    "valid": true,
+    "checks": {
+      "all_required_tools_consumed": true,
+      "all_consumed_reports_pass": true,
+      "blocking_count": 0
+    },
+    "tool_consumption": {
+      "reconstruction_inventory": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/reconstruction_inventory.json"
+      },
+      "svg_output": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output"
+      },
+      "reconstruction_quality": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis"
+      },
+      "authored_svg_preflight_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/authored_svg_preflight_qa.json"
+      },
+      "native_text_style_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_style_qa.json"
+      },
+      "native_text_geometry_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/native_text_geometry_qa.json"
+      },
+      "text_content_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/text_content_qa.json"
+      },
+      "editable_page_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/editable_page_qa.json"
+      },
+      "clean_base_policy_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/clean_base_policy_qa.json"
+      },
+      "graphic_text_policy_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/analysis/graphic_text_policy_qa.json"
+      },
+      "render_compare": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json"
+      },
+      "exported_pptx": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+      }
+    },
+    "blocking_errors": [],
+    "reports": {
+      "reconstruction_inventory": {
+        "valid": true
+      },
+      "reconstruction_quality": {
+        "valid": true,
+        "pages": [
+          {
+            "file": "01.svg",
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+            "exists": true,
+            "errors": [],
+            "warnings": [
+              "Reference SVG: detected 2 visible root-level <g> module(s) without explicit data-pptx-bounds (<g>; <g>); every final-page/template root <g> declares its root-coordinate layout subcanvas even when it also carries data-pptx-frame or native chart/table coordinates",
+              "Detected 13 paragraph-like line run(s) split across sibling <text> elements (<g> x=117.0, y=304.0..340.0, 2 lines; <g> x=443.0, y=304.0..340.0, 2 lines; <g> x=285.0, y=160.0..190.0, 2 lines; +10 more). If each run is one prose paragraph, combine it into one <text>: keep its first line as direct text and use direct <tspan> children with the parent x and positive relative dy values for later lines. An all-<tspan> form may start with dy=\"0\". Keep semantically independent text frames separate.",
+              "Top-level visible <g> #2 has no id; object-level animation config cannot reference it",
+              "Top-level visible <g> #3 has no id; object-level animation config cannot reference it",
+              "1 ungrouped top-level Slide-local element(s) in svg_output (<image> #1); group only logical content units in a top-level <g id=\"...\">. Keep genuine static page framing as a root primitive and declare a supported data-pptx-role such as \"background\" or \"decoration\"",
+              "page SVG is missing root data-pptx-page-role"
+            ],
+            "info": {
+              "viewbox": "0 0 2048 1024",
+              "fonts": [
+                "PingFang SC"
+              ],
+              "text_elements": 0,
+              "tspan_elements": 0
+            },
+            "passed": true,
+            "source_sha256": "16f8fb8dc7d503aed2d6ece680b0877a8e410b04c693d4d772da3deab40cdbbf"
+          }
+        ]
+      },
+      "svg_output": {
+        "valid": true
+      },
+      "authored_svg_preflight": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.authored_svg_preflight.v1",
+            "page_number": 1,
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/page_001.svg",
+            "view_box": [
+              0.0,
+              0.0,
+              2048.0,
+              1024.0
+            ],
+            "text_count": 60,
+            "text_id_count": 0,
+            "referenced_assets": [
+              "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/authoring/assets/page_001_clean_base_unsharpened.png"
+            ],
+            "valid": true,
+            "errors": [],
+            "warnings": [],
+            "diagnostic_only_warnings": true
+          }
+        ]
+      },
+      "native_text_style": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.native_text_style.v1",
+            "profile": "locked",
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+            "text_count": 60,
+            "changed": false,
+            "split_label_count": 0,
+            "styled_heading_count": 0,
+            "preserved_locked": true
+          }
+        ]
+      },
+      "native_text_geometry": {
+        "valid": true,
+        "qa_only": true,
+        "pages": [
+          {
+            "schema": "cyberppt.native_text_geometry_qa.v1",
+            "page_number": 1,
+            "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/svg_output/01.svg",
+            "status": "skipped",
+            "valid": true,
+            "review_required": false,
+            "reason": "authored styling retained; explicit tspan structure checked",
+            "items": [],
+            "warnings": []
+          }
+        ],
+        "review_required": false
+      },
+      "text_content_qa": {
+        "editable": {
+          "schema": "cyberppt.dual_image.text_content_qa.v1",
+          "valid": true,
+          "order_sensitive": false,
+          "allow_fragmented_actual": true,
+          "checks": {
+            "text_count_matches": true,
+            "pptx_text_matches_expected": true
+          },
+          "expected_texts": [
+            "双方将在五个方向开展科技项目和课题研究合作",
+            "01",
+            "电力领域",
+            "数据基础设施建设",
+            "02",
+            "高质量数据集",
+            "评测标注与资产评估",
+            "03",
+            "电力数据",
+            "安全风险评估",
+            "04",
+            "人工智能",
+            "工具与评测",
+            "05",
+            "能算碳",
+            "综合服务",
+            "开放协同，择优推进",
+            "1700+",
+            "23年",
+            "承担建设任务",
+            "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+            "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+            "围绕数据基础设施参考架构、",
+            "接入连接器、可信流通及多",
+            "主体运营机制开展联合研究。",
+            "中电联作为国家数据基础设",
+            "施行业节点，可组织跨企业构",
+            "建验证环境，提供行业级验证",
+            "条件。",
+            "围绕数据标注、数据集加工、",
+            "质量评测与资产评估的方法及",
+            "工具开展研究，并探索测评互",
+            "认与价值释放机制。",
+            "已联合多家网省公司完成多",
+            "类数据集建设与评测案例，具",
+            "备专家团队与标准体系支撑。",
+            "围绕数据分类分级、全生命",
+            "周期与流通安全规则开展研究，",
+            "联合验证风险评估及脱敏、水",
+            "印等技防工具的适用性。",
+            "已研发相应评估与技防工具，",
+            "并在国网多省份落地应用。",
+            "围绕模型适配、场景能力、",
+            "安全可信等维度联合研发自动",
+            "化评测工具，验证业务智能助",
+            "手与数据治理工具应用效果。",
+            "已构建行业、场景、基础能力",
+            "三级评测体系，在多家网省公",
+            "司落地应用。",
+            "围绕碳排放核算、碳资产开发、",
+            "能效优化与零碳园区管理开展",
+            "工具与机制研究。",
+            "依托1700余家会员单位资源",
+            "和23年行业积累，承担电力碳",
+            "足迹数据库建设任务。",
+            "除上述方向外，如贵单位另有科技项目储备",
+            "或研究选题，可结合实际共同研究，择优推进。",
+            "会员单位资源",
+            "行业积累",
+            "电力碳足迹数据库",
+            "创新业务6-1：科技项目及课题研究",
+            "中国电力企业联合会",
+            "1"
+          ],
+          "actual_texts": [
+            "中国电力企业联合会",
+            "1",
+            "创新业务6-1：科技项目及课题研究",
+            "双方将在五个方向开展科技项目和课题研究合作",
+            "01",
+            "电力领域",
+            "数据基础设施建设",
+            "02",
+            "高质量数据集",
+            "评测标注与资产评估",
+            "03",
+            "电力数据",
+            "安全风险评估",
+            "04",
+            "人工智能",
+            "工具与评测",
+            "05",
+            "能算碳",
+            "综合服务",
+            "开放协同，择优推进",
+            "1700+",
+            "23年",
+            "承担建设任务",
+            "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+            "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+            "围绕数据基础设施参考架构、",
+            "接入连接器、可信流通及多",
+            "主体运营机制开展联合研究。",
+            "中电联作为国家数据基础设",
+            "施行业节点，可组织跨企业构",
+            "建验证环境，提供行业级验证",
+            "条件。",
+            "围绕数据标注、数据集加工、",
+            "质量评测与资产评估的方法及",
+            "工具开展研究，并探索测评互",
+            "认与价值释放机制。",
+            "已联合多家网省公司完成多",
+            "类数据集建设与评测案例，具",
+            "备专家团队与标准体系支撑。",
+            "围绕数据分类分级、全生命",
+            "周期与流通安全规则开展研究，",
+            "联合验证风险评估及脱敏、水",
+            "印等技防工具的适用性。",
+            "已研发相应评估与技防工具，",
+            "并在国网多省份落地应用。",
+            "围绕模型适配、场景能力、",
+            "安全可信等维度联合研发自动",
+            "化评测工具，验证业务智能助",
+            "手与数据治理工具应用效果。",
+            "已构建行业、场景、基础能力",
+            "三级评测体系，在多家网省公",
+            "司落地应用。",
+            "围绕碳排放核算、碳资产开发、",
+            "能效优化与零碳园区管理开展",
+            "工具与机制研究。",
+            "依托1700余家会员单位资源",
+            "和23年行业积累，承担电力碳",
+            "足迹数据库建设任务。",
+            "除上述方向外，如贵单位另有科技项目储备",
+            "或研究选题，可结合实际共同研究，择优推进。",
+            "会员单位资源",
+            "行业积累",
+            "电力碳足迹数据库"
+          ],
+          "mismatches": [],
+          "error_count": 0
+        }
+      },
+      "editable_page": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.stage02.editable_page_qa.v1",
+            "page_number": 1,
+            "valid": true,
+            "clean_base": {
+              "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+              "page_number": 1,
+              "valid": true,
+              "errors": []
+            },
+            "graphic_text_policy": {
+              "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+              "page_number": 1,
+              "valid": true,
+              "status": "complete",
+              "items": [
+                {
+                  "id": "title",
+                  "text": "双方将在五个方向开展科技项目和课题研究合作",
+                  "treatment": "native_text",
+                  "valid": true
+                },
+                {
+                  "id": "sidebar-title",
+                  "text": "开放协同，择优推进",
+                  "treatment": "native_text",
+                  "valid": true
+                },
+                {
+                  "id": "task-title",
+                  "text": "承担建设任务",
+                  "treatment": "native_text",
+                  "valid": true
+                }
+              ],
+              "native_svg_texts": [
+                "双方将在五个方向开展科技项目和课题研究合作",
+                "01",
+                "电力领域",
+                "数据基础设施建设",
+                "02",
+                "高质量数据集",
+                "评测标注与资产评估",
+                "03",
+                "电力数据",
+                "安全风险评估",
+                "04",
+                "人工智能",
+                "工具与评测",
+                "05",
+                "能算碳",
+                "综合服务",
+                "开放协同，择优推进",
+                "1700+",
+                "23年",
+                "承担建设任务",
+                "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+                "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+                "• 围绕数据基础设施参考架构、",
+                "接入连接器、可信流通及多",
+                "主体运营机制开展联合研究。",
+                "• 中电联作为国家数据基础设",
+                "施行业节点，可组织跨企业构",
+                "建验证环境，提供行业级验证",
+                "条件。",
+                "• 围绕数据标注、数据集加工、",
+                "质量评测与资产评估的方法及",
+                "工具开展研究，并探索测评互",
+                "认与价值释放机制。",
+                "• 已联合多家网省公司完成多",
+                "类数据集建设与评测案例，具",
+                "备专家团队与标准体系支撑。",
+                "• 围绕数据分类分级、全生命",
+                "周期与流通安全规则开展研究，",
+                "联合验证风险评估及脱敏、水",
+                "印等技防工具的适用性。",
+                "• 已研发相应评估与技防工具，",
+                "并在国网多省份落地应用。",
+                "• 围绕模型适配、场景能力、",
+                "安全可信等维度联合研发自动",
+                "化评测工具，验证业务智能助",
+                "手与数据治理工具应用效果。",
+                "• 已构建行业、场景、基础能力",
+                "三级评测体系，在多家网省公",
+                "司落地应用。",
+                "• 围绕碳排放核算、碳资产开发、",
+                "能效优化与零碳园区管理开展",
+                "工具与机制研究。",
+                "• 依托1700余家会员单位资源",
+                "和23年行业积累，承担电力碳",
+                "足迹数据库建设任务。",
+                "除上述方向外，如贵单位另有科技项目储备",
+                "或研究选题，可结合实际共同研究，择优推进。",
+                "会员单位资源",
+                "行业积累",
+                "电力碳足迹数据库"
+              ],
+              "image_layer_count": 1,
+              "errors": []
+            },
+            "svg_text_count": 60,
+            "image_layer_count": 1,
+            "errors": []
+          }
+        ]
+      },
+      "clean_base_policy": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.stage02.authored_clean_base.v1.qa",
+            "page_number": 1,
+            "valid": true,
+            "errors": []
+          }
+        ]
+      },
+      "graphic_text_policy": {
+        "valid": true,
+        "pages": [
+          {
+            "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+            "page_number": 1,
+            "valid": true,
+            "status": "complete",
+            "items": [
+              {
+                "id": "title",
+                "text": "双方将在五个方向开展科技项目和课题研究合作",
+                "treatment": "native_text",
+                "valid": true
+              },
+              {
+                "id": "sidebar-title",
+                "text": "开放协同，择优推进",
+                "treatment": "native_text",
+                "valid": true
+              },
+              {
+                "id": "task-title",
+                "text": "承担建设任务",
+                "treatment": "native_text",
+                "valid": true
+              }
+            ],
+            "native_svg_texts": [
+              "双方将在五个方向开展科技项目和课题研究合作",
+              "01",
+              "电力领域",
+              "数据基础设施建设",
+              "02",
+              "高质量数据集",
+              "评测标注与资产评估",
+              "03",
+              "电力数据",
+              "安全风险评估",
+              "04",
+              "人工智能",
+              "工具与评测",
+              "05",
+              "能算碳",
+              "综合服务",
+              "开放协同，择优推进",
+              "1700+",
+              "23年",
+              "承担建设任务",
+              "围绕数据基础设施建设、高质量数据集评测标注与资产评估、电力数据安全风险评估、",
+              "人工智能工具与评测、能算碳综合服务等方向，联合开展科技项目和课题研究合作。",
+              "• 围绕数据基础设施参考架构、",
+              "接入连接器、可信流通及多",
+              "主体运营机制开展联合研究。",
+              "• 中电联作为国家数据基础设",
+              "施行业节点，可组织跨企业构",
+              "建验证环境，提供行业级验证",
+              "条件。",
+              "• 围绕数据标注、数据集加工、",
+              "质量评测与资产评估的方法及",
+              "工具开展研究，并探索测评互",
+              "认与价值释放机制。",
+              "• 已联合多家网省公司完成多",
+              "类数据集建设与评测案例，具",
+              "备专家团队与标准体系支撑。",
+              "• 围绕数据分类分级、全生命",
+              "周期与流通安全规则开展研究，",
+              "联合验证风险评估及脱敏、水",
+              "印等技防工具的适用性。",
+              "• 已研发相应评估与技防工具，",
+              "并在国网多省份落地应用。",
+              "• 围绕模型适配、场景能力、",
+              "安全可信等维度联合研发自动",
+              "化评测工具，验证业务智能助",
+              "手与数据治理工具应用效果。",
+              "• 已构建行业、场景、基础能力",
+              "三级评测体系，在多家网省公",
+              "司落地应用。",
+              "• 围绕碳排放核算、碳资产开发、",
+              "能效优化与零碳园区管理开展",
+              "工具与机制研究。",
+              "• 依托1700余家会员单位资源",
+              "和23年行业积累，承担电力碳",
+              "足迹数据库建设任务。",
+              "除上述方向外，如贵单位另有科技项目储备",
+              "或研究选题，可结合实际共同研究，择优推进。",
+              "会员单位资源",
+              "行业积累",
+              "电力碳足迹数据库"
+            ],
+            "image_layer_count": 1,
+            "errors": []
+          }
+        ]
+      },
+      "render_compare": {
+        "valid": true,
+        "review": {
+          "schema": "cyberppt.image_to_pptx.visual_review.v1",
+          "issues": [],
+          "requires_rebuild": false,
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/image_to_pptx_runtime/analysis/visual-review.json"
+        }
+      },
+      "exported_pptx": {
+        "valid": true
+      },
+      "exported_pptx_by_mode": {
+        "editable": {
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx"
+        }
+      }
+    }
+  }
+}

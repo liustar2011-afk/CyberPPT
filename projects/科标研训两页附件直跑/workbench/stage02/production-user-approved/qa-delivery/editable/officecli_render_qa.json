@@ -1,0 +1,37 @@
+{
+  "schema": "cyberppt.officecli_render_qa.v1",
+  "pptx": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx",
+  "officecli": {
+    "version": "1.0.145",
+    "asset": "officecli-mac-arm64",
+    "repository_path": "/Volumes/DOC/CyberPPT/.tools/officecli/v1.0.145/officecli-mac-arm64",
+    "installed": true,
+    "executable": "/Volumes/DOC/CyberPPT/.tools/officecli/v1.0.145/officecli-mac-arm64",
+    "source": "repository",
+    "detected_version": "1.0.145"
+  },
+  "geometry": {
+    "schema": "cyberppt.dual_image.qa_render_geometry.v1",
+    "pptx": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/editable_svg/exports/editable_svg.pptx",
+    "slide_width_in": 13.3333,
+    "slide_height_in": 7.5,
+    "slide_count": 1,
+    "valid": true,
+    "slides": [
+      {
+        "slide_index": 1,
+        "text_box_count": 1,
+        "overlap_count": 0,
+        "overlaps": [],
+        "out_of_bounds_count": 0,
+        "out_of_bounds": [],
+        "valid": true
+      }
+    ]
+  },
+  "rendered_pages": [
+    "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/stage02/production-user-approved/qa-delivery/editable/renders/slide-1.png"
+  ],
+  "passed": true,
+  "failures": []
+}

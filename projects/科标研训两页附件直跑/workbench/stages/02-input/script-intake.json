@@ -1,14 +1,14 @@
 {
   "schema": "cyberppt.stage02_script_input.v1",
   "project": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑",
-  "created_at": "2026-09-03T11:20:05+00:00",
+  "created_at": "2026-09-04T00:21:58+00:00",
   "source_bindings": {
     "script": {
       "scope": "project",
       "path": "workbench/inputs/final-script.md",
       "sha256": "9f2f66f38524e7eeb679c79e6f57145383d115ec1e8ec37fc33658adc58baa35",
       "semantic_sha256": "9f2f66f38524e7eeb679c79e6f57145383d115ec1e8ec37fc33658adc58baa35",
-      "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/script/dist/final-script.md",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/科标研训两页附件直跑/workbench/inputs/final-script.md",
       "source_sha256": "9f2f66f38524e7eeb679c79e6f57145383d115ec1e8ec37fc33658adc58baa35",
       "source_semantic_sha256": "9f2f66f38524e7eeb679c79e6f57145383d115ec1e8ec37fc33658adc58baa35"
     }

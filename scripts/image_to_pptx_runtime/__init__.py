@@ -10,8 +10,9 @@ import sys
 from pathlib import Path
 
 
-# The vendored files below this package are kept byte-identical to ppt-master.
-# Upstream executes them with its scripts directory on sys.path and therefore
+# Upstream-owned modules are selectively synchronized from ppt-master; the
+# CyberPPT integration modules remain local. Upstream executes its scripts with
+# the scripts directory on sys.path and therefore
 # uses top-level imports such as ``pptx_shapes`` and ``svg_to_pptx``.  Expose
 # this internal directory in the same way, while keeping the external checkout
 # completely out of the runtime dependency graph.
