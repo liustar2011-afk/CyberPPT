@@ -20,7 +20,7 @@ Screens and devices may appear only as supporting evidence inside a broader work
 
 Use broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
 
-Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
+Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
 
 People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
 
