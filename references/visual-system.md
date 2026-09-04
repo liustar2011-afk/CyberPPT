@@ -25,3 +25,6 @@ Avoid equal card walls, equal rows or columns, left-text / center-image / right-
 People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
 
 Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.
+
+【最终视觉执行约束｜最高优先级】
+Every page must establish one visually dominant focus that makes the core judgment immediately recognizable. Express it through scale, position, contrast, deep blue or limited muted amber emphasis, or a semantic anchor. The focus may be a conclusion, key metric, business object, scene, critical relationship, or risk state. Supporting information must remain subordinate. Do not add unrelated decorative objects or compress required body copy merely to create a focus.

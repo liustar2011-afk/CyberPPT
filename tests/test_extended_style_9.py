@@ -61,6 +61,7 @@ def test_style_nine_registry_contract_carries_current_visual_invariants() -> Non
     assert "deep blue #12355B" in contract
     assert "muted amber #D9772B" in contract
     assert "Reserve muted amber only for risks, exceptions, constraints, pending status" in contract
+    assert "Every page must establish one visually dominant focus" in contract
     assert "Build one integrated, asymmetric and unequally weighted composition" in contract
     assert "Avoid equal card walls" in contract
     assert "Icons must not determine the composition" in contract
@@ -169,16 +170,21 @@ def test_style_nine_contract_reaches_content_first_compiler_without_routing_meta
     assert "style09:scope" not in contract
 
 
-def test_style_nine_without_terminal_lock_preserves_the_prompt() -> None:
+def test_style_nine_terminal_lock_reasserts_the_visual_focus_requirement() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         runtime = load_runtime_style_contract(lock)
-        prompt_source = "Page-specific constraint.\nNo invented facts."
+        duplicated_line = next(
+            line.strip() for line in runtime.terminal_lock.splitlines() if line.strip()
+        )
+        prompt_source = f"Page-specific constraint.\n{duplicated_line}\nNo invented facts."
         prompt = enforce_style09_terminal_lock(
             prompt_source,
             lock,
         )
 
-    assert runtime.terminal_lock == ""
-    assert TERMINAL_EXECUTION_HEADING not in prompt
-    assert prompt == prompt_source
+    assert "Every page must establish one visually dominant focus" in runtime.terminal_lock
+    assert prompt.count(TERMINAL_EXECUTION_HEADING) == 1
+    assert prompt.count(duplicated_line) == 1
+    assert "No invented facts." in prompt
+    assert prompt.rstrip().endswith(runtime.terminal_lock.strip())
