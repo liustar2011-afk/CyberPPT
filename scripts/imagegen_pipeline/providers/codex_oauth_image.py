@@ -22,6 +22,8 @@ import time
 from typing import Any
 from urllib import error, request
 
+from PIL import Image
+
 
 DEFAULT_MODEL = "gpt-image-2"
 DEFAULT_SIZE = "2048x1024"
@@ -493,7 +495,7 @@ def _extract_responses_text(body: str) -> str:
 
 
 def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
-    """Enhance an ingested image while preserving the requested delivery canvas."""
+    """Normalize an ingested image to the requested delivery canvas."""
 
     if size == "auto":
         return (-1, -1)
@@ -501,25 +503,19 @@ def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
     if parsed is None:
         return (-1, -1)
     target_width, target_height = parsed
-    from cyberppt.image_enhancer import enhance_image
-
-    # "auto" lets an installed AI super-resolution backend (currently
-    # realesrgan_ncnn) enhance every page before the canvas resize; it
-    # degrades to the conservative builtin path (Lanczos resize + guarded
-    # sharpen) when no backend is installed, when the AI result fails the
-    # pipeline's structural-fidelity gate, or when the backend call itself
-    # errors. See vendor/ppt-image-enhancer-skill-v1.0.0/src/ppt_image_enhancer
-    # /pipeline.py for the gate and enhance.py for the fallback.
-    enhance_image(
-        output_path,
-        output=output_path,
-        backend="auto",
-        scale=1.0,
-        target_size=(target_width, target_height),
-        mode="chart_heavy",
-    )
+    target_size = (target_width, target_height)
+    with Image.open(output_path) as image:
+        if image.size == target_size:
+            return target_size
+        normalized = image.resize(target_size, Image.Resampling.LANCZOS)
+        if (
+            output_path.suffix.lower() in {".jpg", ".jpeg"}
+            and normalized.mode in {"RGBA", "LA", "P"}
+        ):
+            normalized = normalized.convert("RGB")
+        normalized.save(output_path)
     print(
-        f"Enhanced and normalized image to requested canvas "
+        f"Normalized image to requested canvas "
         f"{target_width}x{target_height}: {output_path}",
         file=sys.stderr,
     )

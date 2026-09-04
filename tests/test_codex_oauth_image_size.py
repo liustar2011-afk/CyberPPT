@@ -61,6 +61,18 @@ def test_ensure_output_size_leaves_auto_unchanged(tmp_path: Path) -> None:
         assert unchanged.size == (320, 180)
 
 
+def test_ensure_output_size_preserves_matching_image_bytes(tmp_path: Path) -> None:
+    module = load_codex_oauth_image()
+    output = tmp_path / "generated.png"
+    Image.new("RGB", (2048, 1024), "navy").save(output)
+    original = output.read_bytes()
+
+    result = module.ensure_output_size(output, "2048x1024")
+
+    assert result == (2048, 1024)
+    assert output.read_bytes() == original
+
+
 def test_write_image_preserves_raw_backend_dimensions(tmp_path: Path) -> None:
     module = load_codex_oauth_image()
     output = tmp_path / "generated.png"
