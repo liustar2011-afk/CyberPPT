@@ -1,0 +1,23 @@
+{
+  "schema": "cyberppt.image_to_pptx.inventory.v1",
+  "pages": [
+    {
+      "page_number": 1,
+      "source_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v14-style09-refresh-20260904/editable_svg/image_to_pptx_runtime/sources/p01-source.png",
+      "normalized_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v14-style09-refresh-20260904/editable_svg/image_to_pptx_runtime/images/source-pages/p01.png",
+      "sha256": "43d73dcda156047559e1e529ec5c3707500f7af5b4e9b998a649514a3da544aa",
+      "pixel_size": [
+        2048,
+        1024
+      ],
+      "visible_text": [
+        "平台总体架构自下而上分为五层，层间为单向支撑关系，不越级调用；两项贯穿模块贯穿全部五层，对各层的准入、开发、调用、交付、结算和退出实施统一管控，不作为独立层级；三类业务管理视图横向叠加于五层之上，将各层产生的数据串联为端到端业务链条，两种结构相互映射、共同支撑运营。",
+        "五层内容（自下而上）：第一层数据与人工智能基础层，内容包括存储计算、知识库、向量检索、模型服务和算力资源管理，是全部能力的基础支撑；第二层资源与产品管理层，内容包括统一目录、元数据管理、质量管理、版本管理和产品封装，将数据、模型和专业能力组织为可订购产品；第三层服务交付与场景编排层，内容包括接口调用、模型任务、数据沙箱、隐私保护计算和多方协同交付，支撑产品的调用与成果交付；第四层运营与交易管理层，内容包括客户管理、订单合同、授权管理、计量账单和对账结算，统一管理产品的商业化运营；第五层可信连接与主体接入层，位于最顶层，作为唯一外部入口，内容包括身份认证、连接器注册、接口适配、证书密钥和日志监测，承接机构、人员和应用的接入请求。",
+        "两项贯穿模块内容：安全与合规贯穿，内容包括分类分级、权利核查、访问控制、加密脱敏和审计追溯，覆盖主体接入、产品开发、服务调用、成果交付、计量结算和退出管理全过程；标准与运维贯穿，内容包括目录标识、接口标准、质量标准、服务等级和监控容灾，同样覆盖上述全过程。",
+        "三类业务管理视图内容：资源管理视图，内容包括主体管理、资源管理、产品管理、权利管理和质量管理；服务交付视图，内容包括接口调用、计算处理、数据留域、模型运行和过程审计；客户运营视图，内容包括需求组织、订单履行、账单结算和续约推广。三类视图通过统一标识、订单、授权规则、交付证据和计量记录相互衔接，形成资源—交付—运营的完整链条。"
+      ],
+      "regions": [],
+      "note": "Agent-authored visible-region evidence; no delivery-layer choice is implied."
+    }
+  ]
+}

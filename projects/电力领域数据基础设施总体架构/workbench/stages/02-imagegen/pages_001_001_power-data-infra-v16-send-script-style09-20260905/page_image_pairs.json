@@ -1,0 +1,2054 @@
+{
+  "mode": "cyberppt.stage02.editable_pptx.v1",
+  "production_mode": "image-to-editable-svg",
+  "requested_pages": [
+    1
+  ],
+  "content_page_numbers": [
+    1
+  ],
+  "skipped_pages": [],
+  "output_variants": [
+    "full"
+  ],
+  "text_audit_contract": {
+    "required_before_enhancement": true,
+    "scope": "typo_and_gibberish_only",
+    "max_generation_attempts": 3,
+    "failure_action": "regenerate_image"
+  },
+  "generation_contract": {
+    "mode": "image-to-editable-svg",
+    "owner": "CyberPPT",
+    "slide_canvas": {
+      "width": 2048,
+      "height": 1024
+    },
+    "content_region": {
+      "x": 0,
+      "y": 0,
+      "width": 2048,
+      "height": 1024
+    },
+    "generation_size": {
+      "width": 2048,
+      "height": 1024
+    },
+    "rule": "Generate one audited full content-area image for registered editable-SVG reconstruction; PPT title, subtitle and enterprise chrome are handled by template/export code."
+  },
+  "project_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/inputs/final-script.md",
+  "original_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/inputs/final-script.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/locks/visual_style_lock.json",
+  "stage02_script_input": {
+    "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-input/script-intake.json",
+    "schema": "cyberppt.stage02_script_input.v1"
+  },
+  "output_dir": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905",
+  "created_at": "2026-09-04T16:10:25.483888+00:00",
+  "prompt_contract": {
+    "approved_prompt_is_source": false,
+    "direct_edit_mode": null,
+    "freshness_enforced": false,
+    "canonical_prompt_is_diagnostic_only": false,
+    "compact_blueprint": false,
+    "compiler": "content-first-v1"
+  },
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 1,
+        "mode": "off",
+        "source_prompt_sha256": "4b6170cc9ac231d89aa5a80f9076962a172d7edbc42e05bc5b65033b2c1f9571",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 20957
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "page_number": 1,
+      "page_code": "P01",
+      "title": "电力领域数据基础设施总体架构",
+      "page_script": "【完整上屏内容】\n## 【标题】\n电力领域数据基础设施总体架构\n## 【核心内容】\n面向电力行业数据资源汇聚、可信流通和开发利用，建设覆盖基础支撑、数据资源与产品、可信流通与服务、场景应用、运营管理的五层体系。多方数据进入基础设施后，经过统一接入、治理加工、可信流通和场景开发，形成数据产品、模型服务和业务应用，并通过运营管理实现持续服务和价值循环。安全保障和标准规范贯穿数据流通利用全过程。\n---\n## 01 基础设施层\n基础设施层\n算力、存储、网络、云平台、人工智能基础能力\n承载电力行业数据存储、计算和模型运行，为上层数据治理、可信流通和场景应用提供统一技术底座。\n电力数据进入统一计算和存储环境\n云资源、计算资源和网络资源统一调度\n知识库、向量检索和模型服务共同支撑数据分析与人工智能应用\n基础能力向上支撑各类数据产品和业务场景。\n---\n## 02 数据资源与产品层\n数据资源与产品层\n多源汇聚、统一治理、产品加工\n汇聚中电联、电网企业、发电企业、新能源企业、设备制造企业、科研院所等多方数据资源，经过目录管理、治理加工、质量管理和产品封装，形成可开发利用的数据资源和产品能力。\n中电联行业统计、标准规范等数据进入平台\n电网企业提供电网运行、设备资产等数据\n发电企业提供发电运行、生产经营等数据\n新能源企业提供风光发电、储能运行、气象环境等数据\n设备制造企业提供设备研发、制造和运维数据\n科研院所提供科研、试验、模型算法等数据。\n多源数据汇聚后依次形成\n原始数据资源 → 统一数据目录 → 治理后的标准数据 → 标准数据集 → 数据产品、指标产品、模型能力。\n---\n## 03 可信流通与服务层\n可信流通与服务层\n可信连接、授权使用、受控交付、协同计算\n依托可信连接器、API、数据沙箱和隐私计算等方式，实现不同主体之间的数据可信连接和受控利用，支撑数据、接口、模型等多种方式协同交付。\n数据提供方保留数据控制权\n数据需求方提出数据或计算需求\n双方通过可信连接器建立受控连接\n平台完成身份认证、授权控制和使用规则校验\n敏感数据可在数据沙箱或隐私计算环境内加工\n原始数据不直接流出，向需求方交付指标、结果、模型或接口服务。\n形成完整流通过程\n需求提出 → 身份认证 → 授权审批 → 可信连接 → 数据调用或联合计算 → 结果交付 → 计量审计。\n---\n## 04 场景应用层\n场景应用层\n数据、模型与业务需求融合形成行业应用\n围绕电力行业实际业务需求，将不同来源的数据资源、模型能力和专业服务组合起来，形成可直接服务业务的数据产品和应用场景。\n电力供需预测\n汇聚负荷、发电能力、新能源出力、气象等数据，形成供需形势预测和分析服务。\n设备可靠性\n融合设备运行、故障、检修和可靠性数据，形成设备状态评价、可靠性分析和检修决策服务。\n绿色低碳\n融合发用电、能源消费、碳排放和产品生产数据，形成电碳因子、碳核算和产品碳足迹服务。\n人才教育\n汇聚行业知识、岗位能力、培训课程和人才测评数据，形成行业知识服务、培训和人才评价应用。\n科技创新\n融合科技成果、专家、标准、知识产权及产业需求数据，形成成果评价、供需匹配和转化服务。\n电力征信\n在授权合规条件下利用企业用电及相关经营数据，形成企业经营状况分析和信用辅助服务。\n---\n## 05 运营管理层\n运营管理层\n产品运营、客户服务、授权计量、交易结算\n围绕数据产品和服务的持续供给，建立从产品发布、客户使用到计量结算和运营分析的完整运营闭环。\n数据提供方将数据资源或产品上架\n平台形成统一产品目录和服务目录\n客户查询产品、提出需求并申请使用\n平台完成授权、合同和订单管理\n使用过程中记录接口调用量、模型任务量和服务使用量\n根据实际使用形成计费和结算\n通过运营分析掌握产品使用、客户需求和场景运行情况\n运营结果进一步反向推动数据资源补充和产品迭代。\n形成运营闭环\n资源上架 → 产品发布 → 客户订购 → 授权使用 → 服务交付 → 计量计费 → 结算评价 → 产品迭代。\n---\n## 多方数据资源\n多方数据资源汇聚\n中电联\n行业运行、统计监测、标准规范、可靠性、人才教育等行业数据。\n电网企业\n电网运行、设备资产、负荷需求、营销服务等数据。\n发电企业\n发电运行、设备状态、燃料采购、生产经营等数据。\n新能源企业\n风电、光伏、储能运行以及气象环境等数据。\n设备制造企业\n设备研发、生产制造、运行监测和售后运维等数据。\n科研院所\n科研成果、试验验证、专业知识、模型算法等数据。\n---\n## 安全保障体系\n安全保障体系贯穿全过程\n围绕数据从接入、存储、加工、流通到使用和退出的全过程，建立身份认证、权限控制、数据分类分级、隐私保护、安全审计和全流程留痕能力。\n主体身份可认证\n数据权限可控制\n敏感数据受保护\n每次调用有授权\n每次使用可计量\n每个过程可审计\n数据流向和使用结果可追溯。\n---\n## 标准规范体系\n标准规范体系贯穿全过程\n统一数据目录、接口、产品、服务和流通规则，推动不同主体、不同系统和不同场景之间规范互联和协同使用。\n统一数据目录和元数据描述\n统一数据接入和接口规范\n统一数据产品定义和质量要求\n统一服务调用和交付规则\n统一授权、计量和流通规则\n通过标准规范实现跨企业、跨系统、跨场景互联。\n---\n## 总体形成\n多主体参与 · 多类型数据接入 · 多场景协同应用 · 数据价值持续释放\n将分散在行业不同主体的数据资源连接起来，通过治理、流通、开发和运营，持续形成面向电力行业的数据产品、模型服务和业务应用，推动数据资源由分散持有向可信协同利用、由数据资源向业务价值转化。\n\n\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n\n\n【视觉风格｜不上屏】\n# 视觉风格09：纯白 + 深蓝领导汇报｜多页面适配固化版\n\n## 01｜色彩与基础气质\n\nPalette: white #FFFFFF, deep blue #12355B, muted amber #D9772B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.\n\nUse deep blue for primary relationships, core judgments, key structural carriers and major conclusions. Reserve muted amber only for risks, exceptions, constraints, pending status and occasional decision-critical emphasis; never use it as a category color or decorative accent.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished, precise and content-led. The page should feel like a refined executive-report infographic rather than a dashboard, poster, UI screen or icon-based diagram.\n\n---\n\n## 02｜固定视觉 DNA\n\nThe visual language must remain consistent across all page types, while the page skeleton may change according to semantics.\n\nEvery page must preserve the following visual DNA:\n\n- pure-white background with restrained deep-blue hierarchy;\n- one visually dominant focus;\n- realistic business or electric-power scenes integrated with information structure;\n- asymmetric and unequally weighted composition;\n- concise Chinese presentation text with clear hierarchy;\n- thin dividers, precise alignment and refined pale-blue relationship lines;\n- generous white space and strong reading order;\n- few structural components and few decorative elements;\n- scene-led, content-led and editorial rather than dashboard-like;\n- icons strictly subordinate to scenes, business objects and source-backed text.\n\nThe style must remain recognizable even when the composition changes from radial to sequential, comparative, temporal, causal, quantitative or scene-based.\n\nUniform visual language does not mean uniform page skeleton.\n\n---\n\n## 03｜页面语义优先原则\n\nDerive the page structure from the dominant semantic relationship in the source content.\n\nBefore composing the page, identify the primary relationship:\n\n- center-to-periphery relationship → radial / hub-and-spoke;\n- sequential relationship → main chain / process;\n- temporal relationship → timeline / roadmap;\n- causal relationship → cause-and-effect expansion;\n- comparative relationship → asymmetric comparison;\n- compositional relationship → main body + capability clusters;\n- evidence relationship → conclusion + evidence;\n- real-world business relationship → scene-led composition;\n- quantitative relationship → key metric + trend / evidence;\n- governance or responsibility relationship → relationship axis + boundary / support band.\n\nNever force a radial, central-platform or ring-based composition onto content whose semantics are inherently sequential, comparative, temporal, causal, quantitative or scene-based.\n\nNever force content into repeated cards merely because the source contains several bullet points.\n\nUse only the number of semantic regions required by the content. Prefer fewer, unequally weighted regions. A page may consist of one dominant scene plus annotations, one main chain with embedded evidence, one dominant conclusion with several supporting proofs, or several asymmetric information regions.\n\n---\n\n## 04｜文字与信息组织\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text.\n\nPlace the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPreserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength. Do not invent unsupported facts, slogans, conclusions or policy language.\n\nDeep-blue headings should be visually stronger than body text but remain editorial rather than poster-like.\n\nBody copy should stay compact, readable and close to the related scene, object or structural carrier.\n\nPrefer:\n- short conclusion-first paragraphs;\n- 1–3 sentence local explanations;\n- short bullets only when parallel items must be distinguished;\n- strong local grouping rather than disconnected labels.\n\nDo not reduce complete business meaning into isolated keywords merely to simplify the layout.\n\nDo not compress required body copy merely to create a visual center.\n\nThe page should work as a reading-type PPT and remain understandable without oral explanation.\n\n---\n\n## 05｜实景与结构融合\n\nPrefer a scene-supported executive-report language.\n\nUse realistic, clean and context-rich electric-power and business scenes as visual anchors, such as:\n\n- grid facilities;\n- substations;\n- dispatch centers;\n- control rooms;\n- transmission lines;\n- wind and solar bases;\n- energy storage equipment;\n- power plants;\n- industrial facilities;\n- professional analysis environments;\n- teaching materials;\n- operational resources;\n- business collaboration environments.\n\nPrefer several small or medium embedded scenes over one giant central illustration, unless the page is explicitly scene-led.\n\nEach scene must support a specific topic, judgment, indicator, stakeholder, evidence point or business relationship and remain subordinate to the page's core judgment.\n\nIntegrate scenes directly into information regions through:\n- soft edge fading;\n- cropped photographic windows;\n- partial background embedding;\n- shallow perspective bases;\n- scene-object overlap with adjacent text;\n- white-to-image gradient transitions with restrained contrast.\n\nDo not place every scene inside a rigid card.\n\nThe scene should feel fused with the information structure rather than pasted onto it.\n\n### Scene mapping guidance\n\nGovernment / governance:\ninstitutional architecture, macro-energy context, planning, policy-support or analytical environments.\n\nNew power system:\nrenewable-energy bases, transmission systems, storage, grid interaction or system-operation scenes.\n\nElectric utilities:\nsubstations, control rooms, grid equipment, generation facilities or production-operation scenes.\n\nIndustrial chain / cross-industry collaboration:\nindustrial facilities, energy-consuming industries, manufacturing, logistics or professional collaboration environments.\n\nPlatform / operation / model capability:\ndispatch centers, integrated analysis environments, data-processing workspaces or operational scenes.\n\nPeople should be absent or minimal. If present, keep them small, non-portrait and subordinate to the environment.\n\n---\n\n## 06｜结构载体与空间层级\n\nEvery page must establish one strong semantic and visual anchor.\n\nThe dominant focus may be:\n- a core conclusion;\n- a platform or key business object;\n- a major metric;\n- a business scene;\n- a critical relationship;\n- a principal mechanism;\n- a risk or constraint state.\n\nExpress it through scale, position, contrast, deep blue, limited muted amber emphasis, scene scale, a structural base or another semantic anchor.\n\nSupporting information must remain subordinate in scale and contrast while still fully readable.\n\nMaintain visible spatial hierarchy:\n1. dominant focus;\n2. major supporting directions / evidence / stages;\n3. secondary objects / stakeholders / details;\n4. cross-cutting conditions / constraints / implementation support.\n\nUse broad white fields, shallow structural bases, restrained circular or linear carriers and precise editorial alignment.\n\nWhen a central visual object is needed, it may use:\n- a shallow platform;\n- a circular base;\n- a restrained structural ring;\n- a flat architectural plane;\n- a semi-transparent business carrier.\n\nKeep depth subtle and matte.\n\nAvoid glossy 3D, sci-fi platforms, excessive perspective, floating objects or game-like visual effects.\n\n---\n\n## 07｜连接关系与精细度\n\nUse deep-blue primary connectors and pale-blue secondary connectors.\n\nFavor:\n- thin precise lines;\n- large-radius arcs;\n- short arrows;\n- restrained dotted relationships;\n- subtle circular guides;\n- clean directional paths.\n\nConnectors must explain business logic rather than decorate empty space.\n\nMaintain generous white space around key text and structural junctions.\n\nUse visual breathing room to separate semantic layers instead of adding more boxes.\n\nUse thin dividers, precise alignment, controlled spacing and consistent corner geometry.\n\nText blocks, scene edges, connectors and structural carriers should align to an invisible editorial grid.\n\nAvoid thick borders and heavy framing.\n\nWhere a region needs definition, prefer:\n- a very light blue-gray outline;\n- a thin divider;\n- a broad white field;\n- a softly faded scene boundary.\n\n---\n\n# 08｜页面构图原型库\n\nThe following composition archetypes are available within Style 09. Select the archetype according to the dominant semantic relationship rather than page title.\n\n## 8.1 中心放射式｜定位 / 架构 / 生态 / 多主体关系\n\nUse when the source expresses a clear center-to-periphery relationship.\n\nPreferred structure:\n- center or upper-center = core positioning / platform / principal object;\n- middle layer = 2–4 major directions, capabilities or mechanisms;\n- outer layer = stakeholders, service objects, outcomes or application domains;\n- bottom band = cross-cutting coordination, implementation modes, constraints or existing-system linkage.\n\nUse pale-blue arcs, restrained radial relationships and a strong central semantic anchor.\n\nFor architecture, platform-positioning and ecosystem pages, this is the preferred signature composition of Style 09 when semantics support it.\n\nDo not use radial composition for content without a genuine central relationship.\n\n---\n\n## 8.2 结论证据式｜背景 / 必要性 / 核心判断 / 价值说明\n\nUse when one judgment must dominate and several facts or business realities support it.\n\nPreferred structure:\n- one large conclusion in the dominant region;\n- 2–4 unequally weighted evidence areas;\n- 1–2 realistic scenes supporting the evidence;\n- optional small quantitative proof or outcome region.\n\nThe page should feel more spacious than an architecture page.\n\nAvoid turning each evidence point into an equal card.\n\n---\n\n## 8.3 主链流程式｜业务流程 / 数据流通 / 实施机制 / 服务闭环\n\nUse when the source has a clear sequence or flow.\n\nPreferred structure:\n- one visible main chain across the page;\n- 3–6 meaningful stages;\n- only critical stages receive larger text or scenes;\n- output or business result receives stronger terminal emphasis.\n\nThe chain may be horizontal, gently curved, stepped or folded according to available space.\n\nEmbed scenes and business objects along the chain rather than drawing a row of identical process boxes.\n\nArrows should be directional, sparse and precise.\n\n---\n\n## 8.4 时间路线式｜阶段建设 / 路线图 / 年度计划 / 演进路径\n\nUse when sequence is explicitly temporal.\n\nPreferred structure:\n- one clear time carrier;\n- several unequal stages;\n- current stage or target stage visually emphasized;\n- milestones and deliverables placed close to the relevant point in time;\n- small embedded scenes only where they improve understanding.\n\nDo not render a generic equal-node timeline.\n\nUse scale, spacing and emphasis to show phase importance.\n\n---\n\n## 8.5 场景主导式｜应用场景 / 客户案例 / 业务方案 / 场景共建\n\nUse when a real-world operating scene itself is the best carrier of meaning.\n\nPreferred structure:\n- one dominant realistic scene occupying the main visual area;\n- business actors, data inputs, platform actions and outputs annotated directly around or within the scene;\n- only a few connectors;\n- one concise conclusion or value region.\n\nThe scene becomes the page skeleton.\n\nDo not place the scene in the center and then surround it with unrelated cards.\n\nAnnotations must attach to real business objects or relationships.\n\n---\n\n## 8.6 因果分析式｜问题 / 原因 / 约束 / 风险传导\n\nUse when the source explains why a problem occurs or how several conditions lead to an outcome.\n\nPreferred structure:\n- one dominant problem, constraint or consequence;\n- 2–4 upstream causes or conditions;\n- clear directional relationships;\n- optional bottom region for resulting impact, required response or boundary condition.\n\nUse muted amber only for genuine risks, exceptions or constraints.\n\nDo not use amber simply to differentiate categories.\n\n---\n\n## 8.7 不对称比较式｜模式比较 / 方案选择 / 前后变化 / 优劣分析\n\nUse when two or more alternatives must be contrasted.\n\nPreferred structure:\n- unequal comparison zones;\n- one dominant recommendation, preferred direction or key difference when source supports it;\n- shared comparison criteria aligned across the page;\n- realistic scenes attached only to meaningful differences.\n\nAvoid symmetrical side-by-side cards if the conclusion is not balanced.\n\nUse structure and emphasis to communicate the actual relative importance.\n\n---\n\n## 8.8 能力体系式｜产品体系 / 服务体系 / 能力框架 / 运营体系\n\nUse when several capabilities combine around one business objective.\n\nPreferred structure:\n- one main business objective, platform or service object;\n- capability clusters arranged according to dependency or business proximity;\n- shared infrastructure or support capabilities placed in a bottom / background carrier;\n- outcome or customer-facing service shown distinctly.\n\nAvoid an icon grid.\n\nCapabilities should be represented through text, business objects, restrained scenes or structural grouping.\n\n---\n\n## 8.9 数据指标式｜规模 / 成效 / 市场 / 运营数据 / 关键指标\n\nUse when numbers and evidence are the main argument.\n\nPreferred structure:\n- one dominant key metric, trend or quantitative judgment;\n- 2–4 supporting numbers or evidence points;\n- restrained chart-like visual carriers if needed;\n- realistic scene used only as contextual evidence.\n\nThe page should remain editorial and report-like, not become a dashboard.\n\nAvoid collections of KPI cards.\n\n---\n\n## 8.10 机制权责式｜运营机制 / 合作关系 / 边界 / 分工 / 治理\n\nUse when the source focuses on responsibilities, control relationships, operating boundaries or collaboration mechanisms.\n\nPreferred structure:\n- one central relationship axis, operating mechanism or responsibility carrier;\n- parties positioned according to actual relationship rather than visual symmetry;\n- key rights, responsibilities, control boundaries or retained ownership attached directly to the relevant relationship;\n- bottom support band for implementation modes, governance rules or shared capabilities.\n\nUse precise connectors and restrained boundary lines.\n\nAvoid organization-chart aesthetics unless the content is genuinely hierarchical.\n\n---\n\n## 09｜底部协同带规则\n\nA bottom horizontal band may be used when the page contains cross-cutting information that supports all major regions, such as:\n\n- existing-system linkage;\n- implementation modes;\n- governance rules;\n- common technical support;\n- ownership boundaries;\n- security constraints;\n- supporting conditions;\n- shared infrastructure.\n\nThe bottom band should read as a structural carrier, not as an additional card wall.\n\nIt may use:\n- thin dividers;\n- sparse labels;\n- several very small monochrome symbols;\n- one or two concise text groups;\n- a light structural line connecting back to the main body.\n\nDo not create a bottom band when no genuine cross-cutting semantics exist.\n\n---\n\n## 10｜图标与设备约束\n\nUse icons only when they materially improve recognition.\n\nUse no more than one or two on a typical page, except in a bottom support strip where several very small monochrome symbols may be used as secondary labels if they remain visually subordinate.\n\nKeep icons:\n- simple;\n- deep blue;\n- small;\n- integrated into an existing text, scene or structural region.\n\nDo not give icons:\n- independent cards;\n- circular badges;\n- decorative containers;\n- dedicated display zones.\n\nIcons must not determine the composition, create extra modules, form decorative icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene.\n\nAvoid:\n- repeated devices;\n- isolated UI screenshots;\n- dashboards;\n- SaaS interfaces;\n- product-display layouts.\n\n---\n\n## 11｜明确避免\n\nAvoid:\n- equal card walls;\n- equal rows or columns;\n- mechanical three-column layouts;\n- left-text / center-image / right-text compositions;\n- panoramic posters;\n- giant decorative hero illustrations;\n- abstract data landscapes;\n- dense flowing-line fields;\n- icon grids;\n- repeated circular badges;\n- glossy 3D;\n- glassmorphism;\n- neon glow;\n- floating icons;\n- decorative technology particles;\n- excessive gradients;\n- dashboard tiles;\n- product-UI aesthetics.\n\nAvoid treating every content item as an independent rectangle.\n\nAvoid excessive dark-blue filled boxes.\n\nUse large dark-blue fields only for:\n- the single dominant anchor;\n- a key conclusion;\n- a truly critical business object.\n\nAvoid isolated decorative photography.\n\nEvery scene must have a clear semantic role and be physically close to the text, evidence or business object it supports.\n\nAvoid composition patterns that contradict the source semantics.\n\n---\n\n# 12｜最终视觉执行约束｜最高优先级\n\nEvery page must establish one visually dominant focus that makes the core judgment immediately recognizable.\n\nThe focus may be a conclusion, key metric, business object, scene, critical relationship, mechanism, platform, stage or risk state.\n\nExpress it through:\n- scale;\n- position;\n- contrast;\n- deep blue;\n- limited muted amber emphasis;\n- scene scale;\n- structural carrier;\n- semantic centrality.\n\nSupporting information must remain subordinate while fully readable.\n\nThe page must have:\n- one clear reading path;\n- one dominant semantic relationship;\n- strong spatial hierarchy;\n- integrated realistic scenes;\n- precise editorial alignment;\n- thin and purposeful connectors;\n- generous white space;\n- restrained visual depth.\n\nDo not add unrelated decorative objects.\n\nDo not compress required body copy merely to create a focus.\n\nDo not force all pages into one composition.\n\nThe page skeleton must follow the dominant semantic relationship of the content.\n\n### Style 09 的最终统一原则\n\nUnify the visual language, not the page skeleton.\n\nAcross a complete presentation, Style 09 should remain recognizable through:\n- white + deep-blue executive-report aesthetics;\n- one dominant focus per page;\n- realistic contextual electric-power scenes;\n- embedded text-and-scene information units;\n- refined pale-blue structural relationships;\n- restrained matte depth;\n- asymmetric editorial composition;\n- high readability;\n- minimal decorative graphics.\n\nAt the same time, allow the composition to switch intelligently among radial, conclusion-evidence, sequential, temporal, scene-led, causal, comparative, capability-system, quantitative and governance structures according to the source semantics.\n\nFinal result: a calm, highly readable, presentation-ready executive-report visual system that can support an entire leadership briefing deck without collapsing into repetitive templates.\n",
+      "image_text_truth": {
+        "script_text": "## 【标题】\n\n电力领域数据基础设施总体架构\n\n## 【核心内容】\n\n面向电力行业数据资源汇聚、可信流通和开发利用，建设覆盖基础支撑、数据资源与产品、可信流通与服务、场景应用、运营管理的五层体系。多方数据进入基础设施后，经过统一接入、治理加工、可信流通和场景开发，形成数据产品、模型服务和业务应用，并通过运营管理实现持续服务和价值循环。安全保障和标准规范贯穿数据流通利用全过程。\n\n---\n\n## 01 基础设施层\n\n\n基础设施层\n算力、存储、网络、云平台、人工智能基础能力\n\n\n承载电力行业数据存储、计算和模型运行，为上层数据治理、可信流通和场景应用提供统一技术底座。\n\n\n电力数据进入统一计算和存储环境；\n云资源、计算资源和网络资源统一调度；\n知识库、向量检索和模型服务共同支撑数据分析与人工智能应用；\n基础能力向上支撑各类数据产品和业务场景。\n\n---\n\n## 02 数据资源与产品层\n\n\n数据资源与产品层\n多源汇聚、统一治理、产品加工\n\n\n汇聚中电联、电网企业、发电企业、新能源企业、设备制造企业、科研院所等多方数据资源，经过目录管理、治理加工、质量管理和产品封装，形成可开发利用的数据资源和产品能力。\n\n\n中电联行业统计、标准规范等数据进入平台；\n电网企业提供电网运行、设备资产等数据；\n发电企业提供发电运行、生产经营等数据；\n新能源企业提供风光发电、储能运行、气象环境等数据；\n设备制造企业提供设备研发、制造和运维数据；\n科研院所提供科研、试验、模型算法等数据。\n\n多源数据汇聚后依次形成：\n原始数据资源 → 统一数据目录 → 治理后的标准数据 → 标准数据集 → 数据产品、指标产品、模型能力。\n\n---\n\n## 03 可信流通与服务层\n\n\n可信流通与服务层\n可信连接、授权使用、受控交付、协同计算\n\n\n依托可信连接器、API、数据沙箱和隐私计算等方式，实现不同主体之间的数据可信连接和受控利用，支撑数据、接口、模型等多种方式协同交付。\n\n\n数据提供方保留数据控制权；\n数据需求方提出数据或计算需求；\n双方通过可信连接器建立受控连接；\n平台完成身份认证、授权控制和使用规则校验；\n敏感数据可在数据沙箱或隐私计算环境内加工；\n原始数据不直接流出，向需求方交付指标、结果、模型或接口服务。\n\n形成完整流通过程：\n需求提出 → 身份认证 → 授权审批 → 可信连接 → 数据调用或联合计算 → 结果交付 → 计量审计。\n\n---\n\n## 04 场景应用层\n\n\n场景应用层\n数据、模型与业务需求融合形成行业应用\n\n\n围绕电力行业实际业务需求，将不同来源的数据资源、模型能力和专业服务组合起来，形成可直接服务业务的数据产品和应用场景。\n\n\n电力供需预测：\n汇聚负荷、发电能力、新能源出力、气象等数据，形成供需形势预测和分析服务。\n\n设备可靠性：\n融合设备运行、故障、检修和可靠性数据，形成设备状态评价、可靠性分析和检修决策服务。\n\n绿色低碳：\n融合发用电、能源消费、碳排放和产品生产数据，形成电碳因子、碳核算和产品碳足迹服务。\n\n人才教育：\n汇聚行业知识、岗位能力、培训课程和人才测评数据，形成行业知识服务、培训和人才评价应用。\n\n科技创新：\n融合科技成果、专家、标准、知识产权及产业需求数据，形成成果评价、供需匹配和转化服务。\n\n电力征信：\n在授权合规条件下利用企业用电及相关经营数据，形成企业经营状况分析和信用辅助服务。\n\n---\n\n## 05 运营管理层\n\n\n运营管理层\n产品运营、客户服务、授权计量、交易结算\n\n\n围绕数据产品和服务的持续供给，建立从产品发布、客户使用到计量结算和运营分析的完整运营闭环。\n\n\n数据提供方将数据资源或产品上架；\n平台形成统一产品目录和服务目录；\n客户查询产品、提出需求并申请使用；\n平台完成授权、合同和订单管理；\n使用过程中记录接口调用量、模型任务量和服务使用量；\n根据实际使用形成计费和结算；\n通过运营分析掌握产品使用、客户需求和场景运行情况；\n运营结果进一步反向推动数据资源补充和产品迭代。\n\n形成运营闭环：\n资源上架 → 产品发布 → 客户订购 → 授权使用 → 服务交付 → 计量计费 → 结算评价 → 产品迭代。\n\n---\n\n## 多方数据资源\n\n\n多方数据资源汇聚\n\n\n中电联\n行业运行、统计监测、标准规范、可靠性、人才教育等行业数据。\n\n电网企业\n电网运行、设备资产、负荷需求、营销服务等数据。\n\n发电企业\n发电运行、设备状态、燃料采购、生产经营等数据。\n\n新能源企业\n风电、光伏、储能运行以及气象环境等数据。\n\n设备制造企业\n设备研发、生产制造、运行监测和售后运维等数据。\n\n科研院所\n科研成果、试验验证、专业知识、模型算法等数据。\n\n---\n\n## 安全保障体系\n\n\n安全保障体系贯穿全过程\n\n\n围绕数据从接入、存储、加工、流通到使用和退出的全过程，建立身份认证、权限控制、数据分类分级、隐私保护、安全审计和全流程留痕能力。\n\n\n主体身份可认证；\n数据权限可控制；\n敏感数据受保护；\n每次调用有授权；\n每次使用可计量；\n每个过程可审计；\n数据流向和使用结果可追溯。\n\n---\n\n## 标准规范体系\n\n\n标准规范体系贯穿全过程\n\n\n统一数据目录、接口、产品、服务和流通规则，推动不同主体、不同系统和不同场景之间规范互联和协同使用。\n\n\n统一数据目录和元数据描述；\n统一数据接入和接口规范；\n统一数据产品定义和质量要求；\n统一服务调用和交付规则；\n统一授权、计量和流通规则；\n通过标准规范实现跨企业、跨系统、跨场景互联。\n\n---\n\n## 总体形成\n\n\n多主体参与 · 多类型数据接入 · 多场景协同应用 · 数据价值持续释放\n\n\n将分散在行业不同主体的数据资源连接起来，通过治理、流通、开发和运营，持续形成面向电力行业的数据产品、模型服务和业务应用，推动数据资源由分散持有向可信协同利用、由数据资源向业务价值转化。",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.authored_clean_base.v1",
+        "status": "required",
+        "note": "Prepare reference-edited local layers and register-quick-page; resume the same build."
+      },
+      "prompt_file": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905/prompts/p01.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-input/script-intake.json",
+      "full": {
+        "filename": "page_001_电力领域数据基础设施总体架构_full.png",
+        "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905/page_001_电力领域数据基础设施总体架构_full.png",
+        "prompt": "【完整上屏内容】\n## 【标题】\n电力领域数据基础设施总体架构\n## 【核心内容】\n面向电力行业数据资源汇聚、可信流通和开发利用，建设覆盖基础支撑、数据资源与产品、可信流通与服务、场景应用、运营管理的五层体系。多方数据进入基础设施后，经过统一接入、治理加工、可信流通和场景开发，形成数据产品、模型服务和业务应用，并通过运营管理实现持续服务和价值循环。安全保障和标准规范贯穿数据流通利用全过程。\n---\n## 01 基础设施层\n基础设施层\n算力、存储、网络、云平台、人工智能基础能力\n承载电力行业数据存储、计算和模型运行，为上层数据治理、可信流通和场景应用提供统一技术底座。\n电力数据进入统一计算和存储环境\n云资源、计算资源和网络资源统一调度\n知识库、向量检索和模型服务共同支撑数据分析与人工智能应用\n基础能力向上支撑各类数据产品和业务场景。\n---\n## 02 数据资源与产品层\n数据资源与产品层\n多源汇聚、统一治理、产品加工\n汇聚中电联、电网企业、发电企业、新能源企业、设备制造企业、科研院所等多方数据资源，经过目录管理、治理加工、质量管理和产品封装，形成可开发利用的数据资源和产品能力。\n中电联行业统计、标准规范等数据进入平台\n电网企业提供电网运行、设备资产等数据\n发电企业提供发电运行、生产经营等数据\n新能源企业提供风光发电、储能运行、气象环境等数据\n设备制造企业提供设备研发、制造和运维数据\n科研院所提供科研、试验、模型算法等数据。\n多源数据汇聚后依次形成\n原始数据资源 → 统一数据目录 → 治理后的标准数据 → 标准数据集 → 数据产品、指标产品、模型能力。\n---\n## 03 可信流通与服务层\n可信流通与服务层\n可信连接、授权使用、受控交付、协同计算\n依托可信连接器、API、数据沙箱和隐私计算等方式，实现不同主体之间的数据可信连接和受控利用，支撑数据、接口、模型等多种方式协同交付。\n数据提供方保留数据控制权\n数据需求方提出数据或计算需求\n双方通过可信连接器建立受控连接\n平台完成身份认证、授权控制和使用规则校验\n敏感数据可在数据沙箱或隐私计算环境内加工\n原始数据不直接流出，向需求方交付指标、结果、模型或接口服务。\n形成完整流通过程\n需求提出 → 身份认证 → 授权审批 → 可信连接 → 数据调用或联合计算 → 结果交付 → 计量审计。\n---\n## 04 场景应用层\n场景应用层\n数据、模型与业务需求融合形成行业应用\n围绕电力行业实际业务需求，将不同来源的数据资源、模型能力和专业服务组合起来，形成可直接服务业务的数据产品和应用场景。\n电力供需预测\n汇聚负荷、发电能力、新能源出力、气象等数据，形成供需形势预测和分析服务。\n设备可靠性\n融合设备运行、故障、检修和可靠性数据，形成设备状态评价、可靠性分析和检修决策服务。\n绿色低碳\n融合发用电、能源消费、碳排放和产品生产数据，形成电碳因子、碳核算和产品碳足迹服务。\n人才教育\n汇聚行业知识、岗位能力、培训课程和人才测评数据，形成行业知识服务、培训和人才评价应用。\n科技创新\n融合科技成果、专家、标准、知识产权及产业需求数据，形成成果评价、供需匹配和转化服务。\n电力征信\n在授权合规条件下利用企业用电及相关经营数据，形成企业经营状况分析和信用辅助服务。\n---\n## 05 运营管理层\n运营管理层\n产品运营、客户服务、授权计量、交易结算\n围绕数据产品和服务的持续供给，建立从产品发布、客户使用到计量结算和运营分析的完整运营闭环。\n数据提供方将数据资源或产品上架\n平台形成统一产品目录和服务目录\n客户查询产品、提出需求并申请使用\n平台完成授权、合同和订单管理\n使用过程中记录接口调用量、模型任务量和服务使用量\n根据实际使用形成计费和结算\n通过运营分析掌握产品使用、客户需求和场景运行情况\n运营结果进一步反向推动数据资源补充和产品迭代。\n形成运营闭环\n资源上架 → 产品发布 → 客户订购 → 授权使用 → 服务交付 → 计量计费 → 结算评价 → 产品迭代。\n---\n## 多方数据资源\n多方数据资源汇聚\n中电联\n行业运行、统计监测、标准规范、可靠性、人才教育等行业数据。\n电网企业\n电网运行、设备资产、负荷需求、营销服务等数据。\n发电企业\n发电运行、设备状态、燃料采购、生产经营等数据。\n新能源企业\n风电、光伏、储能运行以及气象环境等数据。\n设备制造企业\n设备研发、生产制造、运行监测和售后运维等数据。\n科研院所\n科研成果、试验验证、专业知识、模型算法等数据。\n---\n## 安全保障体系\n安全保障体系贯穿全过程\n围绕数据从接入、存储、加工、流通到使用和退出的全过程，建立身份认证、权限控制、数据分类分级、隐私保护、安全审计和全流程留痕能力。\n主体身份可认证\n数据权限可控制\n敏感数据受保护\n每次调用有授权\n每次使用可计量\n每个过程可审计\n数据流向和使用结果可追溯。\n---\n## 标准规范体系\n标准规范体系贯穿全过程\n统一数据目录、接口、产品、服务和流通规则，推动不同主体、不同系统和不同场景之间规范互联和协同使用。\n统一数据目录和元数据描述\n统一数据接入和接口规范\n统一数据产品定义和质量要求\n统一服务调用和交付规则\n统一授权、计量和流通规则\n通过标准规范实现跨企业、跨系统、跨场景互联。\n---\n## 总体形成\n多主体参与 · 多类型数据接入 · 多场景协同应用 · 数据价值持续释放\n将分散在行业不同主体的数据资源连接起来，通过治理、流通、开发和运营，持续形成面向电力行业的数据产品、模型服务和业务应用，推动数据资源由分散持有向可信协同利用、由数据资源向业务价值转化。\n\n\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n\n\n【视觉风格｜不上屏】\n# 视觉风格09：纯白 + 深蓝领导汇报｜多页面适配固化版\n\n## 01｜色彩与基础气质\n\nPalette: white #FFFFFF, deep blue #12355B, muted amber #D9772B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.\n\nUse deep blue for primary relationships, core judgments, key structural carriers and major conclusions. Reserve muted amber only for risks, exceptions, constraints, pending status and occasional decision-critical emphasis; never use it as a category color or decorative accent.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished, precise and content-led. The page should feel like a refined executive-report infographic rather than a dashboard, poster, UI screen or icon-based diagram.\n\n---\n\n## 02｜固定视觉 DNA\n\nThe visual language must remain consistent across all page types, while the page skeleton may change according to semantics.\n\nEvery page must preserve the following visual DNA:\n\n- pure-white background with restrained deep-blue hierarchy;\n- one visually dominant focus;\n- realistic business or electric-power scenes integrated with information structure;\n- asymmetric and unequally weighted composition;\n- concise Chinese presentation text with clear hierarchy;\n- thin dividers, precise alignment and refined pale-blue relationship lines;\n- generous white space and strong reading order;\n- few structural components and few decorative elements;\n- scene-led, content-led and editorial rather than dashboard-like;\n- icons strictly subordinate to scenes, business objects and source-backed text.\n\nThe style must remain recognizable even when the composition changes from radial to sequential, comparative, temporal, causal, quantitative or scene-based.\n\nUniform visual language does not mean uniform page skeleton.\n\n---\n\n## 03｜页面语义优先原则\n\nDerive the page structure from the dominant semantic relationship in the source content.\n\nBefore composing the page, identify the primary relationship:\n\n- center-to-periphery relationship → radial / hub-and-spoke;\n- sequential relationship → main chain / process;\n- temporal relationship → timeline / roadmap;\n- causal relationship → cause-and-effect expansion;\n- comparative relationship → asymmetric comparison;\n- compositional relationship → main body + capability clusters;\n- evidence relationship → conclusion + evidence;\n- real-world business relationship → scene-led composition;\n- quantitative relationship → key metric + trend / evidence;\n- governance or responsibility relationship → relationship axis + boundary / support band.\n\nNever force a radial, central-platform or ring-based composition onto content whose semantics are inherently sequential, comparative, temporal, causal, quantitative or scene-based.\n\nNever force content into repeated cards merely because the source contains several bullet points.\n\nUse only the number of semantic regions required by the content. Prefer fewer, unequally weighted regions. A page may consist of one dominant scene plus annotations, one main chain with embedded evidence, one dominant conclusion with several supporting proofs, or several asymmetric information regions.\n\n---\n\n## 04｜文字与信息组织\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text.\n\nPlace the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.\n\nPreserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength. Do not invent unsupported facts, slogans, conclusions or policy language.\n\nDeep-blue headings should be visually stronger than body text but remain editorial rather than poster-like.\n\nBody copy should stay compact, readable and close to the related scene, object or structural carrier.\n\nPrefer:\n- short conclusion-first paragraphs;\n- 1–3 sentence local explanations;\n- short bullets only when parallel items must be distinguished;\n- strong local grouping rather than disconnected labels.\n\nDo not reduce complete business meaning into isolated keywords merely to simplify the layout.\n\nDo not compress required body copy merely to create a visual center.\n\nThe page should work as a reading-type PPT and remain understandable without oral explanation.\n\n---\n\n## 05｜实景与结构融合\n\nPrefer a scene-supported executive-report language.\n\nUse realistic, clean and context-rich electric-power and business scenes as visual anchors, such as:\n\n- grid facilities;\n- substations;\n- dispatch centers;\n- control rooms;\n- transmission lines;\n- wind and solar bases;\n- energy storage equipment;\n- power plants;\n- industrial facilities;\n- professional analysis environments;\n- teaching materials;\n- operational resources;\n- business collaboration environments.\n\nPrefer several small or medium embedded scenes over one giant central illustration, unless the page is explicitly scene-led.\n\nEach scene must support a specific topic, judgment, indicator, stakeholder, evidence point or business relationship and remain subordinate to the page's core judgment.\n\nIntegrate scenes directly into information regions through:\n- soft edge fading;\n- cropped photographic windows;\n- partial background embedding;\n- shallow perspective bases;\n- scene-object overlap with adjacent text;\n- white-to-image gradient transitions with restrained contrast.\n\nDo not place every scene inside a rigid card.\n\nThe scene should feel fused with the information structure rather than pasted onto it.\n\n### Scene mapping guidance\n\nGovernment / governance:\ninstitutional architecture, macro-energy context, planning, policy-support or analytical environments.\n\nNew power system:\nrenewable-energy bases, transmission systems, storage, grid interaction or system-operation scenes.\n\nElectric utilities:\nsubstations, control rooms, grid equipment, generation facilities or production-operation scenes.\n\nIndustrial chain / cross-industry collaboration:\nindustrial facilities, energy-consuming industries, manufacturing, logistics or professional collaboration environments.\n\nPlatform / operation / model capability:\ndispatch centers, integrated analysis environments, data-processing workspaces or operational scenes.\n\nPeople should be absent or minimal. If present, keep them small, non-portrait and subordinate to the environment.\n\n---\n\n## 06｜结构载体与空间层级\n\nEvery page must establish one strong semantic and visual anchor.\n\nThe dominant focus may be:\n- a core conclusion;\n- a platform or key business object;\n- a major metric;\n- a business scene;\n- a critical relationship;\n- a principal mechanism;\n- a risk or constraint state.\n\nExpress it through scale, position, contrast, deep blue, limited muted amber emphasis, scene scale, a structural base or another semantic anchor.\n\nSupporting information must remain subordinate in scale and contrast while still fully readable.\n\nMaintain visible spatial hierarchy:\n1. dominant focus;\n2. major supporting directions / evidence / stages;\n3. secondary objects / stakeholders / details;\n4. cross-cutting conditions / constraints / implementation support.\n\nUse broad white fields, shallow structural bases, restrained circular or linear carriers and precise editorial alignment.\n\nWhen a central visual object is needed, it may use:\n- a shallow platform;\n- a circular base;\n- a restrained structural ring;\n- a flat architectural plane;\n- a semi-transparent business carrier.\n\nKeep depth subtle and matte.\n\nAvoid glossy 3D, sci-fi platforms, excessive perspective, floating objects or game-like visual effects.\n\n---\n\n## 07｜连接关系与精细度\n\nUse deep-blue primary connectors and pale-blue secondary connectors.\n\nFavor:\n- thin precise lines;\n- large-radius arcs;\n- short arrows;\n- restrained dotted relationships;\n- subtle circular guides;\n- clean directional paths.\n\nConnectors must explain business logic rather than decorate empty space.\n\nMaintain generous white space around key text and structural junctions.\n\nUse visual breathing room to separate semantic layers instead of adding more boxes.\n\nUse thin dividers, precise alignment, controlled spacing and consistent corner geometry.\n\nText blocks, scene edges, connectors and structural carriers should align to an invisible editorial grid.\n\nAvoid thick borders and heavy framing.\n\nWhere a region needs definition, prefer:\n- a very light blue-gray outline;\n- a thin divider;\n- a broad white field;\n- a softly faded scene boundary.\n\n---\n\n# 08｜页面构图原型库\n\nThe following composition archetypes are available within Style 09. Select the archetype according to the dominant semantic relationship rather than page title.\n\n## 8.1 中心放射式｜定位 / 架构 / 生态 / 多主体关系\n\nUse when the source expresses a clear center-to-periphery relationship.\n\nPreferred structure:\n- center or upper-center = core positioning / platform / principal object;\n- middle layer = 2–4 major directions, capabilities or mechanisms;\n- outer layer = stakeholders, service objects, outcomes or application domains;\n- bottom band = cross-cutting coordination, implementation modes, constraints or existing-system linkage.\n\nUse pale-blue arcs, restrained radial relationships and a strong central semantic anchor.\n\nFor architecture, platform-positioning and ecosystem pages, this is the preferred signature composition of Style 09 when semantics support it.\n\nDo not use radial composition for content without a genuine central relationship.\n\n---\n\n## 8.2 结论证据式｜背景 / 必要性 / 核心判断 / 价值说明\n\nUse when one judgment must dominate and several facts or business realities support it.\n\nPreferred structure:\n- one large conclusion in the dominant region;\n- 2–4 unequally weighted evidence areas;\n- 1–2 realistic scenes supporting the evidence;\n- optional small quantitative proof or outcome region.\n\nThe page should feel more spacious than an architecture page.\n\nAvoid turning each evidence point into an equal card.\n\n---\n\n## 8.3 主链流程式｜业务流程 / 数据流通 / 实施机制 / 服务闭环\n\nUse when the source has a clear sequence or flow.\n\nPreferred structure:\n- one visible main chain across the page;\n- 3–6 meaningful stages;\n- only critical stages receive larger text or scenes;\n- output or business result receives stronger terminal emphasis.\n\nThe chain may be horizontal, gently curved, stepped or folded according to available space.\n\nEmbed scenes and business objects along the chain rather than drawing a row of identical process boxes.\n\nArrows should be directional, sparse and precise.\n\n---\n\n## 8.4 时间路线式｜阶段建设 / 路线图 / 年度计划 / 演进路径\n\nUse when sequence is explicitly temporal.\n\nPreferred structure:\n- one clear time carrier;\n- several unequal stages;\n- current stage or target stage visually emphasized;\n- milestones and deliverables placed close to the relevant point in time;\n- small embedded scenes only where they improve understanding.\n\nDo not render a generic equal-node timeline.\n\nUse scale, spacing and emphasis to show phase importance.\n\n---\n\n## 8.5 场景主导式｜应用场景 / 客户案例 / 业务方案 / 场景共建\n\nUse when a real-world operating scene itself is the best carrier of meaning.\n\nPreferred structure:\n- one dominant realistic scene occupying the main visual area;\n- business actors, data inputs, platform actions and outputs annotated directly around or within the scene;\n- only a few connectors;\n- one concise conclusion or value region.\n\nThe scene becomes the page skeleton.\n\nDo not place the scene in the center and then surround it with unrelated cards.\n\nAnnotations must attach to real business objects or relationships.\n\n---\n\n## 8.6 因果分析式｜问题 / 原因 / 约束 / 风险传导\n\nUse when the source explains why a problem occurs or how several conditions lead to an outcome.\n\nPreferred structure:\n- one dominant problem, constraint or consequence;\n- 2–4 upstream causes or conditions;\n- clear directional relationships;\n- optional bottom region for resulting impact, required response or boundary condition.\n\nUse muted amber only for genuine risks, exceptions or constraints.\n\nDo not use amber simply to differentiate categories.\n\n---\n\n## 8.7 不对称比较式｜模式比较 / 方案选择 / 前后变化 / 优劣分析\n\nUse when two or more alternatives must be contrasted.\n\nPreferred structure:\n- unequal comparison zones;\n- one dominant recommendation, preferred direction or key difference when source supports it;\n- shared comparison criteria aligned across the page;\n- realistic scenes attached only to meaningful differences.\n\nAvoid symmetrical side-by-side cards if the conclusion is not balanced.\n\nUse structure and emphasis to communicate the actual relative importance.\n\n---\n\n## 8.8 能力体系式｜产品体系 / 服务体系 / 能力框架 / 运营体系\n\nUse when several capabilities combine around one business objective.\n\nPreferred structure:\n- one main business objective, platform or service object;\n- capability clusters arranged according to dependency or business proximity;\n- shared infrastructure or support capabilities placed in a bottom / background carrier;\n- outcome or customer-facing service shown distinctly.\n\nAvoid an icon grid.\n\nCapabilities should be represented through text, business objects, restrained scenes or structural grouping.\n\n---\n\n## 8.9 数据指标式｜规模 / 成效 / 市场 / 运营数据 / 关键指标\n\nUse when numbers and evidence are the main argument.\n\nPreferred structure:\n- one dominant key metric, trend or quantitative judgment;\n- 2–4 supporting numbers or evidence points;\n- restrained chart-like visual carriers if needed;\n- realistic scene used only as contextual evidence.\n\nThe page should remain editorial and report-like, not become a dashboard.\n\nAvoid collections of KPI cards.\n\n---\n\n## 8.10 机制权责式｜运营机制 / 合作关系 / 边界 / 分工 / 治理\n\nUse when the source focuses on responsibilities, control relationships, operating boundaries or collaboration mechanisms.\n\nPreferred structure:\n- one central relationship axis, operating mechanism or responsibility carrier;\n- parties positioned according to actual relationship rather than visual symmetry;\n- key rights, responsibilities, control boundaries or retained ownership attached directly to the relevant relationship;\n- bottom support band for implementation modes, governance rules or shared capabilities.\n\nUse precise connectors and restrained boundary lines.\n\nAvoid organization-chart aesthetics unless the content is genuinely hierarchical.\n\n---\n\n## 09｜底部协同带规则\n\nA bottom horizontal band may be used when the page contains cross-cutting information that supports all major regions, such as:\n\n- existing-system linkage;\n- implementation modes;\n- governance rules;\n- common technical support;\n- ownership boundaries;\n- security constraints;\n- supporting conditions;\n- shared infrastructure.\n\nThe bottom band should read as a structural carrier, not as an additional card wall.\n\nIt may use:\n- thin dividers;\n- sparse labels;\n- several very small monochrome symbols;\n- one or two concise text groups;\n- a light structural line connecting back to the main body.\n\nDo not create a bottom band when no genuine cross-cutting semantics exist.\n\n---\n\n## 10｜图标与设备约束\n\nUse icons only when they materially improve recognition.\n\nUse no more than one or two on a typical page, except in a bottom support strip where several very small monochrome symbols may be used as secondary labels if they remain visually subordinate.\n\nKeep icons:\n- simple;\n- deep blue;\n- small;\n- integrated into an existing text, scene or structural region.\n\nDo not give icons:\n- independent cards;\n- circular badges;\n- decorative containers;\n- dedicated display zones.\n\nIcons must not determine the composition, create extra modules, form decorative icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene.\n\nAvoid:\n- repeated devices;\n- isolated UI screenshots;\n- dashboards;\n- SaaS interfaces;\n- product-display layouts.\n\n---\n\n## 11｜明确避免\n\nAvoid:\n- equal card walls;\n- equal rows or columns;\n- mechanical three-column layouts;\n- left-text / center-image / right-text compositions;\n- panoramic posters;\n- giant decorative hero illustrations;\n- abstract data landscapes;\n- dense flowing-line fields;\n- icon grids;\n- repeated circular badges;\n- glossy 3D;\n- glassmorphism;\n- neon glow;\n- floating icons;\n- decorative technology particles;\n- excessive gradients;\n- dashboard tiles;\n- product-UI aesthetics.\n\nAvoid treating every content item as an independent rectangle.\n\nAvoid excessive dark-blue filled boxes.\n\nUse large dark-blue fields only for:\n- the single dominant anchor;\n- a key conclusion;\n- a truly critical business object.\n\nAvoid isolated decorative photography.\n\nEvery scene must have a clear semantic role and be physically close to the text, evidence or business object it supports.\n\nAvoid composition patterns that contradict the source semantics.\n\n---\n\n# 12｜最终视觉执行约束｜最高优先级\n\nEvery page must establish one visually dominant focus that makes the core judgment immediately recognizable.\n\nThe focus may be a conclusion, key metric, business object, scene, critical relationship, mechanism, platform, stage or risk state.\n\nExpress it through:\n- scale;\n- position;\n- contrast;\n- deep blue;\n- limited muted amber emphasis;\n- scene scale;\n- structural carrier;\n- semantic centrality.\n\nSupporting information must remain subordinate while fully readable.\n\nThe page must have:\n- one clear reading path;\n- one dominant semantic relationship;\n- strong spatial hierarchy;\n- integrated realistic scenes;\n- precise editorial alignment;\n- thin and purposeful connectors;\n- generous white space;\n- restrained visual depth.\n\nDo not add unrelated decorative objects.\n\nDo not compress required body copy merely to create a focus.\n\nDo not force all pages into one composition.\n\nThe page skeleton must follow the dominant semantic relationship of the content.\n\n### Style 09 的最终统一原则\n\nUnify the visual language, not the page skeleton.\n\nAcross a complete presentation, Style 09 should remain recognizable through:\n- white + deep-blue executive-report aesthetics;\n- one dominant focus per page;\n- realistic contextual electric-power scenes;\n- embedded text-and-scene information units;\n- refined pale-blue structural relationships;\n- restrained matte depth;\n- asymmetric editorial composition;\n- high readability;\n- minimal decorative graphics.\n\nAt the same time, allow the composition to switch intelligently among radial, conclusion-evidence, sequential, temporal, scene-led, causal, comparative, capability-system, quantitative and governance structures according to the source semantics.\n\nFinal result: a calm, highly readable, presentation-ready executive-report visual system that can support an entire leadership briefing deck without collapsing into repetitive templates.\n",
+        "prompt_sha256": "99d735e88aab2cc9819ce5e663392882dcdc2c760c418b752d5a157cb6ff3e0b",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "4b6170cc9ac231d89aa5a80f9076962a172d7edbc42e05bc5b65033b2c1f9571",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 20957
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "99d735e88aab2cc9819ce5e663392882dcdc2c760c418b752d5a157cb6ff3e0b",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Generated",
+        "generated_at": "2026-09-04T16:15:12+00:00",
+        "generated_prompt_sha256": "99d735e88aab2cc9819ce5e663392882dcdc2c760c418b752d5a157cb6ff3e0b",
+        "text_audit": {
+          "schema": "cyberppt.generated_image_text_audit.v2",
+          "valid": true,
+          "scope": "typo_and_gibberish_only",
+          "image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905/page_001_电力领域数据基础设施总体架构_full.png",
+          "image_size": [
+            1774,
+            887
+          ],
+          "issues": [],
+          "observed_text": [
+            "多方数据资源汇聚",
+            "中电联：行业运行、统计监测、标准规范、可靠性、人才教育",
+            "电网企业：电网运行、设备资产、负荷需求、营销服务",
+            "发电企业：发电运行、设备状态、燃料采购、生产经营",
+            "新能源企业：风光储运行、气象环境",
+            "设备制造企业：研发制造、运行监测、售后运维",
+            "科研院所：科研成果、试验验证、模型算法",
+            "统一接入—治理加工—可信流通—场景开发—运营闭环",
+            "05 运营管理层",
+            "产品发布、客户订购、授权计量、交易结算、迭代运营",
+            "04 场景应用层",
+            "数据、模型与业务需求融合形成行业应用",
+            "03 可信流通与服务层",
+            "可信连接、授权使用、受控交付、协同计算",
+            "02 数据资源与产品层",
+            "多源汇聚、统一治理、数据集与产品封装",
+            "01 基础设施层",
+            "算力、存储、网络、云平台、AI基础能力",
+            "场景应用与价值输出",
+            "电力供需预测：负荷、发电能力、新能源出力、气象数据",
+            "设备可靠性：状态评价、可靠性分析、检修决策",
+            "绿色低碳：电碳因子、碳核算、产品碳足迹",
+            "人才教育：知识服务、培训、人才评价",
+            "科技创新：成果评价、供需匹配、转化服务",
+            "电力征信：授权合规下的经营分析与信用辅助",
+            "形成数据产品、模型服务和业务应用",
+            "安全保障体系贯穿全过程",
+            "身份认证、权限控制、分类分级、隐私保护、安全审计、全流程留痕",
+            "主体可认证",
+            "权限可控制",
+            "调用有授权",
+            "使用可计量",
+            "过程可审计",
+            "流向可追溯",
+            "标准规范体系贯穿全过程",
+            "统一目录与元数据、统一接入与接口、统一产品定义与质量、统一服务交付、统一授权计量与流通规则"
+          ],
+          "ocr_items": [
+            {
+              "text": "多方数据资源汇聚",
+              "confidence": 0.9921196177601814,
+              "bbox": [
+                [
+                  95.0,
+                  32.0
+                ],
+                [
+                  307.0,
+                  32.0
+                ],
+                [
+                  307.0,
+                  58.0
+                ],
+                [
+                  95.0,
+                  58.0
+                ]
+              ]
+            },
+            {
+              "text": "统一接入一治理加工一可信流通一场景开发一运营闭环",
+              "confidence": 0.9789735227823257,
+              "bbox": [
+                [
+                  563.0,
+                  28.0
+                ],
+                [
+                  1212.0,
+                  28.0
+                ],
+                [
+                  1212.0,
+                  57.0
+                ],
+                [
+                  563.0,
+                  57.0
+                ]
+              ]
+            },
+            {
+              "text": "场景应用与价值输出",
+              "confidence": 0.9973771969477335,
+              "bbox": [
+                [
+                  1403.0,
+                  32.0
+                ],
+                [
+                  1641.0,
+                  32.0
+                ],
+                [
+                  1641.0,
+                  58.0
+                ],
+                [
+                  1403.0,
+                  58.0
+                ]
+              ]
+            },
+            {
+              "text": "中电联：",
+              "confidence": 0.9994583129882812,
+              "bbox": [
+                [
+                  264.0,
+                  84.0
+                ],
+                [
+                  334.0,
+                  84.0
+                ],
+                [
+                  334.0,
+                  109.0
+                ],
+                [
+                  264.0,
+                  109.0
+                ]
+              ]
+            },
+            {
+              "text": "电力供需预测：",
+              "confidence": 0.9997017213276455,
+              "bbox": [
+                [
+                  1398.0,
+                  86.0
+                ],
+                [
+                  1512.0,
+                  86.0
+                ],
+                [
+                  1512.0,
+                  109.0
+                ],
+                [
+                  1398.0,
+                  109.0
+                ]
+              ]
+            },
+            {
+              "text": "设备可靠性：",
+              "confidence": 0.998771478732427,
+              "bbox": [
+                [
+                  1606.0,
+                  85.0
+                ],
+                [
+                  1702.0,
+                  85.0
+                ],
+                [
+                  1702.0,
+                  109.0
+                ],
+                [
+                  1606.0,
+                  109.0
+                ]
+              ]
+            },
+            {
+              "text": "行业运行、统计监测、",
+              "confidence": 0.9995059669017792,
+              "bbox": [
+                [
+                  262.0,
+                  112.0
+                ],
+                [
+                  402.0,
+                  112.0
+                ],
+                [
+                  402.0,
+                  135.0
+                ],
+                [
+                  262.0,
+                  135.0
+                ]
+              ]
+            },
+            {
+              "text": "05运营管理层",
+              "confidence": 0.999880850315094,
+              "bbox": [
+                [
+                  549.0,
+                  104.0
+                ],
+                [
+                  721.0,
+                  109.0
+                ],
+                [
+                  720.0,
+                  149.0
+                ],
+                [
+                  548.0,
+                  143.0
+                ]
+              ]
+            },
+            {
+              "text": "产品发布、客户订购、授权计量、",
+              "confidence": 0.9982599973678589,
+              "bbox": [
+                [
+                  883.0,
+                  109.0
+                ],
+                [
+                  1134.0,
+                  109.0
+                ],
+                [
+                  1134.0,
+                  132.0
+                ],
+                [
+                  883.0,
+                  132.0
+                ]
+              ]
+            },
+            {
+              "text": "ll",
+              "confidence": 0.6034248918294907,
+              "bbox": [
+                [
+                  1360.0,
+                  104.0
+                ],
+                [
+                  1381.0,
+                  104.0
+                ],
+                [
+                  1381.0,
+                  116.0
+                ],
+                [
+                  1360.0,
+                  116.0
+                ]
+              ]
+            },
+            {
+              "text": "负荷、发电能力、",
+              "confidence": 0.9994405657052994,
+              "bbox": [
+                [
+                  1399.0,
+                  112.0
+                ],
+                [
+                  1508.0,
+                  112.0
+                ],
+                [
+                  1508.0,
+                  135.0
+                ],
+                [
+                  1399.0,
+                  135.0
+                ]
+              ]
+            },
+            {
+              "text": "状态评价、",
+              "confidence": 0.9985028505325317,
+              "bbox": [
+                [
+                  1608.0,
+                  113.0
+                ],
+                [
+                  1673.0,
+                  113.0
+                ],
+                [
+                  1673.0,
+                  134.0
+                ],
+                [
+                  1608.0,
+                  134.0
+                ]
+              ]
+            },
+            {
+              "text": "标准规范、可靠性、",
+              "confidence": 0.9961990515391032,
+              "bbox": [
+                [
+                  262.0,
+                  133.0
+                ],
+                [
+                  387.0,
+                  133.0
+                ],
+                [
+                  387.0,
+                  155.0
+                ],
+                [
+                  262.0,
+                  155.0
+                ]
+              ]
+            },
+            {
+              "text": "交易结算、迭代运营",
+              "confidence": 0.9829655554559495,
+              "bbox": [
+                [
+                  882.0,
+                  134.0
+                ],
+                [
+                  1043.0,
+                  134.0
+                ],
+                [
+                  1043.0,
+                  156.0
+                ],
+                [
+                  882.0,
+                  156.0
+                ]
+              ]
+            },
+            {
+              "text": "新能源出力、",
+              "confidence": 0.997147669394811,
+              "bbox": [
+                [
+                  1399.0,
+                  135.0
+                ],
+                [
+                  1482.0,
+                  135.0
+                ],
+                [
+                  1482.0,
+                  155.0
+                ],
+                [
+                  1399.0,
+                  155.0
+                ]
+              ]
+            },
+            {
+              "text": "可靠性分析、",
+              "confidence": 0.9967689712842306,
+              "bbox": [
+                [
+                  1606.0,
+                  131.0
+                ],
+                [
+                  1691.0,
+                  134.0
+                ],
+                [
+                  1690.0,
+                  158.0
+                ],
+                [
+                  1605.0,
+                  155.0
+                ]
+              ]
+            },
+            {
+              "text": "人才教育",
+              "confidence": 0.9991863965988159,
+              "bbox": [
+                [
+                  263.0,
+                  154.0
+                ],
+                [
+                  328.0,
+                  154.0
+                ],
+                [
+                  328.0,
+                  178.0
+                ],
+                [
+                  263.0,
+                  178.0
+                ]
+              ]
+            },
+            {
+              "text": "气象数据",
+              "confidence": 0.9885840266942978,
+              "bbox": [
+                [
+                  1398.0,
+                  152.0
+                ],
+                [
+                  1463.0,
+                  155.0
+                ],
+                [
+                  1462.0,
+                  177.0
+                ],
+                [
+                  1397.0,
+                  175.0
+                ]
+              ]
+            },
+            {
+              "text": "检修决策",
+              "confidence": 0.9978395700454712,
+              "bbox": [
+                [
+                  1607.0,
+                  155.0
+                ],
+                [
+                  1670.0,
+                  155.0
+                ],
+                [
+                  1670.0,
+                  176.0
+                ],
+                [
+                  1607.0,
+                  176.0
+                ]
+              ]
+            },
+            {
+              "text": "电网企业：",
+              "confidence": 0.9989238858222962,
+              "bbox": [
+                [
+                  263.0,
+                  192.0
+                ],
+                [
+                  350.0,
+                  192.0
+                ],
+                [
+                  350.0,
+                  216.0
+                ],
+                [
+                  263.0,
+                  216.0
+                ]
+              ]
+            },
+            {
+              "text": "04t",
+              "confidence": 0.9072693188985189,
+              "bbox": [
+                [
+                  545.0,
+                  197.0
+                ],
+                [
+                  606.0,
+                  197.0
+                ],
+                [
+                  606.0,
+                  230.0
+                ],
+                [
+                  545.0,
+                  230.0
+                ]
+              ]
+            },
+            {
+              "text": "场景应用层",
+              "confidence": 0.9997715711593628,
+              "bbox": [
+                [
+                  589.0,
+                  199.0
+                ],
+                [
+                  715.0,
+                  203.0
+                ],
+                [
+                  714.0,
+                  234.0
+                ],
+                [
+                  588.0,
+                  229.0
+                ]
+              ]
+            },
+            {
+              "text": "数据、模型与业务需求",
+              "confidence": 0.9991759121417999,
+              "bbox": [
+                [
+                  882.0,
+                  194.0
+                ],
+                [
+                  1058.0,
+                  194.0
+                ],
+                [
+                  1058.0,
+                  217.0
+                ],
+                [
+                  882.0,
+                  217.0
+                ]
+              ]
+            },
+            {
+              "text": "电网运行、设备资产、",
+              "confidence": 0.9988366484642028,
+              "bbox": [
+                [
+                  264.0,
+                  219.0
+                ],
+                [
+                  401.0,
+                  219.0
+                ],
+                [
+                  401.0,
+                  242.0
+                ],
+                [
+                  264.0,
+                  242.0
+                ]
+              ]
+            },
+            {
+              "text": "融合形成行业应用",
+              "confidence": 0.9997995942831039,
+              "bbox": [
+                [
+                  883.0,
+                  219.0
+                ],
+                [
+                  1024.0,
+                  219.0
+                ],
+                [
+                  1024.0,
+                  242.0
+                ],
+                [
+                  883.0,
+                  242.0
+                ]
+              ]
+            },
+            {
+              "text": "负荷需求、营销服务",
+              "confidence": 0.9991249640782675,
+              "bbox": [
+                [
+                  263.0,
+                  239.0
+                ],
+                [
+                  400.0,
+                  242.0
+                ],
+                [
+                  400.0,
+                  264.0
+                ],
+                [
+                  263.0,
+                  262.0
+                ]
+              ]
+            },
+            {
+              "text": "发电企业：",
+              "confidence": 0.9981808662414551,
+              "bbox": [
+                [
+                  262.0,
+                  285.0
+                ],
+                [
+                  351.0,
+                  283.0
+                ],
+                [
+                  352.0,
+                  311.0
+                ],
+                [
+                  263.0,
+                  313.0
+                ]
+              ]
+            },
+            {
+              "text": "绿色低碳：",
+              "confidence": 0.889647263288498,
+              "bbox": [
+                [
+                  1398.0,
+                  285.0
+                ],
+                [
+                  1479.0,
+                  285.0
+                ],
+                [
+                  1479.0,
+                  309.0
+                ],
+                [
+                  1398.0,
+                  309.0
+                ]
+              ]
+            },
+            {
+              "text": "人才教育：",
+              "confidence": 0.9992942094802857,
+              "bbox": [
+                [
+                  1606.0,
+                  286.0
+                ],
+                [
+                  1688.0,
+                  286.0
+                ],
+                [
+                  1688.0,
+                  310.0
+                ],
+                [
+                  1606.0,
+                  310.0
+                ]
+              ]
+            },
+            {
+              "text": "发电运行、设备状态、",
+              "confidence": 0.9982848107814789,
+              "bbox": [
+                [
+                  263.0,
+                  315.0
+                ],
+                [
+                  401.0,
+                  315.0
+                ],
+                [
+                  401.0,
+                  338.0
+                ],
+                [
+                  263.0,
+                  338.0
+                ]
+              ]
+            },
+            {
+              "text": "电碳因子、",
+              "confidence": 0.9994207978248596,
+              "bbox": [
+                [
+                  1400.0,
+                  312.0
+                ],
+                [
+                  1470.0,
+                  312.0
+                ],
+                [
+                  1470.0,
+                  336.0
+                ],
+                [
+                  1400.0,
+                  336.0
+                ]
+              ]
+            },
+            {
+              "text": "知识服务、",
+              "confidence": 0.999254024028778,
+              "bbox": [
+                [
+                  1607.0,
+                  313.0
+                ],
+                [
+                  1676.0,
+                  313.0
+                ],
+                [
+                  1676.0,
+                  334.0
+                ],
+                [
+                  1607.0,
+                  334.0
+                ]
+              ]
+            },
+            {
+              "text": "燃料采购、生产经营",
+              "confidence": 0.9963766601350572,
+              "bbox": [
+                [
+                  264.0,
+                  339.0
+                ],
+                [
+                  400.0,
+                  339.0
+                ],
+                [
+                  400.0,
+                  358.0
+                ],
+                [
+                  264.0,
+                  358.0
+                ]
+              ]
+            },
+            {
+              "text": "碳核算、",
+              "confidence": 0.9979511946439743,
+              "bbox": [
+                [
+                  1400.0,
+                  335.0
+                ],
+                [
+                  1453.0,
+                  335.0
+                ],
+                [
+                  1453.0,
+                  356.0
+                ],
+                [
+                  1400.0,
+                  356.0
+                ]
+              ]
+            },
+            {
+              "text": "培训、",
+              "confidence": 0.9974509676297506,
+              "bbox": [
+                [
+                  1607.0,
+                  335.0
+                ],
+                [
+                  1647.0,
+                  335.0
+                ],
+                [
+                  1647.0,
+                  357.0
+                ],
+                [
+                  1607.0,
+                  357.0
+                ]
+              ]
+            },
+            {
+              "text": "产品碳足迹",
+              "confidence": 0.9963747739791871,
+              "bbox": [
+                [
+                  1400.0,
+                  357.0
+                ],
+                [
+                  1478.0,
+                  357.0
+                ],
+                [
+                  1478.0,
+                  378.0
+                ],
+                [
+                  1400.0,
+                  378.0
+                ]
+              ]
+            },
+            {
+              "text": "人才评价",
+              "confidence": 0.9998039752244949,
+              "bbox": [
+                [
+                  1607.0,
+                  356.0
+                ],
+                [
+                  1672.0,
+                  356.0
+                ],
+                [
+                  1672.0,
+                  380.0
+                ],
+                [
+                  1607.0,
+                  380.0
+                ]
+              ]
+            },
+            {
+              "text": "新能源企业：",
+              "confidence": 0.9785981277624766,
+              "bbox": [
+                [
+                  263.0,
+                  384.0
+                ],
+                [
+                  370.0,
+                  384.0
+                ],
+                [
+                  370.0,
+                  408.0
+                ],
+                [
+                  263.0,
+                  408.0
+                ]
+              ]
+            },
+            {
+              "text": "03",
+              "confidence": 0.9991781711578369,
+              "bbox": [
+                [
+                  490.0,
+                  375.0
+                ],
+                [
+                  526.0,
+                  375.0
+                ],
+                [
+                  526.0,
+                  404.0
+                ],
+                [
+                  490.0,
+                  404.0
+                ]
+              ]
+            },
+            {
+              "text": "可信流通与服务层",
+              "confidence": 0.9989959746599197,
+              "bbox": [
+                [
+                  530.0,
+                  377.0
+                ],
+                [
+                  701.0,
+                  379.0
+                ],
+                [
+                  700.0,
+                  406.0
+                ],
+                [
+                  530.0,
+                  404.0
+                ]
+              ]
+            },
+            {
+              "text": "可信连接、授权使用、",
+              "confidence": 0.9990148544311523,
+              "bbox": [
+                [
+                  792.0,
+                  377.0
+                ],
+                [
+                  953.0,
+                  377.0
+                ],
+                [
+                  953.0,
+                  400.0
+                ],
+                [
+                  792.0,
+                  400.0
+                ]
+              ]
+            },
+            {
+              "text": "受控交付、协同计算",
+              "confidence": 0.9997667537795173,
+              "bbox": [
+                [
+                  793.0,
+                  401.0
+                ],
+                [
+                  949.0,
+                  401.0
+                ],
+                [
+                  949.0,
+                  424.0
+                ],
+                [
+                  793.0,
+                  424.0
+                ]
+              ]
+            },
+            {
+              "text": "风光储运行、",
+              "confidence": 0.9990077316761017,
+              "bbox": [
+                [
+                  264.0,
+                  413.0
+                ],
+                [
+                  350.0,
+                  413.0
+                ],
+                [
+                  350.0,
+                  434.0
+                ],
+                [
+                  264.0,
+                  434.0
+                ]
+              ]
+            },
+            {
+              "text": "气象环境",
+              "confidence": 0.9986949265003204,
+              "bbox": [
+                [
+                  263.0,
+                  431.0
+                ],
+                [
+                  330.0,
+                  434.0
+                ],
+                [
+                  329.0,
+                  459.0
+                ],
+                [
+                  262.0,
+                  456.0
+                ]
+              ]
+            },
+            {
+              "text": "●统一接入→●治理加工",
+              "confidence": 0.9059658104723151,
+              "bbox": [
+                [
+                  502.0,
+                  453.0
+                ],
+                [
+                  685.0,
+                  453.0
+                ],
+                [
+                  685.0,
+                  473.0
+                ],
+                [
+                  502.0,
+                  473.0
+                ]
+              ]
+            },
+            {
+              "text": "产品封装",
+              "confidence": 0.999710738658905,
+              "bbox": [
+                [
+                  732.0,
+                  453.0
+                ],
+                [
+                  801.0,
+                  453.0
+                ],
+                [
+                  801.0,
+                  473.0
+                ],
+                [
+                  732.0,
+                  473.0
+                ]
+              ]
+            },
+            {
+              "text": "设备制造企业：",
+              "confidence": 0.9762454628944397,
+              "bbox": [
+                [
+                  264.0,
+                  483.0
+                ],
+                [
+                  387.0,
+                  483.0
+                ],
+                [
+                  387.0,
+                  507.0
+                ],
+                [
+                  264.0,
+                  507.0
+                ]
+              ]
+            },
+            {
+              "text": "科技创新：",
+              "confidence": 0.9994306921958923,
+              "bbox": [
+                [
+                  1396.0,
+                  487.0
+                ],
+                [
+                  1478.0,
+                  484.0
+                ],
+                [
+                  1479.0,
+                  511.0
+                ],
+                [
+                  1397.0,
+                  515.0
+                ]
+              ]
+            },
+            {
+              "text": "电力征信：",
+              "confidence": 0.9996608018875122,
+              "bbox": [
+                [
+                  1607.0,
+                  488.0
+                ],
+                [
+                  1688.0,
+                  488.0
+                ],
+                [
+                  1688.0,
+                  512.0
+                ],
+                [
+                  1607.0,
+                  512.0
+                ]
+              ]
+            },
+            {
+              "text": "多源汇聚、统一治理、",
+              "confidence": 0.9990732073783875,
+              "bbox": [
+                [
+                  793.0,
+                  507.0
+                ],
+                [
+                  956.0,
+                  507.0
+                ],
+                [
+                  956.0,
+                  530.0
+                ],
+                [
+                  793.0,
+                  530.0
+                ]
+              ]
+            },
+            {
+              "text": "研发制造、运行监测、",
+              "confidence": 0.9974867761135101,
+              "bbox": [
+                [
+                  263.0,
+                  510.0
+                ],
+                [
+                  404.0,
+                  510.0
+                ],
+                [
+                  404.0,
+                  530.0
+                ],
+                [
+                  263.0,
+                  530.0
+                ]
+              ]
+            },
+            {
+              "text": "02",
+              "confidence": 0.9997568428516388,
+              "bbox": [
+                [
+                  490.0,
+                  508.0
+                ],
+                [
+                  530.0,
+                  508.0
+                ],
+                [
+                  530.0,
+                  541.0
+                ],
+                [
+                  490.0,
+                  541.0
+                ]
+              ]
+            },
+            {
+              "text": "数据资源与产品层",
+              "confidence": 0.998290054500103,
+              "bbox": [
+                [
+                  537.0,
+                  512.0
+                ],
+                [
+                  706.0,
+                  514.0
+                ],
+                [
+                  705.0,
+                  541.0
+                ],
+                [
+                  537.0,
+                  538.0
+                ]
+              ]
+            },
+            {
+              "text": "成果评价、",
+              "confidence": 0.9991024136543274,
+              "bbox": [
+                [
+                  1398.0,
+                  514.0
+                ],
+                [
+                  1468.0,
+                  514.0
+                ],
+                [
+                  1468.0,
+                  538.0
+                ],
+                [
+                  1398.0,
+                  538.0
+                ]
+              ]
+            },
+            {
+              "text": "授权合规下的",
+              "confidence": 0.99967689315478,
+              "bbox": [
+                [
+                  1608.0,
+                  516.0
+                ],
+                [
+                  1697.0,
+                  516.0
+                ],
+                [
+                  1697.0,
+                  537.0
+                ],
+                [
+                  1608.0,
+                  537.0
+                ]
+              ]
+            },
+            {
+              "text": "售后运维",
+              "confidence": 0.9973914623260498,
+              "bbox": [
+                [
+                  262.0,
+                  529.0
+                ],
+                [
+                  329.0,
+                  532.0
+                ],
+                [
+                  328.0,
+                  556.0
+                ],
+                [
+                  261.0,
+                  553.0
+                ]
+              ]
+            },
+            {
+              "text": "数据集与产品封装",
+              "confidence": 0.9996243193745613,
+              "bbox": [
+                [
+                  793.0,
+                  529.0
+                ],
+                [
+                  932.0,
+                  531.0
+                ],
+                [
+                  932.0,
+                  554.0
+                ],
+                [
+                  792.0,
+                  552.0
+                ]
+              ]
+            },
+            {
+              "text": "供需匹配、",
+              "confidence": 0.9785124301910401,
+              "bbox": [
+                [
+                  1399.0,
+                  537.0
+                ],
+                [
+                  1467.0,
+                  537.0
+                ],
+                [
+                  1467.0,
+                  560.0
+                ],
+                [
+                  1399.0,
+                  560.0
+                ]
+              ]
+            },
+            {
+              "text": "经营分析与",
+              "confidence": 0.9998616099357605,
+              "bbox": [
+                [
+                  1607.0,
+                  537.0
+                ],
+                [
+                  1685.0,
+                  537.0
+                ],
+                [
+                  1685.0,
+                  560.0
+                ],
+                [
+                  1607.0,
+                  560.0
+                ]
+              ]
+            },
+            {
+              "text": "转化服务",
+              "confidence": 0.9981954097747803,
+              "bbox": [
+                [
+                  1399.0,
+                  560.0
+                ],
+                [
+                  1462.0,
+                  560.0
+                ],
+                [
+                  1462.0,
+                  581.0
+                ],
+                [
+                  1399.0,
+                  581.0
+                ]
+              ]
+            },
+            {
+              "text": "信用辅助",
+              "confidence": 0.9964410215616226,
+              "bbox": [
+                [
+                  1608.0,
+                  559.0
+                ],
+                [
+                  1671.0,
+                  559.0
+                ],
+                [
+                  1671.0,
+                  580.0
+                ],
+                [
+                  1608.0,
+                  580.0
+                ]
+              ]
+            },
+            {
+              "text": "科研院所：",
+              "confidence": 0.997510576248169,
+              "bbox": [
+                [
+                  263.0,
+                  580.0
+                ],
+                [
+                  351.0,
+                  580.0
+                ],
+                [
+                  351.0,
+                  604.0
+                ],
+                [
+                  263.0,
+                  604.0
+                ]
+              ]
+            },
+            {
+              "text": "01",
+              "confidence": 0.9997070133686066,
+              "bbox": [
+                [
+                  492.0,
+                  585.0
+                ],
+                [
+                  553.0,
+                  585.0
+                ],
+                [
+                  553.0,
+                  619.0
+                ],
+                [
+                  492.0,
+                  619.0
+                ]
+              ]
+            },
+            {
+              "text": "基础设施层",
+              "confidence": 0.9994216918945312,
+              "bbox": [
+                [
+                  538.0,
+                  590.0
+                ],
+                [
+                  656.0,
+                  590.0
+                ],
+                [
+                  656.0,
+                  620.0
+                ],
+                [
+                  538.0,
+                  620.0
+                ]
+              ]
+            },
+            {
+              "text": "算力、存储、网络、",
+              "confidence": 0.9976838893360562,
+              "bbox": [
+                [
+                  796.0,
+                  582.0
+                ],
+                [
+                  940.0,
+                  584.0
+                ],
+                [
+                  939.0,
+                  608.0
+                ],
+                [
+                  795.0,
+                  606.0
+                ]
+              ]
+            },
+            {
+              "text": "科研成果、试验验证、",
+              "confidence": 0.9995262384414673,
+              "bbox": [
+                [
+                  263.0,
+                  609.0
+                ],
+                [
+                  406.0,
+                  609.0
+                ],
+                [
+                  406.0,
+                  632.0
+                ],
+                [
+                  263.0,
+                  632.0
+                ]
+              ]
+            },
+            {
+              "text": "云平台、AI基础能力",
+              "confidence": 0.9859586715698242,
+              "bbox": [
+                [
+                  796.0,
+                  608.0
+                ],
+                [
+                  953.0,
+                  608.0
+                ],
+                [
+                  953.0,
+                  631.0
+                ],
+                [
+                  796.0,
+                  631.0
+                ]
+              ]
+            },
+            {
+              "text": "模型算法",
+              "confidence": 0.9997447729110718,
+              "bbox": [
+                [
+                  263.0,
+                  632.0
+                ],
+                [
+                  328.0,
+                  632.0
+                ],
+                [
+                  328.0,
+                  652.0
+                ],
+                [
+                  263.0,
+                  652.0
+                ]
+              ]
+            },
+            {
+              "text": "形成数据产品、模型服务和业务应用",
+              "confidence": 0.9909384846687317,
+              "bbox": [
+                [
+                  1354.0,
+                  659.0
+                ],
+                [
+                  1746.0,
+                  659.0
+                ],
+                [
+                  1746.0,
+                  688.0
+                ],
+                [
+                  1354.0,
+                  688.0
+                ]
+              ]
+            },
+            {
+              "text": "安全保障体系贯穿全过程",
+              "confidence": 0.998249118978327,
+              "bbox": [
+                [
+                  122.0,
+                  730.0
+                ],
+                [
+                  403.0,
+                  732.0
+                ],
+                [
+                  403.0,
+                  761.0
+                ],
+                [
+                  122.0,
+                  759.0
+                ]
+              ]
+            },
+            {
+              "text": "身份认证、权限控制、分类分级、隐私保护、安全审计、全流程留痕",
+              "confidence": 0.9990670065085093,
+              "bbox": [
+                [
+                  435.0,
+                  738.0
+                ],
+                [
+                  886.0,
+                  738.0
+                ],
+                [
+                  886.0,
+                  757.0
+                ],
+                [
+                  435.0,
+                  757.0
+                ]
+              ]
+            },
+            {
+              "text": "主体可认证",
+              "confidence": 0.9997126936912537,
+              "bbox": [
+                [
+                  924.0,
+                  739.0
+                ],
+                [
+                  1005.0,
+                  739.0
+                ],
+                [
+                  1005.0,
+                  762.0
+                ],
+                [
+                  924.0,
+                  762.0
+                ]
+              ]
+            },
+            {
+              "text": "权限可控制",
+              "confidence": 0.9998112320899963,
+              "bbox": [
+                [
+                  1065.0,
+                  738.0
+                ],
+                [
+                  1143.0,
+                  738.0
+                ],
+                [
+                  1143.0,
+                  761.0
+                ],
+                [
+                  1065.0,
+                  761.0
+                ]
+              ]
+            },
+            {
+              "text": "调用有授权",
+              "confidence": 0.999732768535614,
+              "bbox": [
+                [
+                  1196.0,
+                  738.0
+                ],
+                [
+                  1273.0,
+                  738.0
+                ],
+                [
+                  1273.0,
+                  761.0
+                ],
+                [
+                  1196.0,
+                  761.0
+                ]
+              ]
+            },
+            {
+              "text": "使用可计量",
+              "confidence": 0.9998849987983703,
+              "bbox": [
+                [
+                  1317.0,
+                  739.0
+                ],
+                [
+                  1394.0,
+                  739.0
+                ],
+                [
+                  1394.0,
+                  759.0
+                ],
+                [
+                  1317.0,
+                  759.0
+                ]
+              ]
+            },
+            {
+              "text": "过程可审计",
+              "confidence": 0.999876868724823,
+              "bbox": [
+                [
+                  1451.0,
+                  739.0
+                ],
+                [
+                  1530.0,
+                  739.0
+                ],
+                [
+                  1530.0,
+                  759.0
+                ],
+                [
+                  1451.0,
+                  759.0
+                ]
+              ]
+            },
+            {
+              "text": "流向可追溯",
+              "confidence": 0.9814534664154053,
+              "bbox": [
+                [
+                  1576.0,
+                  738.0
+                ],
+                [
+                  1660.0,
+                  738.0
+                ],
+                [
+                  1660.0,
+                  761.0
+                ],
+                [
+                  1576.0,
+                  761.0
+                ]
+              ]
+            },
+            {
+              "text": "标准规范体系贯穿全过程",
+              "confidence": 0.9967773231593046,
+              "bbox": [
+                [
+                  125.0,
+                  811.0
+                ],
+                [
+                  402.0,
+                  811.0
+                ],
+                [
+                  402.0,
+                  838.0
+                ],
+                [
+                  125.0,
+                  838.0
+                ]
+              ]
+            },
+            {
+              "text": "统一目录与元数据、统一接入与接口、",
+              "confidence": 0.9994641717742471,
+              "bbox": [
+                [
+                  441.0,
+                  803.0
+                ],
+                [
+                  713.0,
+                  803.0
+                ],
+                [
+                  713.0,
+                  826.0
+                ],
+                [
+                  441.0,
+                  826.0
+                ]
+              ]
+            },
+            {
+              "text": "统一产品定义与质量、统一服务交付、统一授权计量与流通规则",
+              "confidence": 0.9992994240352085,
+              "bbox": [
+                [
+                  441.0,
+                  830.0
+                ],
+                [
+                  902.0,
+                  830.0
+                ],
+                [
+                  902.0,
+                  849.0
+                ],
+                [
+                  441.0,
+                  849.0
+                ]
+              ]
+            }
+          ],
+          "summary": "未发现明确错字或乱码。",
+          "required_action": null,
+          "page_number": 1,
+          "attempt": 1,
+          "normalized_image_size": [
+            2048,
+            1024
+          ]
+        },
+        "visual_signature": {
+          "schema": "cyberppt.full_image_visual_signature.v1",
+          "page_number": 1,
+          "source_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905/page_001_电力领域数据基础设施总体架构_full.png",
+          "source_sha256": "e7a2d52a9217f41db7e879c5ae3d3eedb01ce6d3aefd07a850b726818fd0b995",
+          "visual_medium": "unspecified",
+          "gravity": {
+            "x": 0.481,
+            "y": 0.4764,
+            "horizontal": "center",
+            "vertical": "middle"
+          },
+          "density": "dense",
+          "density_score": 57.0165,
+          "skeleton_3x3": "111111101",
+          "skeleton_shares": [
+            0.1081,
+            0.1321,
+            0.1155,
+            0.1325,
+            0.115,
+            0.1213,
+            0.1254,
+            0.0612,
+            0.0889
+          ],
+          "structure_hash": "9bb07ff3f383c3c0"
+        },
+        "sha256": "e7a2d52a9217f41db7e879c5ae3d3eedb01ce6d3aefd07a850b726818fd0b995",
+        "reconstruction_visual_source": {
+          "authority": "audited_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905/page_001_电力领域数据基础设施总体架构_full.png",
+          "sha256": "e7a2d52a9217f41db7e879c5ae3d3eedb01ce6d3aefd07a850b726818fd0b995",
+          "immutable_visual_composition": true
+        }
+      },
+      "quick_page_checkpoint": {
+        "schema": "cyberppt.stage02.quick_page_checkpoint.v1",
+        "status": "failed",
+        "error": "requires a hand-authored SVG from the image-to-PPTX runtime"
+      }
+    }
+  ],
+  "source_mode": "external_script",
+  "source_script_sha256": "301cceb94d5a0a5e481260c2a6052b6ea6e0795d9f7911a36a8d43e5d74c54e5",
+  "run_id": "power-data-infra-v16-send-script-style09-20260905",
+  "input_fingerprint": "c6ba661eaf2a092c8332cf1b2ba7777c314d169956850e8c666a727c1992fd19",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "301cceb94d5a0a5e481260c2a6052b6ea6e0795d9f7911a36a8d43e5d74c54e5",
+    "script_input_sha256": "a47c0c18bb4db02f5af11e03b5558e6acd7d3e93fae71d952b534ed990f9471f",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "18249f492ce8352a49a1b3348b68bf7ce2a8a9be108bfc61f792da3aee585203",
+    "source_mode": "external_script",
+    "pages": [
+      1
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "full_image_deck_rhythm_qa": {
+    "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+    "status": "passed",
+    "receipt_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905/qa/full_image_deck_rhythm_qa.json",
+    "receipt_sha256": "3802a9a2ce4172496f7f1f791a2cab8507af1e627648ba0cf555a6a523537e78",
+    "contact_sheet_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v16-send-script-style09-20260905/qa/full_image_contact_sheet.png",
+    "contact_sheet_sha256": "e171874e4f388d10ca3f801fd189efcb37bc402db5e4096dbfa6e44d25bdc8ee",
+    "page_count": 1,
+    "blocker_count": 0,
+    "warning_count": 0,
+    "authority_gate": "before_reconstruction_visual_source_binding"
+  },
+  "visual_truth_policy": {
+    "authority": "audited_full_image",
+    "scope": "editable_reconstruction",
+    "rule": "downstream reconstruction may decompose or rebuild text but must preserve the accepted visual composition",
+    "bound_pages": [
+      1
+    ]
+  },
+  "stage02_state": {
+    "schema": "cyberppt.stage02_build_state.v1",
+    "state": "needs_action",
+    "pages": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image",
+        "error": null
+      }
+    ],
+    "actions": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image"
+      }
+    ],
+    "failures": []
+  }
+}

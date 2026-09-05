@@ -2,6 +2,7 @@
   "communication_goal": "说明数据基础设施如何把分散的数据资源转化为可持续使用的数据服务。",
   "plan_contract_version": 2,
   "planning_profile": "lean",
+  "authoring_mode": "faithful",
   "audience": "业务管理人员",
   "audience_scope": "internal",
   "source_structure_mode": "preserve",

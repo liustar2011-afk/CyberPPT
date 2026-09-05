@@ -1,0 +1,32 @@
+【Style 09 complete runtime contract】
+视觉风格09：纯白 + 深蓝领导汇报
+Palette: white #FFFFFF, deep blue #12355B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
+Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.
+Rewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.
+Prefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.
+Prefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.
+Use icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.
+Do not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.
+Screens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
+Use broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
+Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
+People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
+Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.
+
+【Page-specific priority rule】
+This page must use one integrated five-layer architecture diagram because the source explicitly defines a vertical capability architecture. This requirement supersedes only the Style 09 prohibition on “architecture diagrams”. Keep every other Style 09 rule above. Use a quiet editorial architecture composition, no neon, no glossy 3D, no equal card wall, no icon grid, no diagram chrome.
+
+【Architecture content and composition】
+Create a 2048×1024 Chinese executive architecture page on pure white. Use one asymmetric central structural carrier: five horizontal layers read bottom to top, with deep-blue headings, gray body text, thin #C9CDD1 dividers, restrained connectors and generous whitespace. Embed a small realistic, muted operational scene only where it supports an environment connection; scenes must not form separate image panels.
+
+Top principle band: “统一控制｜分布执行｜按需汇聚｜数据留域”.
+Bottom layer: “数据与人工智能基础” — “经授权数据与模型｜存储计算｜知识库｜向量检索｜模型服务｜算力资源管理”.
+Layer 2: “资源与产品管理” — “登记｜编目｜质量与版本管理｜数据产品封装”.
+Layer 3: “服务交付与场景编排” — “接口调用｜成果交付｜模型任务｜数据沙箱｜多方协同交付”.
+Layer 4: “运营与交易管理” — “客户｜产品规格｜订单｜合同｜授权｜计量｜账单｜结算”.
+Top layer: “可信连接与主体接入” — “机构｜人员｜应用｜可信身份｜外部主体接入｜业务请求”. Show a clear, restrained downward connection through the four layers below; do not turn the layers into a lifecycle or process arrow.
+
+Place two narrow vertical coverage bands, integrated with the stack rather than as cards. Left: “安全与合规” — “分类分级｜权利核查｜访问控制｜输出管理｜审计追溯”，覆盖“主体接入｜产品开发｜服务调用｜成果交付｜计量结算｜退出管理”. Right: “标准与运维” — “目录｜接口｜质量｜服务等级｜计量标准｜版本｜监控｜容灾｜故障处置”.
+
+Use four compact, unequal external connection annotations around the trusted-connection layer, each joined by a thin line: “统一环境：公共能力集中部署”；“合作伙伴资源：可信连接器在源端提供服务”；“客户专属能力：专属实例或客户指定环境”；“受控计算环境：多方敏感数据联合分析”. They are connected environments, never a separate deployment block. All text belongs in its related layer, coverage band or connection annotation. Do not render a page title, subtitle, logo, footer, page number, detached paragraphs, or any prompt labels.

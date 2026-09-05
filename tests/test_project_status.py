@@ -55,14 +55,14 @@ def test_strict_status_ignores_stale_script_source_index(tmp_path: Path) -> None
     assert "reading_strategy is required for script-profile Foundation" not in foundation["issues"]
 
 
-def test_init_project_defaults_to_strict_profile(tmp_path: Path) -> None:
+def test_init_project_defaults_to_script_profile(tmp_path: Path) -> None:
     project = tmp_path / "default-project"
 
     init_project(project)
 
     manifest = (project / "manifest.yml").read_text(encoding="utf-8")
-    assert "profile: strict" in manifest
-    assert "source_truth:" in manifest
+    assert "profile: script" in manifest
+    assert "source_truth:" not in manifest
 
 
 def test_project_status_surfaces_live_handoff_failure(tmp_path: Path) -> None:

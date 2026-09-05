@@ -8,6 +8,19 @@ from typing import Any
 from cyberppt.source_assets import validate_source_assets
 
 
+_FOUNDATION_PROMOTION_PATTERNS = (
+    ("服务于验收/节点", re.compile(r"服务于[^。；\n]{0,40}(?:验收|节点)")),
+    (
+        "为验收/节点提供支撑",
+        re.compile(r"为[^。；\n]{0,40}(?:验收|节点)[^。；\n]{0,20}提供[^。；\n]{0,20}支撑"),
+    ),
+    ("形成必要性", re.compile(r"形成[^。；\n]{0,30}必要性")),
+    ("意味着", re.compile(r"意味着")),
+    ("只有…才/才能", re.compile(r"只有[^。；\n]{0,50}(?:才|才能)")),
+    ("必须…才能/方可", re.compile(r"必须[^。；\n]{0,50}(?:才能|方可)")),
+)
+
+
 def _source_unit_refs(item: dict[str, Any]) -> set[str]:
     refs = {
         str(value)
@@ -296,9 +309,13 @@ def validate_foundation_detail_atomicity(
         if isinstance(unit, dict) and unit.get("unit_id")
     }
     issues: list[str] = []
+    aggregate_by_ref: dict[str, list[str]] = {}
+    item_ids_by_ref: dict[str, list[str]] = {}
     for collection in ("facts", "constraints"):
         for index, item in enumerate(foundation.get(collection) or []):
             if not isinstance(item, dict):
+                continue
+            if str(item.get("argument_duty") or "") == "metadata":
                 continue
             item_id = str(item.get("id") or f"{collection}.{index}")
             cited = [
@@ -306,18 +323,9 @@ def validate_foundation_detail_atomicity(
                 for ref in _source_unit_refs(item)
                 if ref in indexed_units and str(indexed_units[ref].get("kind") or "") != "heading"
             ]
-            obligations = sum(_detail_obligation_count(indexed_units[ref]) for ref in cited)
-            if obligations <= 1:
-                continue
             semantic_units = [
                 unit for unit in item.get("semantic_units") or [] if isinstance(unit, dict)
             ]
-            if len(semantic_units) < obligations:
-                issues.append(
-                    "FOUNDATION_SOURCE_DETAIL_ATOMICITY_GAP: "
-                    f"{item_id} cites {len(cited)} source units carrying at least {obligations} "
-                    f"detail obligations but exposes {len(semantic_units)} semantic_units"
-                )
             covered_refs: set[str] = set()
             authored_by_ref: dict[str, list[str]] = {}
             for unit_index, unit in enumerate(semantic_units):
@@ -336,20 +344,42 @@ def validate_foundation_detail_atomicity(
                     )
                 covered_refs.update(unit_refs)
                 for ref in unit_refs:
-                    authored_by_ref.setdefault(ref, []).append(str(unit.get("text") or ""))
+                    text = str(unit.get("text") or "")
+                    authored_by_ref.setdefault(ref, []).append(text)
+                    aggregate_by_ref.setdefault(ref, []).append(text)
+                    item_ids_by_ref.setdefault(ref, []).append(item_id)
             uncovered = sorted(set(cited) - covered_refs)
             if semantic_units and uncovered:
                 issues.append(
                     "FOUNDATION_SEMANTIC_UNIT_SOURCE_COVERAGE_GAP: "
                     f"{item_id}.semantic_units do not cover cited source units {uncovered}"
                 )
-            for ref in cited:
-                authored_text = "\n".join(authored_by_ref.get(ref) or [])
-                if _detail_overlap(str(indexed_units[ref].get("text") or ""), authored_text) < 0.35:
-                    issues.append(
-                        "FOUNDATION_SEMANTIC_UNIT_DETAIL_LOSS: "
-                        f"{item_id}.semantic_units abstract away source-specific content from {ref}"
-                    )
+    cited_refs = {
+        ref
+        for collection in ("facts", "constraints")
+        for item in foundation.get(collection) or []
+        if isinstance(item, dict)
+        and str(item.get("argument_duty") or "") != "metadata"
+        for ref in _source_unit_refs(item)
+        if ref in indexed_units and str(indexed_units[ref].get("kind") or "") != "heading"
+    }
+    for ref in sorted(cited_refs):
+        obligations = _detail_obligation_count(indexed_units[ref])
+        semantic_units = aggregate_by_ref.get(ref) or []
+        owner_ids = sorted(set(item_ids_by_ref.get(ref) or []))
+        owner_label = ", ".join(owner_ids) or ref
+        if obligations > 1 and len(semantic_units) < obligations:
+            issues.append(
+                "FOUNDATION_SOURCE_DETAIL_ATOMICITY_GAP: "
+                f"{owner_label} collectively cite {ref} carrying at least {obligations} "
+                f"detail obligations but expose {len(semantic_units)} semantic_units"
+            )
+        authored_text = "\n".join(semantic_units)
+        if semantic_units and _detail_overlap(str(indexed_units[ref].get("text") or ""), authored_text) < 0.35:
+            issues.append(
+                "FOUNDATION_SEMANTIC_UNIT_DETAIL_LOSS: "
+                f"{owner_label} collectively abstract away source-specific content from {ref}"
+            )
     return issues
 
 
@@ -358,6 +388,7 @@ def validate_script_foundation_against_index(
 ) -> list[str]:
     issues = validate_foundation_source_bindings(foundation, source_index)
     issues.extend(validate_foundation_detail_atomicity(foundation, source_index))
+    issues.extend(validate_foundation_semantic_promotions(foundation, source_index))
     issues.extend(
         validate_reading_strategy(
             foundation,
@@ -376,9 +407,61 @@ def validate_script_foundation_against_index(
     return list(dict.fromkeys(issues))
 
 
+def validate_foundation_semantic_promotions(
+    foundation: dict[str, Any], source_index: dict[str, Any]
+) -> list[str]:
+    """Catch high-risk relationships introduced before PLAN/AUTHOR."""
+
+    source_by_id = {
+        str(unit.get("unit_id")): str(unit.get("text") or "")
+        for unit in source_index.get("units") or []
+        if isinstance(unit, dict) and unit.get("unit_id")
+    }
+    whole_source = "\n".join(source_by_id.values())
+    candidates: list[tuple[str, str, str]] = []
+    semantics = foundation.get("document_semantics") or {}
+    if isinstance(semantics, dict):
+        for field in ("primary_thesis", "author_purpose"):
+            value = semantics.get(field)
+            if isinstance(value, str):
+                candidates.append((f"document_semantics.{field}", value, whole_source))
+        for index, item in enumerate(semantics.get("argument_method") or []):
+            if isinstance(item, dict) and isinstance(item.get("statement"), str):
+                refs = [str(ref) for ref in item.get("source_refs") or []]
+                local_source = "\n".join(source_by_id.get(ref, "") for ref in refs)
+                candidates.append(
+                    (f"document_semantics.argument_method[{index}]", item["statement"], local_source)
+                )
+    for collection in ("facts", "constraints", "argument_nodes"):
+        for index, item in enumerate(foundation.get(collection) or []):
+            if not isinstance(item, dict):
+                continue
+            value = item.get("statement") or item.get("claim")
+            if not isinstance(value, str):
+                continue
+            refs = [str(ref) for ref in item.get("source_refs") or []]
+            local_source = "\n".join(source_by_id.get(ref, "") for ref in refs)
+            candidates.append((f"{collection}.{index}", value, local_source))
+
+    issues: list[str] = []
+    for field, authored, source in candidates:
+        promoted = sorted(
+            label
+            for label, pattern in _FOUNDATION_PROMOTION_PATTERNS
+            if pattern.search(authored) and not pattern.search(source)
+        )
+        if promoted:
+            issues.append(
+                "FOUNDATION_SEMANTIC_RELATION_PROMOTED: "
+                f"{field} introduces unsupported relationship pattern(s) {promoted}"
+            )
+    return issues
+
+
 __all__ = [
     "validate_foundation_detail_atomicity",
     "validate_foundation_source_bindings",
+    "validate_foundation_semantic_promotions",
     "validate_reading_strategy",
     "validate_script_foundation_against_index",
 ]

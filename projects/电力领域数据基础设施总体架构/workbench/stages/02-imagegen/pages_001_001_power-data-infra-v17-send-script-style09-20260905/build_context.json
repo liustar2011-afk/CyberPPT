@@ -1,0 +1,68 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "power-data-infra-v17-send-script-style09-20260905",
+  "run_id": "power-data-infra-v17-send-script-style09-20260905",
+  "input_fingerprint": "588707cb5777f3e7afd2e0247c6d6d94393e5f2c5327f5e5b70fbc7234e49da3",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "301cceb94d5a0a5e481260c2a6052b6ea6e0795d9f7911a36a8d43e5d74c54e5",
+    "script_input_sha256": "a47c0c18bb4db02f5af11e03b5558e6acd7d3e93fae71d952b534ed990f9471f",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "ec675563e3f8eae400c4b4ee2fb99a5b6b8a0af63cae8137af6bcdc59e773497",
+    "source_mode": "external_script",
+    "pages": [
+      1
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "created_at": "2026-09-04T16:18:03+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/inputs/final-script.md",
+  "source_script_sha256": "301cceb94d5a0a5e481260c2a6052b6ea6e0795d9f7911a36a8d43e5d74c54e5",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "ec675563e3f8eae400c4b4ee2fb99a5b6b8a0af63cae8137af6bcdc59e773497",
+  "page_set": [
+    1
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "stage": "02-production-build",
+  "status": "needs_action",
+  "artifacts": {
+    "page_image_pairs": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v17-send-script-style09-20260905/page_image_pairs.json",
+      "sha256": "665eee8cfd9cafa98c20edf550c8ab2980099358b274d0db9bcd6d08d9baedac"
+    },
+    "needs_action": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v17-send-script-style09-20260905/stage02_needs_action.json"
+    }
+  },
+  "stage02_state": {
+    "schema": "cyberppt.stage02_build_state.v1",
+    "state": "needs_action",
+    "pages": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image",
+        "error": null
+      }
+    ],
+    "actions": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image"
+      }
+    ],
+    "failures": []
+  }
+}

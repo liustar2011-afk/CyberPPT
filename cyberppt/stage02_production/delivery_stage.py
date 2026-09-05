@@ -121,6 +121,8 @@ def _final_visible_text_contract(
     expected: list[str] = ["中国电力企业联合会", str(page_number)]
     if page is not None:
         expected.extend([page.title, *(line.strip() for line in page.onscreen_text.splitlines() if line.strip())])
+        if page.page_type == "chapter":
+            expected.extend(["章节导览", page.heading, "".join(page.heading.split())])
     authorized: list[str] = []
     pair = next(
         (item for item in manifest.get("pairs", []) if isinstance(item, dict) and item.get("page_number") == page_number),

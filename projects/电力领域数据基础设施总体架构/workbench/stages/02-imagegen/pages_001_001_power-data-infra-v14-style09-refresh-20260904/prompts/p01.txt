@@ -1,0 +1,554 @@
+【完整上屏内容】
+平台总体架构自下而上分为五层，层间为单向支撑关系，不越级调用；两项贯穿模块贯穿全部五层，对各层的准入、开发、调用、交付、结算和退出实施统一管控，不作为独立层级；三类业务管理视图横向叠加于五层之上，将各层产生的数据串联为端到端业务链条，两种结构相互映射、共同支撑运营。
+五层内容（自下而上）：第一层数据与人工智能基础层，内容包括存储计算、知识库、向量检索、模型服务和算力资源管理，是全部能力的基础支撑；第二层资源与产品管理层，内容包括统一目录、元数据管理、质量管理、版本管理和产品封装，将数据、模型和专业能力组织为可订购产品；第三层服务交付与场景编排层，内容包括接口调用、模型任务、数据沙箱、隐私保护计算和多方协同交付，支撑产品的调用与成果交付；第四层运营与交易管理层，内容包括客户管理、订单合同、授权管理、计量账单和对账结算，统一管理产品的商业化运营；第五层可信连接与主体接入层，位于最顶层，作为唯一外部入口，内容包括身份认证、连接器注册、接口适配、证书密钥和日志监测，承接机构、人员和应用的接入请求。
+两项贯穿模块内容：安全与合规贯穿，内容包括分类分级、权利核查、访问控制、加密脱敏和审计追溯，覆盖主体接入、产品开发、服务调用、成果交付、计量结算和退出管理全过程；标准与运维贯穿，内容包括目录标识、接口标准、质量标准、服务等级和监控容灾，同样覆盖上述全过程。
+三类业务管理视图内容：资源管理视图，内容包括主体管理、资源管理、产品管理、权利管理和质量管理；服务交付视图，内容包括接口调用、计算处理、数据留域、模型运行和过程审计；客户运营视图，内容包括需求组织、订单履行、账单结算和续约推广。三类视图通过统一标识、订单、授权规则、交付证据和计量记录相互衔接，形成资源—交付—运营的完整链条。
+
+
+
+
+
+
+
+
+
+【输出尺寸｜不上屏】
+最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。
+
+
+
+【视觉风格｜不上屏】
+# 视觉风格09：纯白 + 深蓝领导汇报｜多页面适配固化版
+
+## 01｜色彩与基础气质
+
+Palette: white #FFFFFF, deep blue #12355B, muted amber #D9772B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.
+
+Use deep blue for primary relationships, core judgments, key structural carriers and major conclusions. Reserve muted amber only for risks, exceptions, constraints, pending status and occasional decision-critical emphasis; never use it as a category color or decorative accent.
+
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished, precise and content-led. The page should feel like a refined executive-report infographic rather than a dashboard, poster, UI screen or icon-based diagram.
+
+---
+
+## 02｜固定视觉 DNA
+
+The visual language must remain consistent across all page types, while the page skeleton may change according to semantics.
+
+Every page must preserve the following visual DNA:
+
+- pure-white background with restrained deep-blue hierarchy;
+- one visually dominant focus;
+- realistic business or electric-power scenes integrated with information structure;
+- asymmetric and unequally weighted composition;
+- concise Chinese presentation text with clear hierarchy;
+- thin dividers, precise alignment and refined pale-blue relationship lines;
+- generous white space and strong reading order;
+- few structural components and few decorative elements;
+- scene-led, content-led and editorial rather than dashboard-like;
+- icons strictly subordinate to scenes, business objects and source-backed text.
+
+The style must remain recognizable even when the composition changes from radial to sequential, comparative, temporal, causal, quantitative or scene-based.
+
+Uniform visual language does not mean uniform page skeleton.
+
+---
+
+## 03｜页面语义优先原则
+
+Derive the page structure from the dominant semantic relationship in the source content.
+
+Before composing the page, identify the primary relationship:
+
+- center-to-periphery relationship → radial / hub-and-spoke;
+- sequential relationship → main chain / process;
+- temporal relationship → timeline / roadmap;
+- causal relationship → cause-and-effect expansion;
+- comparative relationship → asymmetric comparison;
+- compositional relationship → main body + capability clusters;
+- evidence relationship → conclusion + evidence;
+- real-world business relationship → scene-led composition;
+- quantitative relationship → key metric + trend / evidence;
+- governance or responsibility relationship → relationship axis + boundary / support band.
+
+Never force a radial, central-platform or ring-based composition onto content whose semantics are inherently sequential, comparative, temporal, causal, quantitative or scene-based.
+
+Never force content into repeated cards merely because the source contains several bullet points.
+
+Use only the number of semantic regions required by the content. Prefer fewer, unequally weighted regions. A page may consist of one dominant scene plus annotations, one main chain with embedded evidence, one dominant conclusion with several supporting proofs, or several asymmetric information regions.
+
+---
+
+## 04｜文字与信息组织
+
+Rewrite the supplied source copy into concise, conclusion-first Chinese presentation text.
+
+Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.
+
+Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength. Do not invent unsupported facts, slogans, conclusions or policy language.
+
+Deep-blue headings should be visually stronger than body text but remain editorial rather than poster-like.
+
+Body copy should stay compact, readable and close to the related scene, object or structural carrier.
+
+Prefer:
+- short conclusion-first paragraphs;
+- 1–3 sentence local explanations;
+- short bullets only when parallel items must be distinguished;
+- strong local grouping rather than disconnected labels.
+
+Do not reduce complete business meaning into isolated keywords merely to simplify the layout.
+
+Do not compress required body copy merely to create a visual center.
+
+The page should work as a reading-type PPT and remain understandable without oral explanation.
+
+---
+
+## 05｜实景与结构融合
+
+Prefer a scene-supported executive-report language.
+
+Use realistic, clean and context-rich electric-power and business scenes as visual anchors, such as:
+
+- grid facilities;
+- substations;
+- dispatch centers;
+- control rooms;
+- transmission lines;
+- wind and solar bases;
+- energy storage equipment;
+- power plants;
+- industrial facilities;
+- professional analysis environments;
+- teaching materials;
+- operational resources;
+- business collaboration environments.
+
+Prefer several small or medium embedded scenes over one giant central illustration, unless the page is explicitly scene-led.
+
+Each scene must support a specific topic, judgment, indicator, stakeholder, evidence point or business relationship and remain subordinate to the page's core judgment.
+
+Integrate scenes directly into information regions through:
+- soft edge fading;
+- cropped photographic windows;
+- partial background embedding;
+- shallow perspective bases;
+- scene-object overlap with adjacent text;
+- white-to-image gradient transitions with restrained contrast.
+
+Do not place every scene inside a rigid card.
+
+The scene should feel fused with the information structure rather than pasted onto it.
+
+### Scene mapping guidance
+
+Government / governance:
+institutional architecture, macro-energy context, planning, policy-support or analytical environments.
+
+New power system:
+renewable-energy bases, transmission systems, storage, grid interaction or system-operation scenes.
+
+Electric utilities:
+substations, control rooms, grid equipment, generation facilities or production-operation scenes.
+
+Industrial chain / cross-industry collaboration:
+industrial facilities, energy-consuming industries, manufacturing, logistics or professional collaboration environments.
+
+Platform / operation / model capability:
+dispatch centers, integrated analysis environments, data-processing workspaces or operational scenes.
+
+People should be absent or minimal. If present, keep them small, non-portrait and subordinate to the environment.
+
+---
+
+## 06｜结构载体与空间层级
+
+Every page must establish one strong semantic and visual anchor.
+
+The dominant focus may be:
+- a core conclusion;
+- a platform or key business object;
+- a major metric;
+- a business scene;
+- a critical relationship;
+- a principal mechanism;
+- a risk or constraint state.
+
+Express it through scale, position, contrast, deep blue, limited muted amber emphasis, scene scale, a structural base or another semantic anchor.
+
+Supporting information must remain subordinate in scale and contrast while still fully readable.
+
+Maintain visible spatial hierarchy:
+1. dominant focus;
+2. major supporting directions / evidence / stages;
+3. secondary objects / stakeholders / details;
+4. cross-cutting conditions / constraints / implementation support.
+
+Use broad white fields, shallow structural bases, restrained circular or linear carriers and precise editorial alignment.
+
+When a central visual object is needed, it may use:
+- a shallow platform;
+- a circular base;
+- a restrained structural ring;
+- a flat architectural plane;
+- a semi-transparent business carrier.
+
+Keep depth subtle and matte.
+
+Avoid glossy 3D, sci-fi platforms, excessive perspective, floating objects or game-like visual effects.
+
+---
+
+## 07｜连接关系与精细度
+
+Use deep-blue primary connectors and pale-blue secondary connectors.
+
+Favor:
+- thin precise lines;
+- large-radius arcs;
+- short arrows;
+- restrained dotted relationships;
+- subtle circular guides;
+- clean directional paths.
+
+Connectors must explain business logic rather than decorate empty space.
+
+Maintain generous white space around key text and structural junctions.
+
+Use visual breathing room to separate semantic layers instead of adding more boxes.
+
+Use thin dividers, precise alignment, controlled spacing and consistent corner geometry.
+
+Text blocks, scene edges, connectors and structural carriers should align to an invisible editorial grid.
+
+Avoid thick borders and heavy framing.
+
+Where a region needs definition, prefer:
+- a very light blue-gray outline;
+- a thin divider;
+- a broad white field;
+- a softly faded scene boundary.
+
+---
+
+# 08｜页面构图原型库
+
+The following composition archetypes are available within Style 09. Select the archetype according to the dominant semantic relationship rather than page title.
+
+## 8.1 中心放射式｜定位 / 架构 / 生态 / 多主体关系
+
+Use when the source expresses a clear center-to-periphery relationship.
+
+Preferred structure:
+- center or upper-center = core positioning / platform / principal object;
+- middle layer = 2–4 major directions, capabilities or mechanisms;
+- outer layer = stakeholders, service objects, outcomes or application domains;
+- bottom band = cross-cutting coordination, implementation modes, constraints or existing-system linkage.
+
+Use pale-blue arcs, restrained radial relationships and a strong central semantic anchor.
+
+For architecture, platform-positioning and ecosystem pages, this is the preferred signature composition of Style 09 when semantics support it.
+
+Do not use radial composition for content without a genuine central relationship.
+
+---
+
+## 8.2 结论证据式｜背景 / 必要性 / 核心判断 / 价值说明
+
+Use when one judgment must dominate and several facts or business realities support it.
+
+Preferred structure:
+- one large conclusion in the dominant region;
+- 2–4 unequally weighted evidence areas;
+- 1–2 realistic scenes supporting the evidence;
+- optional small quantitative proof or outcome region.
+
+The page should feel more spacious than an architecture page.
+
+Avoid turning each evidence point into an equal card.
+
+---
+
+## 8.3 主链流程式｜业务流程 / 数据流通 / 实施机制 / 服务闭环
+
+Use when the source has a clear sequence or flow.
+
+Preferred structure:
+- one visible main chain across the page;
+- 3–6 meaningful stages;
+- only critical stages receive larger text or scenes;
+- output or business result receives stronger terminal emphasis.
+
+The chain may be horizontal, gently curved, stepped or folded according to available space.
+
+Embed scenes and business objects along the chain rather than drawing a row of identical process boxes.
+
+Arrows should be directional, sparse and precise.
+
+---
+
+## 8.4 时间路线式｜阶段建设 / 路线图 / 年度计划 / 演进路径
+
+Use when sequence is explicitly temporal.
+
+Preferred structure:
+- one clear time carrier;
+- several unequal stages;
+- current stage or target stage visually emphasized;
+- milestones and deliverables placed close to the relevant point in time;
+- small embedded scenes only where they improve understanding.
+
+Do not render a generic equal-node timeline.
+
+Use scale, spacing and emphasis to show phase importance.
+
+---
+
+## 8.5 场景主导式｜应用场景 / 客户案例 / 业务方案 / 场景共建
+
+Use when a real-world operating scene itself is the best carrier of meaning.
+
+Preferred structure:
+- one dominant realistic scene occupying the main visual area;
+- business actors, data inputs, platform actions and outputs annotated directly around or within the scene;
+- only a few connectors;
+- one concise conclusion or value region.
+
+The scene becomes the page skeleton.
+
+Do not place the scene in the center and then surround it with unrelated cards.
+
+Annotations must attach to real business objects or relationships.
+
+---
+
+## 8.6 因果分析式｜问题 / 原因 / 约束 / 风险传导
+
+Use when the source explains why a problem occurs or how several conditions lead to an outcome.
+
+Preferred structure:
+- one dominant problem, constraint or consequence;
+- 2–4 upstream causes or conditions;
+- clear directional relationships;
+- optional bottom region for resulting impact, required response or boundary condition.
+
+Use muted amber only for genuine risks, exceptions or constraints.
+
+Do not use amber simply to differentiate categories.
+
+---
+
+## 8.7 不对称比较式｜模式比较 / 方案选择 / 前后变化 / 优劣分析
+
+Use when two or more alternatives must be contrasted.
+
+Preferred structure:
+- unequal comparison zones;
+- one dominant recommendation, preferred direction or key difference when source supports it;
+- shared comparison criteria aligned across the page;
+- realistic scenes attached only to meaningful differences.
+
+Avoid symmetrical side-by-side cards if the conclusion is not balanced.
+
+Use structure and emphasis to communicate the actual relative importance.
+
+---
+
+## 8.8 能力体系式｜产品体系 / 服务体系 / 能力框架 / 运营体系
+
+Use when several capabilities combine around one business objective.
+
+Preferred structure:
+- one main business objective, platform or service object;
+- capability clusters arranged according to dependency or business proximity;
+- shared infrastructure or support capabilities placed in a bottom / background carrier;
+- outcome or customer-facing service shown distinctly.
+
+Avoid an icon grid.
+
+Capabilities should be represented through text, business objects, restrained scenes or structural grouping.
+
+---
+
+## 8.9 数据指标式｜规模 / 成效 / 市场 / 运营数据 / 关键指标
+
+Use when numbers and evidence are the main argument.
+
+Preferred structure:
+- one dominant key metric, trend or quantitative judgment;
+- 2–4 supporting numbers or evidence points;
+- restrained chart-like visual carriers if needed;
+- realistic scene used only as contextual evidence.
+
+The page should remain editorial and report-like, not become a dashboard.
+
+Avoid collections of KPI cards.
+
+---
+
+## 8.10 机制权责式｜运营机制 / 合作关系 / 边界 / 分工 / 治理
+
+Use when the source focuses on responsibilities, control relationships, operating boundaries or collaboration mechanisms.
+
+Preferred structure:
+- one central relationship axis, operating mechanism or responsibility carrier;
+- parties positioned according to actual relationship rather than visual symmetry;
+- key rights, responsibilities, control boundaries or retained ownership attached directly to the relevant relationship;
+- bottom support band for implementation modes, governance rules or shared capabilities.
+
+Use precise connectors and restrained boundary lines.
+
+Avoid organization-chart aesthetics unless the content is genuinely hierarchical.
+
+---
+
+## 09｜底部协同带规则
+
+A bottom horizontal band may be used when the page contains cross-cutting information that supports all major regions, such as:
+
+- existing-system linkage;
+- implementation modes;
+- governance rules;
+- common technical support;
+- ownership boundaries;
+- security constraints;
+- supporting conditions;
+- shared infrastructure.
+
+The bottom band should read as a structural carrier, not as an additional card wall.
+
+It may use:
+- thin dividers;
+- sparse labels;
+- several very small monochrome symbols;
+- one or two concise text groups;
+- a light structural line connecting back to the main body.
+
+Do not create a bottom band when no genuine cross-cutting semantics exist.
+
+---
+
+## 10｜图标与设备约束
+
+Use icons only when they materially improve recognition.
+
+Use no more than one or two on a typical page, except in a bottom support strip where several very small monochrome symbols may be used as secondary labels if they remain visually subordinate.
+
+Keep icons:
+- simple;
+- deep blue;
+- small;
+- integrated into an existing text, scene or structural region.
+
+Do not give icons:
+- independent cards;
+- circular badges;
+- decorative containers;
+- dedicated display zones.
+
+Icons must not determine the composition, create extra modules, form decorative icon rows or process sequences, or replace scenes, business objects or source-backed text.
+
+Screens and devices may appear only as supporting evidence inside a broader working scene.
+
+Avoid:
+- repeated devices;
+- isolated UI screenshots;
+- dashboards;
+- SaaS interfaces;
+- product-display layouts.
+
+---
+
+## 11｜明确避免
+
+Avoid:
+- equal card walls;
+- equal rows or columns;
+- mechanical three-column layouts;
+- left-text / center-image / right-text compositions;
+- panoramic posters;
+- giant decorative hero illustrations;
+- abstract data landscapes;
+- dense flowing-line fields;
+- icon grids;
+- repeated circular badges;
+- glossy 3D;
+- glassmorphism;
+- neon glow;
+- floating icons;
+- decorative technology particles;
+- excessive gradients;
+- dashboard tiles;
+- product-UI aesthetics.
+
+Avoid treating every content item as an independent rectangle.
+
+Avoid excessive dark-blue filled boxes.
+
+Use large dark-blue fields only for:
+- the single dominant anchor;
+- a key conclusion;
+- a truly critical business object.
+
+Avoid isolated decorative photography.
+
+Every scene must have a clear semantic role and be physically close to the text, evidence or business object it supports.
+
+Avoid composition patterns that contradict the source semantics.
+
+---
+
+# 12｜最终视觉执行约束｜最高优先级
+
+Every page must establish one visually dominant focus that makes the core judgment immediately recognizable.
+
+The focus may be a conclusion, key metric, business object, scene, critical relationship, mechanism, platform, stage or risk state.
+
+Express it through:
+- scale;
+- position;
+- contrast;
+- deep blue;
+- limited muted amber emphasis;
+- scene scale;
+- structural carrier;
+- semantic centrality.
+
+Supporting information must remain subordinate while fully readable.
+
+The page must have:
+- one clear reading path;
+- one dominant semantic relationship;
+- strong spatial hierarchy;
+- integrated realistic scenes;
+- precise editorial alignment;
+- thin and purposeful connectors;
+- generous white space;
+- restrained visual depth.
+
+Do not add unrelated decorative objects.
+
+Do not compress required body copy merely to create a focus.
+
+Do not force all pages into one composition.
+
+The page skeleton must follow the dominant semantic relationship of the content.
+
+### Style 09 的最终统一原则
+
+Unify the visual language, not the page skeleton.
+
+Across a complete presentation, Style 09 should remain recognizable through:
+- white + deep-blue executive-report aesthetics;
+- one dominant focus per page;
+- realistic contextual electric-power scenes;
+- embedded text-and-scene information units;
+- refined pale-blue structural relationships;
+- restrained matte depth;
+- asymmetric editorial composition;
+- high readability;
+- minimal decorative graphics.
+
+At the same time, allow the composition to switch intelligently among radial, conclusion-evidence, sequential, temporal, scene-led, causal, comparative, capability-system, quantitative and governance structures according to the source semantics.
+
+Final result: a calm, highly readable, presentation-ready executive-report visual system that can support an entire leadership briefing deck without collapsing into repetitive templates.

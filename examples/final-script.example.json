@@ -2,6 +2,7 @@
   "contract": "cyberppt.final-script",
   "version": "1.0",
   "deck": {
+    "authoring_mode": "faithful",
     "title": "示例脚本",
     "communication_goal": "说明数据从资源治理进入可信使用并形成服务输出的逻辑。",
     "audience": "业务管理人员",

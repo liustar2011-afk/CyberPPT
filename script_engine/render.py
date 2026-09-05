@@ -84,10 +84,17 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
             lines.append(f"- 主论证链：{value}")
         full_copy = sanitize_delivery_prose(slide.get("full_copy"))
         if full_copy: lines.extend(["", "### 完整文字稿", "", full_copy])
-        # Stage 01 has one authoritative body-copy contract: the complete
-        # prose is the visible-copy payload consumed at the Stage 02 boundary.
-        # Do not substitute a second, independently authored onscreen module.
-        if full_copy:
+        onscreen_sections = [
+            section for section in (slide.get("onscreen") or [])
+            if isinstance(section, dict)
+        ]
+        onscreen_lines = _render_onscreen(onscreen_sections)
+        if onscreen_lines:
+            lines.extend(["", "### 上屏文字", "", *onscreen_lines])
+        elif full_copy:
+            # Legacy compatibility only. Current content contracts require an
+            # authored onscreen projection; old payloads without that field may
+            # still be rendered without silently losing their body copy.
             lines.extend(["", "### 上屏文字", "", full_copy])
         notes = sanitize_delivery_prose(slide.get("speaker_notes"))
         if notes: lines.extend(["", "### 演讲者备注", "", notes])

@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.imagegen_attempt_request.v1",
+  "page_number": 1,
+  "variant": "full",
+  "attempt": 1,
+  "prompt_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/stages/02-imagegen/pages_001_001_power-positioning-style09-v3-20260904/prompts/attempts/page-001-full-attempt-01-sent.txt",
+  "prompt_sha256": "13d959597e3f26a086a4747f0fdd55b6bf611140f25a09fb7752399e36738d7b",
+  "base_prompt_sha256": "13d959597e3f26a086a4747f0fdd55b6bf611140f25a09fb7752399e36738d7b",
+  "prompt_chars": 4440,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "size": "2048x1024",
+  "input_images": [
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+  ],
+  "correction_retry": false,
+  "original_prompt": null,
+  "failed_image": null,
+  "correction_issues": []
+}

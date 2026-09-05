@@ -1,0 +1,45 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "power-positioning-style09-v2-20260904",
+  "run_id": "power-positioning-style09-v2-20260904",
+  "input_fingerprint": "7da680e8d4151b6931bdf02a324f3ebb3f53404ddb3ebafb036b817ce1cd7d33",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61",
+    "script_input_sha256": "2d037d5118e625c02f9095265e5f14c3783e8f1944a0dedd44562f63f3134368",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "60e02ef651ba55bd633fb905ad2a299537fe317649f969ff5988f5b1f951a632",
+    "source_mode": "external_script",
+    "pages": [
+      1
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "created_at": "2026-09-04T14:44:13+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/inputs/final-script.md",
+  "source_script_sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "60e02ef651ba55bd633fb905ad2a299537fe317649f969ff5988f5b1f951a632",
+  "page_set": [
+    1
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "stage": "02-production-build",
+  "status": "in_progress",
+  "artifacts": {
+    "page_image_pairs": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/stages/02-imagegen/pages_001_001_power-positioning-style09-v2-20260904/page_image_pairs.json",
+      "sha256": "d4d31d3d3cdf1d6efd701dddadfdcfb001139895c44d93462956aaf2e2163813"
+    }
+  }
+}

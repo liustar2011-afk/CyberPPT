@@ -1,0 +1,3584 @@
+{
+  "schema": "cyberppt.final_script_pages_run.v1",
+  "build_id": "20260904T141633Z-d2a8b8dafc",
+  "created_at": "2026-09-04T14:24:43+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/inputs/final-script.md",
+  "source_script_sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61",
+  "pages": [
+    1
+  ],
+  "stage": "02-production-build",
+  "source_mode": "external_script",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "autonomous_contract": null,
+  "project_created": false,
+  "status": "production_ready",
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "image",
+  "editable_pptx_route": "stage02-quick-image-to-pptx",
+  "artifacts": {
+    "compiled_deliverable_prompt": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/final-script_cyberppt_deliverable_p1_p1.md",
+    "page_image_pairs": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_image_pairs.json",
+    "template_text_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/locks/template_text/pages_001_001_template_text_lock.json",
+    "visual_style_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/locks/visual_style_lock.json",
+    "output_dir": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc",
+    "image_ppt_output_dir": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg",
+    "reconstruction_inventory": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/analysis/reconstruction_inventory.json",
+    "svg_output": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/svg_output",
+    "reconstruction_quality": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis",
+    "delivery_readiness": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image-to-pptx-result.json",
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx",
+    "exported_pptx_by_mode": {
+      "image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+    },
+    "officecli_render_qa": {
+      "image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/qa-delivery/image/officecli_render_qa.json"
+    },
+    "final_visible_text_qa": null,
+    "semantic_plan_dir": null,
+    "build_context": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/build_context.json"
+  },
+  "next_steps": [
+    "Generate the audited 2:1 full image, then publish the selected image, editable SVG, or both template-assembled PPTX routes.",
+    "Provide the completed high-fidelity authored SVG, then use the vendored Quick runtime for editable export."
+  ],
+  "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09' --script '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode image --output-dir '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc' --build-id 20260904T141633Z-d2a8b8dafc --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build --external-script",
+  "rebuild": null,
+  "image_to_editable_svg_build": {
+    "schema": "cyberppt.image_to_pptx.stage02.v1",
+    "status": "production_ready",
+    "assembly_mode": "image",
+    "runtime_project": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image",
+    "svg_roster": [],
+    "svg_quality": [],
+    "visual_review": {
+      "schema": "cyberppt.image_to_pptx.visual_review.v1",
+      "mode": "image",
+      "issues": [],
+      "requires_rebuild": false,
+      "valid": true,
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+    },
+    "artifacts": {
+      "reconstruction_inventory": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/analysis/reconstruction_inventory.json",
+      "svg_output": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/svg_output",
+      "reconstruction_quality": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis",
+      "authored_svg_preflight_qa": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/authored_svg_preflight_qa.json",
+      "native_text_style_qa": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_style_qa.json",
+      "native_text_geometry_qa": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_geometry_qa.json",
+      "text_content_qa": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/text_content_qa.json",
+      "editable_page_qa": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/editable_page_qa.json",
+      "clean_base_policy_qa": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/clean_base_policy_qa.json",
+      "graphic_text_policy_qa": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/graphic_text_policy_qa.json",
+      "render_compare": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json",
+      "exported_pptx": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx",
+      "delivery_readiness": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image-to-pptx-result.json"
+    },
+    "artifacts_by_mode": {
+      "image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+    },
+    "reports": {
+      "reconstruction_inventory": {
+        "valid": true
+      },
+      "reconstruction_quality": {
+        "valid": true,
+        "pages": []
+      },
+      "svg_output": {
+        "valid": true
+      },
+      "authored_svg_preflight": {
+        "valid": true,
+        "pages": []
+      },
+      "native_text_style": {
+        "valid": true,
+        "pages": []
+      },
+      "native_text_geometry": {
+        "valid": true,
+        "qa_only": true,
+        "pages": [],
+        "review_required": false
+      },
+      "text_content_qa": {
+        "image": {
+          "schema": "cyberppt.dual_image.text_content_qa.v1",
+          "valid": true,
+          "order_sensitive": false,
+          "allow_fragmented_actual": true,
+          "checks": {
+            "text_count_matches": true,
+            "pptx_text_matches_expected": true
+          },
+          "expected_texts": [
+            "电力领域数据基础设施总体定位：行业中枢与价值释放引擎",
+            "中国电力企业联合会",
+            "1"
+          ],
+          "actual_texts": [
+            "中国电力企业联合会",
+            "1",
+            "电力领域数据基础设施总体定位：行业中枢与价值释放引擎"
+          ],
+          "mismatches": [],
+          "error_count": 0
+        }
+      },
+      "editable_page": {
+        "valid": true,
+        "pages": []
+      },
+      "clean_base_policy": {
+        "valid": true,
+        "pages": []
+      },
+      "graphic_text_policy": {
+        "valid": true,
+        "pages": []
+      },
+      "render_compare": {
+        "valid": true,
+        "review": {
+          "schema": "cyberppt.image_to_pptx.visual_review.v1",
+          "mode": "image",
+          "issues": [],
+          "requires_rebuild": false,
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+        }
+      },
+      "exported_pptx": {
+        "valid": true
+      },
+      "exported_pptx_by_mode": {
+        "image": {
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+        }
+      }
+    },
+    "text_content_qa": {
+      "image": {
+        "schema": "cyberppt.dual_image.text_content_qa.v1",
+        "valid": true,
+        "order_sensitive": false,
+        "allow_fragmented_actual": true,
+        "checks": {
+          "text_count_matches": true,
+          "pptx_text_matches_expected": true
+        },
+        "expected_texts": [
+          "电力领域数据基础设施总体定位：行业中枢与价值释放引擎",
+          "中国电力企业联合会",
+          "1"
+        ],
+        "actual_texts": [
+          "中国电力企业联合会",
+          "1",
+          "电力领域数据基础设施总体定位：行业中枢与价值释放引擎"
+        ],
+        "mismatches": [],
+        "error_count": 0
+      }
+    },
+    "release_gate": {
+      "valid": true,
+      "manual_adjustments": "local_only"
+    },
+    "delivery_readiness": {
+      "schema": "cyberppt.stage02.production_readiness.v1",
+      "stage": "02-production-build",
+      "status": "production_ready",
+      "valid": true,
+      "checks": {
+        "all_required_tools_consumed": true,
+        "all_consumed_reports_pass": true,
+        "blocking_count": 0
+      },
+      "tool_consumption": {
+        "reconstruction_inventory": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/analysis/reconstruction_inventory.json"
+        },
+        "svg_output": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/svg_output"
+        },
+        "reconstruction_quality": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis"
+        },
+        "authored_svg_preflight_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/authored_svg_preflight_qa.json"
+        },
+        "native_text_style_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_style_qa.json"
+        },
+        "native_text_geometry_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_geometry_qa.json"
+        },
+        "text_content_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/text_content_qa.json"
+        },
+        "editable_page_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/editable_page_qa.json"
+        },
+        "clean_base_policy_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/clean_base_policy_qa.json"
+        },
+        "graphic_text_policy_qa": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/graphic_text_policy_qa.json"
+        },
+        "render_compare": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+        },
+        "exported_pptx": {
+          "ran": true,
+          "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+        }
+      },
+      "blocking_errors": [],
+      "reports": {
+        "reconstruction_inventory": {
+          "valid": true
+        },
+        "reconstruction_quality": {
+          "valid": true,
+          "pages": []
+        },
+        "svg_output": {
+          "valid": true
+        },
+        "authored_svg_preflight": {
+          "valid": true,
+          "pages": []
+        },
+        "native_text_style": {
+          "valid": true,
+          "pages": []
+        },
+        "native_text_geometry": {
+          "valid": true,
+          "qa_only": true,
+          "pages": [],
+          "review_required": false
+        },
+        "text_content_qa": {
+          "image": {
+            "schema": "cyberppt.dual_image.text_content_qa.v1",
+            "valid": true,
+            "order_sensitive": false,
+            "allow_fragmented_actual": true,
+            "checks": {
+              "text_count_matches": true,
+              "pptx_text_matches_expected": true
+            },
+            "expected_texts": [
+              "电力领域数据基础设施总体定位：行业中枢与价值释放引擎",
+              "中国电力企业联合会",
+              "1"
+            ],
+            "actual_texts": [
+              "中国电力企业联合会",
+              "1",
+              "电力领域数据基础设施总体定位：行业中枢与价值释放引擎"
+            ],
+            "mismatches": [],
+            "error_count": 0
+          }
+        },
+        "editable_page": {
+          "valid": true,
+          "pages": []
+        },
+        "clean_base_policy": {
+          "valid": true,
+          "pages": []
+        },
+        "graphic_text_policy": {
+          "valid": true,
+          "pages": []
+        },
+        "render_compare": {
+          "valid": true,
+          "review": {
+            "schema": "cyberppt.image_to_pptx.visual_review.v1",
+            "mode": "image",
+            "issues": [],
+            "requires_rebuild": false,
+            "valid": true,
+            "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+          }
+        },
+        "exported_pptx": {
+          "valid": true
+        },
+        "exported_pptx_by_mode": {
+          "image": {
+            "valid": true,
+            "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+          }
+        }
+      }
+    }
+  },
+  "image_generation": {
+    "backend": "codex_oauth_image",
+    "production_mode": "image-to-editable-svg",
+    "generated": [
+      "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.png"
+    ],
+    "skipped": [],
+    "failed": [],
+    "dry_run": false,
+    "text_audit_skipped": false,
+    "full_reference_images": [
+      "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+    ],
+    "text_audits": [
+      {
+        "schema": "cyberppt.generated_image_text_audit.v2",
+        "valid": false,
+        "scope": "typo_and_gibberish_only",
+        "image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-01-text-audit-failed.png",
+        "image_size": [
+          1774,
+          887
+        ],
+        "issues": [
+          {
+            "type": "typo",
+            "expected": "行业中枢",
+            "observed": "平台中枢",
+            "evidence": "中心圆内文字显示为“流通共享的平台中枢”，与参考正确写法“流通共享的行业中枢”不一致，且“平台”为有效汉字词组。",
+            "bbox": [
+              472,
+              244,
+              638,
+              294
+            ]
+          }
+        ],
+        "observed_text": [
+          "01 建设国家数据基础设施 电力行业节点",
+          "承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点。",
+          "电力数据要素 流通共享的平台中枢 和价值释放引擎",
+          "02 建设行业数据与专业能力运营平台",
+          "统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价。",
+          "平台实施原则",
+          "协同衔接：与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接。",
+          "平台职责：承担跨主体连接、共性规则执行、产品运营和可信服务协同。",
+          "数据与模型控制权：平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系。",
+          "实施方式灵活：根据资源属性和业务需要，支持集中服务、源端处理、专属环境和受控计算等多种实施方式。",
+          "03 建设多主体协同和价值共创载体",
+          "组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。",
+          "面向政府部门",
+          "为宏观能源决策、能源规划和行业治理提供数据分析支撑。",
+          "面向新型电力系统建设",
+          "提供行业数据底座，支撑新型电力系统规划、运行与优化。",
+          "面向电力企业",
+          "为生产经营、科技创新和数字化转型提供数据与专业服务。",
+          "平台建设目标",
+          "主体接入",
+          "行业流通",
+          "产品发布",
+          "示范场景",
+          "面向产业链上下游及跨行业主体",
+          "为协同创新与生态合作创造数据流通与价值实现的基础条件。"
+        ],
+        "ocr_items": [
+          {
+            "text": "01建设国家数据基础设施",
+            "confidence": 0.9982166439294815,
+            "bbox": [
+              [
+                102.0,
+                38.0
+              ],
+              [
+                391.0,
+                38.0
+              ],
+              [
+                391.0,
+                64.0
+              ],
+              [
+                102.0,
+                64.0
+              ]
+            ]
+          },
+          {
+            "text": "02建设行业数据与专业能力",
+            "confidence": 0.9982260969968942,
+            "bbox": [
+              [
+                734.0,
+                38.0
+              ],
+              [
+                1052.0,
+                38.0
+              ],
+              [
+                1052.0,
+                64.0
+              ],
+              [
+                734.0,
+                64.0
+              ]
+            ]
+          },
+          {
+            "text": "平台实施原则",
+            "confidence": 0.9999078710873922,
+            "bbox": [
+              [
+                1172.0,
+                54.0
+              ],
+              [
+                1333.0,
+                54.0
+              ],
+              [
+                1333.0,
+                87.0
+              ],
+              [
+                1172.0,
+                87.0
+              ]
+            ]
+          },
+          {
+            "text": "电力行业节点",
+            "confidence": 0.9998335142930349,
+            "bbox": [
+              [
+                144.0,
+                69.0
+              ],
+              [
+                295.0,
+                69.0
+              ],
+              [
+                295.0,
+                99.0
+              ],
+              [
+                144.0,
+                99.0
+              ]
+            ]
+          },
+          {
+            "text": "运营平台",
+            "confidence": 0.9993561506271362,
+            "bbox": [
+              [
+                774.0,
+                67.0
+              ],
+              [
+                880.0,
+                67.0
+              ],
+              [
+                880.0,
+                101.0
+              ],
+              [
+                774.0,
+                101.0
+              ]
+            ]
+          },
+          {
+            "text": "协同衔接：与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接。",
+            "confidence": 0.9934559975351606,
+            "bbox": [
+              [
+                1127.0,
+                117.0
+              ],
+              [
+                1687.0,
+                117.0
+              ],
+              [
+                1687.0,
+                140.0
+              ],
+              [
+                1127.0,
+                140.0
+              ]
+            ]
+          },
+          {
+            "text": "承担电力行业侧主体连接、目录衔接、",
+            "confidence": 0.9967804165447459,
+            "bbox": [
+              [
+                103.0,
+                131.0
+              ],
+              [
+                371.0,
+                131.0
+              ],
+              [
+                371.0,
+                150.0
+              ],
+              [
+                103.0,
+                150.0
+              ]
+            ]
+          },
+          {
+            "text": "统一组织数据资源、模型能力、",
+            "confidence": 0.9973834114415305,
+            "bbox": [
+              [
+                774.0,
+                131.0
+              ],
+              [
+                1004.0,
+                131.0
+              ],
+              [
+                1004.0,
+                150.0
+              ],
+              [
+                774.0,
+                150.0
+              ]
+            ]
+          },
+          {
+            "text": "接口协同、可信流通和场景承接功能，",
+            "confidence": 0.9961491192088407,
+            "bbox": [
+              [
+                103.0,
+                160.0
+              ],
+              [
+                371.0,
+                160.0
+              ],
+              [
+                371.0,
+                180.0
+              ],
+              [
+                103.0,
+                180.0
+              ]
+            ]
+          },
+          {
+            "text": "专业能力和技术能力，衔接资源登记、",
+            "confidence": 0.9848076034994686,
+            "bbox": [
+              [
+                776.0,
+                160.0
+              ],
+              [
+                1041.0,
+                160.0
+              ],
+              [
+                1041.0,
+                180.0
+              ],
+              [
+                776.0,
+                180.0
+              ]
+            ]
+          },
+          {
+            "text": "平台职责：承担跨主体连接、共性规则执行、产品运营和可信服务协同。",
+            "confidence": 0.9977449290454388,
+            "bbox": [
+              [
+                1127.0,
+                163.0
+              ],
+              [
+                1644.0,
+                163.0
+              ],
+              [
+                1644.0,
+                183.0
+              ],
+              [
+                1127.0,
+                183.0
+              ]
+            ]
+          },
+          {
+            "text": "逐步街接全域功能节点、区域节点",
+            "confidence": 0.9673509558041891,
+            "bbox": [
+              [
+                102.0,
+                189.0
+              ],
+              [
+                363.0,
+                189.0
+              ],
+              [
+                363.0,
+                212.0
+              ],
+              [
+                102.0,
+                212.0
+              ]
+            ]
+          },
+          {
+            "text": "产品管理、客户服务、可信交付和",
+            "confidence": 0.9996120611826579,
+            "bbox": [
+              [
+                773.0,
+                189.0
+              ],
+              [
+                1033.0,
+                189.0
+              ],
+              [
+                1033.0,
+                212.0
+              ],
+              [
+                773.0,
+                212.0
+              ]
+            ]
+          },
+          {
+            "text": "数据与模型控制权：平台接入不改变合作伙伴对原始数据、核心模型、",
+            "confidence": 0.997418378629992,
+            "bbox": [
+              [
+                1126.0,
+                205.0
+              ],
+              [
+                1638.0,
+                206.0
+              ],
+              [
+                1638.0,
+                229.0
+              ],
+              [
+                1126.0,
+                228.0
+              ]
+            ]
+          },
+          {
+            "text": "和其他行业节点。",
+            "confidence": 0.9998458921909332,
+            "bbox": [
+              [
+                101.0,
+                219.0
+              ],
+              [
+                233.0,
+                219.0
+              ],
+              [
+                233.0,
+                243.0
+              ],
+              [
+                101.0,
+                243.0
+              ]
+            ]
+          },
+          {
+            "text": "运营评价。",
+            "confidence": 0.9996932029724122,
+            "bbox": [
+              [
+                773.0,
+                217.0
+              ],
+              [
+                855.0,
+                219.0
+              ],
+              [
+                854.0,
+                244.0
+              ],
+              [
+                772.0,
+                241.0
+              ]
+            ]
+          },
+          {
+            "text": "电力数据要素",
+            "confidence": 0.9975506365299225,
+            "bbox": [
+              [
+                502.0,
+                240.0
+              ],
+              [
+                636.0,
+                240.0
+              ],
+              [
+                636.0,
+                266.0
+              ],
+              [
+                502.0,
+                266.0
+              ]
+            ]
+          },
+          {
+            "text": "关键算法和既有知识产权的控制关系。",
+            "confidence": 0.9984651979278115,
+            "bbox": [
+              [
+                1141.0,
+                234.0
+              ],
+              [
+                1409.0,
+                235.0
+              ],
+              [
+                1409.0,
+                257.0
+              ],
+              [
+                1141.0,
+                256.0
+              ]
+            ]
+          },
+          {
+            "text": "流通共享的平台中枢",
+            "confidence": 0.9937011268403795,
+            "bbox": [
+              [
+                470.0,
+                272.0
+              ],
+              [
+                666.0,
+                272.0
+              ],
+              [
+                666.0,
+                299.0
+              ],
+              [
+                470.0,
+                299.0
+              ]
+            ]
+          },
+          {
+            "text": "实施方式灵活：根据资源属性和业务需要，支持集中服务、源端处理、",
+            "confidence": 0.9987301788022441,
+            "bbox": [
+              [
+                1125.0,
+                277.0
+              ],
+              [
+                1639.0,
+                278.0
+              ],
+              [
+                1639.0,
+                301.0
+              ],
+              [
+                1125.0,
+                300.0
+              ]
+            ]
+          },
+          {
+            "text": "和价值释放引擎",
+            "confidence": 0.9978546840803963,
+            "bbox": [
+              [
+                490.0,
+                307.0
+              ],
+              [
+                648.0,
+                307.0
+              ],
+              [
+                648.0,
+                331.0
+              ],
+              [
+                490.0,
+                331.0
+              ]
+            ]
+          },
+          {
+            "text": "专属环境和受控计算等多种实施方式。",
+            "confidence": 0.999261224971098,
+            "bbox": [
+              [
+                1144.0,
+                308.0
+              ],
+              [
+                1409.0,
+                308.0
+              ],
+              [
+                1409.0,
+                328.0
+              ],
+              [
+                1144.0,
+                328.0
+              ]
+            ]
+          },
+          {
+            "text": "平台建设目标",
+            "confidence": 0.9990037878354391,
+            "bbox": [
+              [
+                1163.0,
+                388.0
+              ],
+              [
+                1318.0,
+                390.0
+              ],
+              [
+                1317.0,
+                421.0
+              ],
+              [
+                1163.0,
+                419.0
+              ]
+            ]
+          },
+          {
+            "text": "主体接入",
+            "confidence": 0.9998529553413391,
+            "bbox": [
+              [
+                1139.0,
+                441.0
+              ],
+              [
+                1216.0,
+                441.0
+              ],
+              [
+                1216.0,
+                465.0
+              ],
+              [
+                1139.0,
+                465.0
+              ]
+            ]
+          },
+          {
+            "text": "行业流通",
+            "confidence": 0.9998533874750137,
+            "bbox": [
+              [
+                1291.0,
+                440.0
+              ],
+              [
+                1372.0,
+                440.0
+              ],
+              [
+                1372.0,
+                466.0
+              ],
+              [
+                1291.0,
+                466.0
+              ]
+            ]
+          },
+          {
+            "text": "产品发布",
+            "confidence": 0.9997941553592682,
+            "bbox": [
+              [
+                1444.0,
+                441.0
+              ],
+              [
+                1522.0,
+                441.0
+              ],
+              [
+                1522.0,
+                465.0
+              ],
+              [
+                1444.0,
+                465.0
+              ]
+            ]
+          },
+          {
+            "text": "示范场景",
+            "confidence": 0.9986260682344437,
+            "bbox": [
+              [
+                1606.0,
+                440.0
+              ],
+              [
+                1686.0,
+                440.0
+              ],
+              [
+                1686.0,
+                466.0
+              ],
+              [
+                1606.0,
+                466.0
+              ]
+            ]
+          },
+          {
+            "text": "03建设多主体协同和价值共创载体",
+            "confidence": 0.9964153952896595,
+            "bbox": [
+              [
+                367.0,
+                455.0
+              ],
+              [
+                758.0,
+                455.0
+              ],
+              [
+                758.0,
+                481.0
+              ],
+              [
+                367.0,
+                481.0
+              ]
+            ]
+          },
+          {
+            "text": "总体建设任务完成时，",
+            "confidence": 0.9977393805980682,
+            "bbox": [
+              [
+                1107.0,
+                479.0
+              ],
+              [
+                1244.0,
+                479.0
+              ],
+              [
+                1244.0,
+                499.0
+              ],
+              [
+                1107.0,
+                499.0
+              ]
+            ]
+          },
+          {
+            "text": "支持",
+            "confidence": 0.9996821880340576,
+            "bbox": [
+              [
+                1312.0,
+                481.0
+              ],
+              [
+                1350.0,
+                481.0
+              ],
+              [
+                1350.0,
+                505.0
+              ],
+              [
+                1312.0,
+                505.0
+              ]
+            ]
+          },
+          {
+            "text": "发布不少于",
+            "confidence": 0.9999366998672485,
+            "bbox": [
+              [
+                1443.0,
+                482.0
+              ],
+              [
+                1524.0,
+                482.0
+              ],
+              [
+                1524.0,
+                503.0
+              ],
+              [
+                1443.0,
+                503.0
+              ]
+            ]
+          },
+          {
+            "text": "打造",
+            "confidence": 0.9998654723167419,
+            "bbox": [
+              [
+                1627.0,
+                481.0
+              ],
+              [
+                1664.0,
+                481.0
+              ],
+              [
+                1664.0,
+                504.0
+              ],
+              [
+                1627.0,
+                504.0
+              ]
+            ]
+          },
+          {
+            "text": "组织需求单位、资源方、模型算法方、专业服务方和技术实施方，",
+            "confidence": 0.9990788924282995,
+            "bbox": [
+              [
+                325.0,
+                495.0
+              ],
+              [
+                807.0,
+                495.0
+              ],
+              [
+                807.0,
+                515.0
+              ],
+              [
+                325.0,
+                515.0
+              ]
+            ]
+          },
+          {
+            "text": "实现",
+            "confidence": 0.9999487400054932,
+            "bbox": [
+              [
+                1159.0,
+                501.0
+              ],
+              [
+                1195.0,
+                501.0
+              ],
+              [
+                1195.0,
+                524.0
+              ],
+              [
+                1159.0,
+                524.0
+              ]
+            ]
+          },
+          {
+            "text": "5个以上",
+            "confidence": 0.9998752474784851,
+            "bbox": [
+              [
+                1283.0,
+                510.0
+              ],
+              [
+                1373.0,
+                515.0
+              ],
+              [
+                1371.0,
+                550.0
+              ],
+              [
+                1281.0,
+                545.0
+              ]
+            ]
+          },
+          {
+            "text": "1200个",
+            "confidence": 0.9992845177650451,
+            "bbox": [
+              [
+                1435.0,
+                511.0
+              ],
+              [
+                1532.0,
+                513.0
+              ],
+              [
+                1531.0,
+                548.0
+              ],
+              [
+                1434.0,
+                545.0
+              ]
+            ]
+          },
+          {
+            "text": "20个以上",
+            "confidence": 0.9998668909072876,
+            "bbox": [
+              [
+                1592.0,
+                510.0
+              ],
+              [
+                1701.0,
+                515.0
+              ],
+              [
+                1699.0,
+                549.0
+              ],
+              [
+                1590.0,
+                544.0
+              ]
+            ]
+          },
+          {
+            "text": "围绕行业共性需求开展产品开发、场景共建和持续运营。",
+            "confidence": 0.99615558385849,
+            "bbox": [
+              [
+                362.0,
+                526.0
+              ],
+              [
+                776.0,
+                526.0
+              ],
+              [
+                776.0,
+                544.0
+              ],
+              [
+                362.0,
+                544.0
+              ]
+            ]
+          },
+          {
+            "text": "600家以上",
+            "confidence": 0.9985538224379221,
+            "bbox": [
+              [
+                1119.0,
+                527.0
+              ],
+              [
+                1239.0,
+                531.0
+              ],
+              [
+                1238.0,
+                566.0
+              ],
+              [
+                1117.0,
+                562.0
+              ]
+            ]
+          },
+          {
+            "text": "数据流通利用",
+            "confidence": 0.9990799923737844,
+            "bbox": [
+              [
+                1131.0,
+                574.0
+              ],
+              [
+                1224.0,
+                574.0
+              ],
+              [
+                1224.0,
+                595.0
+              ],
+              [
+                1131.0,
+                595.0
+              ]
+            ]
+          },
+          {
+            "text": "重点行业的跨区域、",
+            "confidence": 0.9919024308522543,
+            "bbox": [
+              [
+                1264.0,
+                566.0
+              ],
+              [
+                1392.0,
+                566.0
+              ],
+              [
+                1392.0,
+                589.0
+              ],
+              [
+                1264.0,
+                589.0
+              ]
+            ]
+          },
+          {
+            "text": "数据产品",
+            "confidence": 0.9996440410614014,
+            "bbox": [
+              [
+                1450.0,
+                567.0
+              ],
+              [
+                1518.0,
+                567.0
+              ],
+              [
+                1518.0,
+                591.0
+              ],
+              [
+                1450.0,
+                591.0
+              ]
+            ]
+          },
+          {
+            "text": "示范性强、带动性广的",
+            "confidence": 0.9987722218036652,
+            "bbox": [
+              [
+                1570.0,
+                567.0
+              ],
+              [
+                1724.0,
+                567.0
+              ],
+              [
+                1724.0,
+                590.0
+              ],
+              [
+                1570.0,
+                590.0
+              ]
+            ]
+          },
+          {
+            "text": "主体接入",
+            "confidence": 0.9996156096458435,
+            "bbox": [
+              [
+                1145.0,
+                595.0
+              ],
+              [
+                1211.0,
+                595.0
+              ],
+              [
+                1211.0,
+                619.0
+              ],
+              [
+                1145.0,
+                619.0
+              ]
+            ]
+          },
+          {
+            "text": "跨行业数据流通利用",
+            "confidence": 0.9994887312253317,
+            "bbox": [
+              [
+                1264.0,
+                592.0
+              ],
+              [
+                1401.0,
+                592.0
+              ],
+              [
+                1401.0,
+                615.0
+              ],
+              [
+                1264.0,
+                615.0
+              ]
+            ]
+          },
+          {
+            "text": "典型应用场景",
+            "confidence": 0.9993208050727844,
+            "bbox": [
+              [
+                1600.0,
+                593.0
+              ],
+              [
+                1694.0,
+                593.0
+              ],
+              [
+                1694.0,
+                614.0
+              ],
+              [
+                1600.0,
+                614.0
+              ]
+            ]
+          },
+          {
+            "text": "面向产业链上下游",
+            "confidence": 0.9993083477020264,
+            "bbox": [
+              [
+                1361.0,
+                681.0
+              ],
+              [
+                1529.0,
+                681.0
+              ],
+              [
+                1529.0,
+                707.0
+              ],
+              [
+                1361.0,
+                707.0
+              ]
+            ]
+          },
+          {
+            "text": "盒",
+            "confidence": 0.5882421731948853,
+            "bbox": [
+              [
+                58.0,
+                694.0
+              ],
+              [
+                87.0,
+                694.0
+              ],
+              [
+                87.0,
+                720.0
+              ],
+              [
+                58.0,
+                720.0
+              ]
+            ]
+          },
+          {
+            "text": "面向政府部门",
+            "confidence": 0.9998562534650167,
+            "bbox": [
+              [
+                113.0,
+                692.0
+              ],
+              [
+                250.0,
+                692.0
+              ],
+              [
+                250.0,
+                719.0
+              ],
+              [
+                113.0,
+                719.0
+              ]
+            ]
+          },
+          {
+            "text": "面向新型电力系统建设",
+            "confidence": 0.9979137897491455,
+            "bbox": [
+              [
+                529.0,
+                692.0
+              ],
+              [
+                754.0,
+                692.0
+              ],
+              [
+                754.0,
+                718.0
+              ],
+              [
+                529.0,
+                718.0
+              ]
+            ]
+          },
+          {
+            "text": "面向电力企业",
+            "confidence": 0.9998038212458292,
+            "bbox": [
+              [
+                942.0,
+                692.0
+              ],
+              [
+                1074.0,
+                692.0
+              ],
+              [
+                1074.0,
+                719.0
+              ],
+              [
+                942.0,
+                719.0
+              ]
+            ]
+          },
+          {
+            "text": "及跨行业主体",
+            "confidence": 0.9995972116788229,
+            "bbox": [
+              [
+                1362.0,
+                709.0
+              ],
+              [
+                1488.0,
+                709.0
+              ],
+              [
+                1488.0,
+                733.0
+              ],
+              [
+                1362.0,
+                733.0
+              ]
+            ]
+          },
+          {
+            "text": "为宏观能源决策、能源规划",
+            "confidence": 0.998522107799848,
+            "bbox": [
+              [
+                49.0,
+                748.0
+              ],
+              [
+                240.0,
+                748.0
+              ],
+              [
+                240.0,
+                768.0
+              ],
+              [
+                49.0,
+                768.0
+              ]
+            ]
+          },
+          {
+            "text": "提供行业数据底座，支撑",
+            "confidence": 0.9993218291889537,
+            "bbox": [
+              [
+                466.0,
+                748.0
+              ],
+              [
+                643.0,
+                748.0
+              ],
+              [
+                643.0,
+                768.0
+              ],
+              [
+                466.0,
+                768.0
+              ]
+            ]
+          },
+          {
+            "text": "为生产经营、科技创新和",
+            "confidence": 0.999595046043396,
+            "bbox": [
+              [
+                885.0,
+                748.0
+              ],
+              [
+                1064.0,
+                748.0
+              ],
+              [
+                1064.0,
+                768.0
+              ],
+              [
+                885.0,
+                768.0
+              ]
+            ]
+          },
+          {
+            "text": "为协同创新与生态合作",
+            "confidence": 0.9996567249298096,
+            "bbox": [
+              [
+                1299.0,
+                746.0
+              ],
+              [
+                1470.0,
+                746.0
+              ],
+              [
+                1470.0,
+                769.0
+              ],
+              [
+                1299.0,
+                769.0
+              ]
+            ]
+          },
+          {
+            "text": "和行业治理提供数据分析",
+            "confidence": 0.9995904022997076,
+            "bbox": [
+              [
+                48.0,
+                778.0
+              ],
+              [
+                230.0,
+                778.0
+              ],
+              [
+                230.0,
+                798.0
+              ],
+              [
+                48.0,
+                798.0
+              ]
+            ]
+          },
+          {
+            "text": "新型电力系统规划、运行",
+            "confidence": 0.9993505098602988,
+            "bbox": [
+              [
+                465.0,
+                776.0
+              ],
+              [
+                643.0,
+                776.0
+              ],
+              [
+                643.0,
+                799.0
+              ],
+              [
+                465.0,
+                799.0
+              ]
+            ]
+          },
+          {
+            "text": "数字化转型提供数据与",
+            "confidence": 0.9988155782222747,
+            "bbox": [
+              [
+                883.0,
+                776.0
+              ],
+              [
+                1051.0,
+                776.0
+              ],
+              [
+                1051.0,
+                799.0
+              ],
+              [
+                883.0,
+                799.0
+              ]
+            ]
+          },
+          {
+            "text": "创造数据流通与价值实现",
+            "confidence": 0.9995715889063749,
+            "bbox": [
+              [
+                1299.0,
+                775.0
+              ],
+              [
+                1485.0,
+                775.0
+              ],
+              [
+                1485.0,
+                798.0
+              ],
+              [
+                1299.0,
+                798.0
+              ]
+            ]
+          },
+          {
+            "text": "支撑。",
+            "confidence": 0.9993396202723185,
+            "bbox": [
+              [
+                46.0,
+                804.0
+              ],
+              [
+                94.0,
+                804.0
+              ],
+              [
+                94.0,
+                830.0
+              ],
+              [
+                46.0,
+                830.0
+              ]
+            ]
+          },
+          {
+            "text": "与优化。",
+            "confidence": 0.999577060341835,
+            "bbox": [
+              [
+                464.0,
+                803.0
+              ],
+              [
+                525.0,
+                805.0
+              ],
+              [
+                524.0,
+                831.0
+              ],
+              [
+                463.0,
+                828.0
+              ]
+            ]
+          },
+          {
+            "text": "专业服务。",
+            "confidence": 0.9998127460479737,
+            "bbox": [
+              [
+                883.0,
+                805.0
+              ],
+              [
+                959.0,
+                805.0
+              ],
+              [
+                959.0,
+                830.0
+              ],
+              [
+                883.0,
+                830.0
+              ]
+            ]
+          },
+          {
+            "text": "的基础条件。",
+            "confidence": 0.9996838668982188,
+            "bbox": [
+              [
+                1298.0,
+                803.0
+              ],
+              [
+                1393.0,
+                803.0
+              ],
+              [
+                1393.0,
+                827.0
+              ],
+              [
+                1298.0,
+                827.0
+              ]
+            ]
+          }
+        ],
+        "summary": "发现1处明确有效汉字替换问题，未见明显乱码字形。",
+        "required_action": "regenerate_image_for_typo_or_gibberish_before_enhancement",
+        "page_number": 1,
+        "attempt": 1,
+        "correction_retry": {
+          "next_attempt": 2,
+          "source_image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-01-text-audit-failed.png",
+          "issues": [
+            {
+              "type": "typo",
+              "expected": "行业中枢",
+              "observed": "平台中枢",
+              "evidence": "中心圆内文字显示为“流通共享的平台中枢”，与参考正确写法“流通共享的行业中枢”不一致，且“平台”为有效汉字词组。",
+              "bbox": [
+                472,
+                244,
+                638,
+                294
+              ]
+            }
+          ],
+          "error_region_images": [
+            "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-01-text-audit-failed-text-audit-region-01.png"
+          ]
+        },
+        "local_edit": {
+          "mode": "local_patch_composite",
+          "source_image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-01-text-audit-failed.png",
+          "candidate_image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-02-local-edit-candidate.png",
+          "boxes": [
+            [
+              348,
+              120,
+              762,
+              418
+            ]
+          ],
+          "outside_changed_pixels": 0
+        }
+      },
+      {
+        "schema": "cyberppt.generated_image_text_audit.v2",
+        "valid": true,
+        "scope": "typo_and_gibberish_only",
+        "image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.png",
+        "image_size": [
+          1774,
+          887
+        ],
+        "issues": [],
+        "observed_text": [
+          "01 建设国家数据基础设施 电力行业节点",
+          "承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点。",
+          "电力数据要素流通共享的行业中枢和价值释放引擎",
+          "02 建设行业数据与专业能力运营平台",
+          "统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价。",
+          "平台实施原则",
+          "协同衔接：与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接。",
+          "平台职责：承担跨主体连接、共性规则执行、产品运营和可信服务协同。",
+          "数据与模型控制权：平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系。",
+          "实施方式灵活：根据资源属性和业务需要，支持集中服务、源端处理、专属环境和受控计算等多种实施方式。",
+          "平台建设目标",
+          "03 建设多主体协同和价值共创载体",
+          "组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。",
+          "面向政府部门",
+          "为宏观能源决策、能源规划和行业治理提供数据分析支撑。",
+          "面向新型电力系统建设",
+          "提供行业数据底座，支撑新型电力系统规划、运行与优化。",
+          "面向电力企业",
+          "为生产经营、科技创新和数字化转型提供数据与专业服务。",
+          "主体接入",
+          "总体建设任务完成时，实现600家以上数据流通利用主体接入",
+          "行业流通",
+          "支持5个以上重点行业的跨区域、跨行业数据流通利用",
+          "产品发布",
+          "发布不少于1200个数据产品",
+          "示范场景",
+          "打造20个以上示范性强、带动性广的典型应用场景",
+          "面向产业链上下游及跨行业主体",
+          "为协同创新与生态合作创造数据流通与价值实现的基础条件。"
+        ],
+        "ocr_items": [
+          {
+            "text": "01建设国家数据基础设施",
+            "confidence": 0.9982249786456426,
+            "bbox": [
+              [
+                102.0,
+                38.0
+              ],
+              [
+                391.0,
+                38.0
+              ],
+              [
+                391.0,
+                64.0
+              ],
+              [
+                102.0,
+                64.0
+              ]
+            ]
+          },
+          {
+            "text": "02建设行业数据与专业能力",
+            "confidence": 0.9966646937223581,
+            "bbox": [
+              [
+                734.0,
+                38.0
+              ],
+              [
+                1052.0,
+                38.0
+              ],
+              [
+                1052.0,
+                64.0
+              ],
+              [
+                734.0,
+                64.0
+              ]
+            ]
+          },
+          {
+            "text": "平台实施原则",
+            "confidence": 0.9999078710873922,
+            "bbox": [
+              [
+                1172.0,
+                54.0
+              ],
+              [
+                1333.0,
+                54.0
+              ],
+              [
+                1333.0,
+                87.0
+              ],
+              [
+                1172.0,
+                87.0
+              ]
+            ]
+          },
+          {
+            "text": "电力行业节点",
+            "confidence": 0.9998335142930349,
+            "bbox": [
+              [
+                144.0,
+                69.0
+              ],
+              [
+                295.0,
+                69.0
+              ],
+              [
+                295.0,
+                99.0
+              ],
+              [
+                144.0,
+                99.0
+              ]
+            ]
+          },
+          {
+            "text": "运营平台",
+            "confidence": 0.9991243481636047,
+            "bbox": [
+              [
+                775.0,
+                68.0
+              ],
+              [
+                879.0,
+                68.0
+              ],
+              [
+                879.0,
+                99.0
+              ],
+              [
+                775.0,
+                99.0
+              ]
+            ]
+          },
+          {
+            "text": "协同衔接：与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接。",
+            "confidence": 0.9934559975351606,
+            "bbox": [
+              [
+                1127.0,
+                117.0
+              ],
+              [
+                1687.0,
+                117.0
+              ],
+              [
+                1687.0,
+                140.0
+              ],
+              [
+                1127.0,
+                140.0
+              ]
+            ]
+          },
+          {
+            "text": "承担电力行业侧主体连接、目录衔接、",
+            "confidence": 0.9954937626333797,
+            "bbox": [
+              [
+                100.0,
+                129.0
+              ],
+              [
+                369.0,
+                124.0
+              ],
+              [
+                369.0,
+                150.0
+              ],
+              [
+                100.0,
+                156.0
+              ]
+            ]
+          },
+          {
+            "text": "统一组织数据资源、模型能力、",
+            "confidence": 0.9976610285895211,
+            "bbox": [
+              [
+                774.0,
+                131.0
+              ],
+              [
+                1004.0,
+                131.0
+              ],
+              [
+                1004.0,
+                150.0
+              ],
+              [
+                774.0,
+                150.0
+              ]
+            ]
+          },
+          {
+            "text": "接口协同、可信流通和场景承接功能，",
+            "confidence": 0.9973027636023128,
+            "bbox": [
+              [
+                100.0,
+                159.0
+              ],
+              [
+                370.0,
+                154.0
+              ],
+              [
+                370.0,
+                181.0
+              ],
+              [
+                100.0,
+                185.0
+              ]
+            ]
+          },
+          {
+            "text": "专业能力和技术能力，衔接资源登记、",
+            "confidence": 0.992367520051844,
+            "bbox": [
+              [
+                775.0,
+                160.0
+              ],
+              [
+                1041.0,
+                160.0
+              ],
+              [
+                1041.0,
+                180.0
+              ],
+              [
+                775.0,
+                180.0
+              ]
+            ]
+          },
+          {
+            "text": "平台职责：承担跨主体连接、共性规则执行、产品运营和可信服务协同。",
+            "confidence": 0.9977449290454388,
+            "bbox": [
+              [
+                1127.0,
+                163.0
+              ],
+              [
+                1644.0,
+                163.0
+              ],
+              [
+                1644.0,
+                183.0
+              ],
+              [
+                1127.0,
+                183.0
+              ]
+            ]
+          },
+          {
+            "text": "逐步街接全域功能节点、区域节点",
+            "confidence": 0.9669456799825032,
+            "bbox": [
+              [
+                102.0,
+                189.0
+              ],
+              [
+                358.0,
+                189.0
+              ],
+              [
+                358.0,
+                212.0
+              ],
+              [
+                102.0,
+                212.0
+              ]
+            ]
+          },
+          {
+            "text": "产品管理、客户服务、可信交付和",
+            "confidence": 0.9996331055959066,
+            "bbox": [
+              [
+                773.0,
+                189.0
+              ],
+              [
+                1033.0,
+                189.0
+              ],
+              [
+                1033.0,
+                212.0
+              ],
+              [
+                773.0,
+                212.0
+              ]
+            ]
+          },
+          {
+            "text": "数据与模型控制权：平台接入不改变合作伙伴对原始数据、核心模型、",
+            "confidence": 0.9980602591268478,
+            "bbox": [
+              [
+                1126.0,
+                206.0
+              ],
+              [
+                1638.0,
+                207.0
+              ],
+              [
+                1638.0,
+                228.0
+              ],
+              [
+                1126.0,
+                227.0
+              ]
+            ]
+          },
+          {
+            "text": "和其他行业节点。",
+            "confidence": 0.9998458921909332,
+            "bbox": [
+              [
+                101.0,
+                219.0
+              ],
+              [
+                233.0,
+                219.0
+              ],
+              [
+                233.0,
+                243.0
+              ],
+              [
+                101.0,
+                243.0
+              ]
+            ]
+          },
+          {
+            "text": "运营评价。",
+            "confidence": 0.9996932029724122,
+            "bbox": [
+              [
+                773.0,
+                217.0
+              ],
+              [
+                855.0,
+                219.0
+              ],
+              [
+                854.0,
+                244.0
+              ],
+              [
+                772.0,
+                241.0
+              ]
+            ]
+          },
+          {
+            "text": "电力数据要素",
+            "confidence": 0.9975144863128662,
+            "bbox": [
+              [
+                497.0,
+                242.0
+              ],
+              [
+                633.0,
+                242.0
+              ],
+              [
+                633.0,
+                265.0
+              ],
+              [
+                497.0,
+                265.0
+              ]
+            ]
+          },
+          {
+            "text": "关键算法和既有知识产权的控制关系。",
+            "confidence": 0.9985884673455182,
+            "bbox": [
+              [
+                1141.0,
+                234.0
+              ],
+              [
+                1409.0,
+                235.0
+              ],
+              [
+                1409.0,
+                257.0
+              ],
+              [
+                1141.0,
+                256.0
+              ]
+            ]
+          },
+          {
+            "text": "流通共享的行业中枢",
+            "confidence": 0.9842107362217374,
+            "bbox": [
+              [
+                464.0,
+                275.0
+              ],
+              [
+                668.0,
+                275.0
+              ],
+              [
+                668.0,
+                302.0
+              ],
+              [
+                464.0,
+                302.0
+              ]
+            ]
+          },
+          {
+            "text": "实施方式灵活：根据资源属性和业务需要，支持集中服务、源端处理、",
+            "confidence": 0.9986689667547902,
+            "bbox": [
+              [
+                1125.0,
+                277.0
+              ],
+              [
+                1639.0,
+                278.0
+              ],
+              [
+                1639.0,
+                301.0
+              ],
+              [
+                1125.0,
+                300.0
+              ]
+            ]
+          },
+          {
+            "text": "和价值释放引擎",
+            "confidence": 0.9984716517584664,
+            "bbox": [
+              [
+                484.0,
+                311.0
+              ],
+              [
+                648.0,
+                311.0
+              ],
+              [
+                648.0,
+                338.0
+              ],
+              [
+                484.0,
+                338.0
+              ]
+            ]
+          },
+          {
+            "text": "专属环境和受控计算等多种实施方式。",
+            "confidence": 0.9992630201227525,
+            "bbox": [
+              [
+                1144.0,
+                308.0
+              ],
+              [
+                1409.0,
+                308.0
+              ],
+              [
+                1409.0,
+                328.0
+              ],
+              [
+                1144.0,
+                328.0
+              ]
+            ]
+          },
+          {
+            "text": "平台建设目标",
+            "confidence": 0.9990037878354391,
+            "bbox": [
+              [
+                1163.0,
+                388.0
+              ],
+              [
+                1318.0,
+                390.0
+              ],
+              [
+                1317.0,
+                421.0
+              ],
+              [
+                1163.0,
+                419.0
+              ]
+            ]
+          },
+          {
+            "text": "主体接入",
+            "confidence": 0.9998371452093124,
+            "bbox": [
+              [
+                1139.0,
+                441.0
+              ],
+              [
+                1215.0,
+                441.0
+              ],
+              [
+                1215.0,
+                465.0
+              ],
+              [
+                1139.0,
+                465.0
+              ]
+            ]
+          },
+          {
+            "text": "行业流通",
+            "confidence": 0.9998533874750137,
+            "bbox": [
+              [
+                1291.0,
+                440.0
+              ],
+              [
+                1372.0,
+                440.0
+              ],
+              [
+                1372.0,
+                466.0
+              ],
+              [
+                1291.0,
+                466.0
+              ]
+            ]
+          },
+          {
+            "text": "产品发布",
+            "confidence": 0.9997941553592682,
+            "bbox": [
+              [
+                1444.0,
+                441.0
+              ],
+              [
+                1522.0,
+                441.0
+              ],
+              [
+                1522.0,
+                465.0
+              ],
+              [
+                1444.0,
+                465.0
+              ]
+            ]
+          },
+          {
+            "text": "示范场景",
+            "confidence": 0.9986260682344437,
+            "bbox": [
+              [
+                1606.0,
+                440.0
+              ],
+              [
+                1686.0,
+                440.0
+              ],
+              [
+                1686.0,
+                466.0
+              ],
+              [
+                1606.0,
+                466.0
+              ]
+            ]
+          },
+          {
+            "text": "03建设多主体协同和价值共创载体",
+            "confidence": 0.9963980875909328,
+            "bbox": [
+              [
+                367.0,
+                455.0
+              ],
+              [
+                758.0,
+                455.0
+              ],
+              [
+                758.0,
+                481.0
+              ],
+              [
+                367.0,
+                481.0
+              ]
+            ]
+          },
+          {
+            "text": "总体建设任务完成时，",
+            "confidence": 0.9977393805980682,
+            "bbox": [
+              [
+                1107.0,
+                479.0
+              ],
+              [
+                1244.0,
+                479.0
+              ],
+              [
+                1244.0,
+                499.0
+              ],
+              [
+                1107.0,
+                499.0
+              ]
+            ]
+          },
+          {
+            "text": "支持",
+            "confidence": 0.9996821880340576,
+            "bbox": [
+              [
+                1312.0,
+                481.0
+              ],
+              [
+                1350.0,
+                481.0
+              ],
+              [
+                1350.0,
+                505.0
+              ],
+              [
+                1312.0,
+                505.0
+              ]
+            ]
+          },
+          {
+            "text": "发布不少于",
+            "confidence": 0.9999366998672485,
+            "bbox": [
+              [
+                1443.0,
+                482.0
+              ],
+              [
+                1524.0,
+                482.0
+              ],
+              [
+                1524.0,
+                503.0
+              ],
+              [
+                1443.0,
+                503.0
+              ]
+            ]
+          },
+          {
+            "text": "打造",
+            "confidence": 0.9998654723167419,
+            "bbox": [
+              [
+                1627.0,
+                481.0
+              ],
+              [
+                1664.0,
+                481.0
+              ],
+              [
+                1664.0,
+                504.0
+              ],
+              [
+                1627.0,
+                504.0
+              ]
+            ]
+          },
+          {
+            "text": "组织需求单位、资源方、模型算法方、专业服务方和技术实施方，",
+            "confidence": 0.9990788924282995,
+            "bbox": [
+              [
+                325.0,
+                495.0
+              ],
+              [
+                807.0,
+                495.0
+              ],
+              [
+                807.0,
+                515.0
+              ],
+              [
+                325.0,
+                515.0
+              ]
+            ]
+          },
+          {
+            "text": "实现",
+            "confidence": 0.9999487400054932,
+            "bbox": [
+              [
+                1159.0,
+                501.0
+              ],
+              [
+                1195.0,
+                501.0
+              ],
+              [
+                1195.0,
+                524.0
+              ],
+              [
+                1159.0,
+                524.0
+              ]
+            ]
+          },
+          {
+            "text": "5个以上",
+            "confidence": 0.9998752474784851,
+            "bbox": [
+              [
+                1283.0,
+                510.0
+              ],
+              [
+                1373.0,
+                515.0
+              ],
+              [
+                1371.0,
+                550.0
+              ],
+              [
+                1281.0,
+                545.0
+              ]
+            ]
+          },
+          {
+            "text": "1200个",
+            "confidence": 0.9992845177650451,
+            "bbox": [
+              [
+                1435.0,
+                511.0
+              ],
+              [
+                1532.0,
+                513.0
+              ],
+              [
+                1531.0,
+                548.0
+              ],
+              [
+                1434.0,
+                545.0
+              ]
+            ]
+          },
+          {
+            "text": "20个以上",
+            "confidence": 0.9998668909072876,
+            "bbox": [
+              [
+                1592.0,
+                510.0
+              ],
+              [
+                1701.0,
+                515.0
+              ],
+              [
+                1699.0,
+                549.0
+              ],
+              [
+                1590.0,
+                544.0
+              ]
+            ]
+          },
+          {
+            "text": "围绕行业共性需求开展产品开发、场景共建和持续运营。",
+            "confidence": 0.99615558385849,
+            "bbox": [
+              [
+                362.0,
+                526.0
+              ],
+              [
+                776.0,
+                526.0
+              ],
+              [
+                776.0,
+                544.0
+              ],
+              [
+                362.0,
+                544.0
+              ]
+            ]
+          },
+          {
+            "text": "600家以上",
+            "confidence": 0.9985538224379221,
+            "bbox": [
+              [
+                1119.0,
+                527.0
+              ],
+              [
+                1239.0,
+                531.0
+              ],
+              [
+                1238.0,
+                566.0
+              ],
+              [
+                1117.0,
+                562.0
+              ]
+            ]
+          },
+          {
+            "text": "数据流通利用",
+            "confidence": 0.9990799923737844,
+            "bbox": [
+              [
+                1131.0,
+                574.0
+              ],
+              [
+                1224.0,
+                574.0
+              ],
+              [
+                1224.0,
+                595.0
+              ],
+              [
+                1131.0,
+                595.0
+              ]
+            ]
+          },
+          {
+            "text": "重点行业的跨区域、",
+            "confidence": 0.9919024308522543,
+            "bbox": [
+              [
+                1264.0,
+                566.0
+              ],
+              [
+                1392.0,
+                566.0
+              ],
+              [
+                1392.0,
+                589.0
+              ],
+              [
+                1264.0,
+                589.0
+              ]
+            ]
+          },
+          {
+            "text": "数据产品",
+            "confidence": 0.9996440410614014,
+            "bbox": [
+              [
+                1450.0,
+                567.0
+              ],
+              [
+                1518.0,
+                567.0
+              ],
+              [
+                1518.0,
+                591.0
+              ],
+              [
+                1450.0,
+                591.0
+              ]
+            ]
+          },
+          {
+            "text": "示范性强、带动性广的",
+            "confidence": 0.9987722218036652,
+            "bbox": [
+              [
+                1570.0,
+                567.0
+              ],
+              [
+                1724.0,
+                567.0
+              ],
+              [
+                1724.0,
+                590.0
+              ],
+              [
+                1570.0,
+                590.0
+              ]
+            ]
+          },
+          {
+            "text": "主体接入",
+            "confidence": 0.9996156096458435,
+            "bbox": [
+              [
+                1145.0,
+                595.0
+              ],
+              [
+                1211.0,
+                595.0
+              ],
+              [
+                1211.0,
+                619.0
+              ],
+              [
+                1145.0,
+                619.0
+              ]
+            ]
+          },
+          {
+            "text": "跨行业数据流通利用",
+            "confidence": 0.9994887312253317,
+            "bbox": [
+              [
+                1264.0,
+                592.0
+              ],
+              [
+                1401.0,
+                592.0
+              ],
+              [
+                1401.0,
+                615.0
+              ],
+              [
+                1264.0,
+                615.0
+              ]
+            ]
+          },
+          {
+            "text": "典型应用场景",
+            "confidence": 0.9993208050727844,
+            "bbox": [
+              [
+                1600.0,
+                593.0
+              ],
+              [
+                1694.0,
+                593.0
+              ],
+              [
+                1694.0,
+                614.0
+              ],
+              [
+                1600.0,
+                614.0
+              ]
+            ]
+          },
+          {
+            "text": "面向产业链上下游",
+            "confidence": 0.9993083477020264,
+            "bbox": [
+              [
+                1361.0,
+                681.0
+              ],
+              [
+                1529.0,
+                681.0
+              ],
+              [
+                1529.0,
+                707.0
+              ],
+              [
+                1361.0,
+                707.0
+              ]
+            ]
+          },
+          {
+            "text": "盒",
+            "confidence": 0.5882421731948853,
+            "bbox": [
+              [
+                58.0,
+                694.0
+              ],
+              [
+                87.0,
+                694.0
+              ],
+              [
+                87.0,
+                720.0
+              ],
+              [
+                58.0,
+                720.0
+              ]
+            ]
+          },
+          {
+            "text": "面向政府部门",
+            "confidence": 0.9998562534650167,
+            "bbox": [
+              [
+                113.0,
+                692.0
+              ],
+              [
+                250.0,
+                692.0
+              ],
+              [
+                250.0,
+                719.0
+              ],
+              [
+                113.0,
+                719.0
+              ]
+            ]
+          },
+          {
+            "text": "面向新型电力系统建设",
+            "confidence": 0.9979137897491455,
+            "bbox": [
+              [
+                529.0,
+                692.0
+              ],
+              [
+                754.0,
+                692.0
+              ],
+              [
+                754.0,
+                718.0
+              ],
+              [
+                529.0,
+                718.0
+              ]
+            ]
+          },
+          {
+            "text": "面向电力企业",
+            "confidence": 0.9998038212458292,
+            "bbox": [
+              [
+                942.0,
+                692.0
+              ],
+              [
+                1074.0,
+                692.0
+              ],
+              [
+                1074.0,
+                719.0
+              ],
+              [
+                942.0,
+                719.0
+              ]
+            ]
+          },
+          {
+            "text": "及跨行业主体",
+            "confidence": 0.9995972116788229,
+            "bbox": [
+              [
+                1362.0,
+                709.0
+              ],
+              [
+                1488.0,
+                709.0
+              ],
+              [
+                1488.0,
+                733.0
+              ],
+              [
+                1362.0,
+                733.0
+              ]
+            ]
+          },
+          {
+            "text": "为宏观能源决策、能源规划",
+            "confidence": 0.998522107799848,
+            "bbox": [
+              [
+                49.0,
+                748.0
+              ],
+              [
+                240.0,
+                748.0
+              ],
+              [
+                240.0,
+                768.0
+              ],
+              [
+                49.0,
+                768.0
+              ]
+            ]
+          },
+          {
+            "text": "提供行业数据底座，支撑",
+            "confidence": 0.9992938691919501,
+            "bbox": [
+              [
+                466.0,
+                748.0
+              ],
+              [
+                642.0,
+                748.0
+              ],
+              [
+                642.0,
+                768.0
+              ],
+              [
+                466.0,
+                768.0
+              ]
+            ]
+          },
+          {
+            "text": "为生产经营、科技创新和",
+            "confidence": 0.999595046043396,
+            "bbox": [
+              [
+                885.0,
+                748.0
+              ],
+              [
+                1064.0,
+                748.0
+              ],
+              [
+                1064.0,
+                768.0
+              ],
+              [
+                885.0,
+                768.0
+              ]
+            ]
+          },
+          {
+            "text": "为协同创新与生态合作",
+            "confidence": 0.9996567249298096,
+            "bbox": [
+              [
+                1299.0,
+                746.0
+              ],
+              [
+                1470.0,
+                746.0
+              ],
+              [
+                1470.0,
+                769.0
+              ],
+              [
+                1299.0,
+                769.0
+              ]
+            ]
+          },
+          {
+            "text": "和行业治理提供数据分析",
+            "confidence": 0.9995904022997076,
+            "bbox": [
+              [
+                48.0,
+                778.0
+              ],
+              [
+                230.0,
+                778.0
+              ],
+              [
+                230.0,
+                798.0
+              ],
+              [
+                48.0,
+                798.0
+              ]
+            ]
+          },
+          {
+            "text": "新型电力系统规划、运行",
+            "confidence": 0.9993505098602988,
+            "bbox": [
+              [
+                465.0,
+                776.0
+              ],
+              [
+                643.0,
+                776.0
+              ],
+              [
+                643.0,
+                799.0
+              ],
+              [
+                465.0,
+                799.0
+              ]
+            ]
+          },
+          {
+            "text": "数字化转型提供数据与",
+            "confidence": 0.9988155782222747,
+            "bbox": [
+              [
+                883.0,
+                776.0
+              ],
+              [
+                1051.0,
+                776.0
+              ],
+              [
+                1051.0,
+                799.0
+              ],
+              [
+                883.0,
+                799.0
+              ]
+            ]
+          },
+          {
+            "text": "创造数据流通与价值实现",
+            "confidence": 0.9995715889063749,
+            "bbox": [
+              [
+                1299.0,
+                775.0
+              ],
+              [
+                1485.0,
+                775.0
+              ],
+              [
+                1485.0,
+                798.0
+              ],
+              [
+                1299.0,
+                798.0
+              ]
+            ]
+          },
+          {
+            "text": "支撑。",
+            "confidence": 0.9993396202723185,
+            "bbox": [
+              [
+                46.0,
+                804.0
+              ],
+              [
+                94.0,
+                804.0
+              ],
+              [
+                94.0,
+                830.0
+              ],
+              [
+                46.0,
+                830.0
+              ]
+            ]
+          },
+          {
+            "text": "与优化。",
+            "confidence": 0.999577060341835,
+            "bbox": [
+              [
+                464.0,
+                803.0
+              ],
+              [
+                525.0,
+                805.0
+              ],
+              [
+                524.0,
+                831.0
+              ],
+              [
+                463.0,
+                828.0
+              ]
+            ]
+          },
+          {
+            "text": "专业服务。",
+            "confidence": 0.9998127460479737,
+            "bbox": [
+              [
+                883.0,
+                805.0
+              ],
+              [
+                959.0,
+                805.0
+              ],
+              [
+                959.0,
+                830.0
+              ],
+              [
+                883.0,
+                830.0
+              ]
+            ]
+          },
+          {
+            "text": "的基础条件。",
+            "confidence": 0.9996838668982188,
+            "bbox": [
+              [
+                1298.0,
+                803.0
+              ],
+              [
+                1393.0,
+                803.0
+              ],
+              [
+                1393.0,
+                827.0
+              ],
+              [
+                1298.0,
+                827.0
+              ]
+            ]
+          }
+        ],
+        "summary": "未发现明确错字或乱码。",
+        "required_action": null,
+        "page_number": 1,
+        "attempt": 2,
+        "normalized_image_size": [
+          2048,
+          1024
+        ]
+      }
+    ],
+    "imagegen_attempts": [
+      {
+        "schema": "cyberppt.imagegen_attempt_request.v1",
+        "page_number": 1,
+        "variant": "full",
+        "attempt": 1,
+        "prompt_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/prompts/attempts/page-001-full-attempt-01-sent.txt",
+        "prompt_sha256": "852ead3565ad4989acc586e059d8d471fb02abe09b29bf0c33173553ca979a95",
+        "base_prompt_sha256": "852ead3565ad4989acc586e059d8d471fb02abe09b29bf0c33173553ca979a95",
+        "prompt_chars": 3952,
+        "model": "gpt-image-2",
+        "quality": "high",
+        "size": "2048x1024",
+        "input_images": [
+          "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+        ],
+        "correction_retry": false,
+        "original_prompt": null,
+        "failed_image": null,
+        "correction_issues": [],
+        "request_record_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/prompts/attempts/page-001-full-attempt-01-request.json"
+      },
+      {
+        "schema": "cyberppt.imagegen_attempt_request.v1",
+        "page_number": 1,
+        "variant": "full",
+        "attempt": 2,
+        "prompt_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/prompts/attempts/page-001-full-attempt-02-sent.txt",
+        "prompt_sha256": "331df00f17c4d724aaf4533f288f04aab1a86de7876135aee2e51301b6f30743",
+        "base_prompt_sha256": "852ead3565ad4989acc586e059d8d471fb02abe09b29bf0c33173553ca979a95",
+        "prompt_chars": 4400,
+        "model": "gpt-image-2",
+        "quality": "high",
+        "size": "2048x1024",
+        "input_images": [
+          "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-01-text-audit-failed.png",
+          "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-01-text-audit-failed-text-audit-region-01.png",
+          "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+        ],
+        "correction_retry": true,
+        "original_prompt": "【完整上屏内容】\n平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系。\n三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。\n四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件。\n平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式。\n\n\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：纯白 + 深蓝领导汇报\n\nPalette: white #FFFFFF, deep blue #12355B, muted amber #D9772B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1. Use deep blue for primary relationships and conclusions. Reserve muted amber only for risks, exceptions, constraints, pending status, and occasional decision-critical emphasis; never use it as a category color or decorative accent.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "failed_image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.attempt-01-text-audit-failed.png",
+        "correction_issues": [
+          {
+            "type": "typo",
+            "expected": "行业中枢",
+            "observed": "平台中枢",
+            "evidence": "中心圆内文字显示为“流通共享的平台中枢”，与参考正确写法“流通共享的行业中枢”不一致，且“平台”为有效汉字词组。",
+            "bbox": [
+              472,
+              244,
+              638,
+              294
+            ]
+          }
+        ],
+        "request_record_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/prompts/attempts/page-001-full-attempt-02-request.json"
+      }
+    ]
+  },
+  "clean_base_generation": null,
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 1,
+        "mode": "off",
+        "source_prompt_sha256": "5776d74e51f31780c01d620fccecf98d8dedd1ba3eb45a3967db65efa745c7fa",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 3951
+      }
+    ]
+  },
+  "tool_consumption": {
+    "reconstruction_inventory": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/analysis/reconstruction_inventory.json"
+    },
+    "svg_output": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/svg_output"
+    },
+    "reconstruction_quality": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis"
+    },
+    "authored_svg_preflight_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/authored_svg_preflight_qa.json"
+    },
+    "native_text_style_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_style_qa.json"
+    },
+    "native_text_geometry_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_geometry_qa.json"
+    },
+    "text_content_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/text_content_qa.json"
+    },
+    "editable_page_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/editable_page_qa.json"
+    },
+    "clean_base_policy_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/clean_base_policy_qa.json"
+    },
+    "graphic_text_policy_qa": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/graphic_text_policy_qa.json"
+    },
+    "render_compare": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+    },
+    "exported_pptx": {
+      "ran": true,
+      "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+    }
+  },
+  "production_readiness": {
+    "schema": "cyberppt.stage02.production_readiness.v1",
+    "stage": "02-production-build",
+    "status": "production_ready",
+    "valid": true,
+    "checks": {
+      "all_required_tools_consumed": true,
+      "all_consumed_reports_pass": true,
+      "blocking_count": 0
+    },
+    "tool_consumption": {
+      "reconstruction_inventory": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/analysis/reconstruction_inventory.json"
+      },
+      "svg_output": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/template_assembly/image/svg_output"
+      },
+      "reconstruction_quality": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis"
+      },
+      "authored_svg_preflight_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/authored_svg_preflight_qa.json"
+      },
+      "native_text_style_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_style_qa.json"
+      },
+      "native_text_geometry_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/native_text_geometry_qa.json"
+      },
+      "text_content_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/text_content_qa.json"
+      },
+      "editable_page_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/editable_page_qa.json"
+      },
+      "clean_base_policy_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/clean_base_policy_qa.json"
+      },
+      "graphic_text_policy_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/graphic_text_policy_qa.json"
+      },
+      "render_compare": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+      },
+      "exported_pptx": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+      }
+    },
+    "blocking_errors": [],
+    "reports": {
+      "reconstruction_inventory": {
+        "valid": true
+      },
+      "reconstruction_quality": {
+        "valid": true,
+        "pages": []
+      },
+      "svg_output": {
+        "valid": true
+      },
+      "authored_svg_preflight": {
+        "valid": true,
+        "pages": []
+      },
+      "native_text_style": {
+        "valid": true,
+        "pages": []
+      },
+      "native_text_geometry": {
+        "valid": true,
+        "qa_only": true,
+        "pages": [],
+        "review_required": false
+      },
+      "text_content_qa": {
+        "image": {
+          "schema": "cyberppt.dual_image.text_content_qa.v1",
+          "valid": true,
+          "order_sensitive": false,
+          "allow_fragmented_actual": true,
+          "checks": {
+            "text_count_matches": true,
+            "pptx_text_matches_expected": true
+          },
+          "expected_texts": [
+            "电力领域数据基础设施总体定位：行业中枢与价值释放引擎",
+            "中国电力企业联合会",
+            "1"
+          ],
+          "actual_texts": [
+            "中国电力企业联合会",
+            "1",
+            "电力领域数据基础设施总体定位：行业中枢与价值释放引擎"
+          ],
+          "mismatches": [],
+          "error_count": 0
+        }
+      },
+      "editable_page": {
+        "valid": true,
+        "pages": []
+      },
+      "clean_base_policy": {
+        "valid": true,
+        "pages": []
+      },
+      "graphic_text_policy": {
+        "valid": true,
+        "pages": []
+      },
+      "render_compare": {
+        "valid": true,
+        "review": {
+          "schema": "cyberppt.image_to_pptx.visual_review.v1",
+          "mode": "image",
+          "issues": [],
+          "requires_rebuild": false,
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+        }
+      },
+      "exported_pptx": {
+        "valid": true
+      },
+      "exported_pptx_by_mode": {
+        "image": {
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx"
+        }
+      }
+    }
+  }
+}

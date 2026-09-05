@@ -2,6 +2,10 @@
 from __future__ import annotations
 
 from difflib import SequenceMatcher
+import re
+
+from cyberppt.semantic_fidelity import audit_semantic_strength
+from script_engine.plan_quality import plan_critic_priorities
 
 from .common import *
 
@@ -12,7 +16,7 @@ _STRUCTURAL_PAGE_ROLES = frozenset(
 _CHAPTER_TRANSITION_ROLES = frozenset({"chapter", "chapter_divider", "transition"})
 _ROOT_FIELDS = frozenset(
     {
-        "communication_goal", "plan_contract_version", "planning_profile", "audience",
+        "communication_goal", "plan_contract_version", "planning_profile", "authoring_mode", "audience",
         "audience_scope", "source_structure_mode", "presentation_structure_mode",
         "chapter_count_exception", "chapters", "pages",
     }
@@ -24,9 +28,84 @@ _PAGE_FIELDS = frozenset(
     {"id", "chapter_id", "title", "question", "logic", "page_role", "source_refs"}
 )
 
+_PLAN_PROMOTION_TERMS = (
+    "完备",
+    "落地",
+    "一次填清",
+    "全面具备",
+    "立即",
+)
+_CONDITIONAL_STATUSES = frozenset(
+    {
+        "proposal", "recommendation", "to_confirm", "conditional",
+        "拟建议", "建议", "待确认", "有条件",
+    }
+)
+_BOUNDARY_MARKERS = (
+    "可", "建议", "拟", "待", "协商", "条件", "原则", "按实际", "以正式", "逐步",
+)
+_SOURCE_HEADING_PREFIX_RE = re.compile(
+    r"^\s*(?:第?[一二三四五六七八九十百]+[章节部分、.．]\s*|[（(]?[一二三四五六七八九十0-9]+[）)、.．]\s*)"
+)
+
 
 def _text(value: object) -> str:
     return str(value or "").strip()
+
+
+def _unambiguous_source_heading_core(
+    page: dict[str, Any], foundation: dict[str, Any]
+) -> str:
+    page_refs = {_text(ref) for ref in page.get("source_refs") or [] if _text(ref)}
+    # Deck Plan source_refs normally name Foundation facts/constraints, while
+    # lightweight argument nodes bind directly to stable SU-* units. Expand
+    # page item IDs to their source-unit refs before matching headings.
+    item_unit_refs = {
+        _text(item.get("id")): {
+            _text(ref) for ref in item.get("source_refs") or [] if _text(ref)
+        }
+        for key in ("facts", "constraints")
+        for item in foundation.get(key) or []
+        if isinstance(item, dict) and _text(item.get("id"))
+    }
+    expanded_refs = set(page_refs)
+    for ref in page_refs:
+        expanded_refs.update(item_unit_refs.get(ref, set()))
+    headings = {
+        _text(node.get("source_heading"))
+        for node in foundation.get("argument_nodes") or []
+        if isinstance(node, dict)
+        and _text(node.get("source_heading"))
+        and expanded_refs.intersection(
+            {_text(ref) for ref in node.get("source_refs") or [] if _text(ref)}
+        )
+    }
+    if len(headings) != 1:
+        return ""
+    return _SOURCE_HEADING_PREFIX_RE.sub("", next(iter(headings))).strip()
+
+
+def _source_heading_title_issues(
+    plan: dict[str, Any], foundation: dict[str, Any]
+) -> list[str]:
+    """Keep faithful page titles anchored to one unambiguous source heading."""
+
+    if _text(plan.get("authoring_mode") or "faithful") != "faithful":
+        return []
+    issues: list[str] = []
+    for index, page in enumerate(plan.get("pages") or []):
+        if not isinstance(page, dict) or _text(page.get("page_role")) in _STRUCTURAL_PAGE_ROLES:
+            continue
+        heading_core = _unambiguous_source_heading_core(page, foundation)
+        title = _text(page.get("title"))
+        if heading_core and heading_core not in title:
+            page_id = _text(page.get("id")) or f"#{index}"
+            issues.append(
+                f"pages.{index} ({page_id}).title: PLAN_SOURCE_TITLE_NOT_PRIORITIZED: "
+                f"faithful mode title must retain source heading '{heading_core}'; "
+                "append a page-specific qualifier only when the source section is split"
+            )
+    return issues
 
 
 def _contract_issues(plan: dict[str, Any]) -> list[str]:
@@ -76,6 +155,82 @@ def _source_boundary_issues(plan: dict[str, Any], foundation: dict[str, Any]) ->
         if unknown:
             issues.append(f"pages.{index} ({page_id}): LEAN_SOURCE_REF_UNKNOWN: {unknown}")
     return issues
+
+
+def _plan_semantic_fidelity_issues(
+    plan: dict[str, Any], foundation: dict[str, Any]
+) -> tuple[list[str], list[str]]:
+    """Catch high-confidence PLAN wording promotions without pretending to prove entailment."""
+
+    issues: list[str] = []
+    warnings: list[str] = []
+    items = foundation_items_by_id(foundation)
+    assets = {
+        _text(asset.get("id")): asset
+        for asset in foundation.get("source_assets") or []
+        if isinstance(asset, dict) and asset.get("id")
+    }
+    for index, page in enumerate(plan.get("pages") or []):
+        if not isinstance(page, dict) or _text(page.get("page_role")) in _STRUCTURAL_PAGE_ROLES:
+            continue
+        page_id = _text(page.get("id")) or f"#{index}"
+        refs = [_text(ref) for ref in page.get("source_refs") or [] if _text(ref)]
+        support = [items[ref] for ref in refs if ref in items]
+        evidence = "\n".join(_item_text(item) for item in support if _item_text(item))
+        if not evidence:
+            if refs and any(ref in assets for ref in refs):
+                warnings.append(
+                    f"pages.{index} ({page_id}): PLAN_SEMANTIC_TEXT_UNAVAILABLE: "
+                    "source boundary contains only non-text assets; require qualitative PLAN review"
+                )
+            continue
+
+        for field in ("title", "logic"):
+            output = _text(page.get(field))
+            for finding in audit_semantic_strength(output, evidence):
+                issues.append(
+                    f"pages.{index} ({page_id}).{field}: PLAN_{finding.code}: "
+                    f"{finding.message}; source_refs={refs}"
+                )
+            for term in _PLAN_PROMOTION_TERMS:
+                if term in output and term not in evidence:
+                    issues.append(
+                        f"pages.{index} ({page_id}).{field}: PLAN_COMPLETION_OR_SCOPE_PROMOTED: "
+                        f"wording introduces unsupported high-risk term '{term}'; source_refs={refs}"
+                    )
+
+        question = _text(page.get("question"))
+        for finding in audit_semantic_strength(question, evidence):
+            warnings.append(
+                f"pages.{index} ({page_id}).question: PLAN_QUESTION_{finding.code}: "
+                f"{finding.message}; qualitative review required"
+            )
+        for term in _PLAN_PROMOTION_TERMS:
+            if term in question and term not in evidence:
+                warnings.append(
+                    f"pages.{index} ({page_id}).question: PLAN_QUESTION_SCOPE_PROMOTED: "
+                    f"question introduces unsupported high-risk term '{term}'; qualitative review required"
+                )
+
+        conditional_refs = [
+            _text(item.get("id"))
+            for item in support
+            if _text(item.get("status")) in _CONDITIONAL_STATUSES
+        ]
+        title = _text(page.get("title"))
+        source_heading_core = _unambiguous_source_heading_core(page, foundation)
+        title_keeps_source_heading = bool(source_heading_core and source_heading_core in title)
+        if (
+            conditional_refs
+            and title
+            and not title_keeps_source_heading
+            and not any(marker in title for marker in _BOUNDARY_MARKERS)
+        ):
+            warnings.append(
+                f"pages.{index} ({page_id}).title: PLAN_STATUS_BOUNDARY_NOT_VISIBLE: "
+                f"title cites conditional/recommended/pending evidence {conditional_refs} without an explicit boundary marker"
+            )
+    return issues, warnings
 
 
 def _chapter_mapping_issues(
@@ -160,6 +315,14 @@ def audit_deck_plan(plan: dict[str, Any], foundation: dict[str, Any]) -> tuple[l
     warnings = _adjacent_mission_warnings(plan)
     issues.extend(_contract_issues(plan))
     issues.extend(_source_boundary_issues(plan, foundation))
+    semantic_issues, semantic_warnings = _plan_semantic_fidelity_issues(plan, foundation)
+    issues.extend(semantic_issues)
+    warnings.extend(semantic_warnings)
+    issues.extend(_source_heading_title_issues(plan, foundation))
+    warnings.extend(
+        f"{finding['code']}: page {finding['page_id']}: {finding['reason']}"
+        for finding in plan_critic_priorities(plan)
+    )
     structure = [item for item in foundation.get("source_structure") or [] if isinstance(item, dict)]
     source_chapters = [
         _text(item.get("id"))

@@ -15,6 +15,12 @@
     "communication_goal": {"type": "string", "minLength": 1},
     "plan_contract_version": {"const": 2},
     "planning_profile": {"const": "lean"},
+    "authoring_mode": {
+      "type": "string",
+      "enum": ["faithful", "analytical"],
+      "default": "faithful",
+      "description": "faithful is the default source-faithful pagination mode; analytical requires explicit user intent."
+    },
     "audience": {"type": "string"},
     "audience_scope": {
       "type": "string",

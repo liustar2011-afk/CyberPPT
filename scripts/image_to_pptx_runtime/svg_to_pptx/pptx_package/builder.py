@@ -2166,6 +2166,16 @@ def _move_template_static_shape(
         return _move_template_background(states, target_path)
 
     resolved_shapes = [shape for shape in shapes if shape is not None]
+    if item.element_id.lower() in _PAGE_NUMBER_TOKENS:
+        field_guid = f"{{{str(uuid.uuid4()).upper()}}}"
+        for shape in resolved_shapes:
+            literal = "".join(shape.itertext()).strip()
+            if literal.isdigit():
+                _replace_literal_run_with_slidenum_field(
+                    shape,
+                    literal,
+                    field_guid,
+                )
     if item.is_background:
         background_xml = _move_template_solid_background_shapes(
             states,

@@ -42,12 +42,24 @@ Run these steps in order for every content page:
    its document type, number, date and owning matter, responsibility, condition,
    boundary and claim strength. Separate source-explicit relationships from
    source-supported editorial inference before drafting.
+   Read `authoring_mode` from the approved Deck Plan; absence means `faithful`.
+   Under `faithful`, source-explicit propositions and relations are the ceiling
+   for titles, conclusions, argument chains, full copy, onscreen text and notes.
+   A faithful page title uses the source heading as its default title anchor.
+   When one source section is split across several pages, retain that heading and
+   append only the page-specific scope needed to distinguish the pages. Rewrite
+   the title freely only when the source has no usable heading or the user has
+   explicitly requested analytical or conclusion-led titles.
 3. **Author the page conclusion.** `core_message` states what the page means and
    organizes the entire page. It contains no planning label, author self-talk,
    review language or relationship-construction note. Execute the mission and
    core-message methods in 3.9 before building the argument.
-4. **Build the claim–argument–evidence chain.** State the independent arguments
-   that establish `core_message`, then bind each argument to the source-grounded
+4. **Build the page structure.** In `faithful` mode, use the smallest structure
+   already present in the source: one proposition, parallel propositions, an
+   explicit sequence, or an explicit claim–argument–evidence chain. Do not turn
+   parallel facts into causality or necessity to manufacture an argument. In
+   explicitly authorized `analytical` mode, state the independent arguments
+   that establish `core_message`; then bind each argument to the source-grounded
    evidence that proves, explains or qualifies it. Apply the organising rules in
    2.8, the page-logic normalization in 2.9 and the argument-topology method in
    3.9 before prose selection.
@@ -62,7 +74,8 @@ Run these steps in order for every content page:
    top-level information roles and the decisive proof retained for each role.
    Apply the density-and-heading preflight in 2.6 before drafting modules.
 7. **Choose the onscreen reading mode and project the structure.** Use the
-   mandatory onscreen structure-projection pass in 3.3. Default compact mode
+   mandatory onscreen structure-projection
+   pass in 3.3. Default compact mode
    selects decisive visible arguments; an explicit `pyramid_prose` mode opens
    with the page conclusion and retains complete supporting paragraphs. Do not
    proportionally shorten every paragraph, keep one bullet per source fact or
@@ -139,6 +152,22 @@ named actors, formal documents, implementation status, task strength, dates and
 numbers, responsibilities, conditions, boundaries and explicit conclusions while
 improving hierarchy and reading order.
 
+`full_copy` and `onscreen` inherit the source document's speaking position and
+issuer voice. When the source directly defines, requires, arranges or states a
+matter, the script directly states that same matter. Do not introduce an
+outside narrator with frames such as `通知所称`、`材料指出`、`文件认为`、
+`原文说明` or `在通知中已明确`. References that already belong to the source's
+own proposition, such as implementing a superior policy or acting according to
+a named regulation, retain their original subject and relation; this rule does
+not erase legitimate source-owned citations.
+
+`onscreen` is a concise, source-faithful projection of `full_copy`. It may select,
+merge and lightly rephrase material already present in `full_copy`; it may not
+independently reconstruct the argument, add a conclusion, reverse a relation or
+drop a condition that changes status, responsibility, timing or scope. Delivery
+must render the authored `onscreen` field and must not replace it with a duplicate
+of `full_copy`.
+
 Onscreen consumption is complete when the visible layer carries the paragraph's
 leading judgment, the decisive facts or relations that make it understandable,
 and every condition or qualifier that materially changes its strength. Compact
@@ -185,7 +214,8 @@ domain or standard cannot become a group-wide predicate. In particular, a
 source instruction to inherit and extend one information-model standard does not
 mean that all existing industry standards can be directly inherited.
 
-Analytical enhancement remains allowed inside the evidence boundary. Preserve
+Analytical enhancement is allowed inside the evidence boundary only when the
+approved Deck Plan declares `authoring_mode: analytical`. Preserve
 its origin in audience language: use forms such as `由此表明`, `本研究据此形成`
 or `可形成` when the relation is inferred rather than directly stated. An
 inferred mapping, loop, conversion path or consequence cannot be phrased as a
@@ -241,7 +271,9 @@ conclusion. Apply the following tests to both layers before delivery:
    colour or visual layout. Do not use repeated label-plus-list grammar, pipes,
    stacked modifiers or generic verbs such as `支撑`、`推进`、`形成`、`提升` unless
    their actor, object and material effect are explicit.
-4. **Meaningful relationship.** A substantive page shows the relationship that
+4. **Source-owned relationship.** In faithful mode, show a relationship when the
+   source states it; parallel facts may remain parallel and still form a complete
+   page. In analytical mode, a substantive page may show the relationship that
    matters to the audience: for example condition to outcome, gap to impact,
    requirement to decision, scenario to standard demand, or output to the next
    action. Parallel facts alone do not establish professional analysis.
@@ -257,7 +289,11 @@ tests by replacing one bureaucratic template with another.
 
 ### 2.5 Page writing framework selection
 
-Every content page uses two composable expression layers. The layers guide the
+In `faithful` mode, select the smallest source-owned structure: a single point,
+parallel facts, an explicit sequence, a classification or an explicit relation.
+Claim–argument–evidence, Pyramid, MECE and SCR are optional tools and must not
+create a relation absent from the source. In explicitly authorized `analytical`
+mode, content pages may use the two composable expression layers below. The layers guide the
 reading order of `core_message`, `full_copy` and `onscreen`; they do not add
 unsupported facts, force visible framework jargon, or require every method on
 every page.
@@ -485,6 +521,9 @@ Before drafting `full_copy`, AUTHOR must normalize the page logic in working
 judgment. This method is mandatory for every analytical, decision, transition or
 conclusion page and remains useful in reduced form for foundation and taxonomy
 pages. It creates no new project artifact, authoring field, receipt or user gate.
+In `faithful` mode, normalization may retain parallel source propositions; the
+directional-chain steps apply only when the source explicitly provides that
+direction.
 
 1. **页面问题归一化。** Rewrite the Deck Plan question as one answerable audience
    question with one decision-bearing verb. A question that joins several roles
@@ -959,6 +998,10 @@ Speaker notes use complete spoken language that can be read aloud or naturally
 paraphrased. They do not mention “本页”“下一页”“上页”“页面设计”“审核稿” or
 production instructions. Use audience-facing transitions such as
 “接下来重点看……” or “在这个基础上，我们再看……”.
+They speak the business content directly. Phrases that explain how the document
+is organised or how the audience should interpret it—such as `通知先说明`、
+`需要分别理解`、`这里强调的是` or `保留条件边界`—are review language and must be
+rewritten as natural spoken propositions.
 
 Notes add at least one element absent from the visible layer: why the evidence
 supports the judgment, a subordinate fact omitted onscreen, a secondary condition

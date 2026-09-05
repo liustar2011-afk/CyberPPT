@@ -1,0 +1,23 @@
+{
+  "schema": "cyberppt.stage02_expected_action.v1",
+  "build_id": "power-positioning-style09-v4-20260904",
+  "status": "needs_action",
+  "actions": [
+    {
+      "page": 1,
+      "state": "needs_svg_authoring",
+      "action": "author_svg_from_audited_full_image"
+    }
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "state": "needs_svg_authoring",
+      "action": "author_svg_from_audited_full_image",
+      "error": null
+    }
+  ],
+  "source_error": "Stage 02 per-page Quick validation failed; passed pages were checkpointed: p01: requires a hand-authored SVG from the image-to-PPTX runtime",
+  "manifest": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/stages/02-imagegen/pages_001_001_power-positioning-style09-v4-20260904/page_image_pairs.json",
+  "resume_rule": "Complete the listed page actions, then rerun final-script-pages with the same build id and output directory."
+}

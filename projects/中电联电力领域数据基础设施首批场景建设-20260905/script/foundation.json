@@ -1,0 +1,1644 @@
+{
+  "source_consumption_policy": "required",
+  "source_consumption_contract_version": 2,
+  "reading_strategy": {
+    "mode": "direct",
+    "section_dispositions": [
+      {
+        "heading_id": "H-9B8A448A18-A7E56DEC9CBE-01",
+        "disposition": "deep_read",
+        "reason": "direct profile reads the complete indexed section"
+      },
+      {
+        "heading_id": "H-9B8A448A18-E0C826302E74-01",
+        "disposition": "deep_read",
+        "reason": "direct profile reads the complete indexed section"
+      },
+      {
+        "heading_id": "H-9B8A448A18-FEA7A3C16ABB-01",
+        "disposition": "deep_read",
+        "reason": "direct profile reads the complete indexed section"
+      },
+      {
+        "heading_id": "H-9B8A448A18-22BD4E56B54F-01",
+        "disposition": "deep_read",
+        "reason": "direct profile reads the complete indexed section"
+      },
+      {
+        "heading_id": "H-9B8A448A18-E51126D98ADA-01",
+        "disposition": "deep_read",
+        "reason": "direct profile reads the complete indexed section"
+      }
+    ],
+    "deep_read_unit_ids": [
+      "SU-9B8A448A18-PARAGRAPH-0147B1E0078B-01",
+      "SU-9B8A448A18-PARAGRAPH-2EE13641ED9C-01",
+      "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01",
+      "SU-9B8A448A18-PARAGRAPH-83E22602908B-01",
+      "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01",
+      "SU-9B8A448A18-PARAGRAPH-0322C1844CBD-01",
+      "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+      "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01",
+      "SU-9B8A448A18-PARAGRAPH-038385692DF6-01",
+      "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01",
+      "SU-9B8A448A18-PARAGRAPH-F51785FC1923-01",
+      "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+      "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01",
+      "SU-9B8A448A18-PARAGRAPH-4B6A053F3001-01",
+      "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+      "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01",
+      "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01",
+      "SU-9B8A448A18-PARAGRAPH-16673B713BC3-01",
+      "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01",
+      "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01",
+      "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01",
+      "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01",
+      "SU-9B8A448A18-PARAGRAPH-941263050803-01",
+      "SU-9B8A448A18-PARAGRAPH-FEF9CE2FD326-01",
+      "SU-9B8A448A18-PARAGRAPH-D0A3E62649CA-01",
+      "SU-9B8A448A18-PARAGRAPH-07E7A53C8152-01",
+      "SU-9B8A448A18-PARAGRAPH-4CDED5C8C865-01",
+      "SU-9B8A448A18-PARAGRAPH-392C566EE11C-01",
+      "SU-9B8A448A18-PARAGRAPH-8CCBBA0591DA-01",
+      "SU-9B8A448A18-PARAGRAPH-56FBCD26AB7D-01",
+      "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01",
+      "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01",
+      "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-01",
+      "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-02",
+      "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-03",
+      "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-04",
+      "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+    ],
+    "excluded_unit_ids": []
+  },
+  "sources": [
+    {
+      "id": "SRC-9B8A448A18",
+      "title": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+      "type": "primary",
+      "path": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+      "sha256": "540e5bef0e88f516a0077c75909342385aa1f9693eb3a4016f1f081add146736",
+      "visibility": "external_ok"
+    }
+  ],
+  "source_structure": [
+    {
+      "id": "H-9B8A448A18-A7E56DEC9CBE-01",
+      "title": "一、建设目标",
+      "order": 4,
+      "level": "section",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-83E22602908B-01"
+      ]
+    },
+    {
+      "id": "H-9B8A448A18-E0C826302E74-01",
+      "title": "二、建设范围",
+      "order": 6,
+      "level": "section",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-0322C1844CBD-01"
+      ]
+    },
+    {
+      "id": "H-9B8A448A18-FEA7A3C16ABB-01",
+      "title": "三、职责分工",
+      "order": 11,
+      "level": "section",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F51785FC1923-01"
+      ]
+    },
+    {
+      "id": "H-9B8A448A18-22BD4E56B54F-01",
+      "title": "四、建设方式",
+      "order": 14,
+      "level": "section",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-4B6A053F3001-01"
+      ]
+    },
+    {
+      "id": "H-9B8A448A18-E51126D98ADA-01",
+      "title": "五、工作安排",
+      "order": 18,
+      "level": "section",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-16673B713BC3-01"
+      ]
+    }
+  ],
+  "document_semantics": {
+    "document_role": "中电联面向本部相关部门和直属单位发布的首批场景建设工作通知",
+    "subject_of_report": "电力领域数据基础设施先行先试项目首批场景建设",
+    "primary_thesis": "中电联组织开展电力领域数据基础设施先行先试项目首批场景建设工作，并明确建设目标、建设范围、职责分工、建设方式和工作安排。",
+    "author_purpose": "组织本部相关部门和直属单位开展首批场景建设工作。",
+    "argument_method": [
+      "SEC-01",
+      "SEC-02",
+      "SEC-03",
+      "SEC-04",
+      "SEC-05"
+    ],
+    "supporting_basis": [],
+    "business_objects": [
+      "电力领域数据基础设施",
+      "首批场景",
+      "场景专区",
+      "首批场景建设任务表"
+    ],
+    "decision_boundary": "具体场景建设和接入方案由工作专班、有关部门和数智公司根据填报情况共同研究；收益分配由相关单位和数智公司协商确定；绩效加分以正式印发的年度考核办法为准。",
+    "scope": "中电联本部相关部门和直属单位首批场景建设工作。",
+    "decision_intent": "请各部门和单位认真组织实施并于2026年9月20日前报送任务表。"
+  },
+  "document_thesis": {
+    "statement": "中电联组织开展电力领域数据基础设施先行先试项目首批场景建设工作，并明确建设目标、建设范围、职责分工、建设方式和工作安排。",
+    "source_refs": [
+      "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01",
+      "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01",
+      "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+      "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+      "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+      "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01"
+    ],
+    "argument_weight": "core"
+  },
+  "argument_nodes": [
+    {
+      "id": "SEC-01",
+      "source_heading": "一、建设目标",
+      "statement": "依托电力领域数据基础设施，围绕成熟业务建设具有中电联特色的场景专区。",
+      "argument_role": "source_section",
+      "argument_weight": "core",
+      "status": "planned",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-83E22602908B-01",
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ]
+    },
+    {
+      "id": "SEC-02",
+      "source_heading": "二、建设范围",
+      "statement": "场景面向外部用户完成真实数据流通应用，首批重点建设已具备较好客户基础、数据基础和数字化基础的场景。",
+      "argument_role": "source_section",
+      "argument_weight": "core",
+      "status": "mixed",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-0322C1844CBD-01",
+        "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+        "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01",
+        "SU-9B8A448A18-PARAGRAPH-038385692DF6-01",
+        "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+      ]
+    },
+    {
+      "id": "SEC-03",
+      "source_heading": "三、职责分工",
+      "statement": "各业务部门和直属单位负责场景建设和业务运营，数智公司负责基础设施运营和场景接入技术支撑。",
+      "argument_role": "source_section",
+      "argument_weight": "core",
+      "status": "assigned",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F51785FC1923-01",
+        "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+        "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+      ]
+    },
+    {
+      "id": "SEC-04",
+      "source_heading": "四、建设方式",
+      "statement": "做好平台、数据和服务接入，开展场景共建和供需对接，建立场景收益分配机制。",
+      "argument_role": "source_section",
+      "argument_weight": "core",
+      "status": "planned",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-4B6A053F3001-01",
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+        "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01",
+        "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+      ]
+    },
+    {
+      "id": "SEC-05",
+      "source_heading": "五、工作安排",
+      "statement": "明确建设任务、开展对接完善、推进场景上线、落实绩效考核安排并按期报送任务表。",
+      "argument_role": "source_section",
+      "argument_weight": "core",
+      "status": "planned",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-16673B713BC3-01",
+        "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01",
+        "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01",
+        "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01",
+        "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01",
+        "SU-9B8A448A18-PARAGRAPH-941263050803-01",
+        "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01",
+        "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01",
+        "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+      ]
+    }
+  ],
+  "argument_relations": [],
+  "facts": [
+    {
+      "id": "ST0001",
+      "statement": "文件主题是开展中电联电力领域数据基础设施首批场景建设工作。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-0147B1E0078B-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "metadata",
+      "atomic_item_id": "AI-001",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "文件主题是开展中电联电力领域数据基础设施首批场景建设工作。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-0147B1E0078B-01"
+        }
+      ],
+      "coverage_anchors": [
+        "中电联电力领域数据基础设施",
+        "首批场景建设"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "全文",
+        "paragraph": 1,
+        "section_paragraph": 1
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0002",
+      "statement": "通知对象为中电联本部相关部门和直属单位。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-2EE13641ED9C-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "metadata",
+      "atomic_item_id": "AI-002",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "通知对象为中电联本部相关部门和直属单位。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-2EE13641ED9C-01"
+        }
+      ],
+      "coverage_anchors": [
+        "本部相关部门",
+        "直属单位"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "全文",
+        "paragraph": 2,
+        "section_paragraph": 2
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0003",
+      "statement": "电力领域数据基础设施先行先试项目是全国性行业协会中首个纳入国家数据基础设施先行先试的项目，并被定位为中电联落实国家数据要素和能源数智化战略、促进内部数据资源协同利用的重要抓手。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "premise",
+      "atomic_item_id": "AI-003",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "电力领域数据基础设施先行先试项目是全国性行业协会中首个纳入国家数据基础设施先行先试的项目，并被定位为中电联落实国家数据要素和能源数智化战略、促进内部数据资源协同利用的重要抓手。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+        }
+      ],
+      "coverage_anchors": [
+        "全国性行业协会中首个",
+        "国家数据要素、能源数智化战略"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "全文",
+        "paragraph": 3,
+        "section_paragraph": 3
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0004",
+      "statement": "场景承担组织行业数据资源、连接数据供需主体、培育数据产品服务和支撑项目持续运营的牵引载体作用。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "driver",
+      "atomic_item_id": "AI-004",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "场景承担组织行业数据资源、连接数据供需主体、培育数据产品服务和支撑项目持续运营的牵引载体作用。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+        }
+      ],
+      "coverage_anchors": [
+        "连接数据供需主体",
+        "持续运营"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "全文",
+        "paragraph": 3,
+        "section_paragraph": 3
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0005",
+      "statement": "为确保达到2026年底通过国家能源局初验、2027年6月通过国家数据局终验的时间节点要求，中电联组织开展先行先试项目首批场景建设工作。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-005",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "为确保达到2026年底通过国家能源局初验、2027年6月通过国家数据局终验的时间节点要求，中电联组织开展先行先试项目首批场景建设工作。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+        }
+      ],
+      "coverage_anchors": [
+        "2026年底",
+        "2027年6月"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "全文",
+        "paragraph": 3,
+        "section_paragraph": 3
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0006",
+      "statement": "首批场景建设工作遵照中电联党组会议精神和《中国电力企业联合会数据共享利用管理办法（试行）》组织开展。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "premise",
+      "atomic_item_id": "AI-006",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "首批场景建设工作遵照中电联党组会议精神和《中国电力企业联合会数据共享利用管理办法（试行）》组织开展。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+        }
+      ],
+      "coverage_anchors": [
+        "党组会议精神",
+        "数据共享利用管理办法（试行）"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "全文",
+        "paragraph": 3,
+        "section_paragraph": 3
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0007",
+      "statement": "场景建设依托电力领域数据基础设施，围绕各业务部门和直属单位成熟业务，统筹现有数据资源、业务平台、产品服务和客户基础建设中电联特色场景专区。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-007",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "场景建设依托电力领域数据基础设施，围绕各业务部门和直属单位成熟业务，统筹现有数据资源、业务平台、产品服务和客户基础建设中电联特色场景专区。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+        }
+      ],
+      "coverage_anchors": [
+        "成熟业务",
+        "统筹现有数据资源、业务平台、产品服务和客户基础"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "一、建设目标",
+        "paragraph": 5,
+        "section_paragraph": 5
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0008",
+      "statement": "场景建设以应用带动基础设施应用并以实际应用牵引基础设施完善。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "driver",
+      "atomic_item_id": "AI-008",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "场景建设以应用带动基础设施应用并以实际应用牵引基础设施完善。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+        }
+      ],
+      "coverage_anchors": [
+        "场景建设带动基础设施应用",
+        "实际应用牵引基础设施完善"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "一、建设目标",
+        "paragraph": 5,
+        "section_paragraph": 5
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0009",
+      "statement": "场景专区将逐步承担业务展示、产品发布、供需对接和服务运营渠道功能，并形成可持续运营的数据产品与应用服务，提升数据资源开发利用和行业数据服务能力。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "foundation",
+      "argument_duty": "consequence",
+      "atomic_item_id": "AI-009",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "场景专区将逐步承担业务展示、产品发布、供需对接和服务运营渠道功能，并形成可持续运营的数据产品与应用服务，提升数据资源开发利用和行业数据服务能力。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+        }
+      ],
+      "coverage_anchors": [
+        "产品发布、供需对接和服务运营",
+        "持续运营的数据产品和应用服务"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "一、建设目标",
+        "paragraph": 5,
+        "section_paragraph": 5
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0010",
+      "statement": "场景是面向外部用户某一业务主题的数据服务或模型应用，依托安全可信、可计量的数据基础设施，通过数据交互、模型调用或可视化应用完成真实数据流通应用并满足用户业务需要。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "definition",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-010",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "场景是面向外部用户某一业务主题的数据服务或模型应用，依托安全可信、可计量的数据基础设施，通过数据交互、模型调用或可视化应用完成真实数据流通应用并满足用户业务需要。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+        }
+      ],
+      "coverage_anchors": [
+        "安全可信和可计量",
+        "真实数据流通应用"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "二、建设范围",
+        "paragraph": 7,
+        "section_paragraph": 7
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0011",
+      "statement": "首批重点建设具备较好客户基础、数据基础和数字化基础的场景。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "definition",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-011",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "首批重点建设具备较好客户基础、数据基础和数字化基础的场景。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+        }
+      ],
+      "coverage_anchors": [
+        "首批重点建设",
+        "客户基础、数据基础和数字化基础"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "二、建设范围",
+        "paragraph": 7,
+        "section_paragraph": 7
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0012",
+      "statement": "客户基础要求已有明确服务对象、实际业务需求和一定客户，服务对象可包括会员单位、电力企业、政府部门、科研院所、高等院校和金融机构。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "definition",
+      "argument_duty": "support",
+      "atomic_item_id": "AI-012",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "客户基础要求已有明确服务对象、实际业务需求和一定客户，服务对象可包括会员单位、电力企业、政府部门、科研院所、高等院校和金融机构。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01"
+        }
+      ],
+      "coverage_anchors": [
+        "明确的服务对象",
+        "实际业务需求"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "二、建设范围",
+        "paragraph": 8,
+        "section_paragraph": 8
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0013",
+      "statement": "数据基础要求已形成业务数据、专业数据或数据集，以及分析报告、分析模型等产品成果，并具备持续更新和进一步开发利用条件。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-038385692DF6-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "definition",
+      "argument_duty": "support",
+      "atomic_item_id": "AI-013",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "数据基础要求已形成业务数据、专业数据或数据集，以及分析报告、分析模型等产品成果，并具备持续更新和进一步开发利用条件。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-038385692DF6-01"
+        }
+      ],
+      "coverage_anchors": [
+        "数据集",
+        "持续更新和进一步开发利用"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "二、建设范围",
+        "paragraph": 9,
+        "section_paragraph": 9
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0014",
+      "statement": "数字化基础要求已有业务系统、专业平台、网站等支撑载体，或产品服务具备数字化交付条件，并可通过API、可信连接器或系统接口接入基础设施。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "definition",
+      "argument_duty": "support",
+      "atomic_item_id": "AI-014",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "数字化基础要求已有业务系统、专业平台、网站等支撑载体，或产品服务具备数字化交付条件，并可通过API、可信连接器或系统接口接入基础设施。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+        }
+      ],
+      "coverage_anchors": [
+        "数字化支撑载体",
+        "API、可信连接器、系统接口"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "二、建设范围",
+        "paragraph": 10,
+        "section_paragraph": 10
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0015",
+      "statement": "各业务部门和直属单位作为场景建设和业务运营主体，负责组织实施、确定产品服务、组织数据业务资源、开展客户对接、服务拓展和运营，并对业务内容、进度和质量负责。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "operation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-015",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "各业务部门和直属单位作为场景建设和业务运营主体，负责本单位场景建设组织实施，确定产品和服务内容，组织相关数据和业务资源，开展客户对接、服务拓展和业务运营。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01"
+        },
+        {
+          "text": "各业务部门和直属单位对场景业务内容、建设进度和质量负责。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01"
+        }
+      ],
+      "coverage_anchors": [
+        "场景建设和业务运营主体",
+        "业务内容、建设进度和质量负责"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "三、职责分工",
+        "paragraph": 12,
+        "section_paragraph": 12
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0016",
+      "statement": "数智公司负责基础设施运营和场景接入技术支撑，承担接口开发、系统联调、计量计费及基础设施侧数据安全技术保障。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "operation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-016",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "数智公司负责电力领域数据基础设施运营及场景接入技术支撑，承担接口开发、系统联调、计量计费等工作。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+        },
+        {
+          "text": "数智公司做好基础设施侧数据安全技术保障。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+        }
+      ],
+      "coverage_anchors": [
+        "接口开发、系统联调、计量计费",
+        "基础设施侧数据安全技术保障"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "三、职责分工",
+        "paragraph": 13,
+        "section_paragraph": 13
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0017",
+      "statement": "现有业务平台和信息系统通过API、可信连接器或系统接口连接基础设施，并按统一入口、后台隔离原则接入服务。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-017",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "现有业务平台和信息系统通过API、可信连接器、系统接口等方式与电力领域数据基础设施连接。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+        },
+        {
+          "text": "现有业务平台和信息系统按照统一入口、后台隔离的原则实现服务接入。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+        }
+      ],
+      "coverage_anchors": [
+        "统一入口、后台隔离",
+        "API、可信连接器、系统接口"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "四、建设方式",
+        "paragraph": 15,
+        "section_paragraph": 15
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0018",
+      "statement": "不宜直接共享的高价值数据可依托区块链、隐私计算、数据沙箱等能力，在保障数据安全和业务权益前提下跨主体流通利用。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-018",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "不宜直接共享的高价值数据可依托区块链、隐私计算、数据沙箱等能力，在保障数据安全和业务权益前提下跨主体流通利用。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+        }
+      ],
+      "coverage_anchors": [
+        "不宜直接共享的高价值数据",
+        "数据安全和业务权益"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "四、建设方式",
+        "paragraph": 15,
+        "section_paragraph": 15
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0019",
+      "statement": "各部门和单位可与现有服务厂商、合作机构共建场景，引导客户由线下转为通过场景专区线上获取服务。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "建议",
+      "semantic_status": "recommendation",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-019",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "各部门和单位可与现有服务厂商、合作机构共建场景，引导客户由线下转为通过场景专区线上获取服务。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01"
+        }
+      ],
+      "coverage_anchors": [
+        "现有服务厂商、合作机构",
+        "由线下改为线上"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "四、建设方式",
+        "paragraph": 16,
+        "section_paragraph": 16
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0020",
+      "statement": "围绕实际业务需求，可联合数据供给方和技术服务方开发数据产品、研发模型、验证应用，并通过场景专区发布产品服务与需求、开展供需对接。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "recommendation",
+      "status": "拟建议",
+      "semantic_status": "proposal",
+      "semantic_argument_role": "recommendation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-020",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "围绕实际业务需求，可联合数据供给方、技术服务方等开展数据产品开发、模型研发和应用验证。",
+          "claim_role": "recommendation",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01"
+        },
+        {
+          "text": "通过场景专区发布产品服务和业务需求、开展供需对接，持续丰富场景服务内容。",
+          "claim_role": "recommendation",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01"
+        }
+      ],
+      "coverage_anchors": [
+        "数据供给方、技术服务方",
+        "发布产品服务和业务需求"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "四、建设方式",
+        "paragraph": 16,
+        "section_paragraph": 16
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0022",
+      "statement": "各业务部门和直属单位需填写首批场景建设任务表，明确场景内容及客户、数据、数字化基础，原则上至少推荐1个，具备条件可推荐2个。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-022",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "各业务部门和直属单位结合本单位业务实际，填写首批场景建设任务表，明确拟建设场景内容及客户基础、数据基础、数字化基础等条件。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01"
+        },
+        {
+          "text": "每个部门和单位原则上至少推荐1个符合条件的场景，具备条件的可推荐2个。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01"
+        }
+      ],
+      "coverage_anchors": [
+        "首批场景建设任务表",
+        "至少推荐1个"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 19,
+        "section_paragraph": 19
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0023",
+      "statement": "项目工作专班逐项沟通梳理业务内容、三项基础、客户需求和接入方式，数智公司同步明确接口、联调和数据安全技术要求，各方共同形成具体建设和接入方案。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-023",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "先行先试项目工作专班根据填报情况，与有关部门和单位逐项沟通，进一步梳理业务内容、数据基础、数字化基础、客户需求及接入方式。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01"
+        },
+        {
+          "text": "数智公司同步提供技术支撑，明确接口接入、系统联调和数据安全技术保障要求。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01"
+        },
+        {
+          "text": "各方共同研究形成具体场景建设和接入方案。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01"
+        }
+      ],
+      "coverage_anchors": [
+        "逐项沟通",
+        "共同研究形成具体场景建设和接入方案"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 20,
+        "section_paragraph": 20
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0024",
+      "statement": "场景按照成熟一个、接入一个、上线一个原则分批推进接口联调、专区上线、产品发布、客户接入和市场化服务，并持续完善。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "response",
+      "atomic_item_id": "AI-024",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "场景按照成熟一个、接入一个、上线一个原则分批推进接口联调、专区上线、产品发布、客户接入和市场化服务，并持续完善。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01"
+        }
+      ],
+      "coverage_anchors": [
+        "成熟一个、接入一个、上线一个",
+        "市场化服务"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 21,
+        "section_paragraph": 21
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0025",
+      "statement": "首批场景应于2026年12月15日前完成建设并上线运行。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-025",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "首批场景应于2026年12月15日前完成建设并上线运行。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01"
+        }
+      ],
+      "coverage_anchors": [
+        "2026年12月15日前",
+        "上线运行"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 21,
+        "section_paragraph": 21
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0027",
+      "statement": "各部门和单位应于2026年9月20日前向项目工作专班报送首批场景建设任务表。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-941263050803-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-027",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "各部门和单位应于2026年9月20日前向项目工作专班报送首批场景建设任务表。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-941263050803-01"
+        }
+      ],
+      "coverage_anchors": [
+        "2026年9月20日前",
+        "报送先行先试项目工作专班"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 23,
+        "section_paragraph": 23
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0028",
+      "statement": "通知列示统计与数智部及数智公司联系人，其中数智公司联系人为刘星。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-FEF9CE2FD326-01",
+        "SU-9B8A448A18-PARAGRAPH-D0A3E62649CA-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "metadata",
+      "atomic_item_id": "AI-028",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "通知列示统计与数智部及数智公司联系人，其中数智公司联系人为刘星。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-FEF9CE2FD326-01"
+        },
+        {
+          "text": "通知列示统计与数智部及数智公司联系人，其中数智公司联系人为刘星。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-D0A3E62649CA-01"
+        }
+      ],
+      "coverage_anchors": [
+        "统计与数智部",
+        "数智公司 刘星"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 24,
+        "section_paragraph": 24
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0029",
+      "statement": "通知附件为电力领域数据基础设施首批场景建设任务表。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-07E7A53C8152-01",
+        "SU-9B8A448A18-PARAGRAPH-8CCBBA0591DA-01",
+        "SU-9B8A448A18-PARAGRAPH-56FBCD26AB7D-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "metadata",
+      "atomic_item_id": "AI-029",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "通知附件为电力领域数据基础设施首批场景建设任务表。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-07E7A53C8152-01"
+        },
+        {
+          "text": "通知附件为电力领域数据基础设施首批场景建设任务表。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-8CCBBA0591DA-01"
+        },
+        {
+          "text": "通知附件为电力领域数据基础设施首批场景建设任务表。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-56FBCD26AB7D-01"
+        }
+      ],
+      "coverage_anchors": [
+        "附件",
+        "首批场景建设任务表"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 27,
+        "section_paragraph": 26
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0030",
+      "statement": "通知署名为中电联统计与数智部、中电联数智公司，日期为2026年9月6日。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-4CDED5C8C865-01",
+        "SU-9B8A448A18-PARAGRAPH-392C566EE11C-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "metadata",
+      "atomic_item_id": "AI-030",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "通知署名为中电联统计与数智部、中电联数智公司，日期为2026年9月6日。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-4CDED5C8C865-01"
+        },
+        {
+          "text": "通知署名为中电联统计与数智部、中电联数智公司，日期为2026年9月6日。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-392C566EE11C-01"
+        }
+      ],
+      "coverage_anchors": [
+        "中电联统计与数智部",
+        "2026年9月6日"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 28,
+        "section_paragraph": 27
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0031",
+      "statement": "任务表字段覆盖建设单位、场景名称与简介、主要服务方式、三项基础、牵头处室以及责任人联系方式。",
+      "source_refs": [
+        "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "detail",
+      "atomic_item_id": "AI-031",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "任务表字段覆盖建设单位、场景名称与简介、主要服务方式、三项基础、牵头处室以及责任人联系方式。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01"
+        }
+      ],
+      "coverage_anchors": [
+        "主要服务方式",
+        "牵头处室"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "table": 1,
+        "table_row": 1
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0032",
+      "statement": "任务表示例以电力行业人才测评场景说明面向会员单位和电力企业提供模型调用、数据交互服务，并分别填写客户、数据、数字化基础。",
+      "source_refs": [
+        "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "support",
+      "atomic_item_id": "AI-032",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "任务表示例为电力行业人才测评场景，面向会员单位和电力企业提供人才能力测评与人岗匹配分析服务。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01"
+        },
+        {
+          "text": "人才测评场景的主要服务方式为模型调用、数据交互。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01"
+        },
+        {
+          "text": "人才测评场景已有明确服务对象和实际业务需求，并已积累人才测评数据集及分析模型。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01"
+        },
+        {
+          "text": "人才测评场景已建有人才测评系统，具备通过接口对外提供服务的能力。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01"
+        }
+      ],
+      "coverage_anchors": [
+        "电力行业人才测评场景",
+        "模型调用、数据交互"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "table": 1,
+        "table_row": 2
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0033",
+      "statement": "任务表在示例行后预留4行空白供各单位填写场景。",
+      "source_refs": [
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-01",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-02",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-03",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-04"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "现状",
+      "semantic_status": "existing",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "metadata",
+      "atomic_item_id": "AI-033",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "任务表在示例行后预留4行空白供各单位填写场景。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-01"
+        },
+        {
+          "text": "任务表在示例行后预留4行空白供各单位填写场景。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-02"
+        },
+        {
+          "text": "任务表在示例行后预留4行空白供各单位填写场景。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-03"
+        },
+        {
+          "text": "任务表在示例行后预留4行空白供各单位填写场景。",
+          "claim_role": "fact",
+          "source_unit_ref": "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-04"
+        }
+      ],
+      "coverage_anchors": [
+        "4行空白",
+        "单位填写场景"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "table": 1,
+        "table_row": 3
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0034",
+      "statement": "任务表要求各单位结合现有业务如实填写，符合条件原则上填报1个、具备条件可填2个，暂不具备条件需说明情况；主要服务方式可选数据交互、模型调用、可视化应用等，专班将据填报沟通完善方案。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "fact",
+      "status": "规划",
+      "semantic_status": "planned",
+      "semantic_argument_role": "implementation",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-034",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "本表用于明确各业务部门和直属单位首批场景建设任务，请结合现有业务如实填写。",
+          "claim_role": "fact",
+          "source_unit_refs": [
+            "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+          ]
+        },
+        {
+          "text": "每个部门和单位原则上至少填报1个符合条件的场景，具备条件的可填报2个。",
+          "claim_role": "fact",
+          "source_unit_refs": [
+            "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+          ]
+        },
+        {
+          "text": "暂不具备条件的，应说明有关情况。",
+          "claim_role": "fact",
+          "source_unit_refs": [
+            "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+          ]
+        },
+        {
+          "text": "主要服务方式可填写数据交互、模型调用、可视化应用等一种或多种。",
+          "claim_role": "fact",
+          "source_unit_refs": [
+            "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+          ]
+        },
+        {
+          "text": "客户基础、数据基础、数字化基础参照本通知二、建设范围填写，第一行为示例，仅供参考。",
+          "claim_role": "fact",
+          "source_unit_refs": [
+            "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+          ]
+        },
+        {
+          "text": "专班将根据填报情况沟通完善场景建设和接入方案。",
+          "claim_role": "fact",
+          "source_unit_refs": [
+            "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+          ]
+        }
+      ],
+      "coverage_anchors": [
+        "暂不具备条件的，应说明有关情况",
+        "专班将根据填报情况沟通完善"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 34,
+        "section_paragraph": 31
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    }
+  ],
+  "concepts": [],
+  "entities": [],
+  "relations": [],
+  "arguments": [],
+  "constraints": [
+    {
+      "id": "ST0021",
+      "statement": "市场化服务收益按照谁建设、谁收益原则，根据业务贡献、资源投入和运营支撑情况协商确定具体分配方式。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "boundary",
+      "status": "待确认",
+      "semantic_status": "to_confirm",
+      "semantic_argument_role": "boundary",
+      "argument_duty": "boundary",
+      "atomic_item_id": "AI-021",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "市场化服务收益按照谁建设、谁收益原则，根据业务贡献、资源投入和运营支撑情况协商确定具体分配方式。",
+          "claim_role": "boundary",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+        }
+      ],
+      "coverage_anchors": [
+        "谁建设、谁收益",
+        "协商确定"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "四、建设方式",
+        "paragraph": 17,
+        "section_paragraph": 17
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    },
+    {
+      "id": "ST0026",
+      "statement": "参与并完成场景建设上线的相关部门和单位可按中电联年度绩效考核规定获得相应加分，具体认定以正式印发的年度考核办法为准。",
+      "source_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01"
+      ],
+      "strength": "P0",
+      "visibility": "unspecified",
+      "claim_role": "boundary",
+      "status": "待确认",
+      "semantic_status": "to_confirm",
+      "semantic_argument_role": "boundary",
+      "argument_duty": "consequence",
+      "atomic_item_id": "AI-026",
+      "claim_origin": "source_explicit",
+      "semantic_units": [
+        {
+          "text": "按照中电联年度绩效考核有关规定，对参与并完成场景建设上线的相关部门和单位给予相应加分。",
+          "claim_role": "boundary",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01"
+        },
+        {
+          "text": "具体认定加分以正式印发的年度考核办法为准。",
+          "claim_role": "boundary",
+          "source_unit_ref": "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01"
+        }
+      ],
+      "coverage_anchors": [
+        "年度绩效考核",
+        "正式印发的年度考核办法"
+      ],
+      "conditions": [],
+      "source_locator": {
+        "source_id": "SRC-9B8A448A18",
+        "file": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+        "section": "五、工作安排",
+        "paragraph": 22,
+        "section_paragraph": 22
+      },
+      "allowed_page_roles": [],
+      "forbidden_page_roles": []
+    }
+  ],
+  "numbers": [],
+  "open_questions": []
+}

@@ -1,0 +1,24 @@
+{
+  "image": {
+    "schema": "cyberppt.dual_image.text_content_qa.v1",
+    "valid": true,
+    "order_sensitive": false,
+    "allow_fragmented_actual": true,
+    "checks": {
+      "text_count_matches": true,
+      "pptx_text_matches_expected": true
+    },
+    "expected_texts": [
+      "电力领域数据基础设施总体定位：行业中枢与价值释放引擎",
+      "中国电力企业联合会",
+      "1"
+    ],
+    "actual_texts": [
+      "中国电力企业联合会",
+      "1",
+      "电力领域数据基础设施总体定位：行业中枢与价值释放引擎"
+    ],
+    "mismatches": [],
+    "error_count": 0
+  }
+}

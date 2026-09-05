@@ -1,0 +1,8 @@
+{
+  "schema": "cyberppt.image_to_pptx.visual_review.v1",
+  "mode": "image",
+  "issues": [],
+  "requires_rebuild": false,
+  "valid": true,
+  "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/analysis/image_review.json"
+}

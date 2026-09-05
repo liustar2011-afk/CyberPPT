@@ -1,0 +1,90 @@
+{
+  "schema": "cyberppt.stage02_expected_action.v1",
+  "build_id": "20260904T164605Z-a7ebc33160",
+  "status": "needs_action",
+  "actions": [
+    {
+      "page": 4,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p04/render/slide-1.png"
+    },
+    {
+      "page": 5,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p05/render/slide-1.png"
+    },
+    {
+      "page": 7,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p07/render/slide-1.png"
+    },
+    {
+      "page": 8,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p08/render/slide-1.png"
+    },
+    {
+      "page": 10,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p10/render/slide-1.png"
+    },
+    {
+      "page": 11,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p11/render/slide-1.png"
+    }
+  ],
+  "pages": [
+    {
+      "page": 4,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p04/render/slide-1.png",
+      "error": null
+    },
+    {
+      "page": 5,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p05/render/slide-1.png",
+      "error": null
+    },
+    {
+      "page": 7,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p07/render/slide-1.png",
+      "error": null
+    },
+    {
+      "page": 8,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p08/render/slide-1.png",
+      "error": null
+    },
+    {
+      "page": 10,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p10/render/slide-1.png",
+      "error": null
+    },
+    {
+      "page": 11,
+      "state": "needs_visual_review",
+      "action": "review_quick_page_preview",
+      "preview_png": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p11/render/slide-1.png",
+      "error": null
+    }
+  ],
+  "source_error": "Stage 02 per-page Quick validation failed; passed pages were checkpointed: p04: rendered preview awaits visual review: /Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p04/render/slide-1.png; p05: rendered preview awaits visual review: /Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p05/render/slide-1.png; p07: rendered preview awaits visual review: /Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p07/render/slide-1.png; p08: rendered preview awaits visual review: /Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p08/render/slide-1.png; p10: rendered preview awaits visual review: /Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p10/render/slide-1.png; p11: rendered preview awaits visual review: /Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/page_checkpoints/p11/render/slide-1.png",
+  "manifest": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/page_image_pairs.json",
+  "resume_rule": "Complete the listed page actions, then rerun final-script-pages with the same build id and output directory."
+}

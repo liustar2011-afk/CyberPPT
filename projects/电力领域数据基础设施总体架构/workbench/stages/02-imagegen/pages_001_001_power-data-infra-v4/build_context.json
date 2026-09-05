@@ -1,0 +1,67 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "power-data-infra-v4",
+  "run_id": "power-data-infra-v4",
+  "input_fingerprint": "13a51ba7c19bd9b25c10662229974500a951bad9f84c749de8f029108f37f66f",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "b34005585f456be830a276b9bfdc76b30744e9d232c3ead67186e1c6e54afe1b",
+    "script_input_sha256": "fe3c6aa2ab7404736a1d612e134c7122cde9c0950673cc77dd803e22d299671f",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "10dcae2f90ca74181b72efe2c054415700bb3a6646850a0526591515623f8982",
+    "pages": [
+      1
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "created_at": "2026-09-04T06:37:10+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/inputs/final-script.md",
+  "source_script_sha256": "b34005585f456be830a276b9bfdc76b30744e9d232c3ead67186e1c6e54afe1b",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "10dcae2f90ca74181b72efe2c054415700bb3a6646850a0526591515623f8982",
+  "page_set": [
+    1
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "editable",
+  "allow_script_edit": false,
+  "allow_prompt_edit": false,
+  "prompt_overrides_dir": null,
+  "stage": "02-production-build",
+  "status": "needs_action",
+  "artifacts": {
+    "page_image_pairs": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/page_image_pairs.json",
+      "sha256": "103a0c9a2f859c723fc27f1b3ff1052d4b57669413b5a1d859d85d5916cf443c"
+    },
+    "needs_action": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/stage02_needs_action.json"
+    }
+  },
+  "stage02_state": {
+    "schema": "cyberppt.stage02_build_state.v1",
+    "state": "needs_action",
+    "pages": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image",
+        "error": null
+      }
+    ],
+    "actions": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image"
+      }
+    ],
+    "failures": []
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "cyberppt.build_context.v1",
+  "build_id": "20260904T141633Z-d2a8b8dafc",
+  "created_at": "2026-09-04T14:24:43+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/inputs/final-script.md",
+  "source_script_sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "2dded561b63c7dcce2728c9f34f1c737e58ef8870e2d4355d3e4be2e9190ab1a",
+  "page_set": [
+    1
+  ],
+  "production_mode": "image-to-editable-svg",
+  "assembly_mode": "image",
+  "editable_pptx_route": "stage02-quick-image-to-pptx",
+  "stage": "02-production-build",
+  "source_mode": "external_script",
+  "autonomous_contract": null,
+  "project_created": false,
+  "status": "production_ready",
+  "artifacts": {
+    "compiled_deliverable_prompt": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/final-script_cyberppt_deliverable_p1_p1.md",
+      "sha256": "1fa89c2a6db8c28dcc318e5c47b2ff036c1e726cb0ce1a893a9450d040d00f12"
+    },
+    "page_image_pairs": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/page_image_pairs.json",
+      "sha256": "e29418705d3fe5e8cd811de3575daa041282b7118b037b60af435d5d5b9a8162"
+    },
+    "template_text_lock": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/locks/template_text/pages_001_001_template_text_lock.json",
+      "sha256": "a0b57c912ca4648b3c855ee2ce1a7abe86dcbc81d3564cf269bfae7aa7824c90"
+    },
+    "visual_style_lock": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/locks/visual_style_lock.json",
+      "sha256": "2dded561b63c7dcce2728c9f34f1c737e58ef8870e2d4355d3e4be2e9190ab1a"
+    },
+    "exported_pptx": {
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/editable_svg/exports/template_image.pptx",
+      "sha256": "c9ebdd0829b2e96ecb147eb0419a3d7914db641beed6b1c24f32c10d67e64ead"
+    },
+    "officecli_render_qa": {
+      "image": {
+        "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-style09/workbench/stages/02-imagegen/pages_001_001_20260904T141633Z-d2a8b8dafc/qa-delivery/image/officecli_render_qa.json",
+        "sha256": "699ef54f82ebf99377c5e9d4de93e2f707c30c10252010d376dfc03084b64580"
+      }
+    }
+  }
+}

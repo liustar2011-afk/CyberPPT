@@ -8,8 +8,8 @@
 
 收到任务后，先按任务类型选择入口：
 
-1. 新脚本项目涉及源材料、页面规划或脚本写作：默认使用 `strict/legacy` profile，先调用 `cyberppt-source-foundation`。
-2. 用户明确要求轻量路径时：使用 `script` profile，先建立确定性来源索引，再调用 `cyberppt-script-understand` 生成 `foundation.json`。
+1. 新脚本项目涉及源材料、页面规划或脚本写作：默认使用快速、忠实的 `script` profile，先建立确定性来源索引，再调用 `cyberppt-script-understand` 生成 `foundation.json`。
+2. 合同、法规、逐事实核验、完整 Source Truth 或旧项目兼容场景：显式使用 `strict/legacy` profile，先调用 `cyberppt-source-foundation`。
 3. 只涉及已锁定最终脚本的单页写作：进入 `cyberppt-write-single-page`。
 4. 只涉及视觉结构、图片、SVG、ImageGen 或 PPTX QA：可以从对应 Stage 02 Skill 开始，不重复建立 Source Foundation。
 5. 涉及旧项目但已有已验证 Foundation 产物：先核对产物状态，再复用；不得因项目已存在而跳过 profile 与产物有效性检查。
@@ -20,9 +20,9 @@
 
 ### Stage 01
 
-默认：`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow（PLAN/AUTHOR）`
+默认：`来源索引 → cyberppt-script-understand → cyberppt-script-workflow（PLAN/AUTHOR）`
 
-显式轻量：`来源索引 → cyberppt-script-understand → cyberppt-script-workflow（PLAN/AUTHOR）`
+显式严格：`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow（PLAN/AUTHOR）`
 
 ### 全流程
 
@@ -59,6 +59,12 @@
 `script/foundation.json`。任务不会生成 Source Truth、完整语义 sidecar 或新增
 内容权威。Foundation 完成后，`audit-foundation` 会将 `reading_strategy` 与同级
 `.cache/source-index.json` 交叉校验。
+
+Foundation 默认且始终采用来源忠实模式：`primary_thesis`、`author_purpose`、
+`argument_method`、事实和论证节点只承载来源明示命题及其原有方向。可辩护的
+潜在关系只能作为带依据和置信度的 inferred relation 留在 Foundation 后台，
+不得进入来源主论点、作者目的、事实或论证节点。下游是否启用分析性深化由
+Deck Plan 的 `authoring_mode` 决定，不能回写或拔高 Foundation。
 
 `strict/legacy` profile 保留以下完整 Source Foundation 产物：
 
@@ -121,9 +127,10 @@ Deck Plan 默认将相邻来源章节按受众问题、论证角色和承接关�
 多章节汇报采用“封面—目录—逐章过渡页—内容页—封底”序列，每个汇报章节
 恰有一个过渡页并位于该章内容之前；单章节汇报仍不设置章节页。
 
-内容页标题在 PLAN 阶段只是简洁正式的主题占位，AUTHOR 可以在完整写作后调整。
-副标题和核心判断属于最终脚本内容，不由 PLAN 锁定。标题覆盖检查只判断暂定标题
-能否标识页面讨论对象，不把判断句回灌到标题。
+`faithful` 模式下，内容页标题在 PLAN 阶段优先保留来源原标题。一个来源章节
+拆成多页时，在原标题后增加页内范围限定以区分页面；来源没有可用标题或用户
+明确要求分析型、结论型标题时，AUTHOR 才可重新拟题。副标题和核心判断属于
+最终脚本内容，不由 PLAN 锁定。
 
 所有项目统一使用 Deck Plan v2 lean。strict/legacy 与 `script` profile 的差异只作用于 Foundation 的理解深度、Source Truth 和来源保全方式；不得把 strict/legacy 的来源消费要求转换成 PLAN 中的核心判断、内容模块、证据处置、上屏合同或视觉关系。旧版 v1 Deck Plan 必须迁移后才能进入当前流程。
 
@@ -145,25 +152,30 @@ Skill 名称均不构成 AUTHOR 执行。
 
 以当前项目的 Foundation、轻量 Deck Plan、目标页来源证据和相邻页边界为依据，一次处理一张内容页。全文主旨和目录每套稿只加载一次；逐页仅回读当前页 `source_refs` 对应证据。strict/legacy 项目可以通过 Foundation 追溯 Source Truth，不在 AUTHOR 阶段重新运行语义理解。
 
-页面脚本保留完整文字稿，并将其直接复制为上屏文字；Stage 01 不执行独立视觉结构设计。页面脚本依次完成：
+页面脚本分别保留完整文字稿和由其适度精炼得到的上屏文字；Stage 01 不执行独立视觉结构设计。页面脚本依次完成：
 
 1. 页面设计简报
 2. 主论证链
 3. 证据架构
 4. 完整文字稿
-5. 上屏文字（复制完整文字稿）
+5. 上屏文字（从完整文字稿选择、合并和适度精炼）
 6. 演讲者备注
 
-完整页面论证、事实保全和必要的作者化重写在 `full_copy` 中完成；随后将
-`full_copy` 原样复制到 `onscreen`。高密度页、高潮页、结论页和 Critic
+完整页面论证、事实保全和必要的作者化重写在 `full_copy` 中完成；随后从
+`full_copy` 生成受约束的 `onscreen`，保留主体、动作、对象、关系、状态、
+责任、数字、时间、条件和边界。高密度页、高潮页、结论页和 Critic
 重点页仍可生成判断主导与证据主导两个内部候选，只保留胜出结果。候选和
 评审理由不形成新增权威产物、checkpoint、gate 或 receipt。
 
-AUTHOR 写作前直接读取 Foundation、轻量 Deck Plan 和对应来源证据，理解本页的来源边界与页面使命。论证关系、完整稿和讲述方式由 AUTHOR 在写作中形成；上屏字段直接继承完整稿。逐页完成作者化写作后，再运行确定性审计；审计只负责发现问题，不代替 AUTHOR 生成或改写页面。
+`full_copy` 和 `onscreen` 同时继承原稿的发布主体和陈述立场。原稿直接
+陈述的定义、要求、安排和事实，脚本不得改写为“通知所称”、
+“材料指出”、“文件认为”或“在通知中已明确”等第三方转述语气。
+
+AUTHOR 写作前直接读取 Foundation、轻量 Deck Plan 和对应来源证据，理解本页的来源边界与页面使命。论证关系、完整稿和讲述方式由 AUTHOR 在写作中形成；上屏字段以完整稿为唯一语义母本进行适度精炼。逐页完成作者化写作后，再运行确定性审计；审计只负责发现问题，不代替 AUTHOR 生成或改写页面。
 
 作者按页面使命和来源证据在 `full_copy` 中组织“结论、证据、解读与含义”，并在 Final Script 中保留来源追溯；Deck Plan 不声明 `content_route`、`onscreen_contract`、`onscreen_composition` 或视觉准备字段。所有项目默认采用 `deck.delivery_mode: self_read`；只有用户明确要求演讲辅助型、低文字密度稿件时，才使用 `presented`。
 
-`self_read` 内容页必须形成可独立阅读的页面闭环：明确页面主题，给出核心判断，解释判断依据，并保留理解所需的事实、范围、条件或结果。`full_copy` 承载该闭环，`onscreen` 直接复制同一内容；数字需要说明所指对象和结论，清单需要说明归组依据和共同作用。作者组织内容时保留对象、动作或判断以及必要限定，避免只剩抽象口号、分类名称和依赖讲解的提示词。
+`self_read` 内容页必须形成可独立阅读的页面闭环：明确页面主题，给出核心判断，解释判断依据，并保留理解所需的事实、范围、条件或结果。`full_copy` 承载完整语义，`onscreen` 保留结论、决定性事实及改变力度或范围的限定；数字需要说明所指对象和结论，清单需要说明归组依据和共同作用。作者组织内容时保留对象、动作或判断以及必要限定，避免只剩抽象口号、分类名称和依赖讲解的提示词。
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 

@@ -1,0 +1,125 @@
+{
+  "schema": "cyberppt.stage02.authored_svg_preflight_qa.v1",
+  "pages": [
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 4,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/page_004.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 3,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/assets/page_004_clean_base.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    },
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 5,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/page_005.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 3,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/assets/page_005_clean_base.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    },
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 7,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/page_007.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 3,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/assets/page_007_clean_base.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    },
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 8,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/page_008.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 3,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/assets/page_008_clean_base.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    },
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 10,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/page_010.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 3,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/assets/page_010_clean_base.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    },
+    {
+      "schema": "cyberppt.authored_svg_preflight.v1",
+      "page_number": 11,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/page_011.svg",
+      "view_box": [
+        0.0,
+        0.0,
+        2048.0,
+        1024.0
+      ],
+      "text_count": 3,
+      "text_id_count": 0,
+      "referenced_assets": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/authoring/assets/page_011_clean_base.png"
+      ],
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "diagnostic_only_warnings": true
+    }
+  ]
+}

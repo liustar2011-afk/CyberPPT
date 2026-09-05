@@ -1,0 +1,66 @@
+{
+  "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+  "status": "passed",
+  "contact_sheet": {
+    "schema": "cyberppt.full_image_contact_sheet.v1",
+    "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v13-style09-refresh-20260904/qa/full_image_contact_sheet.png",
+    "sha256": "6fc098b21e707674c94b13c3b7791ef06d1e5dfc31509f947b9f235245d32220",
+    "page_count": 1,
+    "pages": [
+      {
+        "page_number": 1,
+        "source_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v13-style09-refresh-20260904/page_001_电力领域数据基础设施总体架构_层级关系_连接关系与分层内容_full.png",
+        "source_sha256": "12fc15c9d987a172d1f67f338bc2fe6545dad4f7a603e1479dd5317a812463ea"
+      }
+    ],
+    "thumbnail_size": [
+      480,
+      240
+    ],
+    "columns": 4,
+    "sheet_size": [
+      2048,
+      300
+    ]
+  },
+  "signatures": [
+    {
+      "schema": "cyberppt.full_image_visual_signature.v1",
+      "page_number": 1,
+      "source_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v13-style09-refresh-20260904/page_001_电力领域数据基础设施总体架构_层级关系_连接关系与分层内容_full.png",
+      "source_sha256": "12fc15c9d987a172d1f67f338bc2fe6545dad4f7a603e1479dd5317a812463ea",
+      "visual_medium": "unspecified",
+      "gravity": {
+        "x": 0.5037,
+        "y": 0.5101,
+        "horizontal": "center",
+        "vertical": "middle"
+      },
+      "density": "dense",
+      "density_score": 58.2181,
+      "skeleton_3x3": "111111111",
+      "skeleton_shares": [
+        0.101,
+        0.11,
+        0.0941,
+        0.1094,
+        0.1222,
+        0.123,
+        0.1054,
+        0.1426,
+        0.0923
+      ],
+      "structure_hash": "202c2f2d2f2cfc38"
+    }
+  ],
+  "audit": {
+    "schema": "cyberppt.full_image_deck_rhythm_qa.v1",
+    "status": "passed",
+    "page_count": 1,
+    "findings": [],
+    "blocker_count": 0,
+    "warning_count": 0,
+    "review_basis": "actual_full_image_edge_activity_plus_audited_visual_medium"
+  },
+  "authority_gate": "before_reconstruction_visual_source_binding"
+}

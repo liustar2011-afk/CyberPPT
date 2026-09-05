@@ -122,9 +122,10 @@ def test_stage02_markdown_uses_compatible_page_heading() -> None:
     assert "### 视觉结构" not in markdown
     assert "### 演讲者备注" in markdown
 
-    full_copy = _example()["slides"][0]["full_copy"]
+    slide = _example()["slides"][0]
+    full_copy = slide["full_copy"]
     assert f"### 完整文字稿\n\n{full_copy}" in markdown
-    assert f"### 上屏文字\n\n{full_copy}" in markdown
+    assert slide["onscreen"][0]["heading"] in markdown
 
 def test_stage02_markdown_renders_registered_argument_topologies() -> None:
     payload = copy.deepcopy(_example())
@@ -239,12 +240,14 @@ def test_validate_final_script_accepts_optional_subtitle() -> None:
     payload["slides"][0]["subtitle"] = "五层两贯穿"
     assert validate_final_script(payload) == []
 
-def test_render_uses_full_copy_in_onscreen_section() -> None:
+def test_render_uses_authored_onscreen_in_onscreen_section() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["full_copy"] = "完整正文：标题、换行与正文均由同一字段提供。"
     payload["slides"][0]["onscreen"] = [{"heading": "结构化判断", "items": ["完整正文保留在文字稿中"]}]
     markdown = render_stage02_markdown(payload)
-    assert "### 上屏文字\n\n完整正文：标题、换行与正文均由同一字段提供。" in markdown
+    assert "### 上屏文字\n\n- 结构化判断" in markdown
+    assert "完整正文保留在文字稿中" in markdown
+    assert "### 上屏文字\n\n完整正文：标题、换行与正文均由同一字段提供。" not in markdown
 
 def test_render_does_not_reformat_full_copy_punctuation() -> None:
     payload = copy.deepcopy(_example())
@@ -253,7 +256,7 @@ def test_render_does_not_reformat_full_copy_punctuation() -> None:
     assert "### 完整文字稿\n\n小结：正文" in markdown
 
 
-def test_render_projects_full_copy_into_onscreen_section() -> None:
+def test_render_keeps_full_copy_and_onscreen_projection_distinct() -> None:
     payload = copy.deepcopy(_example())
     full_copy = "标准体系尚未形成统一框架\n\n专业分布：现有标准分散在多个领域"
     payload["slides"][0]["full_copy"] = full_copy
@@ -262,10 +265,11 @@ def test_render_projects_full_copy_into_onscreen_section() -> None:
     markdown = render_stage02_markdown(payload)
 
     assert f"### 完整文字稿\n\n{full_copy}" in markdown
-    assert f"### 上屏文字\n\n{full_copy}" in markdown
+    assert "### 上屏文字\n\n- 标准体系需要统一框架：现有标准分散在多个领域" in markdown
+    assert f"### 上屏文字\n\n{full_copy}" not in markdown
 
 
-def test_render_ignores_independent_onscreen_projection() -> None:
+def test_render_preserves_pyramid_prose_onscreen_projection() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{
         "format": "pyramid_prose",
@@ -275,8 +279,20 @@ def test_render_ignores_independent_onscreen_projection() -> None:
 
     markdown = render_stage02_markdown(payload)
 
-    full_copy = payload["slides"][0]["full_copy"]
-    assert f"### 上屏文字\n\n{full_copy}" in markdown
+    assert "### 上屏文字\n\n标准体系需要统一框架。" in markdown
+    assert "现有标准分散在多个领域。\n\n统一框架将明确专业之间的衔接关系。" in markdown
+
+
+def test_parse_markdown_prefers_explicit_onscreen_over_full_copy() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = "完整文字稿保留全部事实。"
+    payload["slides"][0]["onscreen"] = [{"heading": "上屏结论", "text": "上屏仅保留关键事实。"}]
+
+    parsed = parse_script_markdown(render_stage02_markdown(payload))
+
+    assert parsed.pages[0].full_prose == "完整文字稿保留全部事实。"
+    assert "上屏仅保留关键事实" in parsed.pages[0].onscreen_text
+    assert parsed.pages[0].onscreen_text != parsed.pages[0].full_prose
 
 
 def test_pyramid_prose_is_exempt_from_compact_detail_delivery_rules() -> None:
@@ -718,6 +734,38 @@ def test_lint_final_script_flags_stage_direction_label_in_speaker_notes() -> Non
     issues = lint_final_script(payload)
     assert issues
     assert any("stage-direction-label" in issue for issue in issues)
+
+def test_lint_final_script_flags_review_meta_in_speaker_notes() -> None:
+    payload = copy.deepcopy(_example())
+    for sentence in (
+        "通知先说明建设目标，随后给出工作安排。",
+        "理解这两部分时，需要分别保留原有表述。",
+        "绩效加分目前保留认定边界。",
+    ):
+        payload["slides"][0]["speaker_notes"] = sentence
+        issues = lint_final_script(payload)
+        assert any("speaker-notes-review-meta" in issue for issue in issues), sentence
+
+def test_lint_final_script_flags_third_party_source_voice_in_audience_copy() -> None:
+    for field, sentence in (
+        ("full_copy", "通知所称场景，是指面向外部用户的数据服务。"),
+        ("full_copy", "验收时间节点在通知中已明确。"),
+    ):
+        payload = copy.deepcopy(_example())
+        payload["slides"][0][field] = sentence
+        issues = lint_final_script(payload)
+        assert any("source-voice-third-party-framing" in issue for issue in issues), sentence
+
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["onscreen"][0]["text"] = "材料指出，应开展首批场景建设。"
+    issues = lint_final_script(payload)
+    assert any("source-voice-third-party-framing" in issue for issue in issues)
+
+def test_lint_final_script_allows_source_owned_reference_to_another_instrument() -> None:
+    payload = copy.deepcopy(_example())
+    payload["slides"][0]["full_copy"] = "中电联遵照党组会议精神和《中国电力企业联合会数据共享利用管理办法（试行）》组织开展建设工作。"
+    issues = lint_final_script(payload)
+    assert not any("source-voice-third-party-framing" in issue for issue in issues)
 
 def test_lint_final_script_third_person_audience_reference_scoped_to_speaker_notes_only() -> None:
     payload = copy.deepcopy(_example())

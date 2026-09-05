@@ -2,13 +2,18 @@
 
 ## Product boundary
 
-CyberPPT-Script is an analytical Word-to-PPT semantic compiler.
+CyberPPT-Script is a source-faithful Word-to-PPT pagination and script compiler.
 
-Its default responsibility is to preserve the source document's content boundary and chapter structure while discovering defensible latent logic inside that structure and converting the material into presentation-ready page arguments.
+Its default responsibility is to preserve the source document's viewpoints, content boundary and chapter structure while converting the material into presentation-ready pages. Semantic understanding protects actors, facts, status, responsibility, numbers, conditions and explicit relationships; it does not create a stronger thesis for the source.
 
 The governing principle is:
 
-**Source controls content boundary and chapter order. Script Engine may deepen analysis inside those boundaries. Stage 02 controls rendering.**
+**Source controls viewpoints, content boundary and chapter order. Faithful authoring is the default. Analytical deepening requires explicit user intent. Stage 02 controls rendering.**
+
+Deck Plan and Final Script use `authoring_mode`:
+
+- `faithful` (default): paginate, group, reorder locally and clarify wording while preserving source-explicit propositions and relations. Parallel source statements may remain parallel. Do not add causality, necessity, implication, priority or value judgment merely to create a stronger page thesis.
+- `analytical`: available only when the user explicitly requests analysis, insight, argument reconstruction or strategic deepening. Inferred relations remain visibly qualified and source-bounded.
 
 ## 1. Three-layer fidelity model
 
@@ -53,9 +58,9 @@ and source-declared priorities still require coverage; page-level evidence
 selection does not authorize dropping a source chapter or weakening a material
 boundary.
 
-### Layer C — analytical enhancement
+### Layer C — analytical enhancement (explicit opt-in)
 
-The engine is expected to improve expression depth by identifying latent relationships supported by the source facts, including:
+When `authoring_mode: analytical` is explicitly authorized, the engine may improve expression depth by identifying latent relationships supported by the source facts, including:
 
 - tension and problem structure;
 - cause and mechanism;
@@ -80,6 +85,8 @@ Every material relation used for analysis should be classified internally as one
 `speculative` relationships are excluded from authoritative `foundation.json` relations and from final-script argument chains.
 
 An `inferred` relation should record support fact IDs and a confidence level. Inference can strengthen explanation, but it cannot strengthen the underlying factual claim.
+
+PLAN 的 `title`、`question` 和 `logic` 虽然不承担 AUTHOR 的最终判断，仍属于用户可见的规划表达。内容页审计应以该页 `source_refs` 对应的 Foundation 文本为证据范围，阻断证据中不存在的高风险确定性、完成度、协同、因果或主体角色升级。问题句中的高风险表达以及建议、拟议、待确认和规划事项的标题边界进入人工 Critic 提醒；确定性检查只处理高置信词面升级，不承担完整语义蕴含判断。
 
 ## 3. Source structure authority
 
@@ -129,7 +136,7 @@ Use `visibility` to protect source items:
 
 ## 5. Analytical depth requirement
 
-Source fidelity must not collapse the engine into a summarizer.
+In `faithful` mode, accurate pagination and source-faithful synthesis are successful outputs; the Critic must not demand an extra analytical thesis. In `analytical` mode, the engine should test whether deeper source-supported structure is available.
 
 When a source section contains several material facts, PLAN/AUTHOR should test whether one or more of the following can be made explicit:
 

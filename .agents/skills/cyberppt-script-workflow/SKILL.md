@@ -7,9 +7,12 @@ description: Natural-language router for CyberPPT-Script. Generate or revise PPT
 
 ## 1. Routing principle
 
-The source controls content boundary and default chapter order. The engine
-controls semantic understanding, analytical deepening, page decomposition and PPT
-expression. Do not reply by asking the user to choose an internal stage when the route can
+The source controls viewpoints, content boundary and default chapter order. The
+engine controls semantic understanding, page decomposition and PPT expression.
+Default to source-faithful pagination (`authoring_mode: faithful`). Use analytical
+deepening (`authoring_mode: analytical`) only when the user explicitly asks for
+analysis, insight, argument reconstruction or strategic deepening.
+Do not reply by asking the user to choose an internal stage when the route can
 be inferred from the request and current project artifacts.
 
 Read:
@@ -37,7 +40,7 @@ Automatically:
 
 1. scaffold `projects/<slug>/` and retain source files;
 2. extract and index source structure;
-3. build Foundation with facts, explicit relations and supported inferences once per deck;
+3. build a lightweight Foundation with source structure, facts, explicit relations and boundaries once per deck;
 4. preserve source chapters and plan PPT pages within that structure;
 5. present **脚本规划待确认**;
 6. after ordinary approval, execute the mandatory authoring reference;
@@ -62,6 +65,13 @@ every material fact, condition, responsibility, number and claim strength.
 Stage 01 uses neither mechanical shortening nor phrase-led condensation;
 dense material is resolved through page mission or pagination rather than
 deleting substantive content.
+In the default faithful mode, a page conclusion restates or lightly consolidates
+source-explicit propositions. Parallel source propositions may remain parallel;
+AUTHOR must not manufacture a causal chain, necessity claim, implication,
+priority or value judgment to satisfy a framework. Analytical relations may enter
+the authoritative script only under an explicitly approved analytical mode.
+The default route does not search for latent logic or reconstruct a stronger
+source thesis.
 High-risk pages compare judgment-led and evidence-led candidates and retain only
 the rewritten winner. These passes occur inside the existing three authoritative
 artifacts; they create no Content Plan, checkpoint, gate receipt or review
@@ -130,6 +140,14 @@ Do not dump internal JSON. Run
 `cyberppt-script review-plan <deck-plan.json> <foundation.json>` and present its
 Markdown reading strip. This is a derived review view, not a new authoritative
 artifact or approval state.
+
+Before presenting that reading strip, compare every content page's `title`,
+`question` and `logic` with the Foundation items named by its `source_refs`.
+Remove unsupported certainty, completion, coordination, causality and actor-role
+language. Preserve recommendation, proposal, pending-confirmation and planned
+status in the planning wording. Deterministic PLAN checks provide a high-
+confidence lexical floor; the current main agent still performs the qualitative
+entailment and page-boundary review.
 
 For internal and mixed audiences, preserve an internal-expert voice. Enterprise
 operating topics remain valid; external-consultant address and unsupported generic

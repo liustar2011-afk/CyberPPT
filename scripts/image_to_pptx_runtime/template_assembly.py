@@ -88,6 +88,7 @@ def _render_chrome(
     title: str,
     subtitle: str,
     page_number: int,
+    page_number_layer: str = "master",
 ) -> list[str]:
     master = rules.get("master_elements") or {}
     top = master.get("top_divider") or {}
@@ -95,6 +96,9 @@ def _render_chrome(
     logo = master.get("logo") or {}
     org = master.get("footer_company_text") or {}
     number = master.get("footer_page_num") or {}
+    page_number_layer_attr = (
+        f' data-pptx-layer="{page_number_layer}"' if page_number_layer else ""
+    )
     header = (rules.get("content_regions") or {}).get("body_header_region") or {}
     title_y = float(header.get("y", 16)) + 31
     lines = [
@@ -111,7 +115,7 @@ def _render_chrome(
         [
             f'<rect id="footerBar" data-pptx-layer="master" x="0" y="{footer.get("y", 698)}" width="{CANVAS_WIDTH}" height="{footer.get("height", 22)}" fill={quoteattr(str(footer.get("fill", "#123B66")))}/>',
             f'<text id="footerCompany" data-pptx-layer="master" x="{org.get("x", 58)}" y="{org.get("y", 709)}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="{org.get("font_size", 9)}" fill={quoteattr(str(org.get("fill", "#FFFFFF")))}>{xml_escape(str(org.get("text", "中国电力企业联合会")))}</text>',
-            f'<text id="pageNumber" data-pptx-layer="master" x="{number.get("x", 1240)}" y="{number.get("y", 709)}" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="{number.get("font_size", 9)}" fill={quoteattr(str(number.get("fill", "#FFFFFF")))}>{int(page_number)}</text>',
+            f'<text id="pageNumber"{page_number_layer_attr} x="{number.get("x", 1240)}" y="{number.get("y", 709)}" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="{number.get("font_size", 9)}" fill={quoteattr(str(number.get("fill", "#FFFFFF")))}>{int(page_number)}</text>',
         ]
     )
     return [line for line in lines if 'data-pptx-layer="master"' in line] + [
@@ -262,6 +266,7 @@ def assemble_template_svg(
     mode: str,
     contract: dict | None = None,
     body_image: Path | None = None,
+    page_number_layer: str = "master",
 ) -> Path:
     """Create a 1280x720 template wrapper around a 2:1 body asset."""
 
@@ -277,7 +282,7 @@ def assemble_template_svg(
     elements = [
         f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" viewBox="0 0 {CANVAS_WIDTH} {CANVAS_HEIGHT}" data-template-assembly="cec-lightweight" data-pptx-master="cec-content" data-pptx-master-name="CEC Content Master" data-pptx-layout="cec-content" data-pptx-layout-name="CEC Content">'
     ]
-    elements.extend(_render_chrome(rules=rules, logo_href=logo_href, title=title, subtitle=subtitle, page_number=page_number))
+    elements.extend(_render_chrome(rules=rules, logo_href=logo_href, title=title, subtitle=subtitle, page_number=page_number, page_number_layer=page_number_layer))
     if mode == "image":
         if body_image is None or not body_image.is_file():
             raise FileNotFoundError(f"template image assembly requires body image: {body_image}")

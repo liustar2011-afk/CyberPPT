@@ -42,6 +42,14 @@
           ],
           "default": "self_read"
         },
+        "authoring_mode": {
+          "type": "string",
+          "enum": [
+            "faithful",
+            "analytical"
+          ],
+          "default": "faithful"
+        },
         "narrative": {
           "type": "string"
         }

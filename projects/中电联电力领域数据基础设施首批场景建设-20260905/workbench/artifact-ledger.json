@@ -1,0 +1,161 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "ledger_revision": 2,
+  "artifacts": [
+    {
+      "stage": "02-production-build",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/final-script_cyberppt_deliverable_p1_p12.md",
+      "status": "production_ready",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "88ba3b55780b1acd4aeb0685711bea604fc608b6a51384cf099dccada9b278ee",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-0160fb77c42f8b498ff9",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "02-production-build",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/page_image_pairs.json",
+      "status": "production_ready",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/final-script_cyberppt_deliverable_p1_p12.md"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "6c34ab7779d56e2815a4631c1be9743ef91117b19fd525e90d5c35635d98231e",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-66c6321f6db15cbdc386",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "02-production-build",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/template_text/pages_001_012_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "5bc86e229076e6f979268ff78bfce54220ddff6de154ada78b19d6949d71228a",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-1bcc651aeeef77a818d7",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "02-production-build",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "9576836eb0f65b1b173d79dc5dd2f04cb134f3e659609857ff5921e3137b86c3",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-47111e9c4bb15fe858f5",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "02-production-build",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/pages_001_012_final_script_pages_run.json",
+      "status": "production_ready",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/final-script_cyberppt_deliverable_p1_p12.md",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/template_text/pages_001_012_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "235fc458fcb1b638b873ded697791466e7160bb04cc35171883ddc3292a7f4c5",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-706a4617388b2333d5c5",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "02-production-build",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/build_context.json",
+      "status": "production_ready",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/final-script_cyberppt_deliverable_p1_p12.md",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/template_text/pages_001_012_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "63136fbfca7ccfb38d7895655dcea66c841a5d4e2df6443eafe16c9d8af2e8dd",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-9e6b44f6edf66512dbeb",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "05-qa-delivery",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/exports/editable_svg.pptx",
+      "status": "assembled",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/template_text/pages_001_012_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "1c861a9f3e58760d98ed8dd8c62af4e2a7a1e90d1baadc6b08392c0f93e24c6c",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-ba362f4b892e751b141f",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "05-qa-delivery",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/qa-delivery/editable/officecli_render_qa.json",
+      "status": "passed",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/exports/editable_svg.pptx"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "f6f92e7f877596729f394a9ef47f2fec947d1e4714249915f279e2fc9fb7d939",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-b39bcaac4fc82c641c4d",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    },
+    {
+      "stage": "05-qa-delivery",
+      "page": "1-12",
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/qa-delivery/editable/final_visible_text_qa.json",
+      "status": "passed",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/exports/editable_svg.pptx"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905' --script '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/inputs/final-script.md' --pages 1-12 --style-lock '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160' --build-id 20260904T164605Z-a7ebc33160 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --production-build",
+      "sha256": "b3ca58d734fecb846c67155ca6cb6014e1bcbb514dfe4e87559eaf6c23292320",
+      "updated_at": "2026-09-04T20:17:58+00:00",
+      "build_id": "20260904T164605Z-a7ebc33160",
+      "artifact_id": "artifact-b49f10652dfa7965201f",
+      "created_at": "2026-09-04T20:17:58+00:00"
+    }
+  ]
+}

@@ -75,6 +75,7 @@ def render_plan_review(
     lines = [
         "# 脚本规划待确认", "",
         "- 规划合同：v2 lean",
+        f"- 写作模式：{'忠实分页整理' if plan.get('authoring_mode', 'faithful') == 'faithful' else '分析性深化'}",
         f"- 交流目标：{_text(plan.get('communication_goal'))}",
         f"- 汇报对象：{_text(plan.get('audience'))}",
         f"- 受众范围：{_text(plan.get('audience_scope'))}",

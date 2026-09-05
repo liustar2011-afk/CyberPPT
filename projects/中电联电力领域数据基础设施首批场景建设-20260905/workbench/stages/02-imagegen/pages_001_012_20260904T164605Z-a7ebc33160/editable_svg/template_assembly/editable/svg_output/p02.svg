@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" data-brand-template="02_agenda" data-pptx-master="cec-contents" data-pptx-master-name="CEC Contents Master" data-pptx-layout="cec-contents" data-pptx-layout-name="CEC Contents">
+  
+  <defs>
+    <linearGradient id="agendaLeftWash" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F7F9FC" stop-opacity="0.92" />
+      <stop offset="52%" stop-color="#F7F9FC" stop-opacity="0.78" />
+      <stop offset="78%" stop-color="#F7F9FC" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#F7F9FC" stop-opacity="0.04" />
+    </linearGradient>
+  </defs>
+  
+  <rect id="topDivider" data-pptx-layer="master" x="0" y="84" width="1280" height="3" fill="#8B0000" />
+<image id="companyLogo" data-pptx-layer="master" x="1050" y="13" width="210" height="70" href="logo.png" preserveAspectRatio="xMidYMid meet" />
+<rect id="footerBar" data-pptx-layer="master" x="0" y="698" width="1280" height="22" fill="#123B66" />
+<text id="footerCompany" data-pptx-layer="master" x="58" y="712" font-family="Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif" font-size="9" fill="#FFFFFF">中国电力企业联合会</text>
+<text id="pageNumber" data-pptx-layer="master" x="1240" y="712" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="9" fill="#FFFFFF">2</text>
+<image x="0" y="87" width="1280" height="611" href="agenda_bg.png" preserveAspectRatio="xMidYMid slice" />
+  <rect x="0" y="87" width="1280" height="611" fill="url(#agendaLeftWash)" />
+  <text x="74" y="148" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="700" fill="#123B66">目录</text>
+  <rect x="74" y="168" width="72" height="4" fill="#8B0000" />
+  <g id="agenda-items">
+    
+  </g>
+</svg>

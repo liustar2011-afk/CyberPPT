@@ -54,22 +54,22 @@ class CliTests(unittest.TestCase):
         self.assertIn("visual-structure-audit", help_text)
         self.assertIn("prepare-stage02-handoff", help_text)
 
-    def test_default_init_uses_strict_profile_without_runtime_control_directories(self) -> None:
+    def test_default_init_uses_script_profile_without_runtime_control_directories(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            project = Path(tmp) / "strict-default"
+            project = Path(tmp) / "script-default"
             buffer = io.StringIO()
             with redirect_stdout(buffer):
                 code = main(["init", str(project)])
 
             self.assertEqual(0, code)
             self.assertIn("mode: lightweight", (project / "manifest.yml").read_text(encoding="utf-8"))
-            self.assertIn("profile: strict", (project / "manifest.yml").read_text(encoding="utf-8"))
-            self.assertIn("source_truth:", (project / "manifest.yml").read_text(encoding="utf-8"))
+            self.assertIn("profile: script", (project / "manifest.yml").read_text(encoding="utf-8"))
+            self.assertNotIn("source_truth:", (project / "manifest.yml").read_text(encoding="utf-8"))
             self.assertTrue((project / "script/.cache").is_dir())
             self.assertFalse((project / "workbench").exists())
             readme = (project / "README.md").read_text(encoding="utf-8")
-            self.assertIn("project-foundation", readme)
-            self.assertNotIn("prepare-script-foundation", readme)
+            self.assertIn("do not run `prepare-source-map`", readme)
+            self.assertIn("prepare-script-foundation", readme)
             self.assertFalse((project / "workbench/artifact-ledger.json").exists())
             self.assertFalse((project / "workbench/approvals").exists())
             self.assertFalse((project / "workbench/decisions").exists())

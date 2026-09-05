@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.imagegen_attempt_request.v1",
+  "page_number": 1,
+  "variant": "full",
+  "attempt": 1,
+  "prompt_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v1/prompts/attempts/page-001-full-attempt-01-sent.txt",
+  "prompt_sha256": "f01106a5ca7ea3150aad185a9f27c317823bf4a1fe290954886a6f7e22e4dd71",
+  "base_prompt_sha256": "f01106a5ca7ea3150aad185a9f27c317823bf4a1fe290954886a6f7e22e4dd71",
+  "prompt_chars": 4380,
+  "model": "gpt-image-2",
+  "quality": "high",
+  "size": "2048x1024",
+  "input_images": [
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-09.png"
+  ],
+  "correction_retry": false,
+  "original_prompt": null,
+  "failed_image": null,
+  "correction_issues": []
+}

@@ -1,20 +1,20 @@
 ---
 name: cyberppt-script-understand
-description: Build the unified source foundation for PPT script generation. Preserve source hierarchy, atomic facts, strength, responsibilities, numbers, boundaries and provenance; then run a latent-logic pass to record defensible explicit/inferred relationships. Do not plan slides or rewrite chapter strategy.
+description: Build the lightweight source foundation for PPT script generation. Preserve source hierarchy, atomic facts, strength, responsibilities, numbers, explicit relationships, boundaries and provenance. Do not infer latent logic, plan slides or rewrite chapter strategy.
 ---
 
 # UNDERSTAND
 
 ## Mission
 
-Create a compact, complete semantic foundation that preserves what the source says and exposes source-supported relationships that the Word text may leave implicit.
+Create a compact source foundation that preserves what the source says for safe pagination and page-script writing.
 
 Output: `foundation.json`.
 
 This is the explicit lightweight `script` profile for ordinary PPT script work. It consumes
 the deterministic `.cache/source-index.json` plus selected source text and
 writes the semantic result directly into the existing Foundation authority.
-New source-to-script projects use the full Source Truth route by default.
+New source-to-script projects use this lightweight route by default. The full Source Truth route is reserved for explicitly selected strict/legacy work.
 
 This is the first of the three authoritative Stage 01 script artifacts. The
 following `deck-plan.json` and `dist/final-script.md` are produced by PLAN/AUTHOR
@@ -113,29 +113,14 @@ Record relationships directly stated by the source, such as:
 
 Use `basis: explicit`.
 
-## Pass 4 — Latent Logic Mining
+## Pass 4 — Explicit-relation boundary
 
-Use [`references/analysis-models.md`](references/analysis-models.md) as reasoning lenses. Test whether source facts support deeper relationships that are useful for PPT expression:
-
-- problem/tension;
-- causal or enabling chain;
-- problem-to-response mapping;
-- resource transformation;
-- actor collaboration;
-- capability layering;
-- maturity progression;
-- risk-control-protection;
-- value formation;
-- evidence synthesis.
-
-For every accepted inferred relation:
-
-- set `basis: inferred`;
-- record supporting fact IDs in `support`;
-- record `confidence`;
-- keep the wording no stronger than its support.
-
-If the relationship needs a new external premise, treat it as speculative and do not write it into authoritative `relations` or `arguments`.
+Keep only relationships directly stated by the source. Do not search for latent
+logic, synthesize a stronger thesis, or create inferred relationships in the
+default script profile. `relations` may be empty. When the user explicitly asks
+for analytical deepening, route that request separately through an approved
+`analytical` Deck Plan; do not backfill the lightweight Foundation with inferred
+authority.
 
 ## Pass 5 — Group-strength and inference validation
 
@@ -168,5 +153,5 @@ The audit automatically cross-checks `reading_strategy` against the sibling
 - Do not rewrite source chapter order.
 - Do not draft final presentation copy.
 - Do not upgrade fact strength or policy/commitment status.
-- Do not include speculative relationships as authoritative relations.
+- Do not include inferred or speculative relationships as authoritative relations.
 - Source completeness has priority over early compression.

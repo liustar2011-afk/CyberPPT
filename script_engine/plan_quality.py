@@ -11,35 +11,29 @@ _STRUCTURAL_ROLES = {"cover", "agenda", "contents", "chapter", "transition", "en
 
 
 def plan_critic_priorities(plan: dict[str, Any]) -> list[dict[str, str]]:
-    """Return pages that need qualitative review; findings never rewrite prose."""
+    """Return v2 lean pages that need qualitative review; never rewrite prose."""
 
     pages = [page for page in plan.get("pages") or [] if isinstance(page, dict)]
     content = [page for page in pages if str(page.get("page_role") or "") not in _STRUCTURAL_ROLES]
     findings: list[dict[str, str]] = []
     for page in content:
         page_id = str(page.get("id") or "?")
-        message = str(page.get("message") or "").strip()
-        if _SUMMARY_CONNECTOR_RE.search(message):
+        logic = str(page.get("logic") or "").strip()
+        if _SUMMARY_CONNECTOR_RE.search(logic):
             findings.append({
-                "code": "PLAN_MESSAGE_COVERAGE_SUMMARY",
+                "code": "PLAN_LOGIC_COVERAGE_SUMMARY",
                 "page_id": page_id,
-                "reason": "核心判断疑似把页内模块串成来源覆盖摘要，需要 Critic 判断页面的取舍与认知收益",
+                "reason": "页面使命疑似串联多个来源事项，需要 Critic 判断是否混合了不同页面问题",
             })
-        if not str(page.get("beat") or "").strip():
-            findings.append({
-                "code": "PLAN_BEAT_MISSING",
-                "page_id": page_id,
-                "reason": "页面未声明相对前后页推进的论证节拍",
-            })
-        if not (page.get("proof") or {}).get("evidence_refs") and not page.get("source_refs"):
+        if not page.get("source_refs"):
             findings.append({
                 "code": "PLAN_PAGE_WITHOUT_EVIDENCE",
                 "page_id": page_id,
-                "reason": "页面没有可见的证据投入，无法判断核心结论是否成立",
+                "reason": "页面没有来源边界，无法执行来源忠实度审阅",
             })
     for left, right in zip(content, content[1:]):
         similarity = SequenceMatcher(
-            None, str(left.get("message") or ""), str(right.get("message") or "")
+            None, str(left.get("logic") or ""), str(right.get("logic") or "")
         ).ratio()
         if similarity >= 0.82:
             findings.append({
@@ -54,15 +48,15 @@ def build_plan_critic_context(plan: dict[str, Any]) -> dict[str, Any]:
     """Assemble the one-pass whole-plan review context for a generative Critic."""
 
     return {
-        "thesis": plan.get("thesis"),
-        "narrative_design": plan.get("narrative_design"),
-        "peak_page_id": (plan.get("narrative_design") or {}).get("peak_page_id"),
+        "communication_goal": plan.get("communication_goal"),
+        "authoring_mode": plan.get("authoring_mode", "faithful"),
+        "audience": plan.get("audience"),
+        "source_structure_mode": plan.get("source_structure_mode"),
         "pages": [
             {
                 key: page.get(key)
                 for key in (
-                    "id", "title", "question", "message", "page_role", "beat",
-                    "source_argument_node_ids", "source_refs", "proof", "receives", "next",
+                    "id", "title", "question", "logic", "page_role", "source_refs",
                 )
             }
             for page in plan.get("pages") or []
@@ -70,7 +64,7 @@ def build_plan_critic_context(plan: dict[str, Any]) -> dict[str, Any]:
         ],
         "priorities": plan_critic_priorities(plan),
         "review_dimensions": [
-            "页面必要性", "核心判断力度", "证据选择", "相邻重复", "叙事连续性", "高潮页",
+            "页面必要性", "标题与来源力度", "页面问题归属", "使命边界", "相邻重复", "叙事连续性",
         ],
     }
 

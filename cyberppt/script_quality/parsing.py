@@ -271,12 +271,15 @@ def _page_sections(text: str) -> list[tuple[int, str, str]]:
 def _field_blocks(body: str) -> dict[str, str]:
     blocks: dict[str, list[str]] = {}
     active = ""
+    active_from_heading = False
     for raw_line in body.splitlines():
         if re.match(r"^【(?:演讲者备注|演讲稿|讲稿|备注)】", raw_line.strip()):
             active = ""
+            active_from_heading = False
             continue
         if NON_ONSCREEN_VISUAL_HEADING_RE.match(raw_line.strip()):
             active = "视觉结构"
+            active_from_heading = True
             blocks[active] = []
             continue
         heading_match = HEADING_FIELD_RE.match(raw_line.strip())
@@ -284,6 +287,7 @@ def _field_blocks(body: str) -> dict[str, str]:
             heading_field = _heading_field_name(heading_match.group(1))
             if heading_field:
                 active = heading_field
+                active_from_heading = True
                 blocks[active] = []
                 continue
             # Module headings inside 上屏文字 are content, not a new field;
@@ -296,12 +300,16 @@ def _field_blocks(body: str) -> dict[str, str]:
         match = FIELD_RE.match(raw_line)
         if match:
             field_name = match.group(1).strip()
+            if active == "上屏文字" and active_from_heading:
+                blocks[active].append(raw_line.rstrip())
+                continue
             if active in {"上屏文字", "关系标注", "视觉约束"} and field_name not in PAGE_CONTRACT_FIELDS:
                 # Content bullets in these sections belong to the active
                 # authoring block; they are not peer-level contract fields.
                 blocks[active].append(raw_line.rstrip())
                 continue
             active = field_name
+            active_from_heading = False
             blocks[active] = [match.group(2).strip()]
         elif active:
             blocks[active].append(raw_line.rstrip())
@@ -562,11 +570,14 @@ def parse_script_markdown(
         fields = _field_blocks(body)
         page_type = _normalize_page_type(fields.get("页面类型", ""))
         full_prose = fields.get("完整文字稿", "").strip()
-        # Stage 01's current contract projects the complete page copy into the
-        # onscreen field.  Historical frontend scripts may still carry a short
-        # summary under ``上屏文字``; use the complete copy when available so
-        # Stage 02 assembly does not silently discard the page text.
-        onscreen = full_prose or fields.get("上屏文字", "").strip()
+        # Keep the authored visible projection distinct from the complete copy.
+        # Legacy manuscripts without an 上屏文字 section may still fall back to
+        # full prose, but an explicit visible layer always wins.
+        onscreen_candidate = fields.get("上屏文字", "")
+        # `_field_blocks` deliberately preserves indentation because module
+        # hierarchy checks consume it.  Calling `.strip()` here erased the
+        # first module's indentation while leaving later modules untouched.
+        onscreen = onscreen_candidate if onscreen_candidate.strip() else full_prose
         module_lines: list[tuple[str, int]] = []
         if page_type == "content":
             for line in onscreen.splitlines():

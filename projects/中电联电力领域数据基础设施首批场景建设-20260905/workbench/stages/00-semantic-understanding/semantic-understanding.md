@@ -1,0 +1,1252 @@
+# 全文语义理解
+
+> 本文由 semantic-argument-model.json 确定性渲染；机器模型是唯一语义作者产物。
+
+## 材料担纲与目录地图
+
+- 题名：
+- 材料类型：
+- 副标题：
+- 编制主体：
+- 研究领域：
+- 编制日期：
+
+| 原文一级目录 | 该章论证责任 |
+| --- | --- |
+
+## 全文业务主语
+
+中电联电力领域数据基础设施先行先试项目首批场景的申报、完善、接入、上线与运营；全文主论点为：中电联以具备客户、数据和数字化基础的成熟业务为首批建设范围，由业务部门和直属单位承担场景建设运营、数智公司承担基础设施运营和技术支撑，并按任务申报、方案完善、分批上线的安排推进场景于2026年12月15日前上线运行，以支撑国家先行先试验收和持续运营。
+
+## 核心业务对象
+
+以下对象必须保持各自业务含义、主体责任和来源边界：
+- 电力领域数据基础设施
+- 首批场景
+- 场景专区
+- 数据产品和应用服务
+- 现有业务平台和信息系统
+- 客户与外部用户
+- 首批场景建设任务表
+
+## 空间、时间与服务范围
+
+中电联本部相关业务部门和直属单位的成熟业务，以及与外部用户开展真实数据流通应用的首批场景；时间范围覆盖2026年9月20日前报送、2026年12月15日前上线，并服务于2026年底初验和2027年6月终验；不得超出来源声明的空间、时间、服务及成熟度范围。
+
+## 材料意图与决策动作
+
+- 作者目的：组织本部相关部门和直属单位启动首批场景申报与建设，形成可逐项完善、分批接入上线并持续运营的场景供给，为国家先行先试项目验收节点提供实际应用支撑。
+- 受众动作：要求各部门和单位判断本单位成熟业务是否满足三项基础，原则上至少推荐1个场景，按期提交任务表并配合专班和数智公司完成方案、接入与上线。
+- 成熟度边界：通知已经明确首批场景的准入基础、职责、建设方式、申报数量、报送和上线期限；具体场景清单、接入方案、收益分配方式及绩效加分认定仍需后续填报、协商或以正式办法为准。
+
+## 原文结构与论证顺序
+
+以下顺序由题名、目录层级和正文证据共同重建：
+- 1. SEC-01：场景建设统筹成熟业务已有资源，建设具有中电联特色的场景专区，并以实际应用牵引基础设施完善和持续运营的数据产品服务形成。
+- 2. SEC-02：首批场景面向外部用户真实业务需要，应依托安全可信、可计量的基础设施完成数据交互或模型应用，并优先选择同时具备客户、数据和数字化基础的成熟业务。
+- 3. SEC-03：业务部门和直属单位对场景内容、建设进度、质量和业务运营负责，数智公司对基础设施运营、接入技术支撑及基础设施侧数据安全技术保障负责。
+- 4. SEC-04：场景通过统一入口接入、跨主体安全流通、合作共建与供需对接形成服务运营，并按实际贡献和投入协商收益分配。
+- 5. SEC-05：各部门和单位须按期填报场景任务，专班与数智公司逐项完善方案，并按成熟度分批推进场景在2026年12月15日前上线运行。
+
+## 现有基础与能力缺口
+
+- 一、建设目标：场景建设统筹成熟业务已有资源，建设具有中电联特色的场景专区，并以实际应用牵引基础设施完善和持续运营的数据产品服务形成。
+
+## 业务目标与支撑手段
+
+- 一、建设目标：场景建设统筹成熟业务已有资源，建设具有中电联特色的场景专区，并以实际应用牵引基础设施完善和持续运营的数据产品服务形成。
+- 二、建设范围：首批场景面向外部用户真实业务需要，应依托安全可信、可计量的基础设施完成数据交互或模型应用，并优先选择同时具备客户、数据和数字化基础的成熟业务。
+- 三、职责分工：业务部门和直属单位对场景内容、建设进度、质量和业务运营负责，数智公司对基础设施运营、接入技术支撑及基础设施侧数据安全技术保障负责。
+- 四、建设方式：场景通过统一入口接入、跨主体安全流通、合作共建与供需对接形成服务运营，并按实际贡献和投入协商收益分配。
+- 五、工作安排：各部门和单位须按期填报场景任务，专班与数智公司逐项完善方案，并按成熟度分批推进场景在2026年12月15日前上线运行。
+- 一、建设目标：建设目标同时覆盖资源统筹、场景专区渠道建设、数据产品与应用服务形成以及能力提升。
+- 三、职责分工：两类主体分别承担场景业务全流程责任和基础设施技术运营责任。
+- 四、建设方式：接入、安全流通、共建对接和收益分配构成场景建设运营机制。
+- 五、工作安排：工作安排将场景建设拆解为填报、完善、上线、激励与报送动作，并以任务表固化申报信息。
+
+## 核心概念语义表
+
+| 原文简称 | 语义处理 | 来源锚点 |
+| --- | --- | --- |
+| 电力领域数据基础设施 | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |
+| 首批场景 | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |
+| 场景专区 | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |
+| 数据产品和应用服务 | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |
+| 现有业务平台和信息系统 | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |
+| 客户与外部用户 | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |
+| 首批场景建设任务表 | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |
+
+## 跨章节证据链
+
+- SEC-02 --constrains--> SEC-01：建设范围以场景定义和三项基础约束建设目标面向哪些成熟业务落地。
+- SEC-03 --operationalizes--> SEC-01：职责分工为场景专区建设、服务运营和基础设施接入落实责任主体。
+- SEC-04 --implemented_by--> SEC-01：三类建设方式把目标转化为接入、共建、供需对接和运营分配机制。
+- SEC-05 --operationalizes--> SEC-04：工作安排以逐项形成接入方案和成熟一个上线一个的节奏执行建设方式。
+- SUB-01 --contains--> SEC-01：精确标题节点承载建设目标的正文展开。
+- SUB-02 --contains--> SEC-02：精确标题节点承载建设范围的正文展开。
+- SUB-03 --contains--> SEC-03：精确标题节点承载职责分工的正文展开。
+- SUB-04 --contains--> SEC-04：精确标题节点承载建设方式的正文展开。
+- SUB-05 --contains--> SEC-05：精确标题节点承载工作安排和任务表的正文展开。
+
+## 状态、主体与边界
+
+| 语义节点 | 主体 | 状态 | 权重 |
+| --- | --- | --- | --- |
+| 一、建设目标 | 中电联各业务部门和直属单位 | mixed | core |
+| 二、建设范围 | 中电联、外部用户 | mixed | core |
+| 三、职责分工 | 各业务部门和直属单位、数智公司 | mixed | core |
+| 四、建设方式 | 各业务部门和直属单位、数智公司、服务厂商、合作机构、数据供给方、技术服务方 | mixed | core |
+| 五、工作安排 | 各业务部门和直属单位、先行先试项目工作专班、数智公司 | planned | core |
+
+## 待核事项与禁止推断
+
+- 通知已经明确首批场景的准入基础、职责、建设方式、申报数量、报送和上线期限；具体场景清单、接入方案、收益分配方式及绩效加分认定仍需后续填报、协商或以正式办法为准。；不得据此推导未经来源确认的承诺、因果、结果或责任。
+
+## 源材料论点模型（机器可读）
+
+<!-- semantic-argument-model -->
+```json
+{
+  "schema": "cyberppt.semantic_argument_model.v1",
+  "version": 1,
+  "interpretation_contract_mode": "strict",
+  "source_truth_projection_mode": "required",
+  "document_semantics": {
+    "document_role": "面向中电联本部相关部门和直属单位发布的首批场景建设工作通知",
+    "subject_of_report": "中电联电力领域数据基础设施先行先试项目首批场景的申报、完善、接入、上线与运营",
+    "primary_thesis": "中电联以具备客户、数据和数字化基础的成熟业务为首批建设范围，由业务部门和直属单位承担场景建设运营、数智公司承担基础设施运营和技术支撑，并按任务申报、方案完善、分批上线的安排推进场景于2026年12月15日前上线运行，以支撑国家先行先试验收和持续运营。",
+    "decision_boundary": "通知已经明确首批场景的准入基础、职责、建设方式、申报数量、报送和上线期限；具体场景清单、接入方案、收益分配方式及绩效加分认定仍需后续填报、协商或以正式办法为准。",
+    "author_purpose": "组织本部相关部门和直属单位启动首批场景申报与建设，形成可逐项完善、分批接入上线并持续运营的场景供给，为国家先行先试项目验收节点提供实际应用支撑。",
+    "argument_method": [
+      {
+        "statement": "先说明先行先试项目和场景建设对中电联的战略与验收价值，形成启动首批场景建设的必要性。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+        ]
+      },
+      {
+        "statement": "再界定场景建设目标和首批准入范围，明确场景专区的运营方向及客户、数据、数字化三项基础。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01",
+          "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+          "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01",
+          "SU-9B8A448A18-PARAGRAPH-038385692DF6-01",
+          "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+        ]
+      },
+      {
+        "statement": "随后划分业务建设运营与基础设施运营技术支撑两类责任，避免场景内容责任和平台技术责任混同。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+          "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+        ]
+      },
+      {
+        "statement": "进一步规定平台数据服务接入、共建供需对接及收益分配三类建设机制。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+          "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01",
+          "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+        ]
+      },
+      {
+        "statement": "最后用任务填报、逐项完善、成熟即上线、绩效激励和时间节点把原则转化为可执行安排。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01",
+          "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01",
+          "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01",
+          "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01",
+          "SU-9B8A448A18-PARAGRAPH-941263050803-01"
+        ]
+      }
+    ],
+    "supporting_basis": [
+      {
+        "statement": "国家先行先试项目验收节点及中电联内部制度与党组会议精神构成工作启动依据。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+        ]
+      },
+      {
+        "statement": "成熟业务已有客户、数据和数字化载体，构成首批场景筛选的现实基础。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01",
+          "SU-9B8A448A18-PARAGRAPH-038385692DF6-01",
+          "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+        ]
+      },
+      {
+        "statement": "业务主体与技术主体的明确分工支撑组织实施、接入联调、安全保障和持续运营。",
+        "source_refs": [
+          "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+          "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+        ]
+      },
+      {
+        "statement": "任务表字段和人才测评示例说明了场景填报需同时呈现服务对象、服务方式及三项基础。",
+        "source_refs": [
+          "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01",
+          "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01",
+          "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+        ]
+      }
+    ],
+    "business_objects": [
+      "电力领域数据基础设施",
+      "首批场景",
+      "场景专区",
+      "数据产品和应用服务",
+      "现有业务平台和信息系统",
+      "客户与外部用户",
+      "首批场景建设任务表"
+    ],
+    "scope": "中电联本部相关业务部门和直属单位的成熟业务，以及与外部用户开展真实数据流通应用的首批场景；时间范围覆盖2026年9月20日前报送、2026年12月15日前上线，并服务于2026年底初验和2027年6月终验。",
+    "decision_intent": "要求各部门和单位判断本单位成熟业务是否满足三项基础，原则上至少推荐1个场景，按期提交任务表并配合专班和数智公司完成方案、接入与上线。"
+  },
+  "document_thesis": {
+    "statement": "中电联以具备客户、数据和数字化基础的成熟业务为首批建设范围，由业务部门和直属单位承担场景建设运营、数智公司承担基础设施运营和技术支撑，并按任务申报、方案完善、分批上线的安排推进场景于2026年12月15日前上线运行，以支撑国家先行先试验收和持续运营。",
+    "argument_role": "thesis",
+    "argument_weight": "core",
+    "status": "mixed",
+    "evidence_refs": [
+      "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01",
+      "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01",
+      "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+      "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+      "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01",
+      "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01"
+    ],
+    "actor_refs": [
+      "中电联",
+      "各业务部门和直属单位",
+      "数智公司",
+      "先行先试项目工作专班"
+    ],
+    "claim_origin": "source_explicit"
+  },
+  "section_nodes": [
+    {
+      "id": "SEC-01",
+      "source_heading": "一、建设目标",
+      "section_thesis": "场景建设统筹成熟业务已有资源，建设具有中电联特色的场景专区，并以实际应用牵引基础设施完善和持续运营的数据产品服务形成。",
+      "argument_role": "foundation",
+      "argument_weight": "core",
+      "status": "mixed",
+      "primary_consumer": "说明为什么建、建成什么",
+      "actor_refs": [
+        "中电联各业务部门和直属单位"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-0147B1E0078B-01",
+        "SU-9B8A448A18-PARAGRAPH-2EE13641ED9C-01",
+        "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01",
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "subsection_ids": [
+        "SUB-01"
+      ],
+      "source_gap_ids": [],
+      "level": 1,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SEC-02",
+      "source_heading": "二、建设范围",
+      "section_thesis": "首批场景面向外部用户真实业务需要，应依托安全可信、可计量的基础设施完成数据交互或模型应用，并优先选择同时具备客户、数据和数字化基础的成熟业务。",
+      "argument_role": "definition",
+      "argument_weight": "core",
+      "status": "mixed",
+      "primary_consumer": "明确什么场景可进入首批",
+      "actor_refs": [
+        "中电联",
+        "外部用户"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+        "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01",
+        "SU-9B8A448A18-PARAGRAPH-038385692DF6-01",
+        "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+      ],
+      "subsection_ids": [
+        "SUB-02"
+      ],
+      "source_gap_ids": [],
+      "level": 1,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SEC-03",
+      "source_heading": "三、职责分工",
+      "section_thesis": "业务部门和直属单位对场景内容、建设进度、质量和业务运营负责，数智公司对基础设施运营、接入技术支撑及基础设施侧数据安全技术保障负责。",
+      "argument_role": "operation",
+      "argument_weight": "core",
+      "status": "mixed",
+      "primary_consumer": "明确谁负责什么",
+      "actor_refs": [
+        "各业务部门和直属单位",
+        "数智公司"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+        "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+      ],
+      "subsection_ids": [
+        "SUB-03"
+      ],
+      "source_gap_ids": [],
+      "level": 1,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SEC-04",
+      "source_heading": "四、建设方式",
+      "section_thesis": "场景通过统一入口接入、跨主体安全流通、合作共建与供需对接形成服务运营，并按实际贡献和投入协商收益分配。",
+      "argument_role": "implementation",
+      "argument_weight": "core",
+      "status": "mixed",
+      "primary_consumer": "说明场景怎样建、怎样运营",
+      "actor_refs": [
+        "各业务部门和直属单位",
+        "数智公司",
+        "服务厂商",
+        "合作机构",
+        "数据供给方",
+        "技术服务方"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+        "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01",
+        "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+      ],
+      "subsection_ids": [
+        "SUB-04"
+      ],
+      "source_gap_ids": [
+        "GAP-03"
+      ],
+      "level": 1,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SEC-05",
+      "source_heading": "五、工作安排",
+      "section_thesis": "各部门和单位须按期填报场景任务，专班与数智公司逐项完善方案，并按成熟度分批推进场景在2026年12月15日前上线运行。",
+      "argument_role": "implementation",
+      "argument_weight": "core",
+      "status": "planned",
+      "primary_consumer": "明确近期动作、节奏和节点",
+      "actor_refs": [
+        "各业务部门和直属单位",
+        "先行先试项目工作专班",
+        "数智公司"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01",
+        "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01",
+        "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01",
+        "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01",
+        "SU-9B8A448A18-PARAGRAPH-941263050803-01",
+        "SU-9B8A448A18-PARAGRAPH-FEF9CE2FD326-01",
+        "SU-9B8A448A18-PARAGRAPH-D0A3E62649CA-01",
+        "SU-9B8A448A18-PARAGRAPH-07E7A53C8152-01",
+        "SU-9B8A448A18-PARAGRAPH-4CDED5C8C865-01",
+        "SU-9B8A448A18-PARAGRAPH-392C566EE11C-01",
+        "SU-9B8A448A18-PARAGRAPH-8CCBBA0591DA-01",
+        "SU-9B8A448A18-PARAGRAPH-56FBCD26AB7D-01",
+        "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01",
+        "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-01",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-02",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-03",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-04",
+        "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+      ],
+      "subsection_ids": [
+        "SUB-05"
+      ],
+      "source_gap_ids": [
+        "GAP-01",
+        "GAP-02",
+        "GAP-04"
+      ],
+      "level": 1,
+      "claim_origin": "source_explicit"
+    }
+  ],
+  "subsection_nodes": [
+    {
+      "id": "SUB-01",
+      "parent_id": "SEC-01",
+      "source_heading": "一、建设目标",
+      "section_thesis": "建设目标同时覆盖资源统筹、场景专区渠道建设、数据产品与应用服务形成以及能力提升。",
+      "argument_role": "construction",
+      "argument_weight": "supporting",
+      "status": "planned",
+      "primary_consumer": "建设目标证据展开",
+      "actor_refs": [
+        "中电联各业务部门和直属单位"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-0147B1E0078B-01",
+        "SU-9B8A448A18-PARAGRAPH-2EE13641ED9C-01",
+        "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01",
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "subsection_ids": [],
+      "source_gap_ids": [],
+      "level": 2,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SUB-02",
+      "parent_id": "SEC-02",
+      "source_heading": "二、建设范围",
+      "section_thesis": "场景定义与三项准入基础共同限定首批建设范围。",
+      "argument_role": "boundary",
+      "argument_weight": "constraint",
+      "status": "mixed",
+      "primary_consumer": "建设范围证据展开",
+      "actor_refs": [
+        "中电联",
+        "外部用户"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+        "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01",
+        "SU-9B8A448A18-PARAGRAPH-038385692DF6-01",
+        "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+      ],
+      "subsection_ids": [],
+      "source_gap_ids": [],
+      "level": 2,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SUB-03",
+      "parent_id": "SEC-03",
+      "source_heading": "三、职责分工",
+      "section_thesis": "两类主体分别承担场景业务全流程责任和基础设施技术运营责任。",
+      "argument_role": "operation",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "primary_consumer": "职责分工证据展开",
+      "actor_refs": [
+        "各业务部门和直属单位",
+        "数智公司"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+        "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+      ],
+      "subsection_ids": [],
+      "source_gap_ids": [],
+      "level": 2,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SUB-04",
+      "parent_id": "SEC-04",
+      "source_heading": "四、建设方式",
+      "section_thesis": "接入、安全流通、共建对接和收益分配构成场景建设运营机制。",
+      "argument_role": "implementation",
+      "argument_weight": "supporting",
+      "status": "planned",
+      "primary_consumer": "建设方式证据展开",
+      "actor_refs": [
+        "各业务部门和直属单位",
+        "数智公司",
+        "合作方"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+        "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01",
+        "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+      ],
+      "subsection_ids": [],
+      "source_gap_ids": [
+        "GAP-03"
+      ],
+      "level": 2,
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "SUB-05",
+      "parent_id": "SEC-05",
+      "source_heading": "五、工作安排",
+      "section_thesis": "工作安排将场景建设拆解为填报、完善、上线、激励与报送动作，并以任务表固化申报信息。",
+      "argument_role": "implementation",
+      "argument_weight": "supporting",
+      "status": "mixed",
+      "primary_consumer": "工作安排证据展开",
+      "actor_refs": [
+        "各业务部门和直属单位",
+        "先行先试项目工作专班",
+        "数智公司"
+      ],
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01",
+        "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01",
+        "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01",
+        "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01",
+        "SU-9B8A448A18-PARAGRAPH-941263050803-01",
+        "SU-9B8A448A18-PARAGRAPH-FEF9CE2FD326-01",
+        "SU-9B8A448A18-PARAGRAPH-D0A3E62649CA-01",
+        "SU-9B8A448A18-PARAGRAPH-07E7A53C8152-01",
+        "SU-9B8A448A18-PARAGRAPH-4CDED5C8C865-01",
+        "SU-9B8A448A18-PARAGRAPH-392C566EE11C-01",
+        "SU-9B8A448A18-PARAGRAPH-8CCBBA0591DA-01",
+        "SU-9B8A448A18-PARAGRAPH-56FBCD26AB7D-01",
+        "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01",
+        "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-01",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-02",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-03",
+        "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-04",
+        "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+      ],
+      "subsection_ids": [],
+      "source_gap_ids": [
+        "GAP-01",
+        "GAP-02",
+        "GAP-04"
+      ],
+      "level": 2,
+      "claim_origin": "source_explicit"
+    }
+  ],
+  "argument_relations": [
+    {
+      "id": "REL-01",
+      "from": "SEC-02",
+      "to": "SEC-01",
+      "relation": "constrains",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01",
+        "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+      ],
+      "explanation": "建设范围以场景定义和三项基础约束建设目标面向哪些成熟业务落地。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-02",
+      "from": "SEC-03",
+      "to": "SEC-01",
+      "relation": "operationalizes",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+        "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01",
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "explanation": "职责分工为场景专区建设、服务运营和基础设施接入落实责任主体。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-03",
+      "from": "SEC-04",
+      "to": "SEC-01",
+      "relation": "implemented_by",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+        "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01",
+        "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01",
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "explanation": "三类建设方式把目标转化为接入、共建、供需对接和运营分配机制。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-04",
+      "from": "SEC-05",
+      "to": "SEC-04",
+      "relation": "operationalizes",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01",
+        "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01",
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+      ],
+      "explanation": "工作安排以逐项形成接入方案和成熟一个上线一个的节奏执行建设方式。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-05",
+      "from": "SUB-01",
+      "to": "SEC-01",
+      "relation": "contains",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+      ],
+      "explanation": "精确标题节点承载建设目标的正文展开。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-06",
+      "from": "SUB-02",
+      "to": "SEC-02",
+      "relation": "contains",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+      ],
+      "explanation": "精确标题节点承载建设范围的正文展开。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-07",
+      "from": "SUB-03",
+      "to": "SEC-03",
+      "relation": "contains",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01"
+      ],
+      "explanation": "精确标题节点承载职责分工的正文展开。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-08",
+      "from": "SUB-04",
+      "to": "SEC-04",
+      "relation": "contains",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+      ],
+      "explanation": "精确标题节点承载建设方式的正文展开。",
+      "claim_origin": "source_explicit"
+    },
+    {
+      "id": "REL-09",
+      "from": "SUB-05",
+      "to": "SEC-05",
+      "relation": "contains",
+      "weight_effect": "none",
+      "evidence_refs": [
+        "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01"
+      ],
+      "explanation": "精确标题节点承载工作安排和任务表的正文展开。",
+      "claim_origin": "source_explicit"
+    }
+  ],
+  "mece_rules": {
+    "partition_basis": "按原通知的五类业务问题分区：目标、范围、责任、方法、进度",
+    "exhaustive_scope": "覆盖通知正文从建设目标到工作安排的全部一级结构",
+    "overlap_policy": "相同对象可跨章节出现，但分别承担目标、准入、责任、机制或时间动作，不合并其论证职责。",
+    "groups": [
+      {
+        "parent_id": "document",
+        "node_ids": [
+          "SEC-01",
+          "SEC-02",
+          "SEC-03",
+          "SEC-04",
+          "SEC-05"
+        ],
+        "partition_basis": "通知章节承担的业务问题",
+        "exhaustive_scope": "五个原文章节",
+        "overlap_policy": "按章节问题保留，交叉对象通过关系连接"
+      }
+    ],
+    "review_notes": [
+      "原文编号标题被提取器识别为二级标题；模型以一级章节节点保留全文结构，并以同名二级精确节点满足源标题层级追溯。"
+    ]
+  },
+  "inference_register": [],
+  "concept_occurrence_graph": {
+    "concepts": [],
+    "relations": [],
+    "review_notes": [
+      "场景、场景专区与数据基础设施在原文中角色清楚，暂未发现需要额外消歧的同名异义。"
+    ]
+  },
+  "semantic_content_unit_coverage_mode": "required",
+  "source_coverage": {
+    "assignments": [
+      {
+        "source_unit_refs": [
+          "SU-9B8A448A18-PARAGRAPH-0147B1E0078B-01",
+          "SU-9B8A448A18-PARAGRAPH-2EE13641ED9C-01",
+          "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+        ],
+        "semantic_node_ids": [
+          "SEC-01",
+          "SUB-01"
+        ],
+        "summary": "通知身份、受众、项目背景、验收节点及启动首批场景建设的依据。",
+        "atomic_items": [
+          {
+            "item_id": "AI-001",
+            "statement": "文件主题是开展中电联电力领域数据基础设施首批场景建设工作。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-0147B1E0078B-01"
+            ],
+            "status": "planned",
+            "argument_duty": "metadata",
+            "coverage_anchors": [
+              "中电联电力领域数据基础设施",
+              "首批场景建设"
+            ]
+          },
+          {
+            "item_id": "AI-002",
+            "statement": "通知对象为中电联本部相关部门和直属单位。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-2EE13641ED9C-01"
+            ],
+            "status": "existing",
+            "argument_duty": "metadata",
+            "coverage_anchors": [
+              "本部相关部门",
+              "直属单位"
+            ]
+          },
+          {
+            "item_id": "AI-003",
+            "statement": "电力领域数据基础设施先行先试项目是全国性行业协会中首个纳入国家数据基础设施先行先试的项目，并被定位为中电联落实国家数据要素和能源数智化战略、促进内部数据资源协同利用的重要抓手。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+            ],
+            "status": "existing",
+            "argument_duty": "premise",
+            "coverage_anchors": [
+              "全国性行业协会中首个",
+              "国家数据要素、能源数智化战略"
+            ]
+          },
+          {
+            "item_id": "AI-004",
+            "statement": "场景承担组织行业数据资源、连接数据供需主体、培育数据产品服务和支撑项目持续运营的牵引载体作用。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+            ],
+            "status": "planned",
+            "argument_duty": "driver",
+            "coverage_anchors": [
+              "连接数据供需主体",
+              "持续运营"
+            ]
+          },
+          {
+            "item_id": "AI-005",
+            "statement": "首批场景建设需服务于2026年底通过国家能源局初验和2027年6月通过国家数据局终验的节点要求。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+            ],
+            "status": "planned",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "2026年底",
+              "2027年6月"
+            ]
+          },
+          {
+            "item_id": "AI-006",
+            "statement": "首批场景建设工作遵照中电联党组会议精神和《中国电力企业联合会数据共享利用管理办法（试行）》组织开展。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-6A8D617E8AF2-01"
+            ],
+            "status": "existing",
+            "argument_duty": "premise",
+            "coverage_anchors": [
+              "党组会议精神",
+              "数据共享利用管理办法（试行）"
+            ]
+          }
+        ]
+      },
+      {
+        "source_unit_refs": [
+          "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+        ],
+        "semantic_node_ids": [
+          "SEC-01",
+          "SUB-01"
+        ],
+        "summary": "场景专区的建设依托、运营方向和能力目标。",
+        "atomic_items": [
+          {
+            "item_id": "AI-007",
+            "statement": "场景建设依托电力领域数据基础设施，围绕各业务部门和直属单位成熟业务，统筹现有数据资源、业务平台、产品服务和客户基础建设中电联特色场景专区。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+            ],
+            "status": "planned",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "成熟业务",
+              "统筹现有数据资源、业务平台、产品服务和客户基础"
+            ]
+          },
+          {
+            "item_id": "AI-008",
+            "statement": "场景建设以应用带动基础设施应用并以实际应用牵引基础设施完善。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+            ],
+            "status": "planned",
+            "argument_duty": "driver",
+            "coverage_anchors": [
+              "场景建设带动基础设施应用",
+              "实际应用牵引基础设施完善"
+            ]
+          },
+          {
+            "item_id": "AI-009",
+            "statement": "场景专区将逐步承担业务展示、产品发布、供需对接和服务运营渠道功能，并形成可持续运营的数据产品与应用服务，提升数据资源开发利用和行业数据服务能力。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-C9B82A68CA33-01"
+            ],
+            "status": "planned",
+            "argument_duty": "consequence",
+            "coverage_anchors": [
+              "产品发布、供需对接和服务运营",
+              "持续运营的数据产品和应用服务"
+            ]
+          }
+        ]
+      },
+      {
+        "source_unit_refs": [
+          "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01",
+          "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01",
+          "SU-9B8A448A18-PARAGRAPH-038385692DF6-01",
+          "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+        ],
+        "semantic_node_ids": [
+          "SEC-02",
+          "SUB-02"
+        ],
+        "summary": "场景定义及客户、数据、数字化三项首批准入基础。",
+        "atomic_items": [
+          {
+            "item_id": "AI-010",
+            "statement": "场景是面向外部用户某一业务主题的数据服务或模型应用，依托安全可信、可计量的数据基础设施，通过数据交互、模型调用或可视化应用完成真实数据流通应用并满足用户业务需要。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+            ],
+            "status": "planned",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "安全可信和可计量",
+              "真实数据流通应用"
+            ]
+          },
+          {
+            "item_id": "AI-011",
+            "statement": "首批重点建设具备较好客户基础、数据基础和数字化基础的场景。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-F9CD308504CC-01"
+            ],
+            "status": "existing",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "首批重点建设",
+              "客户基础、数据基础和数字化基础"
+            ]
+          },
+          {
+            "item_id": "AI-012",
+            "statement": "客户基础要求已有明确服务对象、实际业务需求和一定客户，服务对象可包括会员单位、电力企业、政府部门、科研院所、高等院校和金融机构。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-326B1DFF1851-01"
+            ],
+            "status": "existing",
+            "argument_duty": "support",
+            "coverage_anchors": [
+              "明确的服务对象",
+              "实际业务需求"
+            ]
+          },
+          {
+            "item_id": "AI-013",
+            "statement": "数据基础要求已形成业务数据、专业数据或数据集，以及分析报告、分析模型等产品成果，并具备持续更新和进一步开发利用条件。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-038385692DF6-01"
+            ],
+            "status": "existing",
+            "argument_duty": "support",
+            "coverage_anchors": [
+              "数据集",
+              "持续更新和进一步开发利用"
+            ]
+          },
+          {
+            "item_id": "AI-014",
+            "statement": "数字化基础要求已有业务系统、专业平台、网站等支撑载体，或产品服务具备数字化交付条件，并可通过API、可信连接器或系统接口接入基础设施。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-A9D9DD3215A7-01"
+            ],
+            "status": "existing",
+            "argument_duty": "support",
+            "coverage_anchors": [
+              "数字化支撑载体",
+              "API、可信连接器、系统接口"
+            ]
+          }
+        ]
+      },
+      {
+        "source_unit_refs": [
+          "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01",
+          "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+        ],
+        "semantic_node_ids": [
+          "SEC-03",
+          "SUB-03"
+        ],
+        "summary": "场景建设运营主体和基础设施运营技术支撑主体的责任边界。",
+        "atomic_items": [
+          {
+            "item_id": "AI-015",
+            "statement": "各业务部门和直属单位作为场景建设和业务运营主体，负责组织实施、确定产品服务、组织数据业务资源、开展客户对接、服务拓展和运营，并对业务内容、进度和质量负责。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-C6DDE8849B89-01"
+            ],
+            "status": "planned",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "场景建设和业务运营主体",
+              "业务内容、建设进度和质量负责"
+            ]
+          },
+          {
+            "item_id": "AI-016",
+            "statement": "数智公司负责基础设施运营和场景接入技术支撑，承担接口开发、系统联调、计量计费及基础设施侧数据安全技术保障。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-6D190883E87C-01"
+            ],
+            "status": "planned",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "接口开发、系统联调、计量计费",
+              "基础设施侧数据安全技术保障"
+            ]
+          }
+        ]
+      },
+      {
+        "source_unit_refs": [
+          "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01",
+          "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01",
+          "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+        ],
+        "semantic_node_ids": [
+          "SEC-04",
+          "SUB-04"
+        ],
+        "summary": "平台数据服务接入、共建供需对接和收益分配机制。",
+        "atomic_items": [
+          {
+            "item_id": "AI-017",
+            "statement": "现有业务平台和信息系统通过API、可信连接器或系统接口连接基础设施，并按统一入口、后台隔离原则接入服务。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+            ],
+            "status": "planned",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "统一入口、后台隔离",
+              "API、可信连接器、系统接口"
+            ]
+          },
+          {
+            "item_id": "AI-018",
+            "statement": "不宜直接共享的高价值数据可依托区块链、隐私计算、数据沙箱等能力，在保障数据安全和业务权益前提下跨主体流通利用。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-F5743F0ABE4B-01"
+            ],
+            "status": "planned",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "不宜直接共享的高价值数据",
+              "数据安全和业务权益"
+            ]
+          },
+          {
+            "item_id": "AI-019",
+            "statement": "各部门和单位可与现有服务厂商、合作机构共建场景，引导客户由线下转为通过场景专区线上获取服务。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01"
+            ],
+            "status": "recommendation",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "现有服务厂商、合作机构",
+              "由线下改为线上"
+            ]
+          },
+          {
+            "item_id": "AI-020",
+            "statement": "围绕实际业务需求，可联合数据供给方和技术服务方开发数据产品、研发模型、验证应用，并通过场景专区发布产品服务与需求、开展供需对接。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-0E913EBDFE3D-01"
+            ],
+            "status": "proposal",
+            "claim_role": "recommendation",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "数据供给方、技术服务方",
+              "发布产品服务和业务需求"
+            ]
+          },
+          {
+            "item_id": "AI-021",
+            "statement": "市场化服务收益按照谁建设、谁收益原则，根据业务贡献、资源投入和运营支撑情况协商确定具体分配方式。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-75A8FE4059C1-01"
+            ],
+            "status": "to_confirm",
+            "claim_role": "boundary",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "谁建设、谁收益",
+              "协商确定"
+            ]
+          }
+        ]
+      },
+      {
+        "source_unit_refs": [
+          "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01",
+          "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01",
+          "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01",
+          "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01",
+          "SU-9B8A448A18-PARAGRAPH-941263050803-01",
+          "SU-9B8A448A18-PARAGRAPH-FEF9CE2FD326-01",
+          "SU-9B8A448A18-PARAGRAPH-D0A3E62649CA-01",
+          "SU-9B8A448A18-PARAGRAPH-07E7A53C8152-01",
+          "SU-9B8A448A18-PARAGRAPH-4CDED5C8C865-01",
+          "SU-9B8A448A18-PARAGRAPH-392C566EE11C-01",
+          "SU-9B8A448A18-PARAGRAPH-8CCBBA0591DA-01",
+          "SU-9B8A448A18-PARAGRAPH-56FBCD26AB7D-01",
+          "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01",
+          "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01",
+          "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-01",
+          "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-02",
+          "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-03",
+          "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-04",
+          "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+        ],
+        "semantic_node_ids": [
+          "SEC-05",
+          "SUB-05"
+        ],
+        "summary": "任务填报、方案完善、分批上线、绩效激励、报送要求和任务表内容。",
+        "atomic_items": [
+          {
+            "item_id": "AI-022",
+            "statement": "各业务部门和直属单位需填写首批场景建设任务表，明确场景内容及客户、数据、数字化基础，原则上至少推荐1个，具备条件可推荐2个。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-7EA3A739BB15-01"
+            ],
+            "status": "planned",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "首批场景建设任务表",
+              "至少推荐1个"
+            ]
+          },
+          {
+            "item_id": "AI-023",
+            "statement": "项目工作专班逐项沟通梳理业务内容、三项基础、客户需求和接入方式，数智公司同步明确接口、联调和数据安全技术要求，各方共同形成具体建设和接入方案。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-BEEB6DC430C3-01"
+            ],
+            "status": "planned",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "逐项沟通",
+              "共同研究形成具体场景建设和接入方案"
+            ]
+          },
+          {
+            "item_id": "AI-024",
+            "statement": "场景按照成熟一个、接入一个、上线一个原则分批推进接口联调、专区上线、产品发布、客户接入和市场化服务，并持续完善。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01"
+            ],
+            "status": "planned",
+            "argument_duty": "response",
+            "coverage_anchors": [
+              "成熟一个、接入一个、上线一个",
+              "市场化服务"
+            ]
+          },
+          {
+            "item_id": "AI-025",
+            "statement": "首批场景应于2026年12月15日前完成建设并上线运行。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-39265C68EEDA-01"
+            ],
+            "status": "planned",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "2026年12月15日前",
+              "上线运行"
+            ]
+          },
+          {
+            "item_id": "AI-026",
+            "statement": "参与并完成场景建设上线的相关部门和单位可按中电联年度绩效考核规定获得相应加分，具体认定以正式印发的年度考核办法为准。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-F123364AEF21-01"
+            ],
+            "status": "to_confirm",
+            "claim_role": "boundary",
+            "argument_duty": "consequence",
+            "coverage_anchors": [
+              "年度绩效考核",
+              "正式印发的年度考核办法"
+            ]
+          },
+          {
+            "item_id": "AI-027",
+            "statement": "各部门和单位应于2026年9月20日前向项目工作专班报送首批场景建设任务表。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-941263050803-01"
+            ],
+            "status": "planned",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "2026年9月20日前",
+              "报送先行先试项目工作专班"
+            ]
+          },
+          {
+            "item_id": "AI-028",
+            "statement": "通知列示统计与数智部及数智公司联系人，其中数智公司联系人为刘星。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-FEF9CE2FD326-01",
+              "SU-9B8A448A18-PARAGRAPH-D0A3E62649CA-01"
+            ],
+            "status": "existing",
+            "argument_duty": "metadata",
+            "coverage_anchors": [
+              "统计与数智部",
+              "数智公司 刘星"
+            ]
+          },
+          {
+            "item_id": "AI-029",
+            "statement": "通知附件为电力领域数据基础设施首批场景建设任务表。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-07E7A53C8152-01",
+              "SU-9B8A448A18-PARAGRAPH-8CCBBA0591DA-01",
+              "SU-9B8A448A18-PARAGRAPH-56FBCD26AB7D-01"
+            ],
+            "status": "existing",
+            "argument_duty": "metadata",
+            "coverage_anchors": [
+              "附件",
+              "首批场景建设任务表"
+            ]
+          },
+          {
+            "item_id": "AI-030",
+            "statement": "通知署名为中电联统计与数智部、中电联数智公司，日期为2026年9月6日。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-4CDED5C8C865-01",
+              "SU-9B8A448A18-PARAGRAPH-392C566EE11C-01"
+            ],
+            "status": "existing",
+            "argument_duty": "metadata",
+            "coverage_anchors": [
+              "中电联统计与数智部",
+              "2026年9月6日"
+            ]
+          },
+          {
+            "item_id": "AI-031",
+            "statement": "任务表字段覆盖建设单位、场景名称与简介、主要服务方式、三项基础、牵头处室以及责任人联系方式。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-TABLE-ROW-1B1F2008C14A-01"
+            ],
+            "status": "existing",
+            "argument_duty": "detail",
+            "coverage_anchors": [
+              "主要服务方式",
+              "牵头处室"
+            ]
+          },
+          {
+            "item_id": "AI-032",
+            "statement": "任务表示例以电力行业人才测评场景说明面向会员单位和电力企业提供模型调用、数据交互服务，并分别填写客户、数据、数字化基础。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-TABLE-ROW-EB6037ED8467-01"
+            ],
+            "status": "existing",
+            "argument_duty": "support",
+            "coverage_anchors": [
+              "电力行业人才测评场景",
+              "模型调用、数据交互"
+            ]
+          },
+          {
+            "item_id": "AI-033",
+            "statement": "任务表在示例行后预留4行空白供各单位填写场景。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-01",
+              "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-02",
+              "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-03",
+              "SU-9B8A448A18-TABLE-ROW-8A239430E7CF-04"
+            ],
+            "status": "existing",
+            "argument_duty": "metadata",
+            "coverage_anchors": [
+              "4行空白",
+              "单位填写场景"
+            ]
+          },
+          {
+            "item_id": "AI-034",
+            "statement": "任务表要求各单位结合现有业务如实填写，符合条件原则上填报1个、具备条件可填2个，暂不具备条件需说明情况；主要服务方式可选数据交互、模型调用、可视化应用等，专班将据填报沟通完善方案。",
+            "source_unit_refs": [
+              "SU-9B8A448A18-PARAGRAPH-E222558E6672-01"
+            ],
+            "status": "planned",
+            "argument_duty": "boundary",
+            "coverage_anchors": [
+              "暂不具备条件的，应说明有关情况",
+              "专班将根据填报情况沟通完善"
+            ]
+          }
+        ]
+      }
+    ],
+    "intentional_omissions": [],
+    "review_notes": [
+      "全部32个非标题源单元均已进入原子事项；空白表格行仅作为附件结构元数据保留。"
+    ]
+  },
+  "source_gaps": [
+    {
+      "id": "GAP-01",
+      "description": "具体首批场景清单尚未形成。",
+      "impact": "无法把任何示例或拟报事项表述为已确定入选场景。",
+      "handling": "后续仅表述为待各单位填报并由专班逐项完善。"
+    },
+    {
+      "id": "GAP-02",
+      "description": "各场景的具体建设和接入方案尚未形成。",
+      "impact": "接口、联调、数据安全和上线范围无法细化到具体场景。",
+      "handling": "保留共同研究形成方案的计划状态。"
+    },
+    {
+      "id": "GAP-03",
+      "description": "收益分配的具体方式未确定。",
+      "impact": "无法给出比例、结算规则或各方确定收益。",
+      "handling": "仅保留原则及相关单位与数智公司按实际协商确定的边界。"
+    },
+    {
+      "id": "GAP-04",
+      "description": "绩效加分的具体认定标准尚待正式年度考核办法。",
+      "impact": "无法承诺固定加分或自动获得加分。",
+      "handling": "将加分表述为受正式办法约束的激励安排。"
+    }
+  ]
+}
+```

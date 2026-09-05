@@ -1,0 +1,1472 @@
+{
+  "mode": "cyberppt.stage02.editable_pptx.v1",
+  "production_mode": "image-to-editable-svg",
+  "requested_pages": [
+    1
+  ],
+  "content_page_numbers": [
+    1
+  ],
+  "skipped_pages": [],
+  "output_variants": [
+    "full"
+  ],
+  "text_audit_contract": {
+    "required_before_enhancement": true,
+    "scope": "typo_and_gibberish_only",
+    "max_generation_attempts": 3,
+    "failure_action": "regenerate_image"
+  },
+  "generation_contract": {
+    "mode": "image-to-editable-svg",
+    "owner": "CyberPPT",
+    "slide_canvas": {
+      "width": 2048,
+      "height": 1024
+    },
+    "content_region": {
+      "x": 0,
+      "y": 0,
+      "width": 2048,
+      "height": 1024
+    },
+    "generation_size": {
+      "width": 2048,
+      "height": 1024
+    },
+    "rule": "Generate one audited full content-area image for registered editable-SVG reconstruction; PPT title, subtitle and enterprise chrome are handled by template/export code."
+  },
+  "project_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/inputs/final-script.md",
+  "original_script": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/inputs/final-script.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/locks/visual_style_lock.json",
+  "stage02_script_input": {
+    "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-input/script-intake.json",
+    "schema": "cyberppt.stage02_script_input.v1"
+  },
+  "output_dir": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4",
+  "created_at": "2026-09-04T06:37:10.143540+00:00",
+  "prompt_contract": {
+    "approved_prompt_is_source": false,
+    "direct_edit_mode": null,
+    "freshness_enforced": false,
+    "canonical_prompt_is_diagnostic_only": false,
+    "compact_blueprint": false,
+    "compiler": "content-first-v1"
+  },
+  "prompt_enrich": {
+    "mode": "off",
+    "require_send_approval": false,
+    "pages": [
+      {
+        "page_number": 1,
+        "mode": "off",
+        "source_prompt_sha256": "8e9b8dc79652dadcb58f026b0c76b71b584e5d4d6006c614fd13e08e469e185c",
+        "structure_cue": "",
+        "used_send_script": false,
+        "send_script_path": null,
+        "enrich_block": "",
+        "prompt_chars": 4285
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "page_number": 1,
+      "page_code": "P01",
+      "title": "电力领域数据基础设施总体架构",
+      "page_script": "【完整上屏内容】\n**平台定位：电力数据基础设施将经授权的数据、知识、模型与专业能力组织为可交付产品，并在不同主体和环境之间提供受控服务。**\n **可信连接为多主体接入建立边界：** 平台面向机构、人员和应用建立可信身份，承接外部主体接入与业务请求。公共能力集中部署于统一环境；合作伙伴资源经可信连接器在源端提供服务；客户专属知识库、模型和场景应用配置专属实例或部署于客户指定环境；涉及多方敏感数据的业务，经受控计算环境开展联合分析。\n **资源产品化明确服务供给对象：** 数据与人工智能基础能力承载经授权数据与模型，提供存储计算、知识库、向量检索、模型服务与算力资源管理。资源与产品管理将数据、知识、模型、算法和专业能力纳入登记、编目、质量与版本管理，并封装形成可订购数据产品。\n **授权使用把产品管理连接到受控交付：** 平台在运营与交易管理中统一管理客户、产品规格、订单、合同、授权、计量、账单与结算；服务交付与场景编排支撑接口调用、成果交付、模型任务、数据沙箱与多方协同交付。权利核查、授权规则、交付证据和计量记录共同支持从产品订购到服务使用的可追溯过程。\n **贯穿保障维持平台的持续可用与可控：** 安全与合规覆盖分类分级、权利核查、访问控制、输出管理和审计追溯全过程；标准与运维统一目录、接口、质量、服务等级和计量标准，并开展版本、监控、容灾和故障处置管理。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：纯白 + 深蓝领导汇报\n\nPalette: white #FFFFFF, deep blue #12355B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+      "image_text_truth": {
+        "script_text": "**平台定位：电力数据基础设施将经授权的数据、知识、模型与专业能力组织为可交付产品，并在不同主体和环境之间提供受控服务。**\n\n  **可信连接为多主体接入建立边界：** 平台面向机构、人员和应用建立可信身份，承接外部主体接入与业务请求。公共能力集中部署于统一环境；合作伙伴资源经可信连接器在源端提供服务；客户专属知识库、模型和场景应用配置专属实例或部署于客户指定环境；涉及多方敏感数据的业务，经受控计算环境开展联合分析。\n\n  **资源产品化明确服务供给对象：** 数据与人工智能基础能力承载经授权数据与模型，提供存储计算、知识库、向量检索、模型服务与算力资源管理。资源与产品管理将数据、知识、模型、算法和专业能力纳入登记、编目、质量与版本管理，并封装形成可订购数据产品。\n\n  **授权使用把产品管理连接到受控交付：** 平台在运营与交易管理中统一管理客户、产品规格、订单、合同、授权、计量、账单与结算；服务交付与场景编排支撑接口调用、成果交付、模型任务、数据沙箱与多方协同交付。权利核查、授权规则、交付证据和计量记录共同支持从产品订购到服务使用的可追溯过程。\n\n  **贯穿保障维持平台的持续可用与可控：** 安全与合规覆盖分类分级、权利核查、访问控制、输出管理和审计追溯全过程；标准与运维统一目录、接口、质量、服务等级和计量标准，并开展版本、监控、容灾和故障处置管理。",
+        "scope": "typo_and_gibberish_only"
+      },
+      "graphic_text_policy": {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "required",
+        "empty_container_check": "required",
+        "items": [],
+        "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export."
+      },
+      "clean_base": {
+        "schema": "cyberppt.stage02.authored_clean_base.v1",
+        "status": "required",
+        "note": "Prepare reference-edited local layers and register-quick-page; resume the same build."
+      },
+      "prompt_file": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/prompts/p01.txt",
+      "visual_structure_handoff": {
+        "consumed": false
+      },
+      "stage02_script_input": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-input/script-intake.json",
+      "full": {
+        "filename": "page_001_电力领域数据基础设施总体架构_full.png",
+        "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/page_001_电力领域数据基础设施总体架构_full.png",
+        "prompt": "【完整上屏内容】\n**平台定位：电力数据基础设施将经授权的数据、知识、模型与专业能力组织为可交付产品，并在不同主体和环境之间提供受控服务。**\n **可信连接为多主体接入建立边界：** 平台面向机构、人员和应用建立可信身份，承接外部主体接入与业务请求。公共能力集中部署于统一环境；合作伙伴资源经可信连接器在源端提供服务；客户专属知识库、模型和场景应用配置专属实例或部署于客户指定环境；涉及多方敏感数据的业务，经受控计算环境开展联合分析。\n **资源产品化明确服务供给对象：** 数据与人工智能基础能力承载经授权数据与模型，提供存储计算、知识库、向量检索、模型服务与算力资源管理。资源与产品管理将数据、知识、模型、算法和专业能力纳入登记、编目、质量与版本管理，并封装形成可订购数据产品。\n **授权使用把产品管理连接到受控交付：** 平台在运营与交易管理中统一管理客户、产品规格、订单、合同、授权、计量、账单与结算；服务交付与场景编排支撑接口调用、成果交付、模型任务、数据沙箱与多方协同交付。权利核查、授权规则、交付证据和计量记录共同支持从产品订购到服务使用的可追溯过程。\n **贯穿保障维持平台的持续可用与可控：** 安全与合规覆盖分类分级、权利核查、访问控制、输出管理和审计追溯全过程；标准与运维统一目录、接口、质量、服务等级和计量标准，并开展版本、监控、容灾和故障处置管理。\n\n【核心意思表达要求｜不上屏】\n可依据【完整上屏内容】、【页面任务】、【核心意思】和【页面逻辑】形成结论句、标题与正文层级；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。\n\n【呈现文案改写授权｜上屏】\n以【完整上屏内容】为事实基础，并结合页面任务、核心意思、页面逻辑和语义关系生成可见中文。允许改写、提炼、合并、拆分、重排与重设标题层级，优先形成结论先行的专业汇报表达。\n改写后必须准确保留业务对象、事实关系、数字、时间、范围、责任主体、条件、状态和结论力度；不得虚构来源未支持的事实、成果、承诺、因果或确定性。\n\n【并列语义防发散｜不上屏】\n改写并列项时，保留原文中共享谓词、限定语和父级说明的适用范围；不得把共享表述误写成每个子项都已单独具备的事实，也不得新增原文不支持的判断、标签或事实。\n\n【非上屏语义边界】\n页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题；生成内容必须受完整上屏内容与事实边界约束。\n\n\n\n\n\n\n\n【输出尺寸｜不上屏】\n最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。\n\n【模板层禁绘｜不上屏】\n正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。\n标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。\n禁止新增与业务内容无关的序号条、页码章或装饰编号。\n\n\n\n【视觉风格｜不上屏】\n视觉风格09：纯白 + 深蓝领导汇报\n\nPalette: white #FFFFFF, deep blue #12355B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.\n\nCreate a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.\n\nBuild one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.\n\nRewrite the supplied source copy into concise, conclusion-first Chinese presentation text. Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit. Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength; do not invent unsupported facts or slogans.\n\nPrefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.\n\nPrefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.\n\nUse icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.\n\nDo not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or source-backed text.\n\nScreens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.\n\nUse broad flat fields and pure-white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.\n\nAvoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.\n\nPeople should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.\n\nFinal result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.\n",
+        "prompt_sha256": "fc695c662004dcbb8aa0cae18b6d0e2b95695e796998a992e25d360b0eed8b32",
+        "generation_method": "text_to_image_generate_full",
+        "operation": "generate",
+        "output_role": "full_textual_visual_reference",
+        "aspect_ratio": "content-region",
+        "image_size": "2x-content-region",
+        "canvas": "2048x1024",
+        "prompt_enrich": {
+          "mode": "off",
+          "source_prompt_sha256": "8e9b8dc79652dadcb58f026b0c76b71b584e5d4d6006c614fd13e08e469e185c",
+          "structure_cue": "",
+          "used_send_script": false,
+          "send_script_path": null,
+          "enrich_block": "",
+          "prompt_chars": 4285
+        },
+        "visual_structure_handoff": {
+          "consumed": false
+        },
+        "prompt_source": "script_compiler",
+        "prompt_provenance": {
+          "consumed_prompt_sha256": "fc695c662004dcbb8aa0cae18b6d0e2b95695e796998a992e25d360b0eed8b32",
+          "consumed_from": "script_compiler"
+        },
+        "status": "Generated",
+        "generated_at": "2026-09-04T06:38:43+00:00",
+        "generated_prompt_sha256": "fc695c662004dcbb8aa0cae18b6d0e2b95695e796998a992e25d360b0eed8b32",
+        "text_audit": {
+          "schema": "cyberppt.generated_image_text_audit.v2",
+          "valid": true,
+          "scope": "typo_and_gibberish_only",
+          "image": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/page_001_电力领域数据基础设施总体架构_full.png",
+          "image_size": [
+            1774,
+            887
+          ],
+          "issues": [],
+          "observed_text": [
+            "01 平台定位",
+            "电力数据基础设施将经授权的数据、知识、模型与专业能力组织为可交付产品，并在不同主体和环境之间提供受控服务。",
+            "02 可信连接为多主体接入建立边界",
+            "平台面向机构、人员和应用建立可信身份，承接外部主体接入与业务请求。",
+            "公共能力集中部署于统一环境；合作伙伴资源经可信连接器在源端提供服务。",
+            "客户专属知识库、模型和场景应用配置专属实例或部署于客户指定环境。",
+            "涉及多方敏感数据的业务，经受控计算环境开展联合分析。",
+            "统一环境",
+            "伙伴资源在源端",
+            "受控计算环境",
+            "03 资源产品化明确服务供给对象",
+            "数据与人工智能基础能力承载经授权数据与模型，提供存储计算、知识库、向量检索、模型服务与算力资源管理。",
+            "资源与产品管理将数据、知识、模型、算法和专业能力纳入登记、编目、质量与版本管理，并封装形成可订购数据产品。",
+            "04 授权使用把产品管理连接到受控交付",
+            "平台在运营与交易管理中统一管理客户、产品规格、订单、合同、授权、计量、账单与结算。",
+            "服务交付与场景编排支撑接口调用、成果交付、模型任务、数据沙箱与多方协同交付。",
+            "权利核查、授权规则、交付证据和计量记录共同支持从产品订购到服务使用的可追溯过程。",
+            "服务交付清单",
+            "05 贯穿保障维持平台的持续可用与可控",
+            "安全与合规覆盖分类分级、权利核查、访问控制、输出管理和审计追溯全过程。",
+            "标准与运维统一目录、接口、质量、服务等级和计量标准，并开展版本、监控、容灾和故障处置管理。",
+            "合规检查记录",
+            "安全与合规",
+            "标准统一",
+            "版本管理",
+            "监控与容灾",
+            "故障处置"
+          ],
+          "ocr_items": [
+            {
+              "text": "01",
+              "confidence": 0.9991784691810608,
+              "bbox": [
+                [
+                  46.0,
+                  43.0
+                ],
+                [
+                  96.0,
+                  43.0
+                ],
+                [
+                  96.0,
+                  83.0
+                ],
+                [
+                  46.0,
+                  83.0
+                ]
+              ]
+            },
+            {
+              "text": "平台定位",
+              "confidence": 0.9998204261064529,
+              "bbox": [
+                [
+                  250.0,
+                  38.0
+                ],
+                [
+                  379.0,
+                  38.0
+                ],
+                [
+                  379.0,
+                  75.0
+                ],
+                [
+                  250.0,
+                  75.0
+                ]
+              ]
+            },
+            {
+              "text": "电力数据基础设施将经授权的数据、知识、模型与专业能力",
+              "confidence": 0.9994686750265268,
+              "bbox": [
+                [
+                  253.0,
+                  84.0
+                ],
+                [
+                  789.0,
+                  84.0
+                ],
+                [
+                  789.0,
+                  107.0
+                ],
+                [
+                  253.0,
+                  107.0
+                ]
+              ]
+            },
+            {
+              "text": "组织为可交付产品，并在不同主体和环境之间提供受控服务。",
+              "confidence": 0.9997536429652462,
+              "bbox": [
+                [
+                  252.0,
+                  118.0
+                ],
+                [
+                  793.0,
+                  118.0
+                ],
+                [
+                  793.0,
+                  141.0
+                ],
+                [
+                  252.0,
+                  141.0
+                ]
+              ]
+            },
+            {
+              "text": "02",
+              "confidence": 0.9985392391681671,
+              "bbox": [
+                [
+                  46.0,
+                  204.0
+                ],
+                [
+                  99.0,
+                  204.0
+                ],
+                [
+                  99.0,
+                  245.0
+                ],
+                [
+                  46.0,
+                  245.0
+                ]
+              ]
+            },
+            {
+              "text": "可信连接为多主体接入建立边界",
+              "confidence": 0.9970362484455109,
+              "bbox": [
+                [
+                  253.0,
+                  200.0
+                ],
+                [
+                  629.0,
+                  200.0
+                ],
+                [
+                  629.0,
+                  229.0
+                ],
+                [
+                  253.0,
+                  229.0
+                ]
+              ]
+            },
+            {
+              "text": "·平台面向机构、人员和应用建立可信身份，承接外部主体接入与业务请求。",
+              "confidence": 0.9935377853758195,
+              "bbox": [
+                [
+                  254.0,
+                  242.0
+                ],
+                [
+                  848.0,
+                  242.0
+                ],
+                [
+                  848.0,
+                  264.0
+                ],
+                [
+                  254.0,
+                  264.0
+                ]
+              ]
+            },
+            {
+              "text": "·公共能力集中部署于统一环境；合作伙伴资源经可信连接器在源端提供服务。",
+              "confidence": 0.9957818337849208,
+              "bbox": [
+                [
+                  250.0,
+                  274.0
+                ],
+                [
+                  866.0,
+                  274.0
+                ],
+                [
+                  866.0,
+                  294.0
+                ],
+                [
+                  250.0,
+                  294.0
+                ]
+              ]
+            },
+            {
+              "text": "·客户专属知识库、模型和场景应用配置专属实例或部署于客户指定环境。",
+              "confidence": 0.9965117356993936,
+              "bbox": [
+                [
+                  252.0,
+                  306.0
+                ],
+                [
+                  831.0,
+                  306.0
+                ],
+                [
+                  831.0,
+                  326.0
+                ],
+                [
+                  252.0,
+                  326.0
+                ]
+              ]
+            },
+            {
+              "text": "统一环境",
+              "confidence": 0.9989894181489944,
+              "bbox": [
+                [
+                  985.0,
+                  322.0
+                ],
+                [
+                  1075.0,
+                  322.0
+                ],
+                [
+                  1075.0,
+                  348.0
+                ],
+                [
+                  985.0,
+                  348.0
+                ]
+              ]
+            },
+            {
+              "text": "伙伴资源在源端",
+              "confidence": 0.9920756305967059,
+              "bbox": [
+                [
+                  1231.0,
+                  322.0
+                ],
+                [
+                  1384.0,
+                  322.0
+                ],
+                [
+                  1384.0,
+                  348.0
+                ],
+                [
+                  1231.0,
+                  348.0
+                ]
+              ]
+            },
+            {
+              "text": "受控计算环境",
+              "confidence": 0.9994691610336304,
+              "bbox": [
+                [
+                  1522.0,
+                  321.0
+                ],
+                [
+                  1655.0,
+                  321.0
+                ],
+                [
+                  1655.0,
+                  347.0
+                ],
+                [
+                  1522.0,
+                  347.0
+                ]
+              ]
+            },
+            {
+              "text": "·涉及多方敏感数据的业务，经受控计算环境开展联合分析。",
+              "confidence": 0.995667905719192,
+              "bbox": [
+                [
+                  252.0,
+                  338.0
+                ],
+                [
+                  725.0,
+                  338.0
+                ],
+                [
+                  725.0,
+                  357.0
+                ],
+                [
+                  252.0,
+                  357.0
+                ]
+              ]
+            },
+            {
+              "text": "光欣规免限",
+              "confidence": 0.7099592208862304,
+              "bbox": [
+                [
+                  1285.0,
+                  372.0
+                ],
+                [
+                  1335.0,
+                  372.0
+                ],
+                [
+                  1335.0,
+                  386.0
+                ],
+                [
+                  1285.0,
+                  386.0
+                ]
+              ]
+            },
+            {
+              "text": "03",
+              "confidence": 0.9990792870521545,
+              "bbox": [
+                [
+                  45.0,
+                  395.0
+                ],
+                [
+                  97.0,
+                  395.0
+                ],
+                [
+                  97.0,
+                  435.0
+                ],
+                [
+                  45.0,
+                  435.0
+                ]
+              ]
+            },
+            {
+              "text": "资源产品化明确服务供给对象",
+              "confidence": 0.9954986663965079,
+              "bbox": [
+                [
+                  251.0,
+                  387.0
+                ],
+                [
+                  603.0,
+                  388.0
+                ],
+                [
+                  603.0,
+                  418.0
+                ],
+                [
+                  251.0,
+                  417.0
+                ]
+              ]
+            },
+            {
+              "text": "数据与人工智能基础能力承载经授权数据与模型，提供存储计算、",
+              "confidence": 0.9984089937703363,
+              "bbox": [
+                [
+                  256.0,
+                  431.0
+                ],
+                [
+                  776.0,
+                  431.0
+                ],
+                [
+                  776.0,
+                  450.0
+                ],
+                [
+                  256.0,
+                  450.0
+                ]
+              ]
+            },
+            {
+              "text": "知识库、向量检索、模型服务与算力资源管理。",
+              "confidence": 0.9989064250673566,
+              "bbox": [
+                [
+                  274.0,
+                  457.0
+                ],
+                [
+                  638.0,
+                  457.0
+                ],
+                [
+                  638.0,
+                  477.0
+                ],
+                [
+                  274.0,
+                  477.0
+                ]
+              ]
+            },
+            {
+              "text": "·资源与产品管理将数据、知识、模型、算法和专业能力纳入登记、",
+              "confidence": 0.9859225451946259,
+              "bbox": [
+                [
+                  255.0,
+                  486.0
+                ],
+                [
+                  778.0,
+                  486.0
+                ],
+                [
+                  778.0,
+                  509.0
+                ],
+                [
+                  255.0,
+                  509.0
+                ]
+              ]
+            },
+            {
+              "text": "编目、质量与版本管理，并封装形成可订购数据产品。",
+              "confidence": 0.9988553201158842,
+              "bbox": [
+                [
+                  273.0,
+                  512.0
+                ],
+                [
+                  691.0,
+                  512.0
+                ],
+                [
+                  691.0,
+                  535.0
+                ],
+                [
+                  273.0,
+                  535.0
+                ]
+              ]
+            },
+            {
+              "text": "04",
+              "confidence": 0.9997329115867615,
+              "bbox": [
+                [
+                  46.0,
+                  560.0
+                ],
+                [
+                  97.0,
+                  560.0
+                ],
+                [
+                  97.0,
+                  601.0
+                ],
+                [
+                  46.0,
+                  601.0
+                ]
+              ]
+            },
+            {
+              "text": "资权使用把产品管理连接到受控交付",
+              "confidence": 0.9925024025142193,
+              "bbox": [
+                [
+                  251.0,
+                  551.0
+                ],
+                [
+                  675.0,
+                  551.0
+                ],
+                [
+                  675.0,
+                  580.0
+                ],
+                [
+                  251.0,
+                  580.0
+                ]
+              ]
+            },
+            {
+              "text": "服务交付清单",
+              "confidence": 0.9021916935841242,
+              "bbox": [
+                [
+                  943.0,
+                  567.0
+                ],
+                [
+                  1037.0,
+                  557.0
+                ],
+                [
+                  1039.0,
+                  574.0
+                ],
+                [
+                  945.0,
+                  584.0
+                ]
+              ]
+            },
+            {
+              "text": "合规检查",
+              "confidence": 0.9817904829978943,
+              "bbox": [
+                [
+                  1594.0,
+                  570.0
+                ],
+                [
+                  1681.0,
+                  584.0
+                ],
+                [
+                  1677.0,
+                  608.0
+                ],
+                [
+                  1590.0,
+                  594.0
+                ]
+              ]
+            },
+            {
+              "text": "·平台在运营与交易管理中统一管理客户、产品规格、订单、合同、授权、",
+              "confidence": 0.9955695379864086,
+              "bbox": [
+                [
+                  252.0,
+                  590.0
+                ],
+                [
+                  831.0,
+                  590.0
+                ],
+                [
+                  831.0,
+                  610.0
+                ],
+                [
+                  252.0,
+                  610.0
+                ]
+              ]
+            },
+            {
+              "text": "记录",
+              "confidence": 0.9986166059970856,
+              "bbox": [
+                [
+                  1603.0,
+                  593.0
+                ],
+                [
+                  1652.0,
+                  601.0
+                ],
+                [
+                  1648.0,
+                  626.0
+                ],
+                [
+                  1598.0,
+                  618.0
+                ]
+              ]
+            },
+            {
+              "text": "计量、账单与结算。",
+              "confidence": 0.9998033907678392,
+              "bbox": [
+                [
+                  271.0,
+                  612.0
+                ],
+                [
+                  425.0,
+                  612.0
+                ],
+                [
+                  425.0,
+                  635.0
+                ],
+                [
+                  271.0,
+                  635.0
+                ]
+              ]
+            },
+            {
+              "text": "·服务交付与场景编排支撑接口调用、成果交付、模型任务、数据沙箱与",
+              "confidence": 0.9972527958452702,
+              "bbox": [
+                [
+                  248.0,
+                  635.0
+                ],
+                [
+                  826.0,
+                  636.0
+                ],
+                [
+                  825.0,
+                  661.0
+                ],
+                [
+                  248.0,
+                  660.0
+                ]
+              ]
+            },
+            {
+              "text": "多方协同交付。",
+              "confidence": 0.9998466457639422,
+              "bbox": [
+                [
+                  272.0,
+                  660.0
+                ],
+                [
+                  390.0,
+                  660.0
+                ],
+                [
+                  390.0,
+                  683.0
+                ],
+                [
+                  272.0,
+                  683.0
+                ]
+              ]
+            },
+            {
+              "text": "权利核查、授权规则、交付证据和计量记录共同支持从产品订购到服务",
+              "confidence": 0.9986998592653582,
+              "bbox": [
+                [
+                  255.0,
+                  681.0
+                ],
+                [
+                  825.0,
+                  681.0
+                ],
+                [
+                  825.0,
+                  704.0
+                ],
+                [
+                  255.0,
+                  704.0
+                ]
+              ]
+            },
+            {
+              "text": "使用的可追溯过程。",
+              "confidence": 0.960079292456309,
+              "bbox": [
+                [
+                  273.0,
+                  705.0
+                ],
+                [
+                  425.0,
+                  705.0
+                ],
+                [
+                  425.0,
+                  728.0
+                ],
+                [
+                  273.0,
+                  728.0
+                ]
+              ]
+            },
+            {
+              "text": "05",
+              "confidence": 0.9997666478157043,
+              "bbox": [
+                [
+                  45.0,
+                  746.0
+                ],
+                [
+                  97.0,
+                  746.0
+                ],
+                [
+                  97.0,
+                  787.0
+                ],
+                [
+                  45.0,
+                  787.0
+                ]
+              ]
+            },
+            {
+              "text": "贯穿保障维持平台的持续可用与可控",
+              "confidence": 0.9971819370985031,
+              "bbox": [
+                [
+                  251.0,
+                  750.0
+                ],
+                [
+                  678.0,
+                  750.0
+                ],
+                [
+                  678.0,
+                  779.0
+                ],
+                [
+                  251.0,
+                  779.0
+                ]
+              ]
+            },
+            {
+              "text": "☆",
+              "confidence": 0.9837644696235657,
+              "bbox": [
+                [
+                  167.0,
+                  789.0
+                ],
+                [
+                  197.0,
+                  789.0
+                ],
+                [
+                  197.0,
+                  816.0
+                ],
+                [
+                  167.0,
+                  816.0
+                ]
+              ]
+            },
+            {
+              "text": "安全与合规",
+              "confidence": 0.9991494536399841,
+              "bbox": [
+                [
+                  932.0,
+                  785.0
+                ],
+                [
+                  1018.0,
+                  785.0
+                ],
+                [
+                  1018.0,
+                  806.0
+                ],
+                [
+                  932.0,
+                  806.0
+                ]
+              ]
+            },
+            {
+              "text": "标准统一",
+              "confidence": 0.9993274360895157,
+              "bbox": [
+                [
+                  1123.0,
+                  783.0
+                ],
+                [
+                  1193.0,
+                  783.0
+                ],
+                [
+                  1193.0,
+                  807.0
+                ],
+                [
+                  1123.0,
+                  807.0
+                ]
+              ]
+            },
+            {
+              "text": "版本管理",
+              "confidence": 0.9997007846832275,
+              "bbox": [
+                [
+                  1289.0,
+                  783.0
+                ],
+                [
+                  1362.0,
+                  783.0
+                ],
+                [
+                  1362.0,
+                  807.0
+                ],
+                [
+                  1289.0,
+                  807.0
+                ]
+              ]
+            },
+            {
+              "text": "监控与容灾",
+              "confidence": 0.9986533284187317,
+              "bbox": [
+                [
+                  1447.0,
+                  783.0
+                ],
+                [
+                  1536.0,
+                  783.0
+                ],
+                [
+                  1536.0,
+                  807.0
+                ],
+                [
+                  1447.0,
+                  807.0
+                ]
+              ]
+            },
+            {
+              "text": "故障处置",
+              "confidence": 0.9982897043228149,
+              "bbox": [
+                [
+                  1621.0,
+                  783.0
+                ],
+                [
+                  1693.0,
+                  783.0
+                ],
+                [
+                  1693.0,
+                  807.0
+                ],
+                [
+                  1621.0,
+                  807.0
+                ]
+              ]
+            },
+            {
+              "text": "·安全与合规覆盖分类分级、权利核查、访问控制、输出管理和审计追湖全过程。",
+              "confidence": 0.9846471697092056,
+              "bbox": [
+                [
+                  251.0,
+                  793.0
+                ],
+                [
+                  855.0,
+                  793.0
+                ],
+                [
+                  855.0,
+                  813.0
+                ],
+                [
+                  251.0,
+                  813.0
+                ]
+              ]
+            },
+            {
+              "text": "分类分级、权利核查",
+              "confidence": 0.9987586008177863,
+              "bbox": [
+                [
+                  909.0,
+                  808.0
+                ],
+                [
+                  1040.0,
+                  808.0
+                ],
+                [
+                  1040.0,
+                  828.0
+                ],
+                [
+                  909.0,
+                  828.0
+                ]
+              ]
+            },
+            {
+              "text": "目录、接口、质量",
+              "confidence": 0.9943176880478859,
+              "bbox": [
+                [
+                  1100.0,
+                  806.0
+                ],
+                [
+                  1219.0,
+                  806.0
+                ],
+                [
+                  1219.0,
+                  829.0
+                ],
+                [
+                  1100.0,
+                  829.0
+                ]
+              ]
+            },
+            {
+              "text": "版本发布",
+              "confidence": 0.9998310059309006,
+              "bbox": [
+                [
+                  1293.0,
+                  807.0
+                ],
+                [
+                  1357.0,
+                  807.0
+                ],
+                [
+                  1357.0,
+                  828.0
+                ],
+                [
+                  1293.0,
+                  828.0
+                ]
+              ]
+            },
+            {
+              "text": "运行监控",
+              "confidence": 0.9982395023107529,
+              "bbox": [
+                [
+                  1458.0,
+                  806.0
+                ],
+                [
+                  1525.0,
+                  806.0
+                ],
+                [
+                  1525.0,
+                  830.0
+                ],
+                [
+                  1458.0,
+                  830.0
+                ]
+              ]
+            },
+            {
+              "text": "故障诊断",
+              "confidence": 0.9970844089984894,
+              "bbox": [
+                [
+                  1625.0,
+                  807.0
+                ],
+                [
+                  1689.0,
+                  807.0
+                ],
+                [
+                  1689.0,
+                  828.0
+                ],
+                [
+                  1625.0,
+                  828.0
+                ]
+              ]
+            },
+            {
+              "text": "·标准与运维统一目录、接口、质量、服务等级和计量标准，并开展版本、",
+              "confidence": 0.9951971101038384,
+              "bbox": [
+                [
+                  250.0,
+                  820.0
+                ],
+                [
+                  820.0,
+                  821.0
+                ],
+                [
+                  820.0,
+                  843.0
+                ],
+                [
+                  250.0,
+                  842.0
+                ]
+              ]
+            },
+            {
+              "text": "访问控制、输出管理",
+              "confidence": 0.9915735191769071,
+              "bbox": [
+                [
+                  908.0,
+                  825.0
+                ],
+                [
+                  1041.0,
+                  827.0
+                ],
+                [
+                  1041.0,
+                  848.0
+                ],
+                [
+                  908.0,
+                  845.0
+                ]
+              ]
+            },
+            {
+              "text": "服务等级",
+              "confidence": 0.9987027198076248,
+              "bbox": [
+                [
+                  1128.0,
+                  827.0
+                ],
+                [
+                  1191.0,
+                  827.0
+                ],
+                [
+                  1191.0,
+                  847.0
+                ],
+                [
+                  1128.0,
+                  847.0
+                ]
+              ]
+            },
+            {
+              "text": "变更管理",
+              "confidence": 0.9996261298656464,
+              "bbox": [
+                [
+                  1293.0,
+                  827.0
+                ],
+                [
+                  1357.0,
+                  827.0
+                ],
+                [
+                  1357.0,
+                  847.0
+                ],
+                [
+                  1293.0,
+                  847.0
+                ]
+              ]
+            },
+            {
+              "text": "容灾管理",
+              "confidence": 0.9988869428634644,
+              "bbox": [
+                [
+                  1459.0,
+                  827.0
+                ],
+                [
+                  1522.0,
+                  827.0
+                ],
+                [
+                  1522.0,
+                  847.0
+                ],
+                [
+                  1459.0,
+                  847.0
+                ]
+              ]
+            },
+            {
+              "text": "快速恢复",
+              "confidence": 0.9995317757129669,
+              "bbox": [
+                [
+                  1626.0,
+                  827.0
+                ],
+                [
+                  1688.0,
+                  827.0
+                ],
+                [
+                  1688.0,
+                  847.0
+                ],
+                [
+                  1626.0,
+                  847.0
+                ]
+              ]
+            },
+            {
+              "text": "监控、容灾和故障处置管理。",
+              "confidence": 0.9988635732577398,
+              "bbox": [
+                [
+                  272.0,
+                  845.0
+                ],
+                [
+                  491.0,
+                  845.0
+                ],
+                [
+                  491.0,
+                  865.0
+                ],
+                [
+                  272.0,
+                  865.0
+                ]
+              ]
+            },
+            {
+              "text": "审计追溯",
+              "confidence": 0.8652402460575104,
+              "bbox": [
+                [
+                  943.0,
+                  845.0
+                ],
+                [
+                  1007.0,
+                  845.0
+                ],
+                [
+                  1007.0,
+                  866.0
+                ],
+                [
+                  943.0,
+                  866.0
+                ]
+              ]
+            },
+            {
+              "text": "计量标准",
+              "confidence": 0.9999412894248962,
+              "bbox": [
+                [
+                  1128.0,
+                  845.0
+                ],
+                [
+                  1191.0,
+                  845.0
+                ],
+                [
+                  1191.0,
+                  866.0
+                ],
+                [
+                  1128.0,
+                  866.0
+                ]
+              ]
+            }
+          ],
+          "summary": "未发现明确错字或乱码。",
+          "required_action": null,
+          "page_number": 1,
+          "attempt": 1,
+          "normalized_image_size": [
+            2048,
+            1024
+          ]
+        },
+        "visual_signature": {
+          "schema": "cyberppt.full_image_visual_signature.v1",
+          "page_number": 1,
+          "source_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/page_001_电力领域数据基础设施总体架构_full.png",
+          "source_sha256": "3fcb498e4387b261c3230f6f8fb55a158855c967f0d7dcc8a9083c1699b49f39",
+          "visual_medium": "unspecified",
+          "gravity": {
+            "x": 0.4928,
+            "y": 0.5151,
+            "horizontal": "center",
+            "vertical": "middle"
+          },
+          "density": "dense",
+          "density_score": 62.2797,
+          "skeleton_3x3": "111111111",
+          "skeleton_shares": [
+            0.1147,
+            0.0914,
+            0.0936,
+            0.1266,
+            0.1135,
+            0.1432,
+            0.1183,
+            0.1025,
+            0.0962
+          ],
+          "structure_hash": "806f7fefe7f37720"
+        },
+        "sha256": "3fcb498e4387b261c3230f6f8fb55a158855c967f0d7dcc8a9083c1699b49f39",
+        "reconstruction_visual_source": {
+          "authority": "audited_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/page_001_电力领域数据基础设施总体架构_full.png",
+          "sha256": "3fcb498e4387b261c3230f6f8fb55a158855c967f0d7dcc8a9083c1699b49f39",
+          "immutable_visual_composition": true
+        }
+      },
+      "quick_page_checkpoint": {
+        "schema": "cyberppt.stage02.quick_page_checkpoint.v1",
+        "status": "failed",
+        "error": "requires a hand-authored SVG from the image-to-PPTX runtime"
+      }
+    }
+  ],
+  "source_mode": "script_file",
+  "source_script_sha256": "b34005585f456be830a276b9bfdc76b30744e9d232c3ead67186e1c6e54afe1b",
+  "run_id": "power-data-infra-v4",
+  "input_fingerprint": "13a51ba7c19bd9b25c10662229974500a951bad9f84c749de8f029108f37f66f",
+  "input_identity": {
+    "schema": "cyberppt.stage02_input_identity.v1",
+    "source_script_sha256": "b34005585f456be830a276b9bfdc76b30744e9d232c3ead67186e1c6e54afe1b",
+    "script_input_sha256": "fe3c6aa2ab7404736a1d612e134c7122cde9c0950673cc77dd803e22d299671f",
+    "visual_spec_sha256": "",
+    "style_lock_sha256": "10dcae2f90ca74181b72efe2c054415700bb3a6646850a0526591515623f8982",
+    "pages": [
+      1
+    ],
+    "production_mode": "image-to-editable-svg",
+    "assembly_mode": "editable",
+    "image_model": "gpt-image-2",
+    "image_quality": "high",
+    "prompt_enrich": "off",
+    "allow_prompt_edit": false
+  },
+  "full_image_deck_rhythm_qa": {
+    "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+    "status": "passed",
+    "receipt_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/qa/full_image_deck_rhythm_qa.json",
+    "receipt_sha256": "59d0641b7c3221e377824ef1b78bb4903838186924f57bc603d41ec87e11f6e1",
+    "contact_sheet_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构/workbench/stages/02-imagegen/pages_001_001_power-data-infra-v4/qa/full_image_contact_sheet.png",
+    "contact_sheet_sha256": "09f2fda96864f8f3e22af2cb113f4112d445791b94dc6f6065aa0c89a7ac131a",
+    "page_count": 1,
+    "blocker_count": 0,
+    "warning_count": 0,
+    "authority_gate": "before_reconstruction_visual_source_binding"
+  },
+  "visual_truth_policy": {
+    "authority": "audited_full_image",
+    "scope": "editable_reconstruction",
+    "rule": "downstream reconstruction may decompose or rebuild text but must preserve the accepted visual composition",
+    "bound_pages": [
+      1
+    ]
+  },
+  "stage02_state": {
+    "schema": "cyberppt.stage02_build_state.v1",
+    "state": "needs_action",
+    "pages": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image",
+        "error": null
+      }
+    ],
+    "actions": [
+      {
+        "page": 1,
+        "state": "needs_svg_authoring",
+        "action": "author_svg_from_audited_full_image"
+      }
+    ],
+    "failures": []
+  }
+}

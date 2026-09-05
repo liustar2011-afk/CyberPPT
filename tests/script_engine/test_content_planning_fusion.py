@@ -9,6 +9,7 @@ from script_engine.analysis_audits.final_script import audit_final_script
 from script_engine.contracts import validate_deck_plan
 from script_engine.narrative_arc import cjk_aware_tokens, review_narrative_design, text_overlap
 from script_engine.onscreen_quality import build_onscreen_critic_context, record_candidate_score, visible_character_count
+from script_engine.plan_quality import build_plan_critic_context
 from script_engine.plan_review import render_plan_review
 
 
@@ -116,6 +117,88 @@ def test_v2_lean_schema_and_audit_keep_only_outline_and_source_boundaries() -> N
     drifted["pages"][0]["source_refs"] = ["UNKNOWN"]
     issues, _ = audit_deck_plan(drifted, _foundation())
     assert any("LEAN_SOURCE_REF_UNKNOWN" in issue for issue in issues)
+
+
+def test_v2_lean_plan_rejects_relation_added_outside_page_evidence() -> None:
+    plan = _lean_plan()
+    plan["pages"][0]["title"] = "业务主体与技术主体协同推进场景落地"
+    plan["pages"][0]["source_refs"] = ["F1"]
+
+    issues, _ = audit_deck_plan(plan, _foundation())
+
+    assert any("PLAN_RELATION_STRENGTH_UPGRADED" in issue and "协同" in issue for issue in issues)
+
+
+def test_v2_lean_plan_rejects_unsupported_completion_upgrade() -> None:
+    plan = _lean_plan()
+    plan["pages"][0]["title"] = "首批场景从三项基础完备的业务中选择"
+    foundation = _foundation()
+    foundation["facts"][0]["statement"] = "首批场景选择具备较好客户基础的业务"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("PLAN_COMPLETION_OR_SCOPE_PROMOTED" in issue and "完备" in issue for issue in issues)
+
+
+def test_v2_lean_plan_accepts_relation_present_in_page_evidence() -> None:
+    plan = _lean_plan()
+    plan["pages"][0]["title"] = "各方协同研究场景建设方案"
+    foundation = _foundation()
+    foundation["facts"][0]["statement"] = "各方协同研究形成具体场景建设方案"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert not any("PLAN_RELATION_STRENGTH_UPGRADED" in issue for issue in issues)
+
+
+def test_v2_lean_plan_warns_when_conditional_status_is_hidden_in_title() -> None:
+    plan = _lean_plan()
+    foundation = _foundation()
+    foundation["facts"][0]["status"] = "待确认"
+
+    issues, warnings = audit_deck_plan(plan, foundation)
+
+    assert issues == []
+    assert any("PLAN_STATUS_BOUNDARY_NOT_VISIBLE" in warning for warning in warnings)
+
+
+def test_faithful_plan_requires_unambiguous_source_heading_in_title() -> None:
+    plan = _lean_plan()
+    foundation = _foundation()
+    foundation["argument_nodes"][0]["source_heading"] = "一、建设目标"
+
+    issues, _ = audit_deck_plan(plan, foundation)
+
+    assert any("PLAN_SOURCE_TITLE_NOT_PRIORITIZED" in issue for issue in issues)
+
+    plan["pages"][0]["title"] = "建设目标｜总体任务"
+    issues, _ = audit_deck_plan(plan, foundation)
+    assert not any("PLAN_SOURCE_TITLE_NOT_PRIORITIZED" in issue for issue in issues)
+
+
+def test_faithful_plan_resolves_heading_through_lightweight_fact_units() -> None:
+    plan = _lean_plan()
+    plan["pages"][0]["title"] = "建设目标"
+    foundation = _foundation()
+    foundation["facts"][0]["source_refs"] = ["SU-GOAL-01"]
+    foundation["argument_nodes"][0]["source_heading"] = "一、建设目标"
+    foundation["argument_nodes"][0]["source_refs"] = ["SU-GOAL-01"]
+
+    issues, warnings = audit_deck_plan(plan, foundation)
+
+    assert not any("PLAN_SOURCE_TITLE_NOT_PRIORITIZED" in issue for issue in issues)
+    assert not any("PLAN_STATUS_BOUNDARY_NOT_VISIBLE" in warning for warning in warnings)
+
+
+def test_plan_critic_context_uses_only_v2_lean_planning_fields() -> None:
+    context = build_plan_critic_context(_lean_plan())
+
+    assert context["communication_goal"]
+    assert set(context["pages"][0]) == {
+        "id", "title", "question", "logic", "page_role", "source_refs",
+    }
+    assert "message" not in context["pages"][0]
+    assert "beat" not in context["pages"][0]
 
 
 def test_v2_lean_plan_accepts_promoted_source_asset_boundary() -> None:

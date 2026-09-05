@@ -27,6 +27,31 @@ heading in `source_structure`, retain source identity and SHA-256 in `sources`,
 and bind authored facts, constraints, numbers, argument nodes, and inferred
 relations to stable `SU-*` source-unit references.
 
+Foundation is a lightweight source-preservation index for page planning and
+writing. Preserve and separate source propositions; do not strengthen, complete,
+interpret or strategize them. Apply these rules before writing any
+downstream-facing field:
+
+- `document_semantics.primary_thesis` must be a near-extractive statement of the
+  source's own main proposition. When the source provides several parallel
+  propositions but no single governing claim, retain them as ordered parallel
+  clauses instead of inventing causality, necessity, priority or a value thesis.
+- `author_purpose` states only the action the source author explicitly undertakes
+  or requests. `argument_method` describes the source's actual order of topics
+  and claims; it must not manufacture a problem, tension, rationale or necessity.
+- A fact preserves the source predicate and its direction. Do not convert
+  “为确保达到某节点而组织开展工作” into “该工作服务于该节点”, “为该节点
+  提供实际应用支撑” or another reversed/expanded relationship.
+- Keep only source-explicit relations in authoritative theses, facts, argument
+  nodes and `relations`. Do not search for, reconstruct or record latent
+  relations in the default script profile; an empty `relations` collection is
+  valid. Analytical inference belongs only to an explicitly requested
+  analytical workflow.
+- Do not add connective language such as “因此、从而、意味着、只有…才、
+  必须…才能、需要在…条件下形成…” unless that same relationship is explicit in
+  the cited source unit. Adjacency and shared vocabulary are not evidence of a
+  relationship.
+
 Set `source_consumption_policy: required` and
 `source_consumption_contract_version: 2`. When one fact or constraint cites a
 compound paragraph, several table rows, or several list items, populate

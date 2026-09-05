@@ -86,7 +86,7 @@ The three authoritative Stage 01 content artifacts are `script/foundation.json`,
 """
 
 
-def init_project(path: Path, force: bool = False, *, profile: str = "strict") -> list[Path]:
+def init_project(path: Path, force: bool = False, *, profile: str = "script") -> list[Path]:
     if profile not in {"script", "strict", "legacy"}:
         raise ValueError("profile must be script, strict, or legacy")
     root = path.expanduser().resolve()

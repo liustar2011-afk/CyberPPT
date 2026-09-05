@@ -20,6 +20,7 @@ from .final_lean import (
     _audit_lean_onscreen_full_copy_alignment,
     _audit_lean_relationship_visibility,
 )
+from .final_fidelity import faithful_relation_promotion_issues
 from .final_onscreen import (
     _audit_authored_onscreen_composition,
     _audit_authored_onscreen_contract,
@@ -42,6 +43,15 @@ def audit_final_script(
     audience_scope = plan.get("audience_scope", "unspecified")
     preserve_structure = plan.get("source_structure_mode") == "preserve"
     delivery_mode = str((final_script.get("deck") or {}).get("delivery_mode") or plan.get("delivery_mode") or "self_read")
+    plan_authoring_mode = str(plan.get("authoring_mode") or "faithful")
+    final_authoring_mode = str(
+        (final_script.get("deck") or {}).get("authoring_mode") or plan_authoring_mode
+    )
+    if final_authoring_mode == "analytical" and plan_authoring_mode != "analytical":
+        issues.append(
+            "AUTHORING_MODE_NOT_AUTHORIZED: final script requests analytical mode "
+            "without analytical mode in the approved Deck Plan"
+        )
 
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
@@ -55,6 +65,11 @@ def audit_final_script(
         plan_text = _page_text(page)
         evidence_ids = _page_evidence_ids(page)
         evidence = _support_items(sorted(evidence_ids), items)
+        if final_authoring_mode == "faithful":
+            issues.extend(
+                f"slides.{index} ({slide_id}): {issue}"
+                for issue in faithful_relation_promotion_issues(slide, evidence)
+            )
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
         plan_logic = str(page.get("logic") or "")

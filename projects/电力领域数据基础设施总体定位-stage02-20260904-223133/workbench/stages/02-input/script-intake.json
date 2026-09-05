@@ -1,0 +1,527 @@
+{
+  "schema": "cyberppt.stage02_script_input.v1",
+  "project": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133",
+  "created_at": "2026-09-04T15:15:26+00:00",
+  "source_bindings": {
+    "script": {
+      "scope": "project",
+      "path": "workbench/inputs/final-script.md",
+      "sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61",
+      "semantic_sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61",
+      "source_path": "/Users/liuxing/Downloads/电力领域数据基础设施总体定位文字稿.md",
+      "source_sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61",
+      "source_semantic_sha256": "68ccdb67c013ec748fecd2cef97a08a93be8130066b666dc88230a0610524f61"
+    }
+  },
+  "page_order": [
+    "p01"
+  ],
+  "pages": [
+    {
+      "page_id": "p01",
+      "page_number": 1,
+      "render_role": "content",
+      "argument_role": "",
+      "title": "电力领域数据基础设施总体定位：行业中枢与价值释放引擎",
+      "subtitle": "",
+      "content_load": "standard",
+      "page_mission": "",
+      "core_message": "",
+      "full_prose": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系。\n\n三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。\n\n四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件。\n\n平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式。",
+      "onscreen_text": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系。\n\n三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。\n\n四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件。\n\n平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式。",
+      "onscreen_items": [
+        "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系",
+        "三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营",
+        "四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件",
+        "平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式"
+      ],
+      "locked_text_items": [
+        {
+          "text_id": "P01-T01",
+          "text": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系",
+          "ordinal": 1
+        },
+        {
+          "text_id": "P01-T02",
+          "text": "三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营",
+          "ordinal": 2
+        },
+        {
+          "text_id": "P01-T03",
+          "text": "四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件",
+          "ordinal": 3
+        },
+        {
+          "text_id": "P01-T04",
+          "text": "平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式",
+          "ordinal": 4
+        }
+      ],
+      "content_integrity": {
+        "schema": "cyberppt.content_integrity.v1",
+        "page_id": "P01",
+        "source_hash": "520d7e213bacb9f3f67e3bc46212cd9bbc07ff2d095745903536143f4dece848",
+        "root_nodes": [
+          "P01-T01",
+          "P01-T02",
+          "P01-T03",
+          "P01-T04"
+        ],
+        "nodes": [
+          {
+            "text_id": "P01-T01",
+            "text": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系",
+            "source_level": 1,
+            "parent_id": null,
+            "root_id": "P01-T01",
+            "children": [],
+            "ordinal": 1,
+            "content_role": "root_module",
+            "promotion_policy": "root_only"
+          },
+          {
+            "text_id": "P01-T02",
+            "text": "三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营",
+            "source_level": 1,
+            "parent_id": null,
+            "root_id": "P01-T02",
+            "children": [],
+            "ordinal": 2,
+            "content_role": "root_module",
+            "promotion_policy": "root_only"
+          },
+          {
+            "text_id": "P01-T03",
+            "text": "四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件",
+            "source_level": 1,
+            "parent_id": null,
+            "root_id": "P01-T03",
+            "children": [],
+            "ordinal": 3,
+            "content_role": "root_module",
+            "promotion_policy": "root_only"
+          },
+          {
+            "text_id": "P01-T04",
+            "text": "平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式",
+            "source_level": 1,
+            "parent_id": null,
+            "root_id": "P01-T04",
+            "children": [],
+            "ordinal": 4,
+            "content_role": "root_module",
+            "promotion_policy": "root_only"
+          }
+        ],
+        "source_order": [
+          "P01-T01",
+          "P01-T02",
+          "P01-T03",
+          "P01-T04"
+        ],
+        "structure_hash": "2339cff4a6baadc01a40a3b4a5d6635dd2a6bd0dba6c4fa0ffa65dda55093282"
+      },
+      "image_locked_text": "",
+      "editable_body_text": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系。\n\n三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。\n\n四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件。\n\n平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式。",
+      "speaker_notes": "",
+      "semantic_annotations": {},
+      "source_refs": [],
+      "provenance_refs": [],
+      "argument_chain": "",
+      "prompt_mode": "semantic_brief",
+      "business_relationships": [],
+      "semantic_proposals": [],
+      "semantic_verification": {
+        "schema": "cyberppt.semantic_verification.v1",
+        "status": "unresolved",
+        "confidence": 0.0,
+        "verdicts": [],
+        "verified_relationships": [],
+        "conflict_codes": [],
+        "hard_constraints": [],
+        "strong_constraints": [],
+        "soft_constraints": []
+      },
+      "verified_business_relationships": [],
+      "render_topology": {
+        "schema": "cyberppt.semantic_topology.v1",
+        "primary_topology": "unknown",
+        "confidence": 0.0,
+        "constraint_authority": "soft",
+        "candidates": [],
+        "eligibility": {
+          "peer_set": {
+            "allowed": false,
+            "reasons": [
+              "no_verified_relation"
+            ]
+          }
+        }
+      },
+      "onscreen_expression": {
+        "form": "neutral_structure_1_7",
+        "source": "verified_topology",
+        "confidence": 0.0,
+        "evidence": [
+          "semantic_topology:unknown"
+        ],
+        "candidates": [
+          [
+            "parallel_classification_3_6",
+            0.78
+          ],
+          [
+            "architecture_layers",
+            0.74
+          ],
+          [
+            "key_points_3",
+            0.64
+          ],
+          [
+            "actions_3",
+            0.08
+          ],
+          [
+            "pyramid_argument",
+            0.08
+          ],
+          [
+            "causal_chain",
+            0.0
+          ],
+          [
+            "comparison_2col",
+            0.0
+          ],
+          [
+            "directed_dependency_2_6",
+            0.0
+          ],
+          [
+            "flow_3_5",
+            0.0
+          ],
+          [
+            "framework_4",
+            0.0
+          ],
+          [
+            "grouped_2",
+            0.0
+          ],
+          [
+            "mapping_2_6",
+            0.0
+          ],
+          [
+            "matrix_2x2",
+            0.0
+          ],
+          [
+            "neutral_structure_1_7",
+            0.0
+          ],
+          [
+            "operation_loop",
+            0.0
+          ],
+          [
+            "support_convergence_3_6",
+            0.0
+          ]
+        ],
+        "constraint_authority": "soft"
+      },
+      "onscreen_expression_ir": null,
+      "expression_constraints": {
+        "form": "neutral_structure_1_7",
+        "heading_policy": "neutral",
+        "node_range": [
+          1,
+          7
+        ],
+        "relation_pattern": "unresolved_relation",
+        "reading_requirement": "neutral",
+        "balance_requirement": "preserve authored grouping and explicit edges while leaving unresolved relation type open for visual review",
+        "required_features": [
+          "relation_review_required"
+        ],
+        "anti_patterns": [
+          "invented_peer_equivalence",
+          "invented_sequence",
+          "invented_hierarchy"
+        ]
+      },
+      "field_provenance": {
+        "content": "input_script",
+        "business_relationships": "input_script",
+        "render_topology": "stage02_derived",
+        "visual_structure": "stage02_derived",
+        "style": "stage02_owned"
+      },
+      "stage02_visual_input": {
+        "page_mission": "",
+        "core_message": "",
+        "full_prose": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系。\n\n三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。\n\n四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件。\n\n平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式。",
+        "content_load": "standard",
+        "argument_chain": "",
+        "prompt_mode": "semantic_brief",
+        "onscreen_text": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系。\n\n三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营。\n\n四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件。\n\n平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式。",
+        "locked_text_items": [
+          {
+            "text_id": "P01-T01",
+            "text": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系",
+            "ordinal": 1
+          },
+          {
+            "text_id": "P01-T02",
+            "text": "三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营",
+            "ordinal": 2
+          },
+          {
+            "text_id": "P01-T03",
+            "text": "四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件",
+            "ordinal": 3
+          },
+          {
+            "text_id": "P01-T04",
+            "text": "平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式",
+            "ordinal": 4
+          }
+        ],
+        "content_integrity": {
+          "schema": "cyberppt.content_integrity.v1",
+          "page_id": "P01",
+          "source_hash": "520d7e213bacb9f3f67e3bc46212cd9bbc07ff2d095745903536143f4dece848",
+          "root_nodes": [
+            "P01-T01",
+            "P01-T02",
+            "P01-T03",
+            "P01-T04"
+          ],
+          "nodes": [
+            {
+              "text_id": "P01-T01",
+              "text": "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构：三重方向并列环绕中心定位展开，四类服务对象居于最外层，体现服务范围逐层拓展的逻辑关系",
+              "source_level": 1,
+              "parent_id": null,
+              "root_id": "P01-T01",
+              "children": [],
+              "ordinal": 1,
+              "content_role": "root_module",
+              "promotion_policy": "root_only"
+            },
+            {
+              "text_id": "P01-T02",
+              "text": "三重建设方向并列展开：一是建设国家数据基础设施电力行业节点，承担电力行业侧主体连接、目录衔接、接口协同、可信流通和场景承接功能，逐步衔接全域功能节点、区域节点和其他行业节点；二是建设行业数据与专业能力运营平台，统一组织数据资源、模型能力、专业能力和技术能力，衔接资源登记、产品管理、客户服务、可信交付和运营评价；三是建设多主体协同和价值共创载体，组织需求单位、资源方、模型算法方、专业服务方和技术实施方，围绕行业共性需求开展产品开发、场景共建和持续运营",
+              "source_level": 1,
+              "parent_id": null,
+              "root_id": "P01-T02",
+              "children": [],
+              "ordinal": 2,
+              "content_role": "root_module",
+              "promotion_policy": "root_only"
+            },
+            {
+              "text_id": "P01-T03",
+              "text": "四类服务对象居于最外层，由三重方向共同支撑：一是面向政府部门，为宏观能源决策、能源规划和行业治理提供数据分析支撑；二是面向新型电力系统建设，提供行业数据底座；三是面向电力企业，为生产经营、科技创新和数字化转型提供专业服务；四是面向产业链上下游及跨行业主体，为协同创新创造基础条件",
+              "source_level": 1,
+              "parent_id": null,
+              "root_id": "P01-T03",
+              "children": [],
+              "ordinal": 3,
+              "content_role": "root_module",
+              "promotion_policy": "root_only"
+            },
+            {
+              "text_id": "P01-T04",
+              "text": "平台与各单位既有业务系统、数据平台、模型平台和安全体系协同衔接，承担跨主体连接、共性规则执行、产品运营和可信服务协同，平台接入不改变合作伙伴对原始数据、核心模型、关键算法和既有知识产权的控制关系，并根据资源属性和业务需要支持集中服务、源端处理、专属环境和受控计算等多种实施方式",
+              "source_level": 1,
+              "parent_id": null,
+              "root_id": "P01-T04",
+              "children": [],
+              "ordinal": 4,
+              "content_role": "root_module",
+              "promotion_policy": "root_only"
+            }
+          ],
+          "source_order": [
+            "P01-T01",
+            "P01-T02",
+            "P01-T03",
+            "P01-T04"
+          ],
+          "structure_hash": "2339cff4a6baadc01a40a3b4a5d6635dd2a6bd0dba6c4fa0ffa65dda55093282"
+        },
+        "module_titles": [
+          "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构",
+          "三重建设方向并列展开",
+          "四类服务对象居于最外层，由三重方向共同支撑"
+        ],
+        "top_level_module_titles": [
+          "平台总体定位为电力数据要素流通共享的行业中枢和价值释放引擎，由中心定位表述、三重建设方向和四类服务对象构成放射状结构",
+          "三重建设方向并列展开",
+          "四类服务对象居于最外层，由三重方向共同支撑"
+        ],
+        "business_relationships": [],
+        "input_relationship_features": {
+          "authority": "input_script",
+          "actors": [],
+          "actions": [],
+          "directions": [],
+          "conditions": [],
+          "branches": [],
+          "feedback": [],
+          "source_visual_notes": ""
+        },
+        "semantic_proposals": [],
+        "semantic_verification": {
+          "schema": "cyberppt.semantic_verification.v1",
+          "status": "unresolved",
+          "confidence": 0.0,
+          "verdicts": [],
+          "verified_relationships": [],
+          "conflict_codes": [],
+          "hard_constraints": [],
+          "strong_constraints": [],
+          "soft_constraints": []
+        },
+        "verified_business_relationships": [],
+        "verified_relationship_features": {
+          "authority": "stage02_semantic_verifier",
+          "actors": [],
+          "actions": [],
+          "directions": [],
+          "conditions": [],
+          "branches": [],
+          "feedback": [],
+          "source_visual_notes": ""
+        },
+        "render_topology": {
+          "schema": "cyberppt.semantic_topology.v1",
+          "primary_topology": "unknown",
+          "confidence": 0.0,
+          "constraint_authority": "soft",
+          "candidates": [],
+          "eligibility": {
+            "peer_set": {
+              "allowed": false,
+              "reasons": [
+                "no_verified_relation"
+              ]
+            }
+          }
+        },
+        "relationship_authority": "input_file_authoritative",
+        "onscreen_expression": {
+          "form": "neutral_structure_1_7",
+          "source": "verified_topology",
+          "confidence": 0.0,
+          "evidence": [
+            "semantic_topology:unknown"
+          ],
+          "candidates": [
+            [
+              "parallel_classification_3_6",
+              0.78
+            ],
+            [
+              "architecture_layers",
+              0.74
+            ],
+            [
+              "key_points_3",
+              0.64
+            ],
+            [
+              "actions_3",
+              0.08
+            ],
+            [
+              "pyramid_argument",
+              0.08
+            ],
+            [
+              "causal_chain",
+              0.0
+            ],
+            [
+              "comparison_2col",
+              0.0
+            ],
+            [
+              "directed_dependency_2_6",
+              0.0
+            ],
+            [
+              "flow_3_5",
+              0.0
+            ],
+            [
+              "framework_4",
+              0.0
+            ],
+            [
+              "grouped_2",
+              0.0
+            ],
+            [
+              "mapping_2_6",
+              0.0
+            ],
+            [
+              "matrix_2x2",
+              0.0
+            ],
+            [
+              "neutral_structure_1_7",
+              0.0
+            ],
+            [
+              "operation_loop",
+              0.0
+            ],
+            [
+              "support_convergence_3_6",
+              0.0
+            ]
+          ],
+          "constraint_authority": "soft"
+        },
+        "onscreen_expression_ir": null,
+        "expression_constraints": {
+          "form": "neutral_structure_1_7",
+          "heading_policy": "neutral",
+          "node_range": [
+            1,
+            7
+          ],
+          "relation_pattern": "unresolved_relation",
+          "reading_requirement": "neutral",
+          "balance_requirement": "preserve authored grouping and explicit edges while leaving unresolved relation type open for visual review",
+          "required_features": [
+            "relation_review_required"
+          ],
+          "anti_patterns": [
+            "invented_peer_equivalence",
+            "invented_sequence",
+            "invented_hierarchy"
+          ]
+        },
+        "constraint_authority": "soft",
+        "author_visual_notes": "",
+        "author_visual_notes_authority": "advisory_only",
+        "semantic_annotations": {},
+        "must_not_include": [],
+        "body_image_canvas": {
+          "width": 2048,
+          "height": 1024,
+          "ratio": "2:1"
+        },
+        "title_render_mode": "external_text_layer",
+        "subtitle_render_mode": "external_text_layer"
+      }
+    }
+  ]
+}

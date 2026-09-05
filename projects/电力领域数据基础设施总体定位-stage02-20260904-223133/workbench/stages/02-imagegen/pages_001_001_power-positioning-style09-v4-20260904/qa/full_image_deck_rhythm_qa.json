@@ -1,0 +1,66 @@
+{
+  "schema": "cyberppt.full_image_deck_rhythm_receipt.v1",
+  "status": "passed",
+  "contact_sheet": {
+    "schema": "cyberppt.full_image_contact_sheet.v1",
+    "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/stages/02-imagegen/pages_001_001_power-positioning-style09-v4-20260904/qa/full_image_contact_sheet.png",
+    "sha256": "dda6b67f5d005bb2db0f2603661a42ffb8428b90a498f696ad14faf26067548b",
+    "page_count": 1,
+    "pages": [
+      {
+        "page_number": 1,
+        "source_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/stages/02-imagegen/pages_001_001_power-positioning-style09-v4-20260904/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.png",
+        "source_sha256": "5f7c18669736ca22c0f3704427f99a8561c8bb1324788422e4738a445a7ccef3"
+      }
+    ],
+    "thumbnail_size": [
+      480,
+      240
+    ],
+    "columns": 4,
+    "sheet_size": [
+      2048,
+      300
+    ]
+  },
+  "signatures": [
+    {
+      "schema": "cyberppt.full_image_visual_signature.v1",
+      "page_number": 1,
+      "source_path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体定位-stage02-20260904-223133/workbench/stages/02-imagegen/pages_001_001_power-positioning-style09-v4-20260904/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.png",
+      "source_sha256": "5f7c18669736ca22c0f3704427f99a8561c8bb1324788422e4738a445a7ccef3",
+      "visual_medium": "unspecified",
+      "gravity": {
+        "x": 0.4931,
+        "y": 0.4956,
+        "horizontal": "center",
+        "vertical": "middle"
+      },
+      "density": "dense",
+      "density_score": 54.1471,
+      "skeleton_3x3": "111111111",
+      "skeleton_shares": [
+        0.1142,
+        0.1349,
+        0.0972,
+        0.0915,
+        0.1545,
+        0.1002,
+        0.0925,
+        0.1251,
+        0.0898
+      ],
+      "structure_hash": "c098ff7e181cfe00"
+    }
+  ],
+  "audit": {
+    "schema": "cyberppt.full_image_deck_rhythm_qa.v1",
+    "status": "passed",
+    "page_count": 1,
+    "findings": [],
+    "blocker_count": 0,
+    "warning_count": 0,
+    "review_basis": "actual_full_image_edge_activity_plus_audited_visual_medium"
+  },
+  "authority_gate": "before_reconstruction_visual_source_binding"
+}

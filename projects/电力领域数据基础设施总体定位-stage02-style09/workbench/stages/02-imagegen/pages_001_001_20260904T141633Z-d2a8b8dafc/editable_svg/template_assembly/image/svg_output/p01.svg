@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 1280 720" data-template-assembly="cec-lightweight" data-pptx-master="cec-content" data-pptx-master-name="CEC Content Master" data-pptx-layout="cec-content" data-pptx-layout-name="CEC Content">
+<rect id="masterBackground" data-pptx-layer="master" x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<rect id="topDivider" data-pptx-layer="master" x="0" y="84" width="1280" height="3" fill="#8B0000"/>
+<image id="companyLogo" data-pptx-layer="master" x="1050" y="13" width="210" height="70" href="../images/logo.png" preserveAspectRatio="xMidYMid meet"/>
+<rect id="footerBar" data-pptx-layer="master" x="0" y="698" width="1280" height="22" fill="#123B66"/>
+<text id="footerCompany" data-pptx-layer="master" x="58" y="712" font-family="Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif" font-size="9" fill="#FFFFFF">中国电力企业联合会</text>
+<text id="pageNumber" data-pptx-layer="master" x="1240" y="712" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="9" fill="#FFFFFF">1</text>
+<text x="58" y="47" font-family="Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif" font-size="32" font-weight="700" fill="#123B66">电力领域数据基础设施总体定位：行业中枢与价值释放引擎</text>
+<image x="33" y="89" width="1214" height="607" href="../images/page_001_电力领域数据基础设施总体定位_行业中枢与价值释放引擎_full.png" preserveAspectRatio="none"/>
+</svg>

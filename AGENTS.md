@@ -15,9 +15,10 @@
 
 - 处理任何 CyberPPT 源材料、Source Truth、语义模型、脚本规划、页面脚本或视觉生产任务，先阅读 [docs/CYBERPPT_WORKFLOW.md](docs/CYBERPPT_WORKFLOW.md)。该文件是全流程总览和检索入口。
 - `AGENTS.md` 负责仓库级硬约束；各 `.agents/skills/*/SKILL.md` 负责阶段细则。不要通过拼接多个 Skill 的局部说明自行重建主流程。
-- 新建且包含正式源材料的 Stage 01 项目默认使用 `strict/legacy` profile：`.agents/skills/cyberppt-source-foundation/SKILL.md` → `business-semantic-understanding` → `project-foundation` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。`script` profile 仅在用户明确选择轻量路径时使用：`prepare-source-context` → `prepare-script-foundation --profile script` → `.agents/skills/cyberppt-script-understand/SKILL.md` → `foundation.json` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
+- 新建且包含正式源材料的 Stage 01 项目默认使用快速、忠实的 `script` profile：`prepare-source-context` → `prepare-script-foundation --profile script` → `.agents/skills/cyberppt-script-understand/SKILL.md` → `foundation.json` → `.agents/skills/cyberppt-script-workflow/SKILL.md`。只有合同、法规、逐事实核验、完整 Source Truth 或旧项目兼容场景显式选择 `strict/legacy`，并依次进入 `cyberppt-source-foundation` → `business-semantic-understanding` → `project-foundation` → `cyberppt-script-workflow`。纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
 - 对任何 Stage 02 制作、重制、图转 PPT、套用模板、母版修复或重新组装请求，必须调用 `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md`，并通过 `.venv/bin/python3 -m cyberppt final-script-pages --production-build` 进入生产。正式适配器同时验证当前进程的编排调用与磁盘 build context；单独持有有效旧记录仍不得直调适配器。
 - Stage 02 出现缺资产、待 SVG 编写、待看图或失败时，只执行当前状态要求的动作，并按当前运行记录的 `resume_command` 回到同一入口。禁止通过临时 Python/JS 导出脚本、直接调用底层 PPTX builder、直接改最终 PPTX 包或合并单页 PPTX 来代替正式生产；不得为绕过失败而另开批次。底层工具可用于单元测试和隔离诊断，其输出不得直接作为正式交付。修复生成逻辑后，仍由正式入口重新生成和验收。
+- 禁止绕过正式入口直接调用 `run_stage02_reconstruction`；该适配器只能由 `final-script-pages --production-build` 编排调用。
 
 ## 独立技术判断（硬规则）
 
@@ -34,6 +35,8 @@ Stage 01 分两段，各有唯一权威路线，之间用一次机械投影衔�
 
 **理解段（UNDERSTAND）**：新建 Stage 01 源材料项目默认由 `strict/legacy` profile 经 `cyberppt-source-foundation` → `business-semantic-understanding` 产出 `source-truth.json`，随后机械投影 Foundation。用户明确选择轻量路径时，`script` profile 保留来源身份、哈希、标题结构、稳定 source units、来源主论点、论证顺序、关键事实、数字、责任、状态、条件和边界，直接写入 `script/foundation.json`。
 
+无论 profile，Foundation 都只承载来源明示的主论点、事实及关系方向。来源没有单一统领观点时，按原顺序保留并列命题；不得为了完整语义模型而合成因果、必要性、优先级、价值判断或战略结论。可辩护的潜在关系只能作为显式标注的 inferred relation 保留在后台关系集合中，不得进入 `document_semantics.primary_thesis`、`author_purpose`、事实或论证节点。
+
 **规划与写作段（PLAN/AUTHOR）**：两种 profile 均从 `script/foundation.json` 进入 `.agents/skills/cyberppt-script-workflow/SKILL.md` 编排的 `PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER`，产出 `script/deck-plan.json` 和 `script/dist/final-script.md`。strict/legacy 的 `project-foundation` 只做字段搬运，不重新分析。
 
 - PLAN 和 AUTHOR 的唯一执行者是当前主 Agent。UNDERSTAND 对全文只做一次语义建模；PLAN 读取 Foundation 和来源结构，AUTHOR 每套稿只加载一次全文主旨与目录，逐页只回读该页 `source_refs` 对应原文及相邻页面边界。Critic 和 Rewrite 复用同一语义简报与证据范围，不得重新运行全文语义理解。只有源材料变化、Foundation 校验失败或来源边界无法支撑页面使命时，才返回 UNDERSTAND。
@@ -46,11 +49,14 @@ Stage 01 分两段，各有唯一权威路线，之间用一次机械投影衔�
 - 高密度页面必须区分核心结论、一级结构、关键证据和可降权清单；无法形成清晰层级时调整页面使命或分页。核心结论包含映射、协同、闭环、衔接、转化或支撑关系时，上屏必须呈现关系两端和中间动作，不能仅并置对象。
 - 演讲者备注必须提供上屏之外的增量价值，至少承担依据解释、次级证据、不改变可见结论力度与适用范围的次级条件边界、听众关注点或自然过渡之一；改变结论力度、时间、责任或适用范围的关键条件必须上屏，不能只放在备注中。按顺序复述模块标题和明细视为不合格。
 - 仓库不设置独立 AUTHOR Skill、AUTHOR CLI、规则式作者生成器或项目硬编码作者脚本。`.agents/skills/cyberppt-script-workflow/references/authoring-contract.md` 是 AUTHOR、CRITIQUE、REWRITE、单页修订和全稿审核的唯一操作性作者规则；进入这些动作前必须完整读取。确定性代码仅在生成式写作完成后校验来源、关系、边界和交付格式。
-- `full_copy` 是 Stage 01 内容页的唯一正文稿和上屏表达的语义母本。AUTHOR 必须回读页面 `source_refs` 对应原文，保留核心事实、正式主体、文件名称、建设状态、任务强度、数字节点、责任、条件、边界以及来源明确作出的结论；不得用“建设内容、阶段进度、技术规则”等作者归纳维度替换原文中力度更强的政策动作、实施状态、明确目标和成果定位。多段文字继续采用观点先行和完整语义表达。`onscreen` 采用结论先行的金字塔表达：先给出页面完整结论，再以完整段落展开原因、事实和影响，可调整顺序、补足衔接句和重组段落，不得改变业务对象、动作、关系、状态、责任、数字、条件和结论力度；v2 lean 的 `source_refs` 仍表示本页可用证据范围。
+- `full_copy` 是 Stage 01 内容页的唯一正文稿和上屏表达的语义母本。AUTHOR 必须回读页面 `source_refs` 对应原文，保留核心事实、正式主体、文件名称、建设状态、任务强度、数字节点、责任、条件、边界以及来源明确作出的结论；不得用“建设内容、阶段进度、技术规则”等作者归纳维度替换原文中力度更强的政策动作、实施状态、明确目标和成果定位。多段文字继续采用观点先行和完整语义表达；来源没有单一中心判断时，允许忠实保留并列命题，不得为满足页面框架而拼接新因果或必要性。`onscreen` 先呈现来源明示结论或忠实归纳，再以完整段落展开来源事实和明确关系，可调整顺序、补足不改变命题关系的衔接句和重组段落，不得改变业务对象、动作、关系、状态、责任、数字、条件和结论力度；v2 lean 的 `source_refs` 仍表示本页可用证据范围。
+- `full_copy` 和 `onscreen` 必须继承原稿的发布主体与陈述立场。原稿直接定义、要求、安排或陈述的内容，脚本也直接陈述；严禁增加“通知所称”“材料指出”“文件认为”“原文说明”“在通知中已明确”等第三方转述框架。原稿本身对上位政策、制度或其他文件的引用，应按原关系保留。
+- `faithful` 模式下页面标题默认保留来源原标题；同一来源章节拆成多页时采用“原标题＋页内范围限定”区分页面。仅在来源没有可用标题、用户明确要求分析型标题或批准结论式改写时重新拟题。`onscreen` 必须由 `full_copy` 选择、合并和适度精炼而来；渲染器必须优先使用显式 `onscreen`，不得以 `full_copy` 覆盖已经写明的上屏表达。
 - “短语化、条目化”不作为 Stage 01 的上屏生产目标。上屏保留完整文字稿的实质信息，用结论句和完整段落组织阅读顺序；页面密度过高时优先调整页面使命或分页，避免以删减事实换取篇幅。并列事实确有助于理解时可使用完整句式的并列段，关键限定、业务对象、动作、关系、责任、时间和数字必须保留。Stage 02 负责文字可读性、图像文字审计和最终页面 QA。
 - 完整语义必须明确具体事项。子项只能继承同一可见模块直接声明的共同主语或动作，且标签必须明确语义角色；`full_copy` 的段落观点和 `onscreen.heading` 不得依赖页标题、上一段、相邻模块、上一页或读者猜测来补全业务对象。“国家已明确……”“项目将推进……”“研究形成成果”“后续开展工作”等表述必须写明具体部署、项目、研究成果或工作事项。
 - 上屏语义完整性同时约束模块标题和明细行。普通内容模块标题必须表达完整判断；来源正式定义的分类、阶段或主体名称可以作为模块标题，其下必须说明该分类规范什么、该阶段实现什么或该主体承担什么。明细必须采用完整命题或“语义标签：语义完整的短语或说明”。明细可以继承同一可见模块直接声明的主语或动作，但必须保留关系、对象和必要限定。以“以、基于、围绕、结合、按照、通过、面向、依托、针对”开头的依据、条件、方式或范围表达必须在同一行补全业务动作或结果，不得形成悬空状语。确定性长度门禁属于生产约束，不是写作目标；超限时通过拆分语义角色、提升共同命题、调整页面使命或分页处理，不得截断关键对象、动作、关系、条件或限定。AUTHOR 逐页执行“锁定来源最强结论与保护信息—完整稿语义保全—上屏证据取舍—逐项语义闭合—来源力度与边界复核—整页重写”的内部闭环；该闭环不新增状态文件，确定性 lint 只负责发现可机械识别的缺陷。
 - 所有新项目的 Deck Plan 均使用 v2 lean；profile 只决定 Foundation 的理解深度和来源保全方式，不决定页面规划合同。strict/legacy 继续保留 Source Truth、完整语义模型、逐事实核验和 `source_consumption_policy: required`，Deck Plan 只承担章节归并、页数分配、暂定标题、页面问题/使命和来源边界；核心判断、内容模块、证据取舍、上屏合同、视觉关系与讲述线索属于 AUTHOR 和 Final Script。v1 strict Deck Plan 仅供已有旧项目原位兼容，不得作为新项目默认模板。Stage 02 不读取 Deck Plan 文案。
+- 新项目默认声明 `authoring_mode: faithful`，目标是忠实分页整理和页面化表达。语义理解用于保护事实、主体、状态、责任、数字、条件、边界及原文明示关系，不得为了形成更强页面观点而新增因果、必要性、优先级、价值判断或结论。只有用户明确要求分析、洞察、论证重构或战略深化时，才可在 Deck Plan 中声明 `authoring_mode: analytical`；Final Script 不得自行升级模式。
 
 来源章节与汇报章节必须分层。Foundation 保留来源章节身份、边界和顺序；
 Deck Plan 默认把相邻来源章节按共同受众问题、论证角色和承接关系归并为汇报
@@ -100,6 +106,7 @@ Stage 01 的脚本规划与写作段只有三个权威内容产物（vendored en
 ## 演讲者备注规则（仓库级硬规则）
 
 - 演讲者备注必须使用演讲者现场讲解的完整语气，可直接朗读或自然转述。
+- 演讲者备注直接讲业务内容，不得使用“通知先说明”“需要分别理解”“这里强调的是”“保留条件边界”等审稿、解释编排或自我提示语气。
 - 演讲者备注不得出现“本页”“下一页”“上页”“页面设计”“审核稿”“制作提示”等制作过程用语。
 - 页面之间的衔接应写成面向听众的自然过渡，例如“接下来重点看……”“在这个基础上，我们再看……”，不得写成页面编排说明。
 

@@ -1,0 +1,74 @@
+{
+  "schema": "cyberppt.native_text_geometry_qa.v1",
+  "qa_only": true,
+  "pages": [
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 4,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/image_to_pptx_runtime/svg_output/04.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    },
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 5,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/image_to_pptx_runtime/svg_output/05.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    },
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 7,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/image_to_pptx_runtime/svg_output/07.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    },
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 8,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/image_to_pptx_runtime/svg_output/08.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    },
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 10,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/image_to_pptx_runtime/svg_output/10.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    },
+    {
+      "schema": "cyberppt.native_text_geometry_qa.v1",
+      "page_number": 11,
+      "path": "/Volumes/DOC/CyberPPT/projects/中电联电力领域数据基础设施首批场景建设-20260905/workbench/stages/02-imagegen/pages_001_012_20260904T164605Z-a7ebc33160/editable_svg/image_to_pptx_runtime/svg_output/11.svg",
+      "status": "skipped",
+      "valid": true,
+      "review_required": false,
+      "reason": "authored styling retained; explicit tspan structure checked",
+      "items": [],
+      "warnings": []
+    }
+  ],
+  "valid": true,
+  "review_required": false
+}

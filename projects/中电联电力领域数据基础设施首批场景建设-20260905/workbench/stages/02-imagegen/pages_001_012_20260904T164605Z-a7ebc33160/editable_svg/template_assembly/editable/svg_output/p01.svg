@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 1280 720" data-brand-template="01_cover" data-pptx-master="cec-cover" data-pptx-master-name="CEC Cover Master" data-pptx-layout="cec-cover" data-pptx-layout-name="CEC Cover">
+  
+  <image x="0" y="0" width="1280" height="720" xlink:href="cover_bg.jpg" preserveAspectRatio="xMidYMid slice" id="brandBackground0" data-pptx-layer="master" />
+
+  
+  <g id="cover-decor">
+    <circle cx="80" cy="640" r="180" fill="none" stroke="#4AB3D6" stroke-width="1" stroke-opacity="0.12" />
+    <circle cx="80" cy="640" r="120" fill="none" stroke="#4AB3D6" stroke-width="1" stroke-opacity="0.08" />
+  </g>
+
+  
+  <text x="640" y="250" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="50" font-weight="700" fill="#1F2933">中电联电力领域数据基础设施首批场景建设工作</text>
+
+  
+  <text x="640" y="500" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#EAF3FF" fill-opacity="0.85" />
+  <text x="640" y="560" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="600" fill="#FFFFFF">中国电力企业联合会</text>
+  <text x="640" y="630" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" fill="#EAF3FF" data-pptx-width="240" />
+</svg>

@@ -1,0 +1,75 @@
+{
+  "schema": "cyberppt.source_heading_tree.v1",
+  "headings": [
+    {
+      "heading_id": "H-9B8A448A18-A7E56DEC9CBE-01",
+      "source_id": "SRC-9B8A448A18",
+      "source_path": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+      "title": "一、建设目标",
+      "level": 2,
+      "parent_heading_id": null,
+      "source_order": 4,
+      "unit_id": "SU-9B8A448A18-PARAGRAPH-83E22602908B-01",
+      "heading_path": [
+        "一、建设目标"
+      ],
+      "detection_method": "heuristic_pattern"
+    },
+    {
+      "heading_id": "H-9B8A448A18-E0C826302E74-01",
+      "source_id": "SRC-9B8A448A18",
+      "source_path": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+      "title": "二、建设范围",
+      "level": 2,
+      "parent_heading_id": null,
+      "source_order": 6,
+      "unit_id": "SU-9B8A448A18-PARAGRAPH-0322C1844CBD-01",
+      "heading_path": [
+        "二、建设范围"
+      ],
+      "detection_method": "heuristic_pattern"
+    },
+    {
+      "heading_id": "H-9B8A448A18-FEA7A3C16ABB-01",
+      "source_id": "SRC-9B8A448A18",
+      "source_path": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+      "title": "三、职责分工",
+      "level": 2,
+      "parent_heading_id": null,
+      "source_order": 11,
+      "unit_id": "SU-9B8A448A18-PARAGRAPH-F51785FC1923-01",
+      "heading_path": [
+        "三、职责分工"
+      ],
+      "detection_method": "heuristic_pattern"
+    },
+    {
+      "heading_id": "H-9B8A448A18-22BD4E56B54F-01",
+      "source_id": "SRC-9B8A448A18",
+      "source_path": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+      "title": "四、建设方式",
+      "level": 2,
+      "parent_heading_id": null,
+      "source_order": 14,
+      "unit_id": "SU-9B8A448A18-PARAGRAPH-4B6A053F3001-01",
+      "heading_path": [
+        "四、建设方式"
+      ],
+      "detection_method": "heuristic_pattern"
+    },
+    {
+      "heading_id": "H-9B8A448A18-E51126D98ADA-01",
+      "source_id": "SRC-9B8A448A18",
+      "source_path": "source/关于开展中电联电力领域数据基础设施首批场景建设工作的通知0904.docx",
+      "title": "五、工作安排",
+      "level": 2,
+      "parent_heading_id": null,
+      "source_order": 18,
+      "unit_id": "SU-9B8A448A18-PARAGRAPH-16673B713BC3-01",
+      "heading_path": [
+        "五、工作安排"
+      ],
+      "detection_method": "heuristic_pattern"
+    }
+  ]
+}

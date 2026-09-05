@@ -271,6 +271,40 @@ def test_strict_v2_foundation_accepts_traceable_atomic_units() -> None:
     assert validate_foundation_detail_atomicity(foundation, index) == []
 
 
+def test_strict_v2_foundation_accepts_atomic_units_split_across_sibling_facts() -> None:
+    foundation = _foundation({}, statement="参考架构明确映射关系")
+    foundation.update(
+        {"source_consumption_policy": "required", "source_consumption_contract_version": 2}
+    )
+    foundation["facts"][0]["semantic_units"] = [
+        {
+            "id": "F-1#0",
+            "text": "参考架构明确与国家数据基础设施总体架构的映射关系",
+            "source_unit_refs": ["SU-1"],
+        }
+    ]
+    foundation["facts"].append(
+        {
+            "id": "F-2",
+            "statement": "标识目录规定管理和描述要求",
+            "source_refs": ["SU-1"],
+            "semantic_units": [
+                {
+                    "id": "F-2#0",
+                    "text": "标识目录规定电力数据标识管理和目录描述要求",
+                    "source_unit_refs": ["SU-1"],
+                }
+            ],
+        }
+    )
+    index = _strict_v2_index([
+        "参考架构明确与国家数据基础设施总体架构的映射关系。"
+        "标识目录规定电力数据标识管理和目录描述要求。"
+    ])
+
+    assert validate_foundation_detail_atomicity(foundation, index) == []
+
+
 def test_strict_v2_foundation_rejects_generic_semantic_units_with_valid_refs() -> None:
     foundation = _foundation({}, statement="形成标准建设安排")
     foundation.update(

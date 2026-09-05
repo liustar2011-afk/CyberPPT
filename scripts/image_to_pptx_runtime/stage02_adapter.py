@@ -719,6 +719,7 @@ def run_stage02_reconstruction(
                     mode="image",
                     contract=contract,
                     body_image=Path(str(pair["full"]["path"])),
+                    page_number_layer="",
                 )
             )
         image_export = output / "exports" / "template_image.pptx"
@@ -743,6 +744,7 @@ def run_stage02_reconstruction(
                     page_number=number,
                     mode="editable",
                     contract=contract,
+                    page_number_layer="",
                 )
             )
         editable_export = output / "exports" / "editable_svg.pptx"

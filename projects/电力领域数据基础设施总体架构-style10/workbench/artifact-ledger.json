@@ -1,0 +1,111 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "ledger_revision": 2,
+  "artifacts": [
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1",
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/final-script_cyberppt_deliverable_p1_p1.md",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10' --script '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1' --build-id power-data-infra-style10-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --external-script",
+      "sha256": "13d3109956571a16b218795359f6c0874e6e86c09abfd92a6df44c5ca0379b56",
+      "updated_at": "2026-09-04T08:23:28+00:00",
+      "build_id": "power-data-infra-style10-v1",
+      "artifact_id": "artifact-86796cb7457aa7a277de",
+      "created_at": "2026-09-04T08:23:28+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1",
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/page_image_pairs.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/final-script_cyberppt_deliverable_p1_p1.md"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10' --script '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1' --build-id power-data-infra-style10-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --external-script",
+      "sha256": "2f88dace0ae1a5ed4be1007cc589aa339cea61a4ec164eeb9fc0d97e423e79fd",
+      "updated_at": "2026-09-04T08:23:28+00:00",
+      "build_id": "power-data-infra-style10-v1",
+      "artifact_id": "artifact-c9431e55794a2d476807",
+      "created_at": "2026-09-04T08:23:28+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1",
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/template_text/pages_001_001_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10' --script '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1' --build-id power-data-infra-style10-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --external-script",
+      "sha256": "904d31773bebe8affd18c1ca0a5e07bc059476e6de155a3a3f8a4aa806a80de3",
+      "updated_at": "2026-09-04T08:23:28+00:00",
+      "build_id": "power-data-infra-style10-v1",
+      "artifact_id": "artifact-fd6e76442b4ee4830917",
+      "created_at": "2026-09-04T08:23:28+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1",
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10' --script '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1' --build-id power-data-infra-style10-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --external-script",
+      "sha256": "2e601045530487f457fc73bde1b94f7726cd8ced4f296a42a263434fc50269fd",
+      "updated_at": "2026-09-04T08:23:28+00:00",
+      "build_id": "power-data-infra-style10-v1",
+      "artifact_id": "artifact-6a7818f42c380112f405",
+      "created_at": "2026-09-04T08:23:28+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1",
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/pages_001_001_final_script_pages_run.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/final-script_cyberppt_deliverable_p1_p1.md",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/template_text/pages_001_001_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10' --script '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1' --build-id power-data-infra-style10-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --external-script",
+      "sha256": "ff91e7f75bef62b731b626251bc32c177059409c526f8ab66cf079b36dbd3e76",
+      "updated_at": "2026-09-04T08:23:28+00:00",
+      "build_id": "power-data-infra-style10-v1",
+      "artifact_id": "artifact-ba039f6f84938d33cd6a",
+      "created_at": "2026-09-04T08:23:28+00:00"
+    },
+    {
+      "stage": "02-blueprint-image-to-editable-svg",
+      "page": "1",
+      "path": "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/build_context.json",
+      "status": "image_assets_generated",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/final-script_cyberppt_deliverable_p1_p1.md",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/template_text/pages_001_001_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": ".venv/bin/python3 -m cyberppt final-script-pages '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10' --script '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/inputs/final-script.md' --pages 1 --style-lock '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/locks/visual_style_lock.json' --production-mode image-to-editable-svg --assembly-mode editable --output-dir '/Volumes/DOC/CyberPPT/projects/电力领域数据基础设施总体架构-style10/workbench/stages/02-imagegen/pages_001_001_power-data-infra-style10-v1' --build-id power-data-infra-style10-v1 --image-model gpt-image-2 --image-quality high --image-timeout 600 --prompt-enrich off --generate-images --external-script",
+      "sha256": "619856ba4471e9fdfe47fba9b7b24f355acbd316c5bd509a6efd5aa73e0cc165",
+      "updated_at": "2026-09-04T08:23:28+00:00",
+      "build_id": "power-data-infra-style10-v1",
+      "artifact_id": "artifact-6da910e7555e18b280c9",
+      "created_at": "2026-09-04T08:23:28+00:00"
+    }
+  ]
+}
