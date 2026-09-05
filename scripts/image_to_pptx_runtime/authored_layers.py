@@ -154,7 +154,13 @@ def register_quick_page(
     policy = pair.get("graphic_text_policy")
     for report in (
         validate_authored_svg_preflight(svg, page_number=page_number),
-        validate_graphic_text_policy(policy, authored_svg=svg, page_number=page_number),
+        validate_graphic_text_policy(
+            policy,
+            authored_svg=svg,
+            page_number=page_number,
+            source_image=source,
+            require_exact_fidelity=True,
+        ),
     ):
         if not report.get("valid"):
             raise ValueError(f"authored page is incomplete: {report.get('errors')}")

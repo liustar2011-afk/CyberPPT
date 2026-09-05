@@ -4,7 +4,14 @@ import xml.etree.ElementTree as ET
 
 import pytest
 
-from scripts.image_to_pptx_runtime.template_assembly import _materialize_body_scale
+from scripts.image_to_pptx_runtime.template_assembly import (
+    _materialize_body_scale,
+    author_px_for_target_pt,
+)
+
+
+def test_author_px_for_target_pt_accounts_for_template_scale():
+    assert author_px_for_target_pt(12, source_height=1024, body_height=607) == pytest.approx(26.9918, rel=1e-4)
 
 
 def test_inherited_and_overridden_metrics_are_scaled_once():

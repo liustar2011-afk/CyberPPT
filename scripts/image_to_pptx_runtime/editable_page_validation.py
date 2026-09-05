@@ -38,6 +38,7 @@ def validate_editable_page(
     authored_svg: Path | str,
     graphic_text_policy: Mapping[str, Any] | None,
     page_number: int,
+    require_exact_fidelity: bool = False,
 ) -> dict[str, Any]:
     """Validate clean base and text policy from one parsed authored SVG."""
 
@@ -62,6 +63,8 @@ def validate_editable_page(
         page_number=page_number,
         svg_text_values=svg_texts,
         image_href_values=image_hrefs,
+        source_image=full_image,
+        require_exact_fidelity=require_exact_fidelity,
     )
     errors: list[dict[str, str]] = []
     if evidence_error:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
@@ -91,8 +92,51 @@ def test_template_contract_uses_exact_two_to_one_body_slot() -> None:
     assert (body["x"], body["y"], body["width"], body["height"]) == (33, 89, 1214, 607)
     assert body["width"] / body["height"] == 2
     master = contract["rules"]["master_elements"]
+    assert master["top_divider"]["height"] == 3.3
     assert master["footer_company_text"]["y"] == 712
     assert master["footer_page_num"]["y"] == 712
+
+
+def test_template_master_svg_is_authoritative_and_bound(tmp_path: Path) -> None:
+    source_template = Path(__file__).resolve().parents[1] / "assets" / "presentation-templates" / "cec-lightweight"
+    template = tmp_path / "template"
+    shutil.copytree(source_template, template)
+    master_path = template / "master_elements.svg"
+    master_path.write_text(
+        master_path.read_text(encoding="utf-8").replace(
+            'id="topDivider" data-pptx-layer="master" x="0" y="84"',
+            'id="topDivider" data-pptx-layer="master" x="0" y="91"',
+        ),
+        encoding="utf-8",
+    )
+    contract = load_template_contract(template)
+    first_hash = contract["template_assets_sha256"]["master_elements.svg"]
+    body = tmp_path / "body.svg"
+    body.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">'
+        '<text x="20" y="50">body</text></svg>',
+        encoding="utf-8",
+    )
+    wrapper = tmp_path / "out" / "svg_output" / "p01.svg"
+    assemble_template_svg(
+        source=body,
+        output=wrapper,
+        title="title",
+        page_number=1,
+        mode="editable",
+        contract=contract,
+    )
+    wrapper_text = wrapper.read_text(encoding="utf-8")
+    assert 'id="topDivider"' in wrapper_text
+    assert 'y="91"' in wrapper_text
+    assert 'id="pageNumber"' in wrapper_text
+    assert 'data-pptx-layer="master"' in wrapper_text
+
+    master_path.write_text(
+        master_path.read_text(encoding="utf-8").replace('y="91"', 'y="92"'),
+        encoding="utf-8",
+    )
+    assert load_template_contract(template)["template_assets_sha256"]["master_elements.svg"] != first_hash
 
 
 def test_image_mode_places_body_image_in_template_slot(tmp_path: Path) -> None:

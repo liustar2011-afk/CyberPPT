@@ -7,6 +7,7 @@ from PIL import Image
 
 from cyberppt.stage02_production.image_stage import (
     _generate_manifest_images,
+    _import_user_approved_full_image,
     _normalize_user_approved_full_image,
     _normalize_text_audit_geometry,
 )
@@ -100,6 +101,26 @@ def test_user_approved_image_normalization_does_not_use_enhancement(tmp_path: Pa
     Image.new("RGB", (1774, 887), "white").save(image)
     _normalize_user_approved_full_image(image, "2048x1024")
     assert Image.open(image).size == (2048, 1024)
+
+
+def test_user_approved_image_can_already_be_at_build_target(tmp_path: Path) -> None:
+    image = tmp_path / "page_001.png"
+    Image.new("RGB", (2048, 1024), "white").save(image)
+    manifest = {
+        "pairs": [{
+            "page_script": "已批准",
+            "full": {"path": str(image), "canvas": "2048x1024", "prompt_sha256": "prompt"},
+        }]
+    }
+
+    with patch(
+        "cyberppt.image_text_gate.audit_generated_image_text",
+        return_value={"valid": True, "issues": []},
+    ):
+        result = _import_user_approved_full_image(object(), manifest, image)
+
+    assert result["imported"] == str(image)
+    assert manifest["pairs"][0]["full"]["text_audit"]["valid"] is True
 
 
 def test_text_audit_bboxes_are_normalized_to_final_canvas() -> None:

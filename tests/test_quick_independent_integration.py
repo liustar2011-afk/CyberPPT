@@ -52,7 +52,13 @@ def _author(root, page=1):
                  }},
         "graphic_text_policy": {
             "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
-            "status": "complete", "empty_container_check": "passed", "items": [
+            "status": "complete", "empty_container_check": "passed",
+            "fidelity_mode": "exact_source_image",
+            "source_image_sha256": _hash(source),
+            "source_text_inventory": [
+                {"id": "label", "text": "登记编目", "bbox": [40, 45, 170, 80]},
+            ],
+            "items": [
                 {"id": "label", "text": "登记编目", "treatment": "native_text",
                  "source_visible": True, "bbox": [40, 45, 170, 80]},
             ],

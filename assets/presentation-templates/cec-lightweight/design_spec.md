@@ -25,11 +25,12 @@ primary_color: ""
 
 | Element | Source File | Geometry / Rule | Lock Scope |
 |---|---|---|---|
-| Top red divider | `./master_elements.svg` | y=82, h=7, fill `#8B0000` | Public chrome only |
+| Top red divider | `./master_elements.svg` | y=84, h=3.3, fill `#8B0000` | Public chrome only |
 | Top-right CEC logo | `./logo.png` via `./master_elements.svg` | x=1050, y=13, w=210, h=70 | Public chrome only |
-| Dynamic page number | `./master_elements.svg` | x=1240, y=712, font 10, fill `#666666`, exported as page-number field when supported | Public chrome only |
+| Footer bar and company name | `./master_elements.svg` | y=698, h=22; company text x=58, y=712 | Public chrome only |
+| Dynamic page number | `./master_elements.svg` | x=1240, y=712, font 9, fill `#FFFFFF`, exported as page-number field | Public chrome only |
 
-The red divider, gray page number, and logo colors are fixed only for the public chrome layer. They are not a content palette and must not be copied into `spec_lock.md colors` as `primary`, `accent`, `bg`, `surface`, `text`, or chart colors.
+The red divider, footer chrome, page number, and logo colors are fixed only for the public chrome layer. They are not a content palette and must not be copied into `spec_lock.md colors` as `primary`, `accent`, `bg`, `surface`, `text`, or chart colors.
 
 ## III. Cover Base
 

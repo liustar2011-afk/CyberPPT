@@ -64,14 +64,14 @@ def test_explicit_id_wins_when_text_is_duplicated(tmp_path: Path) -> None:
     assert [item["svg_x"] for item in report["items"]] == [20.0, 100.0]
 
 
-def test_missing_bbox_is_review_only(tmp_path: Path) -> None:
+def test_missing_bbox_blocks_geometry(tmp_path: Path) -> None:
     svg = _svg(tmp_path, '<text x="10" y="30" font-size="16">缺少框</text>')
     report = analyze_native_text_geometry(
         _policy([{"id": "missing", "text": "缺少框", "treatment": "native_text"}]),
         authored_svg=svg,
         page_number=1,
     )
-    assert report["valid"] is True
+    assert report["valid"] is False
     assert report["review_required"] is True
     assert report["items"][0]["action"] == "missing_bbox"
 
@@ -153,15 +153,52 @@ def test_tspan_vertical_region_jump_blocks_geometry(tmp_path: Path) -> None:
     assert "tspan baselines jump across visual regions" in report["items"][0]["structural_issues"]
 
 
-def test_locked_svg_is_skipped(tmp_path: Path) -> None:
-    svg = _svg(tmp_path, '<text x="10" y="30">锁定</text>', locked=True)
+def test_locked_svg_is_fully_checked(tmp_path: Path) -> None:
+    svg = _svg(tmp_path, '<text x="10" y="30" font-size="16">锁定</text>', locked=True)
     report = analyze_native_text_geometry(
         _policy([{"id": "locked", "text": "锁定", "treatment": "native_text", "bbox": [10, 10, 50, 35]}]),
         authored_svg=svg,
         page_number=1,
     )
-    assert report["status"] == "skipped"
-    assert report["items"] == []
+    assert report["status"] == "checked_locked"
+    assert len(report["items"]) == 1
+    assert report["items"][0]["final_font_pt"] == 12.0
+
+
+def test_template_scale_enforces_final_font_floor(tmp_path: Path) -> None:
+    svg = _svg(tmp_path, '<text x="10" y="30" font-size="12">过小</text>', locked=True)
+    report = analyze_native_text_geometry(
+        _policy([{"id": "small", "text": "过小", "treatment": "native_text", "bbox": [10, 15, 50, 35]}]),
+        authored_svg=svg,
+        page_number=1,
+        body_scale=0.5,
+    )
+    assert report["valid"] is False
+    assert report["items"][0]["final_font_pt"] == 4.5
+    assert "below 12.00pt floor" in report["warnings"][0]
+
+
+def test_exact_source_mode_preserves_source_sized_multiline_type(tmp_path: Path) -> None:
+    svg = _svg(
+        tmp_path,
+        '<text data-cyberppt-text-id="body" x="40" y="77" font-size="17">'
+        '<tspan x="40" y="77">第一行</tspan><tspan x="40" y="100">第二行</tspan></text>',
+        locked=True,
+    )
+    policy = _policy([
+        {"id": "body", "text": "第一行第二行", "role": "body", "treatment": "native_text", "bbox": [40, 60, 120, 105]}
+    ])
+    policy["fidelity_mode"] = "exact_source_image"
+
+    report = analyze_native_text_geometry(
+        policy,
+        authored_svg=svg,
+        page_number=1,
+        body_scale=0.5,
+    )
+
+    assert report["valid"] is True
+    assert report["items"][0]["exact_source_fidelity"] is True
 
 
 def test_geometry_receipt_is_machine_readable(tmp_path: Path) -> None:

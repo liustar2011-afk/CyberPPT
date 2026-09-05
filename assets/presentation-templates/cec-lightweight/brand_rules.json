@@ -20,7 +20,7 @@
   "master_elements": {
     "top_divider": {
       "y": 84,
-      "height": 3,
+      "height": 3.3,
       "fill": "#8B0000",
       "scope": "chrome-only"
     },

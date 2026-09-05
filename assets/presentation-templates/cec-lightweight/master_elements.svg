@@ -6,11 +6,15 @@
   -->
 
   <!-- Top brand divider -->
-  <rect x="0" y="94" width="1280" height="7" fill="#8B0000"/>
+  <rect id="topDivider" data-pptx-layer="master" x="0" y="84" width="1280" height="3.3" fill="#8B0000"/>
 
   <!-- Company logo (top-right) -->
-  <image x="1050" y="13" width="210" height="70" xlink:href="logo.png" preserveAspectRatio="xMidYMid meet"/>
+  <image id="companyLogo" data-pptx-layer="master" x="1050" y="13" width="210" height="70" xlink:href="logo.png" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Shared footer chrome -->
+  <rect id="footerBar" data-pptx-layer="master" x="0" y="698" width="1280" height="22" fill="#123B66"/>
+  <text id="footerCompany" data-pptx-layer="master" x="58" y="712" font-family="Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif" font-size="9" fill="#FFFFFF">中国电力企业联合会</text>
 
   <!-- Auto page number placeholder -->
-  <text x="1240" y="712" text-anchor="end" font-family="Microsoft YaHei, Arial" font-size="10" font-weight="700" fill="#666666">{{PAGE_NUM}}</text>
+  <text id="pageNumber" data-pptx-layer="master" x="1240" y="712" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="9" fill="#FFFFFF">{{PAGE_NUM}}</text>
 </svg>

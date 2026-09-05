@@ -29,6 +29,14 @@ _FONT_RATIO_MAX = 1.50
 _MIN_INTRA_TEXT_X_SPAN = 120.0
 _MAX_INTRA_TEXT_X_SPAN_IN_FONTS = 6.0
 _MAX_BASELINE_STEP_IN_FONTS = 4.0
+POINTS_PER_SVG_PX = 0.75
+DEFAULT_MIN_FONT_PT_BY_ROLE = {
+    "caption": 9.0,
+    "card_body": 10.0,
+    "body": 12.0,
+    "module_title": 15.0,
+    "page_title": 20.0,
+}
 
 
 def _local_name(element: ET.Element) -> str:
@@ -232,6 +240,8 @@ def analyze_native_text_geometry(
     *,
     authored_svg: Path | str,
     page_number: int,
+    body_scale: float = 1.0,
+    min_font_pt_by_role: Mapping[str, float] | None = None,
 ) -> dict[str, Any]:
     """Compare native SVG text geometry against policy OCR boxes, read-only."""
 
@@ -250,28 +260,19 @@ def analyze_native_text_geometry(
             "items": [],
             "warnings": [str(exc)],
         }
-    if root.get(LOCKED_STYLE_ATTR) == "locked":
-        # A style lock preserves authored metrics; it does not waive structural
-        # checks on explicit tspan coordinates.
-        structural_warnings = [
-            f"{_text(''.join(node.itertext()))}: {issue}"
-            for node in _text_nodes(root)
-            for issue in _intra_text_geometry(node, _font_size(node))[2]
-        ]
-        return {
-            "schema": SCHEMA,
-            "page_number": page_number,
-            "path": str(svg_path),
-            "status": "invalid" if structural_warnings else "skipped",
-            "valid": not structural_warnings,
-            "review_required": bool(structural_warnings),
-            "reason": "authored styling retained; explicit tspan structure checked",
-            "items": [],
-            "warnings": structural_warnings,
-        }
+    locked = root.get(LOCKED_STYLE_ATTR) == "locked"
+    if not math.isfinite(body_scale) or body_scale <= 0:
+        raise ValueError("body_scale must be a finite positive number")
+    font_floors = dict(DEFAULT_MIN_FONT_PT_BY_ROLE)
+    if min_font_pt_by_role is not None:
+        font_floors.update({str(key): float(value) for key, value in min_font_pt_by_role.items()})
 
     view_x, view_y, view_width, view_height, pixel_width, pixel_height = _svg_canvas(root)
     items = _policy_items(policy)
+    exact_source_fidelity = (
+        isinstance(policy, Mapping)
+        and policy.get("fidelity_mode") == "exact_source_image"
+    )
     nodes = _text_nodes(root)
     matched, match_warnings = _match_nodes(items, nodes)
     reports: list[dict[str, Any]] = []
@@ -308,13 +309,23 @@ def analyze_native_text_geometry(
         svg_x = _node_x(node)
         svg_y = _node_y(node)
         font_size = _font_size(node)
+        role = _text(item.get("role")) or "body"
+        final_font_pt = font_size * body_scale * POINTS_PER_SVG_PX if font_size is not None else None
+        minimum_font_pt = font_floors.get(role, font_floors["body"])
         line_count, line_step = _line_metrics(node)
         intra_text_x_span, max_baseline_step, structural_issues = _intra_text_geometry(
             node, font_size
         )
         mapped = _map_bbox(source_box, viewbox=(view_x, view_y, view_width, view_height), pixel_width=pixel_width, pixel_height=pixel_height)
         mapped_left, mapped_top, _, mapped_bottom = mapped
-        expected_baseline = mapped_top + (font_size * 0.78 if font_size is not None else 0.0)
+        # A frozen exact-source inventory describes the complete visible region.
+        # Multiline nodes therefore compare their first baseline with the first
+        # line instead of the region's final baseline.
+        expected_baseline = (
+            mapped_top + (font_size or 0)
+            if exact_source_fidelity and line_count > 1
+            else mapped_bottom
+        )
         delta_x = svg_x - mapped_left if svg_x is not None else None
         delta_y = svg_y - expected_baseline if svg_y is not None else None
         bbox_height = mapped_bottom - mapped_top
@@ -329,6 +340,12 @@ def analyze_native_text_geometry(
             issues.append("baseline deviation exceeds QA tolerance")
         if font_ratio is not None and not (_FONT_RATIO_MIN <= font_ratio <= _FONT_RATIO_MAX):
             issues.append("font-to-region ratio requires review")
+        if final_font_pt is None:
+            issues.append("missing SVG font-size")
+        elif not exact_source_fidelity and final_font_pt < minimum_font_pt:
+            issues.append(
+                f"final font size {final_font_pt:.2f}pt is below {minimum_font_pt:.2f}pt floor for {role}"
+            )
         issues.extend(structural_issues)
         base.update(
             {
@@ -336,6 +353,11 @@ def analyze_native_text_geometry(
                 "svg_x": svg_x,
                 "svg_y": svg_y,
                 "font_size": font_size,
+                "role": role,
+                "body_scale": body_scale,
+                "final_font_pt": final_font_pt,
+                "minimum_font_pt": minimum_font_pt,
+                "exact_source_fidelity": exact_source_fidelity,
                 "line_count": line_count,
                 "line_step": line_step,
                 "expected_x": mapped_left,
@@ -359,8 +381,8 @@ def analyze_native_text_geometry(
         "schema": SCHEMA,
         "page_number": page_number,
         "path": str(svg_path),
-        "status": "complete",
-        "valid": not any(item.get("structural_issues") for item in reports),
+        "status": "checked_locked" if locked else "complete",
+        "valid": not warnings,
         "review_required": bool(warnings),
         "qa_only": True,
         "detail_level": "full",

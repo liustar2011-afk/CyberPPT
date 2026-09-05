@@ -82,8 +82,10 @@ the authored SVG is copied into the runtime project and before native styling.
 It writes `analysis/native_text_geometry_qa.json` and includes the report in
 the Stage 02 result. The report compares policy OCR regions with SVG text
 baselines, line metrics and authored font sizes; it does not rewrite SVG
-coordinates or infer a PowerPoint font size from OCR bbox height. Ambiguous
-matches, missing bboxes and locked SVGs remain explicit review outcomes.
+coordinates or infer a PowerPoint font size from OCR bbox height. It applies the
+template body scale before checking the final point size. Ambiguous matches,
+missing bboxes, undersized type and locked SVG defects are blocking outcomes;
+the locked attribute preserves authored styling but does not waive QA.
 The geometry gate must also inspect every explicit `<tspan>` coordinate inside
 each text node. A line that jumps into another column or visual region is a
 blocking authored-SVG defect even when the parent `<text>` x/y matches its OCR
@@ -142,7 +144,9 @@ Pixel identity outside a text mask is not the acceptance rule for reference edit
 Complete the graphic-text policy from observed source regions, without estimating
 region widths from character counts. Author explicit line coordinates and set
 `data-cyberppt-native-text-style="locked"` on the SVG root so native export preserves
-the author's typography. Register the inspected local assets using
+the author's typography. Every non-empty authored SVG `<text>` node must map to
+exactly one `native_text` policy item; repeated copy requires a matching unique
+`data-cyberppt-text-id`. Register the inspected local assets using
 `register-quick-page` as described in the continuation reference. The command
 binds source, base, SVG, all image layers and policy to the review; changes require
 fresh review. It does not author pages or make visual decisions.

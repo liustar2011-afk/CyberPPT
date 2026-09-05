@@ -26,6 +26,7 @@ from typing import Any
 
 from pptx import Presentation
 from pptx.util import Emu
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPTS_DIR.parents[1]
@@ -46,7 +47,14 @@ def _emu_to_px(value: int, *, dpi: int = 96) -> float:
 
 def _shape_assignments(slide: Any, *, dpi: int) -> list[dict[str, Any]]:
     assignments: list[dict[str, Any]] = []
-    for index, shape in enumerate(slide.shapes):
+    def walk(shapes: Any):
+        for shape in shapes:
+            if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+                yield from walk(shape.shapes)
+            else:
+                yield shape
+
+    for index, shape in enumerate(walk(slide.shapes)):
         if not shape.has_text_frame:
             continue
         text = shape.text_frame.text.strip()

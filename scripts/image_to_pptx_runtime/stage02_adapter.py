@@ -122,6 +122,9 @@ def _quick_page_binding(
         "graphic_text_policy_sha256": _json_sha256(pair.get("graphic_text_policy") or {}),
         "content_root_qa_sha256": _json_sha256(root_qa or {}),
         "template_contract_sha256": _json_sha256(template_contract.get("rules") or {}),
+        "template_assets_sha256": _json_sha256(
+            template_contract.get("template_assets_sha256") or {}
+        ),
         # The runtime style-lock receipt is refreshed for each formal run and
         # carries volatile metadata.  It does not alter an authored SVG or the
         # template contract, so including its raw file hash would invalidate a
@@ -129,6 +132,7 @@ def _quick_page_binding(
         "runtime_style_lock_sha256": "",
         "native_text_style_profile": NATIVE_TEXT_STYLE_PROFILE,
         "native_text_geometry_schema": NATIVE_TEXT_GEOMETRY_SCHEMA + ".locked-intra-text-v2",
+        "exact_text_fidelity_schema": "source-inventory-v1",
         "clean_base_policy_schema": CLEAN_BASE_SCHEMA + "." + CLEAN_BASE_ALGORITHM_VERSION,
         "authored_svg_preflight_schema": AUTHORED_SVG_PREFLIGHT_SCHEMA,
     }
@@ -468,6 +472,7 @@ def run_stage02_reconstruction(
                         authored_svg=authored,
                         graphic_text_policy=pair.get("graphic_text_policy"),
                         page_number=page_number,
+                        require_exact_fidelity=True,
                     )
                     if not page_validation["valid"]:
                         raise ValueError(f"failed editable-page validation: {page_validation['errors']}")
@@ -478,6 +483,8 @@ def run_stage02_reconstruction(
                         pair.get("graphic_text_policy"),
                         authored_svg=target,
                         page_number=page_number,
+                        body_scale=float(contract["rules"]["content_regions"]["body_pages"]["height"])
+                        / float(ET.parse(target).getroot().get("viewBox", "0 0 1 1").split()[3]),
                     )
                     if geometry_report.get("valid") is not True:
                         raise ValueError(
@@ -719,7 +726,6 @@ def run_stage02_reconstruction(
                     mode="image",
                     contract=contract,
                     body_image=Path(str(pair["full"]["path"])),
-                    page_number_layer="",
                 )
             )
         image_export = output / "exports" / "template_image.pptx"
@@ -744,7 +750,6 @@ def run_stage02_reconstruction(
                     page_number=number,
                     mode="editable",
                     contract=contract,
-                    page_number_layer="",
                 )
             )
         editable_export = output / "exports" / "editable_svg.pptx"

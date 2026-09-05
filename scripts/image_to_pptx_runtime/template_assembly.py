@@ -7,6 +7,7 @@ CEC lightweight chrome without changing the body geometry.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import os
@@ -26,7 +27,17 @@ CANVAS_HEIGHT = 720
 TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "assets" / "presentation-templates" / "cec-lightweight"
 TEMPLATE_BACKGROUND = "#FFFFFF"
 TEMPLATE_FONT_FAMILY = "Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif"
-TEMPLATE_ASSEMBLY_PROFILE = "cec-structured-master-v1"
+TEMPLATE_ASSEMBLY_PROFILE = "cec-structured-master-v2"
+POINTS_PER_SVG_PX = 0.75
+
+
+def author_px_for_target_pt(
+    target_pt: float, *, source_height: float, body_height: float
+) -> float:
+    """Return the authoring-canvas font size that yields ``target_pt`` after assembly."""
+    if target_pt <= 0 or source_height <= 0 or body_height <= 0:
+        raise ValueError("target_pt, source_height and body_height must be positive")
+    return target_pt / POINTS_PER_SVG_PX / (body_height / source_height)
 
 
 def load_template_contract(template_dir: Path | None = None) -> dict:
@@ -34,6 +45,8 @@ def load_template_contract(template_dir: Path | None = None) -> dict:
 
     root = (template_dir or TEMPLATE_DIR).expanduser().resolve()
     rules_path = root / "brand_rules.json"
+    master_path = root / "master_elements.svg"
+    logo_path = root / "logo.png"
     rules = json.loads(rules_path.read_text(encoding="utf-8"))
     if not isinstance(rules, dict):
         raise ValueError(f"template rules must be an object: {rules_path}")
@@ -45,7 +58,22 @@ def load_template_contract(template_dir: Path | None = None) -> dict:
         raise ValueError("CEC template is missing content_regions.body_pages")
     if not _is_two_to_one(float(body.get("width", 0)), float(body.get("height", 0))):
         raise ValueError("CEC template body region must remain 2:1")
-    return {"root": root, "rules": rules}
+    try:
+        master_root = ET.parse(master_path).getroot()
+    except (OSError, ET.ParseError) as exc:
+        raise ValueError(f"cannot read CEC master elements: {master_path}: {exc}") from exc
+    if master_root.get("viewBox") != f"0 0 {CANVAS_WIDTH} {CANVAS_HEIGHT}":
+        raise ValueError("CEC master elements must use the template canvas")
+    assets_sha256 = {
+        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in (rules_path, master_path, logo_path)
+    }
+    return {
+        "root": root,
+        "rules": rules,
+        "master_elements_svg": master_path,
+        "template_assets_sha256": assets_sha256,
+    }
 
 
 def _is_two_to_one(width: float, height: float, *, tolerance: float = 0.002) -> bool:
@@ -83,41 +111,32 @@ def _rules_number(rules: dict, section: str, field: str, default: float) -> floa
 
 def _render_chrome(
     *,
-    rules: dict,
+    contract: dict,
     logo_href: str,
     title: str,
     subtitle: str,
     page_number: int,
-    page_number_layer: str = "master",
 ) -> list[str]:
-    master = rules.get("master_elements") or {}
-    top = master.get("top_divider") or {}
-    footer = master.get("footer_bar") or {}
-    logo = master.get("logo") or {}
-    org = master.get("footer_company_text") or {}
-    number = master.get("footer_page_num") or {}
-    page_number_layer_attr = (
-        f' data-pptx-layer="{page_number_layer}"' if page_number_layer else ""
-    )
+    rules = contract["rules"]
     header = (rules.get("content_regions") or {}).get("body_header_region") or {}
     title_y = float(header.get("y", 16)) + 31
-    lines = [
-        f'<rect id="masterBackground" data-pptx-layer="master" x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" fill="{TEMPLATE_BACKGROUND}"/>',
-        f'<rect id="topDivider" data-pptx-layer="master" x="0" y="{top.get("y", 84)}" width="{CANVAS_WIDTH}" height="{top.get("height", 3)}" fill={quoteattr(str(top.get("fill", "#8B0000")))}/>',
-        f'<image id="companyLogo" data-pptx-layer="master" x="{logo.get("x", 1050)}" y="{logo.get("y", 13)}" width="{logo.get("width", 210)}" height="{logo.get("height", 70)}" href={quoteattr(logo_href)} preserveAspectRatio="xMidYMid meet"/>',
-        f'<text x="{header.get("x", 58)}" y="{title_y:g}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="32" font-weight="700" fill="#123B66">{xml_escape(title)}</text>',
-    ]
+    master_root = ET.parse(contract["master_elements_svg"]).getroot()
+    lines = [f'<rect id="masterBackground" data-pptx-layer="master" x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" fill="{TEMPLATE_BACKGROUND}"/>']
+    for child in list(master_root):
+        if _local_tag(child) == "image":
+            child.attrib.pop("{http://www.w3.org/1999/xlink}href", None)
+            child.set("href", logo_href)
+        if child.get("id") == "pageNumber":
+            child.text = str(int(page_number))
+        child.set("data-pptx-layer", "master")
+        lines.append(ET.tostring(child, encoding="unicode"))
+    lines.append(
+        f'<text x="{header.get("x", 58)}" y="{title_y:g}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="32" font-weight="700" fill="#123B66">{xml_escape(title)}</text>'
+    )
     if subtitle.strip():
         lines.append(
             f'<text x="{header.get("x", 58)}" y="{float(header.get("y", 16)) + 56:g}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="14" fill="#60758A">{xml_escape(subtitle)}</text>'
         )
-    lines.extend(
-        [
-            f'<rect id="footerBar" data-pptx-layer="master" x="0" y="{footer.get("y", 698)}" width="{CANVAS_WIDTH}" height="{footer.get("height", 22)}" fill={quoteattr(str(footer.get("fill", "#123B66")))}/>',
-            f'<text id="footerCompany" data-pptx-layer="master" x="{org.get("x", 58)}" y="{org.get("y", 709)}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="{org.get("font_size", 9)}" fill={quoteattr(str(org.get("fill", "#FFFFFF")))}>{xml_escape(str(org.get("text", "中国电力企业联合会")))}</text>',
-            f'<text id="pageNumber"{page_number_layer_attr} x="{number.get("x", 1240)}" y="{number.get("y", 709)}" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="{number.get("font_size", 9)}" fill={quoteattr(str(number.get("fill", "#FFFFFF")))}>{int(page_number)}</text>',
-        ]
-    )
     return [line for line in lines if 'data-pptx-layer="master"' in line] + [
         line for line in lines if 'data-pptx-layer="master"' not in line
     ]
@@ -266,7 +285,6 @@ def assemble_template_svg(
     mode: str,
     contract: dict | None = None,
     body_image: Path | None = None,
-    page_number_layer: str = "master",
 ) -> Path:
     """Create a 1280x720 template wrapper around a 2:1 body asset."""
 
@@ -282,7 +300,7 @@ def assemble_template_svg(
     elements = [
         f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" viewBox="0 0 {CANVAS_WIDTH} {CANVAS_HEIGHT}" data-template-assembly="cec-lightweight" data-pptx-master="cec-content" data-pptx-master-name="CEC Content Master" data-pptx-layout="cec-content" data-pptx-layout-name="CEC Content">'
     ]
-    elements.extend(_render_chrome(rules=rules, logo_href=logo_href, title=title, subtitle=subtitle, page_number=page_number, page_number_layer=page_number_layer))
+    elements.extend(_render_chrome(contract=loaded, logo_href=logo_href, title=title, subtitle=subtitle, page_number=page_number))
     if mode == "image":
         if body_image is None or not body_image.is_file():
             raise FileNotFoundError(f"template image assembly requires body image: {body_image}")
@@ -343,7 +361,7 @@ def assemble_brand_page_svg(
 
     def template_chrome() -> str:
         return "\n".join(_render_chrome(
-            rules=loaded["rules"], logo_href=copy_asset("logo.png"),
+            contract=loaded, logo_href=copy_asset("logo.png"),
             title="", subtitle="", page_number=int(page_number or 0),
         )[1:6])
 

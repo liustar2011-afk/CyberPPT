@@ -43,7 +43,8 @@ def _import_user_approved_full_image(context: Stage02BuildContext, manifest: dic
     if not target:
         raise ValueError("approved full image target is missing")
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, target)
+    if source.resolve() != target.resolve():
+        shutil.copy2(source, target)
     _normalize_user_approved_full_image(target, str(full.get("canvas") or "2048x1024"))
     from cyberppt.image_text_gate import audit_generated_image_text
     audit = audit_generated_image_text(target, script_text=str(pair.get("page_script") or ""))

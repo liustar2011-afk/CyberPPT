@@ -91,13 +91,33 @@ def test_stage02_adapter_requires_audited_hand_authored_svg(tmp_path: Path) -> N
         raise AssertionError("production adapter must reject direct invocation")
 
 
-def _graphic_text_policy(*, items: list[dict[str, object]] | None = None, empty_container_check: str = "passed") -> dict[str, object]:
-    return {
+def _graphic_text_policy(
+    *,
+    items: list[dict[str, object]] | None = None,
+    empty_container_check: str = "passed",
+    exact_source: Path | None = None,
+) -> dict[str, object]:
+    policy: dict[str, object] = {
         "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
         "status": "complete",
         "empty_container_check": empty_container_check,
         "items": items or [],
     }
+    if exact_source is not None:
+        policy.update({
+            "fidelity_mode": "exact_source_image",
+            "source_image_sha256": sha256(exact_source.read_bytes()).hexdigest(),
+            "source_text_inventory": [
+                {
+                    "id": item.get("id"),
+                    "text": item.get("text") or item.get("observed_text"),
+                    "bbox": item.get("bbox"),
+                }
+                for item in (items or [])
+                if item.get("source_visible") is not False
+            ],
+        })
+    return policy
 
 
 def _policy_svg(tmp_path: Path, *, text: str = "登记编目") -> Path:
@@ -131,7 +151,7 @@ def _clean_base_contract(
         {
             "policy_id": "label-1",
             "text": text,
-            "bbox": [30, 50, 180, 100],
+            "bbox": [40, 60, 180, 85],
             "clearance_bbox": [24, 44, 186, 106],
             "method": "flat-surface-rebuild",
             "clearability": {"status": "clearable"},
@@ -189,11 +209,92 @@ def _official_context(manifest: Path, script: Path, *, assembly_mode: str = "edi
 def test_graphic_text_policy_requires_native_reconstruction_for_cleared_text(tmp_path: Path) -> None:
     svg = _policy_svg(tmp_path)
     report = validate_graphic_text_policy(
-        _graphic_text_policy(items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}]),
+        _graphic_text_policy(items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text", "bbox": [40, 60, 120, 85]}]),
         authored_svg=svg,
         page_number=1,
     )
     assert report["valid"] is True
+
+
+def test_exact_fidelity_requires_source_bound_inventory_and_verbatim_policy(tmp_path: Path) -> None:
+    source = tmp_path / "source.png"
+    Image.new("RGB", (400, 200), "white").save(source)
+    item = {
+        "id": "label-1",
+        "text": "登记编目",
+        "treatment": "native_text",
+        "bbox": [40, 60, 120, 85],
+    }
+    policy = _graphic_text_policy(items=[item])
+    policy.update({
+        "fidelity_mode": "exact_source_image",
+        "source_image_sha256": sha256(source.read_bytes()).hexdigest(),
+        "source_text_inventory": [
+            {"id": "label-1", "text": "登记编目", "bbox": [40, 60, 120, 85]}
+        ],
+    })
+
+    report = validate_graphic_text_policy(
+        policy,
+        authored_svg=_policy_svg(tmp_path),
+        page_number=1,
+        source_image=source,
+        require_exact_fidelity=True,
+    )
+
+    assert report["valid"] is True
+    assert report["source_text_inventory_count"] == 1
+
+
+def test_exact_fidelity_blocks_missing_or_rewritten_source_text(tmp_path: Path) -> None:
+    source = tmp_path / "source.png"
+    Image.new("RGB", (400, 200), "white").save(source)
+    policy = _graphic_text_policy(
+        items=[
+            {
+                "id": "label-1",
+                "text": "登记",
+                "treatment": "native_text",
+                "bbox": [40, 60, 120, 85],
+            }
+        ]
+    )
+    policy.update({
+        "fidelity_mode": "exact_source_image",
+        "source_image_sha256": sha256(source.read_bytes()).hexdigest(),
+        "source_text_inventory": [
+            {"id": "label-1", "text": "登记编目", "bbox": [40, 60, 120, 85]}
+        ],
+    })
+
+    report = validate_graphic_text_policy(
+        policy,
+        authored_svg=_policy_svg(tmp_path, text="登记"),
+        page_number=1,
+        source_image=source,
+        require_exact_fidelity=True,
+    )
+
+    assert report["valid"] is False
+    assert "source_inventory_policy_mismatch" in {item["code"] for item in report["errors"]}
+
+
+def test_exact_fidelity_blocks_missing_mode_inventory_and_source_hash(tmp_path: Path) -> None:
+    source = tmp_path / "source.png"
+    Image.new("RGB", (400, 200), "white").save(source)
+
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(
+            items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text", "bbox": [40, 60, 120, 85]}]
+        ),
+        authored_svg=_policy_svg(tmp_path),
+        page_number=1,
+        source_image=source,
+        require_exact_fidelity=True,
+    )
+
+    codes = {item["code"] for item in report["errors"]}
+    assert {"exact_fidelity_mode_required", "missing_source_text_inventory"} <= codes
 
 
 def test_graphic_text_policy_is_required_even_when_no_embedded_text_is_declared(tmp_path: Path) -> None:
@@ -211,18 +312,72 @@ def test_graphic_text_policy_blocks_missing_native_text_and_empty_containers(tmp
     svg = _policy_svg(tmp_path, text="其他文字")
     report = validate_graphic_text_policy(
         _graphic_text_policy(
-            items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}],
+            items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text", "bbox": [40, 60, 120, 85]}],
             empty_container_check="failed",
         ),
         authored_svg=svg,
         page_number=1,
     )
     assert report["valid"] is False
-    assert {error["code"] for error in report["errors"]} == {"empty_container_check_failed", "invalid_item"}
+    assert {error["code"] for error in report["errors"]} == {
+        "empty_container_check_failed", "invalid_item", "unclassified_svg_text"
+    }
+
+
+def test_graphic_text_policy_rejects_unclassified_svg_text(tmp_path: Path) -> None:
+    svg = tmp_path / "two-labels.svg"
+    svg.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">'
+        '<text x="40" y="80" font-size="20">已登记</text>'
+        '<text x="200" y="80" font-size="20">未登记</text></svg>',
+        encoding="utf-8",
+    )
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(
+            items=[
+                {
+                    "id": "registered",
+                    "text": "已登记",
+                    "treatment": "native_text",
+                    "bbox": [40, 60, 120, 85],
+                }
+            ]
+        ),
+        authored_svg=svg,
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert report["unclassified_svg_texts"] == [{"id": None, "text": "未登记"}]
+
+
+def test_graphic_text_policy_uses_svg_ids_with_preparsed_duplicate_text(tmp_path: Path) -> None:
+    svg = tmp_path / "duplicate-labels.svg"
+    svg.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">'
+        '<text data-cyberppt-text-id="left" x="40" y="80" font-size="20">人工智能应用</text>'
+        '<text data-cyberppt-text-id="right" x="200" y="80" font-size="20">人工智能应用</text></svg>',
+        encoding="utf-8",
+    )
+    policy = _graphic_text_policy(
+        items=[
+            {"id": "left", "text": "人工智能应用", "treatment": "native_text", "bbox": [40, 60, 160, 85]},
+            {"id": "right", "text": "人工智能应用", "treatment": "native_text", "bbox": [200, 60, 320, 85]},
+        ]
+    )
+
+    report = validate_graphic_text_policy(
+        policy,
+        authored_svg=svg,
+        page_number=1,
+        svg_text_values=["人工智能应用", "人工智能应用"],
+        image_href_values=[],
+    )
+
+    assert report["valid"] is True
 
 
 def test_graphic_text_policy_requires_evidence_for_preserved_image_text(tmp_path: Path) -> None:
-    svg = _policy_svg(tmp_path)
+    svg = _policy_svg(tmp_path, text="")
     report = validate_graphic_text_policy(
         _graphic_text_policy(items=[{"id": "label-1", "text": "登记编目", "treatment": "preserved_in_image"}]),
         authored_svg=svg,
@@ -235,7 +390,7 @@ def test_graphic_text_policy_requires_evidence_for_preserved_image_text(tmp_path
 def test_graphic_text_policy_accepts_preserved_text_with_local_image_evidence(tmp_path: Path) -> None:
     asset = tmp_path / "wordmark.png"
     Image.new("RGB", (20, 20), "white").save(asset)
-    svg = _policy_svg(tmp_path)
+    svg = _policy_svg(tmp_path, text="")
     svg.write_text(
         svg.read_text(encoding="utf-8").replace(
             "</svg>",
@@ -273,7 +428,7 @@ def test_graphic_text_policy_accepts_reviewed_decorative_glyph_without_svg_text(
                 }
             ]
         ),
-        authored_svg=_policy_svg(tmp_path),
+        authored_svg=_policy_svg(tmp_path, text=""),
         page_number=1,
     )
     assert report["valid"] is True
@@ -471,11 +626,12 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                                     "id": "label-1",
                                     "text": "登记编目",
                                     "treatment": "native_text",
-                                    "bbox": [30, 50, 180, 100],
-                                    "layout_lines": [{"text": "登记编目", "bbox": [30, 50, 180, 100]}],
+                                    "bbox": [40, 60, 180, 85],
+                                    "layout_lines": [{"text": "登记编目", "bbox": [40, 60, 180, 85]}],
                                     "locator": {"coverage": 1.0, "similarity": 1.0},
                                 }
-                            ]
+                            ],
+                            exact_source=source,
                         ),
                         "clean_base": _clean_base_contract(
                             source,
@@ -486,11 +642,12 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                                         "id": "label-1",
                                         "text": "登记编目",
                                         "treatment": "native_text",
-                                        "bbox": [30, 50, 180, 100],
-                                        "layout_lines": [{"text": "登记编目", "bbox": [30, 50, 180, 100]}],
+                                        "bbox": [40, 60, 180, 85],
+                                        "layout_lines": [{"text": "登记编目", "bbox": [40, 60, 180, 85]}],
                                         "locator": {"coverage": 1.0, "similarity": 1.0},
                                     }
-                                ]
+                                ],
+                                exact_source=source,
                             ),
                         ),
                     }
@@ -604,11 +761,12 @@ def test_stage02_adapter_checkpoints_later_pages_when_one_page_fails(tmp_path: P
                 "id": "label-1",
                 "text": "登记编目",
                 "treatment": "native_text",
-                "bbox": [30, 50, 180, 100],
-                "layout_lines": [{"text": "登记编目", "bbox": [30, 50, 180, 100]}],
+                "bbox": [40, 60, 180, 85],
+                "layout_lines": [{"text": "登记编目", "bbox": [40, 60, 180, 85]}],
                 "locator": {"coverage": 1.0, "similarity": 1.0},
             }
-        ]
+        ],
+        exact_source=source,
     )
     manifest = tmp_path / "manifest.json"
     manifest.write_text(
