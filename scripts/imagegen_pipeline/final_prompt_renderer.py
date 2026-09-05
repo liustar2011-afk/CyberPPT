@@ -149,13 +149,13 @@ def render_final_prompt(
     """Render the single production prompt in the required seven-part order."""
 
     runtime = None
+    if style_id == 9:
+        if style_lock is None:
+            raise ValueError("style_lock is required for style 09 final prompt rendering")
+        runtime = load_runtime_style_contract(style_lock)
     runtime_style_contract = ir.runtime_lock.style_contract
-    if style_lock is not None:
-        try:
-            runtime = load_runtime_style_contract(style_lock)
-            runtime_style_contract = runtime.contract
-        except (OSError, ValueError, TypeError):
-            pass
+    if runtime is not None:
+        runtime_style_contract = runtime.contract
 
     runtime_section = "\n".join(
         (
@@ -179,9 +179,9 @@ def render_final_prompt(
                 f"Core judgment (non-visible): {ir.page_judgment}",
                 *(
                     (
-                            "Source-grounded semantic context (use for business objects, "
-                            "conditions, boundaries and implications; it defines the factual "
-                            "boundary for rewritten visible copy):",
+                        "Full-copy semantic context (non-visible; use only to understand "
+                        "business objects, relationships, conditions, boundaries and "
+                        "implications; never render or paraphrase this passage as extra copy):",
                         ir.semantic_context,
                     )
                     if ir.semantic_context
@@ -220,9 +220,9 @@ def render_final_prompt(
             (
                 SECTION_HEADINGS[5],
                 (
-                    "The source copy is declared inside its semantic group above. Rewrite it "
-                    "into concise, conclusion-first visible copy as needed; preserve factual "
-                    "objects, numbers, conditions, scope, responsibility, status and claim strength."
+                    "Render every exact visible-text entry verbatim. Preserve its wording and "
+                    "order; line breaks and spatial grouping may change, but no entry may be "
+                    "rewritten, omitted, expanded, or supplemented from the full-copy context."
                 ),
                 *(
                     ()

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
+from cyberppt.text_capacity import assess_text_capacity
 from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy
 
 
@@ -433,7 +434,7 @@ def _style_metadata(style_lock: Path) -> ArtDirectionSpec:
     from scripts.imagegen_pipeline.deliverable_prompt import style_contract
     from scripts.imagegen_pipeline.style_library import load_style_lock
 
-    payload = load_style_lock(style_lock)
+    payload = json.loads(style_lock.read_text(encoding="utf-8"))
     raw_style = payload.get("style") if isinstance(payload, dict) else None
     style = raw_style if isinstance(raw_style, dict) else {}
     raw_id = style.get("id")
@@ -441,11 +442,19 @@ def _style_metadata(style_lock: Path) -> ArtDirectionSpec:
         style_id = int(raw_id) if raw_id is not None else None
     except (TypeError, ValueError):
         style_id = None
+    if style_id == 9:
+        payload = load_style_lock(style_lock)
+        raw_style = payload.get("style") if isinstance(payload, dict) else None
+        style = raw_style if isinstance(raw_style, dict) else {}
+    raw_contract = str(
+        style.get("prompt_contract") or style.get("style_prompt_v2") or ""
+    ).strip()
+    contract = style_contract(style_lock) if style_id == 9 else raw_contract
     return ArtDirectionSpec(
         style_id=style_id,
         style_name=str(style.get("name") or "").strip(),
         style_slug=str(style.get("slug") or "").strip(),
-        contract=_required_text(style_contract(style_lock), "art direction contract"),
+        contract=_required_text(contract, "art direction contract"),
     )
 
 
@@ -660,13 +669,17 @@ def build_page_artifact_spec(
         str(item.get("text") or "").strip()
         for item in final_text if isinstance(item, dict)
     ) if isinstance(final_text, list) else ()
-    visible_text = (
-        _text_lines(handoff_page.get("onscreen_text"))
-        or final_text_values
-        or _strings(generation_handoff.get("required_text"))
-    )
+    visible_text = _text_lines(handoff_page.get("onscreen_text"))
     if not visible_text:
-        raise ValueError("artifact spec requires on-screen text reference")
+        raise ValueError(
+            "artifact spec requires authored onscreen_text; Stage 2 cannot derive "
+            "visible copy from visual planning or generation handoff fields"
+        )
+    if final_text_values and final_text_values != visible_text:
+        raise ValueError("artifact spec visible text drifted from authored onscreen_text")
+    required_text = _strings(generation_handoff.get("required_text"))
+    if required_text and required_text != visible_text:
+        raise ValueError("artifact spec generation text drifted from authored onscreen_text")
 
     content_integrity = handoff_page.get("content_integrity")
     if not isinstance(content_integrity, dict):
@@ -674,6 +687,25 @@ def build_page_artifact_spec(
     content_nodes = content_integrity.get("nodes") if isinstance(content_integrity, dict) else None
     root_nodes = content_integrity.get("root_nodes") if isinstance(content_integrity, dict) else None
     content_root_count = len(root_nodes) if isinstance(root_nodes, list) else 0
+    if str(handoff_page.get("onscreen_source") or "authored") == "full_prose_fallback":
+        hierarchy_levels = tuple(
+            int(node.get("level") or 1)
+            for node in (content_nodes or [])
+            if isinstance(node, dict)
+        )
+        capacity = assess_text_capacity(
+            visible_text,
+            root_count=content_root_count,
+            hierarchy_levels=hierarchy_levels,
+            canvas=(handoff_canvas[0], handoff_canvas[1]),
+        )
+        if capacity.status == "blocked" or capacity.character_count >= 520:
+            raise ValueError(
+                "STAGE02_FALLBACK_TEXT_CAPACITY_EXCEEDED: the manuscript has no authored "
+                "onscreen text and its verbatim full-prose fallback exceeds "
+                "the current canvas capacity; split the page or provide explicit onscreen text. "
+                f"score={capacity.pressure_score}; characters={capacity.character_count}"
+            )
     # Content-integrity nodes describe the authored script structure. They are
     # useful for semantic grouping, but they do not bind the model to exact
     # bitmap wording. Keep the prompt input as plain reference text.
@@ -812,10 +844,11 @@ def build_page_artifact_spec(
         )))
 
     semantic_text = str(handoff_page.get("full_prose") or "").strip()
-    semantic_source_kind = "full_prose"
     if not semantic_text:
-        semantic_text = core_judgment
-        semantic_source_kind = "core_judgment_compatibility_fallback"
+        raise ValueError(
+            "artifact spec requires full_prose as non-visible semantic context; "
+            "Stage 2 cannot substitute core_judgment for the complete copy"
+        )
     prompt_mode = _prompt_mode(handoff_page, visual_page, policy)
 
     return PageArtifactSpec(
@@ -886,7 +919,7 @@ def build_page_artifact_spec(
             text=semantic_text,
             argument_chain=str(handoff_page.get("argument_chain") or "").strip(),
             source_sha256=hashlib.sha256(semantic_text.encode("utf-8")).hexdigest(),
-            source_kind=semantic_source_kind,
+            source_kind="full_prose",
             trace_refs=(),
         ),
         prompt_mode=prompt_mode,

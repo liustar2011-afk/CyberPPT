@@ -2936,6 +2936,34 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertIn("行业公共能力", parsed["必留上屏"])
         self.assertIn("S015", parsed["仅追溯"])
 
+    def test_missing_onscreen_uses_verbatim_full_prose_with_provenance(self) -> None:
+        document = parse_script_markdown(
+            """## 第1页：外部稿原标题
+- 页面类型：内容页
+- 页面标题：外部稿原标题
+- 完整文字稿：政策文件和关键数字均按外部稿原文保留。
+"""
+        )
+
+        page = document.pages[0]
+        self.assertEqual("外部稿原标题", page.title)
+        self.assertEqual(page.full_prose, page.onscreen_text)
+        self.assertEqual("full_prose_fallback", page.onscreen_source)
+
+    def test_explicit_onscreen_keeps_authored_provenance(self) -> None:
+        document = parse_script_markdown(
+            """## 第1页：外部稿原标题
+- 页面类型：内容页
+- 页面标题：外部稿原标题
+- 完整文字稿：完整文字稿保留完整语义。
+- 上屏文字：锁定上屏文字
+"""
+        )
+
+        page = document.pages[0]
+        self.assertEqual("锁定上屏文字", page.onscreen_text)
+        self.assertEqual("authored", page.onscreen_source)
+
     def test_rejects_document_without_pages(self) -> None:
         with self.assertRaisesRegex(ValueError, "no page headings"):
             parse_script_markdown("# empty")

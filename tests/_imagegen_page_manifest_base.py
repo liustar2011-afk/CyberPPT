@@ -67,6 +67,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 )
 
         full = manifest["pairs"][0]["full"]
+        self.assertEqual("full_prose_fallback", manifest["pairs"][0]["onscreen_source"])
         self.assertEqual("用户直接修改后的 Stage 2 生图脚本。", full["prompt"].strip())
         self.assertEqual("direct_prompt_override", full["prompt_source"])
         self.assertEqual(str(override.resolve()), full["prompt_override_path"])

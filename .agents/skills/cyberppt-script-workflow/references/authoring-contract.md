@@ -168,6 +168,17 @@ drop a condition that changes status, responsibility, timing or scope. Delivery
 must render the authored `onscreen` field and must not replace it with a duplicate
 of `full_copy`.
 
+Apply a strict two-pass order. First finish and review `full_copy`; then create
+`onscreen` only from that completed text. For each page, select the page's core
+conclusion and the smallest set of complete supporting propositions needed for
+silent reading. Each selected proposition must have a direct parent passage in
+`full_copy`. If shortening would risk changing or omitting an actor, action,
+object, relationship, status, responsibility, number, time, condition, boundary
+or claim strength, copy that complete parent passage into `onscreen` verbatim.
+Verbatim fallback is preferable to an unsafe author-created summary. It applies
+to the affected passage or, when necessary, the complete page; it is not a
+failure merely because the visible field becomes longer.
+
 Onscreen consumption is complete when the visible layer carries the paragraph's
 leading judgment, the decisive facts or relations that make it understandable,
 and every condition or qualifier that materially changes its strength. Compact

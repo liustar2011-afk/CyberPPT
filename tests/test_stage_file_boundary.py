@@ -29,6 +29,24 @@ def test_stage2_input_is_portable_and_ignores_adjacent_producer_state():
         assert payload["schema"]=="cyberppt.stage02_script_input.v1"; assert payload["pages"][0]["title"]=="文件边界"; assert payload["pages"][0]["content_load"]=="standard"; assert payload["source_bindings"]["script"]["source_path"]==str(script.resolve())
         assert (stage2/"workbench/inputs/final-script.md").is_file(); assert prepare_stage02_input(stage2,script=script,reuse_current=True)["status"]=="passed"; assert (stage2/INPUT_JSON).is_file()
 
+def test_external_title_and_full_prose_get_verbatim_visible_fallback():
+    manuscript = """## 第1页：外部原标题
+- 页面类型：内容页
+- 页面标题：外部原标题
+- 完整文字稿：政策文件、关键数字和核心事项均按外部稿原文保留。
+"""
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        script = root / "external-script.md"
+        script.write_text(manuscript, encoding="utf-8")
+        payload = build_stage02_input(root / "stage2", script=script)
+
+    page = payload["pages"][0]
+    assert page["title"] == "外部原标题"
+    assert page["onscreen_text"] == page["full_prose"]
+    assert page["onscreen_source"] == "full_prose_fallback"
+    assert page["stage02_visual_input"]["onscreen_source"] == "full_prose_fallback"
+
 def test_formal_stage2_runtime_has_no_stage1_artifact_dependency():
     repo=Path(__file__).resolve().parents[1]
     files=[repo/"cyberppt/stage02_input.py",repo/"cyberppt/page_artifact_spec.py",repo/"scripts/imagegen_pipeline/page_manifest.py"]

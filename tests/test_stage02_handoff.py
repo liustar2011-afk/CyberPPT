@@ -77,6 +77,22 @@ def test_stage02_handoff_preserves_author_declared_onscreen_expression_ir() -> N
     assert record["stage02_visual_input"]["onscreen_expression_ir"] == expression_ir
 
 
+def test_stage02_handoff_records_full_prose_fallback_provenance() -> None:
+    page = ScriptPage(
+        page_id="p01", sequence=1, heading="", page_type="content", title="原标题",
+        main_message="", full_prose="外部完整文字稿。", selection_notes="",
+        evidence_map="", evidence_map_refs=(), source_refs=(), boundary_source_refs=(),
+        boundary="", visual_structure="", onscreen_text="外部完整文字稿。",
+        module_titles=(), onscreen_source="full_prose_fallback",
+    )
+
+    record = _page_record(page, None)
+
+    assert record["onscreen_source"] == "full_prose_fallback"
+    assert record["field_provenance"]["onscreen_text"] == "full_prose_fallback"
+    assert record["stage02_visual_input"]["onscreen_source"] == "full_prose_fallback"
+
+
 def _payload(project: Path, *, created_at: str) -> dict[str, object]:
     script = project / "script.md"
     stage01 = project / "workbench" / "stages" / "01-analysis"

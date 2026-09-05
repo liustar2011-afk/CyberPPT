@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 
 from scripts.imagegen_pipeline.deliverable_prompt import (
     PageBlock,
+    assert_deliverable_prompt,
     compile_page_blocks,
     compile_pages,
     fit_template_title,
@@ -30,6 +31,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
+    def test_legitimate_source_boundary_is_not_rejected_as_template_meta(self) -> None:
+        assert_deliverable_prompt("电力行业人才测评场景为示例，仅供参考，各单位应结合实际填写。")
+
     def test_source_visual_guidance_drops_page_navigation_and_backend_meta(self) -> None:
         raw = (
             "需求侧与供给侧两条证据链汇聚到服务供给缺口。"

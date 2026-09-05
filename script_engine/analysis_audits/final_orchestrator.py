@@ -18,6 +18,7 @@ from .final_deck import (
 from .final_lean import (
     _audit_lean_authored_source_consumption,
     _audit_lean_onscreen_full_copy_alignment,
+    _audit_lean_onscreen_protected_retention,
     _audit_lean_relationship_visibility,
 )
 from .final_fidelity import faithful_relation_promotion_issues
@@ -114,6 +115,9 @@ def audit_final_script(
             issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
         for alignment_issue in _audit_lean_onscreen_full_copy_alignment(slide):
             issues.append(f"slides.{index} ({slide_id}): {alignment_issue}")
+        retained_evidence = _support_items(slide.get("source_refs") or [], items)
+        for retention_issue in _audit_lean_onscreen_protected_retention(slide, retained_evidence, items):
+            issues.append(f"slides.{index} ({slide_id}): {retention_issue}")
         for relationship_issue in _audit_lean_relationship_visibility(slide):
             issues.append(f"slides.{index} ({slide_id}): {relationship_issue}")
         for coverage_issue in _audit_authored_content_coverage(page, slide):

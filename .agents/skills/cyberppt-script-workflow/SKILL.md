@@ -62,6 +62,14 @@ semantic-preserving editorial projection: it opens with the page conclusion,
 then uses complete paragraphs to unfold the supporting reasons, facts and
 implications. It may reorder and clarify the complete copy while retaining
 every material fact, condition, responsibility, number and claim strength.
+The writing order is strict: finish and review `full_copy` first; only then
+select its core conclusion and decisive supporting content for `onscreen`.
+Every onscreen proposition must be traceable to a proposition already written
+in `full_copy`. When the author cannot shorten a passage without risking a
+change of actor, action, object, status, responsibility, number, time,
+condition, boundary or claim strength, copy the relevant complete-copy passage
+into `onscreen` verbatim as the safe fallback. Never invent a new summary merely
+to make the visible layer shorter.
 Stage 01 uses neither mechanical shortening nor phrase-led condensation;
 dense material is resolved through page mission or pagination rather than
 deleting substantive content.

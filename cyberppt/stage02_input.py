@@ -271,6 +271,7 @@ def _page_record(
         "core_message": page.main_message,
         "full_prose": page.full_prose,
         "onscreen_text": page.onscreen_text,
+        "onscreen_source": page.onscreen_source,
         "onscreen_items": _onscreen_items(page),
         "locked_text_items": locked_text_items,
         "content_integrity": content_integrity,
@@ -292,6 +293,7 @@ def _page_record(
         "expression_constraints": constraints,
         "field_provenance": {
             "content": "input_script",
+            "onscreen_text": page.onscreen_source,
             "business_relationships": "input_script",
             "render_topology": "stage02_derived",
             "visual_structure": "stage02_derived",
@@ -310,6 +312,7 @@ def _page_record(
         "argument_chain": page.argument_chain,
         "prompt_mode": prompt_mode,
         "onscreen_text": page.onscreen_text,
+        "onscreen_source": page.onscreen_source,
         "locked_text_items": locked_text_items,
         "content_integrity": content_integrity,
         "module_titles": list(page.module_titles),

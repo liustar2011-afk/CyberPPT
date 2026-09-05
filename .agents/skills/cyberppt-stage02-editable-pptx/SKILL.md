@@ -39,12 +39,20 @@ Stage 02 does not require or invoke a separate visual-structure preparation stag
 
 When the user supplies an external manuscript, invoke the formal entry with
 `--external-script`. External scripts use the same content-first presentation
-authoring contract as other Stage 02 inputs: visible copy may be reorganized,
-condensed and rewritten into a clearer hierarchy while preserving the script's
-business objects, factual relationships, numbers, conditions, status and
-conclusion strength. The manifest, input identity, build context and resume
+contract as other Stage 02 inputs. When an external page provides only a title
+and `full_copy`, preserve the title and copy `full_copy` verbatim into `onscreen`;
+record `onscreen_source: full_prose_fallback`. Do not summarize or rewrite it.
+If that fallback exceeds canvas capacity, stop and require page splitting or
+explicit onscreen text. The manifest, input identity, build context and resume
 command must retain `source_mode: external_script` so the external source and
 its semantic boundary remain traceable.
+
+For a finalized Stage 01 script, `full_copy` and `onscreen` have separate,
+non-interchangeable roles in the image prompt. `full_copy` is non-visible semantic
+context only. `onscreen` is the sole visible-text authority and every entry is
+rendered verbatim; only line breaks and spatial grouping may change. Production
+must fail closed when either field is missing or when downstream `final_text` or
+`required_text` differs from `onscreen`.
 
 ## Per-page Quick checkpoint loop
 

@@ -578,6 +578,9 @@ def parse_script_markdown(
         # hierarchy checks consume it.  Calling `.strip()` here erased the
         # first module's indentation while leaving later modules untouched.
         onscreen = onscreen_candidate if onscreen_candidate.strip() else full_prose
+        onscreen_source = (
+            "authored" if onscreen_candidate.strip() else "full_prose_fallback"
+        )
         module_lines: list[tuple[str, int]] = []
         if page_type == "content":
             for line in onscreen.splitlines():
@@ -640,6 +643,7 @@ def parse_script_markdown(
                 onscreen_text=onscreen,
                 module_titles=modules,
                 raw_onscreen_text=onscreen,
+                onscreen_source=onscreen_source,
                 top_level_module_titles=top_level_modules,
                 visual_proof=fields.get("视觉证明", "").strip(),
                 onscreen_judgment=fields.get("上屏结论", "").strip(),

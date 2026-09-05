@@ -677,6 +677,7 @@ def build_manifest(
                 "page_code": f"P{page_number:02d}",
                 "title": page.title,
                 "page_script": prompt,
+                "onscreen_source": script_pages[page_number].onscreen_source,
                 "image_text_truth": {
                     "script_text": image_text_reference,
                     "scope": "typo_and_gibberish_only",

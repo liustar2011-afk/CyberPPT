@@ -252,6 +252,105 @@ def _audit_lean_onscreen_full_copy_alignment(slide: dict[str, Any]) -> list[str]
     return issues
 
 
+def _audit_lean_onscreen_protected_retention(
+    slide: dict[str, Any],
+    evidence: list[dict[str, Any]],
+    items: dict[str, dict[str, Any]],
+) -> list[str]:
+    """Reject onscreen compression that drops protected full-copy meaning."""
+
+    if slide.get("page_type") != "content":
+        return []
+
+    full_copy = str(slide.get("full_copy") or "").strip()
+    onscreen = _onscreen_surface(slide)
+    compact_full = re.sub(r"\s+", "", full_copy)
+    compact_onscreen = re.sub(r"\s+", "", onscreen)
+    issues: list[str] = []
+
+    protected_numbers = set(
+        re.findall(
+            r"\d+(?:\.\d+)?(?:年\d{1,2}月\d{1,2}日|年|月|日|%|％|万|亿|项|级)?",
+            full_copy,
+        )
+    )
+    missing_numbers = sorted(
+        value for value in protected_numbers
+        if value and value not in compact_onscreen
+    )
+    if missing_numbers:
+        issues.append(
+            "AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST: onscreen compression lost "
+            f"protected full-copy values {missing_numbers}; copy the affected "
+            "full-copy passage when they cannot be shortened safely"
+        )
+
+    for item in evidence:
+        item_id = str(item.get("id") or "?")
+        statement = str(
+            item.get("statement")
+            or item.get("claim")
+            or item.get("definition")
+            or item.get("relation")
+            or _item_text(item)
+        ).strip()
+        if not statement or _source_statement_overlap(statement, full_copy) < 0.08:
+            continue
+
+        missing_conditions = [
+            str(value).strip()
+            for value in item.get("conditions") or []
+            if str(value).strip()
+            and re.sub(r"\s+", "", str(value)) in compact_full
+            and re.sub(r"\s+", "", str(value)) not in compact_onscreen
+        ]
+        if missing_conditions:
+            issues.append(
+                f"AUTHOR_ONSCREEN_CONDITION_LOST: {item_id} lost full-copy "
+                f"conditions {missing_conditions}"
+            )
+
+        missing_entities: list[str] = []
+        for entity_ref in item.get("entity_refs") or []:
+            entity = items.get(entity_ref)
+            name = str((entity or {}).get("name") or "").strip()
+            compact_name = re.sub(r"\s+", "", name)
+            if compact_name and compact_name in compact_full and compact_name not in compact_onscreen:
+                missing_entities.append(name)
+        if missing_entities:
+            issues.append(
+                f"AUTHOR_ONSCREEN_RESPONSIBILITY_LOST: {item_id} lost full-copy "
+                f"actors {missing_entities}"
+            )
+
+        role = str(
+            item.get("claim_role")
+            or item.get("semantic_argument_role")
+            or item.get("argument_duty")
+            or ""
+        ).strip().lower()
+        strength = str(item.get("strength") or item.get("priority") or "").strip().upper()
+        protected_item = strength == "P0" or role in {
+            "boundary", "constraint", "requirement", "responsibility", "task"
+        }
+        overlap = _source_statement_overlap(statement, onscreen)
+        if protected_item and overlap < 0.08:
+            issues.append(
+                f"AUTHOR_ONSCREEN_CORE_SEMANTICS_LOST: {item_id} is protected "
+                "full-copy meaning but is absent from onscreen "
+                f"(overlap={overlap:.3f}); retain it or copy its full-copy passage"
+            )
+
+        status = str(item.get("status") or "").strip()
+        if status and not _status_strength_preserved(status, onscreen):
+            issues.append(
+                f"AUTHOR_ONSCREEN_STATUS_STRENGTH_LOST: {item_id} lost full-copy "
+                f"status '{status}'"
+            )
+
+    return issues
+
+
 def _audit_lean_relationship_visibility(slide: dict[str, Any]) -> list[str]:
     """Require relationship claims and edges to be visible in both copy layers."""
 
@@ -307,5 +406,6 @@ __all__ = [
     "_audit_lean_authored_source_consumption",
     "_onscreen_surface",
     "_audit_lean_onscreen_full_copy_alignment",
+    "_audit_lean_onscreen_protected_retention",
     "_audit_lean_relationship_visibility",
 ]

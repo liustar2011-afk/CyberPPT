@@ -40,6 +40,7 @@ class PageArtifactSpecTests(unittest.TestCase):
             "page_mission": "Show how governed input becomes a traceable result.",
             "core_message": "Unified governance makes the result traceable.",
             "full_prose": "Governed input is transformed under an explicit control condition before the traceable result is released.",
+            "onscreen_text": "Governed input\nTraceable result",
             "argument_chain": "governed input → control condition → traceable result",
             "provenance_refs": ["SU-EXAMPLE-PARAGRAPH-01"],
             "must_not_include": ["Do not discuss the next chapter"],
@@ -219,6 +220,88 @@ class PageArtifactSpecTests(unittest.TestCase):
             self.assertNotIn(backend_id, serialized)
         self.assertNotIn("Do not discuss the next chapter", serialized)
         self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", serialized)
+
+    def test_requires_authored_onscreen_text_as_the_only_visible_authority(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            del handoff_page["onscreen_text"]
+
+            with self.assertRaisesRegex(ValueError, "requires authored onscreen_text"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    script_input_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
+    def test_rejects_visual_text_that_drifts_from_authored_onscreen_text(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            visual_page["final_text"][1]["text"] = "Rewritten result"
+
+            with self.assertRaisesRegex(ValueError, "visible text drifted"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    script_input_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
+    def test_rejects_generation_text_that_drifts_from_authored_onscreen_text(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            visual_page["generation_handoff"]["required_text"][1] = "Rewritten result"
+
+            with self.assertRaisesRegex(ValueError, "generation text drifted"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    script_input_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
+    def test_requires_full_prose_as_non_visible_semantic_context(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            del handoff_page["full_prose"]
+
+            with self.assertRaisesRegex(ValueError, "requires full_prose"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    script_input_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
+    def test_blocks_oversized_external_full_prose_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            fallback = "完整文字稿原文。" * 80
+            handoff_page["full_prose"] = fallback
+            handoff_page["onscreen_text"] = fallback
+            handoff_page["onscreen_source"] = "full_prose_fallback"
+            visual_page["final_text"] = [{"text": fallback}]
+            visual_page["generation_handoff"]["required_text"] = [fallback]
+
+            with self.assertRaisesRegex(
+                ValueError, "STAGE02_FALLBACK_TEXT_CAPACITY_EXCEEDED"
+            ):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    script_input_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
 
     def test_explicit_hard_directed_relationship_enables_directed_composition(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

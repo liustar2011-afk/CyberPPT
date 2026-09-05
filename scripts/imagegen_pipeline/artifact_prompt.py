@@ -32,6 +32,7 @@ from scripts.imagegen_pipeline.runtime_style_contract import (
     enforce_terminal_execution_lock,
     internal_style_token_leaks,
     load_runtime_style_contract,
+    project_runtime_style_contract,
 )
 
 
@@ -130,12 +131,14 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
     visible_lines = tuple(f'Exact visible text: "{text}"' for text in typography.visible_text)
 
     style_contract = spec.art_direction.contract
+    runtime = None
     if spec.art_direction.style_id == 9:
-        if style_lock is not None:
-            try:
-                style_contract = load_runtime_style_contract(style_lock).contract
-            except (OSError, ValueError, TypeError):
-                pass
+        try:
+            runtime = load_runtime_style_contract(style_lock) if style_lock else None
+        except (OSError, ValueError, TypeError):
+            runtime = project_runtime_style_contract(style_contract)
+    if runtime is not None:
+        style_contract = runtime.contract
 
     sections = (
         "\n".join((

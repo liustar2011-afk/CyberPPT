@@ -23,9 +23,18 @@ def test_v04_examples_validate() -> None:
     assert plan["plan_contract_version"] == 2
     assert plan["planning_profile"] == "lean"
 
-def test_understand_skill_contains_latent_logic_pass() -> None:
-    text = _read(".agents/skills/cyberppt-script-understand/SKILL.md")
-    for token in ("Source structure", "Atomic facts", "Latent Logic Mining", "basis: inferred", "support", "confidence"):
+def test_understand_skill_preserves_only_explicit_relations() -> None:
+    text = " ".join(
+        _read(".agents/skills/cyberppt-script-understand/SKILL.md").split()
+    )
+    for token in (
+        "Source structure",
+        "Atomic facts",
+        "Explicit relations",
+        "basis: explicit",
+        "Do not search for latent logic",
+        "relations` may be empty",
+    ):
         assert token in text
 
 

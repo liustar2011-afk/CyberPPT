@@ -1022,8 +1022,7 @@ def assert_deliverable_prompt(prompt: str) -> None:
         r"标题占位条",
         r"(?m)^标题[:：]",
         r"(?m)^副标题[:：]",
-        r"仅供参考",
-        r"核对内容",
+        r"仅供参考[、，,\s]*核对内容(?:用)?",
         r"\[通用风格前缀\]",
     ]
     for pattern in forbidden:

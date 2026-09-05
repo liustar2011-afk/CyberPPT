@@ -67,6 +67,7 @@ class ScriptPage:
     onscreen_text: str
     module_titles: tuple[str, ...]
     raw_onscreen_text: str = ""
+    onscreen_source: str = "authored"
     top_level_module_titles: tuple[str, ...] = ()
     subtitle: str = ""
     content_load: str = ""

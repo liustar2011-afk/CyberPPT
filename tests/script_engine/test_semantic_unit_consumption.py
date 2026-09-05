@@ -242,6 +242,49 @@ def test_final_rejects_onscreen_claim_absent_from_full_copy() -> None:
     assert any("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED" in issue for issue in issues)
 
 
+def test_final_rejects_protected_full_copy_number_lost_from_onscreen() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
+        "电力行业已形成6项配套技术文件，中国电力企业联合会负责标准宣贯与监督。",
+        onscreen_items=["国家建设进入全面实施阶段", "行业协会负责标准宣贯与监督"],
+    )
+
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+
+    assert any("AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST" in issue and "6项" in issue for issue in issues)
+
+
+def test_final_rejects_protected_responsibility_lost_from_onscreen() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
+        "电力行业已形成6项配套技术文件，中国电力企业联合会负责标准宣贯与监督。",
+        onscreen_items=["国家建设进入全面实施阶段", "电力行业已形成6项配套技术文件"],
+    )
+
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+
+    assert any("AUTHOR_ONSCREEN_RESPONSIBILITY_LOST" in issue for issue in issues)
+
+
+def test_final_accepts_verbatim_full_copy_as_safe_onscreen_fallback() -> None:
+    full_copy = (
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
+        "电力行业已形成6项配套技术文件，中国电力企业联合会负责标准宣贯与监督。"
+    )
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        full_copy,
+        onscreen_items=[full_copy],
+    )
+    final["slides"][0]["onscreen"][0]["heading"] = final["slides"][0]["core_message"]
+
+    issues, _ = audit_final_script(final, _plan(), _foundation())
+
+    assert not any("AUTHOR_ONSCREEN_" in issue for issue in issues)
+
+
 def test_final_rejects_relationship_that_exists_only_in_metadata() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],

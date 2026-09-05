@@ -21,7 +21,7 @@ Critical rule:
 
 **SEMANTIC EXPANSION DOES NOT AUTHORIZE TEXT EXPANSION.**
 
-Semantic expansion is for internal understanding, relationship discovery and visual design.
+Semantic expansion is for internal understanding, relationship discovery and visual design.  
 It must not automatically increase the amount of on-page copy.
 
 Do not expose internal analysis, semantic expansion, information prioritization, layout reasoning or design deliberation on the page.
@@ -1030,3 +1030,4 @@ Do not shrink typography to fit excess copy.
 Do not require the source content to prescribe the layout.
 
 **Derive the layout from semantics. Compress the display copy before rendering.**
+

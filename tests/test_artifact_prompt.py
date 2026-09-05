@@ -321,9 +321,27 @@ class ArtifactPromptTests(unittest.TestCase):
         prompt = render_final_prompt(build_final_prompt_ir(spec))
 
         self.assertIn(unique_context, prompt)
-        self.assertIn("Source-grounded semantic context (non-visible", prompt)
+        self.assertIn("Full-copy semantic context (non-visible", prompt)
         self.assertNotIn(f'Exact visible text: "{unique_context}"', prompt)
         self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", prompt)
+
+    def test_final_prompt_locks_onscreen_text_and_forbids_full_copy_as_extra_copy(self) -> None:
+        unique_context = "This complete explanation is semantic context only."
+        spec = replace(
+            _spec(),
+            semantic_context=SemanticContextSpec(
+                text=unique_context,
+                source_sha256="d" * 64,
+                source_kind="full_prose",
+            ),
+        )
+
+        prompt = render_final_prompt(build_final_prompt_ir(spec))
+
+        self.assertIn(unique_context, prompt)
+        self.assertIn("never render or paraphrase this passage as extra copy", prompt)
+        self.assertIn("Render every exact visible-text entry verbatim", prompt)
+        self.assertIn("no entry may be rewritten, omitted, expanded, or supplemented", prompt)
 
     def test_verified_visual_thesis_overrides_legacy_argument_chain(self) -> None:
         spec = replace(
