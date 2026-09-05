@@ -844,8 +844,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertIn("组件A：输入与输出关系", prompt)
         self.assertNotIn("原文" + "锁定规则", prompt)
         self.assertNotIn("逐字、完整并保持" + "原有顺序呈现", prompt)
-        self.assertIn("页面任务", prompt)
-        self.assertIn("页面逻辑", prompt)
+        self.assertIn("【完整上屏内容】", prompt)
         self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
         self.assertIn("--external-script", summary["resume_command"])
 

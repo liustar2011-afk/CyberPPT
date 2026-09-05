@@ -59,7 +59,7 @@ def test_final_prompt_renders_macro_region_authority_without_backend_ids():
     assert "Region relationship: Region 1 to Region 2 — flow." in prompt
     assert "Preferred visual medium: mixed." in prompt
     assert "Allowed visual media: business scene; object illustration; relationship diagram; mixed." in prompt
-    assert "owns exact visible-text item(s) 1" in prompt
+    assert "owns source onscreen item(s) 1" in prompt
     assert "RG01" not in prompt
     assert "RG02" not in prompt
     assert "E1" not in prompt
@@ -78,11 +78,11 @@ def test_semantic_brief_no_longer_delegates_macro_spatial_organization():
     assert "choose the visual reading implementation freely" not in prompt
 
 
-def test_exact_visible_text_is_not_redeclared_inside_region_lines():
+def test_source_onscreen_text_is_not_redeclared_inside_region_lines():
     ir = build_final_prompt_ir(_current_spec())
     prompt = render_final_prompt(ir)
     for text in ir.visible_text:
-        assert prompt.count(f'- Exact visible text: "{text}"') == 1
+        assert prompt.count(f'- Source onscreen text: "{text}"') == 1
     region_lines = [line for line in prompt.splitlines() if line.startswith("Region ")]
     assert all(text not in "\n".join(region_lines) for text in ir.visible_text)
 

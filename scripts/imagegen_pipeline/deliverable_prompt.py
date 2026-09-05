@@ -588,20 +588,6 @@ def _creative_brief_style_contract(
 
     contract = style_contract(style_lock_path, semantic_tags=semantic_tags)
     contract = re.sub(
-        r"允许根据画面容量压缩、取舍和重组文字，但不得改变原意，?",
-        "完整、准确呈现锁定的上屏文字，不得压缩、删减、改写或重组，",
-        contract,
-    )
-    contract = re.sub(
-        r"(?:may|can)\s+(?:compress|shorten|summarize|paraphrase)[^.]*\.",
-        (
-            "Render the locked on-screen text completely and exactly; do not compress, "
-            "shorten, summarize, paraphrase, or reorganize it."
-        ),
-        contract,
-        flags=re.I,
-    )
-    contract = re.sub(
         r"factual numbers and labels must be verified and remain editable\.?",
         (
             "Keep every locked factual number and label exact. Auxiliary visuals may contain "
@@ -665,20 +651,22 @@ def _creative_brief_style_contract(
     contract = re.sub(
         r"在不改变原脚本结构的前提下，",
         (
-            "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
-            "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥；"
+            "上屏文字可为清晰表达进行改写、合并、精简、重排或拆分，同时保留业务"
+            "对象、事实、数字、范围、责任、条件、状态和结论力度；整体构图、视觉隐喻"
+            "和辅助表达均可自由发挥；不要求沿用原始列表、卡片、栏位或段落排布形式；"
         ),
         contract,
     )
     creative_layout_freedom = (
-        "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
-        "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥。"
+        "上屏文字可为清晰表达进行改写、合并、精简、重排或拆分，同时保留业务对象、"
+        "事实、数字、范围、责任、条件、状态和结论力度；整体构图、视觉隐喻和辅助表达"
+        "均可自由发挥，不要求沿用原始列表、卡片、栏位或段落排布形式。"
     )
     if "不要求沿用原始列表、卡片、栏位或段落排布形式" not in contract:
         contract = f"{contract}\n\n{creative_layout_freedom}"
     required_guardrails = (
         "Auxiliary imagery may use clear supporting words, interface text, chart labels, or document-like wording when it improves the visual idea. This auxiliary text does not need to duplicate the locked wording, but must not masquerade as a new factual number, organization claim, or unsupported conclusion.",
-        "Do not introduce organization or person names beyond the locked on-screen text.",
+        "Do not introduce organization or person names beyond the supplied semantic source.",
         "Schematic screens, charts, maps, time bands, interface-like structures, and their supporting labels may organize the composition freely;",
     )
     for guardrail in required_guardrails:

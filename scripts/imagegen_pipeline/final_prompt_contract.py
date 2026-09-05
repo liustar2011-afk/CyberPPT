@@ -107,6 +107,13 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt visible text contains excluded chrome content: {text!r}"
             )
+    source_declarations = tuple(
+        re.findall(r'^- Source onscreen text: "(.*)"$', prompt, flags=re.MULTILINE)
+    )
+    if source_declarations != ir.visible_text:
+        raise PromptContractError(
+            "final prompt source onscreen declarations must match the supplied source material"
+        )
     _validate_text_bindings(prompt, ir)
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)

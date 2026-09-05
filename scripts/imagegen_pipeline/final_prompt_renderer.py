@@ -19,7 +19,7 @@ SECTION_HEADINGS = (
     "[3. Dominant relationship and reading path]",
     "[4. Semantic groups]",
     "[5. Composition skeleton and visual responsibility]",
-    "[6. Exact visible text contract]",
+    "[6. Visible text source material]",
     "[7. Runtime lock]",
 )
 
@@ -63,8 +63,8 @@ def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
                     "keep each level-3 item visibly attached to its preceding level-2 heading. Preserve three "
                     "distinct reading ranks; do not flatten them into peer cards or body copy."
                 )
-            lines.append("- exact visible text assigned to this group:")
-            lines.extend(f'- Exact visible text: "{text}"' for text in binding.exact_text)
+            lines.append("- source onscreen text assigned to this group:")
+            lines.extend(f'- Source onscreen text: "{text}"' for text in binding.exact_text)
             level_path = " → ".join(str(level) for level in levels)
             lines.append(f"- hierarchy: levels {level_path}; keep this group's text together in one coherent visual region.")
     return tuple(lines)
@@ -106,7 +106,7 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
                 "Region " + str(index) + ": "
                 + f"role {region.role.replace('_', ' ')}; anchor {region.anchor.replace('_', ' ')}; "
                 + f"relative share about {round(region.weight * 100)}%; span {region.span.replace('_', ' ')}; "
-                + f"priority {region.priority.replace('_', ' ')}; owns exact visible-text item(s) {ownership_text}."
+                + f"priority {region.priority.replace('_', ' ')}; owns source onscreen item(s) {ownership_text}."
             )
         for relation in graph.relations:
             source = public_region[relation.source]
@@ -220,14 +220,14 @@ def render_final_prompt(
             (
                 SECTION_HEADINGS[5],
                 (
-                    "Render every exact visible-text entry verbatim. Preserve its wording and "
-                    "order; line breaks and spatial grouping may change, but no entry may be "
-                    "rewritten, omitted, expanded, or supplemented from the full-copy context."
+                    "Use the supplied copy as source material for concise presentation text. "
+                    "You may rewrite, merge, shorten, reorder, split, select, or replace its "
+                    "wording to suit the visual composition."
                 ),
                 *(
                     ()
                     if ir.text_bindings
-                    else tuple(f'- Exact visible text: "{text}"' for text in ir.visible_text)
+                    else tuple(f'- Source onscreen text: "{text}"' for text in ir.visible_text)
                 ),
             )
         ),

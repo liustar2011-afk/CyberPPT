@@ -236,7 +236,7 @@ Stage 02 制作、重制、模板/母版修复及重新组装均通过同一个 
 
 使用已确认的项目内或外部脚本，Stage 02 直接接收 `--script <path>` 指向的最终脚本文件，并在自身工作区建立输入快照。Stage 02 不读取 Stage 01 的 Foundation、Deck Plan、Source Truth、Outline 或流程状态。
 
-Stage 02 将所有输入复制到自有路径 `workbench/inputs/final-script.md` 作为运行快照。显式使用 `--external-script` 时，输入标记为 `external_script`，以保留外部来源身份、变更检测和续跑绑定。外部页面只有标题和完整文字稿时，标题原样保留，完整文字稿逐字回填到上屏文字，并记录 `onscreen_source: full_prose_fallback`；不得自动摘要或改写。回填文字超过画布容量时停止生产，要求拆页或显式提供上屏文字。原始文件暂时不可用时，仅在 Stage 02 已有快照及其字节哈希仍有效时允许续跑。
+Stage 02 将所有输入复制到自有路径 `workbench/inputs/final-script.md` 作为运行快照。显式使用 `--external-script` 时，输入标记为 `external_script`，以保留外部来源身份、变更检测和续跑绑定。内部稿件与外部稿件采用同一规则：`onscreen` 只作为可选文字素材，视觉生产可自由选择、改写、合并、精简、重排、拆分或替换其措辞。原始文件暂时不可用时，仅在 Stage 02 已有快照及其字节哈希仍有效时允许续跑。
 
 ### 2. Stage 02 script input
 
@@ -253,11 +253,10 @@ Stage 02 默认直接读取 `references/visual-system.md` 中的 Style 09 正文
 编译每页实际送图提示词和 manifest，并检查以下内容彼此分离：
 
 - 页面完整文字稿仅作为不可见语义上下文，用于理解业务对象、关系、条件和边界
-- 图片中的严格上屏文字是唯一可见文字权威，逐项原文锁定；仅允许调整换行和空间分组
+- `onscreen` 只作为可选文字素材，不控制图片中的最终措辞
 - 所选风格文件及其执行约束
 
-Stage 02 不得从视觉规划或生图交接字段反推、补写或改写上屏文字。`onscreen`
-缺失，或下游 `final_text`、`required_text` 与其不一致时，生产流程必须失败关闭。
+Stage 02 的文字 QA 只检查明确错字、乱码、伪中文和最终可读性，不以 `onscreen` 对生成文字做匹配、覆盖率或改字判定。
 
 PNG 文件存在不等于提示词、批次或 QA 成功。必须检查实际落盘的 `prompts/pXX.txt`、manifest 和运行记录。
 

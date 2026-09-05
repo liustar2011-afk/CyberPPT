@@ -101,11 +101,11 @@ class ValidateFinalPromptTests(unittest.TestCase):
 
         validate_final_prompt(prompt, ir)
 
-    def test_rejects_duplicate_visible_text_declaration(self) -> None:
+    def test_rejects_duplicate_source_text_declaration(self) -> None:
         ir = _ir()
         prompt = render_final_prompt(ir)
-        corrupted = prompt.rstrip() + '\n- Exact visible text: "Unauthorized"\n'
-        with self.assertRaisesRegex(PromptContractError, "exactly match"):
+        corrupted = prompt.rstrip() + '\n- Source onscreen text: "Unauthorized"\n'
+        with self.assertRaisesRegex(PromptContractError, "supplied source material"):
             validate_final_prompt(corrupted, ir)
 
     def test_rejects_missing_section(self) -> None:

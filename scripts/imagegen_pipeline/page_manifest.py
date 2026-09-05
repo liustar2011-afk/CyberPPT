@@ -193,9 +193,9 @@ def _compact_blueprint_prompt(
     parts = [
             f"【页面编码】P{page_number:02d}",
             "【正文画布合同】\n2048×1024（2:1）正文内容区。不得绘制标题、副标题、Logo、页码、页脚或模板外框。",
-            "【严格上屏文字】\n" + str(handoff_page.get("onscreen_text") or "").strip(),
+            "【文字素材】\n" + str(handoff_page.get("onscreen_text") or "").strip(),
             visual_prompt.strip(),
-            "【生成约束】\n只渲染“严格上屏文字”中的文字；字段名、指令、证据编号和调试信息均不得上屏。",
+            "【生成约束】\n可自由选择、改写、合并、精简、重排、拆分或替换“文字素材”的措辞。字段名、指令、证据编号和调试信息均不得上屏。",
             "【正式风格锁｜不上屏】\n" + style_contract(style_lock).strip(),
         ]
     return "\n\n".join(parts)

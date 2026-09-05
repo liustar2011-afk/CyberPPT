@@ -197,9 +197,9 @@ class ArtifactPromptTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "has no content"):
             assert_artifact_prompt_contract(empty_thesis)
-        with self.assertRaisesRegex(ValueError, "visible text declarations"):
+        with self.assertRaisesRegex(ValueError, "source-text declarations"):
             assert_artifact_prompt_contract(
-                f'{prompt.rstrip()}\n- Exact visible text: "Unauthorized"\n',
+                f'{prompt.rstrip()}\n- Source onscreen text: "Unauthorized"\n',
                 expected_visible_text=("Governed input", "Traceable result"),
             )
 
@@ -212,7 +212,7 @@ class ArtifactPromptTests(unittest.TestCase):
             expected_visible_text=("E1与E2支撑流通利用能力", "Traceable result"),
         )
 
-    def test_exact_text_contract_remains_unique_when_evidence_reuses_the_words(self) -> None:
+    def test_source_text_boundary_remains_unique_when_evidence_reuses_the_words(self) -> None:
         spec = replace(
             _spec(),
             evidence=(EvidenceSpec("Governed input", "process", "P0"),),
@@ -220,7 +220,7 @@ class ArtifactPromptTests(unittest.TestCase):
         prompt = render_artifact_prompt(spec)
 
         self.assertGreater(prompt.count("Governed input"), 1)
-        self.assertEqual(1, prompt.count('- Exact visible text: "Governed input"'))
+        self.assertEqual(1, prompt.count('- Source onscreen text: "Governed input"'))
 
     def test_group_heading_constraint_keeps_heading_above_locked_detail(self) -> None:
         bindings = (
@@ -325,7 +325,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertNotIn(f'Exact visible text: "{unique_context}"', prompt)
         self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", prompt)
 
-    def test_final_prompt_locks_onscreen_text_and_forbids_full_copy_as_extra_copy(self) -> None:
+    def test_final_prompt_uses_onscreen_as_free_source_and_hides_full_copy(self) -> None:
         unique_context = "This complete explanation is semantic context only."
         spec = replace(
             _spec(),
@@ -340,8 +340,8 @@ class ArtifactPromptTests(unittest.TestCase):
 
         self.assertIn(unique_context, prompt)
         self.assertIn("never render or paraphrase this passage as extra copy", prompt)
-        self.assertIn("Render every exact visible-text entry verbatim", prompt)
-        self.assertIn("no entry may be rewritten, omitted, expanded, or supplemented", prompt)
+        self.assertIn("Use the supplied copy as source material", prompt)
+        self.assertIn("rewrite, merge, shorten, reorder, split, select, or replace", prompt)
 
     def test_verified_visual_thesis_overrides_legacy_argument_chain(self) -> None:
         spec = replace(

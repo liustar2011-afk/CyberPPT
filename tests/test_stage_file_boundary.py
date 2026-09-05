@@ -1,6 +1,7 @@
 from __future__ import annotations
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
 from cyberppt.stage02_input import INPUT_JSON, build_stage02_input, prepare_stage02_input
 
 SCRIPT="""## P01 文件边界
@@ -29,7 +30,7 @@ def test_stage2_input_is_portable_and_ignores_adjacent_producer_state():
         assert payload["schema"]=="cyberppt.stage02_script_input.v1"; assert payload["pages"][0]["title"]=="文件边界"; assert payload["pages"][0]["content_load"]=="standard"; assert payload["source_bindings"]["script"]["source_path"]==str(script.resolve())
         assert (stage2/"workbench/inputs/final-script.md").is_file(); assert prepare_stage02_input(stage2,script=script,reuse_current=True)["status"]=="passed"; assert (stage2/INPUT_JSON).is_file()
 
-def test_external_title_and_full_prose_get_verbatim_visible_fallback():
+def test_external_title_and_full_prose_remain_available_as_visible_source():
     manuscript = """## 第1页：外部原标题
 - 页面类型：内容页
 - 页面标题：外部原标题
@@ -45,7 +46,6 @@ def test_external_title_and_full_prose_get_verbatim_visible_fallback():
     assert page["title"] == "外部原标题"
     assert page["onscreen_text"] == page["full_prose"]
     assert page["onscreen_source"] == "full_prose_fallback"
-    assert page["stage02_visual_input"]["onscreen_source"] == "full_prose_fallback"
 
 def test_formal_stage2_runtime_has_no_stage1_artifact_dependency():
     repo=Path(__file__).resolve().parents[1]

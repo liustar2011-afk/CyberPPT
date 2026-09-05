@@ -105,9 +105,6 @@ def audit_generated_image_text(
 
 这是字形审计，不是语义转录。逐字观察实际笔画，不得依据上下文或脚本文字自动纠正损坏字形。能够猜出原字也不能放行：笔画残缺、粘连、部件错位、错误拼接或非有效汉字均报告 gibberish；明确写成另一个有效汉字报告 typo。
 
-脚本文字参考（只用于正确写法，不要求全部出现）：
-{script_text}
-
 不要报告漏字、新增文字、数字、标点、换行、字体、排版或一般可读性问题。
 返回：{{"observed_text": ["..."], "issues": [{{"type": "typo|gibberish", "expected": "", "observed": "", "evidence": "", "bbox": [x1,y1,x2,y2]}}], "summary": ""}}
 """

@@ -39,20 +39,15 @@ Stage 02 does not require or invoke a separate visual-structure preparation stag
 
 When the user supplies an external manuscript, invoke the formal entry with
 `--external-script`. External scripts use the same content-first presentation
-contract as other Stage 02 inputs. When an external page provides only a title
-and `full_copy`, preserve the title and copy `full_copy` verbatim into `onscreen`;
-record `onscreen_source: full_prose_fallback`. Do not summarize or rewrite it.
-If that fallback exceeds canvas capacity, stop and require page splitting or
-explicit onscreen text. The manifest, input identity, build context and resume
-command must retain `source_mode: external_script` so the external source and
-its semantic boundary remain traceable.
+contract as other Stage 02 inputs. The manifest, input identity, build context
+and resume command must retain `source_mode: external_script` so the external
+source and its semantic boundary remain traceable.
 
 For a finalized Stage 01 script, `full_copy` and `onscreen` have separate,
 non-interchangeable roles in the image prompt. `full_copy` is non-visible semantic
-context only. `onscreen` is the sole visible-text authority and every entry is
-rendered verbatim; only line breaks and spatial grouping may change. Production
-must fail closed when either field is missing or when downstream `final_text` or
-`required_text` differs from `onscreen`.
+context only. `onscreen` is optional source material for visible copy. Stage 02
+may select, rewrite, merge, shorten, reorder, split or replace its wording. OCR
+and release QA must not compare generated wording with `onscreen`.
 
 ## Per-page Quick checkpoint loop
 
@@ -117,15 +112,16 @@ generator. The vendored Quick runtime consumes the authored SVG and preserves
 its explicit coordinates, font size, weight, and color.
 
 The current Codex main agent owns this reconstruction step, matching the source Quick
-workflow: inspect the normalized audited full image, clean base, locked onscreen text
+workflow: inspect the normalized audited full image, clean base, source onscreen text
 and registered local assets, then reproduce the accepted visual composition as the
 complete page SVG on the same canvas. The authored SVG preserves the bound full
 image's spatial composition and visual hierarchy; it does not reopen visual design.
 `final-script-pages` prepares and validates the workspace; if an
 `authoring_svg` is absent it must stop for authoring, then resume the same build.
 Do not replace this step with an OCR-to-SVG generator or redraw an already-audited
-full image merely because its recognized wording differs from the locked text
-truth; write the locked truth into the authored SVG.
+full image merely because its wording differs from the source onscreen copy. The
+authored SVG may retain or improve the accepted visible wording under the same
+semantic-fidelity constraints.
 
 - `native_text`: all readable information, labels, figures, captions and ordinary
   text. Remove it from the base and rebuild it in SVG.

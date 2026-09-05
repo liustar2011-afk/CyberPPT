@@ -934,7 +934,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
                     [
                         f"Respect scene_policy={scene_policy}; scene, business illustration or structural carrier may be selected only within that policy.",
                         f"Respect focus_policy={focus_policy}; preserve the declared macro focus relationship and do not manufacture a dominant peer or extra result center.",
-                        "Preserve only source-supported relationship direction and keep exact visible text near its corresponding business meaning.",
+                        "Preserve source-supported relationship direction and keep rewritten visible text near its corresponding business meaning.",
                     ]
                     if prompt_mode == "semantic_brief"
                     else [
