@@ -45,6 +45,32 @@ def test_final_visible_text_qa_accepts_dash_ocr_alias_only_at_declared_positions
     assert report["valid"] is False
 
 
+def test_final_visible_text_qa_accepts_declared_vertical_separator_ocr_alias(tmp_path: Path) -> None:
+    image = tmp_path / "preview.png"
+    Image.new("RGB", (160, 90), "white").save(image)
+
+    report = audit_final_visible_text(
+        image,
+        expected_texts=["工作安排｜任务填报"],
+        ocr_runner=lambda _path: [{"text": "工作安排一任务填报", "confidence": 0.96}],
+    )
+
+    assert report["valid"] is True
+
+
+def test_final_visible_text_qa_ignores_low_confidence_single_character_noise(tmp_path: Path) -> None:
+    image = tmp_path / "preview.png"
+    Image.new("RGB", (160, 90), "white").save(image)
+
+    report = audit_final_visible_text(
+        image,
+        expected_texts=["登记编目"],
+        ocr_runner=lambda _path: [{"text": "百", "confidence": 0.67}],
+    )
+
+    assert report["valid"] is True
+
+
 def test_final_visible_text_qa_blocks_unowned_residual_chinese(tmp_path: Path) -> None:
     image = tmp_path / "preview.png"
     Image.new("RGB", (160, 90), "white").save(image)

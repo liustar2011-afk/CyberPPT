@@ -86,8 +86,10 @@ def audit_final_visible_text(
         # OCR can join Chinese runs by reading an authored em/en dash as 一.
         # Only declared dash positions gain this exact alias; ordinary Chinese
         # is never deleted/replaced and native PPTX text is checked separately.
-        if "—" in item or "–" in item:
-            allowed.extend(_chinese_runs(item.translate(str.maketrans({"—": "一", "–": "一"}))))
+        if any(marker in item for marker in ("—", "–", "｜", "|")):
+            allowed.extend(
+                _chinese_runs(item.translate(str.maketrans({"—": "一", "–": "一", "｜": "一", "|": "一"})))
+            )
     unexpected: list[dict[str, Any]] = []
     for observation in observations:
         if not isinstance(observation, Mapping):
@@ -97,6 +99,9 @@ def audit_final_visible_text(
             continue
         report["observed_text"].append(observed)
         for run in _chinese_runs(observed):
+            confidence = observation.get("confidence")
+            if len(run) == 1 and isinstance(confidence, (int, float)) and confidence < 0.75:
+                continue
             if not _allowed_run(run, allowed):
                 unexpected.append(
                     {
