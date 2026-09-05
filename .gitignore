@@ -14,6 +14,7 @@ build/
 .tools/
 
 # Project-specific working directories
+/projects/
 /out/
 /deck/
 /*-deck/
@@ -36,10 +37,6 @@ build/
 # Root scratch files must not become repository artifacts
 /tmp_*
 /out.txt
-
-# Project-authoritative final scripts
-!projects/**/script/dist/
-!projects/**/script/dist/**
 
 # Stage 02 transient binary/runtime outputs
 projects/**/workbench/imagegen/builds/**/*.png
