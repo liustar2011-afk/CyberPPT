@@ -66,6 +66,63 @@ def _image_size(path: Path) -> list[int] | None:
         return None
 
 
+def _normalize_text_audit_geometry(
+    audit: dict[str, Any], normalized_size: list[int]
+) -> None:
+    """Express persisted OCR geometry in the final normalized image canvas."""
+    source_size = audit.get("image_size")
+    if not (
+        isinstance(source_size, list)
+        and len(source_size) == 2
+        and all(isinstance(value, (int, float)) and value > 0 for value in source_size)
+    ):
+        audit["image_size"] = normalized_size
+        audit["normalized_image_size"] = normalized_size
+        return
+    if source_size == normalized_size:
+        audit["normalized_image_size"] = normalized_size
+        return
+
+    scale_x = normalized_size[0] / float(source_size[0])
+    scale_y = normalized_size[1] / float(source_size[1])
+
+    def scale_bbox(value: Any) -> Any:
+        if (
+            isinstance(value, list)
+            and len(value) == 4
+            and all(isinstance(item, (int, float)) for item in value)
+        ):
+            return [
+                round(float(value[0]) * scale_x, 3),
+                round(float(value[1]) * scale_y, 3),
+                round(float(value[2]) * scale_x, 3),
+                round(float(value[3]) * scale_y, 3),
+            ]
+        if isinstance(value, list) and all(
+            isinstance(point, list)
+            and len(point) == 2
+            and all(isinstance(axis, (int, float)) for axis in point)
+            for point in value
+        ):
+            return [
+                [round(float(point[0]) * scale_x, 3), round(float(point[1]) * scale_y, 3)]
+                for point in value
+            ]
+        return value
+
+    for collection_name in ("ocr_items", "issues"):
+        collection = audit.get(collection_name)
+        if not isinstance(collection, list):
+            continue
+        for item in collection:
+            if isinstance(item, dict) and "bbox" in item:
+                item["bbox"] = scale_bbox(item["bbox"])
+
+    audit["audit_source_image_size"] = list(source_size)
+    audit["image_size"] = normalized_size
+    audit["normalized_image_size"] = normalized_size
+
+
 def _attach_content_root_qa(
     *,
     pair: dict[str, Any],
@@ -116,7 +173,7 @@ def normalize_audited_manifest_images(
             resize_image(path, canvas)
         normalized_size = _image_size(path)
         if normalized_size is not None:
-            audit["normalized_image_size"] = normalized_size
+            _normalize_text_audit_geometry(audit, normalized_size)
 
 
 def bind_reconstruction_visual_sources(manifest: dict[str, Any]) -> list[dict[str, Any]]:
@@ -338,6 +395,35 @@ def _generate_manifest_images(
             text_truth = pair.get("image_text_truth") if variant == "full" and not skip_text_audit else None
             has_text_receipt = (item.get("text_audit") or {}).get("valid") is True
             prompt_matches_existing_image = item.get("generated_prompt_sha256") == item.get("prompt_sha256") and bool(item.get("generated_prompt_sha256"))
+            clean_base = pair.get("clean_base") if isinstance(pair.get("clean_base"), dict) else {}
+            registered_source = (
+                variant == "full"
+                and output_path.is_file()
+                and not force
+                and isinstance(text_truth, dict)
+                and clean_base.get("schema") == "cyberppt.stage02.authored_clean_base.v1"
+                and clean_base.get("status") == "complete"
+                and clean_base.get("source_sha256") == sha256(output_path.read_bytes()).hexdigest()
+                and Path(str(pair.get("authoring_svg") or "")).is_file()
+            )
+            if registered_source and not has_text_receipt:
+                from cyberppt.image_text_gate import audit_generated_image_text
+
+                audit = audit_generated_image_text(
+                    output_path,
+                    script_text=str(text_truth.get("script_text") or ""),
+                    timeout=timeout,
+                )
+                audit["page_number"] = pair.get("page_number")
+                audit["attempt"] = 0
+                audit["recovered_from_registered_source"] = True
+                _attach_content_root_qa(pair=pair, audit=audit)
+                text_audits.append(audit)
+                if audit.get("valid") is True:
+                    item["text_audit"] = audit
+                    item["generated_prompt_sha256"] = item.get("prompt_sha256")
+                    has_text_receipt = True
+                    prompt_matches_existing_image = True
             reusable_audited_full = variant == "full" and has_text_receipt
             if output_path.is_file() and not force and (prompt_matches_existing_image or reusable_audited_full) and (not isinstance(text_truth, dict) or has_text_receipt):
                 if reusable_audited_full and not prompt_matches_existing_image:
@@ -364,7 +450,7 @@ def _generate_manifest_images(
                 if audit is not None:
                     normalized_size = _image_size(output_path)
                     if normalized_size is not None:
-                        audit["normalized_image_size"] = normalized_size
+                        _normalize_text_audit_geometry(audit, normalized_size)
                 item["status"] = "Generated"
                 item.pop("last_error", None)
                 skipped.append(str(output_path))
@@ -458,7 +544,7 @@ def _generate_manifest_images(
                     if accepted_audit is not None:
                         normalized_size = _image_size(output_path)
                         if normalized_size is not None:
-                            accepted_audit["normalized_image_size"] = normalized_size
+                            _normalize_text_audit_geometry(accepted_audit, normalized_size)
                     break
             except (OSError, TimeoutError, http.client.HTTPException, RuntimeError) as exc:
                 item["status"] = "Failed"

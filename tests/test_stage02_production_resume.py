@@ -8,6 +8,7 @@ from PIL import Image
 from cyberppt.stage02_production.image_stage import (
     _generate_manifest_images,
     _normalize_user_approved_full_image,
+    _normalize_text_audit_geometry,
 )
 
 
@@ -99,3 +100,24 @@ def test_user_approved_image_normalization_does_not_use_enhancement(tmp_path: Pa
     Image.new("RGB", (1774, 887), "white").save(image)
     _normalize_user_approved_full_image(image, "2048x1024")
     assert Image.open(image).size == (2048, 1024)
+
+
+def test_text_audit_bboxes_are_normalized_to_final_canvas() -> None:
+    audit = {
+        "image_size": [1774, 887],
+        "ocr_items": [{"text": "标题", "bbox": [[10, 20], [30, 20], [30, 40], [10, 40]]}],
+        "issues": [{"type": "typo", "bbox": [10, 20, 30, 40]}],
+    }
+
+    _normalize_text_audit_geometry(audit, [2048, 1024])
+
+    assert audit["audit_source_image_size"] == [1774, 887]
+    assert audit["image_size"] == [2048, 1024]
+    assert audit["normalized_image_size"] == [2048, 1024]
+    assert audit["ocr_items"][0]["bbox"] == [
+        [11.545, 23.089],
+        [34.634, 23.089],
+        [34.634, 46.178],
+        [11.545, 46.178],
+    ]
+    assert audit["issues"][0]["bbox"] == [11.545, 23.089, 34.634, 46.178]

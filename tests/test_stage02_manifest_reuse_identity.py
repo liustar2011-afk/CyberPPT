@@ -5,6 +5,7 @@ from hashlib import sha256
 
 from PIL import Image, ImageDraw
 
+from cyberppt.stage02_production.image_stage import _generate_manifest_images
 from cyberppt.stage02_production.manifest_stage import _retain_audited_prior_pairs, _reuse_prior_artifacts
 from scripts.image_to_pptx_runtime.clean_base_policy import (
     ALGORITHM_VERSION,
@@ -120,6 +121,48 @@ def test_prior_audited_full_is_not_reused_when_bound_image_bytes_change(tmp_path
     _reuse_prior_artifacts(manifest=current, prior_manifest=prior, production_mode="image-to-editable-svg")
 
     assert "text_audit" not in current["pairs"][0]["full"]
+
+
+def test_registered_source_is_reaudited_without_redrawing(tmp_path: Path, monkeypatch) -> None:
+    full = tmp_path / "p4.png"
+    Image.new("RGB", (160, 90), "white").save(full)
+    authored_svg = tmp_path / "p4.svg"
+    authored_svg.write_text("<svg/>", encoding="utf-8")
+    file_hash = sha256(full.read_bytes()).hexdigest()
+    pair = _pair(full, prompt_sha="prompt")
+    pair.update({
+        "image_text_truth": {"script_text": "原文"},
+        "authoring_svg": str(authored_svg),
+        "clean_base": {
+            "schema": "cyberppt.stage02.authored_clean_base.v1",
+            "status": "complete",
+            "source_sha256": file_hash,
+        },
+    })
+    manifest = {"production_mode": "image-to-editable-svg", "pairs": [pair]}
+
+    monkeypatch.setattr(
+        "cyberppt.image_text_gate.audit_generated_image_text",
+        lambda *_args, **_kwargs: {"valid": True},
+    )
+
+    def fail_generation(**_kwargs):
+        raise AssertionError("registered source must not be redrawn")
+
+    result = _generate_manifest_images(
+        manifest,
+        model="test",
+        quality="test",
+        timeout=1,
+        force=False,
+        dry_run=False,
+        run_codex_image_fn=fail_generation,
+        ensure_output_size_fn=lambda *_args: None,
+    )
+
+    assert result["generated"] == []
+    assert result["skipped"] == [str(full)]
+    assert pair["full"]["text_audit"]["recovered_from_registered_source"] is True
 
 
 def test_partial_recovery_retains_pages_only_for_same_input_identity(tmp_path: Path) -> None:
