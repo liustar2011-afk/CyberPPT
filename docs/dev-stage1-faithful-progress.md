@@ -60,5 +60,26 @@ Changed:
   - Added a faithful per-visible-line alignment check that flags new onscreen propositions with insufficient semantic anchoring in `full_copy`.
   - Reworded the multi-module self-read check around explanatory/source-backed payload rather than an argument layer.
 
+### Step 3 — Remove residual high-level `core_message` / argument assumptions
+
+Status: completed for active call path.
+
+Changed:
+- `script_engine/analysis_audits/final_onscreen.py`
+  - `_audit_authored_onscreen_composition()` now accepts `authoring_mode`.
+  - In faithful `evidence_first`, remediation no longer says "move the judgment to core_message"; it preserves source-native peer facts and allows a lead only when the source itself contains one.
+  - Density remediation now warns against adding unsupported summary judgments.
+- `script_engine/analysis_audits/final_authoring_expression.py`
+  - `_author_execution_issues()` now accepts `authoring_mode`.
+  - Mechanical source concatenation in faithful mode is repaired as coherent source-faithful page prose, explicitly without inventing a new argument.
+  - `phrase_led` faithful pages are no longer required to turn every visible detail into a complete analytical action/relation/result; raw table fragments remain blocked.
+  - Reworded evidence-first hierarchy guidance so selective leads require a source or approved analytical lead proposition.
+- `script_engine/analysis_audits/final_orchestrator.py`
+  - Passes `final_authoring_mode` into the mode-aware high-level checks.
+  - Fixed a lean-plan evidence bug: final semantic audits now union `page.source_refs` with optional proof/analysis refs. Previously, v2 lean pages could present an empty evidence set to faithful relation checking even though the approved page had source refs.
+
+Deferred intentionally:
+- `final_lean.py` still contains some legacy wording about "argument paragraphs"; its underlying source-retention checks are useful and remain active. Functional wording cleanup is deferred until the source-addition audit is added, to avoid changing a large file without corresponding regression tests.
+
 Next:
-- Step 3: remove residual `core_message`/argument assumptions from higher-level final audits (`final_onscreen.py`, `final_authoring_expression.py`, `final_lean.py`).
+- Step 4: strengthen faithful semantic-addition auditing (outside narrator, added numbers/formal instruments, relation/status promotion) using page source evidence.
