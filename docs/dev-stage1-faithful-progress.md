@@ -34,5 +34,18 @@ Changed:
 Compatibility decision:
 - Kept Final Script `version: 1.0`; current schema loader has no version routing, so the change is intentionally backward-compatible rather than introducing a partially implemented schema version.
 
+### Step 2A — Stop forcing judgment-led `full_copy` in faithful mode
+
+Status: completed.
+
+Changed:
+- `script_engine/full_copy_contracts.py`
+  - Added authoring-mode detection.
+  - Faithful paragraphs may begin with source-native definitions, task labels, taxonomy labels, stages, or other source-native structures; they are no longer required to begin with a substantive business judgment.
+  - Numbered faithful branches are no longer required to invent independent business sub-conclusions.
+  - Analytical mode retains the existing judgment-led paragraph and numbered-subconclusion requirements.
+  - Kept the concrete-source-matter safeguard that rejects author-created abstraction of source actions/status/milestones into generic summary dimensions.
+  - Reworded the long-chain structure check so it no longer treats every authored structure as an "argument".
+
 Next:
-- Step 2: remove judgment-first requirements from deterministic `full_copy` and `onscreen` checks while preserving source-strength and protected-fact safeguards.
+- Step 2B: make onscreen validation source/full-copy led in faithful mode instead of core-message led.
