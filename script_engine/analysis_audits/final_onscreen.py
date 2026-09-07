@@ -9,7 +9,10 @@ from .final_authoring import (
 
 
 def _audit_authored_onscreen_composition(
-    page: dict[str, Any], slide: dict[str, Any]
+    page: dict[str, Any],
+    slide: dict[str, Any],
+    *,
+    authoring_mode: str = "faithful",
 ) -> list[str]:
     """Check that module lead text follows the approved page composition policy."""
     composition = page.get("onscreen_composition")
@@ -30,9 +33,16 @@ def _audit_authored_onscreen_composition(
     if mode == "evidence_first":
         for module in lead_modules:
             heading = str(module.get("heading") or "?").strip()
+            if authoring_mode == "analytical":
+                remedy = "move the analytical judgment to core_message and retain source facts as evidence items"
+            else:
+                remedy = (
+                    "retain source-native peer facts as items, or use selective_lead only when the source itself "
+                    "contains a lead proposition; faithful mode must not synthesize a new module judgment"
+                )
             issues.append(
                 f"{slide_id}: onscreen_composition='evidence_first' forbids module lead text in "
-                f"'{heading}'; move the judgment to core_message and retain source facts as evidence items"
+                f"'{heading}'; {remedy}"
             )
         for module in modules:
             issues.extend(_evidence_first_item_hierarchy_issues(slide_id, module))
@@ -93,7 +103,7 @@ def _audit_self_reading_density(
             f"ONSCREEN_SELF_READ_DENSITY_LOW: {slide_id} {load} content provides {units} "
             f"semantic payload units across {module_count} modules; at least {minimum} are "
             "required for independent reading at the approved load. Add distinct source-backed "
-            "facts, roles, conditions, boundaries or results; do not repeat the page judgment"
+            "facts, roles, conditions, boundaries or results; do not add an unsupported summary judgment"
         )
     return issues
 
