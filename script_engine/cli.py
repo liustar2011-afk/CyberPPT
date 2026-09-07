@@ -24,6 +24,7 @@ from .delivery_commands import (
     render_stage02_delivery,
 )
 from .final_quality import collect_final_lint_issues, partition_final_lint_findings
+from .page_source_command import page_source_report
 from .project_scaffold import create_project
 from .project_status import build_project_status, project_profile_for_foundation
 
@@ -58,6 +59,25 @@ def _audit_plan(plan_path: Path, foundation_path: Path) -> int:
 def _review_plan(plan_path: Path, foundation_path: Path) -> int:
     review, exit_code = plan_review_text(plan_path, foundation_path)
     print(review)
+    return exit_code
+
+
+def _page_source(
+    plan_path: Path,
+    foundation_path: Path,
+    page_id: str,
+    *,
+    source_index_path: Path | None = None,
+    output_path: Path | None = None,
+) -> int:
+    report, exit_code = page_source_report(
+        plan_path,
+        foundation_path,
+        page_id,
+        source_index_path=source_index_path,
+        output_path=output_path,
+    )
+    _print_report(report, stderr=exit_code != 0)
     return exit_code
 
 
@@ -168,6 +188,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "audit-foundation": return _audit_foundation(Path(args.foundation))
     if args.command == "audit-plan": return _audit_plan(Path(args.plan), Path(args.foundation))
     if args.command == "review-plan": return _review_plan(Path(args.plan), Path(args.foundation))
+    if args.command == "page-source": return _page_source(
+        Path(args.plan),
+        Path(args.foundation),
+        args.page_id,
+        source_index_path=Path(args.source_index) if args.source_index else None,
+        output_path=Path(args.output) if args.output else None,
+    )
     if args.command == "audit-final": return _audit_final(Path(args.final), Path(args.plan), Path(args.foundation))
     if args.command == "trace-composed": return _trace_composed(Path(args.final), Path(args.foundation), args.n)
     if args.command == "build-source-index": return _build_source_index(Path(args.source_extract), Path(args.output), args.source_file)

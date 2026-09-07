@@ -195,7 +195,8 @@
           "source_refs": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           }
         },
@@ -213,7 +214,32 @@
             },
             "then": {
               "required": [
-                "mission",
+                "full_copy",
+                "onscreen",
+                "source_refs"
+              ],
+              "properties": {
+                "full_copy": {
+                  "minLength": 1
+                },
+                "onscreen": {
+                  "minItems": 1
+                },
+                "source_refs": {
+                  "minItems": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "anyOf": [
+                {"required": ["core_message"]},
+                {"required": ["argument"]}
+              ]
+            },
+            "then": {
+              "required": [
                 "core_message",
                 "argument",
                 "full_copy",
@@ -222,24 +248,11 @@
                 "speaker_notes"
               ],
               "properties": {
-                "mission": {
-                  "minLength": 1
-                },
-                "core_message": {
-                  "minLength": 1
-                },
-                "full_copy": {
-                  "minLength": 1
-                },
-                "onscreen": {
-                  "minItems": 1
-                },
-                "visual_thesis": {
-                  "minLength": 1
-                },
-                "speaker_notes": {
-                  "minLength": 1
-                }
+                "core_message": {"minLength": 1},
+                "full_copy": {"minLength": 1},
+                "onscreen": {"minItems": 1},
+                "visual_thesis": {"minLength": 1},
+                "speaker_notes": {"minLength": 1}
               }
             }
           }

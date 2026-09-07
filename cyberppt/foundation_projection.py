@@ -17,6 +17,8 @@ FOUNDATION_SCHEMA_ID = "https://cyberppt.local/contracts/foundation.schema.json"
 
 _CONSTRAINT_TYPES = {"B"}
 _EXPLICIT_ORIGINS = {"source_explicit"}
+_VALID_BASES = {"explicit", "inferred"}
+_VALID_CONFIDENCE = {"high", "medium", "low"}
 
 
 def _text(value: object) -> str:
@@ -32,6 +34,15 @@ def _record_visibility(record: dict[str, Any]) -> str:
 
 def _record_basis(record: dict[str, Any]) -> str:
     return "explicit" if _text(record.get("claim_origin")) in _EXPLICIT_ORIGINS else "inferred"
+
+
+def _conclusion_basis(conclusion: dict[str, Any]) -> str:
+    """Preserve conclusion explicitness independently of whether evidence refs exist."""
+
+    basis = _text(conclusion.get("basis"))
+    if basis in _VALID_BASES:
+        return basis
+    return "explicit" if _text(conclusion.get("claim_origin")) in _EXPLICIT_ORIGINS else "inferred"
 
 
 def _project_sources(source_truth: dict[str, Any]) -> list[dict[str, Any]]:
@@ -209,12 +220,16 @@ def _project_arguments(source_truth: dict[str, Any]) -> list[dict[str, Any]]:
         if not claim:
             continue
         support = [_text(ref) for ref in conclusion.get("source_refs") or [] if _text(ref)]
+        basis = _conclusion_basis(conclusion)
+        confidence = _text(conclusion.get("confidence"))
+        if confidence not in _VALID_CONFIDENCE:
+            confidence = "high" if basis == "explicit" else "medium"
         arguments.append({
             "id": _text(conclusion.get("id")) or f"A-{len(arguments) + 1:03d}",
             "claim": claim,
             "support": support,
-            "basis": "explicit" if support else "inferred",
-            "confidence": "high" if support else "medium",
+            "basis": basis,
+            "confidence": confidence,
             "source_refs": support,
         })
     return arguments

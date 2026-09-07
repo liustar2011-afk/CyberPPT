@@ -27,6 +27,9 @@ _OPERATION_LABELS = {
     "split_for_presentation": "为汇报拆分",
     "user_authorized_cross_chapter": "用户授权跨章重组",
 }
+_CITABLE_KEYS = (
+    "facts", "concepts", "entities", "relations", "arguments", "constraints", "numbers"
+)
 
 
 def _text(value: object) -> str:
@@ -48,6 +51,50 @@ def _ids(value: object) -> list[str]:
     return [str(item).strip() for item in value if str(item).strip()]
 
 
+def _anchor_text(item: dict[str, Any]) -> str:
+    if item.get("from") and item.get("to") and item.get("relation"):
+        value = f"{item.get('from')}{item.get('relation')}{item.get('to')}"
+    elif item.get("name"):
+        value = str(item.get("name"))
+    elif item.get("term") and item.get("definition"):
+        value = f"{item.get('term')}：{item.get('definition')}"
+    elif item.get("value") is not None:
+        value = f"{item.get('value')}{item.get('unit') or ''} {item.get('context') or ''}"
+    else:
+        value = next(
+            (
+                str(item.get(key))
+                for key in ("statement", "claim", "definition", "context", "relation", "term")
+                if item.get(key) is not None and str(item.get(key)).strip()
+            ),
+            "",
+        )
+    value = " ".join(value.split()).strip()
+    if len(value) > 72:
+        return value[:71] + "…"
+    return value
+
+
+def _foundation_anchor_map(foundation: dict[str, Any]) -> dict[str, str]:
+    anchors: dict[str, str] = {}
+    for key in _CITABLE_KEYS:
+        for item in foundation.get(key) or []:
+            if not isinstance(item, dict):
+                continue
+            item_id = str(item.get("id") or "").strip()
+            if not item_id:
+                continue
+            anchor = _anchor_text(item)
+            if anchor:
+                anchors[item_id] = anchor
+    return anchors
+
+
+def _page_source_anchors(refs: list[str], anchors: dict[str, str]) -> str:
+    values = [f"{ref} {anchors[ref]}" for ref in refs if ref in anchors]
+    return "；".join(values) if values else "—"
+
+
 def render_plan_review(
     plan: dict[str, Any],
     foundation: dict[str, Any],
@@ -55,11 +102,11 @@ def render_plan_review(
     issues: list[str] | None = None,
     warnings: list[str] | None = None,
 ) -> str:
-    """Render the actual PLAN review boundary without AUTHOR-owned prose."""
+    """Render the PLAN review boundary with compact source anchors, never AUTHOR prose."""
 
-    del foundation  # Source details remain addressable through source_refs.
     issues = list(issues or [])
     warnings = list(warnings or [])
+    source_anchors = _foundation_anchor_map(foundation)
     chapters = [item for item in plan.get("chapters") or [] if isinstance(item, dict)]
     pages = [item for item in plan.get("pages") or [] if isinstance(item, dict)]
     by_chapter: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -82,7 +129,7 @@ def render_plan_review(
         f"- 来源结构：{_label(plan.get('source_structure_mode'), _STRUCTURE_MODE_LABELS)}",
         f"- 汇报结构：{_label(plan.get('presentation_structure_mode'), _PRESENTATION_MODE_LABELS)}",
         f"- 汇报章节数：{len(chapters)}",
-        "- 规划边界：章节、页序、页面问题、页面使命和来源范围", "",
+        "- 规划边界：章节、页序、页面问题、页面使命和来源范围；来源锚点仅用于核对，不新增页面结论", "",
     ]
 
     def append_section(title: str, section_pages: list[dict[str, Any]], chapter: dict[str, Any] | None) -> None:
@@ -96,18 +143,20 @@ def render_plan_review(
                 lines.append(f"- 章节结构操作：{_label(chapter.get('structural_operation'), _OPERATION_LABELS)}")
             lines.append("")
         lines.extend([
-            "| 页面 | 类型 | 暂定标题 | 页面问题 | 页面使命 | 来源范围 |",
-            "|---|---|---|---|---|---|",
+            "| 页面 | 类型 | 暂定标题 | 页面问题 | 页面使命 | 来源范围 | 来源锚点 |",
+            "|---|---|---|---|---|---|---|",
         ])
         for page in section_pages:
+            refs = _ids(page.get("source_refs"))
             lines.append(
-                "| {id} | {role} | {title} | {question} | {logic} | {refs} |".format(
+                "| {id} | {role} | {title} | {question} | {logic} | {refs} | {anchors} |".format(
                     id=_cell(page.get("id")),
                     role=_cell(_label(page.get("page_role"), _PAGE_ROLE_LABELS)),
                     title=_cell(page.get("title")),
                     question=_cell(page.get("question")),
                     logic=_cell(page.get("logic")),
-                    refs=_cell("、".join(_ids(page.get("source_refs"))) or "—"),
+                    refs=_cell("、".join(refs) or "—"),
+                    anchors=_cell(_page_source_anchors(refs, source_anchors)),
                 )
             )
         lines.append("")

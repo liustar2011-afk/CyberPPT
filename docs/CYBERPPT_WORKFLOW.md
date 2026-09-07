@@ -26,9 +26,9 @@
 
 ### 全流程
 
-默认：源材料 → Source Foundation → 一次业务语义理解 → 机械投影 Foundation → Deck Plan → AUTHOR → Stage 02 视觉生产 → PPTX QA 与交付
+默认：源材料 → 来源索引 → 一次 UNDERSTAND/Foundation → Deck Plan → AUTHOR → Stage 02 视觉生产 → PPTX QA 与交付
 
-显式轻量：源材料 → 来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR 逐页写作 → 最终全稿 → Stage 02
+显式严格：源材料 → Source Foundation → business-semantic-understanding → Source Truth → 机械投影 Foundation → Deck Plan → AUTHOR → Stage 02 视觉生产 → PPTX QA 与交付
 
 旧版 Outline/Handoff 命令仅用于历史项目迁移的内部兼容，不是新项目或已验证 Source Truth 项目的第二条路线。
 
@@ -36,7 +36,7 @@
 
 ### 1. 建立脚本 Foundation
 
-显式轻量 `script` profile 只建立 `script/.cache/source-index.json` 和
+默认 `script` profile 只建立 `script/.cache/source-index.json` 和
 `script/foundation.json`。来源转换采用直接解析优先、按格式回退；OCR 显式启用。
 
 执行入口：
@@ -78,7 +78,7 @@ Deck Plan 的 `authoring_mode` 决定，不能回写或拔高 Foundation。
 - `argument-chain.json`
 - `semantic-report.json`
 
-主责 Skill：默认 `cyberppt-source-foundation`、`business-semantic-understanding`；显式轻量路径为 `cyberppt-script-understand`。
+主责 Skill：默认 `script` 路线使用 `cyberppt-script-understand`；显式 `strict/legacy` 路线使用 `cyberppt-source-foundation`、`business-semantic-understanding`。
 
 ### 2. 形成 strict/legacy 业务语义理解
 
@@ -119,9 +119,10 @@ Deck Plan 是 AUTHOR 之前的轻量过渡产物，只负责确定：
 
 核心判断、完整论证链、内容模块、证据取舍、上屏结构、视觉关系、讲述线索和
 阅读密度均由 AUTHOR 在完整读取来源后形成，不得在 Deck Plan 中提前编写。
+faithful 页面没有来源明示总判断或论证链时，可以不生成这些可选结构。
 
 来源章节与汇报章节分层处理。Foundation 保留全部来源章节身份、边界与顺序；
-Deck Plan 默认将相邻来源章节按受众问题、论证角色和承接关系归并为汇报章节，
+Deck Plan 默认将相邻来源章节按受众问题、内容角色和承接关系归并为汇报章节，
 展开全部 `source_chapter_ids` 后必须与来源顺序完全一致。正式汇报通常控制在
 4 个以内，6 个为默认上限；超过 6 个必须记录无法继续归并的具体理由。
 多章节汇报采用“封面—目录—逐章过渡页—内容页—封底”序列，每个汇报章节
@@ -138,60 +139,59 @@ Deck Plan 默认将相邻来源章节按受众问题、论证角色和承接关�
 
 该 Skill 由当前主 Agent 直接执行。仓库不另设 AUTHOR CLI 或规则式作者生成器；
 “调用 Skill”要求主 Agent 实际读取 Foundation、来源正文、整份 Deck Plan 与相邻
-页面合同，完成生成式写作、Critic 和整页重写。仅生成合法字段、运行审计或引用
-Skill 名称均不构成 AUTHOR 执行。
+页面合同，完成生成式写作、Critic 和整页重写。仅生成合法字段、运行审计、生成
+`page-source` packet 或引用 Skill 名称均不构成 AUTHOR 执行。
 
-进入 AUTHOR、CRITIQUE、REWRITE、单页修订或全稿审核前，主 Agent 必须完整读取
-`.agents/skills/cyberppt-script-workflow/references/authoring-contract.md`。该文件是
-操作性作者规则的唯一权威；`cyberppt-script-workflow/SKILL.md` 只负责路由和阶段边界，
-不得在两处维护重复作者规则。
+进入 AUTHOR、CRITIQUE、REWRITE、单页修订或全稿审核前，主 Agent 必须先解析
+`authoring_mode`，随后且只读取一个模式合同：
 
-规划确认是对话中的人工停点；审核稿必须以 Markdown 等可读格式展示，不直接把 JSON 作为审核材料。
+- `faithful` 或未声明：完整读取 `.agents/skills/cyberppt-script-workflow/references/faithful-authoring-contract.md`；
+- `analytical`：完整读取 `.agents/skills/cyberppt-script-workflow/references/authoring-contract.md`。
+
+两套合同不得混用。`cyberppt-script-workflow/SKILL.md` 负责模式路由和阶段边界，模式合同负责对应 AUTHOR、CRITIQUE、REWRITE 行为。
+
+规划确认是对话中的人工停点；`review-plan` 审阅稿必须以 Markdown 等可读格式展示，并显示页面 `source_refs` 对应的简短来源锚点，不直接把 JSON 作为审核材料。
 
 ### 6. 汇总与交付最终全稿
 
-以当前项目的 Foundation、轻量 Deck Plan、目标页来源证据和相邻页边界为依据，一次处理一张内容页。全文主旨和目录每套稿只加载一次；逐页仅回读当前页 `source_refs` 对应证据。strict/legacy 项目可以通过 Foundation 追溯 Source Truth，不在 AUTHOR 阶段重新运行语义理解。
+以当前项目的 Foundation、轻量 Deck Plan、目标页来源证据和相邻页边界为依据，一次处理一张内容页。全文主旨和目录每套稿只加载一次；逐页仅回读当前页 `source_refs` 对应证据。默认 `script` profile 存在 v2 `.cache/source-index.json` 时，faithful AUTHOR 写作或实质重写每页前必须运行 `page-source`，读取该页完整 source units；packet 仅作为 `derived_runtime_context`，不构成第四个权威内容产物。strict/legacy 项目通过 Foundation 追溯 Source Truth；存在兼容 v2 source index 时同样可使用 `page-source`，否则使用其精确 Source Truth/source-consumption 绑定，不在 AUTHOR 阶段重新运行语义理解。
 
-页面脚本分别保留完整文字稿和由其适度精炼得到的上屏文字；Stage 01 不执行独立视觉结构设计。页面脚本依次完成：
+faithful 页面按以下顺序完成：
 
-1. 页面设计简报
-2. 主论证链
-3. 证据架构
-4. 完整文字稿
-5. 上屏文字（从完整文字稿选择、合并和适度精炼）
-6. 演讲者备注
+1. 锁定页面来源范围和相邻页边界；
+2. 解析并读取该页精确原文；
+3. 判断来源原生结构（定义、并列事实/任务、分类、阶段、状态、职责、来源明示关系或论证）；
+4. 直接从来源语义形成完整文字稿 `full_copy`；
+5. 对 `full_copy` 做 Source Fidelity Critic；
+6. 只从已审定的 `full_copy` 选择、合并和适度精炼形成 `onscreen`；
+7. 对 `full_copy ↔ onscreen` 做反向语义检查；
+8. 仅在来源支持且确有价值时增加可选的 `mission`、`core_message`、`argument`、`visual_thesis`、`relationships`、`speaker_notes`。
 
-完整页面论证、事实保全和必要的作者化重写在 `full_copy` 中完成；随后从
-`full_copy` 生成受约束的 `onscreen`，保留主体、动作、对象、关系、状态、
-责任、数字、时间、条件和边界。高密度页、高潮页、结论页和 Critic
-重点页仍可生成判断主导与证据主导两个内部候选，只保留胜出结果。候选和
-评审理由不形成新增权威产物、checkpoint、gate 或 receipt。
+analytical 页面按已批准的 analytical contract 在来源边界内形成核心判断、论证结构和分析性表达。分析模式可以组织 source-supported inferred relationship，但不得新增事实、数字、责任、承诺或无依据关系。
 
 `full_copy` 和 `onscreen` 同时继承原稿的发布主体和陈述立场。原稿直接
 陈述的定义、要求、安排和事实，脚本不得改写为“通知所称”、
 “材料指出”、“文件认为”或“在通知中已明确”等第三方转述语气。
 
-AUTHOR 写作前直接读取 Foundation、轻量 Deck Plan 和对应来源证据，理解本页的来源边界与页面使命。论证关系、完整稿和讲述方式由 AUTHOR 在写作中形成；上屏字段以完整稿为唯一语义母本进行适度精炼。逐页完成作者化写作后，再运行确定性审计；审计只负责发现问题，不代替 AUTHOR 生成或改写页面。
+faithful 模式下，`full_copy` 是页面完整、忠实、可读的正文稿，不承担额外“so what”推导任务。并列事实、任务、分类、阶段、状态和职责可以保持并列；来源没有单一中心判断时不强制生成核心结论。`onscreen` 以 `full_copy` 为唯一语义母本，不得新增主体、对象、动作、关系、状态、责任、数字、条件、机制、能力、价值、意义或结论力度。逐页完成作者化写作后，再运行确定性审计；审计负责发现问题，不代替 AUTHOR 生成或改写页面。
 
-作者按页面使命和来源证据在 `full_copy` 中组织“结论、证据、解读与含义”，并在 Final Script 中保留来源追溯；Deck Plan 不声明 `content_route`、`onscreen_contract`、`onscreen_composition` 或视觉准备字段。所有项目默认采用 `deck.delivery_mode: self_read`；只有用户明确要求演讲辅助型、低文字密度稿件时，才使用 `presented`。
-
-`self_read` 内容页必须形成可独立阅读的页面闭环：明确页面主题，给出核心判断，解释判断依据，并保留理解所需的事实、范围、条件或结果。`full_copy` 承载完整语义，`onscreen` 保留结论、决定性事实及改变力度或范围的限定；数字需要说明所指对象和结论，清单需要说明归组依据和共同作用。作者组织内容时保留对象、动作或判断以及必要限定，避免只剩抽象口号、分类名称和依赖讲解的提示词。
+`self_read` 内容页必须可独立阅读：页面主题和来源结构清楚，理解所需的事实、范围、条件、状态、职责或明确关系完整。faithful 页面不因自读要求而强制添加来源没有的“核心判断”；analytical 页面按获批分析结构呈现核心判断及其依据。数字需要说明所指对象，分类与清单需要保留来源定义的归组维度；避免只剩抽象口号、无业务语义的标签和依赖讲解的提示词。
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
 v2 lean Deck Plan 只保留页面来源范围和必要的暴露边界，完整证据取舍由 AUTHOR 完成。strict/legacy Foundation 的逐事实核验、数字、责任、状态、条件和边界继续由最终审计直接对照 Foundation 与 Final Script，不在 PLAN 中预制页面表达。
 
-Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成简洁 Markdown 审阅稿，只展示章节、页面分配、暂定标题、页面问题、页面使命和来源范围。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
+Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成简洁 Markdown 审阅稿，展示章节、页面分配、暂定标题、页面问题、页面使命、来源范围和对应的简短来源锚点。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
 
-strict/legacy Foundation 的 `source_consumption_policy: required` 继续服务新建源材料项目，但 v2 lean Deck Plan 不逐记录声明页面消费方式。完整稿与上屏选择由 AUTHOR 在来源边界内完成，机器审计直接检查引用、数字、责任、状态、条件与边界。
+strict/legacy Foundation 的 `source_consumption_policy: required` 继续服务严格项目，但 v2 lean Deck Plan 不逐记录声明页面消费方式。完整稿与上屏选择由 AUTHOR 在来源边界内完成，机器审计直接检查引用、数字、责任、状态、条件与边界。
 
 AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态和分类层级。上屏审计验证代表来源的模块映射和可见特征。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
 页面信息密度不使用固定字数或固定模块数门槛。Final Script 默认声明 `deck.delivery_mode: self_read`，内容页可在自身声明 `content_load`；最终审计依据实际上屏模块和语义信息单元检查阅读自洽性。用户明确选择演讲辅助型稿件时可声明 `presented`。Plan 不承担信息密度设计。
 
-页面关系由 AUTHOR 基于来源和完整稿形成，并写入 Final Script。`audit-final` 直接对照 Foundation 检查无来源关系、数字、责任、状态和边界，不再要求关系先在轻量 Plan 中获批。
+faithful 页面关系只有在来源明确表达时才能进入 Final Script；analytical 页面可以在已批准的分析模式下保留 source-supported inferred relationship。`audit-final` 直接对照 Foundation 检查无来源关系、数字、责任、状态和边界，不要求关系先在轻量 Plan 中预写。
 
-项目定位、能力、任务、职责和验证场景等明细项，来源提供对象、作用、任务或边界时，应采用“业务标签：细化说明”；来源只列分类名称且没有细节时可以保留标签式列举。`audit-final` 与 `lint` 继续检查明细退化、同段误分组和来源边界问题。
+项目定位、能力、任务、职责和验证场景等明细项，来源提供对象、作用、任务或边界时，应保留其具体业务语义；来源只列分类名称且没有细节时可以保留来源原生标签，不得补写来源未说明的作用或结果。`audit-final` 与 `lint` 继续检查明细退化、同段误分组和来源边界问题。
 
 将已完成页面汇总为最终脚本后，执行真实存在的全稿检查，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约：
 
@@ -207,7 +207,7 @@ AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日�
 
 | 停点 | 必须展示 | 用户反馈后的动作 |
 |---|---|---|
-| 脚本规划待确认 | 交流目标、章节结构、页面顺序、暂定标题、页面问题/使命和来源范围 | 修改现有 Deck Plan 后继续 |
+| 脚本规划待确认 | 交流目标、章节结构、页面顺序、暂定标题、页面问题/使命、来源范围和来源锚点 | 修改现有 Deck Plan 后继续 |
 | 最终全稿 | 全套页面脚本和全稿审计结果 | 等待最终确认，不自行跳过 |
 
 这两个停点发生在对话中，不新增 approval、receipt、attempt、manifest、哈希绑定或平行审阅目录。单页内容仅在用户主动要求逐页审核时展示，不构成默认流程停点。
@@ -310,10 +310,11 @@ PPTX 组装支持三个正式分支：`editable` 为默认输出，`image` 输�
 
 ## 六、权威产物与边界
 
-### 显式轻量 script profile
+### 默认 script profile
 
 `script/foundation.json` 是统一语义 Foundation；
-`script/.cache/source-index.json` 是唯一来源派生索引。
+`script/.cache/source-index.json` 是来源派生索引；
+`script/.cache/page-source/*.json` 是逐页精确证据的派生运行时上下文。二者均不构成新的内容权威。
 
 ### Strict/legacy Source Foundation 权威产物
 
@@ -326,7 +327,7 @@ strict/legacy 下游兼容投影，不得反向成为第二套语义权威。
 
 ### 页面脚本权威
 
-最终脚本及其审计结果是 Stage 02 的内容输入。修改脚本后必须重新执行受影响的 handoff、manifest、提示词和 QA 环节。
+Stage 01 的权威内容链为 `foundation.json → deck-plan.json → dist/final-script.md`。最终脚本及其审计结果是 Stage 02 的内容输入。修改脚本后必须重新执行受影响的 handoff、manifest、提示词和 QA 环节。
 
 ## 七、禁止事项
 
@@ -342,8 +343,8 @@ strict/legacy 下游兼容投影，不得反向成为第二套语义权威。
 只有同时满足以下条件，才能对外称为完成：
 
 1. 当前 profile 的 Foundation 和语义验证通过；strict/legacy 另需 Source Truth 验证通过。
-2. 轻量 Deck Plan 已完成章节、页数、页面使命和来源边界检查，并经过人工规划停点。
-3. AUTHOR 已完成整页上屏重写闭环并通过 Final Script 审计。
+2. 轻量 Deck Plan 已完成章节、页数、页面使命、来源边界和来源锚点检查，并经过人工规划停点。
+3. AUTHOR 已按当前 `authoring_mode` 完成逐页写作闭环；faithful 页面已完成精确原文回读、`full_copy → onscreen` 投影和来源忠实审计。
 4. Stage 02 已建立当前脚本绑定的 handoff，脚本可以来自本项目或外部路径。
 5. 风格已由用户确认，并生成有效的 JSON 风格锁。
 6. 实际提示词检查通过；视觉结构准备与审计不再是前置步骤。

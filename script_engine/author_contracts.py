@@ -26,6 +26,11 @@ def _field_is_blank(value: object) -> bool:
     return not isinstance(value, str) or not value.strip()
 
 
+def _authoring_mode(final_script: dict[str, Any]) -> str:
+    deck = final_script.get("deck") if isinstance(final_script.get("deck"), dict) else {}
+    return "analytical" if deck.get("authoring_mode") == "analytical" else "faithful"
+
+
 def _onscreen_lines(slide: dict[str, Any]) -> list[str]:
     lines: list[str] = []
     for module in slide.get("onscreen") or []:
@@ -44,35 +49,55 @@ def _onscreen_lines(slide: dict[str, Any]) -> list[str]:
 
 
 def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
-    """Enforce the mechanical floor of the mandatory AUTHOR supporting-field pass."""
+    """Enforce mode-aware mechanical AUTHOR field requirements.
+
+    Faithful pages may use the source-native minimum. When a faithful page opts in
+    to an explicit ``argument``/``core_message`` structure, the authored optional
+    fields are checked for internal quality but are still not required on other
+    faithful pages. Analytical pages retain the stronger supporting-field contract.
+    """
 
     issues: list[str] = []
+    mode = _authoring_mode(final_script)
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
             continue
         slide_id = slide.get("id") or f"#{index}"
         prefix = f"slides.{index} ({slide_id})"
 
-        for field in ("mission", "core_message", "full_copy", "visual_thesis", "speaker_notes"):
+        required_string_fields = (
+            ("mission", "core_message", "full_copy", "visual_thesis", "speaker_notes")
+            if mode == "analytical"
+            else ("full_copy",)
+        )
+        for field in required_string_fields:
             if _field_is_blank(slide.get(field)):
                 issues.append(
-                    f"AUTHOR_FIELD_REQUIRED: {prefix}.{field}: content pages require a non-empty {field}"
+                    f"AUTHOR_FIELD_REQUIRED: {prefix}.{field}: {mode} content pages require a non-empty {field}"
                 )
+
+        onscreen = slide.get("onscreen")
+        if not isinstance(onscreen, list) or not any(isinstance(item, dict) for item in onscreen):
+            issues.append(
+                f"AUTHOR_ONSCREEN_REQUIRED: {prefix}.onscreen: content pages require at least one authored onscreen module"
+            )
 
         mission = str(slide.get("mission") or "").strip()
         if mission and _MISSION_GENERIC_RE.fullmatch(mission):
             issues.append(
                 f"AUTHOR_MISSION_GENERIC: {prefix}.mission: '{mission}' names a generic review topic; "
-                "state the single audience question or page duty"
+                "state a concrete page duty or omit this optional field in faithful mode"
             )
 
         argument = slide.get("argument")
-        if not isinstance(argument, dict):
-            issues.append(
-                f"AUTHOR_ARGUMENT_REQUIRED: {prefix}.argument: content pages require an argument object"
-            )
-            topology = None
-            chain: list[object] = []
+        topology = None
+        has_argument = isinstance(argument, dict)
+        structured_page = mode == "analytical" or has_argument or not _field_is_blank(slide.get("core_message"))
+        if not has_argument:
+            if mode == "analytical":
+                issues.append(
+                    f"AUTHOR_ARGUMENT_REQUIRED: {prefix}.argument: analytical content pages require an argument object"
+                )
         else:
             pattern = str(argument.get("pattern") or "").strip()
             topology = argument_pattern_topology(pattern)
@@ -85,21 +110,21 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
             usable_chain = [item.strip() for item in chain if isinstance(item, str) and item.strip()]
             if len(usable_chain) < 2 or len(usable_chain) != len(chain):
                 issues.append(
-                    f"AUTHOR_ARGUMENT_CHAIN_INVALID: {prefix}.argument.chain: provide at least two non-empty semantic nodes"
+                    f"AUTHOR_ARGUMENT_CHAIN_INVALID: {prefix}.argument.chain: when argument is authored, provide at least two non-empty semantic nodes"
                 )
 
         visual_thesis = str(slide.get("visual_thesis") or "").strip()
-        if visual_thesis and not _VISUAL_RELATION_GRAMMAR_RE.search(visual_thesis):
+        if structured_page and visual_thesis and not _VISUAL_RELATION_GRAMMAR_RE.search(visual_thesis):
             issues.append(
                 f"AUTHOR_VISUAL_THESIS_NONRELATIONAL: {prefix}.visual_thesis: '{visual_thesis}' "
-                "does not state a visible direction, grouping, mapping, convergence or closed loop"
+                "does not state a visible direction, grouping, mapping, convergence or source-explicit relationship"
             )
-        if topology == "parallel" and visual_thesis and not _PARALLEL_VISUAL_GRAMMAR_RE.search(visual_thesis):
+        if structured_page and topology == "parallel" and visual_thesis and not _PARALLEL_VISUAL_GRAMMAR_RE.search(visual_thesis):
             issues.append(
                 f"AUTHOR_VISUAL_TOPOLOGY_CONFLICT: {prefix}.visual_thesis: registered parallel pattern "
                 "requires visible parallel, grouping or shared-dimension grammar"
             )
-        if topology == "convergence" and visual_thesis and not _CONVERGENCE_VISUAL_GRAMMAR_RE.search(visual_thesis):
+        if structured_page and topology == "convergence" and visual_thesis and not _CONVERGENCE_VISUAL_GRAMMAR_RE.search(visual_thesis):
             issues.append(
                 f"AUTHOR_VISUAL_TOPOLOGY_CONFLICT: {prefix}.visual_thesis: registered convergence pattern "
                 "requires inputs to share a visible landing"
@@ -107,10 +132,10 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
 
         core = normalize_item_text(str(slide.get("core_message") or ""))
         visual = normalize_item_text(visual_thesis)
-        if core and visual and len(core) >= 16 and difflib.SequenceMatcher(None, core, visual).ratio() >= 0.9:
+        if structured_page and core and visual and len(core) >= 16 and difflib.SequenceMatcher(None, core, visual).ratio() >= 0.9:
             issues.append(
                 f"AUTHOR_VISUAL_THESIS_RESTATEMENT: {prefix}.visual_thesis restates core_message "
-                "instead of declaring the visual relationship"
+                "instead of declaring the visual/source relationship"
             )
 
         for relation_index, relation in enumerate(slide.get("relationships") or []):
@@ -134,9 +159,12 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
                 )
             combined = normalize_item_text(f"{source}{action}{target}")
             if GENERIC_TRANSFORMATION_CLAIM_RE.search(combined):
+                if mode == "analytical":
+                    remedy = "name the concrete operating mechanism and observable result at both ends"
+                else:
+                    remedy = "remove this edge unless the source explicitly states the relation; faithful mode must not complete an abstract transformation"
                 issues.append(
-                    f"AUTHOR_RELATION_ABSTRACT_TRANSFORMATION: {prefix}.relationships[{relation_index}]: "
-                    "name the concrete operating mechanism and observable result at both ends"
+                    f"AUTHOR_RELATION_ABSTRACT_TRANSFORMATION: {prefix}.relationships[{relation_index}]: {remedy}"
                 )
 
         notes = normalize_item_text(str(slide.get("speaker_notes") or ""))
@@ -149,8 +177,8 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
             for line in comparison_lines
         ):
             issues.append(
-                f"AUTHOR_SPEAKER_NOTES_RESTATEMENT: {prefix}.speaker_notes directly restates a visible judgment; "
-                "add basis, subordinate evidence, a non-material boundary, audience focus or natural transition"
+                f"AUTHOR_SPEAKER_NOTES_RESTATEMENT: {prefix}.speaker_notes directly restates visible copy; "
+                "add only incremental source-grounded context or omit the optional note"
             )
     return issues
 

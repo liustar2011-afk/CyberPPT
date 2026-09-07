@@ -35,6 +35,22 @@ def build_parser(validation_kinds: Iterable[str]) -> argparse.ArgumentParser:
     review_plan.add_argument("plan")
     review_plan.add_argument("foundation")
 
+    page_source = sub.add_parser(
+        "page-source",
+        help="Resolve one Deck Plan page to exact source-index.v2 units for faithful AUTHOR context",
+    )
+    page_source.add_argument("plan")
+    page_source.add_argument("foundation")
+    page_source.add_argument("page_id")
+    page_source.add_argument(
+        "--source-index",
+        help="Override source-index.v2 path; defaults to <foundation-dir>/.cache/source-index.json",
+    )
+    page_source.add_argument(
+        "--output",
+        help="Optional derived packet path, normally script/.cache/page-source/Pxx.json",
+    )
+
     audit_final = sub.add_parser(
         "audit-final",
         help="Audit PLAN-to-AUTHOR semantic inheritance and high-risk source-boundary rules",
