@@ -12,8 +12,12 @@
     {"id": "F3", "statement": "治理和可信使用共同支撑服务输出。", "source_refs": ["ST003"], "strength": "stated", "group_id": "G1", "visibility": "external_ok"},
     {"id": "F4", "statement": "具体技术能力清单留到后续页面说明。", "source_refs": ["ST004"], "strength": "stated", "visibility": "external_ok"}
   ],
-  "concepts": [],
-  "relations": [],
+  "concepts": [
+    {"id": "C1", "term": "可信使用机制", "definition": "控制授权、安全和审计。", "source_refs": ["ST002"], "visibility": "external_ok"}
+  ],
+  "relations": [
+    {"id": "R1", "from": "治理和可信使用", "to": "服务输出", "relation": "共同支撑", "basis": "explicit", "confidence": "high", "support": ["F3"], "source_refs": ["ST003"], "visibility": "external_ok"}
+  ],
   "arguments": [
     {"id": "A1", "claim": "治理和可信使用共同支撑服务输出。", "support": ["F3"], "basis": "explicit", "confidence": "high", "source_refs": ["ST003"], "visibility": "external_ok"}
   ]
