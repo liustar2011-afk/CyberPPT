@@ -43,6 +43,7 @@ def test_final_script_schema_places_content_load_on_slide_items() -> None:
                     "onscreen": [{"heading": "协同推进", "text": "明确责任分工"}],
                     "visual_thesis": "责任分工推动协同机制形成。",
                     "speaker_notes": "重点说明各方责任如何在推进过程中衔接。",
+                    "source_refs": ["F1"],
                     "content_load": "dense"}],
     }
     validator = Draft202012Validator(schema)
