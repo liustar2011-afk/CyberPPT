@@ -64,7 +64,10 @@ def audit_final_script(
             continue
         final_text = _slide_text(slide)
         plan_text = _page_text(page)
-        evidence_ids = _page_evidence_ids(page)
+        page_source_refs = {
+            ref for ref in page.get("source_refs") or [] if isinstance(ref, str) and ref
+        }
+        evidence_ids = _page_evidence_ids(page) | page_source_refs
         evidence = _support_items(sorted(evidence_ids), items)
         if final_authoring_mode == "faithful":
             issues.extend(
@@ -105,7 +108,11 @@ def audit_final_script(
             if not GAP_RE.search(plan_text) and not GAP_RE.search(source_text):
                 issues.append(f"slides.{index} ({slide_id}): final script introduces a current-vs-target gap judgment without a source or plan baseline")
 
-        for composition_issue in _audit_authored_onscreen_composition(page, slide):
+        for composition_issue in _audit_authored_onscreen_composition(
+            page,
+            slide,
+            authoring_mode=final_authoring_mode,
+        ):
             issues.append(f"slides.{index} ({slide_id}): {composition_issue}")
         for density_issue in _audit_self_reading_density(delivery_mode, page, slide):
             issues.append(f"slides.{index} ({slide_id}): {density_issue}")
@@ -127,7 +134,13 @@ def audit_final_script(
                 f"slides.{index} ({slide_id}): ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: "
                 f"{detail_issue}"
             )
-        for author_issue in _author_execution_issues(delivery_mode, page, slide, items):
+        for author_issue in _author_execution_issues(
+            delivery_mode,
+            page,
+            slide,
+            items,
+            authoring_mode=final_authoring_mode,
+        ):
             issues.append(f"slides.{index} ({slide_id}): {author_issue}")
         warnings.extend(
             f"slides.{index} ({slide_id}): {warning}"
