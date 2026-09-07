@@ -102,5 +102,30 @@ Changed:
 Design limit:
 - This is a high-confidence deterministic guard, not a full natural-language entailment engine. Model Critic/source review is still required for subtler semantic additions.
 
+### Step 5 — Split generative AUTHOR behavior by mode
+
+Status: completed.
+
+Changed:
+- `.agents/skills/cyberppt-script-workflow/AGENTS.md`
+  - Added a more specific workflow-level authority rule.
+  - Exactly one operational contract is active per authoring action: `faithful` uses the new faithful contract; `analytical` uses the existing analytical contract.
+  - Prevents blending analytical judgment-first methods into faithful writing while preserving the repository-level single-authority principle at runtime.
+- `.agents/skills/cyberppt-script-workflow/references/faithful-authoring-contract.md`
+  - Added a complete source-native faithful AUTHOR/CRITIQUE/REWRITE contract.
+  - Defines the faithful sequence as page scope -> exact source evidence -> source-native structure -> `full_copy` -> Source Fidelity Critic -> `onscreen` from `full_copy` -> projection Critic -> optional supporting fields -> whole-deck Critic -> deterministic validation.
+  - Explicitly allows definition, parallel facts/tasks, taxonomy, stages, status, responsibilities and source-explicit relations without an author-created total conclusion.
+  - Defines allowed editorial transformations and prohibited semantic additions.
+  - Makes `mission`, `core_message`, `argument`, `visual_thesis`, `relationships`, and `speaker_notes` optional under faithful mode.
+  - Includes issuer-voice, status, modality, formal-instrument, number/date, condition/boundary and title rules.
+- `.agents/skills/cyberppt-script-workflow/SKILL.md`
+  - Replaced the old single-contract router with mode-specific routing.
+  - Faithful workflow now explicitly describes `source -> full_copy -> onscreen` rather than conclusion-first projection.
+  - Analytical behavior remains available only when explicitly approved.
+  - Targeted edit, whole-deck review and re-plan paths now respect the active mode instead of implicitly applying judgment-first rules.
+
+Why this structure:
+- Repository-level `AGENTS.md` still contains legacy text naming `authoring-contract.md` as the single operational authority. A child `AGENTS.md` is the repository-supported way to specialize that rule locally without rewriting the very large root file in one risky change. Runtime still has exactly one active contract.
+
 Next:
-- Step 5: rewrite AUTHOR operational contract so generative behavior matches the new runtime contracts; otherwise prompts can still generate judgment-first copy even when validators no longer require it.
+- Step 6: replace contradictory faithful examples and update tests so they teach and enforce the new contract rather than the old conclusion-first behavior.
