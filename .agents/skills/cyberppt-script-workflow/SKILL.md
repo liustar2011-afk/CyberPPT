@@ -53,8 +53,9 @@ Automatically:
 4. preserve source chapters and plan PPT pages within that structure;
 5. present **脚本规划待确认**;
 6. after ordinary approval, resolve `authoring_mode` and execute the matching mandatory authoring reference;
-7. run Critic, rewrite, deterministic audits and delivery validation;
-8. report **最终脚本已生成**.
+7. for each faithful page, resolve exact page source context before drafting; when `script/.cache/source-index.json` is v2, generate the derived `page-source` packet first;
+8. run Critic, rewrite, deterministic audits and delivery validation;
+9. report **最终脚本已生成**.
 
 For every new project, PLAN writes a v2 lean `deck-plan.json` containing deck
 purpose, chapter grouping, page allocation, tentative topic titles, page
@@ -70,6 +71,23 @@ migrated to v2 lean before entering this workflow.
 `faithful` is source-native editorial transduction. AUTHOR writes `full_copy` as
 the complete page-ready manuscript from the source-native structure, then writes
 `onscreen` only from the reviewed `full_copy`.
+
+Before writing a faithful content page, resolve the exact evidence for that page.
+For the default `script` profile, when `script/.cache/source-index.json` is a
+`cyberppt.source_index.v2` file, run:
+
+```bash
+.venv/bin/python3 -m script_engine.cli page-source \
+  script/deck-plan.json \
+  script/foundation.json \
+  <PAGE_ID> \
+  --output script/.cache/page-source/<PAGE_ID>.json
+```
+
+Read the packet before drafting. It is disposable `derived_runtime_context`, not a
+new content authority. A packet with `status: rewrite_required` blocks drafting of
+that page until its source boundary is repaired. Regenerate the packet whenever the
+page source refs, Foundation or source index changes.
 
 A faithful page may legitimately contain a definition, parallel facts, parallel
 tasks, a taxonomy, explicit stages, status statements or responsibilities without
@@ -103,8 +121,10 @@ condensation; dense material is resolved through source-faithful editing,
 approved page scope or pagination rather than deleting substantive content.
 
 The current main agent is the AUTHOR executor. There is no separate AUTHOR Skill,
-CLI, deterministic generator or project-specific author script. Loading this
-router, creating schema-valid output or passing lint does not execute AUTHOR.
+CLI, deterministic generator or project-specific author script. The `page-source`
+CLI only resolves exact evidence; it does not author prose. Loading this router,
+creating schema-valid output, generating a page-source packet or passing lint does
+not execute AUTHOR.
 
 Every deck defaults to `deck.delivery_mode: self_read`. Use `presented` only when
 the user explicitly requests a presenter-led sparse deck.
@@ -137,9 +157,11 @@ authorizes whole-deck writing; do not ask the user to name an internal stage.
 
 Resolve the page/deck `authoring_mode` and read only the matching mandatory
 authoring reference. Then read the target page and adjacent pages, matching Deck
-Plan entry, `source_refs`, relevant Foundation records and exact page source text
-where available. Preserve source chapter boundaries unless the user explicitly
-authorizes structural change.
+Plan entry, `source_refs`, relevant Foundation records and exact page source text.
+In faithful mode, if a v2 source index exists, regenerate the target page's
+`page-source` packet before editing so the revision uses the current exact source
+units. Preserve source chapter boundaries unless the user explicitly authorizes
+structural change.
 
 In faithful mode, repair `full_copy` before `onscreen`; do not repair visible copy
 by inventing a stronger page conclusion. In analytical mode, follow the
@@ -154,8 +176,10 @@ progression, optionality, visibility, compression loss, formal register and the
 whole-deck checks in the active contract.
 
 Faithful review does not fail a page merely because it lacks an author-created
-conclusion or argument chain. Analytical review may evaluate conclusion and
-argument quality under the analytical contract.
+conclusion or argument chain. When exact v2 source context exists, page-level
+faithful rewrites regenerate and reuse the corresponding page-source packet rather
+than drafting from previews or memory. Analytical review may evaluate conclusion
+and argument quality under the analytical contract.
 
 Repair the smallest affected page scope and rerun adjacent-page review. Do not
 expose Critic self-dialogue; return the rewritten result and a concise summary of
@@ -168,6 +192,7 @@ Show a readable **脚本规划待确认** containing:
 - source chapter structure;
 - page allocation by presentation chapter;
 - each page's tentative title, question, mission and source boundary;
+- compact source anchors for each page so the reviewer can see what the cited Foundation refs actually state;
 - material split or merge decisions;
 - inferred relationships or source conflicts that merit attention;
 - restricted or internal material needing an exposure decision.
@@ -198,6 +223,9 @@ Stage 01 owns three authoritative script artifacts:
 - `script/foundation.json`;
 - `script/deck-plan.json`;
 - `script/dist/final-script.md`.
+
+`script/.cache/page-source/*.json` remains derived runtime context and is not added
+to the authoritative artifact list.
 
 After the final script is locked, Stage 02 uses one formal orchestration entry:
 
