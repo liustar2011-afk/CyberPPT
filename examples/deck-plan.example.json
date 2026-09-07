@@ -1,5 +1,5 @@
 {
-  "communication_goal": "说明数据基础设施如何把分散的数据资源转化为可持续使用的数据服务。",
+  "communication_goal": "说明资源治理、可信使用与服务输出的来源内容及明确关系。",
   "plan_contract_version": 2,
   "planning_profile": "lean",
   "authoring_mode": "faithful",
@@ -11,7 +11,7 @@
     {
       "id": "C01",
       "title": "数据服务形成机制",
-      "purpose": "解释资源治理与可信使用如何共同支撑服务输出。",
+      "purpose": "呈现资源治理、可信使用以及来源明确的服务输出关系。",
       "source_chapter_ids": ["CH01"],
       "structural_operation": "preserve"
     }
@@ -20,10 +20,10 @@
     {
       "id": "P01",
       "chapter_id": "C01",
-      "title": "数据服务形成机制",
-      "question": "数据基础设施如何把分散资源转化为可持续服务？",
-      "logic": "解释资源治理与可信使用共同支撑服务输出的机制",
-      "page_role": "mechanism",
+      "title": "资源治理、可信使用与服务输出",
+      "question": "本节包含哪些资源治理、可信使用和服务输出内容？",
+      "logic": "按来源原有关系呈现资源治理、可信使用和服务输出，并将具体技术能力清单留到后续页面",
+      "page_role": "content",
       "source_refs": ["F1", "F2", "F3", "F4"]
     }
   ]
