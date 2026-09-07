@@ -47,5 +47,18 @@ Changed:
   - Kept the concrete-source-matter safeguard that rejects author-created abstraction of source actions/status/milestones into generic summary dimensions.
   - Reworded the long-chain structure check so it no longer treats every authored structure as an "argument".
 
+### Step 2B — Make faithful onscreen projection `full_copy`-led
+
+Status: completed.
+
+Changed:
+- `script_engine/onscreen_contracts.py`
+  - Added mode-aware onscreen validation.
+  - Faithful headings may remain source-native category/task/stage labels and no longer need to be rewritten into judgment sentences.
+  - Faithful detail lines are no longer forced to add an action/result merely because they begin with a method/scope phrase; hidden-context and generic-detail safeguards remain.
+  - `check_onscreen_core_alignment()` now dispatches by mode: analytical pages retain `core_message → onscreen`; faithful pages use `full_copy → onscreen` semantic-anchor alignment.
+  - Added a faithful per-visible-line alignment check that flags new onscreen propositions with insufficient semantic anchoring in `full_copy`.
+  - Reworded the multi-module self-read check around explanatory/source-backed payload rather than an argument layer.
+
 Next:
-- Step 2B: make onscreen validation source/full-copy led in faithful mode instead of core-message led.
+- Step 3: remove residual `core_message`/argument assumptions from higher-level final audits (`final_onscreen.py`, `final_authoring_expression.py`, `final_lean.py`).
