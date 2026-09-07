@@ -12,13 +12,9 @@
     {"id": "F3", "statement": "治理和可信使用共同支撑服务输出。", "source_refs": ["ST003"], "strength": "stated", "group_id": "G1", "visibility": "external_ok"},
     {"id": "F4", "statement": "具体技术能力清单留到后续页面说明。", "source_refs": ["ST004"], "strength": "stated", "visibility": "external_ok"}
   ],
-  "concepts": [
-    {"id": "C1", "term": "示例概念", "definition": "占位定义。", "source_refs": ["ST001"], "visibility": "external_ok"}
-  ],
-  "relations": [
-    {"id": "R1", "from": "数据资源治理", "to": "可信使用", "relation": "治理为可信使用提供可识别、可管理的资源基础", "basis": "inferred", "confidence": "high", "support": ["F1", "F2"], "source_refs": ["ST001", "ST002"], "visibility": "external_ok"}
-  ],
+  "concepts": [],
+  "relations": [],
   "arguments": [
-    {"id": "A1", "claim": "资源治理与可信使用共同支撑服务输出。", "support": ["F1", "F2", "F3"], "basis": "inferred", "confidence": "high", "source_refs": ["ST001", "ST002", "ST003"], "visibility": "external_ok"}
+    {"id": "A1", "claim": "治理和可信使用共同支撑服务输出。", "support": ["F3"], "basis": "explicit", "confidence": "high", "source_refs": ["ST003"], "visibility": "external_ok"}
   ]
 }
