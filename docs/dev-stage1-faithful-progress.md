@@ -127,5 +127,29 @@ Changed:
 Why this structure:
 - Repository-level `AGENTS.md` still contains legacy text naming `authoring-contract.md` as the single operational authority. A child `AGENTS.md` is the repository-supported way to specialize that rule locally without rewriting the very large root file in one risky change. Runtime still has exactly one active contract.
 
+### Step 6 — Replace contradictory faithful examples and tests
+
+Status: completed.
+
+Changed:
+- `examples/foundation.example.json`
+  - Removed the default inferred relation.
+  - Replaced the inferred argument with the source-explicit F3 proposition and `basis: explicit`.
+  - Removed the unrelated placeholder concept.
+- `examples/deck-plan.example.json`
+  - Removed the transformation/mechanism framing from the default faithful plan.
+  - Replaced it with neutral source-scope wording and a normal `content` page role.
+- `examples/final-script.example.json`
+  - Removed all source-external additions including catalog/standard/quality/lineage/version details, authorization details, abnormal-call handling, model training, API/report/Q&A output, customer feedback, cost/revenue review, renewal/upsell, replication, progression and `缺一不可` claims.
+  - Replaced the page with a minimal faithful `full_copy -> onscreen` example using F1-F4 only.
+  - Demonstrates that a faithful content page can omit `mission`, `core_message`, `argument`, `visual_thesis`, `relationships`, and `speaker_notes`.
+- `tests/script_engine/test_authoring_method.py`
+  - Removed tests that locked the default workflow to old judgment-first methods.
+  - Added validation/lint coverage for the new faithful example and minimal faithful pages without an argument.
+  - Added mode-routing contract tests and confirmed the analytical contract still retains analytical authoring methods.
+  - Added assertions that default examples are source-closed and no longer teach unsupported expansion.
+- `tests/script_engine/test_semantic_guardrails.py`
+  - Added tests for outside-narrator drift, added numbers, added formal instruments, status promotion, modality promotion, closed-loop/progression promotion, and source-explicit relationship allowance.
+
 Next:
-- Step 6: replace contradictory faithful examples and update tests so they teach and enforce the new contract rather than the old conclusion-first behavior.
+- Step 7: verify the branch with repository CI/tests, repair regressions, and only then proceed to P1 source-packet/PLAN improvements.
