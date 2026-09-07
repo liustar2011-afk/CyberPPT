@@ -30,12 +30,20 @@ _LABEL_SPLIT_RE = re.compile(r"[：:]", flags=re.UNICODE)
 _ONSCREEN_CORE_MIN_BIGRAMS = 4
 _ONSCREEN_CORE_MIN_COVERAGE = 0.25
 _ONSCREEN_BODY_MIN_COVERAGE = 0.15
+_FAITHFUL_LINE_MIN_BIGRAMS = 4
+_FAITHFUL_LINE_MIN_FULL_COPY_COVERAGE = 0.10
+
+
+def _authoring_mode(final_script: dict[str, Any]) -> str:
+    deck = final_script.get("deck") if isinstance(final_script.get("deck"), dict) else {}
+    return "analytical" if deck.get("authoring_mode") == "analytical" else "faithful"
 
 
 def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
-    """Reject short category labels that force readers to infer a module's business meaning."""
+    """Protect heading semantics without forcing faithful source labels into judgments."""
 
     issues: list[str] = []
+    mode = _authoring_mode(final_script)
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
             continue
@@ -52,16 +60,16 @@ def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
             source_defined_taxonomy = bool(
                 _FORMAL_TAXONOMY_HEADING_RE.match(heading)
                 or heading.endswith("层")
-                or ("贯穿" in heading and "贯穿" in str(slide.get("core_message") or ""))
+                or "贯穿" in heading
             ) and bool(module.get("text") or module.get("items"))
             if _CONTEXT_DEPENDENT_HEADING_RE.search(heading):
                 issues.append(
                     f"ONSCREEN_HEADING_OBJECT_OMITTED: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
-                    f"'{heading}' relies on page context to supply the business matter; name the exact deployment, "
-                    "project, research output or work item in the heading itself"
+                    f"'{heading}' relies on hidden page context to supply the business matter; name the exact deployment, "
+                    "project, research output or work item"
                 )
                 continue
-            if GENERIC_TRANSFORMATION_CLAIM_RE.search(compact):
+            if mode == "analytical" and GENERIC_TRANSFORMATION_CLAIM_RE.search(compact):
                 issues.append(
                     f"ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
                     f"'{heading}' is grammatically complete but leaves both the construction mechanism and operating "
@@ -69,7 +77,8 @@ def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
                 )
                 continue
             if (
-                heading
+                mode == "analytical"
+                and heading
                 and len(compact) < 16
                 and not source_defined_taxonomy
                 and not category_with_criterion
@@ -77,15 +86,16 @@ def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
             ):
                 issues.append(
                     f"ONSCREEN_HEADING_INCOMPLETE: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
-                    f"'{heading}' is only a category label; state the object and its action, status, role or judgment"
+                    f"'{heading}' is only a category label; analytical mode requires a complete module point"
                 )
     return issues
 
 
 def check_onscreen_detail_semantics(final_script: dict[str, Any]) -> list[str]:
-    """Reject detail lines that stop at a basis, condition, method or scope."""
+    """Reject ambiguous details while allowing source-native faithful phrases."""
 
     issues: list[str] = []
+    mode = _authoring_mode(final_script)
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
             continue
@@ -106,13 +116,14 @@ def check_onscreen_detail_semantics(final_script: dict[str, Any]) -> list[str]:
                 parts = _LABEL_SPLIT_RE.split(line, maxsplit=1)
                 body = parts[1].strip() if len(parts) == 2 else line
                 if (
-                    _DANGLING_MODIFIER_RE.search(body)
+                    mode == "analytical"
+                    and _DANGLING_MODIFIER_RE.search(body)
                     and not has_complete_semantic_predicate(body)
                     and not _PASS_RESULT_RE.search(body)
                 ):
                     issues.append(
                         f"ONSCREEN_DANGLING_MODIFIER: slides.{index} ({slide_id}).onscreen[{module_index}].{field}: "
-                        f"'{line}' states only a basis, condition, method or scope; add the business action or result"
+                        f"'{line}' states only a basis, condition, method or scope; analytical mode requires the business action or result"
                     )
                 elif len(parts) == 2 and _GENERIC_DETAIL_TAIL_RE.fullmatch(normalize_item_text(body)):
                     issues.append(
@@ -123,7 +134,7 @@ def check_onscreen_detail_semantics(final_script: dict[str, Any]) -> list[str]:
 
 
 def check_onscreen_projection_structure(final_script: dict[str, Any]) -> list[str]:
-    """Require a mechanical evidence floor for normal multi-module self-read pages."""
+    """Require explanatory payload for normal multi-module self-read pages."""
 
     issues: list[str] = []
     for index, slide in enumerate(final_script.get("slides") or []):
@@ -132,18 +143,17 @@ def check_onscreen_projection_structure(final_script: dict[str, Any]) -> list[st
         modules = [module for module in slide.get("onscreen") or [] if isinstance(module, dict)]
         if len(modules) < 2:
             continue
-        has_evidence_layer = any(
+        has_payload_layer = any(
             (isinstance(module.get("text"), str) and module.get("text", "").strip())
             or any(isinstance(item, str) and item.strip() for item in module.get("items") or [])
             for module in modules
         )
-        if not has_evidence_layer:
+        if not has_payload_layer:
             slide_id = slide.get("id") or f"#{index}"
             issues.append(
                 f"ONSCREEN_EVIDENCE_LAYER_MISSING: slides.{index} ({slide_id}).onscreen: "
-                "multiple module judgments are presented without any child text or items; "
-                "retain the decisive evidence, condition, scope or result that establishes "
-                "the projected argument layer"
+                "multiple modules are presented without any child text or items; retain the source-backed "
+                "detail, condition, scope, definition or result needed for independent reading"
             )
     return issues
 
@@ -218,8 +228,58 @@ def _onscreen_text(slide: dict[str, Any]) -> str:
     return " ".join(values)
 
 
+def _onscreen_entries(slide: dict[str, Any]) -> list[tuple[str, str]]:
+    entries: list[tuple[str, str]] = []
+    for module_index, module in enumerate(slide.get("onscreen") or []):
+        if not isinstance(module, dict):
+            continue
+        for key in ("heading", "text"):
+            value = module.get(key)
+            if isinstance(value, str) and value.strip():
+                entries.append((f"onscreen[{module_index}].{key}", value.strip()))
+        entries.extend(
+            (f"onscreen[{module_index}].items[{item_index}]", item.strip())
+            for item_index, item in enumerate(module.get("items") or [])
+            if isinstance(item, str) and item.strip()
+        )
+    return entries
+
+
+def _check_faithful_full_copy_alignment(final_script: dict[str, Any]) -> list[str]:
+    """Require faithful visible copy to inherit semantic anchors from ``full_copy``."""
+
+    issues: list[str] = []
+    for index, slide in enumerate(final_script.get("slides") or []):
+        if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        full_copy_bigrams = _semantic_bigrams(slide.get("full_copy"))
+        if len(full_copy_bigrams) < _FAITHFUL_LINE_MIN_BIGRAMS:
+            continue
+        slide_id = slide.get("id") or f"#{index}"
+        for field, text in _onscreen_entries(slide):
+            line_bigrams = _semantic_bigrams(text)
+            if len(line_bigrams) < _FAITHFUL_LINE_MIN_BIGRAMS:
+                continue
+            coverage = len(line_bigrams & full_copy_bigrams) / len(line_bigrams)
+            if coverage < _FAITHFUL_LINE_MIN_FULL_COPY_COVERAGE:
+                issues.append(
+                    f"ONSCREEN_FULL_COPY_MISALIGNED: slides.{index} ({slide_id}).{field}: "
+                    f"visible copy shares only {coverage:.0%} of its semantic anchors with full_copy "
+                    f"(minimum {_FAITHFUL_LINE_MIN_FULL_COPY_COVERAGE:.0%}); select, merge or lightly rephrase "
+                    "from full_copy instead of introducing a new proposition"
+                )
+    return issues
+
+
 def check_onscreen_core_alignment(final_script: dict[str, Any]) -> list[str]:
-    """Treat ``core_message`` as page meaning and ``onscreen`` as its visible projection."""
+    """Use mode-appropriate semantic parentage for onscreen copy.
+
+    Faithful mode projects from ``full_copy``. Analytical mode keeps the legacy
+    ``core_message`` projection contract.
+    """
+
+    if _authoring_mode(final_script) != "analytical":
+        return _check_faithful_full_copy_alignment(final_script)
 
     issues: list[str] = []
     for index, slide in enumerate(final_script.get("slides") or []):
@@ -242,8 +302,8 @@ def check_onscreen_core_alignment(final_script: dict[str, Any]) -> list[str]:
             issues.append(
                 f"ONSCREEN_CORE_MISALIGNED: slides.{index} ({slide_id}).onscreen: "
                 f"title + body cover {coverage:.0%} and body modules cover {body_coverage:.0%} "
-                "of the core conclusion's semantic anchors (minimum 25% / 15%); organize the "
-                "whole onscreen expression around core_message"
+                "of the analytical core conclusion's semantic anchors (minimum 25% / 15%); organize the "
+                "analytical onscreen expression around core_message"
             )
     return issues
 
