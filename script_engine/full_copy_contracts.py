@@ -11,7 +11,7 @@ from .semantic_text_primitives import (
 )
 
 
-_FULL_COPY_STRUCTURE_MIN_CHARS = 180
+_FULL_COPY_STRUCTURE_MIN_CHARS = 60
 _FULL_COPY_PARAGRAPH_MIN_CHARS = 24
 _ABSTRACT_TOPIC_SENTENCE_RE = re.compile(
     r"(?:任务|要求|工作|建设|内容).{0,8}(?:具体化|更加明确|进一步明确|更为清晰|具有重要意义|意义重大)"
