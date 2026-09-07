@@ -17,7 +17,6 @@ from .audit_reports import (
     validate_artifact_report,
 )
 from .cli_parser import build_parser as _build_parser
-from .contracts import load_json
 from .delivery_commands import (
     delivery_sync_report,
     lint_report,
@@ -25,10 +24,9 @@ from .delivery_commands import (
     render_stage02_delivery,
 )
 from .final_quality import collect_final_lint_issues, partition_final_lint_findings
-from .page_source_packet import build_page_source_packet
+from .page_source_command import page_source_report
 from .project_scaffold import create_project
 from .project_status import build_project_status, project_profile_for_foundation
-from .text_io import write_text_lf
 
 _project_profile_for_foundation = project_profile_for_foundation
 
@@ -72,77 +70,15 @@ def _page_source(
     source_index_path: Path | None = None,
     output_path: Path | None = None,
 ) -> int:
-    """Resolve one page to exact source units and optionally persist derived context."""
-
-    plan = load_json(plan_path)
-    foundation = load_json(foundation_path)
-    resolved_source_index = source_index_path or foundation_path.parent / ".cache" / "source-index.json"
-    if not resolved_source_index.is_file():
-        _print_report(
-            {
-                "schema": "cyberppt.page_source_packet.v1",
-                "authority": "derived_runtime_context",
-                "page_id": page_id,
-                "status": "rewrite_required",
-                "issues": [f"PAGE_SOURCE_INDEX_MISSING: source index does not exist: {resolved_source_index}"],
-                "warnings": [],
-            },
-            stderr=True,
-        )
-        return 1
-
-    source_index = load_json(resolved_source_index)
-    if source_index.get("schema") != "cyberppt.source_index.v2":
-        _print_report(
-            {
-                "schema": "cyberppt.page_source_packet.v1",
-                "authority": "derived_runtime_context",
-                "page_id": page_id,
-                "status": "rewrite_required",
-                "issues": [
-                    "PAGE_SOURCE_INDEX_SCHEMA_INVALID: page-source requires cyberppt.source_index.v2"
-                ],
-                "warnings": [],
-            },
-            stderr=True,
-        )
-        return 1
-
-    page = next(
-        (
-            item
-            for item in plan.get("pages") or []
-            if isinstance(item, dict) and str(item.get("id") or "") == page_id
-        ),
-        None,
+    report, exit_code = page_source_report(
+        plan_path,
+        foundation_path,
+        page_id,
+        source_index_path=source_index_path,
+        output_path=output_path,
     )
-    if page is None:
-        _print_report(
-            {
-                "schema": "cyberppt.page_source_packet.v1",
-                "authority": "derived_runtime_context",
-                "page_id": page_id,
-                "status": "rewrite_required",
-                "issues": [f"PAGE_SOURCE_PAGE_UNKNOWN: page '{page_id}' is not in deck-plan.json"],
-                "warnings": [],
-            },
-            stderr=True,
-        )
-        return 1
-
-    page_context = dict(page)
-    page_context["authoring_mode"] = str(plan.get("authoring_mode") or "faithful")
-    packet = build_page_source_packet(page_context, foundation, source_index)
-    packet["source_index"] = str(resolved_source_index.resolve())
-
-    if output_path is not None:
-        output_path = output_path.expanduser().resolve()
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        write_text_lf(output_path, json.dumps(packet, ensure_ascii=False, indent=2) + "\n")
-        packet["output"] = str(output_path)
-
-    _print_report(packet, stderr=packet.get("status") != "passed")
-    return 0 if packet.get("status") == "passed" else 1
+    _print_report(report, stderr=exit_code != 0)
+    return exit_code
 
 
 def _audit_final(final_path: Path, plan_path: Path, foundation_path: Path) -> int:
