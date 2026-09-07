@@ -51,9 +51,10 @@ def _onscreen_lines(slide: dict[str, Any]) -> list[str]:
 def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
     """Enforce mode-aware mechanical AUTHOR field requirements.
 
-    Faithful pages are valid with source-native ``full_copy`` + ``onscreen`` +
-    ``source_refs`` only. Analytical pages retain the stronger conclusion,
-    argument and visual-supporting-field contract.
+    Faithful pages may use the source-native minimum. When a faithful page opts in
+    to an explicit ``argument``/``core_message`` structure, the authored optional
+    fields are checked for internal quality but are still not required on other
+    faithful pages. Analytical pages retain the stronger supporting-field contract.
     """
 
     issues: list[str] = []
@@ -80,13 +81,6 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
             issues.append(
                 f"AUTHOR_ONSCREEN_REQUIRED: {prefix}.onscreen: content pages require at least one authored onscreen module"
             )
-        source_refs = slide.get("source_refs")
-        if not isinstance(source_refs, list) or not any(
-            isinstance(ref, str) and ref.strip() for ref in source_refs
-        ):
-            issues.append(
-                f"AUTHOR_SOURCE_REFS_REQUIRED: {prefix}.source_refs: content pages require at least one source reference"
-            )
 
         mission = str(slide.get("mission") or "").strip()
         if mission and _MISSION_GENERIC_RE.fullmatch(mission):
@@ -97,7 +91,9 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
 
         argument = slide.get("argument")
         topology = None
-        if not isinstance(argument, dict):
+        has_argument = isinstance(argument, dict)
+        structured_page = mode == "analytical" or has_argument or not _field_is_blank(slide.get("core_message"))
+        if not has_argument:
             if mode == "analytical":
                 issues.append(
                     f"AUTHOR_ARGUMENT_REQUIRED: {prefix}.argument: analytical content pages require an argument object"
@@ -118,17 +114,17 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
                 )
 
         visual_thesis = str(slide.get("visual_thesis") or "").strip()
-        if mode == "analytical" and visual_thesis and not _VISUAL_RELATION_GRAMMAR_RE.search(visual_thesis):
+        if structured_page and visual_thesis and not _VISUAL_RELATION_GRAMMAR_RE.search(visual_thesis):
             issues.append(
                 f"AUTHOR_VISUAL_THESIS_NONRELATIONAL: {prefix}.visual_thesis: '{visual_thesis}' "
-                "does not state a visible direction, grouping, mapping, convergence or closed loop"
+                "does not state a visible direction, grouping, mapping, convergence or source-explicit relationship"
             )
-        if mode == "analytical" and topology == "parallel" and visual_thesis and not _PARALLEL_VISUAL_GRAMMAR_RE.search(visual_thesis):
+        if structured_page and topology == "parallel" and visual_thesis and not _PARALLEL_VISUAL_GRAMMAR_RE.search(visual_thesis):
             issues.append(
                 f"AUTHOR_VISUAL_TOPOLOGY_CONFLICT: {prefix}.visual_thesis: registered parallel pattern "
                 "requires visible parallel, grouping or shared-dimension grammar"
             )
-        if mode == "analytical" and topology == "convergence" and visual_thesis and not _CONVERGENCE_VISUAL_GRAMMAR_RE.search(visual_thesis):
+        if structured_page and topology == "convergence" and visual_thesis and not _CONVERGENCE_VISUAL_GRAMMAR_RE.search(visual_thesis):
             issues.append(
                 f"AUTHOR_VISUAL_TOPOLOGY_CONFLICT: {prefix}.visual_thesis: registered convergence pattern "
                 "requires inputs to share a visible landing"
@@ -136,10 +132,10 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
 
         core = normalize_item_text(str(slide.get("core_message") or ""))
         visual = normalize_item_text(visual_thesis)
-        if mode == "analytical" and core and visual and len(core) >= 16 and difflib.SequenceMatcher(None, core, visual).ratio() >= 0.9:
+        if structured_page and core and visual and len(core) >= 16 and difflib.SequenceMatcher(None, core, visual).ratio() >= 0.9:
             issues.append(
                 f"AUTHOR_VISUAL_THESIS_RESTATEMENT: {prefix}.visual_thesis restates core_message "
-                "instead of declaring the visual relationship"
+                "instead of declaring the visual/source relationship"
             )
 
         for relation_index, relation in enumerate(slide.get("relationships") or []):
