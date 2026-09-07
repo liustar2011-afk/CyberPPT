@@ -151,5 +151,16 @@ Changed:
 - `tests/script_engine/test_semantic_guardrails.py`
   - Added tests for outside-narrator drift, added numbers, added formal instruments, status promotion, modality promotion, closed-loop/progression promotion, and source-explicit relationship allowance.
 
-Next:
-- Step 7: verify the branch with repository CI/tests, repair regressions, and only then proceed to P1 source-packet/PLAN improvements.
+### Step 7A — Start repository-native CI verification
+
+Status: in progress.
+
+Completed:
+- Inspected `.github/workflows/tests.yml`.
+- Confirmed CI runs on pull requests (branch pushes only run automatically for `main`).
+- Opened Draft PR #28: `refactor/stage1-faithful-authoring` -> `main` strictly as a CI/verification boundary; it must not be merged before verification is green.
+- Confirmed GitHub Actions created five checks for the branch head, including Python 3.10/3.12 tests, macOS/Windows wheel smoke, and OfficeCLI smoke.
+
+Verification target:
+- Repair all P0 regressions found by CI.
+- Record exact green/failing checks and any repairs here before proceeding to P1.
