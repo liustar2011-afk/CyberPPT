@@ -81,5 +81,26 @@ Changed:
 Deferred intentionally:
 - `final_lean.py` still contains some legacy wording about "argument paragraphs"; its underlying source-retention checks are useful and remain active. Functional wording cleanup is deferred until the source-addition audit is added, to avoid changing a large file without corresponding regression tests.
 
+### Step 4 — Add high-confidence faithful semantic-addition audit
+
+Status: completed.
+
+Changed:
+- `script_engine/analysis_audits/final_fidelity.py`
+  - Expanded relation/synthesis promotion detection beyond causal connectors to include unsupported closed-loop, progression, transformation, value, key-support, mechanism, continuous-optimization and replication/scale-up claims.
+  - Added `faithful_semantic_addition_issues()`.
+  - Detects Arabic numeric/date tokens introduced in Final Script but absent from page evidence.
+  - Detects newly introduced formal instrument names in `《…》`.
+  - Detects outside-narrator framing such as `材料指出` / `文件认为` / `根据材料可以看出` when the source does not speak that way.
+  - Detects newly introduced achieved/completed status markers when page evidence contains no achieved-state marker.
+  - Detects newly introduced obligation/prohibition markers when page evidence contains no corresponding modality.
+  - Expands source evidence with linked number/entity/condition payload where available.
+  - Deliberately returns no semantic-addition verdict when page evidence is empty; missing/unknown source evidence remains the responsibility of source-consumption checks, avoiding cascades of false positives.
+- `script_engine/analysis_audits/final_orchestrator.py`
+  - Runs both relation-promotion and semantic-addition audits for `faithful` pages.
+
+Design limit:
+- This is a high-confidence deterministic guard, not a full natural-language entailment engine. Model Critic/source review is still required for subtler semantic additions.
+
 Next:
-- Step 4: strengthen faithful semantic-addition auditing (outside narrator, added numbers/formal instruments, relation/status promotion) using page source evidence.
+- Step 5: rewrite AUTHOR operational contract so generative behavior matches the new runtime contracts; otherwise prompts can still generate judgment-first copy even when validators no longer require it.
