@@ -5,6 +5,10 @@ import json
 from pathlib import Path
 
 from script_engine.analysis_audit import audit_deck_plan, audit_final_script
+from script_engine.analysis_audits.final_fidelity import (
+    faithful_relation_promotion_issues,
+    faithful_semantic_addition_issues,
+)
 from script_engine.contracts import validate_deck_plan
 
 
@@ -64,5 +68,68 @@ def test_relationship_metadata_cannot_replace_visible_reasoning() -> None:
         {"from": "甲", "to": "乙", "relation": "甲推动乙形成闭环"}
     ]
     issues, _ = audit_final_script(broken, plan, foundation)
-    assert any("AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue for issue in issues)
+    assert any(
+        "AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue
+        or "FAITHFUL_RELATION_PROMOTED" in issue
+        for issue in issues
+    )
 
+
+def test_faithful_semantic_addition_audit_rejects_objective_additions_and_voice_drift() -> None:
+    evidence = [
+        {
+            "id": "F1",
+            "statement": "计划开展场景梳理。",
+            "source_refs": ["SU-1"],
+        }
+    ]
+    slide = {
+        "title": "场景梳理",
+        "full_copy": "材料指出，已完成《新增管理办法》并覆盖8类场景。",
+        "onscreen": [
+            {"heading": "场景梳理", "text": "已完成8类场景梳理"}
+        ],
+    }
+
+    issues = faithful_semantic_addition_issues(slide, evidence, {})
+    assert any("FAITHFUL_OUTSIDE_NARRATOR" in issue for issue in issues)
+    assert any("FAITHFUL_STATUS_PROMOTED" in issue for issue in issues)
+    assert any("FAITHFUL_FORMAL_INSTRUMENT_ADDED" in issue for issue in issues)
+    assert any("FAITHFUL_NUMBER_ADDED" in issue for issue in issues)
+
+
+def test_faithful_semantic_addition_audit_rejects_new_obligation_strength() -> None:
+    evidence = [{"id": "F1", "statement": "可开展数据共享。"}]
+    slide = {
+        "full_copy": "必须开展数据共享。",
+        "onscreen": [{"heading": "数据共享", "text": "必须开展数据共享"}],
+    }
+
+    issues = faithful_semantic_addition_issues(slide, evidence, {})
+    assert any("FAITHFUL_MODALITY_PROMOTED" in issue for issue in issues)
+
+
+def test_faithful_relation_audit_rejects_new_closed_loop_and_progression() -> None:
+    evidence = [
+        {"id": "F1", "statement": "A事项与B事项并列开展。"},
+    ]
+    slide = {
+        "full_copy": "A事项与B事项形成闭环并依次递进。",
+        "onscreen": [{"heading": "A事项与B事项", "text": "形成闭环并依次递进"}],
+    }
+
+    issues = faithful_relation_promotion_issues(slide, evidence)
+    assert any("FAITHFUL_RELATION_PROMOTED" in issue and "闭环" in issue for issue in issues)
+    assert any("FAITHFUL_RELATION_PROMOTED" in issue and "递进" in issue for issue in issues)
+
+
+def test_faithful_relation_audit_allows_source_explicit_relationship() -> None:
+    evidence = [
+        {"id": "F1", "statement": "A事项与B事项形成闭环。"},
+    ]
+    slide = {
+        "full_copy": "A事项与B事项形成闭环。",
+        "onscreen": [{"heading": "A事项与B事项", "text": "形成闭环"}],
+    }
+
+    assert faithful_relation_promotion_issues(slide, evidence) == []
