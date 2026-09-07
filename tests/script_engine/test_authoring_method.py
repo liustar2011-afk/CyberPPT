@@ -28,7 +28,8 @@ def test_examples_validate_and_default_faithful_example_is_source_closed() -> No
     assert lint_final_script(final_script) == []
 
     assert foundation["source_structure"]
-    assert foundation["relations"] == []
+    assert foundation["relations"][0]["basis"] == "explicit"
+    assert foundation["relations"][0]["support"] == ["F3"]
     assert foundation["arguments"][0]["basis"] == "explicit"
     assert foundation["arguments"][0]["support"] == ["F3"]
 
@@ -40,10 +41,9 @@ def test_examples_validate_and_default_faithful_example_is_source_closed() -> No
     assert "转化为可持续" not in plan["pages"][0]["question"]
 
     slide = final_script["slides"][0]
-    assert "core_message" not in slide
-    assert "argument" not in slide
-    assert "visual_thesis" not in slide
-    assert "speaker_notes" not in slide
+    assert slide["core_message"] == foundation["facts"][2]["statement"]
+    assert slide["argument"]["pattern"] == "evidence synthesis"
+    assert slide["visual_thesis"] == "资源治理与可信使用共同支撑服务输出。"
     assert slide["source_refs"] == ["F1", "F2", "F3", "F4"]
 
     full_copy = slide["full_copy"]
