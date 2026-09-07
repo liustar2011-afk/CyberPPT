@@ -43,12 +43,29 @@ def test_current_main_agent_executes_author_instead_of_delegating_to_dead_code()
     assert not (ROOT / "scripts" / "author_v16_outline.py").exists()
 
 
-def test_workflow_requires_full_copy_structure_pass_before_onscreen_selection() -> None:
+def test_workflow_requires_faithful_full_copy_before_onscreen_projection() -> None:
     workflow = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
+    faithful = _read(
+        ".agents/skills/cyberppt-script-workflow/references/faithful-authoring-contract.md"
+    )
 
-    assert "semantic-preserving editorial projection" in workflow
-    assert "conclusion-first, reader-facing expression" in workflow
-    assert "complete paragraphs" in workflow
+    assert "source-native editorial transduction" in workflow
+    assert "writes `full_copy` as the complete page-ready manuscript" in workflow
+    assert "writes `onscreen` only from the reviewed `full_copy`" in workflow
+    assert "Write `full_copy` directly from source meaning" in faithful
+    assert "Create `onscreen` only from approved `full_copy`" in faithful
+    assert "conclusion-first, reader-facing expression" not in workflow
+
+
+def test_workflow_keeps_conclusion_first_methods_inside_explicit_analytical_mode() -> None:
+    workflow = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
+    analytical = _read(
+        ".agents/skills/cyberppt-script-workflow/references/authoring-contract.md"
+    )
+
+    assert "Only when `authoring_mode: analytical` is explicitly approved" in workflow
+    assert "Author the page conclusion" in analytical
+    assert "judgment-first hierarchy" in analytical
 
 
 def test_user_facing_states_are_limited_to_plan_and_final() -> None:
