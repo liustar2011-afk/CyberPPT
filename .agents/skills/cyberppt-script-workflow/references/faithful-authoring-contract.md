@@ -48,8 +48,36 @@ invent a stronger question, conclusion, mechanism, or value thesis.
 
 ### Step 2 — Resolve exact source evidence
 
-Read the Foundation records named by the page's `source_refs` and, where source-unit
-references are available, read the exact underlying source text before drafting.
+For the default `script` profile, exact per-page source resolution is mandatory whenever
+`script/.cache/source-index.json` exists and has schema `cyberppt.source_index.v2`.
+Before drafting the page, run:
+
+```bash
+.venv/bin/python3 -m script_engine.cli page-source \
+  script/deck-plan.json \
+  script/foundation.json \
+  <PAGE_ID> \
+  --output script/.cache/page-source/<PAGE_ID>.json
+```
+
+Use the resulting packet as disposable AUTHOR runtime context. It is marked
+`authority: derived_runtime_context`; it does not become a fourth semantic authority and
+does not change the chain `source -> foundation -> deck_plan -> final_script`.
+
+The packet must be regenerated when the page `source_refs`, Foundation, or source index
+changes. If it returns `status: rewrite_required`, stop that page and repair the source
+boundary before drafting. Do not author around an unknown page reference. Warnings about
+missing exact unit bindings must be treated explicitly: use the Foundation surface only
+when the project/profile genuinely lacks a resolvable v2 source unit, and do not infer
+precise wording that the available evidence does not support.
+
+For `strict/legacy`, use the strongest exact source context available through the
+projected Foundation / Source Truth bindings. If a compatible v2 source index is present,
+use the same `page-source` command; otherwise resolve the page's source units through the
+strict source-consumption bindings rather than reconstructing meaning from memory.
+
+Read the Foundation records named by the page's `source_refs` and the exact underlying
+source text resolved for those records before drafting.
 
 Record the protected payload:
 
@@ -440,6 +468,7 @@ Do not solve density by:
 When a page fails, rewrite from the earliest failed semantic layer:
 
 - wrong source scope -> repair PLAN/page scope;
+- unresolved page-source packet -> repair `source_refs` or source bindings before prose;
 - unsupported full-copy proposition -> repair `full_copy` first;
 - onscreen drift -> regenerate `onscreen` from the repaired `full_copy`;
 - optional supporting-field drift -> delete or repair the optional field;
