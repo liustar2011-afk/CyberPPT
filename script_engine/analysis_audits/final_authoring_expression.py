@@ -59,9 +59,8 @@ def _evidence_first_item_hierarchy_issues(
     heading = str(module.get("heading") or "?").strip()
     return [
         f"{slide_id}: onscreen_composition='evidence_first' module '{heading}' "
-        "uses a lead-like first item above lighter peer evidence; rewrite every item "
-        "as same-granularity source facts, or use selective_lead when the judgment "
-        "must remain inside the module"
+        "uses a lead-like first item above lighter peer evidence; keep same-granularity source facts, "
+        "or use selective_lead only when the source or approved analytical plan actually contains a lead proposition"
     ]
 
 
@@ -146,6 +145,8 @@ def _author_execution_issues(
     page: dict[str, Any],
     slide: dict[str, Any],
     items: dict[str, dict[str, Any]],
+    *,
+    authoring_mode: str = "faithful",
 ) -> list[str]:
     """Fail closed on deterministic assembly signatures that cannot count as AUTHOR."""
 
@@ -165,16 +166,21 @@ def _author_execution_issues(
     if metadata_hits:
         issues.append(
             "AUTHOR_STRUCTURAL_METADATA_LEAK: full_copy contains document front matter, "
-            f"TOC entries, or section labels as argument prose: {metadata_hits}"
+            f"TOC entries, or section labels as page prose: {metadata_hits}"
         )
 
     semicolon_segments = [part.strip() for part in re.split(r"[；;]", full_copy) if part.strip()]
     if len(semicolon_segments) >= 5 and sum(
         1 for part in semicolon_segments if len(_VISIBLE_CHAR_RE.findall(part)) <= 36
     ) >= 4:
+        remedy = (
+            "rewrite it as a coherent analytical argument"
+            if authoring_mode == "analytical"
+            else "rewrite it as coherent source-faithful page prose without inventing a new argument"
+        )
         issues.append(
             "AUTHOR_MECHANICAL_SOURCE_CONCATENATION: full_copy is dominated by short "
-            "semicolon-joined source fragments; rewrite it as a coherent argument"
+            f"semicolon-joined source fragments; {remedy}"
         )
 
     contract = page.get("onscreen_contract")
@@ -190,6 +196,8 @@ def _author_execution_issues(
                         f"AUTHOR_ONSCREEN_TABLE_FRAGMENT: module '{heading}' contains a raw table row: {line!r}"
                     )
                     continue
+                if authoring_mode != "analytical":
+                    continue
                 if _is_readable_proposition(line):
                     continue
                 if re.search(r"[：:]", line):
@@ -198,7 +206,7 @@ def _author_execution_issues(
                         continue
                 issues.append(
                     f"AUTHOR_ONSCREEN_INCOMPLETE_DETAIL: module '{heading}' has a visible "
-                    f"detail without a complete business action, relation, or result: {line!r}"
+                    f"detail without a complete analytical action, relation, or result: {line!r}"
                 )
     return issues
 
