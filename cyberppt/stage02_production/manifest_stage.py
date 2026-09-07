@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -287,7 +288,7 @@ def _retain_audited_prior_pairs(*, manifest: dict[str, Any], prior_manifest: dic
 def _import_audited_full_images(
     *,
     manifest: dict[str, Any],
-    source_manifest_path: Path,
+    source_manifest_path: Path | tuple[Path, ...] | list[Path],
     selected_pages: tuple[int, ...],
 ) -> None:
     """Bind audited full images from a prior official Stage 02 manifest.
@@ -298,70 +299,117 @@ def _import_audited_full_images(
     changed assembly mode as a resumable build identity.
     """
 
-    source_path = source_manifest_path.expanduser().resolve()
-    if not source_path.is_file():
-        raise FileNotFoundError(f"audited image manifest is missing: {source_path}")
-    source = read_json(source_path)
-    if source.get("source_script_sha256") != manifest.get("source_script_sha256"):
-        raise ValueError("audited image manifest targets a different final script")
-    if source.get("production_mode") != manifest.get("production_mode"):
-        raise ValueError("audited image manifest uses a different production mode")
-
-    source_pairs = {
-        int(pair.get("page_number")): pair
-        for pair in source.get("pairs", [])
-        if isinstance(pair, dict) and str(pair.get("page_number") or "").isdigit()
-    }
+    source_paths = (
+        (source_manifest_path,)
+        if isinstance(source_manifest_path, Path)
+        else tuple(source_manifest_path)
+    )
+    if not source_paths:
+        raise ValueError("at least one audited image manifest is required")
     target_pairs = {
         int(pair.get("page_number")): pair
         for pair in manifest.get("pairs", [])
         if isinstance(pair, dict) and str(pair.get("page_number") or "").isdigit()
     }
+    selected = set(selected_pages)
     validated = []
-    for page_number in selected_pages:
-        source_pair = source_pairs.get(page_number)
-        target_pair = target_pairs.get(page_number)
-        source_full = source_pair.get("full") if isinstance(source_pair, dict) else None
-        target_full = target_pair.get("full") if isinstance(target_pair, dict) else None
-        if not isinstance(source_full, dict) or not isinstance(target_full, dict):
-            raise ValueError(f"page {page_number} is missing its full-image record")
-        if (source_full.get("text_audit") or {}).get("valid") is not True:
-            raise ValueError(f"page {page_number} has no passed full-image text audit")
-        if source_full.get("prompt_sha256") != target_full.get("prompt_sha256"):
-            raise ValueError(f"page {page_number} full-image prompt differs from the requested build")
-        source_image = Path(str(source_full.get("path") or "")).expanduser().resolve()
-        target_image = Path(str(target_full.get("path") or "")).expanduser().resolve()
-        if not source_image.is_file():
-            raise FileNotFoundError(f"page {page_number} audited full image is missing: {source_image}")
-        source_hash = sha256_file(source_image)
-        bound_hash = source_full.get("sha256") or (source_full.get("reconstruction_visual_source") or {}).get("sha256")
-        if not bound_hash or source_hash != bound_hash:
-            raise ValueError(f"page {page_number} source image no longer matches its audited hash")
-        if source_full.get("status") != "Generated" or source_full.get("generated_prompt_sha256", source_full.get("prompt_sha256")) != source_full.get("prompt_sha256"):
-            raise ValueError(f"page {page_number} source audit is not current for its prompt")
-        validated.append((page_number, source_full, target_full, source_image, target_image))
+    claimed_pages: dict[int, Path] = {}
+    sources_used: list[dict[str, Any]] = []
+    for raw_source_path in source_paths:
+        source_path = raw_source_path.expanduser().resolve()
+        if not source_path.is_file():
+            raise FileNotFoundError(f"audited image manifest is missing: {source_path}")
+        source = read_json(source_path)
+        if source.get("source_script_sha256") != manifest.get("source_script_sha256"):
+            raise ValueError("audited image manifest targets a different final script")
+        if source.get("production_mode") != manifest.get("production_mode"):
+            raise ValueError("audited image manifest uses a different production mode")
+        source_pairs = {
+            int(pair.get("page_number")): pair
+            for pair in source.get("pairs", [])
+            if isinstance(pair, dict) and str(pair.get("page_number") or "").isdigit()
+        }
+        imported_from_source: list[int] = []
+        for page_number in sorted(selected.intersection(source_pairs)):
+            if page_number in claimed_pages:
+                raise ValueError(
+                    f"page {page_number} appears in multiple audited image manifests: "
+                    f"{claimed_pages[page_number]} and {source_path}"
+                )
+            source_pair = source_pairs[page_number]
+            target_pair = target_pairs.get(page_number)
+            source_full = source_pair.get("full") if isinstance(source_pair, dict) else None
+            target_full = target_pair.get("full") if isinstance(target_pair, dict) else None
+            if not isinstance(source_full, dict) or not isinstance(target_full, dict):
+                raise ValueError(f"page {page_number} is missing its full-image record")
+            if (source_full.get("text_audit") or {}).get("valid") is not True:
+                raise ValueError(f"page {page_number} has no passed full-image text audit")
+            prompt_differs = source_full.get("prompt_sha256") != target_full.get("prompt_sha256")
+            source_prompt = source_full.get("prompt")
+            if prompt_differs:
+                source_prompt_sha = sha256(str(source_prompt or "").encode("utf-8")).hexdigest()
+                if not source_prompt or source_prompt_sha != source_full.get("prompt_sha256"):
+                    raise ValueError(f"page {page_number} full-image prompt differs from the requested build and has no valid prompt snapshot")
+            source_image = Path(str(source_full.get("path") or "")).expanduser().resolve()
+            target_image = Path(str(target_full.get("path") or "")).expanduser().resolve()
+            if not source_image.is_file():
+                raise FileNotFoundError(f"page {page_number} audited full image is missing: {source_image}")
+            source_hash = sha256_file(source_image)
+            bound_hash = source_full.get("sha256") or (source_full.get("reconstruction_visual_source") or {}).get("sha256")
+            if bound_hash and source_hash != bound_hash:
+                raise ValueError(f"page {page_number} source image no longer matches its audited hash")
+            if source_full.get("status") != "Generated" or source_full.get("generated_prompt_sha256", source_full.get("prompt_sha256")) != source_full.get("prompt_sha256"):
+                raise ValueError(f"page {page_number} source audit is not current for its prompt")
+            claimed_pages[page_number] = source_path
+            imported_from_source.append(page_number)
+            validated.append((page_number, source_full, target_full, source_image, target_image,
+                              source_path, source, prompt_differs, bool(bound_hash)))
+        if imported_from_source:
+            sources_used.append({"manifest": str(source_path), "pages": imported_from_source})
+    if not validated:
+        raise ValueError("audited image manifests contain none of the requested pages")
+    if any(item[7] for item in validated) and set(claimed_pages) != selected:
+        missing = sorted(selected.difference(claimed_pages))
+        raise ValueError(
+            "audited full-image prompts differ from the requested build while imported manifests "
+            f"do not cover every requested page; missing pages: {missing}"
+        )
     # Validate every source before touching any existing target image.
-    for page_number, source_full, target_full, source_image, target_image in validated:
+    for (page_number, source_full, target_full, source_image, target_image,
+         source_path, source, prompt_differs, has_bound_hash) in validated:
         target_image.parent.mkdir(parents=True, exist_ok=True)
         if source_image != target_image:
             shutil.copy2(source_image, target_image)
         image_sha256 = sha256_file(target_image)
         if not image_sha256:
             raise ValueError(f"page {page_number} copied full image cannot be hashed")
+        if prompt_differs:
+            target_full["prompt"] = source_full["prompt"]
+            target_full["prompt_sha256"] = source_full["prompt_sha256"]
         target_full["status"] = "Generated"
         target_full["generated_at"] = source_full.get("generated_at")
         target_full["generated_prompt_sha256"] = str(source_full.get("generated_prompt_sha256") or source_full.get("prompt_sha256"))
-        target_full["text_audit"] = source_full["text_audit"]
+        if has_bound_hash:
+            target_full["text_audit"] = source_full["text_audit"]
+        else:
+            target_full["text_audit"] = {
+                "valid": False,
+                "revalidation_required": True,
+                "reason": "legacy source manifest did not bind the audited image hash",
+            }
         target_full["sha256"] = image_sha256
         target_full["reused_from"] = {
             "manifest": str(source_path),
             "image": str(source_image),
             "image_sha256": sha256_file(source_image),
             "source_assembly_mode": source.get("assembly_mode"),
+            "prompt_snapshot_preserved": prompt_differs,
+            "text_audit_revalidation_required": not has_bound_hash,
         }
     manifest["audited_full_image_import"] = {
-        "manifest": str(source_path),
-        "pages": list(selected_pages),
+        "sources": sources_used,
+        "pages": sorted(claimed_pages),
+        "missing_pages": sorted(selected.difference(claimed_pages)),
     }
 
 

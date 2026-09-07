@@ -67,6 +67,19 @@ class RenderFinalPromptTests(unittest.TestCase):
         for text in ir.visible_text:
             self.assertEqual(1, prompt.count(f'- Exact visible text: "{text}"'))
 
+    def test_emits_title_mission_and_judgment_as_nonvisible_context(self) -> None:
+        ir = _sample_ir(
+            page_title="制度保障与运营授权",
+            page_mission="说明制度安排如何支撑安全运营。",
+        )
+        prompt = render_final_prompt(ir)
+
+        self.assertIn("【标题（不上屏）】\n制度保障与运营授权", prompt)
+        self.assertIn("【页面使命（不上屏）】\n说明制度安排如何支撑安全运营。", prompt)
+        self.assertIn("【核心判断（不上屏）】\nUnified governance makes the result traceable.", prompt)
+        visible_section = prompt.split(SECTION_HEADINGS[3], 1)[1].split(SECTION_HEADINGS[4], 1)[0]
+        self.assertNotIn("制度保障与运营授权", visible_section)
+
     def test_bound_visible_text_is_rendered_once_globally(self) -> None:
         ir = _sample_ir(
             visible_text=(

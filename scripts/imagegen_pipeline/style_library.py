@@ -354,6 +354,9 @@ def load_style_lock(path: Path) -> dict[str, Any]:
 
     payload = _read_json(path)
     style = payload.get("style")
+    policy = payload.get("policy")
+    if isinstance(policy, dict) and policy.get("resolved_contract_is_immutable") is True:
+        return payload
     if not isinstance(style, dict) or int(style.get("id") or 0) not in LIVE_CONTRACT_STYLE_IDS:
         return payload
     current = resolve_default_style(style_id=int(style["id"]))

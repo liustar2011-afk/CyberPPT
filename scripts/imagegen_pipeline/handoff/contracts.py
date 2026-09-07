@@ -11,7 +11,7 @@ IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
 SEMANTIC_VISUAL_CHROME_CONTRACT = """【语义视觉画面边界｜不上屏】
 正文区图只画业务语义底图，不绘制页面标题、副标题、Logo、页脚、页码、页面序号、母版装饰线或完整正文。正文和事实文字由后续 PPT 可编辑文字层承载。不要把提示词字段名、模块编号、调试信息、伪中文或新增标签画入图片。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
-将【完整上屏内容】改写为结论先行、层级清晰的页面表达。可提炼正文结论、重组段落、合并重复信息并调整标题层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
+将【页面内容素材｜允许提炼、改写、重组】作为事实与语义素材，形成结论先行、层级清晰的页面表达。允许选择、提炼、重写、重组、合并重复信息并调整标题层级，无需逐字照搬；必须保留业务对象、数字、时间、责任、条件、状态和结论力度，不得新增事实。画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
 CONTENT_FIRST_PAGE_MISSION_LABEL = "页面任务："
 CONTENT_FIRST_CORE_MEANING_LABEL = "核心意思："
 # Compatibility alias for extensions importing the old constant.

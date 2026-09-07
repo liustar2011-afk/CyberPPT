@@ -375,7 +375,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertNotIn("Boundary (do not show on slide)", prompt)
         self.assertNotIn("正式范围待后续确定", prompt)
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
-        self.assertIn("【完整上屏内容】", prompt)
+        self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
         self.assertNotIn("【模板层禁绘｜不上屏】", prompt)
         self.assertNotIn("正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号", prompt)
         self.assertNotIn("不得捏造事实、改变判断强度", prompt)

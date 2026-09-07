@@ -217,12 +217,29 @@ def render_content_first_prompt(
         if presentation.source == "script"
         else ""
     )
+    nonvisible_page_context = [
+        "【标题（不上屏）】",
+        page.title.strip(),
+        "",
+        "【页面使命（不上屏）】",
+        (
+            page_mission.strip()
+            or page.page_mission.strip()
+            or page.core_message.strip()
+            or page.title.strip()
+        ),
+        "",
+        "【核心判断（不上屏）】",
+        core_meaning_for_semantics,
+        "",
+    ]
     if semantic_visual:
         semantic_brief = render_semantic_visual_brief(page)
         page_specific_semantics = str(
             (visual_context or {}).get("visual_center") or ""
         ).strip()
         parts = [
+            *nonvisible_page_context,
             SEMANTIC_VISUAL_TEXT_CONTRACT,
             "",
             SEMANTIC_VISUAL_FACTS_HEADER,
@@ -273,20 +290,9 @@ def render_content_first_prompt(
             ),
         ]
     else:
-        nonvisible_semantic_context = (
-            []
-            if style09_surface
-            else [
-                CONTENT_FIRST_PAGE_MISSION_LABEL,
-                page_mission.strip() or page.core_message.strip(),
-                "",
-                CONTENT_FIRST_CORE_MEANING_LABEL,
-                core_meaning_for_semantics,
-                "",
-            ]
-        )
         parts = [
-            "【完整上屏内容】",
+            *nonvisible_page_context,
+            "【页面内容素材｜允许提炼、改写、重组】",
             complete_semantics,
             "",
             (
@@ -295,7 +301,6 @@ def render_content_first_prompt(
                 else ""
             ),
             "",
-            *nonvisible_semantic_context,
             (
                 "【页面语义关系｜仅供理解，不上屏】\n" + semantic_relations
                 if semantic_relations

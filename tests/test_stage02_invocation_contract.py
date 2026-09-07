@@ -67,3 +67,13 @@ def test_resume_round_trips_spaces_and_production_parameters(context, mode):
         assert args[args.index(flag) + 1] == value
     assert "--production-build" in args and "--generate-images" in args
     assert "--force-images" not in args and "--skip-image-text-audit" not in args
+
+
+def test_resume_round_trips_multiple_audited_image_manifests(context):
+    sources = (context.project / "p02" / "page_image_pairs.json",
+               context.project / "p03-p14" / "page_image_pairs.json")
+    options = Stage02RunOptions(project=context.project, script=context.canonical_script,
+        pages_raw="1-2", production_build=True, reuse_audited_images_from=sources)
+    args = shlex.split(_resume_command(context, options))
+    positions = [index for index, value in enumerate(args) if value == "--reuse-audited-images-from"]
+    assert [args[index + 1] for index in positions] == [str(path) for path in sources]

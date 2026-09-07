@@ -407,6 +407,32 @@ def _generate_manifest_images(
                 and clean_base.get("source_sha256") == sha256(output_path.read_bytes()).hexdigest()
                 and Path(str(pair.get("authoring_svg") or "")).is_file()
             )
+            imported_source_needs_reaudit = (
+                variant == "full"
+                and output_path.is_file()
+                and not force
+                and isinstance(text_truth, dict)
+                and isinstance(item.get("reused_from"), dict)
+                and (item.get("text_audit") or {}).get("revalidation_required") is True
+            )
+            if imported_source_needs_reaudit:
+                from cyberppt.image_text_gate import audit_generated_image_text
+
+                audit = audit_generated_image_text(
+                    output_path,
+                    script_text=str(text_truth.get("script_text") or ""),
+                    timeout=timeout,
+                )
+                audit["page_number"] = pair.get("page_number")
+                audit["attempt"] = 0
+                audit["revalidated_imported_source"] = True
+                _attach_content_root_qa(pair=pair, audit=audit)
+                text_audits.append(audit)
+                item["text_audit"] = audit
+                if audit.get("valid") is True:
+                    item["generated_prompt_sha256"] = item.get("prompt_sha256")
+                    has_text_receipt = True
+                    prompt_matches_existing_image = True
             if registered_source and not has_text_receipt:
                 from cyberppt.image_text_gate import audit_generated_image_text
 

@@ -165,7 +165,7 @@ def llm_enrich_brief(*, page_number: int, approved_prompt: str) -> str:
 You will rewrite the approved ImageGen script into a **send prompt** optimized for image models.
 
 ## Hard rules
-1. You MAY rewrite the visible Chinese from 【完整上屏内容】 into conclusion-first, professional presentation copy.
+1. Treat 【页面内容素材｜允许提炼、改写、重组】 as semantic and factual source material. You MAY select, merge, shorten, reorganize, or rewrite it into conclusion-first professional presentation copy; do not copy it mechanically.
 2. Preserve business objects, numbers, dates, scope, responsibility, conditions, status and claim strength; do not invent facts, service names, slogans, logos, or page chrome.
 3. You MAY: compress/English-ize style cues; add structure/material/people/ban cues image models hear; clarify path vs crosscut relations from 【页面逻辑】.
 4. You MUST NOT: replace STYLE09 with another palette; force a fixed card/timeline/hub template unless the page logic requires it.

@@ -64,10 +64,14 @@ def _resume_command(context: Stage02BuildContext, options: Stage02RunOptions) ->
     ):
         if enabled:
             args.append(flag)
-    for path, flag in ((options.prompt_overrides_dir, "--prompt-overrides-dir"),
-                       (options.reuse_audited_images_from, "--reuse-audited-images-from")):
-        if path is not None:
-            args.extend([flag, str(path.expanduser().resolve())])
+    if options.prompt_overrides_dir is not None:
+        args.extend(["--prompt-overrides-dir", str(options.prompt_overrides_dir.expanduser().resolve())])
+    reuse_sources = options.reuse_audited_images_from
+    if reuse_sources is not None:
+        if isinstance(reuse_sources, Path):
+            reuse_sources = (reuse_sources,)
+        for path in reuse_sources:
+            args.extend(["--reuse-audited-images-from", str(path.expanduser().resolve())])
     # Force-redraw and audit bypasses are never inherited by a normal resume.
     return shlex.join(args)
 

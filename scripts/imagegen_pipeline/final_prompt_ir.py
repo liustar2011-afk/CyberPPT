@@ -181,6 +181,7 @@ class FinalPromptIR:
     visible_text: tuple[str, ...]
     hard_constraints: tuple[str, ...]
     runtime_lock: RuntimeLockIR
+    page_title: str = ""
     page_mission: str = ""
     semantic_context: str = ""
     prompt_mode: str = "semantic_brief"

@@ -649,6 +649,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             visible_text=spec.typography.visible_text,
             hard_constraints=hard_constraints,
             runtime_lock=RuntimeLockIR(style_contract=spec.art_direction.contract),
+            page_title=spec.communication_goal.page_title,
             page_mission=spec.communication_goal.page_mission,
             semantic_context=spec.semantic_context.text,
             prompt_mode=spec.prompt_mode,

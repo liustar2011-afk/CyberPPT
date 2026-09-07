@@ -175,6 +175,56 @@ def test_audited_image_import_rejects_changed_bytes(local_page):
         _import_audited_full_images(manifest=manifest, source_manifest_path=path, selected_pages=(1,))
 
 
+def test_audited_image_import_combines_disjoint_partial_manifests(tmp_path):
+    from cyberppt.stage02_production.manifest_stage import _import_audited_full_images
+
+    target_pairs = []
+    source_paths = []
+    for page_number in (1, 2):
+        source_image = tmp_path / f"source-{page_number}.png"
+        Image.new("RGB", (400, 200), "white").save(source_image)
+        target_image = tmp_path / "target" / f"page-{page_number}.png"
+        prompt_sha = f"prompt-{page_number}"
+        target_pairs.append({"page_number": page_number, "full": {
+            "path": str(target_image), "prompt_sha256": prompt_sha,
+        }})
+        source = {"source_script_sha256": "script", "production_mode": "image-to-editable-svg",
+            "assembly_mode": "editable", "pairs": [{"page_number": page_number, "full": {
+                "path": str(source_image), "prompt_sha256": prompt_sha,
+                "generated_prompt_sha256": prompt_sha, "status": "Generated",
+                "sha256": _hash(source_image), "text_audit": {"valid": True},
+            }}]}
+        source_path = tmp_path / f"source-{page_number}.json"
+        _write(source_path, source)
+        source_paths.append(source_path)
+
+    manifest = {"source_script_sha256": "script", "production_mode": "image-to-editable-svg",
+        "pairs": target_pairs}
+    _import_audited_full_images(manifest=manifest,
+        source_manifest_path=tuple(source_paths), selected_pages=(1, 2, 3))
+
+    assert [pair["full"]["status"] for pair in manifest["pairs"]] == ["Generated", "Generated"]
+    assert manifest["audited_full_image_import"]["pages"] == [1, 2]
+    assert manifest["audited_full_image_import"]["missing_pages"] == [3]
+
+
+def test_audited_image_import_rejects_duplicate_page_sources(tmp_path, local_page):
+    from cyberppt.stage02_production.manifest_stage import _import_audited_full_images
+
+    path, pair = local_page
+    manifest = json.loads(path.read_text())
+    manifest["production_mode"] = "image-to-editable-svg"
+    manifest["pairs"][0]["full"]["prompt_sha256"] = "prompt"
+    _write(path, manifest)
+    target = {"source_script_sha256": manifest["source_script_sha256"],
+        "production_mode": "image-to-editable-svg", "pairs": [{"page_number": 1, "full": {
+            "path": str(tmp_path / "target.png"), "prompt_sha256": "prompt",
+        }}]}
+    with pytest.raises(ValueError, match="multiple audited image manifests"):
+        _import_audited_full_images(manifest=target,
+            source_manifest_path=(path, path), selected_pages=(1,))
+
+
 def test_page_scoped_assets_do_not_collide(tmp_path):
     first, second = _author(tmp_path, 1), _author(tmp_path, 2)
     targets = []

@@ -2,533 +2,565 @@
 
 ## 01｜色彩与基础气质
 
-Palette: white #FFFFFF, deep blue #12355B, muted amber #D9772B, title #12355B, body #303030, secondary #6F7275, divider #C9CDD1.
+配色：纯白 #FFFFFF，深蓝 #12355B，低饱和琥珀色 #D9772B，标题色 #12355B，正文色 #303030，次级文字色 #6F7275，分隔线色 #C9CDD1。
 
-Use deep blue for primary relationships, core judgments, key structural carriers and major conclusions. Reserve muted amber only for risks, exceptions, constraints, pending status and occasional decision-critical emphasis; never use it as a category color or decorative accent.
+深蓝用于主要关系、核心判断、关键结构载体和重要结论。低饱和琥珀色仅用于风险、例外、约束、待定状态以及少量对决策具有关键意义的强调；不得将其作为类别区分色或装饰性色彩。
 
-Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished, precise and content-led. The page should feel like a refined executive-report infographic rather than a dashboard, poster, UI screen or icon-based diagram.
+创建高端领导汇报页面，采用结构化、编辑式的商务信息图风格：权威、沉稳、精致、准确，以内容为核心。页面应呈现精炼的领导汇报型信息图效果，避免形成仪表盘、海报、UI界面或图标化示意图。
+
+视觉质量锚点：premium executive-report design, refined editorial infographic, presentation-grade visual quality, polished, sophisticated, meticulously finished, restrained and authoritative.
 
 ---
 
 ## 02｜固定视觉 DNA
 
-The visual language must remain consistent across all page types, while the page skeleton may change according to semantics.
+所有页面类型必须保持统一的视觉语言，但页面骨架可根据内容语义灵活变化。
 
-Every page must preserve the following visual DNA:
+每一页必须保留以下视觉 DNA：
 
-- pure-white background with restrained deep-blue hierarchy;
-- one visually dominant focus;
-- realistic business or electric-power scenes integrated with information structure;
-- asymmetric and unequally weighted composition;
-- concise Chinese presentation text with clear hierarchy;
-- thin dividers, precise alignment and refined pale-blue relationship lines;
-- generous white space and strong reading order;
-- few structural components and few decorative elements;
-- scene-led, content-led and editorial rather than dashboard-like;
-- icons strictly subordinate to scenes, business objects and source-backed text.
+- 纯白背景，建立克制的深蓝层级；
+- 一个视觉主焦点；
+- 将来源于业务语义的场景、对象或结构化视觉材料与信息结构融合；
+- 原则上采用非对称、非均衡权重构图；源内容确属等权比较时允许平衡构图；
+- 使用精炼、层级清晰的中文汇报文字；
+- 使用细分隔线、精确对齐和精致的浅蓝关系线；
+- 保持充足留白和明确阅读顺序；
+- 减少结构组件和装饰元素；
+- 以业务语义和内容为主导，保持编辑式表达，避免仪表盘化；
+- 图标必须严格从属于业务对象、视觉材料和有来源依据的文字内容。
 
-The style must remain recognizable even when the composition changes from radial to sequential, comparative, temporal, causal, quantitative or scene-based.
+即使页面结构在放射式、流程式、比较式、时间式、因果式、数据式或场景式之间切换，整体风格仍应保持高度一致的识别度。
 
-Uniform visual language does not mean uniform page skeleton.
+统一视觉语言，并不意味着统一页面骨架。
+
+构图质量锚点：sophisticated editorial composition, intentional asymmetry, unequal visual weight, strong visual hierarchy, controlled spatial rhythm, integrated text-and-visual composition.
 
 ---
 
 ## 03｜页面语义优先原则
 
-Derive the page structure from the dominant semantic relationship in the source content.
+页面结构必须从源内容中的主导语义关系出发。
 
-Before composing the page, identify the primary relationship:
+构图前依次完成三步：先确定页面使命和核心判断，再从多种语义关系中选出一个主导关系，最后选择一个主构图原型。
 
-- center-to-periphery relationship → radial / hub-and-spoke;
-- sequential relationship → main chain / process;
-- temporal relationship → timeline / roadmap;
-- causal relationship → cause-and-effect expansion;
-- comparative relationship → asymmetric comparison;
-- compositional relationship → main body + capability clusters;
-- evidence relationship → conclusion + evidence;
-- real-world business relationship → scene-led composition;
-- quantitative relationship → key metric + trend / evidence;
-- governance or responsibility relationship → relationship axis + boundary / support band.
+当同一页面同时存在时间、证据、因果、价值、治理等多重关系时，仅允许一种关系作为页面骨架；其余关系必须嵌入主骨架内部，不得分别生成第二套、第三套独立结构。
 
-Never force a radial, central-platform or ring-based composition onto content whose semantics are inherently sequential, comparative, temporal, causal, quantitative or scene-based.
+主要关系包括：
 
-Never force content into repeated cards merely because the source contains several bullet points.
+- 中心—外围关系 → 放射式 / 中心辐射式；
+- 先后顺序关系 → 主链 / 流程式；
+- 时间关系 → 时间轴 / 路线图；
+- 因果关系 → 因果展开式；
+- 比较关系 → 比较式 / 非对称比较式；
+- 组成关系 → 主体 + 能力集群；
+- 证据关系 → 结论 + 证据；
+- 现实业务关系 → 场景主导式；
+- 数量关系 → 核心指标 + 趋势 / 证据；
+- 治理或权责关系 → 关系轴 + 边界 / 支撑带。
 
-Use only the number of semantic regions required by the content. Prefer fewer, unequally weighted regions. A page may consist of one dominant scene plus annotations, one main chain with embedded evidence, one dominant conclusion with several supporting proofs, or several asymmetric information regions.
+当内容本质上属于流程、比较、时间、因果、数据或场景关系时，不得强行套用中心放射、中心平台或环形结构。
+
+不得因为源内容包含多个条目，就机械地将其全部放入重复卡片。
+
+只使用内容真正需要的语义区域数量。优先采用数量更少、权重不等的区域组合。一个页面可以由一个主场景加若干标注、一条主链嵌入关键证据、一个核心结论配若干支撑依据，或多个非对称信息区域构成。
 
 ---
 
 ## 04｜文字与信息组织
 
-Rewrite the supplied source copy into concise, conclusion-first Chinese presentation text.
+将输入的源文字改写为精炼、结论先行的中文汇报文字。
 
-Place the rewritten text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.
+先做信息分工，再组织上屏内容。每一个主要信息点只选择一种主载体表达：文字、数字、图表、业务对象、场景或结构关系。
 
-Preserve business objects, facts, numbers, conditions, scope, responsibility, status and claim strength. Do not invent unsupported facts, slogans, conclusions or policy language.
+同一信息不重复完整表达。若数字、图表、流程、对象或视觉关系已经清晰呈现某一事实，正文不再复述其完整内容，只补充判断、条件、原因、影响或结论。
 
-Deep-blue headings should be visually stronger than body text but remain editorial rather than poster-like.
+文字优先表达判断、解释、条件和结论；数字与图形优先承载规模、比较、趋势、流程、组成和关系。
 
-Body copy should stay compact, readable and close to the related scene, object or structural carrier.
+必须保留业务对象、事实、数字、条件、范围、责任主体、状态和原有表述强度，但这些信息可分别由文字、数字、图形、对象或结构承载，不要求全部写入正文。不得凭空增加未经依据支持的事实、口号、结论或政策语言。
 
-Prefer:
-- short conclusion-first paragraphs;
-- 1–3 sentence local explanations;
-- short bullets only when parallel items must be distinguished;
-- strong local grouping rather than disconnected labels.
+深蓝色标题在视觉上应明显强于正文，但保持编辑式汇报气质，不得形成海报式大标题效果。
 
-Do not reduce complete business meaning into isolated keywords merely to simplify the layout.
+优先使用：
 
-Do not compress required body copy merely to create a visual center.
+- 一个短判断句 + 一个必要说明句；
+- 关键数字直接数字化呈现；
+- 并列事项使用短条目或结构关系；
+- 通过局部标题、数字、对象和结构共同分担信息。
 
-The page should work as a reading-type PPT and remain understandable without oral explanation.
+正文只在视觉材料无法独立承载必要逻辑时使用。避免连续大段说明文字，通常不使用连续 4 行以上的说明性正文。
+
+充分压缩为适合上屏的短句和短段，仅保留支撑页面核心判断所必需的事实、条件、范围和业务边界；已经单独视觉化的数字和事实不再重复写入正文。
+
+字号应主动利用可用空间。在版面仍有明显余量时，优先放大正文、局部标题和关键数字，避免为了保留空白、容纳更多小模块或维持装饰空间而使用偏小字号。
+
+正文作为页面基础阅读尺度；局部标题应明显大于正文，次级说明原则上不得明显小于正文，只有真正注释性的补充信息可以进一步缩小。
+
+实质性正文必须在正常汇报观看距离下保持清晰易读；注释级小字不得承载关键事实、判断或业务含义。
+
+页面信息应自洽、层级清晰，由文字、数字、业务对象、视觉材料和结构关系共同完成表达。
 
 ---
 
-## 05｜实景与结构融合
+## 05｜视觉材料与结构融合
 
-Prefer a scene-supported executive-report language.
+根据源内容选择最适合承载业务语义的视觉表达。
 
-Use realistic, clean and context-rich electric-power and business scenes as visual anchors, such as:
+视觉材料必须承担独立的信息价值，不作为正文的装饰性配图。优先让视觉材料承担对象识别、证据、关系、流程、空间或情境中的至少一项；若其只能重复相邻文字内容，应减少、替换或重新组织。
 
-- grid facilities;
-- substations;
-- dispatch centers;
-- control rooms;
-- transmission lines;
-- wind and solar bases;
-- energy storage equipment;
-- power plants;
-- industrial facilities;
-- professional analysis environments;
-- teaching materials;
-- operational resources;
-- business collaboration environments.
+根据源内容选择真实、整洁、具有业务语境的场景、对象或环境作为视觉锚点，例如：
 
-Prefer several small or medium embedded scenes over one giant central illustration, unless the page is explicitly scene-led.
+- 电网设施；
+- 变电站；
+- 调度中心；
+- 控制室；
+- 输电线路；
+- 风电、光伏基地；
+- 储能设备；
+- 发电厂；
+- 工业设施；
+- 专业分析环境；
+- 教学资料；
+- 运营资源；
+- 商务协作环境；
+- 数据基础设施相关业务关系与环境。
 
-Each scene must support a specific topic, judgment, indicator, stakeholder, evidence point or business relationship and remain subordinate to the page's core judgment.
+如需使用场景，优先采用与具体信息单元直接相关的小型或中型嵌入式场景；只有页面明确属于“场景 / 对象主导式”时，才让单一场景占据主要视觉区域。
 
-Integrate scenes directly into information regions through:
-- soft edge fading;
-- cropped photographic windows;
-- partial background embedding;
-- shallow perspective bases;
-- scene-object overlap with adjacent text;
-- white-to-image gradient transitions with restrained contrast.
+每一个主要视觉材料都必须服务于一个明确的主题、判断、指标、主体、证据点或业务关系，并始终从属于页面核心判断。
 
-Do not place every scene inside a rigid card.
+场景可通过以下方式直接融入信息区域：
 
-The scene should feel fused with the information structure rather than pasted onto it.
+- 柔化边缘渐隐；
+- 裁切式摄影窗口；
+- 局部背景嵌入；
+- 轻微透视的浅层底座；
+- 场景对象与邻近文字适度叠接；
+- 白色向图片过渡的低对比渐变。
 
-### Scene mapping guidance
+不得将所有场景机械地放入刚性卡片中。
 
-Government / governance:
-institutional architecture, macro-energy context, planning, policy-support or analytical environments.
+场景和视觉对象应与信息结构融为一体，并补充文字未表达的语义，避免形成简单贴图感或图文复述。
 
-New power system:
-renewable-energy bases, transmission systems, storage, grid interaction or system-operation scenes.
+### 视觉语义参考｜非固定映射
 
-Electric utilities:
-substations, control rooms, grid equipment, generation facilities or production-operation scenes.
+以下仅作为可选参考，不构成类别与场景的固定绑定。应优先从当前页面的具体业务对象、主体、行为、资源、环境和结果中推导视觉材料。
 
-Industrial chain / cross-industry collaboration:
-industrial facilities, energy-consuming industries, manufacturing, logistics or professional collaboration environments.
+政府 / 治理：
 
-Platform / operation / model capability:
-dispatch centers, integrated analysis environments, data-processing workspaces or operational scenes.
+采用制度架构、宏观能源环境、规划、政策支撑或专业分析环境。
 
-People should be absent or minimal. If present, keep them small, non-portrait and subordinate to the environment.
+新型电力系统：
+
+采用新能源基地、输电系统、储能、电网友好互动或系统运行场景。
+
+电力企业：
+
+采用变电站、控制室、电网设备、发电设施或生产运行场景。
+
+产业链 / 跨行业协作：
+
+采用工业设施、高耗能行业、制造、物流或专业协作环境。
+
+平台 / 运营 / 模型能力：
+
+采用调度中心、综合分析环境、数据处理工作空间或运营场景。
+
+数据基础设施：
+
+优先从数据资源组织、可信流通、接入服务、跨主体连接、算力—存储—网络协同等业务关系中提取视觉语义。仅当源内容明确涉及物理设施、算力或存储资源时，再使用数据中心、机房、机柜等实景载体。
+
+尽量避免出现人物。确需人物时，应保持人物较小、非正面肖像化，并从属于整体环境。
 
 ---
 
 ## 06｜结构载体与空间层级
 
-Every page must establish one strong semantic and visual anchor.
+每一页必须建立一个强有力的语义与视觉锚点。
 
-The dominant focus may be:
-- a core conclusion;
-- a platform or key business object;
-- a major metric;
-- a business scene;
-- a critical relationship;
-- a principal mechanism;
-- a risk or constraint state.
+主焦点可以是：
 
-Express it through scale, position, contrast, deep blue, limited muted amber emphasis, scene scale, a structural base or another semantic anchor.
+- 核心结论；
+- 平台或关键业务对象；
+- 重要指标；
+- 业务场景；
+- 关键关系；
+- 核心机制；
+- 风险或约束状态。
 
-Supporting information must remain subordinate in scale and contrast while still fully readable.
+主焦点优先通过位置、尺度差异、文字层级、留白、结构关系和局部色彩对比形成，不默认依赖大型实心色块、徽章或独立容器。只有内容本身具有明确中心—外围关系或关键对象需要实体化表达时，才使用大型圆形、环形或深蓝实心主体。
 
-Maintain visible spatial hierarchy:
-1. dominant focus;
-2. major supporting directions / evidence / stages;
-3. secondary objects / stakeholders / details;
-4. cross-cutting conditions / constraints / implementation support.
+支撑信息在视觉权重上应弱于主焦点，可主要通过位置、字重、颜色、留白和结构关系形成层级；不得仅通过大幅缩小字号制造从属关系，并须保持舒适可读。
 
-Use broad white fields, shallow structural bases, restrained circular or linear carriers and precise editorial alignment.
+建立清晰的空间层级：
 
-When a central visual object is needed, it may use:
-- a shallow platform;
-- a circular base;
-- a restrained structural ring;
-- a flat architectural plane;
-- a semi-transparent business carrier.
+1. 主焦点；
+2. 主要支撑方向 / 证据 / 阶段；
+3. 次级对象 / 主体 / 细节；
+4. 跨区域条件 / 约束 / 实施支撑。
 
-Keep depth subtle and matte.
+使用大面积白色空间和精确的编辑式对齐。必要时使用浅层、线性、局部环形或半透明结构载体，并根据页面语义选择，不默认采用圆形结构。
 
-Avoid glossy 3D, sci-fi platforms, excessive perspective, floating objects or game-like visual effects.
+整体纵深应保持轻微、哑光和克制。
+
+避免高光 3D、科幻平台、过度透视、漂浮物体或游戏化视觉效果。
 
 ---
 
 ## 07｜连接关系与精细度
 
-Use deep-blue primary connectors and pale-blue secondary connectors.
+主要连接关系使用深蓝线，次级连接关系使用浅蓝线。所有关系线都应保持纤细、精确，并优先服务于页面整体组织和跨区域连续性。
 
-Favor:
-- thin precise lines;
-- large-radius arcs;
-- short arrows;
-- restrained dotted relationships;
-- subtle circular guides;
-- clean directional paths.
+优先采用：
 
-Connectors must explain business logic rather than decorate empty space.
+- 用于关键逻辑的纤细主关系线；
+- 共享对齐轴和跨区域延伸线；
+- 浅蓝色次级弧线、辅助导引线和边缘衔接；
+- 必要的短箭头、虚线关系和局部分隔线；
+- 与主体结构同源的局部轮廓或浅层几何延伸。
 
-Maintain generous white space around key text and structural junctions.
+所有连接线都必须用于解释方向、依赖、流转、边界、层级或区域衔接，不得仅用于填补空白，也不得把页面切割成多个彼此独立的模块。
 
-Use visual breathing room to separate semantic layers instead of adding more boxes.
+### 精修层
 
-Use thin dividers, precise alignment, controlled spacing and consistent corner geometry.
+主体构图完成后，应进行一次克制的精修，以提升页面完成度，同时不得产生新的内容模块。
 
-Text blocks, scene edges, connectors and structural carriers should align to an invisible editorial grid.
+精修质量锚点：precision linework, refined micro-geometry, cross-region continuity, shared alignment axes, subtle structural detailing, meticulous alignment, delicate pale-blue accents, layered line hierarchy, high craftsmanship.
 
-Avoid thick borders and heavy framing.
+精修优先作用于区域之间的连续关系，可有控制地组合使用：
 
-Where a region needs definition, prefer:
-- a very light blue-gray outline;
-- a thin divider;
-- a broad white field;
-- a softly faded scene boundary.
+- 主、次、三级关系之间轻微的线宽与透明度差异；
+- 共享对齐轴、基线和跨区域视觉延伸；
+- 相邻区域之间的边缘连续、局部叠合与嵌套关系；
+- 柔和边界渐隐、白底向视觉材料的过渡和局部呼应；
+- 精细的分隔、边缘处理与结构收口；
+- 精确的间距、统一的圆角和一致的几何逻辑；
+- 仅在能够延续主构图时使用轻量背景几何。
+
+精修层应让多个区域看起来属于同一张完整页面，提升层级、节奏、连续性和精致度，并始终从属于语义结构。
+
+不得仅在各独立模块内部堆叠细线、节点或装饰。避免随机粒子、密集科技线、发光效果、装饰性图标行、重复徽章或无业务意义的背景纹样。
+
+关键文字和结构交汇处应保持充足留白。
+
+文字块、场景边缘、连接线、视觉对象和结构载体应共同对齐于一个不可见的编辑网格。
+
+需要界定区域时，优先使用极浅蓝灰色描边、细分隔线、大面积白色空间或柔和渐隐边界，避免厚重框体。
+
+避免粗边框、厚重框架以及全页线条粗细完全一致。
 
 ---
-
 # 08｜页面构图原型库
 
-The following composition archetypes are available within Style 09. Select the archetype according to the dominant semantic relationship rather than page title.
+风格09可使用以下构图原型。应根据内容的主导语义关系选择构图，而不是根据页面标题机械选择。
+
+每一页只选择一个原型作为主骨架。其他原型中的局部手法可以借用，但不得形成第二套完整结构。若页面同时符合多个原型，选择最能承载核心判断和阅读路径的一个作为主构图。
 
 ## 8.1 中心放射式｜定位 / 架构 / 生态 / 多主体关系
 
-Use when the source expresses a clear center-to-periphery relationship.
+适用于源内容具有明确中心—外围关系的情况。
 
-Preferred structure:
-- center or upper-center = core positioning / platform / principal object;
-- middle layer = 2–4 major directions, capabilities or mechanisms;
-- outer layer = stakeholders, service objects, outcomes or application domains;
-- bottom band = cross-cutting coordination, implementation modes, constraints or existing-system linkage.
+推荐结构：
 
-Use pale-blue arcs, restrained radial relationships and a strong central semantic anchor.
+- 中心或上部中心 = 核心定位 / 平台 / 主要对象；
+- 中间层 = 2—4 个主要方向、能力或机制；
+- 外层 = 相关主体、服务对象、成果或应用领域；
+- 底部横带 = 跨区域协同、实施方式、约束条件或与现有系统的衔接。
 
-For architecture, platform-positioning and ecosystem pages, this is the preferred signature composition of Style 09 when semantics support it.
+使用浅蓝弧线、克制的放射关系和明确的中心语义锚点。
 
-Do not use radial composition for content without a genuine central relationship.
+内容没有真实中心关系时，不得使用放射式结构。
 
 ---
 
 ## 8.2 结论证据式｜背景 / 必要性 / 核心判断 / 价值说明
 
-Use when one judgment must dominate and several facts or business realities support it.
+适用于需要突出一个核心判断，并由多个事实或业务现实加以支撑的页面。
 
-Preferred structure:
-- one large conclusion in the dominant region;
-- 2–4 unequally weighted evidence areas;
-- 1–2 realistic scenes supporting the evidence;
-- optional small quantitative proof or outcome region.
+推荐结构：
 
-The page should feel more spacious than an architecture page.
+- 一个大尺度核心结论占据主导区域；
+- 2—4 个权重不等的证据区域；
+- 可配置少量视觉证据、业务对象或场景支撑相关证据；
+- 可选设置一个小型数据证明区或成果区。
 
-Avoid turning each evidence point into an equal card.
+此类页面应比架构页具有更大的留白和空间感。
+
+不得把每一条证据都制作成等权卡片。
 
 ---
 
 ## 8.3 主链流程式｜业务流程 / 数据流通 / 实施机制 / 服务闭环
 
-Use when the source has a clear sequence or flow.
+适用于源内容具有明确先后顺序或流转关系的情况。
 
-Preferred structure:
-- one visible main chain across the page;
-- 3–6 meaningful stages;
-- only critical stages receive larger text or scenes;
-- output or business result receives stronger terminal emphasis.
+推荐结构：
 
-The chain may be horizontal, gently curved, stepped or folded according to available space.
+- 页面上建立一条清晰可见的主链；
+- 设置 3—6 个具有实际业务意义的阶段；
+- 仅对关键阶段配置较大的文字、业务对象或视觉材料；
+- 对最终输出或业务结果给予更强的终点强调。
 
-Embed scenes and business objects along the chain rather than drawing a row of identical process boxes.
+主链可根据空间采用水平、缓弧、阶梯或折线路径。
 
-Arrows should be directional, sparse and precise.
+应将业务对象、视觉材料或场景嵌入主链，而不是绘制一排完全相同的流程框。
+
+箭头必须方向明确、数量克制、位置精确。
 
 ---
 
 ## 8.4 时间路线式｜阶段建设 / 路线图 / 年度计划 / 演进路径
 
-Use when sequence is explicitly temporal.
+适用于先后关系具有明确时间属性的页面。
 
-Preferred structure:
-- one clear time carrier;
-- several unequal stages;
-- current stage or target stage visually emphasized;
-- milestones and deliverables placed close to the relevant point in time;
-- small embedded scenes only where they improve understanding.
+推荐结构：
 
-Do not render a generic equal-node timeline.
+- 一条明确的时间载体；
+- 若干权重不等的阶段；
+- 突出当前阶段或目标阶段；
+- 里程碑和交付成果紧邻对应时间节点；
+- 仅在确实能够帮助理解时加入小型嵌入视觉材料。
 
-Use scale, spacing and emphasis to show phase importance.
+不得绘制成通用的等节点时间轴。
+
+通过尺度、间距和强调程度体现各阶段的重要性差异。
 
 ---
 
-## 8.5 场景主导式｜应用场景 / 客户案例 / 业务方案 / 场景共建
+## 8.5 场景 / 对象主导式｜应用场景 / 客户案例 / 业务方案 / 场景共建
 
-Use when a real-world operating scene itself is the best carrier of meaning.
+适用于现实业务场景、关键业务对象、数据基础设施载体或核心业务关系本身就是最佳信息载体的页面。
 
-Preferred structure:
-- one dominant realistic scene occupying the main visual area;
-- business actors, data inputs, platform actions and outputs annotated directly around or within the scene;
-- only a few connectors;
-- one concise conclusion or value region.
+推荐结构：
 
-The scene becomes the page skeleton.
+- 一个主要场景、业务对象、数据基础设施载体或核心关系占据核心视觉区域；
+- 将业务主体、数据输入、平台动作和输出结果直接标注在场景内部或周边；
+- 只保留少量连接关系；
+- 设置一个精炼的结论区或价值区。
 
-Do not place the scene in the center and then surround it with unrelated cards.
+主要视觉载体本身即为页面骨架。
 
-Annotations must attach to real business objects or relationships.
+不得将主要视觉载体简单放置在中央，再在四周堆放与其联系薄弱的卡片。
+
+所有标注必须对应真实的业务对象或业务关系。
 
 ---
 
 ## 8.6 因果分析式｜问题 / 原因 / 约束 / 风险传导
 
-Use when the source explains why a problem occurs or how several conditions lead to an outcome.
+适用于解释问题产生原因，或展示多个条件如何共同导致某一结果的页面。
 
-Preferred structure:
-- one dominant problem, constraint or consequence;
-- 2–4 upstream causes or conditions;
-- clear directional relationships;
-- optional bottom region for resulting impact, required response or boundary condition.
+推荐结构：
 
-Use muted amber only for genuine risks, exceptions or constraints.
+- 一个核心问题、约束或结果占据主导位置；
+- 设置 2—4 个上游原因或条件；
+- 建立明确的方向关系；
+- 可在底部设置影响结果、应对要求或边界条件区域。
 
-Do not use amber simply to differentiate categories.
+低饱和琥珀色仅用于真实的风险、例外或约束。
+
+不得为了区分类别而使用琥珀色。
 
 ---
 
 ## 8.7 不对称比较式｜模式比较 / 方案选择 / 前后变化 / 优劣分析
 
-Use when two or more alternatives must be contrasted.
+适用于需要对两个或多个方案、模式或状态进行对比的页面。
 
-Preferred structure:
-- unequal comparison zones;
-- one dominant recommendation, preferred direction or key difference when source supports it;
-- shared comparison criteria aligned across the page;
-- realistic scenes attached only to meaningful differences.
+推荐结构：
 
-Avoid symmetrical side-by-side cards if the conclusion is not balanced.
+- 设置权重不等的比较区域；
+- 当源内容具有明确依据时，突出一个主要推荐方向、优选方案或关键差异；
+- 共同比较维度在页面上保持对齐；
+- 仅在真实差异需要视觉解释时配置业务对象、视觉材料或场景。
 
-Use structure and emphasis to communicate the actual relative importance.
+当结论本身并非均衡时，避免采用左右完全对称的卡片布局。
+
+通过结构和视觉强调表达实际的重要性差异。
 
 ---
 
 ## 8.8 能力体系式｜产品体系 / 服务体系 / 能力框架 / 运营体系
 
-Use when several capabilities combine around one business objective.
+适用于多个能力围绕一个业务目标共同组合的页面。
 
-Preferred structure:
-- one main business objective, platform or service object;
-- capability clusters arranged according to dependency or business proximity;
-- shared infrastructure or support capabilities placed in a bottom / background carrier;
-- outcome or customer-facing service shown distinctly.
+推荐结构：
 
-Avoid an icon grid.
+- 一个主要业务目标、平台或服务对象；
+- 各能力集群根据依赖关系或业务距离进行组织；
+- 共享基础设施或支撑能力放置在底部或背景结构载体中；
+- 面向客户的成果或服务单独突出表达。
 
-Capabilities should be represented through text, business objects, restrained scenes or structural grouping.
+避免形成图标矩阵。
+
+能力应主要通过文字、业务对象、结构化视觉材料或结构化分组进行表达。
 
 ---
 
 ## 8.9 数据指标式｜规模 / 成效 / 市场 / 运营数据 / 关键指标
 
-Use when numbers and evidence are the main argument.
+适用于数字和证据构成主要论据的页面。
 
-Preferred structure:
-- one dominant key metric, trend or quantitative judgment;
-- 2–4 supporting numbers or evidence points;
-- restrained chart-like visual carriers if needed;
-- realistic scene used only as contextual evidence.
+推荐结构：
 
-The page should remain editorial and report-like, not become a dashboard.
+- 一个核心指标、趋势或量化判断占据主导位置；
+- 配置 2—4 个支撑数字或证据点；
+- 必要时采用克制的类图表视觉载体；
+- 视觉材料仅作为背景语境或证据辅助，并保持从属。
 
-Avoid collections of KPI cards.
+核心数字由数字视觉直接表达；相邻文字只说明数字代表的判断、原因、条件或影响，不重复数字本身及其完整事实描述。同一指标不得同时以大数字和正文完整复述。
+
+页面仍应保持编辑式、报告式气质，不得演变为数据仪表盘。
+
+避免使用大量 KPI 卡片。
 
 ---
 
 ## 8.10 机制权责式｜运营机制 / 合作关系 / 边界 / 分工 / 治理
 
-Use when the source focuses on responsibilities, control relationships, operating boundaries or collaboration mechanisms.
+适用于源内容重点描述责任、控制关系、运营边界或协作机制的页面。
 
-Preferred structure:
-- one central relationship axis, operating mechanism or responsibility carrier;
-- parties positioned according to actual relationship rather than visual symmetry;
-- key rights, responsibilities, control boundaries or retained ownership attached directly to the relevant relationship;
-- bottom support band for implementation modes, governance rules or shared capabilities.
+推荐结构：
 
-Use precise connectors and restrained boundary lines.
+- 建立一条核心关系轴、运行机制或责任载体；
+- 各参与方按照真实业务关系进行定位，而不是追求视觉对称；
+- 关键权利、责任、控制边界或保留权属应直接附着在对应关系上；
+- 底部可设置实施方式、治理规则或共享能力支撑带。
 
-Avoid organization-chart aesthetics unless the content is genuinely hierarchical.
+使用精确连接线和克制的边界线。
+
+除非内容本身确属严格层级关系，否则避免采用组织架构图式视觉。
 
 ---
 
-## 09｜底部协同带规则
+## 09｜跨区域支撑信息
 
-A bottom horizontal band may be used when the page contains cross-cutting information that supports all major regions, such as:
+仅当确有同时作用于多个主要区域的共性规则、约束、基础设施或实施条件时，才可在底部或背景设置轻量支撑带。
 
-- existing-system linkage;
-- implementation modes;
-- governance rules;
-- common technical support;
-- ownership boundaries;
-- security constraints;
-- supporting conditions;
-- shared infrastructure.
-
-The bottom band should read as a structural carrier, not as an additional card wall.
-
-It may use:
-- thin dividers;
-- sparse labels;
-- several very small monochrome symbols;
-- one or two concise text groups;
-- a light structural line connecting back to the main body.
-
-Do not create a bottom band when no genuine cross-cutting semantics exist.
+支撑带必须从属于主构图并与主体结构直接连接，不得承载第二套主要观点体系，不得形成等分卡片、图标条或独立总结区。若相关内容本身具有独立判断价值，应重新融入主体构图。
 
 ---
 
 ## 10｜图标与设备约束
 
-Use icons only when they materially improve recognition.
+仅在图标能够明显提升识别效率时使用图标。
 
-Use no more than one or two on a typical page, except in a bottom support strip where several very small monochrome symbols may be used as secondary labels if they remain visually subordinate.
+一般页面最多使用 1—2 个图标。底部支撑带中可使用若干极小的单色符号作为次级标签，但必须保持视觉从属。
 
-Keep icons:
-- simple;
-- deep blue;
-- small;
-- integrated into an existing text, scene or structural region.
+图标应保持：
 
-Do not give icons:
-- independent cards;
-- circular badges;
-- decorative containers;
-- dedicated display zones.
+- 简洁；
+- 深蓝；
+- 小尺寸；
+- 嵌入已有文字、场景或结构区域。
 
-Icons must not determine the composition, create extra modules, form decorative icon rows or process sequences, or replace scenes, business objects or source-backed text.
+不得给图标设置：
 
-Screens and devices may appear only as supporting evidence inside a broader working scene.
+- 独立卡片；
+- 圆形徽章；
+- 装饰性容器；
+- 专门展示区域。
 
-Avoid:
-- repeated devices;
-- isolated UI screenshots;
-- dashboards;
-- SaaS interfaces;
-- product-display layouts.
+图标不得主导构图，不得制造额外模块，不得形成装饰性图标行或图标流程，不得替代业务对象、语义视觉材料或有来源依据的文字内容。
+
+屏幕和设备只能作为更大工作场景中的辅助证据出现。
+
+避免：
+
+- 重复出现多个设备；
+- 孤立的 UI 截图；
+- 仪表盘；
+- SaaS 界面；
+- 产品展示式布局。
 
 ---
 
 ## 11｜明确避免
 
-Avoid:
-- equal card walls;
-- equal rows or columns;
-- mechanical three-column layouts;
-- left-text / center-image / right-text compositions;
-- panoramic posters;
-- giant decorative hero illustrations;
-- abstract data landscapes;
-- dense flowing-line fields;
-- icon grids;
-- repeated circular badges;
-- glossy 3D;
-- glassmorphism;
-- neon glow;
-- floating icons;
-- decorative technology particles;
-- excessive gradients;
-- dashboard tiles;
-- product-UI aesthetics.
+反模板约束：Avoid generic PowerPoint aesthetics, default infographic styling, stock-photo collage, coarse vector shapes and low-detail diagram rendering.
 
-Avoid treating every content item as an independent rectangle.
+避免：
 
-Avoid excessive dark-blue filled boxes.
+- 等权卡片墙；
+- 等距等权的行或列；
+- 机械式三栏布局；
+- 左文字—中图片—右文字构图；
+- 全景式海报；
+- 巨型装饰性主视觉插图；
+- 抽象数据景观；
+- 密集流线场；
+- 图标矩阵；
+- 重复圆形徽章；
+- 高光 3D；
+- 玻璃拟态；
+- 霓虹光效；
+- 漂浮图标；
+- 装饰性科技粒子；
+- 过度渐变；
+- 仪表盘式信息块；
+- 产品 UI 式视觉。
 
-Use large dark-blue fields only for:
-- the single dominant anchor;
-- a key conclusion;
-- a truly critical business object.
+避免将每一个内容事项都制作成独立矩形框。
 
-Avoid isolated decorative photography.
+深蓝优先用于标题文字、关系线和局部结构强调。大型深蓝实心区域应谨慎使用，仅在其本身承担明确业务语义时采用；不得把大型色块、圆盘或徽章作为默认主焦点载体。
 
-Every scene must have a clear semantic role and be physically close to the text, evidence or business object it supports.
+避免使用与内容无关的孤立装饰摄影图片。
 
-Avoid composition patterns that contradict the source semantics.
+每一个主要视觉材料都必须具有明确语义作用，并在空间上靠近其所支撑的文字、证据或业务对象。
+
+避免使用与源内容语义关系相冲突的构图模式。
 
 ---
 
 # 12｜最终视觉执行约束｜最高优先级
 
-Every page must establish one visually dominant focus that makes the core judgment immediately recognizable.
+每一页必须建立一个视觉主焦点，使页面核心判断能够被第一时间识别。
 
-The focus may be a conclusion, key metric, business object, scene, critical relationship, mechanism, platform, stage or risk state.
+主焦点可以是结论、关键指标、业务对象、场景、关键关系、机制、平台、阶段或风险状态。
 
-Express it through:
-- scale;
-- position;
-- contrast;
-- deep blue;
-- limited muted amber emphasis;
-- scene scale;
-- structural carrier;
-- semantic centrality.
+主焦点应主要通过位置、尺度差异、文字层级、留白、结构关系和语义中心性形成，避免依赖大型独立容器或装饰性形状。
 
-Supporting information must remain subordinate while fully readable.
+支撑信息必须在视觉上保持从属，同时保证舒适可读；层级优先通过位置、字重、颜色和结构关系形成，不得把缩小字号作为主要层级手段。
 
-The page must have:
-- one clear reading path;
-- one dominant semantic relationship;
-- strong spatial hierarchy;
-- integrated realistic scenes;
-- precise editorial alignment;
-- thin and purposeful connectors;
-- generous white space;
-- restrained visual depth.
+每一页必须具备：
 
-Do not add unrelated decorative objects.
+- 一个主导语义关系；
+- 一个主构图机制；
+- 一条清晰阅读路径；
+- 明确的空间层级；
+- 与信息结构融合的语义视觉材料；
+- 精确的编辑式对齐；
+- 跨区域连续且目的明确的连接关系；
+- 充足但不过量的留白；
+- 克制的空间纵深。
 
-Do not compress required body copy merely to create a focus.
+同一主要信息点必须有一个主表达载体。若已经由数字、图表、流程、业务对象、场景或结构关系清晰表达，正文不得机械重复；其他载体只能补充解释、条件、关系、影响或意义。
 
-Do not force all pages into one composition.
+当字号与留白、模块数量、视觉材料或装饰空间发生冲突时，优先保证正文和局部标题的舒适阅读尺度；可减少模块、扩大文字区域、压缩视觉材料或收紧非必要留白，不得优先缩小文字。
 
-The page skeleton must follow the dominant semantic relationship of the content.
+不得增加与内容无关的装饰对象。
 
-### Style 09 的最终统一原则
+不得丢失支撑核心判断所必需的事实、数字、条件、范围和业务边界。
 
-Unify the visual language, not the page skeleton.
+不得强行将所有页面套入同一种构图。
 
-Across a complete presentation, Style 09 should remain recognizable through:
-- white + deep-blue executive-report aesthetics;
-- one dominant focus per page;
-- realistic contextual electric-power scenes;
-- embedded text-and-scene information units;
-- refined pale-blue structural relationships;
-- restrained matte depth;
-- asymmetric editorial composition;
-- high readability;
-- minimal decorative graphics.
+页面骨架必须服从内容的主导语义关系。
 
-At the same time, allow the composition to switch intelligently among radial, conclusion-evidence, sequential, temporal, scene-led, causal, comparative, capability-system, quantitative and governance structures according to the source semantics.
+### 风格09的最终统一原则
 
-Final result: a calm, highly readable, presentation-ready executive-report visual system that can support an entire leadership briefing deck without collapsing into repetitive templates.
+统一视觉语言，不统一页面骨架。
+
+在完整汇报材料中，风格09应通过以下特征持续保持识别度：
+
+- 纯白 + 深蓝的领导汇报审美；
+- 每页一个主焦点；
+- 来源于业务语义的场景、对象与结构化视觉材料；
+- 文字与视觉材料局部融合；
+- 精致的浅蓝结构关系；
+- 克制的哑光纵深；
+- 以非对称、非均衡权重为主的编辑式构图；
+- 高可读性；
+- 少量、精细、结构性的微装饰。
+
+与此同时，根据源内容语义，允许页面在以下结构之间智能切换：中心放射式、结论证据式、流程式、时间式、场景 / 对象主导式、因果式、比较式、能力体系式、数据指标式和机制权责式。每页仅选一个作为主骨架。
+
+最终效果：形成一套沉稳、高可读、可直接用于汇报的领导报告视觉系统，能够支撑完整汇报型 PPT 的多种页面内容，同时避免陷入重复模板化。

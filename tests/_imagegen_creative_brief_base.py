@@ -119,7 +119,7 @@ def test_dense_editorial_page_does_not_inject_must_onscreen_fact_layer() -> None
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock, page_mission="如何治理知识底座")
     assert "【补充事实层｜必须上屏】" not in prompt
-    onscreen_section = prompt.split("【完整上屏内容】", 1)[1].split(
+    onscreen_section = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1].split(
         "【结论表达要求｜不上屏】", 1
     )[0]
     assert "多组织隔离" not in onscreen_section
@@ -147,7 +147,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" not in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
-    assert "【完整上屏内容】均需进入 full 图" not in implicit
+    assert "【页面内容素材｜允许提炼、改写、重组】均需进入 full 图" not in implicit
     assert "使用生成式图形形态、路径、层次和必要画面组织附近文字与业务关系" not in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
     assert "【内容与视觉要求｜不上屏】" not in implicit
@@ -190,7 +190,7 @@ def test_visual_structure_review_mode_is_explicit_and_auditable() -> None:
     assert "[Mandatory composition guidance]" in compiled.prompt
     assert "- Reading path:" in compiled.prompt
     assert "- Dominant visual carrier:" in compiled.prompt
-    assert compiled.prompt.index("【完整上屏内容】") < compiled.prompt.index(
+    assert compiled.prompt.index("【页面内容素材｜允许提炼、改写、重组】") < compiled.prompt.index(
         "[Mandatory composition guidance]"
     )
     for label in (
@@ -298,7 +298,7 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    semantics = prompt.split("【完整上屏内容】", 1)[1]
+    semantics = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1]
     assert "【锁定关键文字】" not in prompt
     assert "【呈现文案改写授权｜上屏】" not in prompt
     assert "数据治理" in semantics
@@ -444,7 +444,7 @@ def test_content_first_full_reference_keeps_complete_onscreen_content() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    full = prompt.split("【完整上屏内容】", 1)[1].split(
+    full = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1].split(
         "【结论句要求｜不上屏】", 1
     )[0]
     assert "保持滚动验证和误差复盘" in full
@@ -472,7 +472,7 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_typ
             "prompt_contract"
         ]
 
-    assert "将【完整上屏内容】改写为结论先行、层级清晰的页面表达" in prompt
+    assert "将【页面内容素材｜允许提炼、改写、重组】作为事实与语义素材" in prompt
     assert "【锁定关键文字】" not in prompt
     assert "Rewrite the supplied source copy into concise, conclusion-first Chinese presentation text." in style_contract
     assert "1.6—1.8倍" not in prompt
@@ -490,7 +490,7 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "以上仅用于按页追踪" not in prompt
     assert page.title not in prompt
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in prompt
-    assert "【完整上屏内容】均需进入 full 图" not in prompt
+    assert "【页面内容素材｜允许提炼、改写、重组】均需进入 full 图" not in prompt
     assert prompt.count("【页面逻辑｜不上屏】") == 0
     assert "【只读构图语义｜不得上屏】" not in prompt
     assert "不得从本区抽取任何新标题、栏目名、图内标签" not in prompt
@@ -504,7 +504,7 @@ def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() 
         prompt = build_page_prompt(page, lock)
 
     assert "【锁定关键文字】中的每一项都必须逐字准确" not in prompt
-    assert "完整上屏内容已有的数字、单位、专有名词、业务术语和否定含义必须准确" not in prompt
+    assert "页面内容素材已有的数字、单位、专有名词、业务术语和否定含义必须准确" not in prompt
     assert "不得自行补充限定信息" not in prompt
     assert "不得新增未经页面内容支持的上屏文字" not in prompt
 

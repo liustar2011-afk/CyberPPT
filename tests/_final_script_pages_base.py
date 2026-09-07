@@ -35,6 +35,35 @@ from scripts.imagegen_pipeline.style_library import write_project_style_lock
 
 
 class FinalScriptPagesTests(unittest.TestCase):
+    def test_style09_prompt_includes_nonvisible_title_mission_and_judgment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            script.write_text(
+                """## 第4页：制度保障与运营授权
+- 页面类型：内容页
+- 页面标题：制度保障与运营授权
+- 页面使命：说明制度安排如何支撑安全运营。
+- 核心结论：制度授权为数据安全运营提供边界。
+- 上屏文字：
+
+  **授权边界清晰**
+  - 明确运营责任和使用范围。
+""",
+                encoding="utf-8",
+            )
+            page = parse_script_markdown(script.read_text(encoding="utf-8")).pages[0]
+            style_lock = write_project_style_lock(project=project, style_id=9, source_script=script)
+            prompt = build_page_prompt(page, style_lock, page_mission=page.page_mission)
+
+        self.assertIn("【标题（不上屏）】\n制度保障与运营授权", prompt)
+        self.assertIn("【页面使命（不上屏）】\n说明制度安排如何支撑安全运营。", prompt)
+        self.assertIn("【核心判断（不上屏）】\n制度授权为数据安全运营提供边界。", prompt)
+        visible = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1].split("【核心意思表达要求", 1)[0]
+        self.assertNotIn("制度保障与运营授权", visible)
+
     def test_long_discontinuous_page_set_uses_windows_safe_slug(self) -> None:
         pages = [4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 25, 26, 27]
         slug = _page_range_slug(pages)
@@ -73,7 +102,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
             prompt = build_page_prompt(page, style_lock)
 
-        body = prompt.split("【完整上屏内容】", 1)[1].split(
+        body = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1].split(
             "【核心意思表达要求", 1
         )[0]
         self.assertNotIn(judgment, body)
@@ -116,7 +145,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
             prompt = build_page_prompt(page, style_lock)
 
-        body = prompt.split("【完整上屏内容】", 1)[1].split(
+        body = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1].split(
             "【核心意思表达要求", 1
         )[0]
         normalized_original = "\n".join(
@@ -784,7 +813,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn("#12355B", prompt)
             self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
             self.assertNotIn("【页面逻辑｜不上屏】", prompt)
-            self.assertIn("【完整上屏内容】", prompt)
+            self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
             self.assertIn("【视觉风格｜不上屏】", prompt)
             self.assertIn("Do not render title, subtitle, logo, page number, footer, or template frame.", prompt)
             self.assertEqual("content-first-v1", manifest["prompt_contract"]["compiler"])
@@ -844,7 +873,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertIn("组件A：输入与输出关系", prompt)
         self.assertNotIn("原文" + "锁定规则", prompt)
         self.assertNotIn("逐字、完整并保持" + "原有顺序呈现", prompt)
-        self.assertIn("【完整上屏内容】", prompt)
+        self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
         self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
         self.assertIn("--external-script", summary["resume_command"])
 

@@ -63,7 +63,16 @@ def test_style_nine_registry_contract_carries_current_visual_invariants() -> Non
     assert "Reserve muted amber only for risks, exceptions, constraints, pending status" in contract
     assert "Every page must establish one visually dominant focus" in contract
     assert "Build one integrated, asymmetric and unequally weighted composition" in contract
-    assert "Avoid equal card walls" in contract
+    assert "Repeated or equally weighted cards are allowed" in contract
+    assert "Avoid equal card walls" not in contract
+    assert "Apply a replaceability test" in contract
+    assert "dominant scene that only signals an industry category is insufficient" in contract
+    assert "Photography is optional" in contract
+    assert "Do not default to one large photograph" in contract
+    assert "several independent scene fragments" in contract
+    assert "Medium and small scenes" in contract
+    assert "Decorative use is acceptable in restrained amounts" in contract
+    assert "Prefer one coherent primary scene" not in contract
     assert "Icons must not determine the composition" in contract
     assert len(contract) > 2_000
 
@@ -156,6 +165,27 @@ def test_legacy_style_nine_lock_refreshes_to_current_contract() -> None:
     assert "Palette: white #FFFFFF" in refreshed["style"]["prompt_contract"]
     assert refreshed["style_source"].endswith("references/visual-system.md")
     assert second_read["style"] == refreshed["style"]
+
+
+def test_explicitly_immutable_style_nine_lock_preserves_frozen_contract() -> None:
+    with TemporaryDirectory() as directory:
+        lock = Path(directory) / "visual_style_lock.json"
+        lock.write_text(
+            json.dumps(
+                {
+                    "style_source": "/tmp/frozen-visual-system.md",
+                    "style": {"id": 9, "prompt_contract": "frozen test contract"},
+                    "policy": {"resolved_contract_is_immutable": True},
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        loaded = load_style_lock(lock)
+
+    assert loaded["style"]["prompt_contract"] == "frozen test contract"
+    assert loaded["style_source"] == "/tmp/frozen-visual-system.md"
 
 
 def test_style_nine_contract_reaches_content_first_compiler_without_routing_metadata() -> None:

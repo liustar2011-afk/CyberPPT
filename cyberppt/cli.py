@@ -490,7 +490,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             allow_prompt_edit=args.allow_prompt_edit,
             prompt_overrides_dir=Path(args.prompt_overrides_dir) if args.prompt_overrides_dir else None,
             reuse_audited_images_from=(
-                Path(args.reuse_audited_images_from)
+                tuple(Path(value) for value in args.reuse_audited_images_from)
                 if args.reuse_audited_images_from else None
             ),
             approved_full_image=Path(args.approved_full_image) if args.approved_full_image else None,
@@ -983,9 +983,11 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
     final_script_pages_parser.add_argument(
         "--reuse-audited-images-from",
+        action="append",
         help=(
             "Import same-script, text-audited full images from an official Stage 02 "
-            "manifest for editable or dual Quick reconstruction; images are not regenerated."
+            "manifest for editable or dual Quick reconstruction. Repeat this option to "
+            "combine disjoint audited page batches; missing pages follow normal generation."
         ),
     )
     final_script_pages_parser.add_argument(

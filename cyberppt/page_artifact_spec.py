@@ -41,6 +41,7 @@ class DeliverableSpec:
 class CommunicationGoalSpec:
     page_mission: str
     core_judgment: str
+    page_title: str = ""
 
 
 @dataclass(frozen=True)
@@ -862,7 +863,11 @@ def build_page_artifact_spec(
             subtitle_render_mode=subtitle_mode,
             excluded_chrome=("title", "subtitle", "logo", "page_number", "footer", "template_frame"),
         ),
-        communication_goal=CommunicationGoalSpec(page_mission, core_judgment),
+        communication_goal=CommunicationGoalSpec(
+            page_mission=page_mission,
+            core_judgment=core_judgment,
+            page_title=_required_text(handoff_page.get("title"), "page title"),
+        ),
         visual_thesis=_required_text(visual_decision.get("visual_thesis"), "visual thesis"),
         evidence=evidence,
         relationships=relationships,

@@ -134,9 +134,21 @@ def validate_final_prompt(
                 "directed-composition prompt must declare exactly one reading path"
             )
 
-    judgment_line = f"Core judgment (non-visible): {ir.page_judgment}"
-    if sum(line == judgment_line for line in prompt.splitlines()) != 1:
-        raise PromptContractError("final prompt must state one authoritative page judgment")
+    lines = prompt.splitlines()
+    expected_context = {
+        "【核心判断（不上屏）】": ("page judgment", ir.page_judgment),
+        "【页面使命（不上屏）】": ("page mission", ir.page_mission or ir.page_judgment),
+    }
+    if ir.page_title:
+        expected_context["【标题（不上屏）】"] = ("page title", ir.page_title)
+    for heading, (field_name, value) in expected_context.items():
+        if lines.count(heading) != 1:
+            raise PromptContractError(f"final prompt must state one {field_name} ({heading}) field")
+        index = lines.index(heading)
+        if index + 1 >= len(lines) or lines[index + 1] != value:
+            raise PromptContractError(
+                f"final prompt {field_name} ({heading}) value differs from the prompt IR"
+            )
 
 
 

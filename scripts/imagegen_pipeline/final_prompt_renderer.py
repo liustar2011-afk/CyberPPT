@@ -165,18 +165,19 @@ def render_final_prompt(
         )
     )
     hard_constraints_section = "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints))
-    mission_lines = (
-        (f"Page mission (non-visible): {ir.page_mission}",)
-        if ir.page_mission and ir.page_mission != ir.page_judgment
-        else ()
+    nonvisible_page_context = (
+        *(("【标题（不上屏）】", ir.page_title) if ir.page_title else ()),
+        "【页面使命（不上屏）】",
+        ir.page_mission or ir.page_judgment,
+        "【核心判断（不上屏）】",
+        ir.page_judgment,
     )
     sections_before_runtime = (
         "\n".join((SECTION_HEADINGS[0], ir.deliverable)),
         "\n".join(
             (
                 SECTION_HEADINGS[1],
-                *mission_lines,
-                f"Core judgment (non-visible): {ir.page_judgment}",
+                *nonvisible_page_context,
                 *(
                     (
                         "Full-copy semantic context (non-visible; use only to understand "

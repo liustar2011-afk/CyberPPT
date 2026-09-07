@@ -91,7 +91,7 @@ def run_final_script_pages(
     skip_image_text_audit: bool = False,
     allow_prompt_edit: bool = False,
     prompt_overrides_dir: Path | None = None,
-    reuse_audited_images_from: Path | None = None,
+    reuse_audited_images_from: Path | tuple[Path, ...] | list[Path] | None = None,
     approved_full_image: Path | None = None,
 ) -> dict[str, Any]:
     _ = lightweight_stage01_confirmed, rebuild_args, style_id, style_name
