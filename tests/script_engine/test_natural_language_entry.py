@@ -10,6 +10,10 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def _flat(relative: str) -> str:
+    return " ".join(_read(relative).split())
+
+
 def test_repository_uses_local_workflow_router_instead_of_a_root_skill() -> None:
     assert not (ROOT / "SKILL.md").exists()
     router = _read(".agents/skills/cyberppt-workflow/SKILL.md")
@@ -44,13 +48,13 @@ def test_current_main_agent_executes_author_instead_of_delegating_to_dead_code()
 
 
 def test_workflow_requires_faithful_full_copy_before_onscreen_projection() -> None:
-    workflow = _read(".agents/skills/cyberppt-script-workflow/SKILL.md")
+    workflow = _flat(".agents/skills/cyberppt-script-workflow/SKILL.md")
     faithful = _read(
         ".agents/skills/cyberppt-script-workflow/references/faithful-authoring-contract.md"
     )
 
     assert "source-native editorial transduction" in workflow
-    assert "writes `full_copy` as the complete page-ready manuscript" in workflow
+    assert "AUTHOR writes `full_copy` as the complete page-ready manuscript" in workflow
     assert "writes `onscreen` only from the reviewed `full_copy`" in workflow
     assert "Write `full_copy` directly from source meaning" in faithful
     assert "Create `onscreen` only from approved `full_copy`" in faithful
