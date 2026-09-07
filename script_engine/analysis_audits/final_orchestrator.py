@@ -21,7 +21,10 @@ from .final_lean import (
     _audit_lean_onscreen_protected_retention,
     _audit_lean_relationship_visibility,
 )
-from .final_fidelity import faithful_relation_promotion_issues
+from .final_fidelity import (
+    faithful_relation_promotion_issues,
+    faithful_semantic_addition_issues,
+)
 from .final_onscreen import (
     _audit_authored_onscreen_composition,
     _audit_authored_onscreen_contract,
@@ -73,6 +76,10 @@ def audit_final_script(
             issues.extend(
                 f"slides.{index} ({slide_id}): {issue}"
                 for issue in faithful_relation_promotion_issues(slide, evidence)
+            )
+            issues.extend(
+                f"slides.{index} ({slide_id}): {issue}"
+                for issue in faithful_semantic_addition_issues(slide, evidence, items)
             )
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
