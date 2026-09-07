@@ -27,6 +27,16 @@ def _authoring_mode(final_script: dict[str, Any]) -> str:
     return "analytical" if deck.get("authoring_mode") == "analytical" else "faithful"
 
 
+def _uses_structured_authoring(mode: str, slide: dict[str, Any]) -> bool:
+    """Return whether this page opted into an explicit argument/core structure."""
+
+    return (
+        mode == "analytical"
+        or isinstance(slide.get("argument"), dict)
+        or bool(str(slide.get("core_message") or "").strip())
+    )
+
+
 def check_full_copy_structure(final_script: dict[str, Any]) -> list[str]:
     """Require an explicitly authored long multi-step chain to retain paragraph structure."""
 
@@ -56,13 +66,20 @@ def check_full_copy_structure(final_script: dict[str, Any]) -> list[str]:
 
 
 def check_full_copy_topic_semantics(final_script: dict[str, Any]) -> list[str]:
-    """Protect source specificity without forcing faithful paragraphs into judgments."""
+    """Protect source specificity without forcing minimal faithful pages into judgments.
+
+    If a faithful page explicitly authors a core/argument structure, its paragraph
+    openings are checked for the same structural coherence as analytical pages.
+    Source-native faithful pages without that opt-in remain free to use definitions,
+    task labels, taxonomy labels, and stages directly.
+    """
 
     issues: list[str] = []
     mode = _authoring_mode(final_script)
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
             continue
+        structured_page = _uses_structured_authoring(mode, slide)
         slide_id = slide.get("id") or f"#{index}"
         paragraphs = [
             paragraph.strip()
@@ -83,7 +100,7 @@ def check_full_copy_topic_semantics(final_script: dict[str, Any]) -> list[str]:
                     "formal outputs with an author-created summary dimension; restore the concrete source matter"
                 )
                 continue
-            if mode == "analytical" and (
+            if structured_page and (
                 _ABSTRACT_TOPIC_SENTENCE_RE.search(topic) or (
                     len(compact) < 16
                     and not has_substantive_colon_tail
@@ -93,24 +110,24 @@ def check_full_copy_topic_semantics(final_script: dict[str, Any]) -> list[str]:
                 issues.append(
                     f"FULL_COPY_TOPIC_INCOMPLETE: slides.{index} ({slide_id}).full_copy paragraph "
                     f"{paragraph_index + 1}: opening '{topic}' is a label or abstract evaluation, not a "
-                    "complete analytical audience-facing point"
+                    "complete point for the page's explicitly authored core/argument structure"
                 )
     return issues
 
 
 def check_full_copy_parallel_subconclusions(final_script: dict[str, Any]) -> list[str]:
-    """Require judgment-led numbered branches only in analytical mode.
+    """Require judgment-led numbered branches only on explicitly structured pages.
 
-    Faithful mode may preserve source-native numbered tasks, facts, stages and
-    taxonomy labels without upgrading each branch into a business conclusion.
+    Minimal faithful pages may preserve source-native numbered tasks, facts, stages
+    and taxonomy labels without upgrading each branch into a business conclusion.
     """
 
-    if _authoring_mode(final_script) != "analytical":
-        return []
-
     issues: list[str] = []
+    mode = _authoring_mode(final_script)
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
+            continue
+        if not _uses_structured_authoring(mode, slide):
             continue
         slide_id = slide.get("id") or f"#{index}"
         paragraphs = [
@@ -142,8 +159,8 @@ def check_full_copy_parallel_subconclusions(final_script: dict[str, Any]) -> lis
                     issues.append(
                         f"FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE: slides.{index} ({slide_id}).full_copy "
                         f"paragraph {paragraph_index + 1}, branch {match.group(1)}: opening '{opening}' is a label "
-                        "or incomplete clause; analytical mode requires an independently intelligible "
-                        "sub-conclusion before its supporting detail"
+                        "or incomplete clause; explicitly structured pages require an independently intelligible "
+                        "sub-conclusion before supporting detail"
                     )
     return issues
 
