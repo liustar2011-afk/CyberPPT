@@ -230,6 +230,31 @@
                 }
               }
             }
+          },
+          {
+            "if": {
+              "anyOf": [
+                {"required": ["core_message"]},
+                {"required": ["argument"]}
+              ]
+            },
+            "then": {
+              "required": [
+                "core_message",
+                "argument",
+                "full_copy",
+                "onscreen",
+                "visual_thesis",
+                "speaker_notes"
+              ],
+              "properties": {
+                "core_message": {"minLength": 1},
+                "full_copy": {"minLength": 1},
+                "onscreen": {"minItems": 1},
+                "visual_thesis": {"minLength": 1},
+                "speaker_notes": {"minLength": 1}
+              }
+            }
           }
         ],
         "additionalProperties": true
