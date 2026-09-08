@@ -52,9 +52,18 @@ from .template_assembly import (
 
 
 def _structural_display_lines(lines: list[str], title: str, page_type: str) -> list[str]:
-    if title in lines or (page_type == "chapter" and any(line.endswith(title) for line in lines)):
-        return lines
-    return [title, *lines]
+    visible = lines if title in lines or (
+        page_type == "chapter" and any(line.endswith(title) for line in lines)
+    ) else [title, *lines]
+    if page_type == "cover":
+        return visible[:3]
+    if page_type == "contents":
+        return visible[:7]
+    if page_type == "chapter":
+        return visible[:3]
+    if page_type == "closing":
+        return visible[:2]
+    return visible
 
 
 CANONICAL_EDITABLE_PPTX_ROUTE = "stage02-quick-image-to-pptx"
@@ -316,7 +325,11 @@ def _run_text_qa(export: Path, expected: list[str]) -> dict[str, Any]:
         include_inherited=True,
     )
     if not report["valid"]:
-        raise ValueError(f"exported PPTX native text differs from the approved script: {export}")
+        preview = "; ".join(str(item) for item in report.get("mismatches", [])[:8])
+        raise ValueError(
+            f"exported PPTX native text differs from the approved script: {export}"
+            + (f"; {preview}" if preview else "")
+        )
     return report
 
 
@@ -644,7 +657,7 @@ def run_stage02_reconstruction(
             try:
                 root = ET.parse(authored_svg).getroot()
                 page_expected = [
-                    "".join(node.itertext()).strip().lstrip("• ").strip()
+                    "".join(node.itertext()).strip().lstrip("•■ ").strip()
                     for node in root.iter()
                     if node.tag.rsplit("}", 1)[-1] == "text" and "".join(node.itertext()).strip()
                 ]

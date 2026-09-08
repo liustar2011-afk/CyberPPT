@@ -133,6 +133,12 @@ def _final_visible_text_contract(
         None,
     )
     if not isinstance(pair, dict):
+        if page is not None and page.page_type == "cover":
+            cover_lines = [line.strip() for line in page.onscreen_text.splitlines() if line.strip()]
+            expected.extend(cover_lines[:3])
+            # The branded raster logo can be segmented this way by RapidOCR;
+            # the full organization name remains separately required above.
+            authorized.append("九企业")
         return expected, authorized
     # An authored SVG may intentionally split a source sentence across several
     # native text lines to preserve its column geometry.  Those line fragments

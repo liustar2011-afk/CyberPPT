@@ -2166,7 +2166,8 @@ def _move_template_static_shape(
         return _move_template_background(states, target_path)
 
     resolved_shapes = [shape for shape in shapes if shape is not None]
-    if item.element_id.lower() in _PAGE_NUMBER_TOKENS:
+    is_page_number = item.element_id.lower() in _PAGE_NUMBER_TOKENS
+    if is_page_number:
         field_guid = f"{{{str(uuid.uuid4()).upper()}}}"
         for shape in resolved_shapes:
             literal = "".join(shape.itertext()).strip()
@@ -2192,7 +2193,7 @@ def _move_template_static_shape(
         _canonical_shape_xml(shape, state.rels)
         for state, shape in zip(states, resolved_shapes)
     }
-    if len(canonical) != 1:
+    if len(canonical) != 1 and not is_page_number:
         slide_names = ", ".join(state.spec.svg_path.name for state in states)
         raise TemplateStructureError(
             f"Explicit structure element {item.element_id!r} differs across slides: "

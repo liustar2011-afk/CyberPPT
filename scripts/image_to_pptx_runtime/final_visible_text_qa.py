@@ -83,6 +83,11 @@ def audit_final_visible_text(
     allowed: list[str] = []
     for item in (*report["expected_texts"], *report["authorized_image_texts"]):
         allowed.extend(_chinese_runs(item))
+        compact = re.sub(r"\s+", "", item)
+        if compact != item:
+            # OCR commonly joins adjacent Chinese runs separated only by
+            # typographic spacing in an editable text box.
+            allowed.extend(_chinese_runs(compact))
         # OCR can join Chinese runs by reading an authored em/en dash as 一.
         # Only declared dash positions gain this exact alias; ordinary Chinese
         # is never deleted/replaced and native PPTX text is checked separately.

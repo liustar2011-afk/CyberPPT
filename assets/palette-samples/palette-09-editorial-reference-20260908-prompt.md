@@ -1,0 +1,10 @@
+# 风格09参考图
+
+生成方式：内置 imagegen。依据：references/visual-system.md。
+
+用途：配色、中文排版、尺度、线条与局部材质样本。示例文字与数字仅作字体展示；生产页依据业务内容独立组织，避免复制样本布局。当前为候选参考图，尚未替换生产引用。
+
+## 实际提示词
+
+Create one polished visual style reference board for Chinese executive presentations, landscape 2:1, high resolution. This is a reusable style specimen, not an actual business slide. Based on Style 09: pure white #FFFFFF dominant, deep navy #12355B, body charcoal #303030, secondary gray #6F7275, fine rules #C9CDD1, extremely sparing muted amber #D9772B. Premium confident editorial composition, expressive typographic hierarchy, precise Chinese sans-serif typography, crisp edges, intentional white space, subtle localized material depth. Show a sophisticated art-director's specimen sheet with a small top heading “纯白 · 深蓝” and smaller “视觉风格 09”. Below, four distinct loosely arranged editorial specimens separated by generous white gutters, not boxed cards: one typographic specimen with a large navy “清晰” and small text “准确表达，舒展阅读”; one numerical specimen with large “09” and tiny “数字与文字的尺度”; one horizontal thin-line arrangement with three small navy square markers and labels “信息”“结构”“表达”; one small beautiful close-up of a rectangular folded white paper and navy anodized metal edge, studio soft shadow, tactile precision, clearly a material sample. Along bottom a very small row of rectangular color chips, white navy charcoal gray and tiny amber. Keep entire sheet refined and visually confident, vary scale and placement organically, strong clean white background. Flat frontal text, all text Chinese correctly typeset and restrained. NO circles, circular platforms, rings, discs, halos, orbit lines, round icon badges, cloud servers, sci-fi blue glow, industry scene collage, huge decoration, blue fog, pervasive gradients, dashboard UI, or rounded card grid. Material specimen occupies only a small part; this board primarily teaches color, typography, lines and spacing without imposing a single reusable slide composition. Only specified short text, no business claims, no logos.
+
