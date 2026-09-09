@@ -105,3 +105,43 @@
 
 下一阶段工作：
 - Phase 3 / Step 3.1：升级 Visual Medium Resolver v2，增加页面语义评分、confidence、forbidden media，取消 `mixed` 无条件默认，并保证 rationale 与实际评分依据一致。
+
+## Step 3.1｜Visual Medium Resolver v2 语义评分合同
+
+状态：已完成
+
+已完成工作：
+- `VisualMediumPolicy` 升级为 v2，新增 `secondary`、`forbidden`、`confidence`、`scores`、`version`。
+- scene policy 仅负责媒介资格边界；preferred medium 由页面使命、业务关系、可画业务对象、主体类型、数据信号和轻量密度信号评分。
+- `mixed` 取消无条件默认，仅在确有跨媒介需求且两个专业媒介同时强、分差接近时进入首选竞争。
+- 收紧 data visualization 触发条件，普通“数据提供方”等数据主体不再被误判为图表任务；指标、趋势、统计、监测、预测、分布等读数/读趋势任务才形成数据表达强信号。
+- 扩展 visual-medium-policy JSON Schema，保持旧 required 字段兼容。
+- 新增 `tests/test_visual_medium_resolver_v2.py` 并更新 `tests/test_visual_medium_policy.py`。
+
+验证结果：
+- 第一轮 10 passed / 2 failed，暴露 mixed 过度抢占；未进入生产链接入。
+- 第二轮 11 passed / 1 failed，定位“数据提供方”误触 data visualization；继续阻断接入。
+- 第三轮全部通过：同一 scene policy 下，操作场景、关系治理、对象说明、数据趋势可得到不同 preferred medium；mixed 不再作为兜底。
+
+下一阶段工作：
+- Step 3.2：将 v2 resolver 接入 Visual Stage，并把 secondary / forbidden / confidence 贯通 FinalPromptIR、生产 Prompt 和 debug receipt。
+
+## Step 3.2｜Visual Medium Resolver v2 生产链闭环
+
+状态：已完成
+
+已完成工作：
+- Visual Stage 向 resolver 提供 page mission、verified business relationships、正文数量/字符数、business object、actor type、data availability 等语义输入。
+- `FinalPromptIR.VisualMediumPolicyIR` 增加 secondary / forbidden / confidence 并做合法性校验。
+- `artifact_prompt.py` 完整投影 v2 medium contract。
+- 最终 Prompt 输出 preferred、secondary、allowed、forbidden、confidence、scene policy 和公共化 rationale；内部枚举下划线不直接泄漏到 Prompt。
+- Debug receipt 保留原始 v2 medium 字段，便于追溯评分与选择依据。
+- 新增 `tests/test_visual_medium_prompt_v2.py`，同时回归 Phase 2 的 Region Graph / CompositionStrategy 集成。
+
+验证结果：
+- 定向执行 `test_visual_medium_policy + test_visual_medium_resolver_v2 + test_visual_medium_prompt_v2 + test_region_graph_composition_strategy` 全部通过。
+- 业务提交：`430019a2f6d80d83ec23742b31505a80dab4f0bd`（`stage2-v3: integrate semantic visual medium resolver`）。
+- Phase 3 验收完成：相同 scene policy + 不同页面语义可选择不同 preferred medium；medium 具备 score / confidence / forbidden；rationale 与真实评分输入一致。
+
+下一阶段工作：
+- Phase 4 / Step 4.1：为 Text Capacity 增加 `content_action`，删除 dense text 对 visual budget 的直接降级路径；blocked 页面明确返回 Stage01 内容工程处理，Visual Medium Resolver 只消费容量通过页面。
