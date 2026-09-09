@@ -1,4 +1,4 @@
-name: Stage2 v3 final copy compatibility
+name: Stage2 v3 final compatibility gate
 
 on:
   push:
@@ -21,22 +21,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Patch strict legacy copy fallback
-        run: python tools/stage2_v3_final_copy_compat.py
+      - name: Patch visual thesis compatibility
+        run: python tools/stage2_v3_final_visual_thesis_compat.py
       - name: Install test dependencies
         run: python -m pip install -e '.[dev]'
-      - name: Run focused Stage2 copy compatibility tests
+      - name: Run focused Visual Thesis compatibility tests
         run: |
           python -m pytest -q \
-            tests/test_final_prompt_renderer.py::RenderFinalPromptTests::test_visible_text_declarations_match_ir_exactly \
-            tests/test_final_prompt_renderer.py::RenderFinalPromptTests::test_bound_visible_text_is_rendered_once_globally \
-            tests/test_stage2_legacy_visual_compatibility.py::test_legacy_visual_spec_without_region_or_medium_policy_still_compiles \
-            tests/test_prompt_macro_structure.py \
-            tests/test_prompt_topology_matrix.py
+            tests/test_visual_thesis.py \
+            tests/test_visual_thesis_compiler_contract.py \
+            tests/test_stage2_focus_policy.py \
+            tests/test_prompt_optimization_regressions.py \
+            tests/test_visual_structure_stage.py
       - name: Commit verified patch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scripts/imagegen_pipeline/final_prompt_renderer.py scripts/imagegen_pipeline/final_prompt_contract.py tests/test_prompt_macro_structure.py
-          git commit -m 'fix(stage2): lock legacy visible copy fallback'
+          git add cyberppt/visual_thesis.py tests/test_prompt_optimization_regressions.py tests/test_visual_structure_stage.py
+          git commit -m 'fix(stage2): migrate legacy visual thesis fixtures'
           git push origin HEAD:feature/stage2-artifact-contract-v3
