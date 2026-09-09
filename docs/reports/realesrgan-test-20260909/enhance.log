@@ -1,0 +1,20 @@
+{
+  "source": "/Volumes/DOC/CyberPPT/docs/reports/images25-size-16x9-test-20260909/2048x1152_raw.png",
+  "output": "/Volumes/DOC/CyberPPT/docs/reports/realesrgan-test-20260909/ai-2x.png",
+  "report": "/Volumes/DOC/CyberPPT/docs/reports/realesrgan-test-20260909/ai-2x.png.report.json",
+  "backend": "realesrgan_ncnn",
+  "warnings": [],
+  "command": [
+    "/Volumes/DOC/CyberPPT/.venv/bin/python3",
+    "/Volumes/DOC/CyberPPT/vendor/ppt-image-enhancer-skill-v1.0.0/enhance.py",
+    "/Volumes/DOC/CyberPPT/docs/reports/images25-size-16x9-test-20260909/2048x1152_raw.png",
+    "--output",
+    "/Volumes/DOC/CyberPPT/docs/reports/realesrgan-test-20260909/ai-2x.png",
+    "--report",
+    "/Volumes/DOC/CyberPPT/docs/reports/realesrgan-test-20260909/ai-2x.png.report.json",
+    "--backend",
+    "realesrgan_ncnn",
+    "--scale",
+    "2.0"
+  ]
+}

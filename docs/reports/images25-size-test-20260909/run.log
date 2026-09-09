@@ -1,0 +1,15 @@
+Calling Codex OAuth image backend (edit) with 1 input image(s).
+Codex OAuth image completed via images in 121.7s.
+Wrote raw backend image 1774x887: /Volumes/DOC/CyberPPT/docs/reports/images25-size-test-20260909/2560x1280_raw.png
+Wrote /Volumes/DOC/CyberPPT/docs/reports/images25-size-test-20260909/2560x1280.png
+{"requested_size": "2560x1280", "requested_model": "gpt-image-2.5-sunburst", "actual_model": null, "quality": "high", "postprocess": false, "actual_size": [1774, 887], "exact_size": false, "bytes": 1904492, "status": "success", "elapsed_seconds": 121.8}
+Calling Codex OAuth image backend (edit) with 1 input image(s).
+Codex OAuth image completed via images in 173.3s.
+Wrote raw backend image 1774x887: /Volumes/DOC/CyberPPT/docs/reports/images25-size-test-20260909/3072x1536_raw.png
+Wrote /Volumes/DOC/CyberPPT/docs/reports/images25-size-test-20260909/3072x1536.png
+{"requested_size": "3072x1536", "requested_model": "gpt-image-2.5-sunburst", "actual_model": null, "quality": "high", "postprocess": false, "actual_size": [1774, 887], "exact_size": false, "bytes": 1867283, "status": "success", "elapsed_seconds": 173.3}
+Calling Codex OAuth image backend (edit) with 1 input image(s).
+Codex OAuth image completed via images in 62.7s.
+Wrote raw backend image 1774x887: /Volumes/DOC/CyberPPT/docs/reports/images25-size-test-20260909/3840x1920_raw.png
+Wrote /Volumes/DOC/CyberPPT/docs/reports/images25-size-test-20260909/3840x1920.png
+{"requested_size": "3840x1920", "requested_model": "gpt-image-2.5-sunburst", "actual_model": null, "quality": "high", "postprocess": false, "actual_size": [1774, 887], "exact_size": false, "bytes": 1769758, "status": "success", "elapsed_seconds": 62.7}

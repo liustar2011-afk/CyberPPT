@@ -1,0 +1,47 @@
+[
+  {
+    "requested_size": "2560x1280",
+    "requested_model": "gpt-image-2.5-sunburst",
+    "actual_model": null,
+    "quality": "high",
+    "postprocess": false,
+    "actual_size": [
+      1774,
+      887
+    ],
+    "exact_size": false,
+    "bytes": 1904492,
+    "status": "success",
+    "elapsed_seconds": 121.8
+  },
+  {
+    "requested_size": "3072x1536",
+    "requested_model": "gpt-image-2.5-sunburst",
+    "actual_model": null,
+    "quality": "high",
+    "postprocess": false,
+    "actual_size": [
+      1774,
+      887
+    ],
+    "exact_size": false,
+    "bytes": 1867283,
+    "status": "success",
+    "elapsed_seconds": 173.3
+  },
+  {
+    "requested_size": "3840x1920",
+    "requested_model": "gpt-image-2.5-sunburst",
+    "actual_model": null,
+    "quality": "high",
+    "postprocess": false,
+    "actual_size": [
+      1774,
+      887
+    ],
+    "exact_size": false,
+    "bytes": 1769758,
+    "status": "success",
+    "elapsed_seconds": 62.7
+  }
+]

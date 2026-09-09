@@ -1,0 +1,79 @@
+{
+  "mode": "ppt_page",
+  "input": "/Volumes/DOC/CyberPPT/docs/reports/images25-size-16x9-test-20260909/2048x1152_raw.png",
+  "output": "/Volumes/DOC/CyberPPT/docs/reports/realesrgan-test-20260909/ai-2x.png",
+  "super_resolution_backend": "realesrgan_ncnn",
+  "ai_super_resolution_used": true,
+  "super_resolution_metadata": {
+    "model": "realesrgan-x4plus-anime",
+    "scale": 4,
+    "tile": 0
+  },
+  "text_guard_enabled": true,
+  "upscale_applied": true,
+  "before": {
+    "file": "/Volumes/DOC/CyberPPT/docs/reports/images25-size-16x9-test-20260909/2048x1152_raw.png",
+    "width": 1672,
+    "height": 941,
+    "aspect_ratio": 1.776833,
+    "sharpness_laplacian_variance": 3532.0667,
+    "edge_density": 0.105479,
+    "near_white_ratio": 0.42468,
+    "noise_estimate": 0.0,
+    "blockiness_score": 0.9999,
+    "notes": [
+      "Resolution is relatively small for presentation use; moderate upscaling may help.",
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "after": {
+    "file": "/Volumes/DOC/CyberPPT/docs/reports/realesrgan-test-20260909/ai-2x.png",
+    "width": 3344,
+    "height": 1882,
+    "aspect_ratio": 1.776833,
+    "sharpness_laplacian_variance": 881.8827,
+    "edge_density": 0.068473,
+    "near_white_ratio": 0.440473,
+    "noise_estimate": 0.0,
+    "blockiness_score": 1.0253,
+    "notes": [
+      "Large near-white area detected; white-background protection is recommended."
+    ]
+  },
+  "warnings": [],
+  "structural_fidelity": {
+    "valid": true,
+    "correlation": 0.994467,
+    "normalized_mean_abs_delta": 0.013161,
+    "edge_recall": 0.987445,
+    "edge_precision": 0.910995
+  },
+  "quality_gate_valid": true,
+  "external_super_resolution_used": false,
+  "auto_decision": {
+    "detected_mode": "ppt_page",
+    "selected_mode": "ppt_page",
+    "selected_backend": "realesrgan_ncnn",
+    "probe": {
+      "file": "/Volumes/DOC/CyberPPT/docs/reports/images25-size-16x9-test-20260909/2048x1152_raw.png",
+      "width": 1672,
+      "height": 941,
+      "aspect_ratio": 1.776833,
+      "sharpness_laplacian_variance": 3532.0667,
+      "edge_density": 0.105479,
+      "near_white_ratio": 0.42468,
+      "noise_estimate": 0.0,
+      "blockiness_score": 0.9999,
+      "notes": [
+        "Resolution is relatively small for presentation use; moderate upscaling may help.",
+        "Large near-white area detected; white-background protection is recommended."
+      ]
+    },
+    "backend_status": {
+      "ncnn": "/Volumes/DOC/CyberPPT/vendor/ppt-image-enhancer-skill-v1.0.0/runtime/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan",
+      "realesrgan_python": false,
+      "swinir_python": false,
+      "torch": false
+    }
+  }
+}
