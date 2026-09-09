@@ -6,7 +6,16 @@ on:
       - feature/stage2-artifact-contract-v3
     paths:
       - cyberppt/acceptance_contract.py
-      - tests/test_acceptance_contract.py
+      - cyberppt/composition_strategy.py
+      - cyberppt/page_artifact_spec.py
+      - scripts/imagegen_pipeline/final_prompt_ir.py
+      - scripts/imagegen_pipeline/artifact_prompt.py
+      - scripts/imagegen_pipeline/final_prompt_renderer.py
+      - scripts/imagegen_pipeline/final_prompt_contract.py
+      - scripts/imagegen_pipeline/prompt_compiler.py
+      - scripts/imagegen_pipeline/handoff/prompt.py
+      - scripts/imagegen_pipeline/imagegen_handoff.py
+      - tests/test_acceptance*.py
       - tools/stage2_v3_*.py
       - .github/workflows/stage2-v3-apply.yml
 
@@ -29,5 +38,5 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
-      - name: Validate acceptance contract
-        run: python -m pytest -q tests/test_acceptance_contract.py
+      - name: Integrate and validate Acceptance Contract v3
+        run: python tools/stage2_v3_phase7_integrate.py
