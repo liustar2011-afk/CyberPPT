@@ -398,15 +398,15 @@ class PageArtifactSpecTests(unittest.TestCase):
         self.assertEqual("integrated_scene", spec.visual_budget.mode)
         self.assertTrue(spec.visual_budget.region_local_visuals)
 
-    def test_dense_non_scene_page_defaults_to_relationship_field_only(self) -> None:
+    def test_dense_text_no_longer_overrides_non_scene_visual_budget(self) -> None:
         budget = _visual_budget(
             {},
             topology="layered_architecture",
             use_scene=False,
             visible_text=tuple("dense evidence" for _ in range(14)),
         )
-        self.assertEqual("relationship_field_only", budget.mode)
-        self.assertEqual(0, budget.max_auxiliary_fragments)
+        self.assertEqual("shared_field", budget.mode)
+        self.assertEqual(1, budget.max_auxiliary_fragments)
         self.assertEqual("page", budget.scope)
         self.assertFalse(budget.region_local_visuals)
 

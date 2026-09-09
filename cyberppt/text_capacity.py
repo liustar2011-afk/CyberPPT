@@ -1,9 +1,16 @@
-"""Deterministic Stage 02 capacity gate for locked body text."""
+"""Deterministic Stage 02 capacity gate for locked body text.
 
+Text capacity is a content-engineering gate.  It may decide whether a page can
+continue into Stage 02, but it never chooses or suppresses the visual medium.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Sequence
+
+
+CONTENT_ACTION_CONTINUE = "continue_stage02"
+CONTENT_ACTION_RETURN_STAGE01 = "return_to_stage01"
 
 
 @dataclass(frozen=True)
@@ -16,6 +23,21 @@ class TextCapacityAssessment:
     pressure_score: float
     status: str
     reasons: tuple[str, ...]
+    content_action: str = CONTENT_ACTION_CONTINUE
+
+    def __post_init__(self) -> None:
+        if self.status not in {"passed", "blocked"}:
+            raise ValueError(f"unsupported text capacity status: {self.status!r}")
+        expected = (
+            CONTENT_ACTION_RETURN_STAGE01
+            if self.status == "blocked"
+            else CONTENT_ACTION_CONTINUE
+        )
+        if self.content_action != expected:
+            raise ValueError(
+                "text capacity content_action must match status: "
+                f"status={self.status!r}, content_action={self.content_action!r}"
+            )
 
 
 def assess_text_capacity(
@@ -52,6 +74,7 @@ def assess_text_capacity(
     # dimensions are independently elevated. This avoids a single long line
     # or a single deep hierarchy from becoming an arbitrary hard threshold.
     blocked = score >= 3.35 and len(reasons) >= 2
+    status = "blocked" if blocked else "passed"
     return TextCapacityAssessment(
         item_count=item_count,
         character_count=character_count,
@@ -59,8 +82,13 @@ def assess_text_capacity(
         max_hierarchy_level=max_level,
         canvas_area=canvas_area,
         pressure_score=round(score, 3),
-        status="blocked" if blocked else "passed",
+        status=status,
         reasons=tuple(reasons),
+        content_action=(
+            CONTENT_ACTION_RETURN_STAGE01
+            if blocked
+            else CONTENT_ACTION_CONTINUE
+        ),
     )
 
 
@@ -80,10 +108,17 @@ def assert_text_capacity(
     if assessment.status == "blocked":
         raise ValueError(
             "STAGE02_TEXT_CAPACITY_EXCEEDED: locked body text exceeds the current canvas capacity; "
-            "return to Stage 01 to revise approved onscreen text instead of allowing ImageGen to omit or rewrite it. "
+            "content_action=return_to_stage01; return to Stage 01 to split, prioritize or revise "
+            "approved onscreen text instead of allowing ImageGen to omit, rewrite, or suppress visuals. "
             f"score={assessment.pressure_score}; " + ", ".join(assessment.reasons)
         )
     return assessment
 
 
-__all__ = ["TextCapacityAssessment", "assess_text_capacity", "assert_text_capacity"]
+__all__ = [
+    "CONTENT_ACTION_CONTINUE",
+    "CONTENT_ACTION_RETURN_STAGE01",
+    "TextCapacityAssessment",
+    "assess_text_capacity",
+    "assert_text_capacity",
+]

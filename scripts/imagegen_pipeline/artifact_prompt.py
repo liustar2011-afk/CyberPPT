@@ -14,8 +14,10 @@ from cyberppt.page_artifact_spec import (
     VisualBudgetSpec,
 )
 from scripts.imagegen_pipeline.final_prompt_ir import (
+    AcceptanceIR,
     CompositionIR,
     FinalPromptIR,
+    FullSlideDesignContextIR,
     MicroVisualFreedomIR,
     PromptContractError,
     RegionGraphIR,
@@ -485,6 +487,38 @@ def _text_binding_ir(spec: PageArtifactSpec) -> tuple[TextBindingIR, ...]:
     return result
 
 
+def _acceptance_ir(spec: PageArtifactSpec) -> AcceptanceIR | None:
+    acceptance = spec.acceptance
+    if acceptance is None:
+        return None
+    return AcceptanceIR(
+        exact_copy_coverage=acceptance.exact_copy_coverage,
+        extra_text_count=acceptance.extra_text_count,
+        region_ownership=acceptance.region_ownership,
+        relationship_accuracy=acceptance.relationship_accuracy,
+        hierarchy_preservation=acceptance.hierarchy_preservation,
+        minimum_readability=acceptance.minimum_readability,
+        forbidden_structure_absence=acceptance.forbidden_structure_absence,
+        style_lock_conformance=acceptance.style_lock_conformance,
+    )
+
+
+def _full_slide_design_context_ir(spec: PageArtifactSpec) -> FullSlideDesignContextIR | None:
+    context = spec.full_slide_design_context
+    if context is None:
+        return None
+    title = context.title_region
+    body = context.body_region
+    return FullSlideDesignContextIR(
+        canvas=context.canvas,
+        title_region=(title.x, title.y, title.w, title.h),
+        body_region=(body.x, body.y, body.w, body.h),
+        body_export_canvas=context.body_export_canvas,
+        title_render_mode=title.render_mode,
+        subtitle_render_mode=context.subtitle_render_mode,
+    )
+
+
 def _visual_medium_policy_ir(spec: PageArtifactSpec) -> VisualMediumPolicyIR | None:
     policy = spec.visual_medium_policy
     if policy is None:
@@ -494,6 +528,9 @@ def _visual_medium_policy_ir(spec: PageArtifactSpec) -> VisualMediumPolicyIR | N
         allowed=policy.allowed,
         scene_policy=policy.scene_policy,
         rationale=policy.rationale,
+        secondary=policy.secondary,
+        forbidden=policy.forbidden,
+        confidence=policy.confidence,
     )
 
 
@@ -511,7 +548,7 @@ def _micro_visual_freedom_ir(spec: PageArtifactSpec) -> MicroVisualFreedomIR | N
         forbidden=(
             "Do not merge or split macro regions.",
             "Do not change macro region roles, anchors, relative emphasis or semantic order in a way that changes meaning.",
-            "Keep each rewritten source item within its assigned macro semantic region.",
+            "Keep each declared copy item within its assigned macro semantic region.",
             "Do not change the focus policy or promote a peer item into a result or judgment.",
             "Do not change relationship type or direction, or invent stronger causality, hierarchy or sequence than the source supports.",
             "Do not leave the allowed visual media or violate the scene policy.",
@@ -649,6 +686,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             visible_text=spec.typography.visible_text,
             hard_constraints=hard_constraints,
             runtime_lock=RuntimeLockIR(style_contract=spec.art_direction.contract),
+            copy_contract=spec.copy_contract,
             page_title=spec.communication_goal.page_title,
             page_mission=spec.communication_goal.page_mission,
             semantic_context=spec.semantic_context.text,
@@ -657,6 +695,8 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             region_graph=_region_graph_ir(spec),
             visual_medium_policy=_visual_medium_policy_ir(spec),
             micro_visual_freedom=_micro_visual_freedom_ir(spec),
+            full_slide_design_context=_full_slide_design_context_ir(spec),
+            acceptance=_acceptance_ir(spec),
         )
     except PromptContractError as exc:
         raise PromptContractError(f"{spec.page_id}: {exc}") from exc

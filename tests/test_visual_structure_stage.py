@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 import re
@@ -30,6 +31,26 @@ from cyberppt.script_quality_contract import ScriptPage
 from cyberppt.semantic_digest import outline_semantic_digest, script_semantic_digest
 from cyberppt.onscreen_expression import expression_constraints
 from cyberppt.onscreen_expression import expression_constraints_sha256
+
+
+_RAW_BUILD_EXECUTABLE_PAGE = _build_executable_page
+
+
+def _build_executable_page(source, decision):
+    """Migrate legacy fixtures to the required visual-thesis contract.
+
+    Missing-thesis rejection is covered separately by
+    test_visual_thesis_compiler_contract.py. These older structure fixtures
+    need an explicit relational thesis so they can reach the contract they
+    were originally written to exercise.
+    """
+    migrated = copy.deepcopy(decision)
+    for candidate in migrated.get("candidates", []):
+        candidate.setdefault(
+            "visual_thesis",
+            "Approved evidence flows through the source-supported relationship.",
+        )
+    return _RAW_BUILD_EXECUTABLE_PAGE(source, migrated)
 
 
 class VisualStructureStageTests(unittest.TestCase):

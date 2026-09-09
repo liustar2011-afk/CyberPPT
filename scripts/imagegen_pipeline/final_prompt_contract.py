@@ -68,7 +68,7 @@ def validate_final_prompt(
     *,
     style_id: int | None = None,
 ) -> None:
-    from scripts.imagegen_pipeline.final_prompt_renderer import SECTION_HEADINGS
+    from scripts.imagegen_pipeline.final_prompt_renderer import ACCEPTANCE_HEADING, HARD_CONSTRAINTS_HEADING, SECTION_HEADINGS
 
     positions: list[int] = []
     for heading in SECTION_HEADINGS:
@@ -107,14 +107,77 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt visible text contains excluded chrome content: {text!r}"
             )
-    source_declarations = tuple(
-        re.findall(r'^- Source onscreen text: "(.*)"$', prompt, flags=re.MULTILINE)
+    legacy_source_declarations = tuple(
+        re.findall(r'^- Source onscreen text: \"(.*)\"$', prompt, flags=re.MULTILINE)
     )
-    if source_declarations != ir.visible_text:
+    if legacy_source_declarations:
         raise PromptContractError(
-            "final prompt source onscreen declarations must match the supplied source material"
+            "supplied source material declarations are retired; use exact or explicitly rewriteable copy declarations"
         )
+    if ir.copy_contract is not None:
+        exact_declarations = tuple(
+            re.findall(r'^- Exact visible text: \"(.*)\"$', prompt, flags=re.MULTILINE)
+        )
+        rewriteable_declarations = tuple(
+            re.findall(r'^- Rewriteable visible source: \"(.*)\"$', prompt, flags=re.MULTILINE)
+        )
+        locked_text = {item.text for item in ir.copy_contract.locked_copy}
+        rewriteable_text = {item.source_text for item in ir.copy_contract.rewriteable_copy}
+        expected_exact = tuple(text for text in ir.visible_text if text in locked_text)
+        expected_rewriteable = tuple(text for text in ir.visible_text if text in rewriteable_text)
+        if exact_declarations != expected_exact:
+            raise PromptContractError("final prompt exact-copy declarations must match locked copy")
+        if rewriteable_declarations != expected_rewriteable:
+            raise PromptContractError("final prompt rewriteable-copy declarations must match rewriteable copy")
+        if "You may rewrite, merge, shorten, reorder, split, select, or replace" in prompt:
+            raise PromptContractError("copy-contract prompt cannot grant blanket rewrite authority")
+        if (
+            not ir.copy_contract.extra_text.allowed
+            and "Do not add any visible text that is not declared in this copy contract." not in prompt
+        ):
+            raise PromptContractError("copy-contract prompt must forbid undeclared extra visible text")
+    else:
+        exact_declarations = tuple(
+            re.findall(r'^- Exact visible text: \"(.*)\"$', prompt, flags=re.MULTILINE)
+        )
+        if exact_declarations != ir.visible_text:
+            raise PromptContractError(
+                "final prompt exact-copy declarations must match the supplied visible copy"
+            )
+        if "You may rewrite, merge, shorten, reorder, split, select, or replace" in prompt:
+            raise PromptContractError("legacy fallback cannot grant blanket rewrite authority")
+        if "Do not add any visible text that is not declared in this copy contract." not in prompt:
+            raise PromptContractError("legacy fallback must forbid undeclared extra visible text")
     _validate_text_bindings(prompt, ir)
+
+    if ir.full_slide_design_context is not None:
+        context = ir.full_slide_design_context
+        expected = f"Full-slide design context: {context.canvas[0]}x{context.canvas[1]} ({context.canvas[2]})."
+        if prompt.count(expected) != 1:
+            raise PromptContractError("full-slide design context must be declared exactly once")
+        if "External title region:" not in prompt or "Body image export remains independent" not in prompt:
+            raise PromptContractError("full-slide prompt must declare external title and body-export mapping")
+
+
+    if ir.acceptance is not None:
+        if prompt.count(ACCEPTANCE_HEADING) != 1:
+            raise PromptContractError("acceptance criteria section must appear exactly once")
+        if not (
+            prompt.index(ACCEPTANCE_HEADING) < prompt.index(HARD_CONSTRAINTS_HEADING)
+            < prompt.index(SECTION_HEADINGS[-1])
+        ):
+            raise PromptContractError("acceptance criteria must precede hard constraints and runtime lock")
+        acceptance = ir.acceptance
+        expected_lines = (
+            f"Exact copy coverage: {round(acceptance.exact_copy_coverage * 100)}% of locked copy must be present exactly once.",
+            f"Maximum extra visible text count: {acceptance.extra_text_count}.",
+            "Forbidden structure absence: required.",
+            "Style lock conformance: required.",
+        )
+        if any(prompt.count(line) != 1 for line in expected_lines):
+            raise PromptContractError("acceptance criteria values differ from the prompt IR")
+    elif ACCEPTANCE_HEADING in prompt:
+        raise PromptContractError("legacy prompt without acceptance IR cannot contain acceptance criteria")
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)
     reading_boundary_declarations = re.findall(r"^Reading boundary: .*$", prompt, flags=re.MULTILINE)

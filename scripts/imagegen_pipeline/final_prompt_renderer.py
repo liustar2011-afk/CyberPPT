@@ -23,6 +23,7 @@ SECTION_HEADINGS = (
     "[7. Runtime lock]",
 )
 
+ACCEPTANCE_HEADING = "[Acceptance criteria]"
 HARD_CONSTRAINTS_HEADING = "[Hard constraints]"
 
 
@@ -63,8 +64,9 @@ def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
                     "keep each level-3 item visibly attached to its preceding level-2 heading. Preserve three "
                     "distinct reading ranks; do not flatten them into peer cards or body copy."
                 )
-            lines.append("- source onscreen text assigned to this group:")
-            lines.extend(f'- Source onscreen text: "{text}"' for text in binding.exact_text)
+            ordinals = _public_text_ordinals(ir)
+            owned = [ordinals[text_id] for text_id in binding.text_ids if text_id in ordinals]
+            lines.append("- copy ownership: source onscreen item(s) " + ", ".join(str(item) for item in owned) + "; exact wording is declared once in Section 6.")
             level_path = " → ".join(str(level) for level in levels)
             lines.append(f"- hierarchy: levels {level_path}; keep this group's text together in one coherent visual region.")
     return tuple(lines)
@@ -119,12 +121,102 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
         )
     if policy is not None:
         allowed = "; ".join(item.replace("_", " ") for item in policy.allowed)
-        lines.extend((
+        forbidden = "; ".join(item.replace("_", " ") for item in policy.forbidden) or "none"
+        rationale = policy.rationale.replace("_", " ")
+        medium_lines = [
             f"Preferred visual medium: {policy.preferred.replace('_', ' ')}.",
+        ]
+        if policy.secondary:
+            medium_lines.append(f"Secondary visual medium: {policy.secondary.replace('_', ' ')}.")
+        medium_lines.extend((
             f"Allowed visual media: {allowed}.",
+            f"Forbidden visual media: {forbidden}.",
+            f"Medium confidence: {policy.confidence:.2f}.",
             f"Scene policy: {policy.scene_policy.replace('_', ' ')}.",
-            f"Medium rationale: {policy.rationale}",
+            f"Medium rationale: {rationale}",
         ))
+        lines.extend(medium_lines)
+    return tuple(lines)
+
+
+def _acceptance_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    acceptance = ir.acceptance
+    if acceptance is None:
+        return ()
+    return (
+        f"Exact copy coverage: {round(acceptance.exact_copy_coverage * 100)}% of locked copy must be present exactly once.",
+        f"Maximum extra visible text count: {acceptance.extra_text_count}.",
+        "Region ownership: " + acceptance.region_ownership.replace("_", " ") + ".",
+        "Relationship accuracy: " + acceptance.relationship_accuracy.replace("_", " ") + ".",
+        "Hierarchy preservation: " + acceptance.hierarchy_preservation.replace("_", " ") + ".",
+        "Minimum readability: " + acceptance.minimum_readability.replace("_", " ") + ".",
+        "Forbidden structure absence: required." if acceptance.forbidden_structure_absence else "Forbidden structure absence: not required.",
+        "Style lock conformance: required." if acceptance.style_lock_conformance else "Style lock conformance: not required.",
+    )
+
+
+def _full_slide_context_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    context = ir.full_slide_design_context
+    if context is None:
+        return ()
+    tx, ty, tw, th = context.title_region
+    bx, by, bw, bh = context.body_region
+    ew, eh, er = context.body_export_canvas
+    return (
+        f"Full-slide design context: {context.canvas[0]}x{context.canvas[1]} ({context.canvas[2]}).",
+        f"External title region: x={tx}, y={ty}, w={tw}, h={th}; reserve this region in the full-slide hierarchy but do not render title or subtitle into the body image.",
+        f"Body visual region in the finished slide: x={bx}, y={by}, w={bw}, h={bh}; compose the body as the visual continuation below the external title region.",
+        f"Body image export remains independent at {ew}x{eh} ({er}); map the full-slide body-region composition into this export without adding title, subtitle, logo, footer or page chrome.",
+    )
+
+
+def _copy_contract_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    contract = ir.copy_contract
+    if contract is None:
+        lines: list[str] = [
+            "Copy authority: supplied visible copy is locked by default when no explicit copy contract is attached."
+        ]
+        for text in ir.visible_text:
+            lines.append(f'- Exact visible text: \"{text}\"')
+            lines.append("  - semantic role: content; render exactly once.")
+        if not ir.visible_text:
+            lines.append("- No visible copy is declared.")
+        lines.extend(
+            (
+                "Locked copy may not be rewritten, merged, shortened, reordered, split, selected, or replaced; line breaks, grouping and position changes may be used only to preserve readability and meaning.",
+                "Do not add any visible text that is not declared in this copy contract.",
+            )
+        )
+        return tuple(lines)
+    locked_by_text = {item.text: item for item in contract.locked_copy}
+    rewriteable_by_text = {item.source_text: item for item in contract.rewriteable_copy}
+    public_region = (
+        {region.id: index for index, region in enumerate(ir.region_graph.regions, start=1)}
+        if ir.region_graph is not None
+        else {}
+    )
+    lines: list[str] = [
+        "Copy authority: only the copy declared below may become visible text. Locked copy is immutable; rewriteable copy may change only within its explicit rewrite goal and preservation boundary."
+    ]
+    for text in ir.visible_text:
+        locked = locked_by_text.get(text)
+        if locked is not None:
+            lines.append(f'- Exact visible text: \"{locked.text}\"')
+            if locked.region_id and locked.region_id in public_region:
+                lines.append(f"  - assigned macro region: Region {public_region[locked.region_id]}")
+            lines.append(f"  - semantic role: {locked.semantic_role.replace('_', ' ')}; hierarchy {locked.hierarchy}; render exactly once.")
+            continue
+        rewriteable = rewriteable_by_text[text]
+        lines.append(f'- Rewriteable visible source: \"{rewriteable.source_text}\"')
+        if rewriteable.region_id and rewriteable.region_id in public_region:
+            lines.append(f"  - assigned macro region: Region {public_region[rewriteable.region_id]}")
+        length = f"; max length {rewriteable.max_length}" if rewriteable.max_length else ""
+        preserve = ", ".join(item.replace("_", " ") for item in rewriteable.preserve)
+        lines.append(f"  - rewrite goal: {rewriteable.rewrite_goal}{length}; preserve {preserve}.")
+    if contract.extra_text.allowed:
+        lines.append(f"Additional visible text is allowed only within the explicit extra-text budget: at most {contract.extra_text.max_count} item(s).")
+    else:
+        lines.append("Do not add any visible text that is not declared in this copy contract.")
     return tuple(lines)
 
 
@@ -165,6 +257,11 @@ def render_final_prompt(
         )
     )
     hard_constraints_section = "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints))
+    acceptance_section = (
+        "\n".join((ACCEPTANCE_HEADING, *_acceptance_lines(ir)))
+        if ir.acceptance is not None
+        else ""
+    )
     nonvisible_page_context = (
         *(("【标题（不上屏）】", ir.page_title) if ir.page_title else ()),
         "【页面使命（不上屏）】",
@@ -173,7 +270,7 @@ def render_final_prompt(
         ir.page_judgment,
     )
     sections_before_runtime = (
-        "\n".join((SECTION_HEADINGS[0], ir.deliverable)),
+        "\n".join((SECTION_HEADINGS[0], ir.deliverable, *_full_slide_context_lines(ir))),
         "\n".join(
             (
                 SECTION_HEADINGS[1],
@@ -217,23 +314,9 @@ def render_final_prompt(
                 *ir.composition.visual_responsibility,
             )
         ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[5],
-                (
-                    "Use the supplied copy as source material for concise presentation text. "
-                    "You may rewrite, merge, shorten, reorder, split, select, or replace its "
-                    "wording to suit the visual composition."
-                ),
-                *(
-                    ()
-                    if ir.text_bindings
-                    else tuple(f'- Source onscreen text: "{text}"' for text in ir.visible_text)
-                ),
-            )
-        ),
+        "\n".join((SECTION_HEADINGS[5], *_copy_contract_lines(ir))),
     )
-    sections = (*sections_before_runtime, hard_constraints_section, runtime_section)
+    sections = (*sections_before_runtime, acceptance_section, hard_constraints_section, runtime_section)
     prompt = "\n\n".join(section for section in sections if section.strip()).rstrip() + "\n"
     if runtime is not None:
         prompt = enforce_terminal_execution_lock(prompt, runtime)
@@ -330,20 +413,47 @@ def render_debug_receipt(
         "visual_medium_policy": (
             {
                 "preferred": ir.visual_medium_policy.preferred,
+                "secondary": ir.visual_medium_policy.secondary,
                 "allowed": list(ir.visual_medium_policy.allowed),
+                "forbidden": list(ir.visual_medium_policy.forbidden),
+                "confidence": ir.visual_medium_policy.confidence,
                 "scene_policy": ir.visual_medium_policy.scene_policy,
                 "rationale": ir.visual_medium_policy.rationale,
             }
             if ir.visual_medium_policy is not None
             else None
         ),
+        "acceptance": (
+            {
+                "exact_copy_coverage": ir.acceptance.exact_copy_coverage,
+                "extra_text_count": ir.acceptance.extra_text_count,
+                "region_ownership": ir.acceptance.region_ownership,
+                "relationship_accuracy": ir.acceptance.relationship_accuracy,
+                "hierarchy_preservation": ir.acceptance.hierarchy_preservation,
+                "minimum_readability": ir.acceptance.minimum_readability,
+                "forbidden_structure_absence": ir.acceptance.forbidden_structure_absence,
+                "style_lock_conformance": ir.acceptance.style_lock_conformance,
+            } if ir.acceptance is not None else None
+        ),
+        "full_slide_design_context": (
+            {
+                "canvas": list(ir.full_slide_design_context.canvas),
+                "title_region": list(ir.full_slide_design_context.title_region),
+                "body_region": list(ir.full_slide_design_context.body_region),
+                "body_export_canvas": list(ir.full_slide_design_context.body_export_canvas),
+                "title_render_mode": ir.full_slide_design_context.title_render_mode,
+                "subtitle_render_mode": ir.full_slide_design_context.subtitle_render_mode,
+            } if ir.full_slide_design_context is not None else None
+        ),
         "visible_text": list(ir.visible_text),
+        "copy_contract": (ir.copy_contract.as_dict() if ir.copy_contract is not None else None),
         "hard_constraints": list(ir.hard_constraints),
         "source_hashes": dict(source_hashes),
     }
 
 
 __all__ = [
+    "ACCEPTANCE_HEADING",
     "HARD_CONSTRAINTS_HEADING",
     "SECTION_HEADINGS",
     "render_debug_receipt",

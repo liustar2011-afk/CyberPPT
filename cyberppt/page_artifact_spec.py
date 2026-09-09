@@ -9,9 +9,17 @@ import warnings
 from pathlib import Path
 from typing import Any, Mapping
 
+from cyberppt.acceptance_contract import AcceptanceSpec, build_acceptance_spec
+from cyberppt.copy_contract import CopyContractSpec, build_copy_contract
+from cyberppt.composition_strategy import CompositionStrategySpec, validate_composition_strategy
+from cyberppt.full_slide_context import (
+    FullSlideDesignContextSpec, default_full_slide_design_context,
+    validate_full_slide_design_context,
+)
 from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
-from cyberppt.text_capacity import assess_text_capacity
+from cyberppt.text_capacity import TextCapacityAssessment, assess_text_capacity
 from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy
+from cyberppt.visual_thesis import validate_visual_thesis
 
 
 TEXT_DENSE_ITEM_THRESHOLD = 14
@@ -221,6 +229,11 @@ class PageArtifactSpec:
     visible_text_bindings: tuple[VisibleTextBindingSpec, ...] = ()
     region_graph: RegionGraphSpec | None = None
     visual_medium_policy: VisualMediumPolicy | None = None
+    copy_contract: CopyContractSpec | None = None
+    text_capacity: TextCapacityAssessment | None = None
+    full_slide_design_context: FullSlideDesignContextSpec | None = None
+    composition_strategy: CompositionStrategySpec | None = None
+    acceptance: AcceptanceSpec | None = None
 
     def __post_init__(self) -> None:
         if self.visible_text_bindings:
@@ -232,6 +245,12 @@ class PageArtifactSpec:
             ids = tuple(binding.text_id for binding in self.visible_text_bindings)
             if len(ids) != len(set(ids)):
                 raise ValueError("visible text binding text_id values must be unique")
+        if self.copy_contract is not None:
+            declared = {item.text_id: item.text for item in self.copy_contract.locked_copy}
+            declared.update({item.text_id: item.source_text for item in self.copy_contract.rewriteable_copy})
+            expected = {binding.text_id: binding.text for binding in self.visible_text_bindings}
+            if declared != expected:
+                raise ValueError("copy contract must cover every visible text binding exactly once")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -414,13 +433,8 @@ def _visual_budget(
         resolved = "allowed" if use_scene is True else "forbidden" if use_scene is False else "auto"
     if resolved not in {"required", "allowed", "forbidden", "auto"}:
         raise ValueError(f"unsupported scene policy for visual budget: {resolved!r}")
-    if is_text_dense(visible_text) and resolved != "required":
-        return VisualBudgetSpec(
-            mode="relationship_field_only",
-            max_auxiliary_fragments=0,
-            scope="page",
-            region_local_visuals=False,
-        )
+    # Text density is governed by TextCapacityAssessment before visual planning.
+    # It must never suppress or choose the page's visual medium/budget.
     if resolved == "forbidden":
         return VisualBudgetSpec(
             mode="shared_field",
@@ -646,6 +660,17 @@ def build_page_artifact_spec(
     )
     if handoff_canvas != visual_canvas:
         raise ValueError("artifact spec canvas drifted between handoff and visual spec")
+    raw_full_slide_context = visual_input.get("full_slide_design_context")
+    if isinstance(raw_full_slide_context, Mapping):
+        full_slide_design_context = validate_full_slide_design_context(raw_full_slide_context)
+    else:
+        warnings.warn(
+            "legacy_stage02_prompt_contract: projecting default 16:9 full-slide design context",
+            RuntimeWarning, stacklevel=2,
+        )
+        full_slide_design_context = default_full_slide_design_context()
+    if full_slide_design_context.body_export_canvas != handoff_canvas:
+        raise ValueError("full-slide context body export canvas drifted from Stage02 body canvas")
 
     text_integration = visual_page.get("text_integration")
     text_integration = text_integration if isinstance(text_integration, dict) else {}
@@ -688,29 +713,40 @@ def build_page_artifact_spec(
     content_nodes = content_integrity.get("nodes") if isinstance(content_integrity, dict) else None
     root_nodes = content_integrity.get("root_nodes") if isinstance(content_integrity, dict) else None
     content_root_count = len(root_nodes) if isinstance(root_nodes, list) else 0
-    if str(handoff_page.get("onscreen_source") or "authored") == "full_prose_fallback":
-        hierarchy_levels = tuple(
-            int(node.get("level") or 1)
-            for node in (content_nodes or [])
-            if isinstance(node, dict)
+    hierarchy_levels = tuple(
+        int(node.get("source_level") or node.get("level") or 1)
+        for node in (content_nodes or [])
+        if isinstance(node, dict)
+    )
+    capacity = assess_text_capacity(
+        visible_text,
+        root_count=content_root_count,
+        hierarchy_levels=hierarchy_levels,
+        canvas=(handoff_canvas[0], handoff_canvas[1]),
+    )
+    if capacity.status == "blocked":
+        raise ValueError(
+            "STAGE02_TEXT_CAPACITY_EXCEEDED: content_action=return_to_stage01; "
+            "revise approved onscreen text before visual-medium resolution. "
+            f"score={capacity.pressure_score}; reasons={','.join(capacity.reasons)}"
         )
-        capacity = assess_text_capacity(
-            visible_text,
-            root_count=content_root_count,
-            hierarchy_levels=hierarchy_levels,
-            canvas=(handoff_canvas[0], handoff_canvas[1]),
+    if (
+        str(handoff_page.get("onscreen_source") or "authored") == "full_prose_fallback"
+        and capacity.character_count >= 520
+    ):
+        raise ValueError(
+            "STAGE02_FALLBACK_TEXT_CAPACITY_EXCEEDED: content_action=return_to_stage01; "
+            "the manuscript has no authored onscreen text and its verbatim full-prose fallback "
+            "requires Stage 01 content engineering before visual planning. "
+            f"score={capacity.pressure_score}; characters={capacity.character_count}"
         )
-        if capacity.status == "blocked" or capacity.character_count >= 520:
-            raise ValueError(
-                "STAGE02_FALLBACK_TEXT_CAPACITY_EXCEEDED: the manuscript has no authored "
-                "onscreen text and its verbatim full-prose fallback exceeds "
-                "the current canvas capacity; split the page or provide explicit onscreen text. "
-                f"score={capacity.pressure_score}; characters={capacity.character_count}"
-            )
-    # Content-integrity nodes describe the authored script structure. They are
-    # useful for semantic grouping, but they do not bind the model to exact
-    # bitmap wording. Keep the prompt input as plain reference text.
-    visible_text_bindings = ()
+    # Authored content-integrity nodes are the authority for exact visible-copy
+    # ownership. Preserve that binding into the artifact contract; Stage2 may
+    # not silently downgrade authored copy to free source material.
+    visible_text_bindings = _visible_text_bindings(
+        visible_text=visible_text,
+        content_nodes=content_nodes,
+    )
     text_id_to_root = {
         str(node.get("text_id")): str(node.get("root_id") or "")
         for node in content_nodes or [] if isinstance(node, dict)
@@ -748,6 +784,12 @@ def build_page_artifact_spec(
 
     semantic_graph = visual_page.get("semantic_graph")
     semantic_graph = semantic_graph if isinstance(semantic_graph, dict) else {}
+    raw_composition_strategy = visual_page.get("composition_strategy")
+    composition_strategy = (
+        validate_composition_strategy(raw_composition_strategy)
+        if isinstance(raw_composition_strategy, Mapping)
+        else None
+    )
     raw_region_graph = visual_page.get("region_graph")
     region_graph = (
         validate_region_graph(raw_region_graph)
@@ -759,6 +801,26 @@ def build_page_artifact_spec(
         validate_visual_medium_policy(raw_medium_policy)
         if isinstance(raw_medium_policy, Mapping)
         else None
+    )
+    region_by_text_id: dict[str, str] = {}
+    if region_graph is not None:
+        for region in region_graph.regions:
+            for text_id in region.text_ids:
+                existing = region_by_text_id.get(text_id)
+                if existing and existing != region.id:
+                    raise ValueError(f"visible text {text_id!r} is owned by multiple macro regions")
+                region_by_text_id[text_id] = region.id
+    copy_contract = (
+        build_copy_contract(visible_text_bindings, region_by_text_id=region_by_text_id)
+        if visible_text_bindings
+        else None
+    )
+    acceptance = build_acceptance_spec(
+        allowed_extra_text_count=(
+            copy_contract.extra_text.max_count
+            if copy_contract is not None and copy_contract.extra_text.allowed
+            else 0
+        )
     )
     handoff_relationships = visual_input.get("business_relationships")
     visual_relationships = semantic_graph.get("business_relationships")
@@ -868,7 +930,7 @@ def build_page_artifact_spec(
             core_judgment=core_judgment,
             page_title=_required_text(handoff_page.get("title"), "page title"),
         ),
-        visual_thesis=_required_text(visual_decision.get("visual_thesis"), "visual thesis"),
+        visual_thesis=validate_visual_thesis(visual_decision.get("visual_thesis"), core_judgment),
         evidence=evidence,
         relationships=relationships,
         visual_carrier=VisualCarrierSpec(
@@ -931,6 +993,11 @@ def build_page_artifact_spec(
         visible_text_bindings=visible_text_bindings,
         region_graph=region_graph,
         visual_medium_policy=visual_medium_policy,
+        copy_contract=copy_contract,
+        text_capacity=capacity,
+        full_slide_design_context=full_slide_design_context,
+        composition_strategy=composition_strategy,
+        acceptance=acceptance,
     )
 
 

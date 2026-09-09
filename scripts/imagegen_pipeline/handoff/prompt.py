@@ -25,6 +25,7 @@ from scripts.imagegen_pipeline.page_semantics import (
 )
 from scripts.imagegen_pipeline.prompt_compiler import (
     ARTIFACT_PROMPT_COMPILER,
+    ARTIFACT_PROMPT_COMPILER_V3,
     CompiledPagePrompt,
     DEFAULT_PROMPT_COMPILER,
     DEFAULT_TEXT_RENDER_MODE,
@@ -354,13 +355,34 @@ def compile_page_prompt(
         raise ValueError("visual_structure_mode must be 'off' or 'review'")
     if visual_structure_mode == "review" and prompt_compiler != "content-first-v1":
         raise ValueError("visual structure review mode requires content-first-v1")
-    if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
+    if prompt_compiler in {ARTIFACT_PROMPT_COMPILER, ARTIFACT_PROMPT_COMPILER_V3}:
         if artifact_spec is None:
-            raise ValueError("artifact-spec-v2 requires artifact_spec")
+            raise ValueError(f"{prompt_compiler} requires artifact_spec")
         if visual_design is not None or enrichment_block.strip():
             raise ValueError(
-                "artifact-spec-v2 accepts only artifact_spec; visual_design and enrichment are separate prompt authorities"
+                f"{prompt_compiler} accepts only artifact_spec; visual_design and enrichment are separate prompt authorities"
             )
+        if prompt_compiler == ARTIFACT_PROMPT_COMPILER_V3:
+            missing: list[str] = []
+            if artifact_spec.copy_contract is None:
+                missing.append("copy_contract")
+            if artifact_spec.composition_strategy is None:
+                missing.append("composition_strategy")
+            if artifact_spec.region_graph is None:
+                missing.append("region_graph")
+            if artifact_spec.visual_medium_policy is None:
+                missing.append("visual_medium_policy")
+            if artifact_spec.acceptance is None:
+                missing.append("acceptance")
+            if artifact_spec.full_slide_design_context is None:
+                missing.append("full_slide_design_context")
+            if artifact_spec.text_capacity is None or artifact_spec.text_capacity.status != "passed":
+                missing.append("passed_text_capacity")
+            if missing:
+                raise ValueError(
+                    "artifact-spec-v3 requires the complete Stage2 v3 authority chain: "
+                    + ", ".join(missing)
+                )
         final_prompt_ir = build_final_prompt_ir(artifact_spec)
         prompt = render_final_prompt(
             final_prompt_ir,

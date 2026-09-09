@@ -5,10 +5,12 @@ import re
 from pathlib import Path
 from typing import Any
 
-from cyberppt.page_artifact_spec import is_text_dense
+from cyberppt.composition_strategy import resolve_composition_strategy
+from cyberppt.text_capacity import TextCapacityAssessment, assert_text_capacity
 from cyberppt.region_graph import build_region_graph
 from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map
 from cyberppt.visual_medium_policy import resolve_visual_medium_policy
+from cyberppt.visual_thesis import validate_visual_thesis
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 from cyberppt.topology_resolver import CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY
 
@@ -237,16 +239,14 @@ def _legacy_use_scene(scene_policy: str) -> bool:
     return scene_policy in {"required", "allowed"}
 
 
-def _visual_budget(dense_text_page: bool, medium_policy: dict[str, object] | str) -> dict[str, object]:
+def _visual_budget(_dense_text_page: bool, medium_policy: dict[str, object] | str) -> dict[str, object]:
+    """Resolve visual budget from medium policy only.
+
+    The first argument remains for legacy private callers but is intentionally
+    ignored: dense copy is a Stage01 content-engineering concern.
+    """
     if isinstance(medium_policy, str):
         medium_policy = resolve_visual_medium_policy(None, scene_policy=medium_policy).to_dict()
-    if dense_text_page:
-        return {
-            "mode": "relationship_field_only",
-            "max_auxiliary_fragments": 0,
-            "scope": "page",
-            "region_local_visuals": False,
-        }
     preferred = str(medium_policy.get("preferred") or "")
     scene_policy = str(medium_policy.get("scene_policy") or "")
     if scene_policy == "forbidden" and preferred in {"relationship_diagram", "data_visualization"}:
@@ -294,6 +294,46 @@ def _render_business_relationships(value: object) -> str:
     return "；".join(sentences) or "业务关系"
 
 
+def _medium_semantic_kwargs(
+    source: dict[str, Any],
+    *,
+    business_object: str = "",
+) -> dict[str, object]:
+    locked = source.get("locked_text_items")
+    locked = locked if isinstance(locked, list) else []
+    texts = [
+        str(item.get("text") or "")
+        for item in locked
+        if isinstance(item, dict) and str(item.get("text") or "")
+    ]
+    relationships = source.get("business_relationships")
+    relationships = relationships if isinstance(relationships, list) else []
+    actors: list[str] = []
+    for item in relationships:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        if subject:
+            actors.append(subject)
+        actors.extend(str(value).strip() for value in item.get("objects") or [] if str(value).strip())
+    explicit_actor = str(source.get("actor_type") or source.get("business_actor_type") or "").strip()
+    data_available = bool(
+        source.get("data_available")
+        or source.get("metrics")
+        or source.get("data_points")
+        or source.get("chart_data")
+    )
+    return {
+        "page_mission": str(source.get("page_mission") or ""),
+        "business_relationships": relationships,
+        "text_count": len(texts),
+        "text_characters": sum(len(text) for text in texts),
+        "business_object": business_object,
+        "actor_type": explicit_actor or " ".join(dict.fromkeys(actors)),
+        "data_available": data_available,
+    }
+
+
 def _decision_execution_design(
     source: dict[str, Any],
     decision: dict[str, Any],
@@ -309,6 +349,7 @@ def _decision_execution_design(
         medium_policy = resolve_visual_medium_policy(
             selected.get("visual_medium_policy"),
             scene_policy=scene_policy,
+            **_medium_semantic_kwargs(source),
         )
         return {
             "business_object": relationships,
@@ -340,6 +381,7 @@ def _decision_execution_design(
         medium_policy = resolve_visual_medium_policy(
             design.get("visual_medium_policy") or selected.get("visual_medium_policy"),
             scene_policy=scene_policy,
+            **_medium_semantic_kwargs(source, business_object=normalized["business_object"]),
         )
         return {
             **normalized,
@@ -381,6 +423,7 @@ def _decision_execution_design(
     medium_policy = resolve_visual_medium_policy(
         selected.get("visual_medium_policy"),
         scene_policy=scene_policy,
+        **_medium_semantic_kwargs(source, business_object=f"{subject}中围绕‘{focus_label}’形成的业务关系场"),
     )
     return {
         "business_object": f"{subject}中围绕“{focus_label}”形成的业务关系场",
@@ -556,6 +599,58 @@ def _semantic_annotation_contract(
     }
 
 
+def _stage02_text_capacity(source: dict[str, Any], page_id: str) -> TextCapacityAssessment:
+    locked = source.get("locked_text_items")
+    if not isinstance(locked, list) or not locked:
+        _fail(f"{page_id}: visual input has no locked body text")
+    texts = [
+        str(item.get("text") or "")
+        for item in locked
+        if isinstance(item, dict) and str(item.get("text") or "")
+    ]
+    if len(texts) != len(locked):
+        _fail(f"{page_id}: locked body text is invalid")
+    integrity = source.get("content_integrity")
+    integrity = integrity if isinstance(integrity, dict) else {}
+    roots = integrity.get("root_nodes")
+    root_count = len(roots) if isinstance(roots, list) else 0
+    nodes = integrity.get("nodes")
+    hierarchy_levels = tuple(
+        int(node.get("source_level") or node.get("level") or 1)
+        for node in (nodes or [])
+        if isinstance(node, dict)
+    )
+    canvas = source.get("body_image_canvas")
+    canvas = canvas if isinstance(canvas, dict) else {}
+    width = int(canvas.get("width") or 2048)
+    height = int(canvas.get("height") or 1024)
+    try:
+        return assert_text_capacity(
+            texts,
+            root_count=root_count,
+            hierarchy_levels=hierarchy_levels,
+            canvas=(width, height),
+        )
+    except ValueError as exc:
+        _fail(f"{page_id}: {exc}")
+    raise AssertionError("unreachable")
+
+
+def _selected_visual_thesis(
+    selected: dict[str, Any],
+    source: dict[str, Any],
+    page_id: str,
+) -> str:
+    try:
+        return validate_visual_thesis(
+            selected.get("visual_thesis"),
+            source.get("core_judgment"),
+        )
+    except ValueError as exc:
+        _fail(f"{page_id}: {exc}")
+    raise AssertionError("unreachable")
+
+
 def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> dict[str, Any]:
     page_id = _page_id(source.get("page_id"))
     prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
@@ -591,6 +686,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     if topology not in ALLOWED_TOPOLOGY:
         _fail(f"{page_id}: selected candidate must declare a topology from {sorted(ALLOWED_TOPOLOGY)}")
     focus_policy = _resolve_focus_policy(selected, topology, page_id)
+    # Capacity must pass before medium resolution or any visual-budget decision.
+    capacity_assessment = _stage02_text_capacity(source, page_id)
     design = _decision_execution_design(source, decision, selected, page_id, focus_policy)
     stage01_features = source.get("stage01_relationship_features")
     stage01_features = stage01_features if isinstance(stage01_features, dict) else {}
@@ -608,6 +705,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             f"{page_id}: selected candidate topology {topology!r} is incompatible with "
             f"verified semantic topology {verified_topology!r}"
         )
+    visual_thesis = _selected_visual_thesis(selected, source, page_id)
     semantic_annotation_contract = _semantic_annotation_contract(
         source,
         decision,
@@ -789,6 +887,16 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     semantic_focus_kind = str(focus.get("kind") or "relationship")
     if semantic_focus_kind not in {"entity", "action", "state", "relationship", "outcome"}:
         semantic_focus_kind = "relationship"
+    composition_strategy = resolve_composition_strategy(
+        topology=topology,
+        focus_policy=focus_policy,
+        evidence_count=len(evidence_keys),
+        medium=str((design.get("visual_medium_policy") or {}).get("preferred") or ""),
+        page_index=int(source.get("page_number") or 0),
+        adjacent_strategy_ids=tuple(
+            str(value) for value in source.get("adjacent_composition_strategy_ids") or [] if str(value)
+        ),
+    )
     region_graph = bind_region_graph_text(
         build_region_graph(
             topology=topology,
@@ -797,6 +905,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             reading_sequence=[eid[key] for key in reading_keys],
             semantic_edges=graph_edges,
             focus_policy=focus_policy,
+            composition_strategy=composition_strategy,
         ),
         evidence_text_ids={eid[key]: text_ids_by_evidence[key] for key in evidence_keys},
         required_text_ids=expected_ids,
@@ -814,10 +923,9 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         {"id": item_id, "type": "body", "text": text, "source_ref": source_ref}
         for item_id, text in zip(expected_ids, expected_text)
     )
-    dense_text_page = is_text_dense(expected_text)
     scene_policy = str(design["scene_policy"])
     medium_policy = dict(design["visual_medium_policy"])
-    visual_budget = _visual_budget(dense_text_page, medium_policy)
+    visual_budget = _visual_budget(False, medium_policy)
     return {
         "schema_version": "1.1",
         "page_id": page_id,
@@ -854,6 +962,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "grouping_decisions": grouping_decisions,
             "forbidden_structures": forbidden_structures,
         },
+        "composition_strategy": composition_strategy.to_dict(),
         "region_graph": region_graph,
         "visual_medium_policy": medium_policy,
         "structural_decision": {
@@ -885,7 +994,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         },
         "visual_decision": {
             "visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"),
-            "visual_thesis": str(selected.get("visual_thesis") or source["core_judgment"]),
+            "visual_thesis": visual_thesis,
             "spatial_organization": design["spatial_organization"],
             "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys],
             "text_integration_method": design["text_integration_method"],

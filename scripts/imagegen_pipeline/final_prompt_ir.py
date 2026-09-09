@@ -9,12 +9,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from cyberppt.copy_contract import CopyContractSpec
+
 MAX_SEMANTIC_GROUPS = 10
 # The rendered contract now binds exact text to semantic groups and renders each
 # visible string once, so persisted debug receipts must record the new version.
 # v4 additionally preserves per-line visible-text hierarchy so the prompt can
 # render a shared group heading, peer groups, and their details distinctly.
-FINAL_PROMPT_IR_VERSION = "v4"
+FINAL_PROMPT_IR_VERSION = "v6"
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 
@@ -141,12 +143,21 @@ class VisualMediumPolicyIR:
     allowed: tuple[str, ...]
     scene_policy: str
     rationale: str
+    secondary: str = ""
+    forbidden: tuple[str, ...] = ()
+    confidence: float = 0.5
 
     def __post_init__(self) -> None:
         if not self.preferred.strip() or not self.allowed or not self.scene_policy.strip():
             raise PromptContractError("visual medium policy IR is incomplete")
         if self.preferred not in self.allowed:
             raise PromptContractError("preferred visual medium must be allowed")
+        if self.secondary and (self.secondary not in self.allowed or self.secondary == self.preferred):
+            raise PromptContractError("secondary visual medium must be a distinct allowed medium")
+        if set(self.allowed) & set(self.forbidden):
+            raise PromptContractError("allowed and forbidden visual media must be disjoint")
+        if not 0.0 <= self.confidence <= 1.0:
+            raise PromptContractError("visual medium confidence must be between 0 and 1")
 
 
 @dataclass(frozen=True)
@@ -161,6 +172,55 @@ class MicroVisualFreedomIR:
             raise PromptContractError("micro visual freedom entries must be non-empty")
         if len(self.allowed) != len(set(self.allowed)) or len(self.forbidden) != len(set(self.forbidden)):
             raise PromptContractError("micro visual freedom entries must be unique")
+
+
+@dataclass(frozen=True)
+class AcceptanceIR:
+    exact_copy_coverage: float
+    extra_text_count: int
+    region_ownership: str
+    relationship_accuracy: str
+    hierarchy_preservation: str
+    minimum_readability: str
+    forbidden_structure_absence: bool
+    style_lock_conformance: bool
+
+    def __post_init__(self) -> None:
+        if self.exact_copy_coverage != 1.0:
+            raise PromptContractError("acceptance exact copy coverage must be 100%")
+        if self.extra_text_count < 0:
+            raise PromptContractError("acceptance extra text count cannot be negative")
+        if not all((
+            self.region_ownership.strip(), self.relationship_accuracy.strip(),
+            self.hierarchy_preservation.strip(), self.minimum_readability.strip(),
+        )):
+            raise PromptContractError("acceptance IR is incomplete")
+        if not self.forbidden_structure_absence or not self.style_lock_conformance:
+            raise PromptContractError("acceptance requires forbidden-structure absence and style-lock conformance")
+
+
+@dataclass(frozen=True)
+class FullSlideDesignContextIR:
+    canvas: tuple[int, int, str]
+    title_region: tuple[int, int, int, int]
+    body_region: tuple[int, int, int, int]
+    body_export_canvas: tuple[int, int, str]
+    title_render_mode: str = "external_text_layer"
+    subtitle_render_mode: str = "external_text_layer"
+
+    def __post_init__(self) -> None:
+        if self.canvas != (1920, 1080, "16:9"):
+            raise PromptContractError("full-slide prompt context must use 1920x1080 (16:9)")
+        if self.body_export_canvas != (2048, 1024, "2:1"):
+            raise PromptContractError("full-slide prompt context must preserve 2048x1024 body export")
+        if self.title_render_mode != "external_text_layer" or self.subtitle_render_mode != "external_text_layer":
+            raise PromptContractError("title and subtitle must remain external text layers")
+        tx, ty, tw, th = self.title_region
+        bx, by, bw, bh = self.body_region
+        if min(tx, ty, tw, th, bx, by, bw, bh) < 0 or tw <= 0 or th <= 0 or bw <= 0 or bh <= 0:
+            raise PromptContractError("full-slide prompt regions must have valid geometry")
+        if ty + th > by:
+            raise PromptContractError("full-slide title region must not overlap body region")
 
 
 @dataclass(frozen=True)
@@ -181,6 +241,7 @@ class FinalPromptIR:
     visible_text: tuple[str, ...]
     hard_constraints: tuple[str, ...]
     runtime_lock: RuntimeLockIR
+    copy_contract: CopyContractSpec | None = None
     page_title: str = ""
     page_mission: str = ""
     semantic_context: str = ""
@@ -189,6 +250,8 @@ class FinalPromptIR:
     region_graph: RegionGraphIR | None = None
     visual_medium_policy: VisualMediumPolicyIR | None = None
     micro_visual_freedom: MicroVisualFreedomIR | None = None
+    full_slide_design_context: FullSlideDesignContextIR | None = None
+    acceptance: AcceptanceIR | None = None
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
@@ -220,6 +283,16 @@ class FinalPromptIR:
             raise PromptContractError("final prompt IR requires visible text")
         if len(self.visible_text) != len(set(self.visible_text)):
             raise PromptContractError("visible text entries must be unique")
+        if self.copy_contract is not None:
+            contract_text = tuple(
+                item.text for item in self.copy_contract.locked_copy
+            ) + tuple(
+                item.source_text for item in self.copy_contract.rewriteable_copy
+            )
+            if len(contract_text) != len(set(contract_text)):
+                raise PromptContractError("copy contract visible text entries must be unique")
+            if set(contract_text) != set(self.visible_text):
+                raise PromptContractError("copy contract visible text must match the prompt IR")
         if self.text_bindings:
             bound = tuple(text for binding in self.text_bindings for text in binding.exact_text)
             if bound != self.visible_text:
@@ -243,8 +316,10 @@ class FinalPromptIR:
 __all__ = [
     "FINAL_PROMPT_IR_VERSION",
     "MAX_SEMANTIC_GROUPS",
+    "AcceptanceIR",
     "CompositionIR",
     "FinalPromptIR",
+    "FullSlideDesignContextIR",
     "MicroVisualFreedomIR",
     "PromptContractError",
     "RegionGraphIR",
