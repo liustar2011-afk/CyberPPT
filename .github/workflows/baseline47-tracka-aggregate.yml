@@ -1,0 +1,31 @@
+name: Baseline47 Track A aggregate validation
+
+on:
+  push:
+    branches:
+      - fix/baseline-47-regressions
+    paths:
+      - .github/workflows/baseline47-tracka-aggregate.yml
+
+jobs:
+  track-a:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/baseline-47-regressions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Run Track A aggregate regression suite
+        run: |
+          python -m pytest -q \
+            tests/test_artifact_prompt.py \
+            tests/test_extended_style_9.py \
+            tests/test_extended_style_10.py \
+            tests/test_final_prompt_contract.py \
+            tests/test_final_prompt_ir.py \
+            tests/test_final_prompt_renderer.py \
+            tests/test_style_lock_snapshot.py
