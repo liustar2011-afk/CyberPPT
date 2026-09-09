@@ -60,3 +60,5 @@ jobs:
                   docs/development/baseline-47-regressions-progress.md
           git commit -m 'test(baseline47): align style lock refresh policy'
           git push origin HEAD:fix/baseline-47-regressions
+
+# Retry after correcting generated-test newline escaping.
