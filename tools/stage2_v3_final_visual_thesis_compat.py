@@ -19,6 +19,20 @@ def main() -> None:
         "English relationship vocabulary",
     )
 
+    composition = Path("cyberppt/composition_strategy.py")
+    replace_once(
+        composition,
+        '''    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
+''',
+        '''    def to_dict(self) -> dict[str, object]:
+        payload = asdict(self)
+        payload["rationale"] = list(self.rationale)
+        return payload
+''',
+        "composition strategy JSON-safe rationale",
+    )
+
     regression = Path("tests/test_prompt_optimization_regressions.py")
     replace_once(
         regression,
