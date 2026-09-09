@@ -145,3 +145,25 @@
 
 下一阶段工作：
 - Phase 4 / Step 4.1：为 Text Capacity 增加 `content_action`，删除 dense text 对 visual budget 的直接降级路径；blocked 页面明确返回 Stage01 内容工程处理，Visual Medium Resolver 只消费容量通过页面。
+
+## Step 4.1｜Text Capacity 与内容工程分离
+
+状态：已完成
+
+已完成工作：
+- `TextCapacityAssessment` 新增 `content_action`，passed 对应 `continue_stage02`，blocked 对应 `return_to_stage01`。
+- `assert_text_capacity()` 的 blocked 错误明确要求返回 Stage01 做拆页、取舍或正文修订，禁止让 ImageGen 通过漏字、改写或减视觉规避容量问题。
+- PageArtifactSpec 对全部 authored visible text 执行容量评估并保留 `text_capacity`；blocked 页面在进入后续视觉规划前阻断。
+- Visual Stage 新增 `_stage02_text_capacity()`，在 `_decision_execution_design()` 和 Visual Medium Resolver 之前执行。
+- 删除 PageArtifactSpec 的 `dense text → relationship_field_only → zero auxiliary visuals` 分支。
+- 删除 Visual Stage visual budget 对 dense flag 的直接响应；保留 legacy 私有函数参数但明确忽略。
+- Visual Stage 持久化 text capacity status / content_action / pressure score / structural indicators。
+- 新增 `tests/test_text_capacity_v2.py`，验证 passed/blocked action、blocked 回 Stage01，以及 dense flag 不再导致零视觉。
+
+验证结果：
+- 定向执行 `test_text_capacity_v2 + test_visual_medium_policy + test_visual_medium_resolver_v2 + test_region_graph_composition_strategy` 全部通过。
+- 业务提交：`fae03b7bd64d7382b02686800db26ab4b3b1876d`（`stage2-v3: separate text capacity from visual planning`）。
+- Phase 4 验收完成：文字多不再自动导致 zero auxiliary visuals；只有容量真正 blocked 时返回 Stage01，medium resolver 仅消费容量通过页面。
+
+下一阶段工作：
+- Phase 5：Visual Thesis 必填，禁止 fallback 到 core_judgment，增加与 core judgment 的重复度校验和关系性校验。
