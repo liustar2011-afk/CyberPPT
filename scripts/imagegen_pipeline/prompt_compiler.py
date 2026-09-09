@@ -11,11 +11,13 @@ if TYPE_CHECKING:
     from cyberppt.page_artifact_spec import PageArtifactSpec
 
 ARTIFACT_PROMPT_COMPILER = "artifact-spec-v2"
+ARTIFACT_PROMPT_COMPILER_V3 = "artifact-spec-v3"
 PROMPT_COMPILERS = (
     "legacy",
     "creative-brief-v1",
     "content-first-v1",
     ARTIFACT_PROMPT_COMPILER,
+    ARTIFACT_PROMPT_COMPILER_V3,
 )
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
 TEXT_RENDER_MODES = ("full_image", "semantic_visual")
@@ -99,6 +101,7 @@ class CompiledPagePrompt:
 __all__ = [
     "CompiledPagePrompt",
     "ARTIFACT_PROMPT_COMPILER",
+    "ARTIFACT_PROMPT_COMPILER_V3",
     "DEFAULT_PROMPT_COMPILER",
     "DEFAULT_TEXT_RENDER_MODE",
     "PROMPT_COMPILERS",

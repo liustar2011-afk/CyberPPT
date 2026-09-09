@@ -68,7 +68,7 @@ def validate_final_prompt(
     *,
     style_id: int | None = None,
 ) -> None:
-    from scripts.imagegen_pipeline.final_prompt_renderer import SECTION_HEADINGS
+    from scripts.imagegen_pipeline.final_prompt_renderer import ACCEPTANCE_HEADING, HARD_CONSTRAINTS_HEADING, SECTION_HEADINGS
 
     positions: list[int] = []
     for heading in SECTION_HEADINGS:
@@ -146,6 +146,27 @@ def validate_final_prompt(
             raise PromptContractError("full-slide design context must be declared exactly once")
         if "External title region:" not in prompt or "Body image export remains independent" not in prompt:
             raise PromptContractError("full-slide prompt must declare external title and body-export mapping")
+
+
+    if ir.acceptance is not None:
+        if prompt.count(ACCEPTANCE_HEADING) != 1:
+            raise PromptContractError("acceptance criteria section must appear exactly once")
+        if not (
+            prompt.index(ACCEPTANCE_HEADING) < prompt.index(HARD_CONSTRAINTS_HEADING)
+            < prompt.index(SECTION_HEADINGS[-1])
+        ):
+            raise PromptContractError("acceptance criteria must precede hard constraints and runtime lock")
+        acceptance = ir.acceptance
+        expected_lines = (
+            f"Exact copy coverage: {round(acceptance.exact_copy_coverage * 100)}% of locked copy must be present exactly once.",
+            f"Maximum extra visible text count: {acceptance.extra_text_count}.",
+            "Forbidden structure absence: required.",
+            "Style lock conformance: required.",
+        )
+        if any(prompt.count(line) != 1 for line in expected_lines):
+            raise PromptContractError("acceptance criteria values differ from the prompt IR")
+    elif ACCEPTANCE_HEADING in prompt:
+        raise PromptContractError("legacy prompt without acceptance IR cannot contain acceptance criteria")
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)
     reading_boundary_declarations = re.findall(r"^Reading boundary: .*$", prompt, flags=re.MULTILINE)

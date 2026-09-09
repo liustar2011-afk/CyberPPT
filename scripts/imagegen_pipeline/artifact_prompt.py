@@ -14,6 +14,7 @@ from cyberppt.page_artifact_spec import (
     VisualBudgetSpec,
 )
 from scripts.imagegen_pipeline.final_prompt_ir import (
+    AcceptanceIR,
     CompositionIR,
     FinalPromptIR,
     FullSlideDesignContextIR,
@@ -486,6 +487,22 @@ def _text_binding_ir(spec: PageArtifactSpec) -> tuple[TextBindingIR, ...]:
     return result
 
 
+def _acceptance_ir(spec: PageArtifactSpec) -> AcceptanceIR | None:
+    acceptance = spec.acceptance
+    if acceptance is None:
+        return None
+    return AcceptanceIR(
+        exact_copy_coverage=acceptance.exact_copy_coverage,
+        extra_text_count=acceptance.extra_text_count,
+        region_ownership=acceptance.region_ownership,
+        relationship_accuracy=acceptance.relationship_accuracy,
+        hierarchy_preservation=acceptance.hierarchy_preservation,
+        minimum_readability=acceptance.minimum_readability,
+        forbidden_structure_absence=acceptance.forbidden_structure_absence,
+        style_lock_conformance=acceptance.style_lock_conformance,
+    )
+
+
 def _full_slide_design_context_ir(spec: PageArtifactSpec) -> FullSlideDesignContextIR | None:
     context = spec.full_slide_design_context
     if context is None:
@@ -679,6 +696,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             visual_medium_policy=_visual_medium_policy_ir(spec),
             micro_visual_freedom=_micro_visual_freedom_ir(spec),
             full_slide_design_context=_full_slide_design_context_ir(spec),
+            acceptance=_acceptance_ir(spec),
         )
     except PromptContractError as exc:
         raise PromptContractError(f"{spec.page_id}: {exc}") from exc

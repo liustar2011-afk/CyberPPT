@@ -23,6 +23,7 @@ SECTION_HEADINGS = (
     "[7. Runtime lock]",
 )
 
+ACCEPTANCE_HEADING = "[Acceptance criteria]"
 HARD_CONSTRAINTS_HEADING = "[Hard constraints]"
 
 
@@ -142,6 +143,22 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def _acceptance_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    acceptance = ir.acceptance
+    if acceptance is None:
+        return ()
+    return (
+        f"Exact copy coverage: {round(acceptance.exact_copy_coverage * 100)}% of locked copy must be present exactly once.",
+        f"Maximum extra visible text count: {acceptance.extra_text_count}.",
+        "Region ownership: " + acceptance.region_ownership.replace("_", " ") + ".",
+        "Relationship accuracy: " + acceptance.relationship_accuracy.replace("_", " ") + ".",
+        "Hierarchy preservation: " + acceptance.hierarchy_preservation.replace("_", " ") + ".",
+        "Minimum readability: " + acceptance.minimum_readability.replace("_", " ") + ".",
+        "Forbidden structure absence: required." if acceptance.forbidden_structure_absence else "Forbidden structure absence: not required.",
+        "Style lock conformance: required." if acceptance.style_lock_conformance else "Style lock conformance: not required.",
+    )
+
+
 def _full_slide_context_lines(ir: FinalPromptIR) -> tuple[str, ...]:
     context = ir.full_slide_design_context
     if context is None:
@@ -233,6 +250,11 @@ def render_final_prompt(
         )
     )
     hard_constraints_section = "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints))
+    acceptance_section = (
+        "\n".join((ACCEPTANCE_HEADING, *_acceptance_lines(ir)))
+        if ir.acceptance is not None
+        else ""
+    )
     nonvisible_page_context = (
         *(("【标题（不上屏）】", ir.page_title) if ir.page_title else ()),
         "【页面使命（不上屏）】",
@@ -287,7 +309,7 @@ def render_final_prompt(
         ),
         "\n".join((SECTION_HEADINGS[5], *_copy_contract_lines(ir))),
     )
-    sections = (*sections_before_runtime, hard_constraints_section, runtime_section)
+    sections = (*sections_before_runtime, acceptance_section, hard_constraints_section, runtime_section)
     prompt = "\n\n".join(section for section in sections if section.strip()).rstrip() + "\n"
     if runtime is not None:
         prompt = enforce_terminal_execution_lock(prompt, runtime)
@@ -394,6 +416,18 @@ def render_debug_receipt(
             if ir.visual_medium_policy is not None
             else None
         ),
+        "acceptance": (
+            {
+                "exact_copy_coverage": ir.acceptance.exact_copy_coverage,
+                "extra_text_count": ir.acceptance.extra_text_count,
+                "region_ownership": ir.acceptance.region_ownership,
+                "relationship_accuracy": ir.acceptance.relationship_accuracy,
+                "hierarchy_preservation": ir.acceptance.hierarchy_preservation,
+                "minimum_readability": ir.acceptance.minimum_readability,
+                "forbidden_structure_absence": ir.acceptance.forbidden_structure_absence,
+                "style_lock_conformance": ir.acceptance.style_lock_conformance,
+            } if ir.acceptance is not None else None
+        ),
         "full_slide_design_context": (
             {
                 "canvas": list(ir.full_slide_design_context.canvas),
@@ -412,6 +446,7 @@ def render_debug_receipt(
 
 
 __all__ = [
+    "ACCEPTANCE_HEADING",
     "HARD_CONSTRAINTS_HEADING",
     "SECTION_HEADINGS",
     "render_debug_receipt",

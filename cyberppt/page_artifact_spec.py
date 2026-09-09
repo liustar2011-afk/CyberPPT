@@ -9,7 +9,9 @@ import warnings
 from pathlib import Path
 from typing import Any, Mapping
 
+from cyberppt.acceptance_contract import AcceptanceSpec, build_acceptance_spec
 from cyberppt.copy_contract import CopyContractSpec, build_copy_contract
+from cyberppt.composition_strategy import CompositionStrategySpec, validate_composition_strategy
 from cyberppt.full_slide_context import (
     FullSlideDesignContextSpec, default_full_slide_design_context,
     validate_full_slide_design_context,
@@ -230,6 +232,8 @@ class PageArtifactSpec:
     copy_contract: CopyContractSpec | None = None
     text_capacity: TextCapacityAssessment | None = None
     full_slide_design_context: FullSlideDesignContextSpec | None = None
+    composition_strategy: CompositionStrategySpec | None = None
+    acceptance: AcceptanceSpec | None = None
 
     def __post_init__(self) -> None:
         if self.visible_text_bindings:
@@ -780,6 +784,12 @@ def build_page_artifact_spec(
 
     semantic_graph = visual_page.get("semantic_graph")
     semantic_graph = semantic_graph if isinstance(semantic_graph, dict) else {}
+    raw_composition_strategy = visual_page.get("composition_strategy")
+    composition_strategy = (
+        validate_composition_strategy(raw_composition_strategy)
+        if isinstance(raw_composition_strategy, Mapping)
+        else None
+    )
     raw_region_graph = visual_page.get("region_graph")
     region_graph = (
         validate_region_graph(raw_region_graph)
@@ -804,6 +814,13 @@ def build_page_artifact_spec(
         build_copy_contract(visible_text_bindings, region_by_text_id=region_by_text_id)
         if visible_text_bindings
         else None
+    )
+    acceptance = build_acceptance_spec(
+        allowed_extra_text_count=(
+            copy_contract.extra_text.max_count
+            if copy_contract is not None and copy_contract.extra_text.allowed
+            else 0
+        )
     )
     handoff_relationships = visual_input.get("business_relationships")
     visual_relationships = semantic_graph.get("business_relationships")
@@ -979,6 +996,8 @@ def build_page_artifact_spec(
         copy_contract=copy_contract,
         text_capacity=capacity,
         full_slide_design_context=full_slide_design_context,
+        composition_strategy=composition_strategy,
+        acceptance=acceptance,
     )
 
 

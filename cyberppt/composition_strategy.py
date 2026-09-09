@@ -8,7 +8,7 @@ geometries without changing business meaning.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from typing import Iterable
+from typing import Iterable, Mapping
 
 
 COMPOSITION_STRATEGY_VERSION = "composition-strategy-v1"
@@ -221,6 +221,39 @@ def legacy_composition_strategy(topology: str) -> CompositionStrategySpec:
     )
 
 
+def validate_composition_strategy(value: Mapping[str, object]) -> CompositionStrategySpec:
+    if not isinstance(value, Mapping):
+        raise ValueError("composition_strategy must be an object")
+    topology = str(value.get("topology") or "").strip()
+    strategy_id = str(value.get("strategy_id") or "").strip()
+    if not topology or not strategy_id:
+        raise ValueError("composition_strategy requires topology and strategy_id")
+    expected = materialize_composition_strategy(topology=topology, strategy_id=strategy_id)
+    rationale_raw = value.get("rationale")
+    if not isinstance(rationale_raw, (list, tuple)) or not rationale_raw:
+        raise ValueError("composition_strategy rationale must be a non-empty array")
+    try:
+        score = float(value.get("score", 1.0))
+    except (TypeError, ValueError) as exc:
+        raise ValueError("composition_strategy score must be numeric") from exc
+    spec = CompositionStrategySpec(
+        strategy_id=strategy_id,
+        topology=topology,
+        primary_axis=str(value.get("primary_axis") or "").strip(),
+        geometry=str(value.get("geometry") or "").strip(),
+        anchor_policy=str(value.get("anchor_policy") or "").strip(),
+        weight_policy=str(value.get("weight_policy") or "").strip(),
+        span_policy=str(value.get("span_policy") or "").strip(),
+        score=score,
+        rationale=tuple(str(item).strip() for item in rationale_raw if str(item).strip()),
+        version=str(value.get("version") or COMPOSITION_STRATEGY_VERSION),
+    )
+    for field in ("primary_axis", "geometry", "anchor_policy", "weight_policy", "span_policy"):
+        if getattr(spec, field) != getattr(expected, field):
+            raise ValueError(f"composition_strategy {field} drifted from the declared strategy blueprint")
+    return spec
+
+
 def resolve_composition_strategy(
     *,
     topology: str,
@@ -276,4 +309,5 @@ __all__ = [
     "legacy_composition_strategy",
     "materialize_composition_strategy",
     "resolve_composition_strategy",
+    "validate_composition_strategy",
 ]

@@ -16,7 +16,7 @@ MAX_SEMANTIC_GROUPS = 10
 # visible string once, so persisted debug receipts must record the new version.
 # v4 additionally preserves per-line visible-text hierarchy so the prompt can
 # render a shared group heading, peer groups, and their details distinctly.
-FINAL_PROMPT_IR_VERSION = "v5"
+FINAL_PROMPT_IR_VERSION = "v6"
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 
@@ -175,6 +175,31 @@ class MicroVisualFreedomIR:
 
 
 @dataclass(frozen=True)
+class AcceptanceIR:
+    exact_copy_coverage: float
+    extra_text_count: int
+    region_ownership: str
+    relationship_accuracy: str
+    hierarchy_preservation: str
+    minimum_readability: str
+    forbidden_structure_absence: bool
+    style_lock_conformance: bool
+
+    def __post_init__(self) -> None:
+        if self.exact_copy_coverage != 1.0:
+            raise PromptContractError("acceptance exact copy coverage must be 100%")
+        if self.extra_text_count < 0:
+            raise PromptContractError("acceptance extra text count cannot be negative")
+        if not all((
+            self.region_ownership.strip(), self.relationship_accuracy.strip(),
+            self.hierarchy_preservation.strip(), self.minimum_readability.strip(),
+        )):
+            raise PromptContractError("acceptance IR is incomplete")
+        if not self.forbidden_structure_absence or not self.style_lock_conformance:
+            raise PromptContractError("acceptance requires forbidden-structure absence and style-lock conformance")
+
+
+@dataclass(frozen=True)
 class FullSlideDesignContextIR:
     canvas: tuple[int, int, str]
     title_region: tuple[int, int, int, int]
@@ -226,6 +251,7 @@ class FinalPromptIR:
     visual_medium_policy: VisualMediumPolicyIR | None = None
     micro_visual_freedom: MicroVisualFreedomIR | None = None
     full_slide_design_context: FullSlideDesignContextIR | None = None
+    acceptance: AcceptanceIR | None = None
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
@@ -290,6 +316,7 @@ class FinalPromptIR:
 __all__ = [
     "FINAL_PROMPT_IR_VERSION",
     "MAX_SEMANTIC_GROUPS",
+    "AcceptanceIR",
     "CompositionIR",
     "FinalPromptIR",
     "FullSlideDesignContextIR",
