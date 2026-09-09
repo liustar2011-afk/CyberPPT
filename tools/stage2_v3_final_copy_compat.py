@@ -11,89 +11,76 @@ def replace_once(path: Path, old: str, new: str, label: str) -> None:
 
 
 def main() -> None:
-    renderer = Path("scripts/imagegen_pipeline/final_prompt_renderer.py")
-    replace_once(
-        renderer,
-        '''            if ir.copy_contract is None:
-                lines.append("- source onscreen text assigned to this group:")
-                lines.extend(f'- Source onscreen text: \\"{text}\\"' for text in binding.exact_text)
-            else:
-                ordinals = _public_text_ordinals(ir)
-                owned = [ordinals[text_id] for text_id in binding.text_ids if text_id in ordinals]
-                lines.append("- copy ownership: source onscreen item(s) " + ", ".join(str(item) for item in owned) + "; exact wording is declared once in Section 6.")
-''',
-        '''            ordinals = _public_text_ordinals(ir)
-            owned = [ordinals[text_id] for text_id in binding.text_ids if text_id in ordinals]
-            lines.append("- copy ownership: source onscreen item(s) " + ", ".join(str(item) for item in owned) + "; exact wording is declared once in Section 6.")
-''',
-        "renderer group fallback block",
-    )
-    replace_once(
-        renderer,
-        '''    if contract is None:
-        return (
-            "Use the supplied copy as source material for concise presentation text. You may rewrite, merge, shorten, reorder, split, select, or replace its wording to suit the visual composition.",
-            *(f'- Source onscreen text: \\"{text}\\"' for text in ir.visible_text),
-        )
-''',
-        '''    if contract is None:
-        lines: list[str] = [
-            "Copy authority: supplied visible copy is locked by default when no explicit copy contract is attached."
-        ]
-        for text in ir.visible_text:
-            lines.append(f'- Exact visible text: \\"{text}\\"')
-            lines.append("  - semantic role: content; render exactly once.")
-        if not ir.visible_text:
-            lines.append("- No visible copy is declared.")
-        lines.extend(
-            (
-                "Locked copy may not be rewritten, merged, shortened, reordered, split, selected, or replaced; line breaks, grouping and position changes may be used only to preserve readability and meaning.",
-                "Do not add any visible text that is not declared in this copy contract.",
-            )
-        )
-        return tuple(lines)
-''',
-        "renderer copy fallback block",
-    )
-
     contract = Path("scripts/imagegen_pipeline/final_prompt_contract.py")
     replace_once(
         contract,
-        '''    else:
-        source_declarations = tuple(
-            re.findall(r'^- Source onscreen text: \\"(.*)\\"$', prompt, flags=re.MULTILINE)
-        )
-        if source_declarations != ir.visible_text:
+        '''    for text in ir.visible_text:
+        if text.strip().lower() in _FORBIDDEN_CHROME_TEXT:
             raise PromptContractError(
-                "final prompt source onscreen declarations must match the supplied source material"
+                f"final prompt visible text contains excluded chrome content: {text!r}"
             )
+    if ir.copy_contract is not None:
 ''',
-        '''    else:
-        exact_declarations = tuple(
-            re.findall(r'^- Exact visible text: \\"(.*)\\"$', prompt, flags=re.MULTILINE)
-        )
-        if exact_declarations != ir.visible_text:
+        '''    for text in ir.visible_text:
+        if text.strip().lower() in _FORBIDDEN_CHROME_TEXT:
             raise PromptContractError(
-                "final prompt exact-copy declarations must match the supplied visible copy"
+                f"final prompt visible text contains excluded chrome content: {text!r}"
             )
-        if "You may rewrite, merge, shorten, reorder, split, select, or replace" in prompt:
-            raise PromptContractError("legacy fallback cannot grant blanket rewrite authority")
-        if "Do not add any visible text that is not declared in this copy contract." not in prompt:
-            raise PromptContractError("legacy fallback must forbid undeclared extra visible text")
+    legacy_source_declarations = tuple(
+        re.findall(r'^- Source onscreen text: \\"(.*)\\"$', prompt, flags=re.MULTILINE)
+    )
+    if legacy_source_declarations:
+        raise PromptContractError(
+            "supplied source material declarations are retired; use exact or explicitly rewriteable copy declarations"
+        )
+    if ir.copy_contract is not None:
 ''',
-        "prompt contract legacy fallback block",
+        "retired source-material declaration gate",
     )
 
-    macro_test = Path("tests/test_prompt_macro_structure.py")
+    artifact_prompt = Path("tests/test_artifact_prompt.py")
     replace_once(
-        macro_test,
-        '''    for text in ir.visible_text:
-        assert prompt.count(f'- Source onscreen text: "{text}"') == 1
+        artifact_prompt,
+        '''    def test_final_prompt_uses_onscreen_as_free_source_and_hides_full_copy(self) -> None:
+        unique_context = "This complete explanation is semantic context only."
+        spec = replace(
+            _spec(),
+            semantic_context=SemanticContextSpec(
+                text=unique_context,
+                source_sha256="d" * 64,
+                source_kind="full_prose",
+            ),
+        )
+
+        prompt = render_final_prompt(build_final_prompt_ir(spec))
+
+        self.assertIn(unique_context, prompt)
+        self.assertIn("never render or paraphrase this passage as extra copy", prompt)
+        self.assertIn("Use the supplied copy as source material", prompt)
+        self.assertIn("rewrite, merge, shorten, reorder, split, select, or replace", prompt)
 ''',
-        '''    for text in ir.visible_text:
-        assert prompt.count(f'- Exact visible text: "{text}"') == 1
+        '''    def test_final_prompt_locks_authored_onscreen_copy_and_hides_full_copy(self) -> None:
+        unique_context = "This complete explanation is semantic context only."
+        spec = replace(
+            _spec(),
+            semantic_context=SemanticContextSpec(
+                text=unique_context,
+                source_sha256="d" * 64,
+                source_kind="full_prose",
+            ),
+        )
+
+        prompt = render_final_prompt(build_final_prompt_ir(spec))
+
+        self.assertIn(unique_context, prompt)
+        self.assertIn("never render or paraphrase this passage as extra copy", prompt)
+        self.assertEqual(1, prompt.count('- Exact visible text: "Governed input"'))
+        self.assertEqual(1, prompt.count('- Exact visible text: "Traceable result"'))
+        self.assertIn("Locked copy may not be rewritten, merged, shortened, reordered, split, selected, or replaced", prompt)
+        self.assertIn("Do not add any visible text that is not declared in this copy contract.", prompt)
+        self.assertNotIn("Use the supplied copy as source material", prompt)
 ''',
-        "macro structure exact-copy assertion",
+        "legacy free-source assertion migration",
     )
 
 
