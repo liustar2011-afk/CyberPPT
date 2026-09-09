@@ -10,6 +10,10 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from cyberppt.copy_contract import CopyContractSpec, build_copy_contract
+from cyberppt.full_slide_context import (
+    FullSlideDesignContextSpec, default_full_slide_design_context,
+    validate_full_slide_design_context,
+)
 from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
 from cyberppt.text_capacity import TextCapacityAssessment, assess_text_capacity
 from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy
@@ -225,6 +229,7 @@ class PageArtifactSpec:
     visual_medium_policy: VisualMediumPolicy | None = None
     copy_contract: CopyContractSpec | None = None
     text_capacity: TextCapacityAssessment | None = None
+    full_slide_design_context: FullSlideDesignContextSpec | None = None
 
     def __post_init__(self) -> None:
         if self.visible_text_bindings:
@@ -651,6 +656,17 @@ def build_page_artifact_spec(
     )
     if handoff_canvas != visual_canvas:
         raise ValueError("artifact spec canvas drifted between handoff and visual spec")
+    raw_full_slide_context = visual_input.get("full_slide_design_context")
+    if isinstance(raw_full_slide_context, Mapping):
+        full_slide_design_context = validate_full_slide_design_context(raw_full_slide_context)
+    else:
+        warnings.warn(
+            "legacy_stage02_prompt_contract: projecting default 16:9 full-slide design context",
+            RuntimeWarning, stacklevel=2,
+        )
+        full_slide_design_context = default_full_slide_design_context()
+    if full_slide_design_context.body_export_canvas != handoff_canvas:
+        raise ValueError("full-slide context body export canvas drifted from Stage02 body canvas")
 
     text_integration = visual_page.get("text_integration")
     text_integration = text_integration if isinstance(text_integration, dict) else {}
@@ -962,6 +978,7 @@ def build_page_artifact_spec(
         visual_medium_policy=visual_medium_policy,
         copy_contract=copy_contract,
         text_capacity=capacity,
+        full_slide_design_context=full_slide_design_context,
     )
 
 

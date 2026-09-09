@@ -16,6 +16,7 @@ from cyberppt.page_artifact_spec import (
 from scripts.imagegen_pipeline.final_prompt_ir import (
     CompositionIR,
     FinalPromptIR,
+    FullSlideDesignContextIR,
     MicroVisualFreedomIR,
     PromptContractError,
     RegionGraphIR,
@@ -485,6 +486,22 @@ def _text_binding_ir(spec: PageArtifactSpec) -> tuple[TextBindingIR, ...]:
     return result
 
 
+def _full_slide_design_context_ir(spec: PageArtifactSpec) -> FullSlideDesignContextIR | None:
+    context = spec.full_slide_design_context
+    if context is None:
+        return None
+    title = context.title_region
+    body = context.body_region
+    return FullSlideDesignContextIR(
+        canvas=context.canvas,
+        title_region=(title.x, title.y, title.w, title.h),
+        body_region=(body.x, body.y, body.w, body.h),
+        body_export_canvas=context.body_export_canvas,
+        title_render_mode=title.render_mode,
+        subtitle_render_mode=context.subtitle_render_mode,
+    )
+
+
 def _visual_medium_policy_ir(spec: PageArtifactSpec) -> VisualMediumPolicyIR | None:
     policy = spec.visual_medium_policy
     if policy is None:
@@ -661,6 +678,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             region_graph=_region_graph_ir(spec),
             visual_medium_policy=_visual_medium_policy_ir(spec),
             micro_visual_freedom=_micro_visual_freedom_ir(spec),
+            full_slide_design_context=_full_slide_design_context_ir(spec),
         )
     except PromptContractError as exc:
         raise PromptContractError(f"{spec.page_id}: {exc}") from exc

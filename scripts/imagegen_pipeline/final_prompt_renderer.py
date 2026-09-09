@@ -142,6 +142,21 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def _full_slide_context_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    context = ir.full_slide_design_context
+    if context is None:
+        return ()
+    tx, ty, tw, th = context.title_region
+    bx, by, bw, bh = context.body_region
+    ew, eh, er = context.body_export_canvas
+    return (
+        f"Full-slide design context: {context.canvas[0]}x{context.canvas[1]} ({context.canvas[2]}).",
+        f"External title region: x={tx}, y={ty}, w={tw}, h={th}; reserve this region in the full-slide hierarchy but do not render title or subtitle into the body image.",
+        f"Body visual region in the finished slide: x={bx}, y={by}, w={bw}, h={bh}; compose the body as the visual continuation below the external title region.",
+        f"Body image export remains independent at {ew}x{eh} ({er}); map the full-slide body-region composition into this export without adding title, subtitle, logo, footer or page chrome.",
+    )
+
+
 def _copy_contract_lines(ir: FinalPromptIR) -> tuple[str, ...]:
     contract = ir.copy_contract
     if contract is None:
@@ -226,7 +241,7 @@ def render_final_prompt(
         ir.page_judgment,
     )
     sections_before_runtime = (
-        "\n".join((SECTION_HEADINGS[0], ir.deliverable)),
+        "\n".join((SECTION_HEADINGS[0], ir.deliverable, *_full_slide_context_lines(ir))),
         "\n".join(
             (
                 SECTION_HEADINGS[1],
@@ -378,6 +393,16 @@ def render_debug_receipt(
             }
             if ir.visual_medium_policy is not None
             else None
+        ),
+        "full_slide_design_context": (
+            {
+                "canvas": list(ir.full_slide_design_context.canvas),
+                "title_region": list(ir.full_slide_design_context.title_region),
+                "body_region": list(ir.full_slide_design_context.body_region),
+                "body_export_canvas": list(ir.full_slide_design_context.body_export_canvas),
+                "title_render_mode": ir.full_slide_design_context.title_render_mode,
+                "subtitle_render_mode": ir.full_slide_design_context.subtitle_render_mode,
+            } if ir.full_slide_design_context is not None else None
         ),
         "visible_text": list(ir.visible_text),
         "copy_contract": (ir.copy_contract.as_dict() if ir.copy_contract is not None else None),

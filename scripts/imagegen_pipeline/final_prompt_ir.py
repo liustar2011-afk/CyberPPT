@@ -175,6 +175,30 @@ class MicroVisualFreedomIR:
 
 
 @dataclass(frozen=True)
+class FullSlideDesignContextIR:
+    canvas: tuple[int, int, str]
+    title_region: tuple[int, int, int, int]
+    body_region: tuple[int, int, int, int]
+    body_export_canvas: tuple[int, int, str]
+    title_render_mode: str = "external_text_layer"
+    subtitle_render_mode: str = "external_text_layer"
+
+    def __post_init__(self) -> None:
+        if self.canvas != (1920, 1080, "16:9"):
+            raise PromptContractError("full-slide prompt context must use 1920x1080 (16:9)")
+        if self.body_export_canvas != (2048, 1024, "2:1"):
+            raise PromptContractError("full-slide prompt context must preserve 2048x1024 body export")
+        if self.title_render_mode != "external_text_layer" or self.subtitle_render_mode != "external_text_layer":
+            raise PromptContractError("title and subtitle must remain external text layers")
+        tx, ty, tw, th = self.title_region
+        bx, by, bw, bh = self.body_region
+        if min(tx, ty, tw, th, bx, by, bw, bh) < 0 or tw <= 0 or th <= 0 or bw <= 0 or bh <= 0:
+            raise PromptContractError("full-slide prompt regions must have valid geometry")
+        if ty + th > by:
+            raise PromptContractError("full-slide title region must not overlap body region")
+
+
+@dataclass(frozen=True)
 class RuntimeLockIR:
     style_contract: str
     terminal_lock: str = ""
@@ -201,6 +225,7 @@ class FinalPromptIR:
     region_graph: RegionGraphIR | None = None
     visual_medium_policy: VisualMediumPolicyIR | None = None
     micro_visual_freedom: MicroVisualFreedomIR | None = None
+    full_slide_design_context: FullSlideDesignContextIR | None = None
 
     def __post_init__(self) -> None:
         if self.prompt_mode not in {"semantic_brief", "directed_composition"}:
@@ -267,6 +292,7 @@ __all__ = [
     "MAX_SEMANTIC_GROUPS",
     "CompositionIR",
     "FinalPromptIR",
+    "FullSlideDesignContextIR",
     "MicroVisualFreedomIR",
     "PromptContractError",
     "RegionGraphIR",

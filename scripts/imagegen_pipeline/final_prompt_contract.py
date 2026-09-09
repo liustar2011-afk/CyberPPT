@@ -139,6 +139,14 @@ def validate_final_prompt(
             )
     _validate_text_bindings(prompt, ir)
 
+    if ir.full_slide_design_context is not None:
+        context = ir.full_slide_design_context
+        expected = f"Full-slide design context: {context.canvas[0]}x{context.canvas[1]} ({context.canvas[2]})."
+        if prompt.count(expected) != 1:
+            raise PromptContractError("full-slide design context must be declared exactly once")
+        if "External title region:" not in prompt or "Body image export remains independent" not in prompt:
+            raise PromptContractError("full-slide prompt must declare external title and body-export mapping")
+
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)
     reading_boundary_declarations = re.findall(r"^Reading boundary: .*$", prompt, flags=re.MULTILINE)
     if ir.prompt_mode == "semantic_brief":

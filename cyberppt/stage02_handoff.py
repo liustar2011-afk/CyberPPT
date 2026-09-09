@@ -18,6 +18,7 @@ from cyberppt.content_integrity_contract import (
     structure_hash_from_node_dicts,
 )
 from cyberppt.script_quality_contract import ScriptPage, parse_script_path
+from cyberppt.full_slide_context import default_full_slide_design_context
 from cyberppt.script_quality.models import ScriptDocument
 from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.stage02_semantic_intake import normalize_semantic_proposals
@@ -545,6 +546,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "author_visual_notes_authority": "advisory_only",
         "must_not_include": must_not_include,
         "body_image_canvas": dict(BODY_CANVAS),
+        "full_slide_design_context": default_full_slide_design_context().to_dict(),
         "title_render_mode": "external_text_layer",
         "subtitle_render_mode": "external_text_layer",
     }
