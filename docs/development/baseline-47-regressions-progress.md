@@ -1,0 +1,131 @@
+# CyberPPT 47 项历史基线失败治理台账
+
+开发分支：`fix/baseline-47-regressions`
+
+基线：`main@366dc81f65f039efdcf48c87e4d132ab5375f6ba`
+
+任务目标：在不回退 Stage2 Artifact Contract v3 已合并能力的前提下，逐组修复仓库现存 47 项历史 Python 测试失败，并将 Python 3.10 / 3.12 全量测试收敛至 0 failed。
+
+实施机制：每个可验证小步骤独立提交；每步同步记录“已完成工作 / 验证结果 / 下一阶段工作”；生产合同与测试期望冲突时，先判定当前正式合同，再决定修代码、迁移测试或补兼容层；禁止为单纯追绿而恢复已废弃行为。
+
+## Step 0｜任务建立与失败基线冻结
+
+状态：已完成
+
+已完成工作：
+- 从 Stage2 v3 合并后的 `main@366dc81f65f039efdcf48c87e4d132ab5375f6ba` 创建独立分支 `fix/baseline-47-regressions`。
+- 使用 Stage2 v3 最终 CI 的 Python 3.12 pytest artifact 冻结 47 个失败测试 ID。
+- 确认 Python 3.10 / 3.12 的 47 个失败集合一致，可采用一套失败清单治理。
+- 将 47 项失败按根因域划分为 3 条治理主线，避免跨域混改。
+
+验证结果：
+- 冻结基线：47 failed / 2000 passed / 8 skipped / 49 subtests passed。
+- 失败分布涉及 20 个测试文件。
+- Stage2 v3 合并前已证明这 47 项均属于历史基线集合，本任务以其为唯一治理对象。
+
+下一阶段工作：
+- Track A：先处理 Style09/10、Runtime Lock、Style Snapshot 相关 18 项失败；该组最集中，且会影响 Final Prompt 与 ImageGen 上层兼容。
+
+## 治理主线
+
+### Track A｜Style Contract / Runtime Lock / Snapshot（18 项）
+
+涉及：
+- `tests/test_artifact_prompt.py`：1
+- `tests/test_extended_style_9.py`：4
+- `tests/test_extended_style_10.py`：2
+- `tests/test_final_prompt_contract.py`：3
+- `tests/test_final_prompt_ir.py`：1
+- `tests/test_final_prompt_renderer.py`：3
+- `tests/test_style_lock_snapshot.py`：4
+
+治理原则：恢复并固化 Style09 terminal runtime lock 的唯一性、末尾位置和 style contract 绑定；核对 Style09/10 registry contract 与 snapshot/migration 语义；不得破坏 Stage2 v3 Copy Contract、Acceptance Contract 与 FinalPromptIR v6。
+
+### Track B｜ImageGen Prompt / Handoff / Creative Brief（22 项）
+
+涉及：
+- `tests/test_imagegen_creative_brief.py`：6
+- `tests/test_imagegen_deliverable_prompt.py`：4
+- `tests/test_imagegen_handoff_modularization.py`：3
+- `tests/test_imagegen_micro_freedom.py`：1
+- `tests/test_imagegen_no_visual_structure.py`：4
+- `tests/test_imagegen_page_manifest.py`：2
+- `tests/test_imagegen_prompt_diagnostics.py`：1
+- `tests/test_visual_grammar.py`：1
+
+治理原则：以当前 content-first / Stage2 v3 Prompt 合同为权威，逐项区分“生产行为回归”和“旧 wording/snapshot 断言漂移”；优先修真实 prompt 权威冲突，纯旧文案快照按现行合同迁移。
+
+### Track C｜其余仓库合同与模块化（7 项）
+
+涉及：
+- `tests/test_content_route.py`：1
+- `tests/test_final_script_pages.py`：2
+- `tests/test_script_quality_modularization.py`：2
+- `tests/test_skill_contract.py`：1
+- `tests/test_text_output_contract.py`：1
+
+治理原则：分别处理 route contract、final script fixture、script-quality baseline、skill contract 路径和 newline translation；每类保持独立提交，不用宽松断言掩盖真实问题。
+
+## 精确失败清单
+
+### Track A
+- `tests/test_artifact_prompt.py::ArtifactPromptTests::test_style09_terminal_lock_is_unique_and_at_absolute_end`
+- `tests/test_extended_style_10.py::test_style_ten_resolves_to_its_copied_live_contract`
+- `tests/test_extended_style_10.py::test_style_ten_is_not_advertised_and_reuses_style_nine_palette`
+- `tests/test_extended_style_9.py::test_style_nine_registry_contract_carries_current_visual_invariants`
+- `tests/test_extended_style_9.py::test_legacy_style_nine_lock_refreshes_to_current_contract`
+- `tests/test_extended_style_9.py::test_style_nine_contract_reaches_content_first_compiler_without_routing_metadata`
+- `tests/test_extended_style_9.py::test_style_nine_terminal_lock_reasserts_the_visual_focus_requirement`
+- `tests/test_final_prompt_contract.py::ValidateFinalPromptTests::test_non_style09_rejects_style09_terminal_marker`
+- `tests/test_final_prompt_contract.py::ValidateFinalPromptTests::test_rejects_duplicate_runtime_lock`
+- `tests/test_final_prompt_contract.py::ValidateFinalPromptTests::test_style09_requires_exactly_one_terminal_lock`
+- `tests/test_final_prompt_ir.py::FinalPromptIRTests::test_runtime_lock_requires_style_contract`
+- `tests/test_final_prompt_renderer.py::RenderFinalPromptTests::test_style09_current_chinese_terminal_lock_is_reasserted`
+- `tests/test_final_prompt_renderer.py::RenderFinalPromptTests::test_style09_requires_style_lock`
+- `tests/test_final_prompt_renderer.py::RenderFinalPromptTests::test_style09_terminal_lock_ends_up_at_absolute_end`
+- `tests/test_style_lock_snapshot.py::test_style09_lock_is_an_immutable_registry_snapshot`
+- `tests/test_style_lock_snapshot.py::test_new_style09_lock_picks_up_new_registry_revision`
+- `tests/test_style_lock_snapshot.py::test_documentation_revision_does_not_change_registry_lock`
+- `tests/test_style_lock_snapshot.py::test_legacy_style09_lock_migrates_once_then_freezes`
+
+### Track B
+- `tests/test_imagegen_creative_brief.py::test_visual_structure_review_mode_is_explicit_and_auditable`
+- `tests/test_imagegen_creative_brief.py::test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist`
+- `tests/test_imagegen_creative_brief.py::test_content_first_treats_visible_judgment_as_body_conclusion_with_style_typography_lock`
+- `tests/test_imagegen_creative_brief.py::test_content_first_omits_tracking_metadata_and_avoids_repeated_rules`
+- `tests/test_imagegen_creative_brief.py::test_semantic_only_handoff_preserves_thesis_logic_and_relations`
+- `tests/test_imagegen_creative_brief.py::test_creative_brief_is_included_for_compact_style_contract`
+- `tests/test_imagegen_deliverable_prompt.py::DualImageOverlayDeliverablePromptTests::test_compile_removes_evidence_caveats_and_placeholder_language`
+- `tests/test_imagegen_deliverable_prompt.py::DualImageOverlayDeliverablePromptTests::test_compile_requires_style_lock`
+- `tests/test_imagegen_deliverable_prompt.py::DualImageOverlayDeliverablePromptTests::test_render_prompt_omits_core_judgment_and_boundary`
+- `tests/test_imagegen_deliverable_prompt.py::DualImageOverlayDeliverablePromptTests::test_style_nine_safety_rules_are_injected_into_imagegen_prompt`
+- `tests/test_imagegen_handoff_modularization.py::test_facade_and_modular_prompt_builder_are_behaviorally_identical_for_style09`
+- `tests/test_imagegen_handoff_modularization.py::test_content_first_prompt_keeps_current_canvas_text_and_template_contracts`
+- `tests/test_imagegen_handoff_modularization.py::test_compiled_prompt_metadata_uses_current_compiler_and_style09`
+- `tests/test_imagegen_micro_freedom.py::test_prompt_locks_macro_mutation_and_allows_region_internal_design`
+- `tests/test_imagegen_no_visual_structure.py::ImageGenNoVisualStructureTests::test_build_page_prompt_omits_visual_structure`
+- `tests/test_imagegen_no_visual_structure.py::ImageGenNoVisualStructureTests::test_page_prompt_places_visual_intent_after_global_style_as_final_priority`
+- `tests/test_imagegen_no_visual_structure.py::ImageGenNoVisualStructureTests::test_render_prompt_template_omits_visual_structure`
+- `tests/test_imagegen_no_visual_structure.py::StructureStyleDecouplingTests::test_style09_and_style10_project_identical_structure`
+- `tests/test_imagegen_page_manifest.py::CyberpptPairManifestTests::test_strict_manifest_uses_content_first_canonical_prompt`
+- `tests/test_imagegen_page_manifest.py::CyberpptPairManifestTests::test_style09_contract_is_single_complete_source_lock_after_stage02_summary`
+- `tests/test_imagegen_prompt_diagnostics.py::test_analyze_prompt_reports_metrics_duplicates_and_known_conflicts`
+- `tests/test_visual_grammar.py::test_open_visual_grammar_allows_expression_with_business_boundaries`
+
+### Track C
+- `tests/test_content_route.py::test_content_route_is_not_part_of_the_v2_lean_plan_contract`
+- `tests/test_final_script_pages.py::FinalScriptPagesTests::test_compiles_pages_7_8_from_final_script_with_traceable_artifacts`
+- `tests/test_final_script_pages.py::FinalScriptPagesTests::test_subtitle_migration_preserves_existing_body_copy`
+- `tests/test_script_quality_modularization.py::ScriptQualityCompatibilityTests::test_baseline_fixture_matches_current_contract`
+- `tests/test_script_quality_modularization.py::ScriptQualityCompatibilityTests::test_second_baseline_fixture_matches_current_contract`
+- `tests/test_skill_contract.py::SkillContractTests::test_default_project_route_uses_current_strict_pipeline`
+- `tests/test_text_output_contract.py::TextOutputContractTests::test_production_text_artifact_writers_disable_newline_translation`
+
+## 完成标准
+
+- Python 3.10：0 failed。
+- Python 3.12：0 failed。
+- Windows / macOS wheel smoke 保持通过。
+- OfficeCLI smoke 保持通过。
+- 不回退 Stage2 v3 已合并合同：Copy Contract、Composition Strategy、Visual Medium v2、Text Capacity、Visual Thesis、Full-slide Context、Acceptance Contract。
+- 全部临时 patch helper / 专用 CI workflow 在 Ready 前清理。
