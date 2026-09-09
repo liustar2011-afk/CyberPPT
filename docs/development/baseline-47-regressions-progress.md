@@ -163,3 +163,19 @@
 
 下一阶段工作：
 - Track A / Step A3：将 4 项 Style Lock Snapshot 历史测试迁移到当前“live style 默认刷新、显式 immutable 才冻结”的正式策略，并补足行为边界验证。
+
+## Track A / Step A3｜Style Lock Live/Snapshot 策略对齐
+
+状态：已完成
+
+已完成工作：
+- 将 4 项 Style Lock Snapshot 历史测试迁移到当前正式策略：Style 09/10 默认读取 live contract，只有显式 `resolved_contract_is_immutable=true` 才冻结。
+- 补充默认 live refresh、新 lock 获取当前版本、显式 immutable 冻结、legacy lock 持续跟随 live contract 四类行为边界。
+- 修正 `style_library.py` 注释与 docstring，使其与现行 live-refresh 实现一致。
+
+验证结果：
+- `tests/test_style_lock_snapshot.py + tests/test_extended_style_9.py + tests/test_extended_style_10.py` 全部通过。
+- 未改变 live-refresh 生产行为，仅纠正历史测试和过时注释。
+
+下一阶段工作：
+- Track A 聚合验收：运行 Track A 原 18 项失败涉及的完整测试族和标准全量 CI，确认 Track A 历史失败清零并计算剩余基线失败数；随后清理 Track A 临时 workflow/helper，进入 Track B。
