@@ -295,6 +295,46 @@ def _render_business_relationships(value: object) -> str:
     return "；".join(sentences) or "业务关系"
 
 
+def _medium_semantic_kwargs(
+    source: dict[str, Any],
+    *,
+    business_object: str = "",
+) -> dict[str, object]:
+    locked = source.get("locked_text_items")
+    locked = locked if isinstance(locked, list) else []
+    texts = [
+        str(item.get("text") or "")
+        for item in locked
+        if isinstance(item, dict) and str(item.get("text") or "")
+    ]
+    relationships = source.get("business_relationships")
+    relationships = relationships if isinstance(relationships, list) else []
+    actors: list[str] = []
+    for item in relationships:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        if subject:
+            actors.append(subject)
+        actors.extend(str(value).strip() for value in item.get("objects") or [] if str(value).strip())
+    explicit_actor = str(source.get("actor_type") or source.get("business_actor_type") or "").strip()
+    data_available = bool(
+        source.get("data_available")
+        or source.get("metrics")
+        or source.get("data_points")
+        or source.get("chart_data")
+    )
+    return {
+        "page_mission": str(source.get("page_mission") or ""),
+        "business_relationships": relationships,
+        "text_count": len(texts),
+        "text_characters": sum(len(text) for text in texts),
+        "business_object": business_object,
+        "actor_type": explicit_actor or " ".join(dict.fromkeys(actors)),
+        "data_available": data_available,
+    }
+
+
 def _decision_execution_design(
     source: dict[str, Any],
     decision: dict[str, Any],
@@ -310,6 +350,7 @@ def _decision_execution_design(
         medium_policy = resolve_visual_medium_policy(
             selected.get("visual_medium_policy"),
             scene_policy=scene_policy,
+            **_medium_semantic_kwargs(source),
         )
         return {
             "business_object": relationships,
@@ -341,6 +382,7 @@ def _decision_execution_design(
         medium_policy = resolve_visual_medium_policy(
             design.get("visual_medium_policy") or selected.get("visual_medium_policy"),
             scene_policy=scene_policy,
+            **_medium_semantic_kwargs(source, business_object=normalized["business_object"]),
         )
         return {
             **normalized,
@@ -382,6 +424,7 @@ def _decision_execution_design(
     medium_policy = resolve_visual_medium_policy(
         selected.get("visual_medium_policy"),
         scene_policy=scene_policy,
+        **_medium_semantic_kwargs(source, business_object=f"{subject}中围绕‘{focus_label}’形成的业务关系场"),
     )
     return {
         "business_object": f"{subject}中围绕“{focus_label}”形成的业务关系场",

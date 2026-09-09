@@ -143,12 +143,21 @@ class VisualMediumPolicyIR:
     allowed: tuple[str, ...]
     scene_policy: str
     rationale: str
+    secondary: str = ""
+    forbidden: tuple[str, ...] = ()
+    confidence: float = 0.5
 
     def __post_init__(self) -> None:
         if not self.preferred.strip() or not self.allowed or not self.scene_policy.strip():
             raise PromptContractError("visual medium policy IR is incomplete")
         if self.preferred not in self.allowed:
             raise PromptContractError("preferred visual medium must be allowed")
+        if self.secondary and (self.secondary not in self.allowed or self.secondary == self.preferred):
+            raise PromptContractError("secondary visual medium must be a distinct allowed medium")
+        if set(self.allowed) & set(self.forbidden):
+            raise PromptContractError("allowed and forbidden visual media must be disjoint")
+        if not 0.0 <= self.confidence <= 1.0:
+            raise PromptContractError("visual medium confidence must be between 0 and 1")
 
 
 @dataclass(frozen=True)

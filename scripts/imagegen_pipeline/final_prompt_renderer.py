@@ -124,12 +124,21 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
         )
     if policy is not None:
         allowed = "; ".join(item.replace("_", " ") for item in policy.allowed)
-        lines.extend((
+        forbidden = "; ".join(item.replace("_", " ") for item in policy.forbidden) or "none"
+        rationale = policy.rationale.replace("_", " ")
+        medium_lines = [
             f"Preferred visual medium: {policy.preferred.replace('_', ' ')}.",
+        ]
+        if policy.secondary:
+            medium_lines.append(f"Secondary visual medium: {policy.secondary.replace('_', ' ')}.")
+        medium_lines.extend((
             f"Allowed visual media: {allowed}.",
+            f"Forbidden visual media: {forbidden}.",
+            f"Medium confidence: {policy.confidence:.2f}.",
             f"Scene policy: {policy.scene_policy.replace('_', ' ')}.",
-            f"Medium rationale: {policy.rationale}",
+            f"Medium rationale: {rationale}",
         ))
+        lines.extend(medium_lines)
     return tuple(lines)
 
 
@@ -360,7 +369,10 @@ def render_debug_receipt(
         "visual_medium_policy": (
             {
                 "preferred": ir.visual_medium_policy.preferred,
+                "secondary": ir.visual_medium_policy.secondary,
                 "allowed": list(ir.visual_medium_policy.allowed),
+                "forbidden": list(ir.visual_medium_policy.forbidden),
+                "confidence": ir.visual_medium_policy.confidence,
                 "scene_policy": ir.visual_medium_policy.scene_policy,
                 "rationale": ir.visual_medium_policy.rationale,
             }

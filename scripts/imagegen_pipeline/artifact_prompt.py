@@ -494,6 +494,9 @@ def _visual_medium_policy_ir(spec: PageArtifactSpec) -> VisualMediumPolicyIR | N
         allowed=policy.allowed,
         scene_policy=policy.scene_policy,
         rationale=policy.rationale,
+        secondary=policy.secondary,
+        forbidden=policy.forbidden,
+        confidence=policy.confidence,
     )
 
 
