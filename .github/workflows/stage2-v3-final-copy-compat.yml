@@ -37,6 +37,6 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scripts/imagegen_pipeline/final_prompt_renderer.py scripts/imagegen_pipeline/final_prompt_contract.py
+          git add scripts/imagegen_pipeline/final_prompt_renderer.py scripts/imagegen_pipeline/final_prompt_contract.py tests/test_prompt_macro_structure.py
           git commit -m 'fix(stage2): lock legacy visible copy fallback'
           git push origin HEAD:feature/stage2-artifact-contract-v3
