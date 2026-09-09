@@ -11,7 +11,7 @@ from typing import Any, Mapping
 
 from cyberppt.copy_contract import CopyContractSpec, build_copy_contract
 from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
-from cyberppt.text_capacity import assess_text_capacity
+from cyberppt.text_capacity import TextCapacityAssessment, assess_text_capacity
 from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy
 
 
@@ -223,6 +223,7 @@ class PageArtifactSpec:
     region_graph: RegionGraphSpec | None = None
     visual_medium_policy: VisualMediumPolicy | None = None
     copy_contract: CopyContractSpec | None = None
+    text_capacity: TextCapacityAssessment | None = None
 
     def __post_init__(self) -> None:
         if self.visible_text_bindings:
@@ -422,13 +423,8 @@ def _visual_budget(
         resolved = "allowed" if use_scene is True else "forbidden" if use_scene is False else "auto"
     if resolved not in {"required", "allowed", "forbidden", "auto"}:
         raise ValueError(f"unsupported scene policy for visual budget: {resolved!r}")
-    if is_text_dense(visible_text) and resolved != "required":
-        return VisualBudgetSpec(
-            mode="relationship_field_only",
-            max_auxiliary_fragments=0,
-            scope="page",
-            region_local_visuals=False,
-        )
+    # Text density is governed by TextCapacityAssessment before visual planning.
+    # It must never suppress or choose the page's visual medium/budget.
     if resolved == "forbidden":
         return VisualBudgetSpec(
             mode="shared_field",
@@ -696,25 +692,33 @@ def build_page_artifact_spec(
     content_nodes = content_integrity.get("nodes") if isinstance(content_integrity, dict) else None
     root_nodes = content_integrity.get("root_nodes") if isinstance(content_integrity, dict) else None
     content_root_count = len(root_nodes) if isinstance(root_nodes, list) else 0
-    if str(handoff_page.get("onscreen_source") or "authored") == "full_prose_fallback":
-        hierarchy_levels = tuple(
-            int(node.get("level") or 1)
-            for node in (content_nodes or [])
-            if isinstance(node, dict)
+    hierarchy_levels = tuple(
+        int(node.get("source_level") or node.get("level") or 1)
+        for node in (content_nodes or [])
+        if isinstance(node, dict)
+    )
+    capacity = assess_text_capacity(
+        visible_text,
+        root_count=content_root_count,
+        hierarchy_levels=hierarchy_levels,
+        canvas=(handoff_canvas[0], handoff_canvas[1]),
+    )
+    if capacity.status == "blocked":
+        raise ValueError(
+            "STAGE02_TEXT_CAPACITY_EXCEEDED: content_action=return_to_stage01; "
+            "revise approved onscreen text before visual-medium resolution. "
+            f"score={capacity.pressure_score}; reasons={','.join(capacity.reasons)}"
         )
-        capacity = assess_text_capacity(
-            visible_text,
-            root_count=content_root_count,
-            hierarchy_levels=hierarchy_levels,
-            canvas=(handoff_canvas[0], handoff_canvas[1]),
+    if (
+        str(handoff_page.get("onscreen_source") or "authored") == "full_prose_fallback"
+        and capacity.character_count >= 520
+    ):
+        raise ValueError(
+            "STAGE02_FALLBACK_TEXT_CAPACITY_EXCEEDED: content_action=return_to_stage01; "
+            "the manuscript has no authored onscreen text and its verbatim full-prose fallback "
+            "requires Stage 01 content engineering before visual planning. "
+            f"score={capacity.pressure_score}; characters={capacity.character_count}"
         )
-        if capacity.status == "blocked" or capacity.character_count >= 520:
-            raise ValueError(
-                "STAGE02_FALLBACK_TEXT_CAPACITY_EXCEEDED: the manuscript has no authored "
-                "onscreen text and its verbatim full-prose fallback exceeds "
-                "the current canvas capacity; split the page or provide explicit onscreen text. "
-                f"score={capacity.pressure_score}; characters={capacity.character_count}"
-            )
     # Authored content-integrity nodes are the authority for exact visible-copy
     # ownership. Preserve that binding into the artifact contract; Stage2 may
     # not silently downgrade authored copy to free source material.
@@ -956,6 +960,7 @@ def build_page_artifact_spec(
         region_graph=region_graph,
         visual_medium_policy=visual_medium_policy,
         copy_contract=copy_contract,
+        text_capacity=capacity,
     )
 
 
