@@ -228,6 +228,9 @@ class RuntimeLockIR:
     style_contract: str
     terminal_lock: str = ""
 
+    def __post_init__(self) -> None:
+        if not self.style_contract.strip():
+            raise PromptContractError("runtime lock requires a non-empty style contract")
 
 
 @dataclass(frozen=True)

@@ -129,3 +129,20 @@
 - OfficeCLI smoke 保持通过。
 - 不回退 Stage2 v3 已合并合同：Copy Contract、Composition Strategy、Visual Medium v2、Text Capacity、Visual Thesis、Full-slide Context、Acceptance Contract。
 - 全部临时 patch helper / 专用 CI workflow 在 Ready 前清理。
+
+## Track A / Step A1｜Runtime Lock 契约修复
+
+状态：已完成
+
+已完成工作：
+- Runtime Style splitter 增加当前 Style 09 终端章节 `## 12｜最终风格收口｜最高视觉优先级` 的识别。
+- `RuntimeLockIR` 强制 style contract 非空。
+- Final Prompt validator 恢复 runtime style contract 唯一性校验、Style 09 terminal 唯一且位于绝对末尾校验、非 live style 禁止 terminal marker 校验。
+- Style 09 缺少 style lock 的错误信息统一为可读口径。
+
+验证结果：
+- 8 项 Runtime Lock 定向回归全部通过。
+- 未修改 `references/visual-system.md` 的现行 Style 09 文案，仅修复 runtime 对现行终端章节的识别与合同校验。
+
+下一阶段工作：
+- Track A / Step A2：迁移 Style 09/10 registry 合同断言到当前中文 Artifact Spec 执行版，并校正 live-contract / palette / terminal-focus 相关旧测试。

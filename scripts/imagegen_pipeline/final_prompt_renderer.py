@@ -243,7 +243,7 @@ def render_final_prompt(
     runtime = None
     if style_id == 9:
         if style_lock is None:
-            raise ValueError("style_lock is required for style 09 final prompt rendering")
+            raise ValueError("style lock is required for style 09 final prompt rendering")
         runtime = load_runtime_style_contract(style_lock)
     runtime_style_contract = ir.runtime_lock.style_contract
     if runtime is not None:
