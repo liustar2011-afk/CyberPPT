@@ -20,4 +20,23 @@
 - 仓库现有 PR CI 可运行 Ubuntu Python 3.10/3.12 全量测试，并含 macOS / Windows wheel smoke 与 OfficeCLI smoke。
 
 下一阶段工作：
-- Step 1：完成 Copy Contract 最小闭环，恢复 VisibleTextBindingSpec 权威链并消除 strict lock / rewrite 冲突。
+- Step 1.1：新增独立 Copy Contract 领域合同与权威规则测试。
+
+## Step 1.1｜Copy Contract 领域模型
+
+状态：已完成
+
+已完成工作：
+- 新增 `cyberppt/copy_contract.py`。
+- 建立 `CopyContractSpec`、`LockedCopySpec`、`RewriteableCopySpec`、`ExtraTextPolicySpec`。
+- authored visible copy 默认进入 locked copy；仅显式授权的 text_id 才允许进入 rewriteable copy。
+- locked copy 强制 `count=1`，并限制 transformation 只能是 line break / grouping / position change 等不改变文案的操作。
+- extra text 默认 `allowed=false`、`max_count=0`。
+- 新增 `tests/test_copy_contract.py`，覆盖默认锁定、显式改写授权、region ownership、重复 id、权限重叠、非法 transformation、extra text 等规则。
+
+验证结果：
+- Copy Contract 领域模型与测试已作为独立提交进入 PR #29。
+- 当前全量 CI 仍包含仓库基线既有失败，不能以全量 CI 作为本步骤增量正确性的唯一判据；后续步骤继续采用定向测试 + PR CI 双层验证。
+
+下一阶段工作：
+- Step 1.2：恢复 `_visible_text_bindings()` 权威链，将 Copy Contract 接入 `PageArtifactSpec → FinalPromptIR → Renderer → Validator`，并删除 locked copy 的 rewrite/source-material 冲突授权。
