@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 import json
 from hashlib import sha256
 from pathlib import Path
@@ -561,7 +562,8 @@ def test_clean_base_policy_recomputes_outside_mask_diff_for_reference_edit(tmp_p
     }
 
 
-def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path, monkeypatch) -> None:
+@pytest.mark.parametrize("source_page", [1, 4])
+def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path, monkeypatch, source_page) -> None:
     # Adapter unit test; the actual invocation gate is covered through the CLI integration.
     monkeypatch.setattr("cyberppt.stage02_production.state.require_production_invocation", lambda **_: None)
     _stub_quick_preview_renderer(monkeypatch)
@@ -578,7 +580,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
         clean_draw.rectangle((40 + offset, 65, 45 + offset, 80), fill="white")
     clean_image.save(clean)
     script = tmp_path / "script.md"
-    script.write_text("## 第1页：标题\n登记编目\n", encoding="utf-8")
+    script.write_text(f"## 第{source_page}页：标题\n登记编目\n", encoding="utf-8")
     authored = _policy_svg(tmp_path)
     authored.write_text(
         authored.read_text(encoding="utf-8").replace(
@@ -602,10 +604,10 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                 },
                 "output_variants": ["full"],
                 "source_script": str(script),
-                "content_page_numbers": [1],
+                "content_page_numbers": [source_page],
                 "pairs": [
                     {
-                        "page_number": 1,
+                        "page_number": source_page,
                         "full": {
                             "path": str(source),
                             "canvas": "400x200",
@@ -664,7 +666,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
             project=tmp_path,
             manifest_path=manifest,
             output_dir=tmp_path / "out",
-            requested_pages=[1],
+            requested_pages=[source_page],
         )
     except ValueError as exc:
         assert "awaits visual review" in str(exc)
@@ -676,7 +678,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     assert Path(checkpoint["preview_png"]).is_file()
     record_quick_page_review(
         manifest,
-        page_number=1,
+        page_number=source_page,
         status="passed",
         reviewer="test-reviewer",
         checks={name: "passed" for name in QUICK_VISUAL_REVIEW_CHECKS},
@@ -686,7 +688,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
         project=tmp_path,
         manifest_path=manifest,
         output_dir=tmp_path / "out",
-        requested_pages=[1],
+        requested_pages=[source_page],
     )
 
     assert result["status"] == "production_ready"
@@ -696,7 +698,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
     assert result["reports"]["native_text_geometry"]["valid"] is True
     style_qa = Path(result["artifacts"]["native_text_style_qa"])
     assert style_qa.is_file()
-    styled_svg = Path(result["artifacts"]["svg_output"]) / "01.svg"
+    styled_svg = Path(result["artifacts"]["svg_output"]) / f"{source_page:02d}.svg"
     assert 'data-cyberppt-native-text-style="editorial-source-text-v1"' in styled_svg.read_text(encoding="utf-8")
     editable_qa = Path(result["artifacts"]["editable_page_qa"])
     assert editable_qa.is_file()
@@ -723,7 +725,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
         project=tmp_path,
         manifest_path=manifest,
         output_dir=tmp_path / "out",
-        requested_pages=[1],
+        requested_pages=[source_page],
     )
     assert resumed["status"] == "production_ready"
     checkpoint = json.loads(manifest.read_text(encoding="utf-8"))["pairs"][0]["quick_page_checkpoint"]

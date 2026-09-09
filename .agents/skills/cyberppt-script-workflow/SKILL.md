@@ -97,8 +97,11 @@ closed loop or progression merely to satisfy a presentation framework.
 
 `full_copy` preserves every material fact, condition, responsibility, formal
 instrument, number, date, status, boundary, claim strength and source-explicit
-relationship. `onscreen` may select, merge and lightly rephrase propositions
-already present in `full_copy`; it cannot become a second authoring pass.
+relationship. The main Agent rewrites `full_copy` into `onscreen` while retaining
+all substantive information, changing only wording and organization. Remove only
+equivalent repetition and non-material connective wording. Review the two complete
+texts directly in both directions before consulting optional machine hints; follow
+Steps 6–7 of the faithful contract. No candidate scoring or helper call is required.
 
 When AUTHOR cannot shorten a passage without risking a change of actor, action,
 object, status, responsibility, number, time, condition, boundary, relationship

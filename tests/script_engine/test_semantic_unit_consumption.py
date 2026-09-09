@@ -229,7 +229,7 @@ def test_final_rejects_thin_single_block_for_multi_fact_page() -> None:
     assert any("AUTHOR_FULL_COPY_TOO_THIN" in issue for issue in issues)
 
 
-def test_final_rejects_onscreen_claim_absent_from_full_copy() -> None:
+def test_final_requests_review_for_lexically_disconnected_onscreen_claim() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
@@ -237,9 +237,10 @@ def test_final_rejects_onscreen_claim_absent_from_full_copy() -> None:
         onscreen_items=["平台已经自动完成全部模型审批", "各省已经进入实时调度运行"],
     )
 
-    issues, _ = audit_final_script(final, _plan(), _foundation())
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
 
-    assert any("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED" in issue for issue in issues)
+    assert any("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED" in issue for issue in warnings)
+    assert not any("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED" in issue for issue in issues)
 
 
 def test_final_rejects_protected_full_copy_number_lost_from_onscreen() -> None:

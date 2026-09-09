@@ -163,8 +163,8 @@ faithful 页面按以下顺序完成：
 3. 判断来源原生结构（定义、并列事实/任务、分类、阶段、状态、职责、来源明示关系或论证）；
 4. 直接从来源语义形成完整文字稿 `full_copy`；
 5. 对 `full_copy` 做 Source Fidelity Critic；
-6. 只从已审定的 `full_copy` 选择、合并和适度精炼形成 `onscreen`；
-7. 对 `full_copy ↔ onscreen` 做反向语义检查；
+6. 主 Agent 将已审定的 `full_copy` 直接改写为 `onscreen`，保留全部实质信息，仅调整措辞、组织和等义重复；
+7. 主 Agent 对照两份完整文本双向检查遗漏、新增和语义变化，修复后重读整页；机械提示仅作复核辅助，不要求调用匹配或评分工具；
 8. 仅在来源支持且确有价值时增加可选的 `mission`、`core_message`、`argument`、`visual_thesis`、`relationships`、`speaker_notes`。
 
 analytical 页面按已批准的 analytical contract 在来源边界内形成核心判断、论证结构和分析性表达。分析模式可以组织 source-supported inferred relationship，但不得新增事实、数字、责任、承诺或无依据关系。
@@ -225,6 +225,8 @@ faithful 页面关系只有在来源明确表达时才能进入 Final Script；a
 路由规则：出现“高保真+Quick”“无字底图+文字 SVG”或同义需求时，固定进入 `stage02.high_fidelity_quick_editable`，随后读取 `cyberppt-stage02-editable-pptx`。不要把它路由到图片型 PPT，也不要从 `scripts/image_to_editable_svg/` 的退役入口推断当前流程。正式代码编排位于 `cyberppt/commands/final_script_pages.py`，Quick 组装适配位于 `scripts/image_to_pptx_runtime/stage02_adapter.py`，内置运行时说明位于 `scripts/image_to_pptx_runtime/UPSTREAM.md`。
 
 ### 1. 最终脚本和页面生产入口
+
+生图默认画质为 `max`（`--image-quality max`），显式画质参数可覆盖默认值。已有批次按记录中的 `resume_command` 续跑，保留原批次画质。
 
 Stage 02 制作、重制、模板/母版修复及重新组装均通过同一个 `final-script-pages --production-build` 入口。适配器需要当前正式编排的进程内调用上下文，并继续校验磁盘构建记录；项目、批次目录、页面范围和组装模式发生偏离时直接报错。进程内上下文在调用结束或异常退出时清除，不新增磁盘审批文件。
 

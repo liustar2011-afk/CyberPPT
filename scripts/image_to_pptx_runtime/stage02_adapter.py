@@ -676,10 +676,13 @@ def run_stage02_reconstruction(
                 if item.get("treatment") == "native_text" and item.get("text")
             ]
         expected.extend(page_expected)
+    # Native slide-number fields use the position in the exported deck, including
+    # when only a subset of source pages is requested.
+    export_page_numbers = {number: index for index, number in enumerate(requested_pages, start=1)}
     chrome_expected = [
         *(title_by_page[number] for number, _ in pages),
         *("中国电力企业联合会" for _ in pages),
-        *(str(number) for number, _ in pages),
+        *(str(export_page_numbers[number]) for number, _ in pages),
     ]
     structural_expected = [
         *[
@@ -690,7 +693,7 @@ def run_stage02_reconstruction(
         ],
         *("中国电力企业联合会" for number in requested_pages if number not in content_pages),
         *(
-            str(number)
+            str(export_page_numbers[number])
             for number in requested_pages
             if number not in content_pages and script_pages[number].page_type in {"contents", "chapter"}
         ),

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
+from dataclasses import replace
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
@@ -9,6 +10,7 @@ from typing import Any
 
 from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks, parse_pages
 from scripts.imagegen_pipeline.page_manifest import PRODUCTION_MODES
+from scripts.imagegen_pipeline.providers.codex_oauth_image import DEFAULT_MODEL
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import write_json_atomic
 from cyberppt.stage02_input import INPUT_JSON, prepare_stage02_input, resolve_input_script
@@ -47,6 +49,25 @@ def read_json(path: Path) -> dict[str, Any]:
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     write_json_atomic(path, payload)
+
+
+def resolve_image_model(options: Stage02RunOptions, build_dir: Path) -> Stage02RunOptions:
+    if options.image_model is not None:
+        if not options.image_model.strip():
+            raise ValueError("--image-model must not be empty")
+        return options
+    # Resolve before manifest replacement so an upgraded default cannot relabel
+    # or mix models in an existing batch.
+    prior_paths = [build_dir / "page_image_pairs.json", build_dir / "build_context.json"]
+    for path in prior_paths:
+        if path.is_file():
+            prior = read_json(path)
+            model = (prior.get("input_identity") or {}).get("image_model")
+            if isinstance(model, str) and model.strip():
+                return replace(options, image_model=model)
+    if any(path.is_file() for path in prior_paths):
+        raise ValueError("Existing build has no recorded image model; resume with an explicit --image-model from its original request.")
+    return replace(options, image_model=DEFAULT_MODEL)
 
 
 def read_style_lock(path: Path) -> dict[str, Any]:

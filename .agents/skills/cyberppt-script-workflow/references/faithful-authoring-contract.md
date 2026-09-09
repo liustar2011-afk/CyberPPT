@@ -171,44 +171,59 @@ repair an unsupported statement by adding more explanation.
 
 ### Step 6 — Create `onscreen` only from approved `full_copy`
 
-Finish and review `full_copy` before writing `onscreen`.
-
 Every visible proposition must have a direct semantic parent in `full_copy`.
+Preserve all substantive information while rewriting for the screen.
 
-Allowed onscreen operations:
+The current main Agent performs this task directly using language understanding:
 
-- select;
-- merge equivalent nearby source-backed statements;
-- lightly rephrase;
-- shorten wording while preserving protected payload;
-- use source-native labels when their parent/child structure keeps the meaning clear.
+> Rewrite the reviewed full_copy for independent reading on a PPT. Preserve all
+> substantive information and change only wording and organization. Use clear
+> groups, complete sentences or self-contained phrases as appropriate. Preserve
+> who does what, to which object, under which conditions, with what status, numbers,
+> responsibility and relationship direction. Remove only equivalent repetition and
+> connective wording that carries no substantive meaning. There is no word limit.
 
-Forbidden onscreen operations:
+Read the entire page's reviewed `full_copy` together before rewriting. Treat its
+substantive content as already selected for this page. Do not select a smaller set
+of “core” propositions, rank sentences for deletion, replace concrete actions with
+umbrella labels, or move substantive examples/background into notes to save space.
+Content selection belongs upstream when establishing the page scope and full copy.
 
-- add a new conclusion;
-- add a new relation;
-- add a mechanism, capability, result, value, or implication;
-- strengthen status or modality;
-- remove a condition that changes meaning;
-- change the speaking position;
-- turn a source label into an invented business judgment.
+Organize by a shared business dimension. A child can inherit a common actor or
+condition from its own visible module heading when the meaning is unambiguous.
+Use natural language judgment to preserve relationships across the whole module.
+Retain complete sentences whenever phrases would obscure meaning. If density remains
+high, adjust grouping/layout or propose a page-scope/pagination repair through the
+existing planning route. Preserve the text until that repair is resolved.
 
-When safe shortening is uncertain, copy the relevant `full_copy` passage verbatim.
-Longer visible text is preferable to semantic drift.
+When an equivalent rewrite is uncertain, retain the original complete expression.
+Do not generate multiple candidates or run a scoring helper as a prerequisite.
 
-### Step 7 — Run Full-copy <-> Onscreen Critic
+### Step 7 — Compare meanings and rewrite
 
-For each heading, lead, text line, and item:
+The current main Agent reads the complete `full_copy` and complete `onscreen`
+side by side in a separate review pass, using the same page evidence. First check
+whether a reader receives all substantive information from full copy; then check
+whether the visible wording adds or changes any assertion. Do this comparison before
+reading optional machine hints so that hints do not define the review scope.
 
-- identify its parent passage in `full_copy`;
-- confirm no new actor, object, number, date, status, responsibility, condition,
-  relation, or claim strength appears;
-- confirm source-native parallel structures remain parallel;
-- confirm source-defined process or stage order is retained;
-- confirm formal instrument identity is unchanged.
+Check responsibility, action/object, status, quantities, conditions, negation,
+relationship direction and formal names in their actual context. Equivalent wording
+and shared visible subjects are valid. Lexical overlap, keyword presence and zero
+machine findings cannot establish semantic equivalence.
 
-A visible line without a defensible `full_copy` parent must be removed or rewritten
-from the parent passage.
+For each actual discrepancy, identify the original assertion, the visible wording
+or omission, and the concrete meaning lost or changed. Rewrite the affected module,
+then reread the complete page in both directions. A shorter or more polished result
+cannot compensate for lost information. Do not persist internal review reasoning,
+proposition ledgers, approval fields or a new workflow artifact.
+
+`build_onscreen_critic_context` is optional diagnostic assistance after this direct
+review. Its matches and findings are unverified hints; inspect them against the
+complete texts. Resolve real errors and disregard false matches with a concise
+explanation in an existing review summary when needed. Do not change correct wording
+merely to satisfy a heuristic. Deterministic test success reports software behavior;
+only the Agent's text comparison assesses the rewritten meaning.
 
 ### Step 8 — Add supporting fields only when they are source-backed and useful
 
@@ -443,16 +458,21 @@ Under faithful mode:
 - if PLAN wording exceeds the page evidence, repair PLAN before AUTHOR or ignore the
   unsupported framing and report the mismatch.
 
-## 8. Safe compression policy
+## 8. Meaning-preserving expression policy
 
-Compression is successful only when meaning is unchanged.
+Readability improvements must retain all substantive information from `full_copy`.
+
+Stage 01 imposes no character-count limit on onscreen headings, text, or items.
+Do not shorten protected meaning to meet a phrase or sentence length target.
+Resolve readability through grouping, complete short sentences, layout or page scope;
+semantic and structural checks still apply.
 
 Prefer, in order:
 
 1. remove repetition;
 2. remove non-material modifiers;
 3. merge equivalent source-backed statements;
-4. move subordinate examples to notes when they do not change the visible claim;
+4. retain substantive examples and background already selected into `full_copy`;
 5. paginate when the page remains too dense.
 
 Do not solve density by:

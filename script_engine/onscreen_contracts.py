@@ -4,6 +4,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from .onscreen_projection import onscreen_projection_issues
+
 from .semantic_text_primitives import (
     GENERIC_TRANSFORMATION_CLAIM_RE,
     has_complete_semantic_predicate,
@@ -310,19 +312,22 @@ def _check_declared_core_consistency(final_script: dict[str, Any]) -> list[str]:
     return issues
 
 
-def check_onscreen_core_alignment(final_script: dict[str, Any]) -> list[str]:
-    """Keep faithful parentage in ``full_copy`` and validate optional core consistency.
-
-    Analytical pages still require core-message alignment. Faithful pages always
-    project from ``full_copy``; when they voluntarily declare ``core_message``, it
-    is checked as a consistency constraint rather than a semantic parent.
-    """
-
-    if _authoring_mode(final_script) != "analytical":
-        return [
-            *_check_faithful_full_copy_alignment(final_script),
+def onscreen_alignment_advisories(final_script: dict[str, Any]) -> list[str]:
+    """Lexical mismatch requires qualitative review, not a fidelity verdict."""
+    if _authoring_mode(final_script) == "analytical":
+        return []
+    return [*_check_faithful_full_copy_alignment(final_script),
             *_check_declared_core_consistency(final_script),
-        ]
+            *(f"slides.{index} ({slide.get('id', '?')}): {issue}"
+              for index, slide in enumerate(final_script.get("slides") or [])
+              if isinstance(slide, dict)
+              for issue in onscreen_projection_issues(slide))]
+
+
+def check_onscreen_core_alignment(final_script: dict[str, Any]) -> list[str]:
+    """Preserve analytical alignment; faithful heuristics are review hints."""
+    if _authoring_mode(final_script) != "analytical":
+        return []
     return _check_declared_core_consistency(final_script)
 
 

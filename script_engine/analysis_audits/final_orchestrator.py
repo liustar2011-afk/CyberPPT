@@ -1,6 +1,7 @@
 """Focused orchestration for the deterministic Final Script semantic audit."""
 from __future__ import annotations
 
+from ..onscreen_contracts import onscreen_alignment_advisories
 from .common import *
 from .composed_trace import hard_finding_messages, trace_composed
 from .final_authoring import (
@@ -56,6 +57,10 @@ def audit_final_script(
             "AUTHORING_MODE_NOT_AUTHORIZED: final script requests analytical mode "
             "without analytical mode in the approved Deck Plan"
         )
+
+    warnings.extend(onscreen_alignment_advisories({
+        **final_script, "deck": {**(final_script.get("deck") or {}), "authoring_mode": final_authoring_mode},
+    }))
 
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
@@ -128,7 +133,11 @@ def audit_final_script(
         for consumption_issue in _audit_lean_authored_source_consumption(page, slide, items, foundation):
             issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
         for alignment_issue in _audit_lean_onscreen_full_copy_alignment(slide):
-            issues.append(f"slides.{index} ({slide_id}): {alignment_issue}")
+            target = warnings if (
+                final_authoring_mode == "faithful"
+                and alignment_issue.startswith("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED")
+            ) else issues
+            target.append(f"slides.{index} ({slide_id}): {alignment_issue}")
         retained_evidence = _support_items(slide.get("source_refs") or [], items)
         for retention_issue in _audit_lean_onscreen_protected_retention(slide, retained_evidence, items):
             issues.append(f"slides.{index} ({slide_id}): {retention_issue}")

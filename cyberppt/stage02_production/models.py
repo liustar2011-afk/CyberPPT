@@ -20,8 +20,9 @@ class Stage02RunOptions:
     production_mode: str = "image-to-editable-svg"
     assembly_mode: str = "editable"
     generate_images: bool = False
-    image_model: str = "gpt-image-2"
-    image_quality: str = "high"
+    # None resolves to the recorded batch model, or the provider default for a new build.
+    image_model: str | None = None
+    image_quality: str = "max"
     image_timeout: int = 600
     force_images: bool = False
     dry_run_images: bool = False

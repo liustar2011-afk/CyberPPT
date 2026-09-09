@@ -90,15 +90,9 @@ def check_declared_count(final_script: dict[str, Any]) -> list[str]:
     return warnings
 
 
-ONSCREEN_DETAIL_PHRASE_MAX_CHARS = 30
-ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS = 90
-_MEANINGFUL_CHAR_RE = re.compile(r"[一-鿿A-Za-z0-9]")
-_LABEL_SPLIT_RE = re.compile(r"[：:]", flags=re.UNICODE)
-_PHRASE_SEPARATOR_RE = re.compile(r"[、，,；;]")
-
-
-def _meaningful_char_count(text: str) -> int:
-    return len(_MEANINGFUL_CHAR_RE.findall(str(text or "")))
+# Compatibility exports: Stage 01 no longer imposes onscreen character limits.
+ONSCREEN_DETAIL_PHRASE_MAX_CHARS = None
+ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS = None
 
 
 def _ends_with_punctuation_or_symbol(value: str) -> bool:
@@ -150,45 +144,14 @@ def check_onscreen_terminal_punctuation(final_script: dict[str, Any]) -> list[st
 
 def check_onscreen_detail_length(
     final_script: dict[str, Any],
-    max_chars: int = ONSCREEN_DETAIL_PHRASE_MAX_CHARS,
+    max_chars: int | None = None,
 ) -> list[str]:
-    """Flag visible detail phrase segments that exceed the Stage 02 readiness ceiling."""
+    """Compatibility hook; onscreen length no longer blocks Stage 01 delivery.
 
-    issues: list[str] = []
-    for index, slide in enumerate(final_script.get("slides") or []):
-        if not isinstance(slide, dict) or slide.get("page_type") != "content":
-            continue
-        slide_id = slide.get("id") or f"#{index}"
-        for module in slide.get("onscreen") or []:
-            if not isinstance(module, dict):
-                continue
-            lines: list[tuple[str, str]] = []
-            text = module.get("text")
-            if isinstance(text, str) and text.strip():
-                lines.append(("text", text))
-            for item_index, item in enumerate(module.get("items") or []):
-                if isinstance(item, str) and item.strip():
-                    lines.append((f"items[{item_index}]", item))
-            for field, line in lines:
-                if _is_pyramid_prose_module(module) and field == "text":
-                    continue
-                parts = _LABEL_SPLIT_RE.split(line, maxsplit=1)
-                labelled_detail = len(parts) == 2 and bool(parts[1].strip())
-                body = parts[1] if labelled_detail else line
-                body_chars = _meaningful_char_count(body)
-                if field == "text" and body_chars <= ONSCREEN_COMPLETE_PROPOSITION_MAX_CHARS:
-                    continue
-                for segment in _PHRASE_SEPARATOR_RE.split(body):
-                    segment = segment.strip()
-                    if not segment:
-                        continue
-                    chars = _meaningful_char_count(segment)
-                    if chars > max_chars:
-                        issues.append(
-                            f"slides.{index} ({slide_id}).onscreen.{field}: phrase '{segment}' has {chars} "
-                            f"meaningful characters (> {max_chars}), will fail Stage 02's ImageGen readiness gate: '{line}'"
-                        )
-    return issues
+    Keep legacy callers working, including callers passing ``max_chars``.
+    Semantic and structural checks remain independent of character counts.
+    """
+    return []
 
 
 def outline_final_script(final_script: dict[str, Any]) -> list[dict[str, Any]]:

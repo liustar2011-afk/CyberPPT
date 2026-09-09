@@ -25,9 +25,9 @@ from urllib import error, request
 from PIL import Image
 
 
-DEFAULT_MODEL = "gpt-image-2"
+DEFAULT_MODEL = "gpt-image-2.5-sunburst"
 DEFAULT_SIZE = "2048x1024"
-DEFAULT_QUALITY = "high"
+DEFAULT_QUALITY = "max"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
 VISION_REQUEST_ATTEMPTS = 3

@@ -5,6 +5,8 @@ import re
 from collections import Counter
 from typing import Any
 
+from .onscreen_projection import review_onscreen_projection
+
 
 _VISIBLE_RE = re.compile(r"[一-鿿A-Za-z0-9]")
 _DIMENSIONS = (
@@ -59,6 +61,9 @@ def build_onscreen_critic_context(
                 **candidate,
                 "visible_characters": visible_character_count(candidate.get("onscreen")),
                 "repeated_lines": repeated_visible_lines(candidate.get("onscreen")),
+                "projection_review": review_onscreen_projection({
+                    "full_copy": full_copy, "onscreen": candidate.get("onscreen"),
+                }),
             }
             for candidate in candidates
         ],

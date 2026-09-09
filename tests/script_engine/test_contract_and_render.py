@@ -590,14 +590,20 @@ def test_lint_final_script_keeps_short_single_module_projection_valid() -> None:
 
     assert not any("ONSCREEN_EVIDENCE_LAYER_MISSING" in issue for issue in issues)
 
-def test_lint_final_script_flags_onscreen_unrelated_to_core_message() -> None:
+def test_lint_final_script_requests_review_for_lexically_unrelated_onscreen() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [
         {"heading": "组织保障", "text": "明确牵头单位与协作职责"},
         {"heading": "资源保障", "text": "落实经费投入与人才配置"},
     ]
     issues = lint_final_script(payload)
-    assert any("ONSCREEN_CORE_MISALIGNED" in issue for issue in issues)
+    from script_engine.final_quality import partition_final_lint_findings
+    from script_engine.render import render_stage02_markdown
+
+    assert not any("ONSCREEN_CORE_MISALIGNED" in issue for issue in issues)
+    blockers, advisories = partition_final_lint_findings(payload, render_stage02_markdown(payload))
+    assert not any("ONSCREEN_CORE_MISALIGNED" in issue for issue in blockers)
+    assert any("ONSCREEN_CORE_MISALIGNED" in issue for issue in advisories)
 
 def test_lint_final_script_allows_onscreen_projection_without_verbatim_repetition() -> None:
     payload = copy.deepcopy(_example())
@@ -872,12 +878,11 @@ def test_check_declared_count_skips_intrinsic_title_count_without_visible_peer_c
     payload["slides"][0]["onscreen"] = [{"heading": "研究结论"}]
     assert check_declared_count(payload) == []
 
-def test_check_onscreen_detail_length_flags_overlong_item() -> None:
+def test_check_onscreen_detail_length_accepts_overlong_item() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{"heading": "模块", "items": ["需求识别到持续优化经过八个连续环节层层推进形成完整闭环缺一不可"]}]
     issues = check_onscreen_detail_length(payload)
-    assert issues
-    assert "meaningful characters (> 30)" in issues[0]
+    assert issues == []
 
 def test_check_onscreen_detail_length_allows_complete_proposition_as_module_lead() -> None:
     payload = copy.deepcopy(_example())
@@ -906,17 +911,14 @@ def test_check_onscreen_terminal_punctuation_rejects_visible_terminal_glyphs() -
     assert len(issues) == 3
     assert all("must not end" in issue for issue in issues)
 
-def test_check_onscreen_detail_length_blocks_complete_proposition_above_sentence_ceiling() -> None:
+def test_check_onscreen_detail_length_accepts_proposition_above_old_ceiling() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{"heading": "模块", "items": ["判" * 91 + "。"]}]
     issues = check_onscreen_detail_length(payload)
-    assert issues
-    assert "meaningful characters (> 30)" in issues[0]
+    assert issues == []
 
 def test_check_onscreen_detail_length_checks_each_separator_delimited_phrase() -> None:
-    """The 30-char ceiling applies per punctuation-separated phrase, not to the whole line: a PPT
-    line legitimately holds several short parallel phrases (e.g. '供得出、流得动、用得好、保安全')
-    whose concatenated length exceeds 30, distinct from a Word-style run-on sentence."""
+    """Punctuation-separated content remains accepted without a length ceiling."""
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{"heading": "模块", "items": ["需求识别、资源组织、产品形成、客户订购、授权交付、计量结算、运营评价、持续优化"]}]
     assert check_onscreen_detail_length(payload) == []
@@ -926,7 +928,7 @@ def test_check_onscreen_detail_length_measures_only_body_after_label() -> None:
     payload["slides"][0]["onscreen"] = [{"heading": "模块", "items": ["内容：" + "判" * 30]}]
     assert check_onscreen_detail_length(payload) == []
     payload["slides"][0]["onscreen"][0]["items"] = ["内容：" + "判" * 31]
-    assert check_onscreen_detail_length(payload) != []
+    assert check_onscreen_detail_length(payload) == []
 
 def test_check_onscreen_detail_length_passes_short_phrases() -> None:
     payload = copy.deepcopy(_example())
@@ -937,6 +939,28 @@ def test_check_onscreen_detail_length_ignores_headings() -> None:
     payload = copy.deepcopy(_example())
     payload["slides"][0]["onscreen"] = [{"heading": "一个非常长的标题超过三十个字用来测试标题是否被忽略而不触发上屏文字密度检查规则"}]
     assert check_onscreen_detail_length(payload) == []
+
+
+def test_onscreen_long_copy_survives_delivery_without_character_gate() -> None:
+    from script_engine.final_quality import collect_final_lint_issues
+    from script_engine.render import render_stage02_markdown
+
+    text = "在用户授权且完成合规审查后由南方能源行业可信数据空间向金融机构提供企业用能数据服务"
+    long_text = text * 4
+    for field, value in (("text", long_text), ("items", [long_text])):
+        payload = {
+            "deck": {"authoring_mode": "faithful"},
+            "slides": [{
+                "id": "P01", "page_type": "content", "title": "数据服务",
+                "full_copy": long_text,
+                "onscreen": [{"heading": "数据服务", field: value}],
+                "source_refs": ["F01"],
+            }],
+        }
+        assert check_onscreen_detail_length(payload, max_chars=1) == []
+        markdown = render_stage02_markdown(payload)
+        assert long_text in markdown.split("### 上屏文字", 1)[1]
+        assert collect_final_lint_issues(payload, markdown) == []
 
 def test_power_industry_deck_final_script_passes_lint() -> None:
     """Regression test: the delivered power-industry-data-infrastructure deck previously leaked

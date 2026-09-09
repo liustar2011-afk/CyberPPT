@@ -111,8 +111,8 @@ def render_content_first_prompt(
         )
         else ""
     )
-    # The complete source copy remains the semantic input. Stage 02 may rewrite
-    # it into a clearer visible hierarchy without changing the protected facts.
+    # Visible material comes from the authored onscreen projection. Full prose
+    # is supplied separately as non-visible context below.
     complete_semantics = (
         onscreen_body
         if page.subtitle.strip()
@@ -233,6 +233,14 @@ def render_content_first_prompt(
         core_meaning_for_semantics,
         "",
     ]
+    if page.full_prose.strip():
+        nonvisible_page_context.extend([
+            "【完整文字稿（不上屏）】",
+            "仅供理解业务对象、关系、条件和边界；不得将本段直接排版或改写为额外上屏文案。"
+            "上屏文字范围仍由独立的页面内容素材及当前文字渲染模式约束。",
+            page.full_prose.strip(),
+            "",
+        ])
     if semantic_visual:
         semantic_brief = render_semantic_visual_brief(page)
         page_specific_semantics = str(

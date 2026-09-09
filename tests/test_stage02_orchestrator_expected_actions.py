@@ -67,6 +67,7 @@ def test_missing_authored_svg_returns_and_persists_needs_action(tmp_path: Path) 
         script=script,
         pages_raw="1",
         production_build=False,
+        image_model="gpt-image-2",
     )
 
     with (

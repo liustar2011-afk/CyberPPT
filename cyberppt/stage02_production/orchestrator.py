@@ -10,7 +10,7 @@ from .models import (
     Stage02ProductionResult,
     Stage02RunOptions,
 )
-from .preflight import prepare_preflight, read_json, write_json
+from .preflight import prepare_preflight, read_json, resolve_image_model, write_json
 from .reconstruction_stage import run_reconstruction_stage
 from .rhythm_stage import run_full_image_rhythm_stage
 from .state import _production_invocation, classify_manifest
@@ -73,6 +73,7 @@ def run_production(
 ) -> Stage02ProductionResult:
     deps = dependencies or default_stage02_dependencies()
     context = prepare_preflight(options)
+    options = resolve_image_model(options, context.build_dir)
     manifest = prepare_manifest(context, options)
     images = run_image_stage(context, manifest, options, deps)
     if options.require_images or (options.production_build and not options.dry_run_images):

@@ -438,16 +438,20 @@ def test_cli_lint_flags_duplicate_onscreen_heading(tmp_path, capsys) -> None:
     assert any("duplicate module heading" in issue for issue in out["issues"])
 
 
-def test_cli_lint_fails_on_overlong_onscreen_detail_line(tmp_path, capsys) -> None:
+def test_cli_lint_accepts_long_faithful_onscreen_detail(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
-    payload["slides"][0]["onscreen"] = [{"heading": "模块", "items": ["需求识别到持续优化经过八个连续环节层层推进形成完整闭环缺一不可"]}]
-    broken = tmp_path / "broken.json"
-    broken.write_text(json.dumps(payload), encoding="utf-8")
-    exit_code = main(["lint", str(broken)])
+    copy = "在用户授权且完成合规审查后由数据服务平台向金融机构提供企业用能数据查询服务"
+    payload["slides"] = [{
+        "id": "P01", "page_type": "content", "title": "数据服务",
+        "full_copy": copy, "onscreen": [{"heading": "数据服务", "items": [copy]}],
+        "source_refs": ["F1"],
+    }]
+    script = tmp_path / "long-copy.json"
+    script.write_text(json.dumps(payload), encoding="utf-8")
+    exit_code = main(["lint", str(script)])
     out = json.loads(capsys.readouterr().out)
-    assert exit_code == 1
-    assert out["status"] == "failed"
-    assert any("meaningful characters (> 30)" in issue for issue in out["issues"])
+    assert exit_code == 0
+    assert out["status"] == "passed"
 
 
 def test_cli_outline_lists_slides_with_onscreen_module_counts(capsys) -> None:

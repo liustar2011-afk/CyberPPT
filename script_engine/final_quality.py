@@ -13,6 +13,7 @@ from .contracts import (
 )
 from .delivery_cleanliness import check_delivery_cleanliness
 from .quality_policy import partition_issues
+from .onscreen_contracts import onscreen_alignment_advisories
 
 
 IssueCollector = Callable[[dict, str], list[str]]
@@ -40,7 +41,8 @@ def partition_final_lint_findings(
 ) -> tuple[list[str], list[str]]:
     """Collect Final Script findings, then apply the shared blocker/advisory policy."""
 
-    return partition_issues(issue_collector(payload, markdown))
+    blockers, advisories = partition_issues(issue_collector(payload, markdown))
+    return blockers, advisories + onscreen_alignment_advisories(payload)
 
 
 __all__ = [

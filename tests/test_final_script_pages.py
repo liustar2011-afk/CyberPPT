@@ -20,6 +20,38 @@ _FinalScriptPagesTestsBase.__test__ = False
 class FinalScriptPagesTests(_FinalScriptPagesTestsBase):
     __test__ = True
 
+    def test_external_script_full_copy_is_nonvisible_prompt_context(self) -> None:
+        from cyberppt.commands.final_script_pages import run_final_script_pages
+        from cyberppt.commands.init_project import init_project
+
+        full_copy = "平台提供数据服务。\n\n补充条件仅用于理解业务边界。"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "external-stage02"
+            init_project(project)
+            script = root / "external.md"
+            script.write_text(
+                "## P01 数据服务\n\n- 页面类型：内容页\n\n"
+                f"### 完整文字稿\n\n{full_copy}\n\n"
+                "### 上屏文字\n\n平台提供数据服务。\n",
+                encoding="utf-8",
+            )
+            original = script.read_bytes()
+            summary = run_final_script_pages(
+                project=project, script=script, pages_raw="1",
+                style_id=9, external_script=True,
+            )
+            manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text())
+            prompt = manifest["pairs"][0]["full"]["prompt"]
+            self.assertEqual("external_script", manifest["source_mode"])
+            self.assertIn("--external-script", summary["resume_command"])
+            self.assertEqual(original, script.read_bytes())
+            self.assertIn("【完整文字稿（不上屏）】", prompt)
+            self.assertEqual(1, prompt.count(full_copy))
+            visible = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1]
+            self.assertIn("平台提供数据服务。", visible)
+            self.assertNotIn("补充条件仅用于理解业务边界", visible)
+
     def test_typo_audit_regenerates_before_enhancement(self) -> None:
         """Correction retry must operate on real image bytes before enhancement."""
 

@@ -11,6 +11,7 @@ from pathlib import Path
 from cyberppt import __version__
 from cyberppt.commands.assemble_final_script import assemble_final_script
 from cyberppt.commands.final_script_pages import run_final_script_pages
+from scripts.imagegen_pipeline.providers.codex_oauth_image import DEFAULT_MODEL as DEFAULT_IMAGE_MODEL
 from cyberppt.foundation_projection import project_source_truth_to_foundation
 from cyberppt.foundation_authoring import prepare_script_foundation
 from script_engine.contracts import validate_foundation
@@ -1018,11 +1019,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Generate pending image variants through the Codex OAuth image backend.",
     )
-    final_script_pages_parser.add_argument("--image-model", default="gpt-image-2")
+    final_script_pages_parser.add_argument(
+        "--image-model",
+        default=None,
+        help=f"Image model override; new builds default to {DEFAULT_IMAGE_MODEL}, resumes retain the recorded model.",
+    )
     final_script_pages_parser.add_argument(
         "--image-quality",
-        choices=("low", "medium", "high", "auto"),
-        default="high",
+        choices=("low", "medium", "high", "max", "auto"),
+        default="max",
+        help="Image generation quality (default: max).",
     )
     final_script_pages_parser.add_argument("--image-timeout", type=int, default=600)
     final_script_pages_parser.add_argument("--force-images", action="store_true")

@@ -25,6 +25,16 @@ runtime provenance is recorded in
 `scripts/image_to_pptx_runtime/UPSTREAM.md`.
 
 Run repository commands from the repository root with `.venv/bin/python3`.
+New Stage 02 builds use `gpt-image-2.5-sunburst` through the existing Codex OAuth
+provider. `--image-model` remains an explicit override.
+New image requests default to `--image-quality max`; an explicit quality overrides
+that default. Resume existing batches using their recorded `resume_command`, which
+preserves the batch's original quality.
+When the model is omitted on resume, use the batch's recorded model; historical builds without model metadata require
+an explicit model from the original request. Keep the current style and prompts.
+Request receipts distinguish `requested_model` from `actual_model`; the latter
+remains unknown when backend model evidence is not captured. Do not infer a
+verified backend version from successful generation or image quality.
 The only production route is `.venv/bin/python3 -m cyberppt final-script-pages` with
 `--production-build`; do not construct a final script or `page_image_pairs.json`
 by hand and do not call `run_stage02_reconstruction` directly.
@@ -43,7 +53,8 @@ contract as other Stage 02 inputs. The manifest, input identity, build context
 and resume command must retain `source_mode: external_script` so the external
 source and its semantic boundary remain traceable.
 
-For a finalized Stage 01 script, `full_copy` and `onscreen` have separate,
+For a finalized Stage 01 script or a structured external script, `full_copy`
+(`完整文字稿`) and `onscreen` (`上屏文字`) have separate,
 non-interchangeable roles in the image prompt. `full_copy` is non-visible semantic
 context only. `onscreen` is optional source material for visible copy. Stage 02
 may select, rewrite, merge, shorten, reorder, split or replace its wording. OCR
