@@ -5,8 +5,9 @@ on:
     branches:
       - feature/stage2-artifact-contract-v3
     paths:
-      - tools/stage2_v3_apply.py
-      - tools/stage2_v3_apply_fix.py
+      - cyberppt/composition_strategy.py
+      - tests/test_composition_strategy.py
+      - tools/stage2_v3_*.py
       - .github/workflows/stage2-v3-apply.yml
 
 permissions:
@@ -28,5 +29,5 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
-      - name: Apply one audited Stage2 v3 step
-        run: python tools/stage2_v3_apply_fix.py
+      - name: Validate current Stage2 v3 step
+        run: python -m pytest -q tests/test_composition_strategy.py
