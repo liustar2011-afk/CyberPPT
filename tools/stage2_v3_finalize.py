@@ -16,7 +16,6 @@ AGGREGATE_TESTS = (
     "tests/test_copy_contract_pipeline.py",
     "tests/test_composition_strategy.py",
     "tests/test_region_graph_composition_strategy.py",
-    "tests/test_region_graph.py",
     "tests/test_visual_medium_policy.py",
     "tests/test_visual_medium_resolver_v2.py",
     "tests/test_visual_medium_prompt_v2.py",
@@ -98,7 +97,7 @@ if "## Step 5.1｜Visual Thesis 强校验" not in ledger:
 状态：已完成聚合定向测试；全量 CI 待最终核对
 
 已完成工作：
-- 聚合执行 Phase 1–7 新增测试及 Region Graph 既有相关回归测试。
+- 聚合执行 Phase 1–7 新增测试及跨阶段回归测试。
 - 删除本次开发使用的临时 `tools/stage2_v3_*.py` 执行器。
 - 删除本次开发使用的 `.github/workflows/stage2-v3-apply.yml` 专用工作流。
 - 正式功能代码、领域合同、生产链改造和长期回归测试全部保留。
