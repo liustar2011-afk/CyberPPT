@@ -16,7 +16,7 @@ if first.returncode != 0:
     content = renderer.read_text(encoding="utf-8")
     old = "        lines.append(f\"  - rewrite goal: {rewriteable.rewrite_goal}{length}; preserve {', '.join(rewriteable.preserve)}.\")\n"
     new = (
-        "        preserve = \", \\".join(item.replace(\"_\", \" \") for item in rewriteable.preserve)\n"
+        "        preserve = \", \".join(item.replace(\"_\", \" \") for item in rewriteable.preserve)\n"
         "        lines.append(f\"  - rewrite goal: {rewriteable.rewrite_goal}{length}; preserve {preserve}.\")\n"
     )
     if old not in content:
