@@ -19,6 +19,11 @@ def run(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
 
 
 content = PATH.read_text(encoding="utf-8")
+content = replace_once(
+    content,
+    '_DATA_RE = re.compile(r"数据|指标|趋势|占比|对比|统计|监测|预测|变化|曲线|分布|排名|data|metric|trend|share|forecast|comparison|distribution", re.I)',
+    '_DATA_RE = re.compile(r"指标|趋势|占比|对比|统计|监测|预测|变化|曲线|分布|排名|metric|trend|share|forecast|comparison|distribution|statistics|chart", re.I)',
+)
 content = replace_once(content, "    evidence_signals = 0\n", "    evidence_signals = 0\n    signal_families: set[str] = set()\n")
 content = replace_once(content, "        evidence_signals += 1\n    elif scene_policy == \"forbidden\":\n", "        evidence_signals += 1\n        signal_families.add(\"scene\")\n    elif scene_policy == \"forbidden\":\n")
 content = replace_once(content, "        evidence_signals += 1\n    if _OBJECT_RE.search(mission + \" \" + object_text):\n", "        evidence_signals += 1\n        signal_families.add(\"process\")\n    if _OBJECT_RE.search(mission + \" \" + object_text):\n")
@@ -39,5 +44,5 @@ run("git", "config", "user.name", "github-actions[bot]")
 run("git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
 run("git", "add", "cyberppt/visual_medium_policy.py")
 if run("git", "diff", "--cached", "--quiet", check=False).returncode != 0:
-    run("git", "commit", "-m", "stage2-v3: tighten mixed medium selection")
+    run("git", "commit", "-m", "stage2-v3: tighten semantic medium scoring")
     run("git", "push", "origin", "HEAD:feature/stage2-artifact-contract-v3")
