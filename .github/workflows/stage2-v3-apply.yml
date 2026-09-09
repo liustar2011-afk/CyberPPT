@@ -6,7 +6,13 @@ on:
       - feature/stage2-artifact-contract-v3
     paths:
       - cyberppt/full_slide_context.py
-      - tests/test_full_slide_context.py
+      - cyberppt/stage02_handoff.py
+      - cyberppt/page_artifact_spec.py
+      - scripts/imagegen_pipeline/final_prompt_ir.py
+      - scripts/imagegen_pipeline/artifact_prompt.py
+      - scripts/imagegen_pipeline/final_prompt_renderer.py
+      - scripts/imagegen_pipeline/final_prompt_contract.py
+      - tests/test_full_slide*.py
       - tools/stage2_v3_*.py
       - .github/workflows/stage2-v3-apply.yml
 
@@ -29,5 +35,5 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
-      - name: Validate full-slide design context contract
-        run: python -m pytest -q tests/test_full_slide_context.py
+      - name: Integrate and validate full-slide design context
+        run: python tools/stage2_v3_phase6_integrate.py
