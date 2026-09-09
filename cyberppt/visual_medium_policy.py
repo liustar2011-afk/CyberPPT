@@ -30,7 +30,7 @@ _MEDIA_TIE_ORDER = (
 _PROCESS_RE = re.compile(r"运行|运营|作业|现场|调度|施工|检修|采购|操作|流程|协作动作|operation|workflow|process|dispatch|field", re.I)
 _OBJECT_RE = re.compile(r"设备|装置|产品|平台|连接器|终端|组件|模型|系统对象|object|device|connector|equipment|product", re.I)
 _RELATION_RE = re.compile(r"关系|协同|流通|机制|架构|治理|主体|角色|边界|接口|依赖|支撑|汇聚|网络|relationship|governance|architecture|dependency|interface|network", re.I)
-_DATA_RE = re.compile(r"数据|指标|趋势|占比|对比|统计|监测|预测|变化|曲线|分布|排名|data|metric|trend|share|forecast|comparison|distribution", re.I)
+_DATA_RE = re.compile(r"指标|趋势|占比|对比|统计|监测|预测|变化|曲线|分布|排名|metric|trend|share|forecast|comparison|distribution|statistics|chart", re.I)
 
 
 @dataclass(frozen=True)
@@ -199,11 +199,13 @@ def _semantic_policy(
     object_text = str(business_object or "")
     actor = str(actor_type or "")
     evidence_signals = 0
+    signal_families: set[str] = set()
 
     if scene_policy == "required":
         _add(scores, reasons, "business_scene", 0.48, "scene policy explicitly requires a business scene")
         _add(scores, reasons, "mixed", 0.10, "mixed remains eligible only as a scene-led hybrid")
         evidence_signals += 1
+        signal_families.add("scene")
     elif scene_policy == "forbidden":
         evidence_signals += 1
 
@@ -211,21 +213,27 @@ def _semantic_policy(
         _add(scores, reasons, "business_scene", 0.25, "page semantics describe an operational action or real business process")
         _add(scores, reasons, "relationship_diagram", 0.07, "the process also contains relationship structure")
         evidence_signals += 1
+        signal_families.add("process")
     if _OBJECT_RE.search(mission + " " + object_text):
         _add(scores, reasons, "object_illustration", 0.28, "a concrete drawable business object is explicitly named")
         evidence_signals += 1
+        signal_families.add("object")
     elif object_text and object_text not in {"业务关系", "business relationship", "业务关系场"}:
         _add(scores, reasons, "object_illustration", 0.12, "the page provides a named business object")
         evidence_signals += 1
+        signal_families.add("object")
     if _RELATION_RE.search(mission + " " + relationships) or relationships:
         _add(scores, reasons, "relationship_diagram", 0.26, "the page mission or verified relations require explicit relationship encoding")
         evidence_signals += 1
+        signal_families.add("relationship")
     if _DATA_RE.search(mission + " " + relationships) or data_available:
         _add(scores, reasons, "data_visualization", 0.30 if data_available else 0.24, "the page contains a metric, comparison, trend, forecast or other data-reading task")
         evidence_signals += 1
+        signal_families.add("data")
     if re.search(r"企业|机构|部门|人员|客户|供应商|organization|person|customer|supplier", actor, re.I):
         _add(scores, reasons, "business_scene", 0.11, "the declared actor can participate in a concrete business scene")
         evidence_signals += 1
+        signal_families.add("actor")
 
     # Density is a weak medium signal only. Capacity gating remains a separate
     # content-engineering responsibility and may never zero the visual budget.
@@ -240,7 +248,13 @@ def _semantic_policy(
     )
     if "mixed" in scores and len(specialized) >= 2:
         first, second = specialized[:2]
-        if first[1] >= 0.58 and second[1] >= 0.56 and abs(first[1] - second[1]) <= 0.08:
+        if (
+            "data" in signal_families
+            and len(signal_families - {"density", "scene"}) >= 2
+            and first[1] >= 0.58
+            and second[1] >= 0.56
+            and abs(first[1] - second[1]) <= 0.08
+        ):
             scores["mixed"] = min(0.94, (first[1] + second[1]) / 2 + 0.04)
             reasons["mixed"].append(
                 f"two specialized media are simultaneously strong and close: {first[0]} + {second[0]}"
