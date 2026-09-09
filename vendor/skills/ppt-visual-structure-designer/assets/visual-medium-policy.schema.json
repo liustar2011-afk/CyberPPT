@@ -11,8 +11,22 @@
     "rationale"
   ],
   "properties": {
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
     "preferred": {
       "enum": [
+        "business_scene",
+        "object_illustration",
+        "relationship_diagram",
+        "data_visualization",
+        "mixed"
+      ]
+    },
+    "secondary": {
+      "enum": [
+        "",
         "business_scene",
         "object_illustration",
         "relationship_diagram",
@@ -34,6 +48,19 @@
         ]
       }
     },
+    "forbidden": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "business_scene",
+          "object_illustration",
+          "relationship_diagram",
+          "data_visualization",
+          "mixed"
+        ]
+      }
+    },
     "scene_policy": {
       "enum": [
         "required",
@@ -41,6 +68,22 @@
         "forbidden",
         "auto"
       ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "business_scene": {"type": "number", "minimum": 0, "maximum": 1},
+        "object_illustration": {"type": "number", "minimum": 0, "maximum": 1},
+        "relationship_diagram": {"type": "number", "minimum": 0, "maximum": 1},
+        "data_visualization": {"type": "number", "minimum": 0, "maximum": 1},
+        "mixed": {"type": "number", "minimum": 0, "maximum": 1}
+      }
     },
     "rationale": {
       "type": "string",
