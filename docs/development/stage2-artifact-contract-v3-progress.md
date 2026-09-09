@@ -40,3 +40,29 @@
 
 下一阶段工作：
 - Step 1.2：恢复 `_visible_text_bindings()` 权威链，将 Copy Contract 接入 `PageArtifactSpec → FinalPromptIR → Renderer → Validator`，并删除 locked copy 的 rewrite/source-material 冲突授权。
+
+## Step 1.2｜Copy Contract 权威链闭环
+
+状态：已完成
+
+已完成工作：
+- 恢复 `_visible_text_bindings()`，不再将 authored visible copy 主动降级为空绑定。
+- `PageArtifactSpec` 增加 `copy_contract`，并校验 Copy Contract 对全部 visible text binding 的唯一覆盖。
+- 将 Region Graph 的 `text_ids` 映射到 Copy Contract，保留每条上屏文字的 macro region ownership。
+- `FinalPromptIR` 增加 `copy_contract` 并将 IR 版本升级至 v5。
+- Renderer 对 locked copy 使用 `Exact visible text` 合同，每条逐字声明一次；rewriteable copy 仅对显式授权项输出 rewrite goal。
+- 删除 Copy Contract 路径中的 blanket `rewrite / merge / shorten / reorder / split / select / replace` 授权。
+- extra text 默认在最终 Prompt 中显式禁止。
+- Validator 分别校验 exact copy、rewriteable copy、extra text policy，并继续阻止 backend/internal 字段泄漏。
+- Debug receipt 增加 Copy Contract sidecar 信息。
+- 新增 `tests/test_copy_contract_pipeline.py`，覆盖 locked-only、mixed copy、coverage drift。
+
+验证结果：
+- 第一次定向测试发现 `claim_strength` 内部字段会泄漏到 Prompt；未提交半成品。
+- 修正为公共表述 `claim strength`，保持 backend leak validator 严格不放宽。
+- 第二次执行 `tests/test_copy_contract.py + tests/test_copy_contract_pipeline.py` 全部通过。
+- 业务提交：`64a50136a81b6b57b7cc1a4d1ce67ced1a123f0d`（`stage2-v3: close copy contract authority chain`）。
+- Phase 1 验收目标已形成代码闭环：locked copy 逐字唯一声明、Region ownership 保留、Copy Contract 路径不存在 blanket rewrite 与 strict lock 并存。
+
+下一阶段工作：
+- Phase 2 / Step 2.1：新增 `CompositionStrategy` contract，删除 topology 对 macro axis/geometry 的一对一权威关系；Region Graph 改为消费 composition strategy，并建立同一 topology 至少 3 种合法宏观构图策略的测试。
