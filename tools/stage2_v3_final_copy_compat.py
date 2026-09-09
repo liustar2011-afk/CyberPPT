@@ -84,6 +84,18 @@ def main() -> None:
         "prompt contract legacy fallback block",
     )
 
+    macro_test = Path("tests/test_prompt_macro_structure.py")
+    replace_once(
+        macro_test,
+        '''    for text in ir.visible_text:
+        assert prompt.count(f'- Source onscreen text: "{text}"') == 1
+''',
+        '''    for text in ir.visible_text:
+        assert prompt.count(f'- Exact visible text: "{text}"') == 1
+''',
+        "macro structure exact-copy assertion",
+    )
+
 
 if __name__ == "__main__":
     main()
