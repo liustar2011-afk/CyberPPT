@@ -13,6 +13,7 @@ from cyberppt.copy_contract import CopyContractSpec, build_copy_contract
 from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
 from cyberppt.text_capacity import TextCapacityAssessment, assess_text_capacity
 from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy
+from cyberppt.visual_thesis import validate_visual_thesis
 
 
 TEXT_DENSE_ITEM_THRESHOLD = 14
@@ -896,7 +897,7 @@ def build_page_artifact_spec(
             core_judgment=core_judgment,
             page_title=_required_text(handoff_page.get("title"), "page title"),
         ),
-        visual_thesis=_required_text(visual_decision.get("visual_thesis"), "visual thesis"),
+        visual_thesis=validate_visual_thesis(visual_decision.get("visual_thesis"), core_judgment),
         evidence=evidence,
         relationships=relationships,
         visual_carrier=VisualCarrierSpec(

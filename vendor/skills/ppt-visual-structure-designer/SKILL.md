@@ -136,7 +136,7 @@ ImageGen 不得合并或拆分 Region，不得把锁定文字移动到其他 Reg
 
 `visual_medium_policy`可由候选显式声明，包含`preferred / allowed / scene_policy / rationale`；媒介依据页面使命、可画业务对象、业务动作、信息密度和Style lock选择，不得仅因`parallel_set`、`flow`、`convergence`等topology直接决定实景、插图或关系图。
 
-每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，五项之和形成0–100的可生成性总分；`score`必须等于五项实际得分之和，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
+每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`为必填独立合同，必须说明画面要证明的对象关系、路径、依赖、汇聚、边界、交换或转化结果；不得为空，不得直接或近似复用`core_judgment`，不得使用纯口号、纯价值判断或仅重复页面结论的句子充当占位。仓库编译器会对缺失、与核心结论高重复以及缺少关系性信号的`visual_thesis`执行阻断；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，五项之和形成0–100的可生成性总分；`score`必须等于五项实际得分之和，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 
 每页必须写入`relationship_coverage`，逐项登记`business_relationships`与`stage01_relationship_features.actions`中的关键关系，标记为`primary`、`secondary`或有业务理由的`not_rendered`，并引用当前证据单元和锁定文字ID。页面使命、核心判断或P0证据所必需的关系不得标记为`not_rendered`。需要生成语义连接的关系必须补充`from_evidence_refs`与`to_evidence_refs`，明确连接两端；`evidence_refs`只表示关系覆盖范围，不能用来推导端点。
 

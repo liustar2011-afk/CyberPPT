@@ -10,6 +10,7 @@ from cyberppt.text_capacity import TextCapacityAssessment, assert_text_capacity
 from cyberppt.region_graph import build_region_graph
 from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map
 from cyberppt.visual_medium_policy import resolve_visual_medium_policy
+from cyberppt.visual_thesis import validate_visual_thesis
 from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 from cyberppt.topology_resolver import CANDIDATE_TOPOLOGIES_BY_SEMANTIC_TOPOLOGY
 
@@ -635,6 +636,21 @@ def _stage02_text_capacity(source: dict[str, Any], page_id: str) -> TextCapacity
     raise AssertionError("unreachable")
 
 
+def _selected_visual_thesis(
+    selected: dict[str, Any],
+    source: dict[str, Any],
+    page_id: str,
+) -> str:
+    try:
+        return validate_visual_thesis(
+            selected.get("visual_thesis"),
+            source.get("core_judgment"),
+        )
+    except ValueError as exc:
+        _fail(f"{page_id}: {exc}")
+    raise AssertionError("unreachable")
+
+
 def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> dict[str, Any]:
     page_id = _page_id(source.get("page_id"))
     prompt_mode = str(source.get("prompt_mode") or "directed_composition").strip()
@@ -689,6 +705,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             f"{page_id}: selected candidate topology {topology!r} is incompatible with "
             f"verified semantic topology {verified_topology!r}"
         )
+    visual_thesis = _selected_visual_thesis(selected, source, page_id)
     semantic_annotation_contract = _semantic_annotation_contract(
         source,
         decision,
@@ -977,7 +994,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         },
         "visual_decision": {
             "visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"),
-            "visual_thesis": str(selected.get("visual_thesis") or source["core_judgment"]),
+            "visual_thesis": visual_thesis,
             "spatial_organization": design["spatial_organization"],
             "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys],
             "text_integration_method": design["text_integration_method"],
