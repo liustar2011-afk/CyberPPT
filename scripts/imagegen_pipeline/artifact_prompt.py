@@ -511,7 +511,7 @@ def _micro_visual_freedom_ir(spec: PageArtifactSpec) -> MicroVisualFreedomIR | N
         forbidden=(
             "Do not merge or split macro regions.",
             "Do not change macro region roles, anchors, relative emphasis or semantic order in a way that changes meaning.",
-            "Keep each rewritten source item within its assigned macro semantic region.",
+            "Keep each declared copy item within its assigned macro semantic region.",
             "Do not change the focus policy or promote a peer item into a result or judgment.",
             "Do not change relationship type or direction, or invent stronger causality, hierarchy or sequence than the source supports.",
             "Do not leave the allowed visual media or violate the scene policy.",
@@ -649,6 +649,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
             visible_text=spec.typography.visible_text,
             hard_constraints=hard_constraints,
             runtime_lock=RuntimeLockIR(style_contract=spec.art_direction.contract),
+            copy_contract=spec.copy_contract,
             page_title=spec.communication_goal.page_title,
             page_mission=spec.communication_goal.page_mission,
             semantic_context=spec.semantic_context.text,

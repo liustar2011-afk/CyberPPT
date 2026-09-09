@@ -63,8 +63,13 @@ def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
                     "keep each level-3 item visibly attached to its preceding level-2 heading. Preserve three "
                     "distinct reading ranks; do not flatten them into peer cards or body copy."
                 )
-            lines.append("- source onscreen text assigned to this group:")
-            lines.extend(f'- Source onscreen text: "{text}"' for text in binding.exact_text)
+            if ir.copy_contract is None:
+                lines.append("- source onscreen text assigned to this group:")
+                lines.extend(f'- Source onscreen text: \"{text}\"' for text in binding.exact_text)
+            else:
+                ordinals = _public_text_ordinals(ir)
+                owned = [ordinals[text_id] for text_id in binding.text_ids if text_id in ordinals]
+                lines.append("- copy ownership: source onscreen item(s) " + ", ".join(str(item) for item in owned) + "; exact wording is declared once in Section 6.")
             level_path = " → ".join(str(level) for level in levels)
             lines.append(f"- hierarchy: levels {level_path}; keep this group's text together in one coherent visual region.")
     return tuple(lines)
@@ -125,6 +130,45 @@ def _macro_structure_lines(ir: FinalPromptIR) -> tuple[str, ...]:
             f"Scene policy: {policy.scene_policy.replace('_', ' ')}.",
             f"Medium rationale: {policy.rationale}",
         ))
+    return tuple(lines)
+
+
+def _copy_contract_lines(ir: FinalPromptIR) -> tuple[str, ...]:
+    contract = ir.copy_contract
+    if contract is None:
+        return (
+            "Use the supplied copy as source material for concise presentation text. You may rewrite, merge, shorten, reorder, split, select, or replace its wording to suit the visual composition.",
+            *(f'- Source onscreen text: \"{text}\"' for text in ir.visible_text),
+        )
+    locked_by_text = {item.text: item for item in contract.locked_copy}
+    rewriteable_by_text = {item.source_text: item for item in contract.rewriteable_copy}
+    public_region = (
+        {region.id: index for index, region in enumerate(ir.region_graph.regions, start=1)}
+        if ir.region_graph is not None
+        else {}
+    )
+    lines: list[str] = [
+        "Copy authority: only the copy declared below may become visible text. Locked copy is immutable; rewriteable copy may change only within its explicit rewrite goal and preservation boundary."
+    ]
+    for text in ir.visible_text:
+        locked = locked_by_text.get(text)
+        if locked is not None:
+            lines.append(f'- Exact visible text: \"{locked.text}\"')
+            if locked.region_id and locked.region_id in public_region:
+                lines.append(f"  - assigned macro region: Region {public_region[locked.region_id]}")
+            lines.append(f"  - semantic role: {locked.semantic_role.replace('_', ' ')}; hierarchy {locked.hierarchy}; render exactly once.")
+            continue
+        rewriteable = rewriteable_by_text[text]
+        lines.append(f'- Rewriteable visible source: \"{rewriteable.source_text}\"')
+        if rewriteable.region_id and rewriteable.region_id in public_region:
+            lines.append(f"  - assigned macro region: Region {public_region[rewriteable.region_id]}")
+        length = f"; max length {rewriteable.max_length}" if rewriteable.max_length else ""
+        preserve = ", ".join(item.replace("_", " ") for item in rewriteable.preserve)
+        lines.append(f"  - rewrite goal: {rewriteable.rewrite_goal}{length}; preserve {preserve}.")
+    if contract.extra_text.allowed:
+        lines.append(f"Additional visible text is allowed only within the explicit extra-text budget: at most {contract.extra_text.max_count} item(s).")
+    else:
+        lines.append("Do not add any visible text that is not declared in this copy contract.")
     return tuple(lines)
 
 
@@ -217,21 +261,7 @@ def render_final_prompt(
                 *ir.composition.visual_responsibility,
             )
         ),
-        "\n".join(
-            (
-                SECTION_HEADINGS[5],
-                (
-                    "Use the supplied copy as source material for concise presentation text. "
-                    "You may rewrite, merge, shorten, reorder, split, select, or replace its "
-                    "wording to suit the visual composition."
-                ),
-                *(
-                    ()
-                    if ir.text_bindings
-                    else tuple(f'- Source onscreen text: "{text}"' for text in ir.visible_text)
-                ),
-            )
-        ),
+        "\n".join((SECTION_HEADINGS[5], *_copy_contract_lines(ir))),
     )
     sections = (*sections_before_runtime, hard_constraints_section, runtime_section)
     prompt = "\n\n".join(section for section in sections if section.strip()).rstrip() + "\n"
@@ -338,6 +368,7 @@ def render_debug_receipt(
             else None
         ),
         "visible_text": list(ir.visible_text),
+        "copy_contract": (ir.copy_contract.as_dict() if ir.copy_contract is not None else None),
         "hard_constraints": list(ir.hard_constraints),
         "source_hashes": dict(source_hashes),
     }

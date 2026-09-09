@@ -107,13 +107,36 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt visible text contains excluded chrome content: {text!r}"
             )
-    source_declarations = tuple(
-        re.findall(r'^- Source onscreen text: "(.*)"$', prompt, flags=re.MULTILINE)
-    )
-    if source_declarations != ir.visible_text:
-        raise PromptContractError(
-            "final prompt source onscreen declarations must match the supplied source material"
+    if ir.copy_contract is not None:
+        exact_declarations = tuple(
+            re.findall(r'^- Exact visible text: \"(.*)\"$', prompt, flags=re.MULTILINE)
         )
+        rewriteable_declarations = tuple(
+            re.findall(r'^- Rewriteable visible source: \"(.*)\"$', prompt, flags=re.MULTILINE)
+        )
+        locked_text = {item.text for item in ir.copy_contract.locked_copy}
+        rewriteable_text = {item.source_text for item in ir.copy_contract.rewriteable_copy}
+        expected_exact = tuple(text for text in ir.visible_text if text in locked_text)
+        expected_rewriteable = tuple(text for text in ir.visible_text if text in rewriteable_text)
+        if exact_declarations != expected_exact:
+            raise PromptContractError("final prompt exact-copy declarations must match locked copy")
+        if rewriteable_declarations != expected_rewriteable:
+            raise PromptContractError("final prompt rewriteable-copy declarations must match rewriteable copy")
+        if "You may rewrite, merge, shorten, reorder, split, select, or replace" in prompt:
+            raise PromptContractError("copy-contract prompt cannot grant blanket rewrite authority")
+        if (
+            not ir.copy_contract.extra_text.allowed
+            and "Do not add any visible text that is not declared in this copy contract." not in prompt
+        ):
+            raise PromptContractError("copy-contract prompt must forbid undeclared extra visible text")
+    else:
+        source_declarations = tuple(
+            re.findall(r'^- Source onscreen text: \"(.*)\"$', prompt, flags=re.MULTILINE)
+        )
+        if source_declarations != ir.visible_text:
+            raise PromptContractError(
+                "final prompt source onscreen declarations must match the supplied source material"
+            )
     _validate_text_bindings(prompt, ir)
 
     reading_path_declarations = re.findall(r"^Reading path: .*$", prompt, flags=re.MULTILINE)

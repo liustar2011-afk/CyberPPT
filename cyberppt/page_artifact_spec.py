@@ -9,6 +9,7 @@ import warnings
 from pathlib import Path
 from typing import Any, Mapping
 
+from cyberppt.copy_contract import CopyContractSpec, build_copy_contract
 from cyberppt.region_graph import RegionGraphSpec, validate_region_graph
 from cyberppt.text_capacity import assess_text_capacity
 from cyberppt.visual_medium_policy import VisualMediumPolicy, validate_visual_medium_policy
@@ -221,6 +222,7 @@ class PageArtifactSpec:
     visible_text_bindings: tuple[VisibleTextBindingSpec, ...] = ()
     region_graph: RegionGraphSpec | None = None
     visual_medium_policy: VisualMediumPolicy | None = None
+    copy_contract: CopyContractSpec | None = None
 
     def __post_init__(self) -> None:
         if self.visible_text_bindings:
@@ -232,6 +234,12 @@ class PageArtifactSpec:
             ids = tuple(binding.text_id for binding in self.visible_text_bindings)
             if len(ids) != len(set(ids)):
                 raise ValueError("visible text binding text_id values must be unique")
+        if self.copy_contract is not None:
+            declared = {item.text_id: item.text for item in self.copy_contract.locked_copy}
+            declared.update({item.text_id: item.source_text for item in self.copy_contract.rewriteable_copy})
+            expected = {binding.text_id: binding.text for binding in self.visible_text_bindings}
+            if declared != expected:
+                raise ValueError("copy contract must cover every visible text binding exactly once")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -707,10 +715,13 @@ def build_page_artifact_spec(
                 "the current canvas capacity; split the page or provide explicit onscreen text. "
                 f"score={capacity.pressure_score}; characters={capacity.character_count}"
             )
-    # Content-integrity nodes describe the authored script structure. They are
-    # useful for semantic grouping, but they do not bind the model to exact
-    # bitmap wording. Keep the prompt input as plain reference text.
-    visible_text_bindings = ()
+    # Authored content-integrity nodes are the authority for exact visible-copy
+    # ownership. Preserve that binding into the artifact contract; Stage2 may
+    # not silently downgrade authored copy to free source material.
+    visible_text_bindings = _visible_text_bindings(
+        visible_text=visible_text,
+        content_nodes=content_nodes,
+    )
     text_id_to_root = {
         str(node.get("text_id")): str(node.get("root_id") or "")
         for node in content_nodes or [] if isinstance(node, dict)
@@ -758,6 +769,19 @@ def build_page_artifact_spec(
     visual_medium_policy = (
         validate_visual_medium_policy(raw_medium_policy)
         if isinstance(raw_medium_policy, Mapping)
+        else None
+    )
+    region_by_text_id: dict[str, str] = {}
+    if region_graph is not None:
+        for region in region_graph.regions:
+            for text_id in region.text_ids:
+                existing = region_by_text_id.get(text_id)
+                if existing and existing != region.id:
+                    raise ValueError(f"visible text {text_id!r} is owned by multiple macro regions")
+                region_by_text_id[text_id] = region.id
+    copy_contract = (
+        build_copy_contract(visible_text_bindings, region_by_text_id=region_by_text_id)
+        if visible_text_bindings
         else None
     )
     handoff_relationships = visual_input.get("business_relationships")
@@ -931,6 +955,7 @@ def build_page_artifact_spec(
         visible_text_bindings=visible_text_bindings,
         region_graph=region_graph,
         visual_medium_policy=visual_medium_policy,
+        copy_contract=copy_contract,
     )
 
 

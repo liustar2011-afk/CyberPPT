@@ -9,12 +9,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from cyberppt.copy_contract import CopyContractSpec
+
 MAX_SEMANTIC_GROUPS = 10
 # The rendered contract now binds exact text to semantic groups and renders each
 # visible string once, so persisted debug receipts must record the new version.
 # v4 additionally preserves per-line visible-text hierarchy so the prompt can
 # render a shared group heading, peer groups, and their details distinctly.
-FINAL_PROMPT_IR_VERSION = "v4"
+FINAL_PROMPT_IR_VERSION = "v5"
 _DANGLING_JUDGMENT_SUFFIXES = ("可信",)
 
 
@@ -181,6 +183,7 @@ class FinalPromptIR:
     visible_text: tuple[str, ...]
     hard_constraints: tuple[str, ...]
     runtime_lock: RuntimeLockIR
+    copy_contract: CopyContractSpec | None = None
     page_title: str = ""
     page_mission: str = ""
     semantic_context: str = ""
@@ -220,6 +223,16 @@ class FinalPromptIR:
             raise PromptContractError("final prompt IR requires visible text")
         if len(self.visible_text) != len(set(self.visible_text)):
             raise PromptContractError("visible text entries must be unique")
+        if self.copy_contract is not None:
+            contract_text = tuple(
+                item.text for item in self.copy_contract.locked_copy
+            ) + tuple(
+                item.source_text for item in self.copy_contract.rewriteable_copy
+            )
+            if len(contract_text) != len(set(contract_text)):
+                raise PromptContractError("copy contract visible text entries must be unique")
+            if set(contract_text) != set(self.visible_text):
+                raise PromptContractError("copy contract visible text must match the prompt IR")
         if self.text_bindings:
             bound = tuple(text for binding in self.text_bindings for text in binding.exact_text)
             if bound != self.visible_text:
