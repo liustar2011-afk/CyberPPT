@@ -26,8 +26,8 @@ def test_style_ten_resolves_to_its_copied_live_contract() -> None:
 
     assert style10["id"] == 10
     assert style10["prompt_contract_source"].endswith("references/visual-system-10.md")
-    assert "Prefer a scene-supported executive-report language." in style10["prompt_contract"]
-    assert "Keep all locked Chinese text complete." not in style10["prompt_contract"]
+    assert "The default visual medium is one open, coherent business scene or concrete business-object field." in style10["prompt_contract"]
+    assert "Keep all locked Chinese text complete, unchanged and in its original order." in style10["prompt_contract"]
 
 
 def test_style_ten_lock_records_its_own_snapshot() -> None:
@@ -43,12 +43,12 @@ def test_style_ten_lock_records_its_own_snapshot() -> None:
     }
     assert payload["style"]["id"] == 10
     assert payload["policy"]["legacy_alias_resolves_to_canonical_snapshot"] is False
-    assert payload["reference_image"]["path"].endswith("palette-09.png")
+    assert payload["reference_image"]["path"].endswith("palette-10.png")
 
 
-def test_style_ten_is_not_advertised_and_reuses_style_nine_palette() -> None:
+def test_style_ten_is_not_advertised_and_uses_its_dedicated_palette() -> None:
     choices = default_style_choices()
     assert choices.count("\n") == 7
     assert "9." not in choices
     assert "10." not in choices
-    assert not (ROOT / "assets" / "palette-samples" / "palette-10.png").exists()
+    assert (ROOT / "assets" / "palette-samples" / "palette-10.png").is_file()

@@ -146,3 +146,20 @@
 
 下一阶段工作：
 - Track A / Step A2：迁移 Style 09/10 registry 合同断言到当前中文 Artifact Spec 执行版，并校正 live-contract / palette / terminal-focus 相关旧测试。
+
+## Track A / Step A2｜Style 09/10 Live Contract 对齐
+
+状态：已完成
+
+已完成工作：
+- Style 09 测试断言从已废弃英文 prompt contract 迁移到当前 `references/visual-system.md` 中文 GPT Image 2.5 Artifact Spec 执行合同。
+- Style 09 的 palette、主焦点、构图机制、场景/图标职责与终端收口均按当前 live contract 验证。
+- Style 10 测试改为验证当前独立 `visual-system-10.md` 的 scene-led / locked-copy 合同。
+- 修正 Style 10 registry 的 reference sample：从 `palette-09.png` 改为仓库已存在的专属 `palette-10.png`。
+
+验证结果：
+- `tests/test_extended_style_9.py + tests/test_extended_style_10.py` 全部通过。
+- 未回退当前 Style 09/10 live contract；测试与 registry 对当前实际资源完成对齐。
+
+下一阶段工作：
+- Track A / Step A3：将 4 项 Style Lock Snapshot 历史测试迁移到当前“live style 默认刷新、显式 immutable 才冻结”的正式策略，并补足行为边界验证。
