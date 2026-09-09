@@ -30,7 +30,7 @@
 - 新增 `cyberppt/copy_contract.py`。
 - 建立 `CopyContractSpec`、`LockedCopySpec`、`RewriteableCopySpec`、`ExtraTextPolicySpec`。
 - authored visible copy 默认进入 locked copy；仅显式授权的 text_id 才允许进入 rewriteable copy。
-- locked copy 强制 `count=1`，并限制 transformation 只能是 line break / grouping / position change 等不改变文案的操作。
+- locked copy 强制 `count=1`，并限制 transformation 只能是 line break / grouping / position_change 等不改变文案的操作。
 - extra text 默认 `allowed=false`、`max_count=0`。
 - 新增 `tests/test_copy_contract.py`，覆盖默认锁定、显式改写授权、region ownership、重复 id、权限重叠、非法 transformation、extra text 等规则。
 
@@ -66,3 +66,42 @@
 
 下一阶段工作：
 - Phase 2 / Step 2.1：新增 `CompositionStrategy` contract，删除 topology 对 macro axis/geometry 的一对一权威关系；Region Graph 改为消费 composition strategy，并建立同一 topology 至少 3 种合法宏观构图策略的测试。
+
+## Step 2.1｜CompositionStrategy 独立合同
+
+状态：已完成
+
+已完成工作：
+- 新增 `cyberppt/composition_strategy.py` 与 `CompositionStrategySpec`。
+- topology 仅约束合法策略集合，macro geometry 由独立 resolver 决定。
+- 建立 horizontal / vertical / open spatial / radial / layered / split boundary / stepped path 等宏观策略。
+- resolver 使用 focus policy、evidence count、visual medium、page rhythm 等输入评分。
+- 新增 `tests/test_composition_strategy.py`。
+
+验证结果：
+- 9 类 render topology 均提供不少于 3 种合法 macro strategy。
+- 相邻页面重复策略会被显式降权。
+- 定向测试 `tests/test_composition_strategy.py` 全部通过。
+
+下一阶段工作：
+- Step 2.2：Region Graph 消费 CompositionStrategy，移除 topology → axis 一对一权威映射，并接入实际 Visual Stage 编译链。
+
+## Step 2.2｜Topology 与 Composition 生产链解耦
+
+状态：已完成
+
+已完成工作：
+- `region_graph.py` 移除 `_AXIS_BY_TOPOLOGY` 生产权威；Region Graph 接收 `CompositionStrategySpec`。
+- Region Graph 的 primary axis、anchor、span 由 composition strategy 决定；semantic topology 继续决定 region role 与 relationship truth。
+- 保留 `legacy_composition_strategy()` 仅用于旧调用兼容投影。
+- Visual Stage 在生成 Region Graph 前独立执行 `resolve_composition_strategy()`，并将结果持久化为 `composition_strategy`。
+- 保留 semantic topology compatibility audit，避免构图自由改变业务关系语义。
+- 新增 `tests/test_region_graph_composition_strategy.py`，验证同一 `directed_flow` 在 3 种宏观几何下关系边完全一致。
+
+验证结果：
+- 定向执行 `tests/test_composition_strategy.py + tests/test_region_graph_composition_strategy.py + tests/test_region_graph.py` 通过。
+- 业务提交：`801f84a71d29dbb2fc0bf2f70be29f0f023a2d41`（`stage2-v3: decouple topology from composition strategy`）。
+- Phase 2 验收完成：同一 topology 可生成至少 3 种合法 macro composition；生产链不再由 topology 强制固定 axis；业务关系 truth 保持不变。
+
+下一阶段工作：
+- Phase 3 / Step 3.1：升级 Visual Medium Resolver v2，增加页面语义评分、confidence、forbidden media，取消 `mixed` 无条件默认，并保证 rationale 与实际评分依据一致。
