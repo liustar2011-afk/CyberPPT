@@ -64,13 +64,9 @@ def _group_lines(ir: FinalPromptIR) -> tuple[str, ...]:
                     "keep each level-3 item visibly attached to its preceding level-2 heading. Preserve three "
                     "distinct reading ranks; do not flatten them into peer cards or body copy."
                 )
-            if ir.copy_contract is None:
-                lines.append("- source onscreen text assigned to this group:")
-                lines.extend(f'- Source onscreen text: \"{text}\"' for text in binding.exact_text)
-            else:
-                ordinals = _public_text_ordinals(ir)
-                owned = [ordinals[text_id] for text_id in binding.text_ids if text_id in ordinals]
-                lines.append("- copy ownership: source onscreen item(s) " + ", ".join(str(item) for item in owned) + "; exact wording is declared once in Section 6.")
+            ordinals = _public_text_ordinals(ir)
+            owned = [ordinals[text_id] for text_id in binding.text_ids if text_id in ordinals]
+            lines.append("- copy ownership: source onscreen item(s) " + ", ".join(str(item) for item in owned) + "; exact wording is declared once in Section 6.")
             level_path = " → ".join(str(level) for level in levels)
             lines.append(f"- hierarchy: levels {level_path}; keep this group's text together in one coherent visual region.")
     return tuple(lines)
@@ -177,10 +173,21 @@ def _full_slide_context_lines(ir: FinalPromptIR) -> tuple[str, ...]:
 def _copy_contract_lines(ir: FinalPromptIR) -> tuple[str, ...]:
     contract = ir.copy_contract
     if contract is None:
-        return (
-            "Use the supplied copy as source material for concise presentation text. You may rewrite, merge, shorten, reorder, split, select, or replace its wording to suit the visual composition.",
-            *(f'- Source onscreen text: \"{text}\"' for text in ir.visible_text),
+        lines: list[str] = [
+            "Copy authority: supplied visible copy is locked by default when no explicit copy contract is attached."
+        ]
+        for text in ir.visible_text:
+            lines.append(f'- Exact visible text: \"{text}\"')
+            lines.append("  - semantic role: content; render exactly once.")
+        if not ir.visible_text:
+            lines.append("- No visible copy is declared.")
+        lines.extend(
+            (
+                "Locked copy may not be rewritten, merged, shortened, reordered, split, selected, or replaced; line breaks, grouping and position changes may be used only to preserve readability and meaning.",
+                "Do not add any visible text that is not declared in this copy contract.",
+            )
         )
+        return tuple(lines)
     locked_by_text = {item.text: item for item in contract.locked_copy}
     rewriteable_by_text = {item.source_text: item for item in contract.rewriteable_copy}
     public_region = (

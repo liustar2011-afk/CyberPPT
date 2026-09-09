@@ -82,7 +82,7 @@ def test_source_onscreen_text_is_not_redeclared_inside_region_lines():
     ir = build_final_prompt_ir(_current_spec())
     prompt = render_final_prompt(ir)
     for text in ir.visible_text:
-        assert prompt.count(f'- Source onscreen text: "{text}"') == 1
+        assert prompt.count(f'- Exact visible text: "{text}"') == 1
     region_lines = [line for line in prompt.splitlines() if line.startswith("Region ")]
     assert all(text not in "\n".join(region_lines) for text in ir.visible_text)
 

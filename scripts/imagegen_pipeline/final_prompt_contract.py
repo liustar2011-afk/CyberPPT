@@ -130,13 +130,17 @@ def validate_final_prompt(
         ):
             raise PromptContractError("copy-contract prompt must forbid undeclared extra visible text")
     else:
-        source_declarations = tuple(
-            re.findall(r'^- Source onscreen text: \"(.*)\"$', prompt, flags=re.MULTILINE)
+        exact_declarations = tuple(
+            re.findall(r'^- Exact visible text: \"(.*)\"$', prompt, flags=re.MULTILINE)
         )
-        if source_declarations != ir.visible_text:
+        if exact_declarations != ir.visible_text:
             raise PromptContractError(
-                "final prompt source onscreen declarations must match the supplied source material"
+                "final prompt exact-copy declarations must match the supplied visible copy"
             )
+        if "You may rewrite, merge, shorten, reorder, split, select, or replace" in prompt:
+            raise PromptContractError("legacy fallback cannot grant blanket rewrite authority")
+        if "Do not add any visible text that is not declared in this copy contract." not in prompt:
+            raise PromptContractError("legacy fallback must forbid undeclared extra visible text")
     _validate_text_bindings(prompt, ir)
 
     if ir.full_slide_design_context is not None:
