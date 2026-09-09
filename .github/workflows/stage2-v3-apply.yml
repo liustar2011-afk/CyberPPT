@@ -1,0 +1,31 @@
+name: Stage2 v3 apply step
+
+on:
+  push:
+    branches:
+      - feature/stage2-artifact-contract-v3
+    paths:
+      - tools/stage2_v3_apply.py
+      - .github/workflows/stage2-v3-apply.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/stage2-artifact-contract-v3
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+      - name: Apply one audited Stage2 v3 step
+        run: python tools/stage2_v3_apply.py
