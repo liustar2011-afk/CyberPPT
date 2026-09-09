@@ -15,7 +15,7 @@ def main() -> None:
     replace_once(
         thesis,
         '    re.compile(r"\\b(?:from|through|into|between|converge|connect|support|flow|feedback|return|map|depend|interface|boundary|exchange|transform|allocate)\\b", re.I),\n',
-        '    re.compile(r"\\b(?:from|through|into|between|relationship|relational|peer|converge|connect|support|flow|feedback|return|map|depend|interface|boundary|exchange|transform|allocate)\\b", re.I),\n',
+        '    re.compile(r"\\b(?:from|through|into|between|relationship|relational|peer|converge|connect|supports?|flow|feedback|return|map|depend|interface|boundary|exchange|transform|allocate)\\b", re.I),\n',
         "English relationship vocabulary",
     )
 
@@ -74,6 +74,216 @@ def _build_executable_page(source, decision):
 class VisualStructureStageTests(unittest.TestCase):
 ''',
         "legacy visual structure fixture migration",
+    )
+
+    schema = Path("vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json")
+    replace_once(
+        schema,
+        '''    "region_graph": {
+      "type": "object",
+''',
+        '''    "composition_strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy_id",
+        "topology",
+        "primary_axis",
+        "geometry",
+        "anchor_policy",
+        "weight_policy",
+        "span_policy",
+        "score",
+        "rationale",
+        "version"
+      ],
+      "properties": {
+        "strategy_id": {
+          "enum": [
+            "editorial_horizontal",
+            "editorial_vertical",
+            "open_spatial_field",
+            "radial_focus_field",
+            "layered_editorial_stack",
+            "split_boundary_field",
+            "stepped_spatial_path"
+          ]
+        },
+        "topology": {
+          "enum": [
+            "parallel_set",
+            "causal_convergence",
+            "layered_architecture",
+            "directed_flow",
+            "lifecycle_loop",
+            "governance_boundary",
+            "ecosystem_map",
+            "allocation_flow",
+            "conclusion_anchor"
+          ]
+        },
+        "primary_axis": {
+          "enum": [
+            "horizontal",
+            "vertical",
+            "radial",
+            "bidirectional",
+            "layered",
+            "free_spatial"
+          ]
+        },
+        "geometry": {"type": "string", "minLength": 1},
+        "anchor_policy": {
+          "enum": ["axis", "free", "focus_centered", "split", "stepped"]
+        },
+        "weight_policy": {
+          "enum": ["semantic_focus", "paired"]
+        },
+        "span_policy": {
+          "enum": ["compact", "free", "focus_half", "band", "half"]
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rationale": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "version": {"const": "composition-strategy-v1"}
+      },
+      "description": "Independent macro-composition strategy. Semantic topology remains the relationship-truth authority."
+    },
+    "region_graph": {
+      "type": "object",
+''',
+        "composition strategy schema",
+    )
+    replace_once(
+        schema,
+        '''        "primary_axis": {
+          "enum": [
+            "horizontal",
+            "vertical",
+            "radial",
+            "bidirectional",
+            "layered",
+            "free_spatial"
+          ]
+        },
+        "regions": {
+''',
+        '''        "primary_axis": {
+          "enum": [
+            "horizontal",
+            "vertical",
+            "radial",
+            "bidirectional",
+            "layered",
+            "free_spatial"
+          ]
+        },
+        "composition_strategy_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "regions": {
+''',
+        "region graph composition strategy id schema",
+    )
+    replace_once(
+        schema,
+        '''        "preferred": {
+          "enum": [
+            "business_scene",
+            "object_illustration",
+            "relationship_diagram",
+            "data_visualization",
+            "mixed"
+          ]
+        },
+        "allowed": {
+''',
+        '''        "version": {
+          "const": "visual-medium-policy-v2"
+        },
+        "preferred": {
+          "enum": [
+            "business_scene",
+            "object_illustration",
+            "relationship_diagram",
+            "data_visualization",
+            "mixed"
+          ]
+        },
+        "secondary": {
+          "enum": [
+            "",
+            "business_scene",
+            "object_illustration",
+            "relationship_diagram",
+            "data_visualization",
+            "mixed"
+          ]
+        },
+        "allowed": {
+''',
+        "visual medium version and secondary schema",
+    )
+    replace_once(
+        schema,
+        '''        "scene_policy": {
+          "enum": [
+            "required",
+            "allowed",
+            "forbidden",
+            "auto"
+          ]
+        },
+        "rationale": {
+''',
+        '''        "forbidden": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "business_scene",
+              "object_illustration",
+              "relationship_diagram",
+              "data_visualization",
+              "mixed"
+            ]
+          }
+        },
+        "scene_policy": {
+          "enum": [
+            "required",
+            "allowed",
+            "forbidden",
+            "auto"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "scores": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "business_scene": {"type": "number", "minimum": 0, "maximum": 1},
+            "object_illustration": {"type": "number", "minimum": 0, "maximum": 1},
+            "relationship_diagram": {"type": "number", "minimum": 0, "maximum": 1},
+            "data_visualization": {"type": "number", "minimum": 0, "maximum": 1},
+            "mixed": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        },
+        "rationale": {
+''',
+        "visual medium v2 schema fields",
     )
 
 
