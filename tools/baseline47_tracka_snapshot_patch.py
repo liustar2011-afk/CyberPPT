@@ -17,7 +17,7 @@ text = text.replace(old, new, 1)
 p.write_text(text, encoding="utf-8", newline="\n")
 
 
-test = '''from __future__ import annotations
+test = r'''from __future__ import annotations
 
 import json
 from pathlib import Path
