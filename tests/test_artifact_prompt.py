@@ -285,7 +285,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertEqual(expected, compiled.prompt)
         self.assertNotIn("WRONG LEGACY", compiled.prompt)
         self.assertEqual(_spec().to_dict(), compiled.build_metadata()["artifact_spec"])
-        self.assertEqual("v4", compiled.prompt_ir_version)
+        self.assertEqual("v6", compiled.prompt_ir_version)
         self.assertIsNotNone(compiled.debug_receipt)
         self.assertEqual("P07", compiled.debug_receipt["page"])
         # Default production uses a semantic brief. Stage 02 composition

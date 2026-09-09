@@ -62,12 +62,12 @@ def test_visual_budget_no_longer_depends_on_topology_or_prompt_mode() -> None:
     }
 
 
-def test_dense_page_still_limits_visual_fragments() -> None:
+def test_dense_page_does_not_override_visual_budget() -> None:
     assert _visual_budget(True, "required") == {
-        "mode": "relationship_field_only",
-        "max_auxiliary_fragments": 0,
-        "scope": "page",
-        "region_local_visuals": False,
+        "mode": "integrated_scene",
+        "max_auxiliary_fragments": 4,
+        "scope": "region",
+        "region_local_visuals": True,
     }
 
 

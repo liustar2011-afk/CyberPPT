@@ -91,7 +91,8 @@ def test_lifecycle_loop_compiles_feedback_relation():
     )
     assert graph["primary_axis"] == "radial"
     assert {item["role"] for item in graph["regions"]} == {"lifecycle_stage"}
-    assert {item["anchor"] for item in graph["regions"]} == {"free"}
+    assert _region(graph, "E3")["anchor"] == "center"
+    assert {_region(graph, "E1")["anchor"], _region(graph, "E2")["anchor"]} == {"free"}
     assert "feedback" in {item["type"] for item in graph["relations"]}
 
 
