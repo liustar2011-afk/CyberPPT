@@ -107,6 +107,13 @@ def validate_final_prompt(
             raise PromptContractError(
                 f"final prompt visible text contains excluded chrome content: {text!r}"
             )
+    legacy_source_declarations = tuple(
+        re.findall(r'^- Source onscreen text: \"(.*)\"$', prompt, flags=re.MULTILINE)
+    )
+    if legacy_source_declarations:
+        raise PromptContractError(
+            "supplied source material declarations are retired; use exact or explicitly rewriteable copy declarations"
+        )
     if ir.copy_contract is not None:
         exact_declarations = tuple(
             re.findall(r'^- Exact visible text: \"(.*)\"$', prompt, flags=re.MULTILINE)

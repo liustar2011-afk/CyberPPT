@@ -325,7 +325,7 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertNotIn(f'Exact visible text: "{unique_context}"', prompt)
         self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", prompt)
 
-    def test_final_prompt_uses_onscreen_as_free_source_and_hides_full_copy(self) -> None:
+    def test_final_prompt_locks_authored_onscreen_copy_and_hides_full_copy(self) -> None:
         unique_context = "This complete explanation is semantic context only."
         spec = replace(
             _spec(),
@@ -340,8 +340,11 @@ class ArtifactPromptTests(unittest.TestCase):
 
         self.assertIn(unique_context, prompt)
         self.assertIn("never render or paraphrase this passage as extra copy", prompt)
-        self.assertIn("Use the supplied copy as source material", prompt)
-        self.assertIn("rewrite, merge, shorten, reorder, split, select, or replace", prompt)
+        self.assertEqual(1, prompt.count('- Exact visible text: "Governed input"'))
+        self.assertEqual(1, prompt.count('- Exact visible text: "Traceable result"'))
+        self.assertIn("Locked copy may not be rewritten, merged, shortened, reordered, split, selected, or replaced", prompt)
+        self.assertIn("Do not add any visible text that is not declared in this copy contract.", prompt)
+        self.assertNotIn("Use the supplied copy as source material", prompt)
 
     def test_verified_visual_thesis_overrides_legacy_argument_chain(self) -> None:
         spec = replace(
