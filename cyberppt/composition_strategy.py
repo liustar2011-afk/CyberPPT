@@ -170,6 +170,57 @@ def _score_strategy(
     return max(0.0, min(score, 0.99)), reasons
 
 
+def materialize_composition_strategy(
+    *,
+    topology: str,
+    strategy_id: str,
+    score: float = 1.0,
+    rationale: tuple[str, ...] = ("explicit composition strategy",),
+) -> CompositionStrategySpec:
+    if strategy_id not in legal_strategy_ids(topology):
+        raise ValueError(f"composition strategy {strategy_id!r} is not legal for topology {topology!r}")
+    blueprint = _STRATEGY_BLUEPRINTS[strategy_id]
+    return CompositionStrategySpec(
+        strategy_id=strategy_id,
+        topology=topology,
+        primary_axis=blueprint["primary_axis"],
+        geometry=blueprint["geometry"],
+        anchor_policy=blueprint["anchor_policy"],
+        weight_policy=blueprint["weight_policy"],
+        span_policy=blueprint["span_policy"],
+        score=score,
+        rationale=rationale,
+    )
+
+
+# Compatibility only: old callers that do not provide CompositionStrategy keep
+# their historical macro axis.  This is not the v3 production resolver.
+_LEGACY_DEFAULT_STRATEGY_BY_TOPOLOGY = {
+    "parallel_set": "open_spatial_field",
+    "causal_convergence": "radial_focus_field",
+    "layered_architecture": "layered_editorial_stack",
+    "directed_flow": "editorial_horizontal",
+    "lifecycle_loop": "radial_focus_field",
+    "governance_boundary": "editorial_horizontal",
+    "ecosystem_map": "open_spatial_field",
+    "allocation_flow": "editorial_horizontal",
+    "conclusion_anchor": "editorial_horizontal",
+}
+
+
+def legacy_composition_strategy(topology: str) -> CompositionStrategySpec:
+    try:
+        strategy_id = _LEGACY_DEFAULT_STRATEGY_BY_TOPOLOGY[topology]
+    except KeyError as exc:
+        raise ValueError(f"unsupported composition topology: {topology!r}") from exc
+    return materialize_composition_strategy(
+        topology=topology,
+        strategy_id=strategy_id,
+        score=0.5,
+        rationale=("legacy Stage02 compatibility projection",),
+    )
+
+
 def resolve_composition_strategy(
     *,
     topology: str,
@@ -222,5 +273,7 @@ __all__ = [
     "COMPOSITION_STRATEGY_VERSION",
     "CompositionStrategySpec",
     "legal_strategy_ids",
+    "legacy_composition_strategy",
+    "materialize_composition_strategy",
     "resolve_composition_strategy",
 ]

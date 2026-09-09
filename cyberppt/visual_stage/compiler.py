@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from cyberppt.composition_strategy import resolve_composition_strategy
 from cyberppt.page_artifact_spec import is_text_dense
 from cyberppt.region_graph import build_region_graph
 from cyberppt.region_binding import bind_region_graph_text, region_text_owner_map
@@ -789,6 +790,16 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     semantic_focus_kind = str(focus.get("kind") or "relationship")
     if semantic_focus_kind not in {"entity", "action", "state", "relationship", "outcome"}:
         semantic_focus_kind = "relationship"
+    composition_strategy = resolve_composition_strategy(
+        topology=topology,
+        focus_policy=focus_policy,
+        evidence_count=len(evidence_keys),
+        medium=str((design.get("visual_medium_policy") or {}).get("preferred") or ""),
+        page_index=int(source.get("page_number") or 0),
+        adjacent_strategy_ids=tuple(
+            str(value) for value in source.get("adjacent_composition_strategy_ids") or [] if str(value)
+        ),
+    )
     region_graph = bind_region_graph_text(
         build_region_graph(
             topology=topology,
@@ -797,6 +808,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             reading_sequence=[eid[key] for key in reading_keys],
             semantic_edges=graph_edges,
             focus_policy=focus_policy,
+            composition_strategy=composition_strategy,
         ),
         evidence_text_ids={eid[key]: text_ids_by_evidence[key] for key in evidence_keys},
         required_text_ids=expected_ids,
@@ -854,6 +866,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "grouping_decisions": grouping_decisions,
             "forbidden_structures": forbidden_structures,
         },
+        "composition_strategy": composition_strategy.to_dict(),
         "region_graph": region_graph,
         "visual_medium_policy": medium_policy,
         "structural_decision": {

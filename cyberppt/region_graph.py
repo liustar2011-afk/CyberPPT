@@ -10,6 +10,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping
 
+from cyberppt.composition_strategy import (
+    CompositionStrategySpec, legacy_composition_strategy, legal_strategy_ids,
+)
+
 
 REGION_GRAPH_CANVAS_RATIO = "2:1"
 REGION_GRAPH_PRIMARY_AXES = frozenset({
@@ -84,6 +88,7 @@ class RegionGraphSpec:
     primary_axis: str
     regions: tuple[RegionSpec, ...]
     relations: tuple[RegionRelationSpec, ...]
+    composition_strategy_id: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -106,6 +111,7 @@ class RegionGraphSpec:
                 {"from": item.source, "to": item.target, "type": item.type}
                 for item in self.relations
             ],
+            **({"composition_strategy_id": self.composition_strategy_id} if self.composition_strategy_id else {}),
         }
 
 
@@ -218,20 +224,9 @@ def validate_region_graph(value: Mapping[str, object]) -> RegionGraphSpec:
         primary_axis=primary_axis,
         regions=tuple(regions),
         relations=tuple(relations),
+        composition_strategy_id=str(value.get("composition_strategy_id") or "").strip(),
     )
 
-
-_AXIS_BY_TOPOLOGY = {
-    "parallel_set": "free_spatial",
-    "causal_convergence": "radial",
-    "layered_architecture": "layered",
-    "directed_flow": "horizontal",
-    "lifecycle_loop": "radial",
-    "governance_boundary": "horizontal",
-    "ecosystem_map": "free_spatial",
-    "allocation_flow": "horizontal",
-    "conclusion_anchor": "horizontal",
-}
 
 _RELATION_TYPE_MAP = {
     "peer": "peer",
@@ -294,23 +289,31 @@ def _region_role(topology: str, evidence_id: str, focus_id: str, position: int) 
 
 
 def _region_anchor(
-    topology: str,
+    strategy: CompositionStrategySpec,
     evidence_id: str,
     focus_id: str,
     position: int,
     total: int,
-    axis: str,
 ) -> str:
-    if topology == "causal_convergence":
+    policy = strategy.anchor_policy
+    if policy == "focus_centered":
         return "center" if evidence_id == focus_id else "free"
-    if topology in {"parallel_set", "ecosystem_map", "lifecycle_loop"}:
+    if policy == "free":
         return "free"
-    if topology == "governance_boundary":
+    if policy == "split":
         if evidence_id == focus_id:
             return "center"
         focus_position = max(0, min(total - 1, position))
         return "left" if position < focus_position else "right"
-    return _axis_anchor(axis, position, total)
+    if policy == "stepped":
+        if total <= 1:
+            return "center"
+        if position == 0:
+            return "top_left"
+        if position == total - 1:
+            return "bottom_right"
+        return "center"
+    return _axis_anchor(strategy.primary_axis, position, total)
 
 
 def _region_weight(focus_policy: str, evidence_id: str, focus_id: str, total: int) -> float:
@@ -323,14 +326,14 @@ def _region_weight(focus_policy: str, evidence_id: str, focus_id: str, total: in
     return round(1.0 / total, 4)
 
 
-def _region_span(topology: str, evidence_id: str, focus_id: str) -> str:
-    if topology == "layered_architecture":
+def _region_span(strategy: CompositionStrategySpec, evidence_id: str, focus_id: str) -> str:
+    if strategy.span_policy == "band":
         return "band"
-    if topology in {"parallel_set", "ecosystem_map", "lifecycle_loop"}:
+    if strategy.span_policy == "free":
         return "free"
-    if evidence_id == focus_id and topology in {"causal_convergence", "conclusion_anchor"}:
+    if strategy.span_policy == "half":
         return "half"
-    if topology == "governance_boundary":
+    if strategy.span_policy == "focus_half" and evidence_id == focus_id:
         return "half"
     return "compact"
 
@@ -356,6 +359,7 @@ def build_region_graph(
     reading_sequence: list[str] | tuple[str, ...],
     semantic_edges: list[Mapping[str, object]] | tuple[Mapping[str, object], ...],
     focus_policy: str,
+    composition_strategy: CompositionStrategySpec | None = None,
 ) -> dict[str, Any]:
     """Compile a topology-aware normalized Region Graph from audited semantics.
 
@@ -374,21 +378,21 @@ def build_region_graph(
     if len(reading) != len(ids) or set(reading) != set(ids):
         raise ValueError("Region Graph compiler reading_sequence must cover every evidence id once")
 
-    axis = _AXIS_BY_TOPOLOGY[topology]
+    strategy = composition_strategy or legacy_composition_strategy(topology)
+    if strategy.topology != topology or strategy.strategy_id not in legal_strategy_ids(topology):
+        raise ValueError("Region Graph composition strategy is incompatible with semantic topology")
     region_by_evidence = {evidence_id: f"RG{index:02d}" for index, evidence_id in enumerate(reading, 1)}
     focus_position = reading.index(focus_id)
     regions: list[dict[str, Any]] = []
     for position, evidence_id in enumerate(reading):
-        anchor = _region_anchor(topology, evidence_id, focus_id, position, len(reading), axis)
-        if topology == "governance_boundary" and evidence_id != focus_id:
-            anchor = "left" if position < focus_position else "right"
+        anchor = _region_anchor(strategy, evidence_id, focus_id, position, len(reading))
         regions.append({
             "id": region_by_evidence[evidence_id],
             "semantic_refs": [evidence_id],
             "role": _region_role(topology, evidence_id, focus_id, position),
             "anchor": anchor,
             "weight": _region_weight(focus_policy, evidence_id, focus_id, len(reading)),
-            "span": _region_span(topology, evidence_id, focus_id),
+            "span": _region_span(strategy, evidence_id, focus_id),
             "priority": _region_priority(focus_policy, evidence_id, focus_id),
         })
 
@@ -408,7 +412,8 @@ def build_region_graph(
 
     payload = {
         "canvas_ratio": REGION_GRAPH_CANVAS_RATIO,
-        "primary_axis": axis,
+        "primary_axis": strategy.primary_axis,
+        "composition_strategy_id": strategy.strategy_id,
         "regions": regions,
         "relations": relations,
     }
