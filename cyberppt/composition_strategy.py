@@ -36,7 +36,9 @@ class CompositionStrategySpec:
             raise ValueError("composition strategy rationale must not be empty")
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        payload = asdict(self)
+        payload["rationale"] = list(self.rationale)
+        return payload
 
 
 _STRATEGY_BLUEPRINTS: dict[str, dict[str, str]] = {

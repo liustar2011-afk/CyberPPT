@@ -18,7 +18,7 @@ _RELATION_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"(?:边界|接口|门控).+(?:连接|控制|约束|进入|输出|交换|关系)"),
     re.compile(r"(?:输入|来源).+(?:处理|服务|能力|结果|输出)"),
     re.compile(r"(?:主体|角色|参与方).+(?:关系|接口|交换|结果|协作|承接)"),
-    re.compile(r"\b(?:from|through|into|between|converge|connect|support|flow|feedback|return|map|depend|interface|boundary|exchange|transform|allocate)\b", re.I),
+    re.compile(r"\b(?:from|through|into|between|relationship|relational|peer|converge|connect|supports?|flow|feedback|return|map|depend|interface|boundary|exchange|transform|allocate)\b", re.I),
 )
 
 

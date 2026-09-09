@@ -39,6 +39,7 @@ def _decision(*, topology: str, grammar: str) -> dict[str, object]:
         "candidates": [
             {
                 "id": "c1",
+                "visual_thesis": "Input flows through the approved relationship into the result.",
                 "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
                 "reading_sequence": ["input", "result"],
                 "spatial_grammar": [grammar],
