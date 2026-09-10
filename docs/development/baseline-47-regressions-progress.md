@@ -179,3 +179,22 @@
 
 下一阶段工作：
 - Track A 聚合验收：运行 Track A 原 18 项失败涉及的完整测试族和标准全量 CI，确认 Track A 历史失败清零并计算剩余基线失败数；随后清理 Track A 临时 workflow/helper，进入 Track B。
+
+## Track A｜聚合验收与收口
+
+状态：已完成
+
+已完成工作：
+- 对 Track A 涉及的 Runtime Lock、Style 09/10 live contract、Style Lock refresh/snapshot 全测试族执行聚合回归。
+- 使用同一 branch head 的标准 Python 3.10 / 3.12 全量 CI 对原 47 项失败集合重新做精确差分。
+- 清理 Track A 开发期专用 workflow 与 patch helper，不将临时门禁带入 Track B。
+
+验证结果：
+- Track A 聚合门禁 run `34418949118`：89 passed，5 subtests passed。
+- 标准全量 CI run `34418955910`：Python 3.10 与 3.12 均为 29 failed / 2018 passed / 8 skipped / 49 subtests passed。
+- 两个 Python 版本剩余 29 项失败集合完全一致；Track A 原 18 项全部消失，新增失败 0。
+- 剩余 29 项精确对应 Track B 22 项 + Track C 7 项。
+- Windows wheel、macOS wheel、OfficeCLI smoke 全部通过。
+
+下一阶段工作：
+- Track B / Step B1：从 ImageGen Creative Brief 6 项失败开始，核对当前 content-first / Stage2 v3 Prompt 合同，区分生产行为回归与旧 wording/snapshot 断言漂移。
