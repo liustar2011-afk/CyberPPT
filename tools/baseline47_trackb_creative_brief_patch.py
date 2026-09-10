@@ -20,7 +20,7 @@ def replace_exact(path: str, old: str, new: str, *, count: int = 1) -> None:
 
 # B4 keeps current production semantics: macro-region copy ownership already exists
 # in the v3 MicroVisualFreedom contract. Migrate old wording and bring legacy test
-# fixtures up to the authored-onscreen/full-prose authorities required by Stage2 v3.
+# fixtures up to the authored-onscreen/full-prose/independent-thesis authorities required by Stage2 v3.
 replace_exact(
     "tests/test_imagegen_micro_freedom.py",
     '''    assert "Do not move exact visible text from its assigned macro region to another region." in prompt
@@ -61,6 +61,13 @@ replace_exact(
             "Do not render prompt field labels or meta headers. Rewrite the source copy into conclusion-first visible Chinese while preserving its factual boundary.",
             prompt,
         )
+''',
+)
+replace_exact(
+    "tests/_imagegen_no_visual_structure_base.py",
+    '''            "visual_thesis": "Input visibly supports the result through one relationship field.",
+''',
+    '''            "visual_thesis": "The image shows Input supporting Result through one directed relationship.",
 ''',
 )
 replace_exact(
