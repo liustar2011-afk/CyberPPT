@@ -370,8 +370,8 @@ def _audit_lean_relationship_visibility(slide: dict[str, Any]) -> list[str]:
     issues: list[str] = []
     if _RELATIONSHIP_CLAIM_RE.search(claim_surface) and not relationships:
         issues.append(
-            "AUTHOR_RELATIONSHIP_NOT_MATERIALIZED: the page claims a relationship "
-            "but declares no edge with two endpoints and a connecting action"
+            "AUTHOR_RELATIONSHIP_CLAIM_HEURISTIC: lexical relationship wording is present "
+            "but no explicit relationship edge is declared; review the structured relation contract"
         )
 
     for relation_index, relation in enumerate(relationships):
