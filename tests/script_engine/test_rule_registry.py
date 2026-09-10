@@ -12,6 +12,7 @@ from script_engine.rule_registry import (
 
 ROOT = Path(__file__).resolve().parents[2]
 BANNED = ROOT / "contracts" / "banned-phrasing.json"
+LEGACY_RULES = ROOT / "cyberppt" / "script_quality" / "rules.yaml"
 
 
 def test_default_rule_registry_is_policy_valid() -> None:
@@ -88,3 +89,18 @@ def test_known_project_specific_phrases_are_absent_from_default_banned_rules() -
         "场景包",
     ):
         assert phrase not in text
+
+
+def test_legacy_rule_file_no_longer_contains_project_content_fingerprints() -> None:
+    text = LEGACY_RULES.read_text(encoding="utf-8")
+    for phrase in (
+        "同意摸底≠",
+        "不锁投资",
+        "追溯五问",
+        "哪版数据",
+        "数据接入与质量治理",
+        "供需模型预测",
+    ):
+        assert phrase not in text
+    assert "cross_page_fingerprints:\n    enabled: false" in text
+    assert "slogan_ban_patterns: []" in text
