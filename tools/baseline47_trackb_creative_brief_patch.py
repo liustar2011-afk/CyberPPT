@@ -20,7 +20,7 @@ def replace_exact(path: str, old: str, new: str, *, count: int = 1) -> None:
 
 # B4 keeps current production semantics: macro-region copy ownership already exists
 # in the v3 MicroVisualFreedom contract. Migrate old wording and bring legacy test
-# fixtures up to the authored-onscreen authority required by Stage2 v3.
+# fixtures up to the authored-onscreen/full-prose authorities required by Stage2 v3.
 replace_exact(
     "tests/test_imagegen_micro_freedom.py",
     '''    assert "Do not move exact visible text from its assigned macro region to another region." in prompt
@@ -38,9 +38,29 @@ replace_exact(
 )
 replace_exact(
     "tests/_imagegen_no_visual_structure_base.py",
+    '''        self.assertIn("核心意思", prompt)
+''',
+    '''        self.assertIn("【核心判断（不上屏）】", prompt)
+''',
+)
+replace_exact(
+    "tests/_imagegen_no_visual_structure_base.py",
     '''        self.assertNotIn("页面使命", prompt)
 ''',
     '''        self.assertNotIn("【页面使命（不上屏）】", prompt)
+''',
+)
+replace_exact(
+    "tests/_imagegen_no_visual_structure_base.py",
+    '''        self.assertIn(
+            "Do not invent section labels like meta headers; only render 上屏文字 modules.",
+            prompt,
+        )
+''',
+    '''        self.assertIn(
+            "Do not render prompt field labels or meta headers. Rewrite the source copy into conclusion-first visible Chinese while preserving its factual boundary.",
+            prompt,
+        )
 ''',
 )
 replace_exact(
@@ -49,6 +69,7 @@ replace_exact(
             "must_not_include": [],
 ''',
     '''            "core_message": "Input visibly supports the result through one relationship field.",
+            "full_prose": "Input supports Result through one relationship field.",
             "onscreen_source": "authored",
             "onscreen_text": "Input\\nResult",
             "must_not_include": [],
