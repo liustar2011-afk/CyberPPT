@@ -16,13 +16,18 @@ def _single_line(value: object) -> str:
     physical line. `full_copy` is intentionally exempt because paragraph breaks are meaningful."""
     return " ".join(_text(value).split())
 
+def _onscreen_item_text(item: object) -> str:
+    if isinstance(item, dict):
+        return _single_line(item.get("text"))
+    return _single_line(item)
+
 def _render_onscreen(sections: list[dict[str, Any]]) -> list[str]:
     lines: list[str] = []
     for section in sections:
         heading = _single_line(section.get("heading")).rstrip("：:")
         raw_body = _text(section.get("text"))
         body = _single_line(raw_body)
-        items = [_single_line(item) for item in (section.get("items") or []) if _text(item)]
+        items = [_onscreen_item_text(item) for item in (section.get("items") or []) if _onscreen_item_text(item)]
         paragraphs = [paragraph.strip() for paragraph in re.split(r"\n\s*\n", raw_body) if paragraph.strip()]
         if section.get("format") == "pyramid_prose":
             if heading:
@@ -43,6 +48,46 @@ def _render_onscreen(sections: list[dict[str, Any]]) -> list[str]:
         elif heading: lines.append(f"- {heading}")
         elif body: lines.append(f"- {body}")
         for item in items: lines.append(f"  - {item}")
+    return lines
+
+def _render_provenance(sections: list[dict[str, Any]]) -> list[str]:
+    """Render audit-only module evidence bindings without changing visible copy."""
+
+    lines: list[str] = []
+    for section in sections:
+        provenance = section.get("provenance")
+        if not isinstance(provenance, dict):
+            continue
+        module_id = _single_line(section.get("id"))
+        derivation = _single_line(provenance.get("derivation"))
+        claim_refs = [
+            _single_line(item)
+            for item in (provenance.get("claim_refs") or [])
+            if _text(item)
+        ]
+        if not module_id:
+            continue
+        summary = f"- {module_id}"
+        if derivation:
+            summary += f" | {derivation}"
+        if claim_refs:
+            summary += f" | claims={','.join(claim_refs)}"
+        lines.append(summary)
+        for binding in provenance.get("bindings") or []:
+            if not isinstance(binding, dict):
+                continue
+            target = _single_line(binding.get("target"))
+            source_refs = [
+                _single_line(item)
+                for item in (binding.get("source_refs") or [])
+                if _text(item)
+            ]
+            relation = _single_line(binding.get("relation"))
+            if not target:
+                continue
+            sources = ",".join(source_refs) if source_refs else "∅"
+            suffix = f" ({relation})" if relation else ""
+            lines.append(f"  - {target} <= {sources}{suffix}")
     return lines
 
 def _render_visual(slide: dict[str, Any]) -> list[str]:
@@ -96,6 +141,11 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
             # authored onscreen projection; old payloads without that field may
             # still be rendered without silently losing their body copy.
             lines.extend(["", "### 上屏文字", "", full_copy])
+        provenance_lines = _render_provenance(onscreen_sections)
+        if provenance_lines:
+            # Reuse the existing parser-recognized 证据映射 field boundary so
+            # module provenance can never be consumed as visible 上屏文字.
+            lines.extend(["", "### 证据映射（模块级｜不上屏）", "", *provenance_lines])
         notes = sanitize_delivery_prose(slide.get("speaker_notes"))
         if notes: lines.extend(["", "### 演讲者备注", "", notes])
         source_refs = [_text(item) for item in (slide.get("source_refs") or []) if _text(item)]

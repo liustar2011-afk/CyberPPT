@@ -13,6 +13,7 @@ from . import full_copy_contracts as _full_copy
 from . import lint_contracts as _lint
 from . import onscreen_contracts as _onscreen
 from . import schema_contracts as _schema
+from . import semantic_contract as _semantic_contract
 from . import source_trace_contracts as _source_trace
 from . import structural_contracts as _structural
 
@@ -28,6 +29,10 @@ _FOCUSED_EXPORTS = {
     "FOUNDATION_CITABLE_KEYS": _source_trace.FOUNDATION_CITABLE_KEYS,
     "collect_foundation_source_codes": _source_trace.collect_foundation_source_codes,
     "validate_source_refs_coverage": _source_trace.validate_source_refs_coverage,
+    "FoundationIndex": _semantic_contract.FoundationIndex,
+    "PROVENANCE_DERIVATIONS": _semantic_contract.PROVENANCE_DERIVATIONS,
+    "PROVENANCE_RELATIONS": _semantic_contract.PROVENANCE_RELATIONS,
+    "validate_final_script_provenance": _semantic_contract.validate_final_script_provenance,
     "BANNED_PHRASING_PATH": _lint.BANNED_PHRASING_PATH,
     "load_banned_phrasing": _lint.load_banned_phrasing,
     "iter_final_script_text_fields": _lint.iter_final_script_text_fields,

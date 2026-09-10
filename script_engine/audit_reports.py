@@ -19,6 +19,7 @@ from .contracts import (
     validate_source_refs_coverage,
 )
 from .plan_review import render_plan_review
+from .semantic_contract import validate_final_script_provenance
 from .source_index import (
     build_source_index_file,
     validate_script_foundation_against_index,
@@ -118,6 +119,7 @@ def final_audit_report(
         + validate_deck_plan(plan)
         + validate_foundation(foundation)
     )
+    issues += validate_final_script_provenance(final_payload, plan, foundation)
     audit_issues, warnings = audit_final_script(final_payload, plan, foundation)
     issues += audit_issues
     trace = trace_composed(final_payload, foundation)
