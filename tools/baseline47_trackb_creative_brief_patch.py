@@ -18,116 +18,159 @@ def replace_exact(path: str, old: str, new: str, *, count: int = 1) -> None:
         handle.write(text)
 
 
-# B4 keeps current production semantics: macro-region copy ownership already exists
-# in the v3 MicroVisualFreedom contract. Migrate old wording and bring legacy test
-# fixtures up to the authored-onscreen/full-prose/independent-thesis authorities required by Stage2 v3.
+# B5: one production diagnostics compatibility fix plus three wording migrations.
+# Diagnostics must recognize both legacy and current deliverable prompt content markers.
 replace_exact(
-    "tests/test_imagegen_micro_freedom.py",
-    '''    assert "Do not move exact visible text from its assigned macro region to another region." in prompt
+    "scripts/imagegen_pipeline/prompt_diagnostics.py",
+    '''_CONTENT_START = "【上屏文字参考】"
+_CONTENT_END = "【构图指令】"
 ''',
-    '''    assert "Keep each declared copy item within its assigned macro semantic region." in prompt
+    '''_CONTENT_STARTS = (
+    "【上屏文字参考】",
+    "【内容锁定】",
+    "【源文案语义输入】",
+)
+_CONTENT_END = "【构图指令】"
+''',
+)
+replace_exact(
+    "scripts/imagegen_pipeline/prompt_diagnostics.py",
+    '''_CONTENT_FIRST_STARTS = (
+    "【页面任务｜",
+    "页面任务：",
+)
+''',
+    '''_CONTENT_FIRST_STARTS = (
+    "【页面使命（不上屏）】",
+    "【页面任务｜",
+    "页面任务：",
+)
+''',
+)
+replace_exact(
+    "scripts/imagegen_pipeline/prompt_diagnostics.py",
+    '''def _section(text: str, start: str, end: str | None = None) -> str:
+    if start not in text:
+        return ""
+    value = text.split(start, 1)[1]
+    if end and end in value:
+        value = value.split(end, 1)[0]
+    return value.strip()
+
+
+def _content_first_page_section(text: str) -> str:
+''',
+    '''def _section(text: str, start: str, end: str | None = None) -> str:
+    if start not in text:
+        return ""
+    value = text.split(start, 1)[1]
+    if end and end in value:
+        value = value.split(end, 1)[0]
+    return value.strip()
+
+
+def _first_marker(text: str, markers: tuple[str, ...]) -> str:
+    """Return the earliest supported marker present in a compiled prompt."""
+
+    present = [(text.index(marker), marker) for marker in markers if marker in text]
+    return min(present)[1] if present else ""
+
+
+def _content_first_page_section(text: str) -> str:
+''',
+)
+replace_exact(
+    "scripts/imagegen_pipeline/prompt_diagnostics.py",
+    '''    content = _section(prompt, _CONTENT_START, _CONTENT_END)
+    if not content:
+        content = _content_first_page_section(prompt)
+    composition = ""
+    if _COMPOSITION_START in prompt and _CONTENT_START in prompt:
+        composition = prompt.split(_COMPOSITION_START, 1)[1].split(_CONTENT_START, 1)[0]
+''',
+    '''    content_start = _first_marker(prompt, _CONTENT_STARTS)
+    content = _section(prompt, content_start, _CONTENT_END) if content_start else ""
+    if not content:
+        content = _content_first_page_section(prompt)
+    composition = ""
+    if _COMPOSITION_START in prompt and content_start:
+        composition = prompt.split(_COMPOSITION_START, 1)[1].split(content_start, 1)[0]
 ''',
 )
 
+# Page Manifest: retain provenance/authority checks, migrate retired prompt labels and
+# Style09 English section headings to the current Chinese live contract.
 replace_exact(
-    "tests/_imagegen_no_visual_structure_base.py",
-    '''        self.assertIn("页面任务", prompt)
-''',
-    '''        self.assertIn("【页面使命（不上屏）】", prompt)
-''',
-)
-replace_exact(
-    "tests/_imagegen_no_visual_structure_base.py",
-    '''        self.assertIn("核心意思", prompt)
+    "tests/_imagegen_page_manifest_base.py",
+    '''        self.assertIn("【锁定关键文字】", prompt)
+        self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
 ''',
     '''        self.assertIn("【核心判断（不上屏）】", prompt)
+        self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
 ''',
 )
 replace_exact(
-    "tests/_imagegen_no_visual_structure_base.py",
-    '''        self.assertNotIn("页面使命", prompt)
+    "tests/test_imagegen_page_manifest.py",
+    '''        self.assertIn("### 1. Style identity and semantic principle — hard", prompt)
+        self.assertIn("### 2. Semantic anchor and composition — hard", prompt)
+        self.assertIn("### 6. Depth, material and icon discipline — hard", prompt)
 ''',
-    '''        self.assertNotIn("【页面使命（不上屏）】", prompt)
-''',
-)
-replace_exact(
-    "tests/_imagegen_no_visual_structure_base.py",
-    '''        self.assertIn(
-            "Do not invent section labels like meta headers; only render 上屏文字 modules.",
-            prompt,
-        )
-''',
-    '''        self.assertIn(
-            "Do not render prompt field labels or meta headers. Rewrite the source copy into conclusion-first visible Chinese while preserving its factual boundary.",
-            prompt,
-        )
-''',
-)
-replace_exact(
-    "tests/_imagegen_no_visual_structure_base.py",
-    '''            "visual_thesis": "Input visibly supports the result through one relationship field.",
-''',
-    '''            "visual_thesis": "The image shows Input supporting Result through one directed relationship.",
-''',
-)
-replace_exact(
-    "tests/_imagegen_no_visual_structure_base.py",
-    '''            "core_message": "Input visibly supports the result through one relationship field.",
-            "must_not_include": [],
-''',
-    '''            "core_message": "Input visibly supports the result through one relationship field.",
-            "full_prose": "Input supports Result through one relationship field.",
-            "onscreen_source": "authored",
-            "onscreen_text": "Input\\nResult",
-            "must_not_include": [],
+    '''        self.assertIn("# 视觉风格09：纯白 + 深蓝领导汇报｜GPT Image 2.5 Artifact Spec 执行版", prompt)
+        self.assertIn("## 00｜任务契约：先定义成品，再执行风格", prompt)
+        self.assertIn("## 02｜Artifact Spec 内部编译：先把页面变成“可验收规格”", prompt)
 ''',
 )
 
+# Visual Grammar: align the exact snapshot with the current source-boundary wording.
 replace_exact(
-    "tests/test_imagegen_no_visual_structure.py",
-    '''        self.assertLess(
-            prompt.index("Page-specific visual intent"),
-            prompt.index("### 2. Semantic anchor and composition — hard"),
-        )
+    "tests/test_visual_grammar.py",
+    '''        "graphical state unless that text is present in the locked on-screen content."
 ''',
-    '''        self.assertLess(
-            prompt.index("Page-specific visual intent"),
-            prompt.index("GPT Image 2.5 Artifact Spec 执行版"),
-        )
-''',
-)
-replace_exact(
-    "tests/test_imagegen_no_visual_structure.py",
-    '''        self.assertNotIn(
-            "Keep all locked Chinese text complete.",
-            spec10.art_direction.contract,
-        )
-''',
-    '''        self.assertIn(
-            "Keep all locked Chinese text complete, unchanged and in its original order.",
-            spec10.art_direction.contract,
-        )
-''',
-)
-replace_exact(
-    "tests/test_imagegen_no_visual_structure.py",
-    '''        self.assertEqual(spec9.typography, spec10.typography)
-        self.assertEqual(spec9.hard_constraints, spec10.hard_constraints)
-
-        hashes9 = {key: value for key, value in spec9.source_hashes if key != "style_lock"}
-''',
-    '''        self.assertEqual(spec9.typography, spec10.typography)
-        self.assertEqual(spec9.hard_constraints, spec10.hard_constraints)
-        self.assertEqual(spec9.copy_contract, spec10.copy_contract)
-        self.assertEqual(spec9.composition_strategy, spec10.composition_strategy)
-        self.assertEqual(spec9.region_graph, spec10.region_graph)
-        self.assertEqual(spec9.visual_medium_policy, spec10.visual_medium_policy)
-        self.assertEqual(spec9.text_capacity, spec10.text_capacity)
-        self.assertEqual(spec9.full_slide_design_context, spec10.full_slide_design_context)
-        self.assertEqual(spec9.acceptance, spec10.acceptance)
-
-        hashes9 = {key: value for key, value in spec9.source_hashes if key != "style_lock"}
+    '''        "graphical state unless that text is supported by the on-screen content reference."
 ''',
 )
 
-print("Track B4 micro-freedom/no-visual-structure contract patch applied")
+# Add current-marker diagnostic coverage so the production fix is pinned independently
+# of the legacy 【内容锁定】 fixture.
+replace_exact(
+    "tests/test_imagegen_prompt_diagnostics.py",
+    '''def test_analyze_prompt_is_read_only() -> None:
+    original = PROMPT
+    analyze_prompt(PROMPT, onscreen_text="正文")
+    assert PROMPT == original
+
+
+def test_analyze_prompt_measures_content_first_page_sections() -> None:
+''',
+    '''def test_analyze_prompt_is_read_only() -> None:
+    original = PROMPT
+    analyze_prompt(PROMPT, onscreen_text="正文")
+    assert PROMPT == original
+
+
+def test_analyze_prompt_measures_current_deliverable_source_section() -> None:
+    prompt = """【页面编码】P02｜测试页
+【源文案语义输入】
+- **治理层｜质量与授权**
+- 2025年完成率 95%。
+
+【构图指令】
+保持事实准确。
+"""
+    metrics = analyze_prompt(
+        prompt,
+        onscreen_text="**治理层｜质量与授权**\\n2025年完成率 95%。",
+    )
+
+    assert metrics.page_content_chars > 0
+    assert metrics.global_rule_chars > 0
+    assert 0 < metrics.page_specific_ratio < 1
+    assert metrics.locked_text_preserved is True
+    assert metrics.exact_facts_preserved is True
+
+
+def test_analyze_prompt_measures_content_first_page_sections() -> None:
+''',
+)
+
+print("Track B5 manifest/diagnostics/visual-grammar patch applied")
