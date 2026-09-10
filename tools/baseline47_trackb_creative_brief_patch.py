@@ -3,63 +3,89 @@ from pathlib import Path
 
 def replace_exact(path: str, old: str, new: str, *, count: int = 1) -> None:
     p = Path(path)
-    text = p.read_text(encoding="utf-8")
-    found = text.count(old)
+    with p.open("r", encoding="utf-8", newline="") as handle:
+        text = handle.read()
+    newline = "\r\n" if "\r\n" in text else "\n"
+    old_native = old.replace("\n", newline)
+    new_native = new.replace("\n", newline)
+    found = text.count(old_native)
     if found != count:
-        raise SystemExit(f"{path}: expected {count} matches, found {found}: {old[:100]!r}")
-    p.write_text(text.replace(old, new, count), encoding="utf-8", newline="\n")
+        raise SystemExit(
+            f"{path}: expected {count} matches, found {found}: {old[:120]!r}"
+        )
+    text = text.replace(old_native, new_native, count)
+    with p.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(text)
 
 
-# Production fix: composition review metadata belongs after page semantics, never inside
-# the title/mission/core-meaning context block.  Keep it immediately before the
-# presentation/canvas contracts in both semantic_visual and full_image branches.
+# B2 is a test-contract migration. The current deliverable compiler intentionally
+# supports an omitted explicit style lock by resolving the default Style 09 contract,
+# strips authoring field labels from visible source material, and carries the current
+# Chinese live Artifact Spec as the Style 09 safety authority.
 replace_exact(
-    "scripts/imagegen_pipeline/handoff/prompt.py",
-    '''            logic_contract if include_logic_context else "",\n            "",\n            presentation_contract,\n''',
-    '''            logic_contract if include_logic_context else "",\n            "",\n            semantic_composition_contract.strip(),\n            "",\n            presentation_contract,\n''',
-    count=2,
+    "tests/_imagegen_deliverable_prompt_base.py",
+    '''    def test_compile_requires_style_lock(self) -> None:
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "script.md"
+            script.write_text("## P2 核心结论\\n组件A：最终内容\\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "missing visual style lock"):
+                compile_pages(script, [2])
+''',
+    '''    def test_compile_without_explicit_style_lock_uses_default_style09_contract(self) -> None:
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "script.md"
+            script.write_text("## P2 核心结论\\n组件A：最终内容\\n", encoding="utf-8")
+
+            prompt = compile_pages(script, [2])
+
+        default_contract = str(
+            resolve_default_style(style_id=9).get("prompt_contract") or ""
+        ).strip()
+        self.assertTrue(default_contract)
+        self.assertIn("最终内容", prompt)
+        self.assertIn("【源头视觉规则权威｜最高优先级】", prompt)
+        self.assertIn(default_contract.splitlines()[0], prompt)
+''',
 )
 replace_exact(
-    "scripts/imagegen_pipeline/handoff/prompt.py",
-    '''    if semantic_composition_contract:\n        # Composition guidance is semantic metadata, never visible copy.\n        insert_at = 2 if semantic_visual else 3\n        parts[insert_at:insert_at] = [semantic_composition_contract, ""]\n    return relation, "\\n".join(parts).strip() + "\\n"\n''',
-    '''    return relation, "\\n".join(parts).strip() + "\\n"\n''',
+    "tests/_imagegen_deliverable_prompt_base.py",
+    '''        self.assertNotIn("页面使命", prompt)
+''',
+    '''        self.assertNotIn("本页结论标题", prompt)
+''',
+)
+replace_exact(
+    "tests/_imagegen_deliverable_prompt_base.py",
+    '''        self.assertIn("上屏文字", prompt)
+        self.assertIn("关键变化", prompt)
+''',
+    '''        self.assertNotIn("【源文案语义输入】\\n- 上屏文字", prompt)
+        self.assertIn("关键变化", prompt)
+        self.assertIn("全社会用电量增长", prompt)
+''',
 )
 
-# Migrate Creative Brief tests from retired empty-allowlist / no-context wording to
-# the current permissive-but-grounded visual grammar and explicit non-visible context.
-p = Path("tests/_imagegen_creative_brief_base.py")
-text = p.read_text(encoding="utf-8")
-text = text.replace(
-    '''    assert "empty auxiliary-label allowlist" in grammar\n    assert "only when the upstream script explicitly supplies a non-empty" in grammar\n    assert "use at most two short labels" not in grammar\n''',
-    '''    assert "concise auxiliary labels are allowed" in grammar\n    assert "They do not need a one-to-one mapping" in grammar\n    assert "keep them tied to the content reference" in grammar\n    assert "Do not invent summary, goal, value, outcome, or conclusion sections or labels" in grammar\n''',
-    1,
+replace_exact(
+    "tests/test_imagegen_deliverable_prompt.py",
+    '''        self.assertIn("默认不出现人物", prompt)
+        self.assertIn("禁止正脸、围桌会议、多人讨论及摆拍办公场景", prompt)
+        self.assertIn("organization names, logos, seals, signage", prompt)
+        self.assertIn("Auxiliary semantic imagery may use a small amount of clear Chinese labels", prompt)
+        self.assertIn("Preserve the full factual meaning", prompt)
+        self.assertIn("pseudo-Chinese", prompt)
+        self.assertIn("Do not use arrows or arrowheads anywhere on the page", prompt)
+        self.assertIn("共享谓词、共享限定语和父级说明不得复制或改写到每个并列子项", prompt)
+        self.assertIn("页面任务、核心意思、页面逻辑、视觉结构、语义关系和所有不上屏区块只决定构图", prompt)
+''',
+    '''        self.assertIn("GPT Image 2.5 Artifact Spec 执行版", prompt)
+        self.assertIn("不生成伪文字、虚构刻度、虚构 UI、无依据数据或随机标签", prompt)
+        self.assertIn("不使用无关 Logo、水印、品牌标识和随机场景文字", prompt)
+        self.assertIn("不让正面人物宣传照成为默认主视觉", prompt)
+        self.assertIn("只使用来源明确支持的关系，不凭视觉需要补造层级、闭环、双向交互、比例或优先级", prompt)
+        self.assertIn("不用面积、距离、颜色、箭头或层级暗示来源未支持的优先级、比例和关系", prompt)
+        self.assertIn("最终结果应呈现：纯白、深蓝、编辑式、高端、精确、克制、内容驱动的领导汇报正文图。", prompt)
+''',
 )
-text = text.replace(
-    '''    assert page.title not in prompt\n''',
-    '''    title_context = prompt.split("【标题（不上屏）】", 1)[1].split("【页面使命（不上屏）】", 1)[0]\n    assert page.title in title_context\n    onscreen_material = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1]\n    assert page.title not in onscreen_material\n''',
-    1,
-)
-text = text.replace(
-    '''    assert page.core_message not in prompt\n    assert "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题" in prompt\n''',
-    '''    assert "【核心判断（不上屏）】" in prompt\n    core_context = prompt.split("【核心判断（不上屏）】", 1)[1].split("【完整文字稿（不上屏）】", 1)[0]\n    assert page.core_message in core_context\n    assert "【页面使命（不上屏）】" in prompt\n''',
-    1,
-)
-text = text.replace(
-    '''    assert "empty auxiliary-label allowlist" in prompt\n    assert "one-to-one mapping" in prompt\n''',
-    '''    assert "concise auxiliary labels are allowed" in prompt\n    assert "do not need a one-to-one mapping" in prompt\n''',
-    1,
-)
-p.write_text(text, encoding="utf-8", newline="\n")
 
-# Current Style09 typography/content authority is the Chinese live Artifact Spec plus
-# the content-first conclusion contract, not retired English typography wording.
-p = Path("tests/test_imagegen_creative_brief.py")
-text = p.read_text(encoding="utf-8")
-old = '''    assert "如【锁定关键文字】含正文结论句" in prompt\n    assert "不得通栏放大" in prompt\n    assert "标题竖线、横线等装饰" in prompt\n\n    hierarchy_lock = (\n        "Create hierarchy through crop, overlap, scale contrast, tonal separation, "\n        "alignment, deep-blue emphasis and shallow foreground–background relationships."\n    )\n    assert style_contract.count(hierarchy_lock) == 1\n    assert prompt.count(hierarchy_lock) == 1\n'''
-new = '''    assert "【结论句要求｜不上屏】" in prompt\n    assert "结论先行、层级清晰" in prompt\n    assert "不得新增事实" in prompt\n    assert "第一眼必须识别正文主焦点" in style_contract\n    assert prompt.count("第一眼必须识别正文主焦点") == 1\n'''
-if text.count(old) != 1:
-    raise SystemExit("current visible-judgment legacy assertion block not found uniquely")
-text = text.replace(old, new, 1)
-p.write_text(text, encoding="utf-8", newline="\n")
-
-print("Track B1 creative-brief patch applied")
+print("Track B2 deliverable-prompt test contract patch applied")
