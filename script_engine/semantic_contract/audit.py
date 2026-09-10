@@ -6,6 +6,7 @@ from typing import Any
 
 from .compatibility import collect_provenance_compatibility_diagnostics
 from .diagnostics import partition_diagnostics
+from .protected_payload import collect_protected_payload_diagnostics
 from .provenance import validate_final_script_provenance
 
 
@@ -14,18 +15,14 @@ def audit_final_script_semantic_contract(
     plan: dict[str, Any] | None,
     foundation: dict[str, Any] | None,
 ) -> tuple[list[str], list[str], list[dict[str, object]]]:
-    """Run the structured semantic contract through one Final Script entry point.
-
-    Phase 1 provenance validation remains source-compatible and is folded into
-    the blocking result here. Typed Phase 2 diagnostics use the unified
-    structured diagnostic model.
-    """
+    """Run all structured Final Script semantic checks through one entry point."""
 
     provenance_issues = validate_final_script_provenance(
         final_script, plan, foundation
     )
-    compatibility = collect_provenance_compatibility_diagnostics(
-        final_script, foundation
-    )
-    blockers, review_required, structured = partition_diagnostics(compatibility)
+    diagnostics = [
+        *collect_provenance_compatibility_diagnostics(final_script, foundation),
+        *collect_protected_payload_diagnostics(final_script, foundation),
+    ]
+    blockers, review_required, structured = partition_diagnostics(diagnostics)
     return [*provenance_issues, *blockers], review_required, structured

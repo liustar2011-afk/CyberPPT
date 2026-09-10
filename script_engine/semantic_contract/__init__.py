@@ -14,6 +14,7 @@ from .models import (
     FoundationRecord,
     SemanticDiagnostic,
 )
+from .protected_payload import collect_protected_payload_diagnostics
 from .provenance import validate_final_script_provenance
 from .provenance_markdown import (
     PROVENANCE_MARKDOWN_HEADING,
@@ -31,6 +32,7 @@ __all__ = [
     "RELATION_ALLOWED_EVIDENCE_ROLES",
     "SemanticDiagnostic",
     "audit_final_script_semantic_contract",
+    "collect_protected_payload_diagnostics",
     "collect_provenance_compatibility_diagnostics",
     "dedupe_diagnostics",
     "parse_provenance_markdown",
