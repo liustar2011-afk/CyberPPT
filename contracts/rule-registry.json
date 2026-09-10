@@ -221,6 +221,42 @@
       "confidence": "medium",
       "owner": "script_engine.onscreen_contracts",
       "severity_rationale": "Text overlap is an advisory proxy; structured provenance and Critic determine semantic alignment."
+    },
+    {
+      "code": "FINAL_PROGRESSION_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "Progression words can flag a possible relation promotion, but lexical markers do not prove that the structured source relation is absent."
+    },
+    {
+      "code": "FINAL_OPTIONALITY_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "Independence and deepening phrases are lexical proxies; optionality preservation must be decided from typed source status and Critic review."
+    },
+    {
+      "code": "FINAL_GROUP_STRENGTH_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "Universal quantifiers and completion verbs cannot by themselves prove that a group-level claim exceeds the structured support set."
+    },
+    {
+      "code": "FINAL_GAP_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "A gap regex can identify review candidates but cannot determine whether an equivalent baseline is present under different wording."
     }
   ]
 }
