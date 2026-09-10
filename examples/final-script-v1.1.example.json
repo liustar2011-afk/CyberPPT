@@ -1,0 +1,143 @@
+{
+  "contract": "cyberppt.final-script",
+  "version": "1.1",
+  "deck": {
+    "authoring_mode": "faithful",
+    "title": "示例脚本",
+    "communication_goal": "说明资源治理、可信使用与服务输出的来源内容及明确关系。",
+    "audience": "业务管理人员",
+    "delivery_mode": "self_read"
+  },
+  "slides": [
+    {
+      "id": "P01",
+      "page_type": "content",
+      "title": "数据服务形成机制",
+      "mission": "呈现资源治理、可信使用及其对服务输出的明确支撑关系。",
+      "core_message": "治理和可信使用共同支撑服务输出。",
+      "argument": {
+        "pattern": "evidence synthesis",
+        "chain": [
+          "资源治理",
+          "可信使用",
+          "服务输出"
+        ]
+      },
+      "content_load": "light",
+      "full_copy": "资源治理方面，数据资源首先需要完成可识别和可管理的治理。可信使用机制控制授权、安全和审计。\n\n治理和可信使用共同支撑服务输出。具体技术能力清单另行说明。",
+      "onscreen": [
+        {
+          "id": "M01-01",
+          "heading": "数据资源需要完成可识别和可管理的治理",
+          "text": "数据资源首先需要完成可识别和可管理的治理",
+          "provenance": {
+            "derivation": "direct",
+            "claim_refs": [
+              "F1"
+            ],
+            "bindings": [
+              {
+                "target": "heading",
+                "source_refs": [
+                  "F1"
+                ],
+                "relation": "expresses"
+              },
+              {
+                "target": "text",
+                "source_refs": [
+                  "F1"
+                ],
+                "relation": "expresses"
+              }
+            ]
+          }
+        },
+        {
+          "id": "M01-02",
+          "heading": "可信使用机制控制授权、安全和审计",
+          "text": "可信使用机制控制授权、安全和审计",
+          "items": [
+            {
+              "id": "M01-02-I01",
+              "text": "授权、安全和审计必须纳入交付边界。"
+            }
+          ],
+          "provenance": {
+            "derivation": "direct",
+            "claim_refs": [
+              "F2"
+            ],
+            "bindings": [
+              {
+                "target": "heading",
+                "source_refs": [
+                  "F2"
+                ],
+                "relation": "expresses"
+              },
+              {
+                "target": "text",
+                "source_refs": [
+                  "F2"
+                ],
+                "relation": "expresses"
+              },
+              {
+                "target": "M01-02-I01",
+                "source_refs": [
+                  "F2"
+                ],
+                "relation": "qualifies"
+              }
+            ]
+          }
+        },
+        {
+          "id": "M01-03",
+          "heading": "治理和可信使用共同支撑服务输出",
+          "text": "治理和可信使用共同支撑服务输出",
+          "provenance": {
+            "derivation": "relation",
+            "claim_refs": [
+              "F1",
+              "F2",
+              "F3"
+            ],
+            "bindings": [
+              {
+                "target": "heading",
+                "source_refs": [
+                  "F3"
+                ],
+                "relation": "expresses"
+              },
+              {
+                "target": "text",
+                "source_refs": [
+                  "F3"
+                ],
+                "relation": "expresses"
+              }
+            ]
+          }
+        }
+      ],
+      "visual_thesis": "资源治理与可信使用共同支撑服务输出。",
+      "relationships": [
+        {
+          "from": "资源治理与可信使用",
+          "to": "服务输出",
+          "relation": "共同支撑"
+        }
+      ],
+      "speaker_notes": "授权、安全和审计是可信使用机制控制的具体事项。",
+      "source_refs": [
+        "F1",
+        "F2",
+        "F3",
+        "F4"
+      ]
+    }
+  ]
+}

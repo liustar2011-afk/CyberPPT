@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from .delivery_cleanliness import argument_pattern_label, render_argument_chain, sanitize_delivery_prose, sanitize_relation_text
+from .semantic_contract.provenance_markdown import render_provenance_markdown
 
 PAGE_TYPE_LABELS = {"cover": "封面", "contents": "目录", "chapter": "章节页", "content": "内容页", "closing": "封底"}
 DETAIL_LABEL_RE = re.compile(r"^[^\s：:，,。；;、]{2,24}[：:]")
@@ -16,13 +17,18 @@ def _single_line(value: object) -> str:
     physical line. `full_copy` is intentionally exempt because paragraph breaks are meaningful."""
     return " ".join(_text(value).split())
 
+def _onscreen_item_text(item: object) -> str:
+    if isinstance(item, dict):
+        return _single_line(item.get("text"))
+    return _single_line(item)
+
 def _render_onscreen(sections: list[dict[str, Any]]) -> list[str]:
     lines: list[str] = []
     for section in sections:
         heading = _single_line(section.get("heading")).rstrip("：:")
         raw_body = _text(section.get("text"))
         body = _single_line(raw_body)
-        items = [_single_line(item) for item in (section.get("items") or []) if _text(item)]
+        items = [_onscreen_item_text(item) for item in (section.get("items") or []) if _onscreen_item_text(item)]
         paragraphs = [paragraph.strip() for paragraph in re.split(r"\n\s*\n", raw_body) if paragraph.strip()]
         if section.get("format") == "pyramid_prose":
             if heading:
@@ -96,6 +102,11 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
             # authored onscreen projection; old payloads without that field may
             # still be rendered without silently losing their body copy.
             lines.extend(["", "### 上屏文字", "", full_copy])
+        provenance_lines = render_provenance_markdown(onscreen_sections)
+        if provenance_lines:
+            # The heading starts with the parser-recognized 证据映射 field, so
+            # this audit-only block cannot be consumed as visible 上屏文字.
+            lines.extend(["", *provenance_lines])
         notes = sanitize_delivery_prose(slide.get("speaker_notes"))
         if notes: lines.extend(["", "### 演讲者备注", "", notes])
         source_refs = [_text(item) for item in (slide.get("source_refs") or []) if _text(item)]

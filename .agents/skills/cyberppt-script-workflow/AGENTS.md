@@ -4,6 +4,22 @@ This file applies only to `.agents/skills/cyberppt-script-workflow/` and its ref
 It specializes the repository-level Stage 01 authoring rule so the active authoring
 contract matches `authoring_mode` without creating two simultaneous authorities.
 
+## Shared Final Script provenance contract
+
+Before every new-project `AUTHOR`, and before any revision of a Final Script 1.1 artifact,
+read `references/final-script-provenance-contract.md` completely. This is a shared delivery
+contract, not a second authoring method.
+
+New projects author Final Script contract `cyberppt.final-script` version `1.1`. Version
+`1.0` remains readable only for legacy compatibility and must not be silently upgraded by
+inventing evidence bindings. A 1.1 content module must carry stable module/item IDs and
+explicit provenance for every visible target. Missing provenance blocks deterministic
+validation and delivery.
+
+The shared provenance contract does not authorize analytical inference. Source meaning,
+claim strength, relationship construction and prose methods still come exclusively from
+the active mode-specific authoring contract below.
+
 ## Single active contract per action
 
 Before `AUTHOR`, `CRITIQUE`, `REWRITE`, targeted page revision, or whole-deck script
@@ -13,10 +29,10 @@ review, resolve the approved mode first:
 - `faithful` -> read `references/faithful-authoring-contract.md` completely;
 - `analytical` -> read `references/authoring-contract.md` completely.
 
-Exactly one of those two contracts is operational for a given action. Do not merge,
-blend, average, or selectively combine their methods. The repository-level phrase
-"single operational authority" therefore means one active mode-specific contract,
-not that analytical judgment-first rules must govern faithful authoring.
+Exactly one of those two mode-specific contracts is operational for a given action. Do not merge,
+blend, average, or selectively combine their methods. The shared provenance contract above only
+defines Final Script identity, evidence binding and synchronization; it does not alter the selected
+authoring mode.
 
 If the Final Script declares `analytical` while the approved Deck Plan is not
 analytical, stop and repair the mode mismatch before authoring.
