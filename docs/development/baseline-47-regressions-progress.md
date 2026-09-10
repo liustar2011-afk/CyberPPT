@@ -232,3 +232,20 @@
 
 下一阶段工作：
 - Track B / Step B3：处理 Handoff Modularization 3 项失败，核对 facade 与模块化 builder 的行为一致性、当前 canvas/text/template contract 和 compiler metadata。
+
+## Track B / Step B3｜Handoff Modularization 合同对齐
+
+状态：已完成
+
+已完成工作：
+- 保留 facade 对 modular implementation 的直接对象同一性与行为完全相等验证，不引入兼容 wrapper 或重复实现。
+- 将 Style 09 断言从已废弃英文 `pure white background #FFFFFF` 迁移到当前中文 GPT Image 2.5 Artifact Spec live contract，并继续验证纯白 `#FFFFFF` / 深蓝 `#12355B` 色板。
+- 将旧 `Semantic anchor and composition` section 断言迁移到当前 content-first 非上屏上下文：页面使命、核心判断、页面内容素材，以及现行 terminal runtime lock。
+- 强化 compiler metadata 验证：`content-first-v1`、`full_image`、Style 09 id/name 和 `style.selected_lock` 注入规则均须保持一致。
+
+验证结果：
+- `tests/test_imagegen_handoff_modularization.py` 全文件回归通过。
+- 3 项历史 Handoff Modularization 失败清零；本步骤不改变 production runtime 行为。
+
+下一阶段工作：
+- Track B / Step B4：处理 Micro Freedom 1 项与 No Visual Structure 4 项，优先核对 exact visible copy 的 macro-region ownership 是否存在真实生产缺口，再迁移旧 wording/fixture。

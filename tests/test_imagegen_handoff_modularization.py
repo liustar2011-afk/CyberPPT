@@ -87,7 +87,8 @@ def test_facade_and_modular_prompt_builder_are_behaviorally_identical_for_style0
     assert via_facade == via_module
     assert "2048×1024" in via_facade
     assert "【模板层禁绘｜不上屏】" not in via_facade
-    assert "pure white background #FFFFFF" in via_facade
+    assert "GPT Image 2.5 Artifact Spec 执行版" in via_facade
+    assert "配色：纯白 `#FFFFFF`，深蓝 `#12355B`" in via_facade
     assert "01｜数据治理" in via_facade
     assert "02｜运行结果" in via_facade
 
@@ -106,7 +107,10 @@ def test_content_first_prompt_keeps_current_canvas_text_and_template_contracts()
     assert "【并列语义防发散｜不上屏】" not in prompt
     assert "【非上屏语义边界】" not in prompt
     assert "正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号" not in prompt
-    assert "### 2. Semantic anchor and composition — hard" in prompt
+    assert "【页面使命（不上屏）】" in prompt
+    assert "【核心判断（不上屏）】" in prompt
+    assert "【页面内容素材｜允许提炼、改写、重组】" in prompt
+    assert "GPT Image 2.5 Artifact Spec 执行版" in prompt
     assert "【最终视觉执行约束｜最高优先级】" in prompt
 
 
@@ -120,9 +124,12 @@ def test_compiled_prompt_metadata_uses_current_compiler_and_style09() -> None:
 
     metadata = compiled.build_metadata()
     assert compiled.prompt
-    assert metadata["compiler_version"]
-    assert metadata["text_render_mode"]
-    assert "pure white background #FFFFFF" in compiled.prompt
+    assert metadata["compiler_version"] == "content-first-v1"
+    assert metadata["text_render_mode"] == "full_image"
+    assert metadata["style_selection"]["id"] == 9
+    assert metadata["style_selection"]["name"] == "纯白 + 深蓝领导汇报"
+    assert "style.selected_lock" in metadata["injected_rule_ids"]
+    assert "GPT Image 2.5 Artifact Spec 执行版" in compiled.prompt
 
 
 def test_style10_uses_its_own_copied_visual_contract() -> None:
