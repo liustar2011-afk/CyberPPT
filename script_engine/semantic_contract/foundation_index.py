@@ -67,7 +67,12 @@ class FoundationIndex:
         record = self.record(ref)
         if record is None:
             return ""
-        return str(record.payload.get("status") or record.payload.get("strength") or "").strip()
+        return str(
+            record.payload.get("status")
+            or record.payload.get("semantic_status")
+            or record.payload.get("strength")
+            or ""
+        ).strip()
 
     def argument_duty(self, ref: str) -> str:
         record = self.record(ref)
@@ -75,8 +80,11 @@ class FoundationIndex:
             return ""
         return str(
             record.payload.get("argument_duty")
+            or record.payload.get("argument_role")
+            or record.payload.get("claim_role")
             or record.payload.get("role")
             or record.payload.get("duty")
+            or record.payload.get("argument_weight")
             or ""
         ).strip()
 
@@ -106,6 +114,7 @@ class FoundationIndex:
             return ""
         return str(
             record.payload.get("claim_origin")
+            or record.payload.get("origin")
             or record.payload.get("basis")
             or record.payload.get("strength")
             or ""

@@ -19,7 +19,7 @@ from .contracts import (
     validate_source_refs_coverage,
 )
 from .plan_review import render_plan_review
-from .semantic_contract import validate_final_script_provenance
+from .semantic_contract import audit_final_script_semantic_contract
 from .source_index import (
     build_source_index_file,
     validate_script_foundation_against_index,
@@ -119,9 +119,14 @@ def final_audit_report(
         + validate_deck_plan(plan)
         + validate_foundation(foundation)
     )
-    issues += validate_final_script_provenance(final_payload, plan, foundation)
+    semantic_issues, semantic_warnings, semantic_diagnostics = (
+        audit_final_script_semantic_contract(final_payload, plan, foundation)
+    )
+    issues += semantic_issues
     audit_issues, warnings = audit_final_script(final_payload, plan, foundation)
     issues += audit_issues
+    issues = list(dict.fromkeys(issues))
+    warnings = list(dict.fromkeys([*warnings, *semantic_warnings]))
     trace = trace_composed(final_payload, foundation)
     return (
         {
@@ -132,6 +137,7 @@ def final_audit_report(
             "status": "passed" if not issues else "failed",
             "issues": issues,
             "warnings": warnings,
+            "semantic_diagnostics": semantic_diagnostics,
             "critic_priorities": critic_priorities(
                 final_payload,
                 plan,
