@@ -54,7 +54,7 @@ def test_content_route_is_not_part_of_the_v2_lean_plan_contract() -> None:
     assert validate_deck_plan(_plan(page))
     issues, warnings = audit_deck_plan(_plan(page), _foundation())
     assert any("AUTHOR_FIELDS_FORBIDDEN" in issue for issue in issues)
-    assert warnings == []
+    assert any("PLAN_PAGE_WITHOUT_EVIDENCE" in warning for warning in warnings)
 
 
 def test_explicit_author_route_wins_over_inference() -> None:
