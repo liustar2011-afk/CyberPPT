@@ -45,7 +45,7 @@ def _is_lead_like_evidence_item(value: str) -> bool:
 def _evidence_first_item_hierarchy_issues(
     slide_id: str, module: dict[str, Any]
 ) -> list[str]:
-    """Reject a hidden module lead placed in the first flat evidence item."""
+    """Flag a possible hidden module lead placed in the first flat evidence item."""
 
     items = [
         item.strip()
@@ -58,9 +58,10 @@ def _evidence_first_item_hierarchy_issues(
         return []
     heading = str(module.get("heading") or "?").strip()
     return [
+        "AUTHOR_EVIDENCE_FIRST_HIERARCHY_HEURISTIC: "
         f"{slide_id}: onscreen_composition='evidence_first' module '{heading}' "
-        "uses a lead-like first item above lighter peer evidence; keep same-granularity source facts, "
-        "or use selective_lead only when the source or approved analytical plan actually contains a lead proposition"
+        "uses a lead-like first item above lighter peer evidence; review whether the first item is "
+        "a synthesized lead or a source-native peer fact"
     ]
 
 
@@ -148,7 +149,7 @@ def _author_execution_issues(
     *,
     authoring_mode: str = "faithful",
 ) -> list[str]:
-    """Fail closed on deterministic assembly signatures that cannot count as AUTHOR."""
+    """Report assembly signatures that require either deterministic rejection or review."""
 
     if slide.get("page_type") != "content":
         return []
