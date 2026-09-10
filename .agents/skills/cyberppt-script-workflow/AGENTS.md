@@ -29,10 +29,10 @@ review, resolve the approved mode first:
 - `faithful` -> read `references/faithful-authoring-contract.md` completely;
 - `analytical` -> read `references/authoring-contract.md` completely.
 
-Exactly one of those two mode-specific contracts is operational for a given action. Do
-not merge, blend, average, or selectively combine their methods. The shared provenance
-contract above only defines Final Script identity, evidence binding and synchronization;
-it does not alter the selected authoring mode.
+Exactly one of those two mode-specific contracts is operational for a given action. Do not merge,
+blend, average, or selectively combine their methods. The shared provenance contract above only
+defines Final Script identity, evidence binding and synchronization; it does not alter the selected
+authoring mode.
 
 If the Final Script declares `analytical` while the approved Deck Plan is not
 analytical, stop and repair the mode mismatch before authoring.
