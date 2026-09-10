@@ -1,4 +1,4 @@
-name: Baseline47 Track B3 handoff modularization
+name: Baseline47 Track B4 structure boundary
 
 on:
   push:
@@ -21,38 +21,43 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply Track B3 handoff-modularization patch
+      - name: Apply Track B4 structure-boundary patch
         run: python tools/baseline47_trackb_creative_brief_patch.py
       - name: Install test dependencies
         run: python -m pip install -e '.[dev]'
-      - name: Run Handoff Modularization regression suite
-        run: python -m pytest -q tests/test_imagegen_handoff_modularization.py
-      - name: Record Step B3 in progress ledger
+      - name: Run Micro Freedom and No Visual Structure regression suites
+        run: |
+          python -m pytest -q \
+            tests/test_imagegen_micro_freedom.py \
+            tests/test_imagegen_no_visual_structure.py
+      - name: Record Step B4 in progress ledger
         run: |
           cat >> docs/development/baseline-47-regressions-progress.md <<'EOF'
 
-          ## Track B / Step B3｜Handoff Modularization 合同对齐
+          ## Track B / Step B4｜Macro Region / No Visual Structure 合同对齐
 
           状态：已完成
 
           已完成工作：
-          - 保留 facade 对 modular implementation 的直接对象同一性与行为完全相等验证，不引入兼容 wrapper 或重复实现。
-          - 将 Style 09 断言从已废弃英文 `pure white background #FFFFFF` 迁移到当前中文 GPT Image 2.5 Artifact Spec live contract，并继续验证纯白 `#FFFFFF` / 深蓝 `#12355B` 色板。
-          - 将旧 `Semantic anchor and composition` section 断言迁移到当前 content-first 非上屏上下文：页面使命、核心判断、页面内容素材，以及现行 terminal runtime lock。
-          - 强化 compiler metadata 验证：`content-first-v1`、`full_image`、Style 09 id/name 和 `style.selected_lock` 注入规则均须保持一致。
+          - 核对 MicroVisualFreedom 生产合同，确认现行 `Keep each declared copy item within its assigned macro semantic region.` 已覆盖 exact/declared copy 的宏区归属约束，因此不重复增加同义 production 禁令，仅迁移旧措辞断言。
+          - No Visual Structure 旧测试从 `页面任务` / 旧 Style 09 英文 section marker 迁移到当前 `【页面使命（不上屏）】` 与中文 GPT Image 2.5 Artifact Spec live contract。
+          - 收窄 direct deliverable prompt 对“页面使命”的排除断言，只禁止注入独立 `【页面使命（不上屏）】` 元数据区块，不误伤正常构图指导中的“根据页面使命”表述。
+          - Style09/10 结构解耦 fixture 补充 Stage2 v3 所要求的 authored `onscreen_text` 权威输入，并扩展验证 Copy Contract、Composition Strategy、Region Graph、Visual Medium、Text Capacity、Full-slide Context、Acceptance Contract 等结构字段均不随 style 选择变化。
 
           验证结果：
-          - `tests/test_imagegen_handoff_modularization.py` 全文件回归通过。
-          - 3 项历史 Handoff Modularization 失败清零；本步骤不改变 production runtime 行为。
+          - `tests/test_imagegen_micro_freedom.py + tests/test_imagegen_no_visual_structure.py` 全部回归通过。
+          - 5 项历史失败清零；未为追绿恢复旧 Style 09 wording，也未放宽 Stage2 v3 authored-copy 要求。
 
           下一阶段工作：
-          - Track B / Step B4：处理 Micro Freedom 1 项与 No Visual Structure 4 项，优先核对 exact visible copy 的 macro-region ownership 是否存在真实生产缺口，再迁移旧 wording/fixture。
+          - Track B / Step B5：处理 Page Manifest 2 项、Prompt Diagnostics 1 项、Visual Grammar 1 项，完成 Track B 最后 4 项后运行 Track B 聚合与标准全量 CI。
           EOF
-      - name: Commit verified B3 changes
+      - name: Commit verified B4 changes
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tests/test_imagegen_handoff_modularization.py \
+          git add tests/test_imagegen_micro_freedom.py \
+                  tests/_imagegen_no_visual_structure_base.py \
+                  tests/test_imagegen_no_visual_structure.py \
                   docs/development/baseline-47-regressions-progress.md
-          git commit -m 'test(baseline47): align handoff modularization contracts'
+          git commit -m 'test(baseline47): align macro-region structure contracts'
           git push origin HEAD:fix/baseline-47-regressions
