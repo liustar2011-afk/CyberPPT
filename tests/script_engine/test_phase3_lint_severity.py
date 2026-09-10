@@ -4,6 +4,7 @@ import copy
 import json
 from pathlib import Path
 
+from script_engine.analysis_audit import audit_final_script
 from script_engine.contracts import lint_final_script
 from script_engine.quality_policy import ADVISORY, BLOCKER, classify_issue, partition_issues
 
@@ -21,6 +22,19 @@ def _v11() -> dict:
     return json.loads(
         (ROOT / "examples" / "final-script-v1.1.example.json").read_text(encoding="utf-8")
     )
+
+
+def _analysis_triplet() -> tuple[dict, dict, dict]:
+    foundation = json.loads(
+        (ROOT / "examples" / "foundation.example.json").read_text(encoding="utf-8")
+    )
+    plan = json.loads(
+        (ROOT / "examples" / "deck-plan.example.json").read_text(encoding="utf-8")
+    )
+    final = _legacy()
+    plan["authoring_mode"] = "analytical"
+    final["deck"]["authoring_mode"] = "analytical"
+    return foundation, plan, final
 
 
 def test_generic_business_object_hint_remains_visible_but_nonblocking() -> None:
@@ -89,3 +103,44 @@ def test_final_script_11_object_items_are_scanned_for_delivery_cleanliness() -> 
 def test_warning_phrasing_registry_is_applied_by_central_policy() -> None:
     finding = "slides.0 (P01).full_copy: [restating-aside] review — matched '也就是说'"
     assert classify_issue(finding)["severity"] == ADVISORY
+
+
+def test_progression_regex_is_review_only_in_final_semantic_audit() -> None:
+    foundation, plan, final = _analysis_triplet()
+    plan["pages"][0]["analysis_basis"] = {"model": "classification"}
+    final["slides"][0]["full_copy"] += " A事项与B事项依次递进。"
+
+    issues, warnings = audit_final_script(final, plan, foundation)
+
+    assert not any("FINAL_PROGRESSION_HEURISTIC" in item for item in issues)
+    assert any("FINAL_PROGRESSION_HEURISTIC" in item for item in warnings)
+
+
+def test_optionality_regex_is_review_only_in_final_semantic_audit() -> None:
+    foundation, plan, final = _analysis_triplet()
+    foundation["facts"][0]["statement"] = "方案可以独立采用，也可以随着合作逐步深化。"
+
+    issues, warnings = audit_final_script(final, plan, foundation)
+
+    assert not any("FINAL_OPTIONALITY_HEURISTIC" in item for item in issues)
+    assert any("FINAL_OPTIONALITY_HEURISTIC" in item for item in warnings)
+
+
+def test_group_strength_wording_is_review_only_in_final_semantic_audit() -> None:
+    foundation, plan, final = _analysis_triplet()
+    final["slides"][0]["core_message"] = "所有事项已完成。"
+
+    issues, warnings = audit_final_script(final, plan, foundation)
+
+    assert not any("FINAL_GROUP_STRENGTH_HEURISTIC" in item for item in issues)
+    assert any("FINAL_GROUP_STRENGTH_HEURISTIC" in item for item in warnings)
+
+
+def test_gap_regex_is_review_only_in_final_semantic_audit() -> None:
+    foundation, plan, final = _analysis_triplet()
+    final["slides"][0]["core_message"] = "目前距离目标还有明显缺口。"
+
+    issues, warnings = audit_final_script(final, plan, foundation)
+
+    assert not any("FINAL_GAP_HEURISTIC" in item for item in issues)
+    assert any("FINAL_GAP_HEURISTIC" in item for item in warnings)
