@@ -2,6 +2,11 @@
 
 This module owns banned-phrasing scanning and the composition order of semantic
 sub-checks. Focused domains replace the legacy rule module incrementally.
+
+``lint_final_script`` intentionally remains a compatibility collector that returns
+all findings. Blocking vs advisory severity is decided centrally by
+:mod:`script_engine.quality_policy` so older callers can still inspect every
+finding while production gates stop treating lexical heuristics as semantic truth.
 """
 from __future__ import annotations
 
@@ -25,7 +30,12 @@ def load_banned_phrasing() -> list[dict[str, Any]]:
 def iter_final_script_text_fields(
     final_script: dict[str, Any],
 ) -> Iterator[tuple[str, str, str]]:
-    """Yield ``(field_path, field_key, text)`` for every prose field."""
+    """Yield ``(field_path, field_key, text)`` for every prose field.
+
+    Final Script 1.1 stores onscreen items as ``{"id", "text"}`` objects while
+    1.0 uses strings. Both representations are scanned so delivery-cleanliness
+    rules cannot be bypassed by upgrading the contract version.
+    """
 
     deck = final_script.get("deck") or {}
     for key in ("title", "communication_goal", "audience", "narrative"):
@@ -76,6 +86,15 @@ def iter_final_script_text_fields(
                         "onscreen.items",
                         item,
                     )
+                    continue
+                if isinstance(item, dict):
+                    item_text = item.get("text")
+                    if isinstance(item_text, str) and item_text:
+                        yield (
+                            f"{prefix}.onscreen[{module_index}].items[{item_index}].text",
+                            "onscreen.items",
+                            item_text,
+                        )
 
         for relation_index, relation in enumerate(slide.get("relationships") or []):
             if not isinstance(relation, dict):
@@ -90,7 +109,12 @@ def iter_final_script_text_fields(
 
 
 def lint_final_script(final_script: dict[str, Any]) -> list[str]:
-    """Run banned-phrasing scans and deterministic semantic sub-checks."""
+    """Collect banned-phrasing and deterministic semantic findings.
+
+    This function does not decide severity. Use ``quality_policy.partition_issues``
+    (or the CLI Final Script quality path) to distinguish blockers from review
+    advisories.
+    """
 
     rules = [
         (
@@ -102,7 +126,7 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
         )
         for rule in load_banned_phrasing()
     ]
-    issues: list[str] = []
+    findings: list[str] = []
     for field_path, field_key, text in iter_final_script_text_fields(final_script):
         for rule_id, regex, description, exclude_fields, include_fields in rules:
             if field_key in exclude_fields:
@@ -111,21 +135,21 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
                 continue
             match = regex.search(text)
             if match:
-                issues.append(
+                findings.append(
                     f"{field_path}: [{rule_id}] {description} — matched '{match.group(0)}'"
                 )
 
-    issues.extend(_author.check_author_field_contract(final_script))
-    issues.extend(_full_copy.check_full_copy_structure(final_script))
-    issues.extend(_full_copy.check_full_copy_topic_semantics(final_script))
-    issues.extend(_full_copy.check_full_copy_parallel_subconclusions(final_script))
-    issues.extend(_onscreen.check_onscreen_heading_semantics(final_script))
-    issues.extend(_onscreen.check_onscreen_detail_semantics(final_script))
-    issues.extend(_onscreen.check_onscreen_projection_structure(final_script))
-    issues.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
-    issues.extend(_onscreen.check_onscreen_code_context(final_script))
-    issues.extend(_onscreen.check_onscreen_core_alignment(final_script))
-    return issues
+    findings.extend(_author.check_author_field_contract(final_script))
+    findings.extend(_full_copy.check_full_copy_structure(final_script))
+    findings.extend(_full_copy.check_full_copy_topic_semantics(final_script))
+    findings.extend(_full_copy.check_full_copy_parallel_subconclusions(final_script))
+    findings.extend(_onscreen.check_onscreen_heading_semantics(final_script))
+    findings.extend(_onscreen.check_onscreen_detail_semantics(final_script))
+    findings.extend(_onscreen.check_onscreen_projection_structure(final_script))
+    findings.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
+    findings.extend(_onscreen.check_onscreen_code_context(final_script))
+    findings.extend(_onscreen.check_onscreen_core_alignment(final_script))
+    return findings
 
 
 __all__ = [

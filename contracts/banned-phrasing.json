@@ -48,6 +48,18 @@
       "severity_rationale": "可能是合法语篇衔接，不能单凭短语阻断。"
     },
     {
+      "id": "underspecified-business-object",
+      "pattern": "能力建设|(?:相关|相应|有关)(?:能力|工作|任务|要求)",
+      "description": "业务对象可能过于概括；结合来源绑定复核具体对象是否已在当前模块中明确。",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "audience_copy",
+      "confidence": "low",
+      "owner": "script_engine.lint_contracts",
+      "severity_rationale": "通用词只能提示潜在缺项，不能判断来源原词是否完整，也不能证明业务对象缺失。",
+      "include_fields": ["core_message", "onscreen.heading", "onscreen.text", "onscreen.items"]
+    },
+    {
       "id": "authoring-intent-description",
       "pattern": "让受众.{0,10}意识到|让听众.{0,10}意识到|降低.{0,10}顾虑|降低.{0,10}疑虑",
       "description": "描述作者希望影响受众的心理效果，而非业务内容。",
