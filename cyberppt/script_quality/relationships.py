@@ -78,15 +78,6 @@ _RELATION_ACTION_SIGNALS = tuple(
         if signal not in {"→", "->", "由", "以"}
     )
 )
-_COMPOSITION_SCOPE_TOPICS = (
-    "课程包",
-    "场景包",
-    "课程",
-    "模块",
-    "产品",
-    "平台",
-    "方案",
-)
 _COMPOSITION_SCOPE_MARKERS = (*COMPOSITION_RELATION_MARKERS, "组合", "作为")
 _PROTECTED_PREDICATE_RE = re.compile(
     r"(?P<subject>[0-9A-Za-z\u4e00-\u9fff、，,/]{4,32}(?:岗位|主体|群体|对象))"
@@ -229,20 +220,20 @@ def _reserved_composition_relation_hits(
     page: ScriptPage,
     contract: dict[str, object],
 ) -> tuple[str, ...]:
-    """Detect only relation-level consumption of current-page reservations.
+    """Review relation-level consumption of explicit page reservations.
 
-    The page boundary must itself reserve a composition relationship.  The
-    authored sentence must then contain both one controlled topic anchor and
-    an explicit composition action.  A course list or a bare module noun is
-    therefore insufficient to trigger the gate.
+    This legacy fallback uses only reservation strings supplied by the page
+    contract. It deliberately has no global business-object vocabulary. Exact
+    structured page-logic/provenance gates remain authoritative when available.
     """
 
-    reservations = _reserved_scope_strings(contract)
-    reservation_text = "\n".join(reservations)
-    controlled_topics = tuple(
-        topic for topic in _COMPOSITION_SCOPE_TOPICS if topic in reservation_text
+    reservations = tuple(
+        reservation.replace(" ", "")
+        for reservation in _reserved_scope_strings(contract)
+        if len(reservation.replace(" ", "")) >= 3
     )
-    if not controlled_topics or not any(
+    reservation_text = "\n".join(reservations)
+    if not reservations or not any(
         marker in reservation_text for marker in _COMPOSITION_SCOPE_MARKERS
     ):
         return ()
@@ -250,7 +241,8 @@ def _reserved_composition_relation_hits(
     hits: list[str] = []
     for unit in re.split(r"[。！？；;\n]+", authored):
         unit = unit.strip()
-        if not unit or not any(topic in unit for topic in controlled_topics):
+        compact = unit.replace(" ", "")
+        if not unit or not any(reservation in compact for reservation in reservations):
             continue
         if composition_relation_units(unit) or "组合" in unit:
             hits.append(unit)
@@ -322,10 +314,10 @@ def _page_relationship_contract_issues(
             _issue(
                 "PAGE_SCOPE_RESERVED_RELATION",
                 page,
-                "The current page consumes a composition relationship explicitly reserved for a later page.",
-                "Keep the permitted topic or course list, and move the reserved composition relationship to its assigned page.",
+                "The current page may consume a composition relationship explicitly reserved for a later page.",
+                "Review the explicit page reservation and move the relationship to its assigned page when the match is semantically valid.",
                 evidence=reserved_hits,
-                severity="error",
+                severity="warning",
             )
         )
     issues.extend(_predicate_ownership_review_issues(page, evidence))
@@ -392,9 +384,10 @@ def _page_relationship_continuity_issues(
                 _issue(
                     "DECLARED_RELATION_NOT_VISIBLE",
                     page,
-                    "Declared content relation is not readable in the visible modules or visual structure.",
-                    "Express the approved subject-action-object relation with a directional chain, hierarchy, collaboration, or loop signal.",
+                    "Declared content relation is not readable by the legacy visibility-word heuristic.",
+                    "Review the approved subject-action-object relation; rely on structured page-logic/provenance gates when available.",
                     evidence=tuple(str(item.get("relation") or "") for item in relations),
+                    severity="warning",
                 )
             )
             labels = _relation_parallel_labels(page)
@@ -405,9 +398,10 @@ def _page_relationship_continuity_issues(
                     _issue(
                         "ONSCREEN_FALSE_RELATION_PARALLEL",
                         page,
-                        "On-screen modules are parallel labels and do not carry the declared relation.",
-                        "Rewrite top-level modules as subject-action-object steps or show their ordered, hierarchical, collaborative, or closed-loop relation.",
+                        "On-screen modules look parallel under the legacy wording heuristic and may not carry the declared relation.",
+                        "Review the structured relation and visible carrier instead of treating keyword absence as proof.",
                         evidence=labels[:6],
+                        severity="warning",
                     )
                 )
         issues.extend(
@@ -425,11 +419,11 @@ def _page_relationship_continuity_issues(
             issues.append(
                 ScriptQualityIssue(
                     "ADJACENT_PAGE_RESPONSIBILITY_DUPLICATE",
-                    "error",
-                    "Adjacent pages repeat the same editorial responsibility and declared relation.",
+                    "warning",
+                    "Adjacent pages may repeat the same editorial responsibility under a similarity heuristic.",
                     (left.page_id, right.page_id),
                     evidence=(left_summary.page_transformation, right_summary.page_transformation),
-                    suggested_action="Keep the responsibility on one page and make the adjacent page advance a distinct audience question or relation.",
+                    suggested_action="Review whether the pages answer distinct audience questions; similarity alone is not a blocking semantic proof.",
                 )
             )
         preempted = _preempted_scope_terms(left, right_summary.excluded_scope)
@@ -437,11 +431,11 @@ def _page_relationship_continuity_issues(
             issues.append(
                 ScriptQualityIssue(
                     "PAGE_SCOPE_PREEMPTED",
-                    "error",
-                    "Current page writes a mechanism or task reserved outside the next page's allowed scope.",
+                    "warning",
+                    "Current page may repeat exact reserved wording from the next page's legacy scope metadata.",
                     (left.page_id, right.page_id),
                     evidence=preempted,
-                    suggested_action="Remove the reserved content from the current page and let the later page introduce its assigned mechanism or task.",
+                    suggested_action="Review the explicit page scope; use structured provenance/page boundaries for blocking decisions.",
                 )
             )
     return issues
