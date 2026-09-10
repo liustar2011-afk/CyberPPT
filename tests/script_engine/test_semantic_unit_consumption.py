@@ -130,12 +130,12 @@ def test_final_rejects_unknown_source_ref() -> None:
     assert any("AUTHOR_SOURCE_REF_UNKNOWN" in issue and "ST9999" in issue for issue in issues)
 
 
-def test_final_requires_minimum_distinct_facts_for_a_multi_source_page() -> None:
-    """A strict sourced page with several available facts cannot rest the whole
-    argument on a single declared record."""
+def test_final_requests_review_for_narrow_multi_source_consumption() -> None:
+    """A distinct-fact floor is useful as review guidance but is not semantic proof."""
     final = _final(["ST0001"], "国家数据基础设施建设进入全面实施阶段。")
-    issues, _ = audit_final_script(final, _plan(), _foundation())
-    assert any("AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW" in issue for issue in warnings)
+    assert not any("AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW" in issue for issue in issues)
 
 
 def test_final_lowers_the_distinct_fact_floor_for_a_short_sourced_page() -> None:
@@ -143,18 +143,19 @@ def test_final_lowers_the_distinct_fact_floor_for_a_short_sourced_page() -> None
     three-fact floor (v2 lean's own evidence-selection freedom)."""
     page = _page(["ST0001"])
     final = _final(["ST0001"], "国家数据基础设施建设进入全面实施阶段，明确总体架构和数据全生命周期要求。")
-    issues, _ = audit_final_script(final, _plan(page), _foundation())
-    assert not any("AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(page), _foundation())
+    assert not any("AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW" in issue for issue in (*issues, *warnings))
 
 
-def test_final_flags_semantics_lost_when_full_copy_ignores_a_declared_source() -> None:
+def test_final_requests_review_when_overlap_heuristic_misses_declared_source_semantics() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段，明确总体架构。今年工作稳步推进，各方持续关注进展。",
     )
-    issues, _ = audit_final_script(final, _plan(), _foundation())
-    assert any("AUTHOR_SOURCE_SEMANTICS_LOST" in issue and "ST0002" in issue for issue in issues)
-    assert any("AUTHOR_SOURCE_SEMANTICS_LOST" in issue and "ST0003" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
+    assert any("AUTHOR_SOURCE_SEMANTICS_LOST" in issue and "ST0002" in issue for issue in warnings)
+    assert any("AUTHOR_SOURCE_SEMANTICS_LOST" in issue and "ST0003" in issue for issue in warnings)
+    assert not any("AUTHOR_SOURCE_SEMANTICS_LOST" in issue for issue in issues)
 
 
 def test_final_flags_protected_number_lost() -> None:
@@ -216,7 +217,7 @@ def test_pages_without_source_refs_are_not_subject_to_the_strict_gate() -> None:
     assert not any(code in issue for issue in final_issues for code in ("AUTHOR_SOURCE_CONSUMPTION_MISSING",))
 
 
-def test_final_rejects_thin_single_block_for_multi_fact_page() -> None:
+def test_final_requests_review_for_thin_single_block_multi_fact_page() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段。电力行业已形成6项配套技术文件。"
@@ -224,9 +225,10 @@ def test_final_rejects_thin_single_block_for_multi_fact_page() -> None:
         onscreen_items=["国家建设进入全面实施阶段", "电力行业已形成6项配套技术文件"],
     )
 
-    issues, _ = audit_final_script(final, _plan(), _foundation())
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
 
-    assert any("AUTHOR_FULL_COPY_TOO_THIN" in issue for issue in issues)
+    assert any("AUTHOR_FULL_COPY_TOO_THIN" in issue for issue in warnings)
+    assert not any("AUTHOR_FULL_COPY_TOO_THIN" in issue for issue in issues)
 
 
 def test_final_requests_review_for_lexically_disconnected_onscreen_claim() -> None:
@@ -286,7 +288,7 @@ def test_final_accepts_verbatim_full_copy_as_safe_onscreen_fallback() -> None:
     assert not any("AUTHOR_ONSCREEN_" in issue for issue in issues)
 
 
-def test_final_rejects_relationship_that_exists_only_in_metadata() -> None:
+def test_final_requests_review_for_relationship_visible_only_in_metadata() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
@@ -297,9 +299,10 @@ def test_final_rejects_relationship_that_exists_only_in_metadata() -> None:
         {"from": "数据底座", "to": "政策发布", "relation": "自动驱动"}
     ]
 
-    issues, _ = audit_final_script(final, _plan(), _foundation())
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
 
-    assert any("AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue for issue in issues)
+    assert any("AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue for issue in warnings)
+    assert not any("AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue for issue in issues)
 
 
 def test_final_requests_review_for_relation_claim_without_materialized_edge() -> None:
