@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "default_profile": "default",
+  "blocking_kinds": [
+    "schema",
+    "structural",
+    "delivery_cleanliness",
+    "delivery_policy",
+    "safety"
+  ],
+  "warning_kinds": [
+    "semantic_heuristic",
+    "style_heuristic"
+  ],
+  "forbidden_default_kinds": [
+    "project_specific"
+  ],
+  "sources": [
+    {
+      "id": "final-script-schema",
+      "path": "contracts/final-script.schema.json",
+      "profile": "default",
+      "kind": "schema",
+      "severity": "blocking",
+      "owner": "script_engine.schema_contracts"
+    },
+    {
+      "id": "module-semantic-contract",
+      "path": "script_engine/semantic_contract",
+      "profile": "default",
+      "kind": "structural",
+      "severity": "blocking",
+      "owner": "script_engine.semantic_contract"
+    },
+    {
+      "id": "banned-phrasing",
+      "path": "contracts/banned-phrasing.json",
+      "profile": "default",
+      "kind": "mixed",
+      "severity": "mixed",
+      "owner": "script_engine.lint_contracts"
+    },
+    {
+      "id": "legacy-script-quality",
+      "path": "cyberppt/script_quality/rules.yaml",
+      "profile": "legacy",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "owner": "cyberppt.script_quality",
+      "default_enabled": false
+    }
+  ]
+}
