@@ -20,11 +20,57 @@ _REQUIRED_RULE_FIELDS = frozenset(
         "severity_rationale",
     }
 )
+_REQUIRED_FINDING_FIELDS = frozenset(
+    {
+        "code",
+        "kind",
+        "severity",
+        "scope",
+        "confidence",
+        "owner",
+        "severity_rationale",
+    }
+)
 _ALLOWED_CONFIDENCE = frozenset({"high", "medium", "low"})
 
 
 def load_rule_registry() -> dict[str, Any]:
     return load_json(RULE_REGISTRY_PATH)
+
+
+def _validate_governed_item(
+    item: dict[str, Any],
+    *,
+    identity: str,
+    blocking_kinds: set[str],
+    warning_kinds: set[str],
+    forbidden_default: set[str],
+    issues: list[str],
+) -> None:
+    kind = str(item.get("kind") or "")
+    severity = str(item.get("severity") or "")
+    confidence = str(item.get("confidence") or "")
+    allowed_kinds = blocking_kinds | warning_kinds | forbidden_default
+    if kind not in allowed_kinds:
+        issues.append(f"{identity}: unknown rule kind {kind!r}")
+    if kind in forbidden_default:
+        issues.append(f"{identity}: project-specific rules are forbidden in the default profile")
+    if severity not in {"blocking", "warning"}:
+        issues.append(f"{identity}: unsupported severity {severity!r}")
+    elif severity == "blocking" and kind not in blocking_kinds:
+        issues.append(
+            f"{identity}: blocking severity requires a structural, safety, or explicit delivery-policy kind"
+        )
+    elif severity == "warning" and kind not in warning_kinds:
+        issues.append(f"{identity}: warning severity requires a declared heuristic kind")
+    if confidence not in _ALLOWED_CONFIDENCE:
+        issues.append(f"{identity}: unsupported confidence {confidence!r}")
+    if not str(item.get("scope") or "").strip():
+        issues.append(f"{identity}: scope must be non-empty")
+    if not str(item.get("owner") or "").strip():
+        issues.append(f"{identity}: owner must be non-empty")
+    if not str(item.get("severity_rationale") or "").strip():
+        issues.append(f"{identity}: severity_rationale must be non-empty")
 
 
 def validate_default_rule_registry(
@@ -42,7 +88,6 @@ def validate_default_rule_registry(
     blocking_kinds = set(registry_payload.get("blocking_kinds") or [])
     warning_kinds = set(registry_payload.get("warning_kinds") or [])
     forbidden_default = set(registry_payload.get("forbidden_default_kinds") or [])
-    allowed_kinds = blocking_kinds | warning_kinds | forbidden_default
 
     issues: list[str] = []
     seen_ids: set[str] = set()
@@ -60,28 +105,38 @@ def validate_default_rule_registry(
         elif rule_id in seen_ids:
             issues.append(f"rules[{index}]: duplicate id {rule_id!r}")
         seen_ids.add(rule_id)
+        _validate_governed_item(
+            rule,
+            identity=rule_id or f"rules[{index}]",
+            blocking_kinds=blocking_kinds,
+            warning_kinds=warning_kinds,
+            forbidden_default=forbidden_default,
+            issues=issues,
+        )
 
-        kind = str(rule.get("kind") or "")
-        severity = str(rule.get("severity") or "")
-        confidence = str(rule.get("confidence") or "")
-        if kind not in allowed_kinds:
-            issues.append(f"{rule_id}: unknown rule kind {kind!r}")
-        if kind in forbidden_default:
-            issues.append(f"{rule_id}: project-specific rules are forbidden in the default profile")
-        if severity not in {"blocking", "warning"}:
-            issues.append(f"{rule_id}: unsupported severity {severity!r}")
-        elif severity == "blocking" and kind not in blocking_kinds:
-            issues.append(
-                f"{rule_id}: blocking severity requires a structural, safety, or explicit delivery-policy kind"
-            )
-        elif severity == "warning" and kind not in warning_kinds:
-            issues.append(
-                f"{rule_id}: warning severity requires a declared heuristic kind"
-            )
-        if confidence not in _ALLOWED_CONFIDENCE:
-            issues.append(f"{rule_id}: unsupported confidence {confidence!r}")
-        if not str(rule.get("severity_rationale") or "").strip():
-            issues.append(f"{rule_id}: severity_rationale must be non-empty")
+    seen_codes: set[str] = set()
+    for index, finding in enumerate(registry_payload.get("deterministic_findings") or []):
+        if not isinstance(finding, dict):
+            issues.append(f"deterministic_findings[{index}]: finding must be an object")
+            continue
+        missing = sorted(_REQUIRED_FINDING_FIELDS - set(finding))
+        if missing:
+            issues.append(f"deterministic_findings[{index}]: missing metadata {missing}")
+            continue
+        code = str(finding.get("code") or "").strip()
+        if not code:
+            issues.append(f"deterministic_findings[{index}]: code must be non-empty")
+        elif code in seen_codes:
+            issues.append(f"deterministic_findings[{index}]: duplicate code {code!r}")
+        seen_codes.add(code)
+        _validate_governed_item(
+            finding,
+            identity=code or f"deterministic_findings[{index}]",
+            blocking_kinds=blocking_kinds,
+            warning_kinds=warning_kinds,
+            forbidden_default=forbidden_default,
+            issues=issues,
+        )
 
     for source in registry_payload.get("sources") or []:
         if not isinstance(source, dict):
