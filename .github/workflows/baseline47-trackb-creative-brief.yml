@@ -1,4 +1,4 @@
-name: Baseline47 Track C repair gates
+name: Baseline47 Track C final gates
 
 on:
   push:
@@ -27,30 +27,19 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-      - name: C1 - preserve source-boundary warning contract
-        run: |
-          python tools/baseline47_trackb_creative_brief_patch.py c1
-          python -m pytest -q tests/test_content_route.py
-          git add tests/test_content_route.py
-          git commit -m 'test(baseline47): align content route evidence warning'
-          git push origin HEAD:fix/baseline-47-regressions
-      - name: C2 - migrate final script page prompt boundaries
-        run: |
-          python tools/baseline47_trackb_creative_brief_patch.py c2
-          python -m pytest -q tests/test_final_script_pages.py
-          git add tests/_final_script_pages_base.py
-          git commit -m 'test(baseline47): align final script prompt boundaries'
-          git push origin HEAD:fix/baseline-47-regressions
-      - name: C3 - refresh script quality serialized fixtures
-        run: |
-          python tools/baseline47_trackb_creative_brief_patch.py c3
-          python -m pytest -q tests/test_script_quality_modularization.py
-          git add tests/fixtures/script_quality_contract_baseline.json tests/fixtures/script_quality_contract_baseline_2.json
-          git commit -m 'test(baseline47): refresh authored onscreen source fixtures'
-          git push origin HEAD:fix/baseline-47-regressions
       - name: C4 - align skill route test with canonical root policy
         run: |
           python tools/baseline47_trackb_creative_brief_patch.py c4
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tests/test_skill_contract.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'self.assertIn("一次业务语义理解", workflow)'
+          new = 'self.assertIn("一次 UNDERSTAND/Foundation", workflow)'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one legacy workflow assertion, got {text.count(old)}')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
           python -m pytest -q tests/test_skill_contract.py
           git add tests/test_skill_contract.py
           git commit -m 'test(baseline47): follow canonical stage01 profile router'
