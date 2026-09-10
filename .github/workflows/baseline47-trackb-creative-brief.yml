@@ -1,4 +1,4 @@
-name: Baseline47 OfficeCLI v1.0.92 HTML inspection
+name: Baseline47 OfficeCLI compatibility matrix
 
 on:
   push:
@@ -8,134 +8,58 @@ on:
       - .github/workflows/baseline47-trackb-creative-brief.yml
 
 jobs:
-  inspect-html:
+  officecli-candidate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: "1.0.92"
+            sha256: "deca2a87583bf8a25096cab9be6e626a48b787cf59875311b30c39a394970ffa"
+          - version: "1.0.143"
+            sha256: "188800425667173acd0aa2f5c2018ddbb3896ce2ae1c2f8bd25588252f430f58"
+          - version: "1.0.145"
+            sha256: "449f0e6a1298e3c6d7da792d26ab53d04ba77bd990f299b51123c7aef383d2ce"
+          - version: "1.0.148"
+            sha256: "e424210bce9355f498eeaf692b4d2b13f1f3422e1db34636c41f54c36025249b"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: pip
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - name: Patch workspace to candidate OfficeCLI v1.0.92 pin
+          python-version: "3.12"
+      - name: Download verified OfficeCLI candidate
+        shell: bash
         run: |
+          set -euo pipefail
+          version='${{ matrix.version }}'
+          url="https://github.com/iOfficeAI/OfficeCLI/releases/download/v${version}/officecli-linux-x64"
+          curl -fL --retry 3 "$url" -o officecli
+          echo '${{ matrix.sha256 }}  officecli' | sha256sum -c -
+          chmod +x officecli
+          ./officecli --version
+      - name: Create deterministic PPTX fixture
+        run: |
+          python -m pip install python-pptx
           python - <<'PY'
-          from pathlib import Path
-          path = Path('cyberppt/officecli.py')
-          text = path.read_text(encoding='utf-8')
-          replacements = {
-              'OFFICECLI_VERSION = "1.0.143"': 'OFFICECLI_VERSION = "1.0.92"',
-              '6a29c598a789b57c92c03e560907d3f131a4bd0a068785b1d338a86fc31a58a7': 'deca2a87583bf8a25096cab9be6e626a48b787cf59875311b30c39a394970ffa',
-          }
-          for old, new in replacements.items():
-              if text.count(old) != 1:
-                  raise SystemExit(f'candidate pin replacement mismatch: {old}')
-              text = text.replace(old, new, 1)
-          path.write_text(text, encoding='utf-8', newline='\n')
-          PY
-      - name: Install CyberPPT and locked Node dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e .
-          npm ci --ignore-scripts
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Install candidate pinned OfficeCLI
-        run: python -m cyberppt officecli install
-      - name: Create deterministic one-slide PPTX fixture
-        run: |
-          mkdir -p officecli-smoke/raw
-          python - <<'PY'
-          from pathlib import Path
           from pptx import Presentation
           from pptx.util import Inches, Pt
 
-          output = Path('officecli-smoke/fixture.pptx')
           prs = Presentation()
           prs.slide_width = Inches(13.333333)
           prs.slide_height = Inches(7.5)
           slide = prs.slides.add_slide(prs.slide_layouts[6])
-          box = slide.shapes.add_textbox(Inches(1.0), Inches(1.0), Inches(11.0), Inches(1.5))
-          frame = box.text_frame
-          frame.clear()
-          paragraph = frame.paragraphs[0]
-          run = paragraph.add_run()
-          run.text = 'CyberPPT OfficeCLI v1.0.92 HTML inspection'
+          box = slide.shapes.add_textbox(Inches(1), Inches(1), Inches(11), Inches(1.5))
+          run = box.text_frame.paragraphs[0].add_run()
+          run.text = 'CyberPPT OfficeCLI candidate'
           run.font.size = Pt(28)
-          prs.save(output)
+          prs.save('fixture.pptx')
           PY
-      - name: Persist raw OfficeCLI HTML
+      - name: Run exact production HTML command
+        shell: bash
         run: |
-          python - <<'PY'
-          import subprocess
-          from pathlib import Path
-          from cyberppt.officecli import resolve_officecli
-
-          executable = resolve_officecli()
-          assert executable is not None
-          html = Path('officecli-smoke/raw/slide-1.html')
-          command = [
-              str(executable), 'view', 'officecli-smoke/fixture.pptx', 'html',
-              '--output', str(html), '--force', '--start', '1', '--end', '1',
-          ]
-          completed = subprocess.run(command, check=False, capture_output=True, text=True)
-          print('returncode=', completed.returncode)
-          print('stdout=', completed.stdout)
-          print('stderr=', completed.stderr)
-          assert completed.returncode == 0
-          assert html.is_file() and html.stat().st_size > 0
-          PY
-      - name: Print DOM structure
-        run: |
-          node --input-type=module <<'JS'
-          import { chromium } from 'playwright';
-          import { pathToFileURL } from 'node:url';
-          import path from 'node:path';
-
-          const htmlPath = path.resolve('officecli-smoke/raw/slide-1.html');
-          const browser = await chromium.launch({ headless: true });
-          const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
-          await page.goto(pathToFileURL(htmlPath).href, { waitUntil: 'load' });
-          const structure = await page.evaluate(() => {
-            const summarize = (el) => {
-              const rect = el.getBoundingClientRect();
-              return {
-                tag: el.tagName,
-                id: el.id || '',
-                className: typeof el.className === 'string' ? el.className : (el.className?.baseVal || ''),
-                width: Math.round(rect.width * 100) / 100,
-                height: Math.round(rect.height * 100) / 100,
-                childCount: el.children.length,
-                style: el.getAttribute('style') || '',
-              };
-            };
-            const bodyChildren = [...document.body.children].map(summarize);
-            const candidates = [...document.querySelectorAll('div,section,main,article,svg')]
-              .map(summarize)
-              .filter((item) => item.width >= 500 && item.height >= 300)
-              .slice(0, 30);
-            const classes = [...new Set([...document.querySelectorAll('[class]')]
-              .flatMap((el) => [...el.classList]))].sort();
-            return {
-              title: document.title,
-              body: summarize(document.body),
-              bodyChildren,
-              candidates,
-              classes,
-              htmlPrefix: document.documentElement.outerHTML.slice(0, 3500),
-            };
-          });
-          console.log(JSON.stringify(structure, null, 2));
-          await browser.close();
-          JS
-      - name: Upload raw HTML
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: officecli-92-html-inspection
-          path: officecli-smoke/
-          if-no-files-found: error
+          set -euo pipefail
+          ./officecli view fixture.pptx html --start 1 --end 1 > slide.html
+          test -s slide.html
+          grep -Fq 'CyberPPT OfficeCLI candidate' slide.html
+          echo "candidate ${{ matrix.version }} passed production HTML command"
