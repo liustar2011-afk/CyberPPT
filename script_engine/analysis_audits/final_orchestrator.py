@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from ..onscreen_contracts import onscreen_alignment_advisories
+from ..quality_policy import ADVISORY, classify_issue
 from .common import *
 from .composed_trace import hard_finding_messages, trace_composed
 from .final_authoring import (
@@ -31,6 +32,23 @@ from .final_onscreen import (
     _audit_authored_onscreen_contract,
     _audit_self_reading_density,
 )
+
+
+def _append_governed_finding(
+    issues: list[str],
+    warnings: list[str],
+    scope: str,
+    finding: str,
+) -> None:
+    """Route one deterministic finding through the central Phase 3 registry.
+
+    Unknown findings remain blocking by policy. Only codes explicitly registered
+    as advisory can move to ``warnings``. Classify the raw finding before adding
+    the slide scope so leading finding codes remain machine-readable.
+    """
+
+    target = warnings if classify_issue(finding)["severity"] == ADVISORY else issues
+    target.append(f"{scope}: {finding}")
 
 
 def audit_final_script(
@@ -66,9 +84,10 @@ def audit_final_script(
         if not isinstance(slide, dict):
             continue
         slide_id = slide.get("id") or f"#{index}"
+        scope = f"slides.{index} ({slide_id})"
         page = pages.get(slide_id)
         if page is None:
-            warnings.append(f"slides.{index} ({slide_id}): no matching deck-plan page; semantic inheritance cannot be audited")
+            warnings.append(f"{scope}: no matching deck-plan page; semantic inheritance cannot be audited")
             continue
         final_text = _slide_text(slide)
         plan_text = _page_text(page)
@@ -78,36 +97,40 @@ def audit_final_script(
         evidence_ids = _page_evidence_ids(page) | page_source_refs
         evidence = _support_items(sorted(evidence_ids), items)
         if final_authoring_mode == "faithful":
-            issues.extend(
-                f"slides.{index} ({slide_id}): {issue}"
-                for issue in faithful_relation_promotion_issues(slide, evidence)
-            )
-            issues.extend(
-                f"slides.{index} ({slide_id}): {issue}"
-                for issue in faithful_semantic_addition_issues(slide, evidence, items)
-            )
+            for finding in faithful_relation_promotion_issues(slide, evidence):
+                _append_governed_finding(issues, warnings, scope, finding)
+            for finding in faithful_semantic_addition_issues(slide, evidence, items):
+                _append_governed_finding(issues, warnings, scope, finding)
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
         plan_logic = str(page.get("logic") or "")
         plan_is_classification = any(token in plan_model for token in ("classification", "taxonomy", "typology")) or "分类" in plan_logic
         plan_allows_progression = bool(PROGRESSION_RE.search(plan_text) or any(token in plan_model for token in ("progression", "maturity")))
         if plan_is_classification and not plan_allows_progression and PROGRESSION_RE.search(final_text):
-            warnings.append(
-                f"slides.{index} ({slide_id}): [FINAL_PROGRESSION_HEURISTIC] "
-                "AUTHOR may have upgraded a classification/taxonomy plan into a progression chain; "
-                "lexical progression markers require Critic review"
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                "FINAL_PROGRESSION_HEURISTIC: AUTHOR may have upgraded a classification/taxonomy plan "
+                "into a progression chain; lexical progression markers require Critic review",
             )
 
         if _has_optionality(evidence) and not _preserves_optionality(final_text):
-            warnings.append(
-                f"slides.{index} ({slide_id}): [FINAL_OPTIONALITY_HEURISTIC] "
-                "final script may have lost source optionality; lexical independence/deepening markers require Critic review"
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                "FINAL_OPTIONALITY_HEURISTIC: final script may have lost source optionality; "
+                "lexical independence/deepening markers require Critic review",
             )
 
         group_issue = _group_strength_issue(str(slide.get("core_message") or ""), evidence)
         if group_issue:
-            warnings.append(
-                f"slides.{index} ({slide_id}): [FINAL_GROUP_STRENGTH_HEURISTIC] {group_issue}"
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                f"FINAL_GROUP_STRENGTH_HEURISTIC: {group_issue}",
             )
 
         internal = [item for item in evidence if effective_visibility(item) == "internal_only"]
@@ -122,57 +145,57 @@ def audit_final_script(
                 if any(value and value.replace("至", "-").replace("—", "-") in normalized_final for value in values):
                     exposed.append(str(item.get("id") or "?"))
             if exposed:
-                issues.append(f"slides.{index} ({slide_id}): external final script exposes internal-only evidence {sorted(set(exposed))}")
+                issues.append(f"{scope}: external final script exposes internal-only evidence {sorted(set(exposed))}")
 
         if GAP_RE.search(final_text):
             source_text = _source_text_for_refs(page.get("source_refs") or [], foundation)
             if not GAP_RE.search(plan_text) and not GAP_RE.search(source_text):
-                warnings.append(
-                    f"slides.{index} ({slide_id}): [FINAL_GAP_HEURISTIC] "
-                    "final script may introduce a current-vs-target gap judgment without the same lexical baseline in source or plan; "
-                    "Critic review is required"
+                _append_governed_finding(
+                    issues,
+                    warnings,
+                    scope,
+                    "FINAL_GAP_HEURISTIC: final script may introduce a current-vs-target gap judgment "
+                    "without the same lexical baseline in source or plan; Critic review is required",
                 )
 
-        for composition_issue in _audit_authored_onscreen_composition(
+        for finding in _audit_authored_onscreen_composition(
             page,
             slide,
             authoring_mode=final_authoring_mode,
         ):
-            issues.append(f"slides.{index} ({slide_id}): {composition_issue}")
-        for density_issue in _audit_self_reading_density(delivery_mode, page, slide):
-            issues.append(f"slides.{index} ({slide_id}): {density_issue}")
-        for contract_issue in _audit_authored_onscreen_contract(page, slide, items):
-            issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
-        for consumption_issue in _audit_lean_authored_source_consumption(page, slide, items, foundation):
-            issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
-        for alignment_issue in _audit_lean_onscreen_full_copy_alignment(slide):
-            target = warnings if (
-                final_authoring_mode == "faithful"
-                and alignment_issue.startswith("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED")
-            ) else issues
-            target.append(f"slides.{index} ({slide_id}): {alignment_issue}")
+            _append_governed_finding(issues, warnings, scope, finding)
+        for finding in _audit_self_reading_density(delivery_mode, page, slide):
+            _append_governed_finding(issues, warnings, scope, finding)
+        for finding in _audit_authored_onscreen_contract(page, slide, items):
+            _append_governed_finding(issues, warnings, scope, finding)
+        for finding in _audit_lean_authored_source_consumption(page, slide, items, foundation):
+            _append_governed_finding(issues, warnings, scope, finding)
+        for finding in _audit_lean_onscreen_full_copy_alignment(slide):
+            _append_governed_finding(issues, warnings, scope, finding)
         retained_evidence = _support_items(slide.get("source_refs") or [], items)
-        for retention_issue in _audit_lean_onscreen_protected_retention(slide, retained_evidence, items):
-            issues.append(f"slides.{index} ({slide_id}): {retention_issue}")
-        for relationship_issue in _audit_lean_relationship_visibility(slide):
-            issues.append(f"slides.{index} ({slide_id}): {relationship_issue}")
-        for coverage_issue in _audit_authored_content_coverage(page, slide):
-            issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
+        for finding in _audit_lean_onscreen_protected_retention(slide, retained_evidence, items):
+            _append_governed_finding(issues, warnings, scope, finding)
+        for finding in _audit_lean_relationship_visibility(slide):
+            _append_governed_finding(issues, warnings, scope, finding)
+        for finding in _audit_authored_content_coverage(page, slide):
+            _append_governed_finding(issues, warnings, scope, finding)
         for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
-            issues.append(
-                f"slides.{index} ({slide_id}): ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: "
-                f"{detail_issue}"
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                f"ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: {detail_issue}",
             )
-        for author_issue in _author_execution_issues(
+        for finding in _author_execution_issues(
             delivery_mode,
             page,
             slide,
             items,
             authoring_mode=final_authoring_mode,
         ):
-            issues.append(f"slides.{index} ({slide_id}): {author_issue}")
+            _append_governed_finding(issues, warnings, scope, finding)
         warnings.extend(
-            f"slides.{index} ({slide_id}): {warning}"
+            f"{scope}: {warning}"
             for warning in _onscreen_expression_warnings(page, slide)
         )
 
@@ -186,7 +209,7 @@ def audit_final_script(
                     expected = _normalize_source_chapter_title(node["title"])
                     actual = str(slide.get("title") or "").strip()
                     if actual and expected and actual != expected:
-                        issues.append(f"slides.{index} ({slide_id}): source_structure_mode='preserve' requires chapter title '{expected}', got '{actual}'")
+                        issues.append(f"{scope}: source_structure_mode='preserve' requires chapter title '{expected}', got '{actual}'")
 
     warnings.extend(_whole_deck_authoring_warnings(final_script))
     return issues, warnings
