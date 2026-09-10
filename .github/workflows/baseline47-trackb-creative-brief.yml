@@ -1,4 +1,4 @@
-name: Baseline47 OfficeCLI v1.0.92 reproducibility
+name: Baseline47 OfficeCLI v1.0.92 HTML inspection
 
 on:
   push:
@@ -8,15 +8,9 @@ on:
       - .github/workflows/baseline47-trackb-creative-brief.yml
 
 jobs:
-  officecli-92-smoke:
-    name: OfficeCLI 1.0.92 smoke (${{ matrix.lane }})
+  inspect-html:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      max-parallel: 2
-      matrix:
-        lane: [a, b]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -54,7 +48,7 @@ jobs:
         run: python -m cyberppt officecli install
       - name: Create deterministic one-slide PPTX fixture
         run: |
-          mkdir -p officecli-smoke
+          mkdir -p officecli-smoke/raw
           python - <<'PY'
           from pathlib import Path
           from pptx import Presentation
@@ -70,32 +64,78 @@ jobs:
           frame.clear()
           paragraph = frame.paragraphs[0]
           run = paragraph.add_run()
-          run.text = 'CyberPPT OfficeCLI v1.0.92 render smoke'
+          run.text = 'CyberPPT OfficeCLI v1.0.92 HTML inspection'
           run.font.size = Pt(28)
           prs.save(output)
-          print(output.resolve())
           PY
-      - name: Run production OfficeCLI geometry and render QA
+      - name: Persist raw OfficeCLI HTML
         run: |
           python - <<'PY'
-          import json
+          import subprocess
           from pathlib import Path
-          from cyberppt.commands.production_qa import run_officecli_render_qa
+          from cyberppt.officecli import resolve_officecli
 
-          qa_dir = Path('officecli-smoke/qa')
-          report = run_officecli_render_qa(Path('officecli-smoke/fixture.pptx'), qa_dir)
-          print(json.dumps(report, ensure_ascii=False, indent=2))
-          assert report['officecli']['version'] == '1.0.92'
-          assert report['passed'] is True
-          rendered_pages = [Path(path) for path in report['rendered_pages']]
-          assert len(rendered_pages) == 1
-          assert all(path.is_file() and path.stat().st_size > 0 for path in rendered_pages)
-          assert Path(report['report_path']).is_file()
+          executable = resolve_officecli()
+          assert executable is not None
+          html = Path('officecli-smoke/raw/slide-1.html')
+          command = [
+              str(executable), 'view', 'officecli-smoke/fixture.pptx', 'html',
+              '--output', str(html), '--force', '--start', '1', '--end', '1',
+          ]
+          completed = subprocess.run(command, check=False, capture_output=True, text=True)
+          print('returncode=', completed.returncode)
+          print('stdout=', completed.stdout)
+          print('stderr=', completed.stderr)
+          assert completed.returncode == 0
+          assert html.is_file() and html.stat().st_size > 0
           PY
-      - name: Upload OfficeCLI smoke artifacts
+      - name: Print DOM structure
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from 'playwright';
+          import { pathToFileURL } from 'node:url';
+          import path from 'node:path';
+
+          const htmlPath = path.resolve('officecli-smoke/raw/slide-1.html');
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+          await page.goto(pathToFileURL(htmlPath).href, { waitUntil: 'load' });
+          const structure = await page.evaluate(() => {
+            const summarize = (el) => {
+              const rect = el.getBoundingClientRect();
+              return {
+                tag: el.tagName,
+                id: el.id || '',
+                className: typeof el.className === 'string' ? el.className : (el.className?.baseVal || ''),
+                width: Math.round(rect.width * 100) / 100,
+                height: Math.round(rect.height * 100) / 100,
+                childCount: el.children.length,
+                style: el.getAttribute('style') || '',
+              };
+            };
+            const bodyChildren = [...document.body.children].map(summarize);
+            const candidates = [...document.querySelectorAll('div,section,main,article,svg')]
+              .map(summarize)
+              .filter((item) => item.width >= 500 && item.height >= 300)
+              .slice(0, 30);
+            const classes = [...new Set([...document.querySelectorAll('[class]')]
+              .flatMap((el) => [...el.classList]))].sort();
+            return {
+              title: document.title,
+              body: summarize(document.body),
+              bodyChildren,
+              candidates,
+              classes,
+              htmlPrefix: document.documentElement.outerHTML.slice(0, 3500),
+            };
+          });
+          console.log(JSON.stringify(structure, null, 2));
+          await browser.close();
+          JS
+      - name: Upload raw HTML
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: officecli-92-render-smoke-${{ matrix.lane }}
+          name: officecli-92-html-inspection
           path: officecli-smoke/
           if-no-files-found: error
