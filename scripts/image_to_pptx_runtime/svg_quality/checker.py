@@ -9506,6 +9506,7 @@ class SVGQualityChecker:
         report_path.write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + '\n',
             encoding='utf-8',
+            newline='\n',
         )
         print(f"\n[REPORT] JSON quality report exported: {report_path}")
 

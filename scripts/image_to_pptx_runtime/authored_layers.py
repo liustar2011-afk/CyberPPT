@@ -188,6 +188,10 @@ def register_quick_page(
     manifest.pop("quick_backend", None)
     manifest.pop("quick_authoring_import", None)
     temporary = manifest_path.with_suffix(".json.tmp")
-    temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     temporary.replace(manifest_path)
     return {"page_number": page_number, "status": "registered", "authoring_svg": str(svg), "clean_base": str(base)}

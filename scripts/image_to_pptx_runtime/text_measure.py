@@ -600,7 +600,7 @@ def _run_calibrate(args: argparse.Namespace) -> int:
         output_path = project_path / 'validation' / 'text_calibration.json'
         output_path.parent.mkdir(parents=True, exist_ok=True)
         rendered_json = json.dumps(payload, ensure_ascii=False, indent=2)
-        output_path.write_text(rendered_json + '\n', encoding='utf-8')
+        output_path.write_text(rendered_json + '\n', encoding='utf-8', newline='\n')
     except (OSError, ValueError) as exc:
         message = ' '.join(str(exc).splitlines())
         print(f'Calibration failed: {message}', file=sys.stderr)
