@@ -215,3 +215,20 @@
 
 下一阶段工作：
 - Track B / Step B2：处理 Deliverable Prompt 4 项失败，核对 style lock 必填、核心判断/边界不上屏、Style09 安全规则与 evidence placeholder 清理。
+
+## Track B / Step B2｜Deliverable Prompt 合同对齐
+
+状态：已完成
+
+已完成工作：
+- 将“必须显式传 style lock”的历史测试迁移到当前正式策略：未显式传入时由 deliverable compiler 使用默认 Style 09 live contract。
+- 将 `上屏文字` 视为作者字段标记，仅验证其后的实际业务文案进入 `【源文案语义输入】`，避免把字段名本身当成可见内容。
+- 移除对“页面使命”词面的过宽排除；当前 Style 09 Artifact Spec 合法包含 PAGE MISSION / 页面使命作为内部编译概念，仍继续排除源稿中的结论标题占位、证据编号、caveat 等作者元数据。
+- Style 09 safety 断言迁移到当前中文 GPT Image 2.5 Artifact Spec：伪文字、无关品牌、正面人物默认主视觉、无依据关系/箭头暗示等全局边界。
+
+验证结果：
+- `tests/test_imagegen_deliverable_prompt.py` 全文件回归通过。
+- 4 项历史 Deliverable Prompt 失败清零；本步骤不改变 production runtime 行为，只对齐测试到当前正式合同。
+
+下一阶段工作：
+- Track B / Step B3：处理 Handoff Modularization 3 项失败，核对 facade 与模块化 builder 的行为一致性、当前 canvas/text/template contract 和 compiler metadata。

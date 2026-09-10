@@ -269,7 +269,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("【构图指令】", prompt)
         self.assertNotIn("【设计目标与叙事】", prompt)
         self.assertNotIn("请先理解", prompt)
-        self.assertNotIn("页面使命", prompt)
+        self.assertNotIn("本页结论标题", prompt)
         self.assertNotIn("母版", prompt)
         self.assertNotIn("可编辑文字层", prompt)
         self.assertIn("【结构密度】", prompt)
@@ -405,13 +405,20 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertTrue(payload["policy"]["forbid_external_style_preset"])
         self.assertTrue(payload["policy"]["forbid_evidence_ids"])
 
-    def test_compile_requires_style_lock(self) -> None:
+    def test_compile_without_explicit_style_lock_uses_default_style09_contract(self) -> None:
         with TemporaryDirectory() as directory:
             script = Path(directory) / "script.md"
             script.write_text("## P2 核心结论\n组件A：最终内容\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "missing visual style lock"):
-                compile_pages(script, [2])
+            prompt = compile_pages(script, [2])
+
+        default_contract = str(
+            resolve_default_style(style_id=9).get("prompt_contract") or ""
+        ).strip()
+        self.assertTrue(default_contract)
+        self.assertIn("最终内容", prompt)
+        self.assertIn("【源头视觉规则权威｜最高优先级】", prompt)
+        self.assertIn(default_contract.splitlines()[0], prompt)
 
     def test_compile_from_content_locks_uses_clean_truth(self) -> None:
         with TemporaryDirectory() as directory:
@@ -487,8 +494,9 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertNotIn("Boundary (do not show on slide)", prompt)
         self.assertNotIn("三项数字保留2025年、全国口径", prompt)
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
-        self.assertIn("上屏文字", prompt)
+        self.assertNotIn("【源文案语义输入】\n- 上屏文字", prompt)
         self.assertIn("关键变化", prompt)
+        self.assertIn("全社会用电量增长", prompt)
         self.assertIn("可将源文案改写为结论、标题、标签、流程节点或正文", prompt)
         self.assertIn("不要生成页面标题、副标题、Logo、页脚", prompt)
         self.assertIn("No evidence IDs, watermarks, debug marks, or placeholders.", prompt)
