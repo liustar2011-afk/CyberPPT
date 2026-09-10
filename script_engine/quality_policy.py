@@ -4,11 +4,11 @@ This layer separates structural/source-safety failures from expression-quality
 heuristics. Unknown findings remain blocking by default so introducing the
 policy cannot silently weaken an existing gate.
 
-Phase 3 rule governance has two advisory sources:
+Phase 3 advisory policy is registry-driven:
 
-1. governed phrasing rules whose registry entry declares ``severity=warning``;
-2. known lexical/similarity/length semantic checks whose code cannot prove a
-   source-fidelity violation without structured Foundation evidence.
+1. governed phrasing rules whose rule entry declares ``severity=warning``;
+2. deterministic finding codes registered as semantic/style heuristics in the
+   central rule registry.
 """
 
 from __future__ import annotations
@@ -21,36 +21,11 @@ from typing import Any, Iterable
 
 from .contracts import lint_final_script, load_json, validate_final_script
 from .lint_contracts import load_banned_phrasing
+from .rule_registry import load_rule_registry
 
 
 BLOCKER = "blocker"
 ADVISORY = "advisory"
-
-# Text-shape and semantic-word checks are editorial review signals. They remain
-# visible to AUTHOR/Critic but no longer act as semantic truth gates.
-_SEMANTIC_HEURISTIC_CODES = frozenset(
-    {
-        "AUTHOR_MISSION_GENERIC",
-        "AUTHOR_VISUAL_THESIS_NONRELATIONAL",
-        "AUTHOR_VISUAL_TOPOLOGY_CONFLICT",
-        "AUTHOR_VISUAL_THESIS_RESTATEMENT",
-        "AUTHOR_RELATION_HIDDEN_INTERMEDIATE",
-        "AUTHOR_RELATION_ABSTRACT_TRANSFORMATION",
-        "AUTHOR_SPEAKER_NOTES_RESTATEMENT",
-        "FULL_COPY_STRUCTURE_FLAT",
-        "FULL_COPY_TOPIC_SOURCE_STRENGTH_ABSTRACTED",
-        "FULL_COPY_TOPIC_INCOMPLETE",
-        "FULL_COPY_PARALLEL_SUBCONCLUSION_ABSTRACT",
-        "FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE",
-        "ONSCREEN_HEADING_OBJECT_OMITTED",
-        "ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION",
-        "ONSCREEN_HEADING_INCOMPLETE",
-        "ONSCREEN_DANGLING_MODIFIER",
-        "ONSCREEN_DETAIL_GENERIC",
-        "ONSCREEN_FULL_COPY_MISALIGNED",
-        "ONSCREEN_CORE_MISALIGNED",
-    }
-)
 
 
 def _configured_warning_rule_ids() -> frozenset[str]:
@@ -61,7 +36,18 @@ def _configured_warning_rule_ids() -> frozenset[str]:
     )
 
 
-ADVISORY_CODES = _SEMANTIC_HEURISTIC_CODES | _configured_warning_rule_ids()
+def _configured_advisory_finding_codes() -> frozenset[str]:
+    registry = load_rule_registry()
+    return frozenset(
+        str(rule.get("code") or "").strip()
+        for rule in registry.get("deterministic_findings") or []
+        if isinstance(rule, dict)
+        and rule.get("severity") == "warning"
+        and str(rule.get("code") or "").strip()
+    )
+
+
+ADVISORY_CODES = _configured_advisory_finding_codes() | _configured_warning_rule_ids()
 
 _CODE_RE = re.compile(r"^(?P<code>[A-Z][A-Z0-9_]+):")
 # Finding paths legitimately contain list indexes such as ``onscreen[0]``.
