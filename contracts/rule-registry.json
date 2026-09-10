@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "default_profile": "default",
   "blocking_kinds": [
     "schema",
@@ -48,6 +48,179 @@
       "severity": "warning",
       "owner": "cyberppt.script_quality",
       "default_enabled": false
+    }
+  ],
+  "deterministic_findings": [
+    {
+      "code": "AUTHOR_MISSION_GENERIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Generic mission wording is an editorial review signal; wording alone cannot prove source-boundary failure."
+    },
+    {
+      "code": "AUTHOR_VISUAL_THESIS_NONRELATIONAL",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Visible relation grammar cannot be proven solely from lexical relation markers."
+    },
+    {
+      "code": "AUTHOR_VISUAL_TOPOLOGY_CONFLICT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Topology wording is a review candidate unless a structured semantic relation establishes the conflict."
+    },
+    {
+      "code": "AUTHOR_VISUAL_THESIS_RESTATEMENT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "String similarity can flag possible restatement but cannot prove semantic duplication."
+    },
+    {
+      "code": "AUTHOR_RELATION_HIDDEN_INTERMEDIATE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_relationships",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "A lexical transition marker cannot deterministically prove an omitted business node."
+    },
+    {
+      "code": "AUTHOR_RELATION_ABSTRACT_TRANSFORMATION",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_relationships",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Generic transformation verbs are insufficient to prove an unsupported semantic relation."
+    },
+    {
+      "code": "AUTHOR_SPEAKER_NOTES_RESTATEMENT",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "speaker_notes",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Similarity can flag likely repetition but cannot prove that notes add no incremental context."
+    },
+    {
+      "code": "FULL_COPY_STRUCTURE_FLAT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Text-shape signals cannot determine whether the source-native structure is legitimately flat."
+    },
+    {
+      "code": "FULL_COPY_TOPIC_SOURCE_STRENGTH_ABSTRACTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Lexical abstraction hints require source-bound semantic evidence before blocking."
+    },
+    {
+      "code": "FULL_COPY_TOPIC_INCOMPLETE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "A short or generic topic can be source-native; completeness requires source context."
+    },
+    {
+      "code": "FULL_COPY_PARALLEL_SUBCONCLUSION_ABSTRACT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Lexical abstraction cannot prove that a parallel source branch lacks a valid role."
+    },
+    {
+      "code": "FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Predicate-shape checks are review signals and do not establish source-semantic incompleteness."
+    },
+    {
+      "code": "ONSCREEN_HEADING_OBJECT_OMITTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Context-dependent wording cannot prove that the business object is absent from the source-owned visible structure."
+    },
+    {
+      "code": "ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Generic transformation vocabulary is a Critic signal, not deterministic semantic evidence."
+    },
+    {
+      "code": "ONSCREEN_HEADING_INCOMPLETE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Length and predicate heuristics cannot prove that a source-native heading is semantically incomplete."
+    },
+    {
+      "code": "ONSCREEN_DANGLING_MODIFIER",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Modifier syntax alone cannot prove that the visible parent fails to supply the business relation."
+    },
+    {
+      "code": "ONSCREEN_DETAIL_GENERIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Generic detail vocabulary is a review hint unless structured provenance proves an omitted payload."
+    },
+    {
+      "code": "ONSCREEN_FULL_COPY_MISALIGNED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Text similarity cannot establish semantic drift between full copy and onscreen projection."
+    },
+    {
+      "code": "ONSCREEN_CORE_MISALIGNED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Text overlap is an advisory proxy; structured provenance and Critic determine semantic alignment."
     }
   ]
 }
