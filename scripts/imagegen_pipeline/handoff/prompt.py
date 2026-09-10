@@ -285,6 +285,8 @@ def render_content_first_prompt(
             "",
             logic_contract if include_logic_context else "",
             "",
+            semantic_composition_contract.strip(),
+            "",
             presentation_contract,
             "",
             IMAGEGEN_CANVAS_CONTRACT,
@@ -318,6 +320,8 @@ def render_content_first_prompt(
             "",
             logic_contract if include_logic_context else "",
             "",
+            semantic_composition_contract.strip(),
+            "",
             presentation_contract,
             "",
             IMAGEGEN_CANVAS_CONTRACT,
@@ -329,10 +333,6 @@ def render_content_first_prompt(
                 semantic_tags=style09_semantic_tags,
             ),
         ]
-    if semantic_composition_contract:
-        # Composition guidance is semantic metadata, never visible copy.
-        insert_at = 2 if semantic_visual else 3
-        parts[insert_at:insert_at] = [semantic_composition_contract, ""]
     return relation, "\n".join(parts).strip() + "\n"
 
 def compile_page_prompt(

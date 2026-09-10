@@ -29,7 +29,7 @@ class ImageGenNoVisualStructureTests(_base.ImageGenNoVisualStructureTests):
         self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
             prompt.index("Page-specific visual intent"),
-            prompt.index("### 2. Semantic anchor and composition — hard"),
+            prompt.index("GPT Image 2.5 Artifact Spec 执行版"),
         )
         self.assertNotIn("扩展风格9：", prompt)
         self.assertNotIn("不进入默认候选", prompt)
@@ -74,8 +74,8 @@ class StructureStyleDecouplingTests(_base.StructureStyleDecouplingTests):
             "Palette: ivory #F7F6F0, deep blue #12355B",
             spec10.art_direction.contract,
         )
-        self.assertNotIn(
-            "Keep all locked Chinese text complete.",
+        self.assertIn(
+            "Keep all locked Chinese text complete, unchanged and in its original order.",
             spec10.art_direction.contract,
         )
         self.assertEqual(spec9.deliverable, spec10.deliverable)
@@ -87,6 +87,13 @@ class StructureStyleDecouplingTests(_base.StructureStyleDecouplingTests):
         self.assertEqual(spec9.composition, spec10.composition)
         self.assertEqual(spec9.typography, spec10.typography)
         self.assertEqual(spec9.hard_constraints, spec10.hard_constraints)
+        self.assertEqual(spec9.copy_contract, spec10.copy_contract)
+        self.assertEqual(spec9.composition_strategy, spec10.composition_strategy)
+        self.assertEqual(spec9.region_graph, spec10.region_graph)
+        self.assertEqual(spec9.visual_medium_policy, spec10.visual_medium_policy)
+        self.assertEqual(spec9.text_capacity, spec10.text_capacity)
+        self.assertEqual(spec9.full_slide_design_context, spec10.full_slide_design_context)
+        self.assertEqual(spec9.acceptance, spec10.acceptance)
 
         hashes9 = {key: value for key, value in spec9.source_hashes if key != "style_lock"}
         hashes10 = {key: value for key, value in spec10.source_hashes if key != "style_lock"}

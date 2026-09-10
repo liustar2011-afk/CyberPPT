@@ -7,7 +7,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 AGENTS = ROOT / "AGENTS.md"
-PROJECT_AGENTS = ROOT / "projects" / "AGENTS.md"
 WORKFLOW = ROOT / "docs" / "CYBERPPT_WORKFLOW.md"
 SCRIPT_SKILL = ROOT / ".agents" / "skills" / "cyberppt-script-workflow" / "SKILL.md"
 SOURCE_SKILL = ROOT / ".agents" / "skills" / "cyberppt-source-foundation" / "SKILL.md"
@@ -43,12 +42,13 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("The current main agent is the AUTHOR executor", text)
         self.assertIn("There is no separate AUTHOR", text)
 
-    def test_default_project_route_uses_current_strict_pipeline(self) -> None:
-        agents = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
+    def test_default_project_route_uses_current_profile_router(self) -> None:
+        agents = AGENTS.read_text(encoding="utf-8-sig")
         workflow = WORKFLOW.read_text(encoding="utf-8-sig")
         source_skill = SOURCE_SKILL.read_text(encoding="utf-8-sig")
-        self.assertIn("New source-to-script projects use the `strict/legacy` profile by default", agents)
-        self.assertIn("一次业务语义理解", workflow)
+        self.assertIn("默认使用快速、忠实的 `script` profile", agents)
+        self.assertIn("strict/legacy", agents)
+        self.assertIn("一次 UNDERSTAND/Foundation", workflow)
         for command in (
             "prepare-source-map",
             "source-map-check",

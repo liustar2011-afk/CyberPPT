@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContractError
+from scripts.imagegen_pipeline.runtime_style_contract import TERMINAL_EXECUTION_HEADING
 
 # ImageGen handoff deliberately has a high ceiling: Stage 01 may copy the
 # complete page prose into the on-screen field, so prompt compilation must not
@@ -149,6 +150,27 @@ def validate_final_prompt(
         if "Do not add any visible text that is not declared in this copy contract." not in prompt:
             raise PromptContractError("legacy fallback must forbid undeclared extra visible text")
     _validate_text_bindings(prompt, ir)
+
+    runtime_style_contract = ir.runtime_lock.style_contract.strip()
+    if style_id == 9:
+        if prompt.count(TERMINAL_EXECUTION_HEADING) != 1:
+            raise PromptContractError(
+                "live runtime style prompt requires one terminal execution lock"
+            )
+        terminal = prompt.split(TERMINAL_EXECUTION_HEADING, 1)[1].strip()
+        if not terminal or not prompt.rstrip().endswith(terminal):
+            raise PromptContractError(
+                "live runtime style prompt requires one terminal execution lock at the absolute end"
+            )
+    else:
+        if TERMINAL_EXECUTION_HEADING in prompt:
+            raise PromptContractError(
+                "non-live style prompt contains a live terminal execution lock"
+            )
+        if prompt.count(runtime_style_contract) != 1:
+            raise PromptContractError(
+                "final prompt must contain the runtime style contract exactly once"
+            )
 
     if ir.full_slide_design_context is not None:
         context = ir.full_slide_design_context

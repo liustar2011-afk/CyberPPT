@@ -25,6 +25,7 @@ _LEGACY_TERMINAL_HEADINGS = (
     "【风格10最终执行锁｜最高优先级】",
     "### Final ImageGen execution lock — hard",
     "# 12｜最终视觉执行约束｜最高优先级",
+    "## 12｜最终风格收口｜最高视觉优先级",
     TERMINAL_EXECUTION_HEADING,
 )
 

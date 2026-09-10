@@ -22,7 +22,7 @@ from urllib.request import urlopen
 from cyberppt.paths import REPO_ROOT
 
 
-OFFICECLI_VERSION = "1.0.145"
+OFFICECLI_VERSION = "1.0.148"
 OFFICECLI_RELEASE_URL = (
     "https://github.com/iOfficeAI/OfficeCLI/releases/download/"
     f"v{OFFICECLI_VERSION}"
@@ -41,27 +41,27 @@ class OfficeCliAsset:
 _ASSETS = {
     ("Darwin", "arm64"): OfficeCliAsset(
         "officecli-mac-arm64",
-        "d66763a563bc844c3cc67036ebc7c4a9caa9319b9592814d9acd3706da231fc1",
+        "501a67fe52ad2afc5cc5626287a204082083db431e5532dd361d6b55158caed1",
     ),
     ("Darwin", "x86_64"): OfficeCliAsset(
         "officecli-mac-x64",
-        "d7dc7013f7bf0af6345ae16a7913e6cf041947460d7f2fa3e024f0b27073d0a2",
+        "235055a83a33e9e675bd85de7a03c9ee657a81d57aad6a24fa41b954caede1b6",
     ),
     ("Linux", "aarch64"): OfficeCliAsset(
         "officecli-linux-arm64",
-        "d38233bb7df4f0f5fb40313de1f00c0f0e575dc96b4164742709711ceec148c5",
+        "edddf5610b97113bb3c0dc99fac16aade3d3f34746c054ab6fe828679ec48438",
     ),
     ("Linux", "x86_64"): OfficeCliAsset(
         "officecli-linux-x64",
-        "449f0e6a1298e3c6d7da792d26ab53d04ba77bd990f299b51123c7aef383d2ce",
+        "e424210bce9355f498eeaf692b4d2b13f1f3422e1db34636c41f54c36025249b",
     ),
     ("Windows", "arm64"): OfficeCliAsset(
         "officecli-win-arm64.exe",
-        "9ab800745ef06f4d30b8fd41729c516a4b28c86a24a32af8764d12a6a5226d57",
+        "e3f67a836b42fc05a8437ab56c260338bc9f6135e083dc67e4be1de1e2cfb0c2",
     ),
     ("Windows", "x86_64"): OfficeCliAsset(
         "officecli-win-x64.exe",
-        "760696b262f3d6bd2cd174577220d54541b6e1e04ec58dee051f1897395638b8",
+        "df91e48fa250500b05ae1043777af26857e51ed12ea75b2f7a57e3333e3813bf",
     ),
 }
 

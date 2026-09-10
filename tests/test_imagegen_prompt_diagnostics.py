@@ -84,6 +84,27 @@ def test_analyze_prompt_is_read_only() -> None:
     assert PROMPT == original
 
 
+def test_analyze_prompt_measures_current_deliverable_source_section() -> None:
+    prompt = """【页面编码】P02｜测试页
+【源文案语义输入】
+- **治理层｜质量与授权**
+- 2025年完成率 95%。
+
+【构图指令】
+保持事实准确。
+"""
+    metrics = analyze_prompt(
+        prompt,
+        onscreen_text="**治理层｜质量与授权**\n2025年完成率 95%。",
+    )
+
+    assert metrics.page_content_chars > 0
+    assert metrics.global_rule_chars > 0
+    assert 0 < metrics.page_specific_ratio < 1
+    assert metrics.locked_text_preserved is True
+    assert metrics.exact_facts_preserved is True
+
+
 def test_analyze_prompt_measures_content_first_page_sections() -> None:
     metrics = analyze_prompt(
         CONTENT_FIRST_PROMPT,

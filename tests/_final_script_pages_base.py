@@ -103,7 +103,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             prompt = build_page_prompt(page, style_lock)
 
         body = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1].split(
-            "【核心意思表达要求", 1
+            "【输出尺寸｜不上屏】", 1
         )[0]
         self.assertNotIn(judgment, body)
         self.assertNotIn(subtitle, body)
@@ -146,7 +146,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             prompt = build_page_prompt(page, style_lock)
 
         body = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1].split(
-            "【核心意思表达要求", 1
+            "【输出尺寸｜不上屏】", 1
         )[0]
         normalized_original = "\n".join(
             line.strip() for line in original_body.splitlines()
@@ -815,7 +815,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertNotIn("【页面逻辑｜不上屏】", prompt)
             self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
             self.assertIn("【视觉风格｜不上屏】", prompt)
-            self.assertIn("Do not render title, subtitle, logo, page number, footer, or template frame.", prompt)
+            self.assertIn("不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚", prompt)
             self.assertEqual("content-first-v1", manifest["prompt_contract"]["compiler"])
             self.assertEqual("态势感知能力要从工具堆叠转向风险闭环", lock["records"][0]["title"])
             self.assertEqual("运营保障机制需要责任、流程和审计同时落地", lock["records"][1]["title"])

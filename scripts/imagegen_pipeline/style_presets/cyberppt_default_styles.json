@@ -185,7 +185,7 @@
         "accent": "#12355B"
       },
       "scenario": "政企领导汇报、演讲辅助；flat editorial / integrated composition",
-      "sample": "assets/palette-samples/palette-09.png",
+      "sample": "assets/palette-samples/palette-10.png",
       "imagegen_signature": [],
       "prompt_contract": "See references/visual-system-10.md.",
       "scope_rule": "本风格只约束色彩、材质、字体、线条、留白、视觉节奏和高级编辑式气质，不预设页面必须使用场景、插画、照片、图标、三维物件或任何固定媒介。",

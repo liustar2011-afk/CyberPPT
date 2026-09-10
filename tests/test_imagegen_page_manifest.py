@@ -55,9 +55,9 @@ class CyberpptPairManifestTests(_base.CyberpptPairManifestTests):
         self.assertNotIn("【视觉组织原则】", prompt)
         self.assertEqual(1, prompt.count("【视觉风格｜不上屏】"))
 
-        self.assertIn("### 1. Style identity and semantic principle — hard", prompt)
-        self.assertIn("### 2. Semantic anchor and composition — hard", prompt)
-        self.assertIn("### 6. Depth, material and icon discipline — hard", prompt)
+        self.assertIn("# 视觉风格09：纯白 + 深蓝领导汇报｜GPT Image 2.5 Artifact Spec 执行版", prompt)
+        self.assertIn("## 00｜任务契约：先定义成品，再执行风格", prompt)
+        self.assertIn("## 02｜Artifact Spec 内部编译：先把页面变成“可验收规格”", prompt)
 
         self.assertNotIn("### Final ImageGen execution lock — hard", prompt)
         self.assertEqual(1, prompt.count(_base.STYLE09_TERMINAL_LOCK_HEADER))

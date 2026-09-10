@@ -56,24 +56,19 @@ def test_style_nine_is_pure_white_extension_and_style_four_stays_unchanged() -> 
 def test_style_nine_registry_contract_carries_current_visual_invariants() -> None:
     contract = resolve_default_style(style_id=9)["prompt_contract"]
 
-    assert "视觉风格09：纯白 + 深蓝领导汇报" in contract
-    assert "Palette: white #FFFFFF" in contract
-    assert "deep blue #12355B" in contract
-    assert "muted amber #D9772B" in contract
-    assert "Reserve muted amber only for risks, exceptions, constraints, pending status" in contract
-    assert "Every page must establish one visually dominant focus" in contract
-    assert "Build one integrated, asymmetric and unequally weighted composition" in contract
-    assert "Repeated or equally weighted cards are allowed" in contract
-    assert "Avoid equal card walls" not in contract
-    assert "Apply a replaceability test" in contract
-    assert "dominant scene that only signals an industry category is insufficient" in contract
-    assert "Photography is optional" in contract
-    assert "Do not default to one large photograph" in contract
-    assert "several independent scene fragments" in contract
-    assert "Medium and small scenes" in contract
-    assert "Decorative use is acceptable in restrained amounts" in contract
-    assert "Prefer one coherent primary scene" not in contract
-    assert "Icons must not determine the composition" in contract
+    assert "视觉风格09：纯白 + 深蓝领导汇报｜GPT Image 2.5 Artifact Spec 执行版" in contract
+    assert "配色：纯白 `#FFFFFF`" in contract
+    assert "深蓝 `#12355B`" in contract
+    assert "低饱和琥珀色 `#D9772B`" in contract
+    assert "琥珀色只用于来源明确的风险、约束、例外、待定或决策重点" in contract
+    assert "第一眼必须识别正文主焦点" in contract
+    assert "来源存在主次时，可采用非对称与不等视觉权重；来源等权时保持同层均衡" in contract
+    assert "卡片只在业务信息本身具有明确独立边界时使用" in contract
+    assert "场景按需使用，可以为零" in contract
+    assert "图标只用于提高必要对象的识别效率" in contract
+    assert "每页采用一个主构图机制" in contract
+    assert "## 12｜最终风格收口｜最高视觉优先级" in contract
+    assert "strong visual hierarchy" in contract
     assert len(contract) > 2_000
 
 
@@ -162,7 +157,7 @@ def test_legacy_style_nine_lock_refreshes_to_current_contract() -> None:
         second_read = load_style_lock(lock)
 
     assert "caller-controlled stale contract" not in refreshed["style"]["prompt_contract"]
-    assert "Palette: white #FFFFFF" in refreshed["style"]["prompt_contract"]
+    assert "配色：纯白 `#FFFFFF`" in refreshed["style"]["prompt_contract"]
     assert refreshed["style_source"].endswith("references/visual-system.md")
     assert second_read["style"] == refreshed["style"]
 
@@ -194,8 +189,8 @@ def test_style_nine_contract_reaches_content_first_compiler_without_routing_meta
         contract = render_content_first_style_contract(lock)
 
     assert "【视觉风格｜不上屏】" in contract
-    assert "Palette: white #FFFFFF" in contract
-    assert "Build one integrated, asymmetric and unequally weighted composition" in contract
+    assert "配色：纯白 `#FFFFFF`" in contract
+    assert "每页采用一个主构图机制" in contract
     assert "semantic_tags:" not in contract
     assert "style09:scope" not in contract
 
@@ -213,7 +208,8 @@ def test_style_nine_terminal_lock_reasserts_the_visual_focus_requirement() -> No
             lock,
         )
 
-    assert "Every page must establish one visually dominant focus" in runtime.terminal_lock
+    assert "strong visual hierarchy" in runtime.terminal_lock
+    assert "构图由当前页面语义决定" in runtime.terminal_lock
     assert prompt.count(TERMINAL_EXECUTION_HEADING) == 1
     assert prompt.count(duplicated_line) == 1
     assert "No invented facts." in prompt

@@ -389,7 +389,11 @@ def assemble_brand_page_svg(
         root[:] = definitions + master + content
         ET.register_namespace("", "http://www.w3.org/2000/svg")
         ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
-        output.write_text(ET.tostring(root, encoding="unicode") + "\n", encoding="utf-8")
+        output.write_text(
+            ET.tostring(root, encoding="unicode") + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
 
     if role == "cover":
         copy_asset("cover_bg.jpg")

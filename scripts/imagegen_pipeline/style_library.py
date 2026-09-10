@@ -158,8 +158,8 @@ def write_project_style_lock(
     source_script: Path | None = None,
     path: Path = STYLE_LIBRARY_PATH,
 ) -> Path:
-    # Resolve the executable registry exactly once when the lock is created.
-    # Production consumers then use the stored snapshot verbatim.
+    # Store the resolved contract for traceability when the lock is created.
+    # Live styles remain refreshable unless the lock policy is explicitly immutable.
     style = resolve_default_style(style_id=style_id, style_name=style_name, path=path)
     legacy_alias = bool(
         style.get("legacy_alias_from_style_id") is not None
@@ -350,7 +350,7 @@ def _migrate_legacy_live_lock(path: Path, payload: dict[str, Any]) -> dict[str, 
 
 
 def load_style_lock(path: Path) -> dict[str, Any]:
-    """Load a style lock and refresh its editable extension contract."""
+    """Load a style lock; refresh live styles unless explicitly immutable."""
 
     payload = _read_json(path)
     style = payload.get("style")
