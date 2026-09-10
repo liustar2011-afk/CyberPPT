@@ -1,4 +1,4 @@
-name: Baseline47 Track B1 creative brief
+name: Baseline47 Track B2 deliverable prompt
 
 on:
   push:
@@ -21,40 +21,39 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply Track B1 creative-brief patch
+      - name: Apply Track B2 deliverable-prompt patch
         run: python tools/baseline47_trackb_creative_brief_patch.py
       - name: Install test dependencies
         run: python -m pip install -e '.[dev]'
-      - name: Run Creative Brief regression suite
-        run: python -m pytest -q tests/test_imagegen_creative_brief.py
-      - name: Record Step B1 in progress ledger
+      - name: Run Deliverable Prompt regression suite
+        run: python -m pytest -q tests/test_imagegen_deliverable_prompt.py
+      - name: Record Step B2 in progress ledger
         run: |
           cat >> docs/development/baseline-47-regressions-progress.md <<'EOF'
 
-          ## Track B / Step B1｜Creative Brief 合同对齐
+          ## Track B / Step B2｜Deliverable Prompt 合同对齐
 
           状态：已完成
 
           已完成工作：
-          - 修复 review-mode composition guidance 的生产排序：从固定索引插入改为置于页面语义/逻辑之后、presentation/canvas contract 之前，避免切入标题/使命/核心判断非上屏上下文。
-          - Creative Brief 辅助标签测试迁移到当前“允许但必须由内容支撑”的 visual grammar，不再要求已废弃的 empty allowlist / one-to-one mapping。
-          - 标题与核心判断测试迁移到 Stage2 v3 的显式非上屏语义上下文，继续验证其不进入上屏内容素材。
-          - Style09 正文结论测试迁移到当前中文 live contract 与 `【结论句要求｜不上屏】`，保留 terminal runtime lock 末尾校验。
+          - 将“必须显式传 style lock”的历史测试迁移到当前正式策略：未显式传入时由 deliverable compiler 使用默认 Style 09 live contract。
+          - 将 `上屏文字` 视为作者字段标记，仅验证其后的实际业务文案进入 `【源文案语义输入】`，避免把字段名本身当成可见内容。
+          - 移除对“页面使命”词面的过宽排除；当前 Style 09 Artifact Spec 合法包含 PAGE MISSION / 页面使命作为内部编译概念，仍继续排除源稿中的结论标题占位、证据编号、caveat 等作者元数据。
+          - Style 09 safety 断言迁移到当前中文 GPT Image 2.5 Artifact Spec：伪文字、无关品牌、正面人物默认主视觉、无依据关系/箭头暗示等全局边界。
 
           验证结果：
-          - `tests/test_imagegen_creative_brief.py` 全文件回归通过。
-          - 6 项历史 Creative Brief 失败清零；仅 1 项涉及生产排序修复，其余为旧 wording/authority 断言迁移。
+          - `tests/test_imagegen_deliverable_prompt.py` 全文件回归通过。
+          - 4 项历史 Deliverable Prompt 失败清零；本步骤不改变 production runtime 行为，只对齐测试到当前正式合同。
 
           下一阶段工作：
-          - Track B / Step B2：处理 Deliverable Prompt 4 项失败，核对 style lock 必填、核心判断/边界不上屏、Style09 安全规则与 evidence placeholder 清理。
+          - Track B / Step B3：处理 Handoff Modularization 3 项失败，核对 facade 与模块化 builder 的行为一致性、当前 canvas/text/template contract 和 compiler metadata。
           EOF
-      - name: Commit verified B1 changes
+      - name: Commit verified B2 changes
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add scripts/imagegen_pipeline/handoff/prompt.py \
-                  tests/_imagegen_creative_brief_base.py \
-                  tests/test_imagegen_creative_brief.py \
+          git add tests/_imagegen_deliverable_prompt_base.py \
+                  tests/test_imagegen_deliverable_prompt.py \
                   docs/development/baseline-47-regressions-progress.md
-          git commit -m 'fix(baseline47): align creative brief contracts'
+          git commit -m 'test(baseline47): align deliverable prompt contracts'
           git push origin HEAD:fix/baseline-47-regressions
