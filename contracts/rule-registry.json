@@ -275,6 +275,159 @@
       "confidence": "low",
       "owner": "script_engine.analysis_audits.final_lean",
       "severity_rationale": "Relationship vocabulary without an explicit edge is a review signal; only malformed or unapproved structured edges remain blocking."
+    },
+    {
+      "code": "AUTHOR_EVIDENCE_FIRST_HIERARCHY_HEURISTIC",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_hierarchy",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_expression",
+      "severity_rationale": "Character-count and predicate-shape cues can suggest a hidden lead but cannot prove that the first evidence item is not a legitimate peer fact."
+    },
+    {
+      "code": "ONSCREEN_SELF_READ_MODULE_THIN",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_self_read_density",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_onscreen",
+      "severity_rationale": "A heading without locally counted payload may still be complete through source-native composition or adjacent visible context."
+    },
+    {
+      "code": "ONSCREEN_SELF_READ_DENSITY_LOW",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_self_read_density",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_onscreen",
+      "severity_rationale": "Visible unit-count thresholds are presentation heuristics and do not establish semantic insufficiency."
+    },
+    {
+      "code": "AUTHOR_MECHANICAL_SOURCE_CONCATENATION",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_full_copy",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_expression",
+      "severity_rationale": "Semicolon count and segment length can flag mechanical assembly but cannot prove that the resulting source-faithful prose is invalid."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_INCOMPLETE_DETAIL",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_expression",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_expression",
+      "severity_rationale": "Generic predicate and character-count tests cannot prove that a visible detail lacks a complete business meaning."
+    },
+    {
+      "code": "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_expression",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_structure",
+      "severity_rationale": "Bare-label detection depends on lexical shape and cannot prove omission of a source-native detail without structured provenance."
+    },
+    {
+      "code": "AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_consumption",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "A minimum distinct-fact count is a coverage heuristic; one authoritative fact can legitimately carry a page when the approved source boundary allows it."
+    },
+    {
+      "code": "AUTHOR_FULL_COPY_TOO_THIN",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_full_copy",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Paragraph-count thresholds are editorial heuristics and cannot prove insufficient source reasoning."
+    },
+    {
+      "code": "AUTHOR_FULL_COPY_PARAGRAPH_UNGROUNDED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_consumption",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "N-gram overlap is a weak grounding proxy and can miss paraphrases or source-native terminology changes."
+    },
+    {
+      "code": "AUTHOR_SOURCE_SEMANTICS_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_consumption",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Text overlap cannot deterministically prove that a cited source fact has lost its meaning under paraphrase."
+    },
+    {
+      "code": "AUTHOR_STATUS_STRENGTH_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_status",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Fixed status-marker lists cannot prove that equivalent modality or temporal status has been lost."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_CORE_SEMANTICS_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_projection",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Protected-role selection is structured, but the current loss decision is still based on text overlap and therefore requires Critic review rather than blocking."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_STATUS_STRENGTH_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_projection",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Fixed status-marker lists cannot prove that onscreen compression changed the source status when equivalent wording may be present."
+    },
+    {
+      "code": "AUTHOR_RELATIONSHIP_METADATA_ONLY",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_relationship_visibility",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "N-gram overlap between a structured edge and copy layers is a visibility proxy; malformed or unapproved edges remain blocking separately."
+    },
+    {
+      "code": "FAITHFUL_RELATION_PROMOTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "A fixed relation-word list can flag possible promotion but cannot prove that an equivalent source relation is absent under different wording."
+    },
+    {
+      "code": "FAITHFUL_STATUS_PROMOTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "Achievement-status regexes are lexical proxies and cannot deterministically establish a source-status upgrade."
+    },
+    {
+      "code": "FAITHFUL_MODALITY_PROMOTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "Obligation regexes can identify review candidates but cannot prove modality strengthening without typed source semantics."
     }
   ]
 }
