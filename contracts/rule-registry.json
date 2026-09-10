@@ -257,6 +257,24 @@
       "confidence": "low",
       "owner": "script_engine.analysis_audits.final_orchestrator",
       "severity_rationale": "A gap regex can identify review candidates but cannot determine whether an equivalent baseline is present under different wording."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_alignment",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "N-gram overlap can identify a likely disconnected projection but cannot prove semantic contradiction or unsupported meaning."
+    },
+    {
+      "code": "AUTHOR_RELATIONSHIP_CLAIM_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_relationship_visibility",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Relationship vocabulary without an explicit edge is a review signal; only malformed or unapproved structured edges remain blocking."
     }
   ]
 }
