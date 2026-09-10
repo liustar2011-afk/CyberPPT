@@ -216,6 +216,28 @@ def _reserved_scope_strings(contract: dict[str, object]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(values))
 
 
+def _reservation_anchor_bigrams(reservations: tuple[str, ...]) -> tuple[str, ...]:
+    """Derive weak lexical anchors only from the explicit page reservation.
+
+    This remains an advisory fallback. It intentionally avoids a global list of
+    business objects: the only lexical material comes from PLAN-authored scope
+    strings, while structured page-logic/provenance checks remain authoritative.
+    """
+
+    anchors: list[str] = []
+    markers = tuple(sorted(_COMPOSITION_SCOPE_MARKERS, key=len, reverse=True))
+    for reservation in reservations:
+        compact = re.sub(r"\s+", "", reservation)
+        for marker in markers:
+            compact = compact.replace(marker, "")
+        compact = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff]+", "", compact)
+        anchors.extend(
+            compact[index : index + 2]
+            for index in range(max(0, len(compact) - 1))
+        )
+    return tuple(dict.fromkeys(anchor for anchor in anchors if len(anchor) == 2))
+
+
 def _reserved_composition_relation_hits(
     page: ScriptPage,
     contract: dict[str, object],
@@ -237,12 +259,18 @@ def _reserved_composition_relation_hits(
         marker in reservation_text for marker in _COMPOSITION_SCOPE_MARKERS
     ):
         return ()
+    anchors = _reservation_anchor_bigrams(reservations)
+    if not anchors:
+        return ()
     authored = "\n".join((page.onscreen_text, page.full_prose))
     hits: list[str] = []
     for unit in re.split(r"[。！？；;\n]+", authored):
         unit = unit.strip()
         compact = unit.replace(" ", "")
-        if not unit or not any(reservation in compact for reservation in reservations):
+        if not unit:
+            continue
+        overlap = tuple(anchor for anchor in anchors if anchor in compact)
+        if len(overlap) < 2:
             continue
         if composition_relation_units(unit) or "组合" in unit:
             hits.append(unit)
