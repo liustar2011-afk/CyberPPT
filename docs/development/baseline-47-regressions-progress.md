@@ -266,3 +266,20 @@
 
 下一阶段工作：
 - Track B / Step B5：处理 Page Manifest 2 项、Prompt Diagnostics 1 项、Visual Grammar 1 项，完成 Track B 最后 4 项后运行 Track B 聚合与标准全量 CI。
+
+## Track B / Step B5｜Page Manifest / Prompt Diagnostics / Visual Grammar 收口
+
+状态：已完成
+
+已完成工作：
+- 修复 Prompt Diagnostics 对当前 deliverable prompt 的内容区识别：兼容 legacy `【上屏文字参考】`、历史 `【内容锁定】` 与当前 `【源文案语义输入】`，并增加当前 `【页面使命（不上屏）】` 的 content-first 诊断入口。
+- 新增 current deliverable source-section 诊断测试，继续验证 page-specific ratio、locked text 与 exact facts 的只读审计能力。
+- Page Manifest 保留 approved-prompt provenance、hash binding、canonical drift 等强校验，仅将旧 `【锁定关键文字】` 与 Style 09 英文 section headings 迁移到当前 `【核心判断（不上屏）】`、`【页面内容素材｜允许提炼、改写、重组】` 和中文 GPT Image 2.5 Artifact Spec live contract。
+- Visual Grammar exact snapshot 同步当前 source-boundary 文案：unsupported outcome 文字必须由 on-screen content reference 支持。
+
+验证结果：
+- `tests/test_imagegen_page_manifest.py + tests/test_imagegen_prompt_diagnostics.py + tests/test_visual_grammar.py` 全部回归通过。
+- Track B 最后 4 项历史失败清零；其中 Prompt Diagnostics 为 production compatibility 修复，其余为旧 wording 迁移。
+
+下一阶段工作：
+- 运行 Track B 八个测试文件聚合验收与标准全量 CI；若剩余失败集合精确收敛为 Track C 7 项，则关闭 Track B、更新状态看板/PR，并清理 Track B 临时门禁脚手架。

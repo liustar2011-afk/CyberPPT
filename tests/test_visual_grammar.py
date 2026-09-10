@@ -45,7 +45,7 @@ _SHORT_LINES = (
     (
         "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "
         "Any outcome inferred from the relationships may be expressed only as an unlabeled "
-        "graphical state unless that text is present in the locked on-screen content."
+        "graphical state unless that text is supported by the on-screen content reference."
     ),
 )
 

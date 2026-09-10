@@ -17,10 +17,15 @@ from typing import Any, Iterable
 _EXACT_NUMBER_RE = re.compile(
     r"(?<![A-Za-z])(?:\d+(?:\.\d+)?%|\d+(?:\.\d+)?(?:亿|万|千|百)?(?:千瓦时|千瓦|小时|天|月|年))"
 )
-_CONTENT_START = "【上屏文字参考】"
+_CONTENT_STARTS = (
+    "【上屏文字参考】",
+    "【内容锁定】",
+    "【源文案语义输入】",
+)
 _CONTENT_END = "【构图指令】"
 _COMPOSITION_START = "[Mandatory composition guidance]"
 _CONTENT_FIRST_STARTS = (
+    "【页面使命（不上屏）】",
     "【页面任务｜",
     "页面任务：",
 )
@@ -240,6 +245,13 @@ def _section(text: str, start: str, end: str | None = None) -> str:
     return value.strip()
 
 
+def _first_marker(text: str, markers: tuple[str, ...]) -> str:
+    """Return the earliest supported marker present in a compiled prompt."""
+
+    present = [(text.index(marker), marker) for marker in markers if marker in text]
+    return min(present)[1] if present else ""
+
+
 def _content_first_page_section(text: str) -> str:
     """Return page-specific content from a content-first-v1 prompt."""
 
@@ -332,12 +344,13 @@ def _known_conflicts(prompt: str) -> tuple[str, ...]:
 def analyze_prompt(prompt: str, *, onscreen_text: str = "") -> PromptMetrics:
     """Measure a compiled prompt without modifying it."""
 
-    content = _section(prompt, _CONTENT_START, _CONTENT_END)
+    content_start = _first_marker(prompt, _CONTENT_STARTS)
+    content = _section(prompt, content_start, _CONTENT_END) if content_start else ""
     if not content:
         content = _content_first_page_section(prompt)
     composition = ""
-    if _COMPOSITION_START in prompt and _CONTENT_START in prompt:
-        composition = prompt.split(_COMPOSITION_START, 1)[1].split(_CONTENT_START, 1)[0]
+    if _COMPOSITION_START in prompt and content_start:
+        composition = prompt.split(_COMPOSITION_START, 1)[1].split(content_start, 1)[0]
 
     page_specific_chars = _meaningful_chars(content) + _meaningful_chars(composition)
     total_chars = _meaningful_chars(prompt)

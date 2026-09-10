@@ -625,7 +625,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
             provenance["approved_prompt_sha256"],
             provenance["consumed_prompt_sha256"],
         )
-        self.assertIn("【锁定关键文字】", prompt)
+        self.assertIn("【核心判断（不上屏）】", prompt)
         self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
 
 
