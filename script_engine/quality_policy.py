@@ -64,7 +64,9 @@ def _configured_warning_rule_ids() -> frozenset[str]:
 ADVISORY_CODES = _SEMANTIC_HEURISTIC_CODES | _configured_warning_rule_ids()
 
 _CODE_RE = re.compile(r"^(?P<code>[A-Z][A-Z0-9_]+):")
-_BRACKET_CODE_RE = re.compile(r"\[(?P<code>[A-Za-z0-9_.-]+)\]")
+# Finding paths legitimately contain list indexes such as ``onscreen[0]``.
+# Require a leading letter so those indexes cannot shadow a later ``[rule-id]``.
+_BRACKET_CODE_RE = re.compile(r"\[(?P<code>[A-Za-z][A-Za-z0-9_.-]*)\]")
 
 
 def issue_code(issue: str) -> str:
