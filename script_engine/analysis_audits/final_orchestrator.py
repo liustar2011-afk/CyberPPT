@@ -92,14 +92,23 @@ def audit_final_script(
         plan_is_classification = any(token in plan_model for token in ("classification", "taxonomy", "typology")) or "分类" in plan_logic
         plan_allows_progression = bool(PROGRESSION_RE.search(plan_text) or any(token in plan_model for token in ("progression", "maturity")))
         if plan_is_classification and not plan_allows_progression and PROGRESSION_RE.search(final_text):
-            issues.append(f"slides.{index} ({slide_id}): AUTHOR upgraded a classification/taxonomy plan into a progression chain")
+            warnings.append(
+                f"slides.{index} ({slide_id}): [FINAL_PROGRESSION_HEURISTIC] "
+                "AUTHOR may have upgraded a classification/taxonomy plan into a progression chain; "
+                "lexical progression markers require Critic review"
+            )
 
         if _has_optionality(evidence) and not _preserves_optionality(final_text):
-            issues.append(f"slides.{index} ({slide_id}): final script lost source optionality; it must preserve independent choice and progressive deepening")
+            warnings.append(
+                f"slides.{index} ({slide_id}): [FINAL_OPTIONALITY_HEURISTIC] "
+                "final script may have lost source optionality; lexical independence/deepening markers require Critic review"
+            )
 
         group_issue = _group_strength_issue(str(slide.get("core_message") or ""), evidence)
         if group_issue:
-            issues.append(f"slides.{index} ({slide_id}): {group_issue}")
+            warnings.append(
+                f"slides.{index} ({slide_id}): [FINAL_GROUP_STRENGTH_HEURISTIC] {group_issue}"
+            )
 
         internal = [item for item in evidence if effective_visibility(item) == "internal_only"]
         if audience_scope == "external" and internal:
@@ -118,7 +127,11 @@ def audit_final_script(
         if GAP_RE.search(final_text):
             source_text = _source_text_for_refs(page.get("source_refs") or [], foundation)
             if not GAP_RE.search(plan_text) and not GAP_RE.search(source_text):
-                issues.append(f"slides.{index} ({slide_id}): final script introduces a current-vs-target gap judgment without a source or plan baseline")
+                warnings.append(
+                    f"slides.{index} ({slide_id}): [FINAL_GAP_HEURISTIC] "
+                    "final script may introduce a current-vs-target gap judgment without the same lexical baseline in source or plan; "
+                    "Critic review is required"
+                )
 
         for composition_issue in _audit_authored_onscreen_composition(
             page,
