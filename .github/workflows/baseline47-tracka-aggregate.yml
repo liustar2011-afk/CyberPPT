@@ -1,4 +1,4 @@
-name: Baseline47 Track A aggregate validation
+name: Baseline47 Track A closeout
 
 on:
   push:
@@ -7,25 +7,54 @@ on:
     paths:
       - .github/workflows/baseline47-tracka-aggregate.yml
 
+permissions:
+  contents: write
+
 jobs:
-  track-a:
+  close-and-clean:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: fix/baseline-47-regressions
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install test dependencies
-        run: python -m pip install -e '.[dev]'
-      - name: Run Track A aggregate regression suite
+          fetch-depth: 0
+      - name: Record Track A aggregate validation
         run: |
-          python -m pytest -q \
-            tests/test_artifact_prompt.py \
-            tests/test_extended_style_9.py \
-            tests/test_extended_style_10.py \
-            tests/test_final_prompt_contract.py \
-            tests/test_final_prompt_ir.py \
-            tests/test_final_prompt_renderer.py \
-            tests/test_style_lock_snapshot.py
+          cat >> docs/development/baseline-47-regressions-progress.md <<'EOF'
+
+          ## Track A｜聚合验收与收口
+
+          状态：已完成
+
+          已完成工作：
+          - 对 Track A 涉及的 Runtime Lock、Style 09/10 live contract、Style Lock refresh/snapshot 全测试族执行聚合回归。
+          - 使用同一 branch head 的标准 Python 3.10 / 3.12 全量 CI 对原 47 项失败集合重新做精确差分。
+          - 清理 Track A 开发期专用 workflow 与 patch helper，不将临时门禁带入 Track B。
+
+          验证结果：
+          - Track A 聚合门禁 run `34418949118`：89 passed，5 subtests passed。
+          - 标准全量 CI run `34418955910`：Python 3.10 与 3.12 均为 29 failed / 2018 passed / 8 skipped / 49 subtests passed。
+          - 两个 Python 版本剩余 29 项失败集合完全一致；Track A 原 18 项全部消失，新增失败 0。
+          - 剩余 29 项精确对应 Track B 22 项 + Track C 7 项。
+          - Windows wheel、macOS wheel、OfficeCLI smoke 全部通过。
+
+          下一阶段工作：
+          - Track B / Step B1：从 ImageGen Creative Brief 6 项失败开始，核对当前 content-first / Stage2 v3 Prompt 合同，区分生产行为回归与旧 wording/snapshot 断言漂移。
+          EOF
+      - name: Remove Track A temporary scaffolding
+        run: |
+          git rm -f \
+            .github/workflows/baseline47-tracka-runtime.yml \
+            .github/workflows/baseline47-tracka-style-contract.yml \
+            .github/workflows/baseline47-tracka-snapshot.yml \
+            .github/workflows/baseline47-tracka-aggregate.yml \
+            tools/baseline47_tracka_runtime_patch.py \
+            tools/baseline47_tracka_style_contract_patch.py \
+            tools/baseline47_tracka_snapshot_patch.py
+          git add docs/development/baseline-47-regressions-progress.md
+      - name: Commit Track A closeout
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(baseline47): close Track A and remove temporary gates'
+          git push origin HEAD:fix/baseline-47-regressions
