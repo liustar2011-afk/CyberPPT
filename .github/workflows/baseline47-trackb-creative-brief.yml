@@ -1,4 +1,4 @@
-name: Baseline47 OfficeCLI pin validation
+name: Baseline47 OfficeCLI v1.0.92 reproducibility
 
 on:
   push:
@@ -8,9 +8,15 @@ on:
       - .github/workflows/baseline47-trackb-creative-brief.yml
 
 jobs:
-  officecli-143-smoke:
+  officecli-92-smoke:
+    name: OfficeCLI 1.0.92 smoke (${{ matrix.lane }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        lane: [a, b]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21,15 +27,15 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Patch workspace to candidate OfficeCLI v1.0.143 pin
+      - name: Patch workspace to candidate OfficeCLI v1.0.92 pin
         run: |
           python - <<'PY'
           from pathlib import Path
           path = Path('cyberppt/officecli.py')
           text = path.read_text(encoding='utf-8')
           replacements = {
-              'OFFICECLI_VERSION = "1.0.145"': 'OFFICECLI_VERSION = "1.0.143"',
-              '449f0e6a1298e3c6d7da792d26ab53d04ba77bd990f299b51123c7aef383d2ce': '6a29c598a789b57c92c03e560907d3f131a4bd0a068785b1d338a86fc31a58a7',
+              'OFFICECLI_VERSION = "1.0.143"': 'OFFICECLI_VERSION = "1.0.92"',
+              '6a29c598a789b57c92c03e560907d3f131a4bd0a068785b1d338a86fc31a58a7': 'deca2a87583bf8a25096cab9be6e626a48b787cf59875311b30c39a394970ffa',
           }
           for old, new in replacements.items():
               if text.count(old) != 1:
@@ -64,7 +70,7 @@ jobs:
           frame.clear()
           paragraph = frame.paragraphs[0]
           run = paragraph.add_run()
-          run.text = 'CyberPPT OfficeCLI v1.0.143 render smoke'
+          run.text = 'CyberPPT OfficeCLI v1.0.92 render smoke'
           run.font.size = Pt(28)
           prs.save(output)
           print(output.resolve())
@@ -79,7 +85,7 @@ jobs:
           qa_dir = Path('officecli-smoke/qa')
           report = run_officecli_render_qa(Path('officecli-smoke/fixture.pptx'), qa_dir)
           print(json.dumps(report, ensure_ascii=False, indent=2))
-          assert report['officecli']['version'] == '1.0.143'
+          assert report['officecli']['version'] == '1.0.92'
           assert report['passed'] is True
           rendered_pages = [Path(path) for path in report['rendered_pages']]
           assert len(rendered_pages) == 1
@@ -90,6 +96,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: officecli-143-render-smoke
+          name: officecli-92-render-smoke-${{ matrix.lane }}
           path: officecli-smoke/
           if-no-files-found: error
