@@ -48,11 +48,22 @@ def _refs(value: object) -> tuple[str, ...]:
 
 def _role(index: FoundationIndex, ref: str) -> str:
     value = index.argument_duty(ref).strip().lower()
-    return ROLE_ALIASES.get(value, value)
+    return ROLE_ALIASES.get(value, "")
 
 
-def _roles(index: FoundationIndex, refs: tuple[str, ...]) -> tuple[str, ...]:
-    return tuple(role for role in (_role(index, ref) for ref in refs) if role)
+def _resolved_roles(
+    index: FoundationIndex,
+    refs: tuple[str, ...],
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    roles: list[str] = []
+    unknown_refs: list[str] = []
+    for ref in refs:
+        role = _role(index, ref)
+        if role:
+            roles.append(role)
+        else:
+            unknown_refs.append(ref)
+    return tuple(roles), tuple(unknown_refs)
 
 
 def _diagnostic(
@@ -104,7 +115,7 @@ def collect_provenance_compatibility_diagnostics(
             if not isinstance(provenance, dict):
                 continue
             claim_refs = _refs(provenance.get("claim_refs"))
-            claim_roles = _roles(index, claim_refs)
+            claim_roles, unknown_claim_refs = _resolved_roles(index, claim_refs)
 
             for binding in provenance.get("bindings") or []:
                 if not isinstance(binding, dict):
@@ -118,22 +129,23 @@ def collect_provenance_compatibility_diagnostics(
                 if allowed_roles is None:
                     continue
 
-                evidence_roles = _roles(index, evidence_refs)
-                if evidence_refs and not evidence_roles:
+                evidence_roles, unknown_evidence_refs = _resolved_roles(
+                    index, evidence_refs
+                )
+                if unknown_evidence_refs:
                     diagnostics.append(
                         _diagnostic(
                             "EVIDENCE_ROLE_UNKNOWN",
-                            "Foundation does not expose a typed evidence role; compatibility requires review",
+                            "Foundation does not expose a recognized typed evidence role for every evidence ref; compatibility requires review",
                             slide_id=slide_id,
                             module_id=module_id,
                             target=target,
                             severity="review_required",
                             claim_refs=claim_refs,
-                            evidence_refs=evidence_refs,
+                            evidence_refs=unknown_evidence_refs,
                             relation=relation,
                         )
                     )
-                    continue
 
                 incompatible = tuple(
                     sorted({role for role in evidence_roles if role not in allowed_roles})
@@ -178,7 +190,7 @@ def collect_provenance_compatibility_diagnostics(
                                 relation=relation,
                             )
                         )
-                elif relation == "implements" and claim_refs and not claim_roles:
+                elif relation == "implements" and unknown_claim_refs:
                     diagnostics.append(
                         _diagnostic(
                             "CLAIM_ROLE_UNKNOWN",
