@@ -49,16 +49,11 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_typ
         ]
         runtime = load_runtime_style_contract(lock)
 
-    assert "如【锁定关键文字】含正文结论句" in prompt
-    assert "不得通栏放大" in prompt
-    assert "标题竖线、横线等装饰" in prompt
-
-    hierarchy_lock = (
-        "Create hierarchy through crop, overlap, scale contrast, tonal separation, "
-        "alignment, deep-blue emphasis and shallow foreground–background relationships."
-    )
-    assert style_contract.count(hierarchy_lock) == 1
-    assert prompt.count(hierarchy_lock) == 1
+    assert "【结论句要求｜不上屏】" in prompt
+    assert "结论先行、层级清晰" in prompt
+    assert "不得新增事实" in prompt
+    assert "第一眼必须识别正文主焦点" in style_contract
+    assert prompt.count("第一眼必须识别正文主焦点") == 1
 
     terminal = runtime.terminal_lock.strip()
     assert terminal

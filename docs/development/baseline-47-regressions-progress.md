@@ -198,3 +198,20 @@
 
 下一阶段工作：
 - Track B / Step B1：从 ImageGen Creative Brief 6 项失败开始，核对当前 content-first / Stage2 v3 Prompt 合同，区分生产行为回归与旧 wording/snapshot 断言漂移。
+
+## Track B / Step B1｜Creative Brief 合同对齐
+
+状态：已完成
+
+已完成工作：
+- 修复 review-mode composition guidance 的生产排序：从固定索引插入改为置于页面语义/逻辑之后、presentation/canvas contract 之前，避免切入标题/使命/核心判断非上屏上下文。
+- Creative Brief 辅助标签测试迁移到当前“允许但必须由内容支撑”的 visual grammar，不再要求已废弃的 empty allowlist / one-to-one mapping。
+- 标题与核心判断测试迁移到 Stage2 v3 的显式非上屏语义上下文，继续验证其不进入上屏内容素材。
+- Style09 正文结论测试迁移到当前中文 live contract 与 `【结论句要求｜不上屏】`，保留 terminal runtime lock 末尾校验。
+
+验证结果：
+- `tests/test_imagegen_creative_brief.py` 全文件回归通过。
+- 6 项历史 Creative Brief 失败清零；仅 1 项涉及生产排序修复，其余为旧 wording/authority 断言迁移。
+
+下一阶段工作：
+- Track B / Step B2：处理 Deliverable Prompt 4 项失败，核对 style lock 必填、核心判断/边界不上屏、Style09 安全规则与 evidence placeholder 清理。

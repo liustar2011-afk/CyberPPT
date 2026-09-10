@@ -340,9 +340,10 @@ def test_content_first_omits_removed_interface_visual_language_rules() -> None:
 def test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist() -> None:
     grammar = creative_brief_visual_grammar()
 
-    assert "empty auxiliary-label allowlist" in grammar
-    assert "only when the upstream script explicitly supplies a non-empty" in grammar
-    assert "use at most two short labels" not in grammar
+    assert "concise auxiliary labels are allowed" in grammar
+    assert "They do not need a one-to-one mapping" in grammar
+    assert "keep them tied to the content reference" in grammar
+    assert "Do not invent summary, goal, value, outcome, or conclusion sections or labels" in grammar
 
 
 @pytest.mark.parametrize(
@@ -488,7 +489,10 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "【页面编码】" not in prompt
     assert "P18" not in prompt
     assert "以上仅用于按页追踪" not in prompt
-    assert page.title not in prompt
+    title_context = prompt.split("【标题（不上屏）】", 1)[1].split("【页面使命（不上屏）】", 1)[0]
+    assert page.title in title_context
+    onscreen_material = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1]
+    assert page.title not in onscreen_material
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in prompt
     assert "【页面内容素材｜允许提炼、改写、重组】均需进入 full 图" not in prompt
     assert prompt.count("【页面逻辑｜不上屏】") == 0
@@ -615,8 +619,10 @@ def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock, page_mission="如何治理多源知识")
 
-    assert page.core_message not in prompt
-    assert "页面任务与核心意思用于推导语义关系，也可用于生成结论、总结框或标题" in prompt
+    assert "【核心判断（不上屏）】" in prompt
+    core_context = prompt.split("【核心判断（不上屏）】", 1)[1].split("【完整文字稿（不上屏）】", 1)[0]
+    assert page.core_message in core_context
+    assert "【页面使命（不上屏）】" in prompt
     assert "【页面逻辑｜不上屏】" in prompt
     assert "主导关系：路径转化。" in prompt
     assert "判断—证据" not in prompt
@@ -1324,8 +1330,8 @@ def test_creative_brief_is_included_for_compact_style_contract() -> None:
 
     assert "[Page-specific creative brief" in prompt
     assert "【视觉组织原则】" in prompt
-    assert "empty auxiliary-label allowlist" in prompt
-    assert "one-to-one mapping" in prompt
+    assert "concise auxiliary labels are allowed" in prompt
+    assert "do not need a one-to-one mapping" in prompt
     assert "Do not generate any text, number, chart label" not in prompt
 
 
