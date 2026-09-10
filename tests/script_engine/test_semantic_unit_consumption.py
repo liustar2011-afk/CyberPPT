@@ -302,7 +302,7 @@ def test_final_rejects_relationship_that_exists_only_in_metadata() -> None:
     assert any("AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue for issue in issues)
 
 
-def test_final_rejects_relation_claim_without_materialized_edge() -> None:
+def test_final_requests_review_for_relation_claim_without_materialized_edge() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
@@ -311,6 +311,24 @@ def test_final_rejects_relation_claim_without_materialized_edge() -> None:
     )
     final["slides"][0]["core_message"] = "总体架构与配套机制贯通形成执行闭环"
 
-    issues, _ = audit_final_script(final, _plan(), _foundation())
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
+
+    assert any("AUTHOR_RELATIONSHIP_CLAIM_HEURISTIC" in issue for issue in warnings)
+    assert not any("AUTHOR_RELATIONSHIP_CLAIM_HEURISTIC" in issue for issue in issues)
+
+
+def test_final_rejects_malformed_explicit_relationship_edge() -> None:
+    final = _final(
+        ["ST0001", "ST0002", "ST0003"],
+        "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
+        "电力行业已形成6项配套技术文件，中国电力企业联合会负责标准宣贯与监督。",
+        onscreen_items=["国家建设进入全面实施阶段", "电力行业已形成6项配套技术文件"],
+    )
+    final["slides"][0]["relationships"] = [
+        {"from": "数据底座", "relation": "支撑"}
+    ]
+
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
 
     assert any("AUTHOR_RELATIONSHIP_NOT_MATERIALIZED" in issue for issue in issues)
+    assert not any("AUTHOR_RELATIONSHIP_NOT_MATERIALIZED" in issue for issue in warnings)
