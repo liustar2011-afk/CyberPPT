@@ -18,7 +18,7 @@ def test_prompt_locks_macro_mutation_and_allows_region_internal_design():
     assert "ImageGen region-internal freedom:" in prompt
     assert "Choose the exact business-object depiction inside each macro region." in prompt
     assert "Do not merge or split macro regions." in prompt
-    assert "Do not move exact visible text from its assigned macro region to another region." in prompt
+    assert "Keep each declared copy item within its assigned macro semantic region." in prompt
     assert "Do not change the focus policy" in prompt
     assert "Do not leave the allowed visual media or violate the scene policy." in prompt
 

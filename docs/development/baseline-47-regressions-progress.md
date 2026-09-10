@@ -249,3 +249,20 @@
 
 下一阶段工作：
 - Track B / Step B4：处理 Micro Freedom 1 项与 No Visual Structure 4 项，优先核对 exact visible copy 的 macro-region ownership 是否存在真实生产缺口，再迁移旧 wording/fixture。
+
+## Track B / Step B4｜Macro Region / No Visual Structure 合同对齐
+
+状态：已完成
+
+已完成工作：
+- 核对 MicroVisualFreedom 生产合同，确认现行 `Keep each declared copy item within its assigned macro semantic region.` 已覆盖 exact/declared copy 的宏区归属约束，因此不重复增加同义 production 禁令，仅迁移旧措辞断言。
+- No Visual Structure 旧测试从 `页面任务` / `核心意思` / 旧 Style 09 英文 section marker 迁移到当前 `【页面使命（不上屏）】`、`【核心判断（不上屏）】` 与中文 GPT Image 2.5 Artifact Spec live contract。
+- 收窄 direct deliverable prompt 对“页面使命”的排除断言，只禁止注入独立 `【页面使命（不上屏）】` 元数据区块；meta-header 断言同步到当前“字段名不上屏 + 结论先行改写”规则。
+- Style09/10 结构解耦 fixture 补充 Stage2 v3 所要求的 authored `onscreen_text`、`full_prose` 与独立 relational `visual_thesis` 权威输入，并扩展验证 Copy Contract、Composition Strategy、Region Graph、Visual Medium、Text Capacity、Full-slide Context、Acceptance Contract 等结构字段均不随 style 选择变化。
+
+验证结果：
+- `tests/test_imagegen_micro_freedom.py + tests/test_imagegen_no_visual_structure.py` 全部回归通过。
+- 5 项历史失败清零；未为追绿恢复旧 Style 09 wording，也未放宽 Stage2 v3 authored-copy / full-prose / visual-thesis 要求。
+
+下一阶段工作：
+- Track B / Step B5：处理 Page Manifest 2 项、Prompt Diagnostics 1 项、Visual Grammar 1 项，完成 Track B 最后 4 项后运行 Track B 聚合与标准全量 CI。

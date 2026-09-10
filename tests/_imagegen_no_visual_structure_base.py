@@ -368,9 +368,9 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertNotIn("页面角色", prompt)
         self.assertNotIn("## 第9页：", prompt)
         self.assertIn("#12355B", prompt)
-        self.assertIn("页面任务", prompt)
+        self.assertIn("【页面使命（不上屏）】", prompt)
         self.assertIn("拟建什么性质的能力", prompt)
-        self.assertIn("核心意思", prompt)
+        self.assertIn("【核心判断（不上屏）】", prompt)
         self.assertNotIn("禁止项", prompt)
         self.assertNotIn("Boundary (do not show on slide)", prompt)
         self.assertNotIn("正式范围待后续确定", prompt)
@@ -415,13 +415,13 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertIn("要点", prompt)
         self.assertIn("基于源文案进行专业改写", prompt)
         self.assertNotIn("请先理解", prompt)
-        self.assertNotIn("页面使命", prompt)
+        self.assertNotIn("【页面使命（不上屏）】", prompt)
         self.assertNotIn("禁止项", prompt)
         self.assertNotIn("Boundary (do not show on slide)", prompt)
         self.assertNotIn("不要画成页脚", prompt)
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
         self.assertIn(
-            "Do not invent section labels like meta headers; only render 上屏文字 modules.",
+            "Do not render prompt field labels or meta headers. Rewrite the source copy into conclusion-first visible Chinese while preserving its factual boundary.",
             prompt,
         )
 
@@ -495,7 +495,7 @@ class StructureStyleDecouplingTests(unittest.TestCase):
                 "reading_sequence": ["E1", "E2"],
             },
             "visual_decision": {
-                "visual_thesis": "Input visibly supports the result through one relationship field.",
+                "visual_thesis": "The image shows Input supporting Result through one directed relationship.",
                 "spatial_organization": "Input leads to Result",
                 "reading_path": ["Input", "Result"],
                 "text_integration_method": "Attach text to its related object",
@@ -540,6 +540,9 @@ class StructureStyleDecouplingTests(unittest.TestCase):
             "title": "Title",
             "page_mission": "Explain how the input relationship field supports the result.",
             "core_message": "Input visibly supports the result through one relationship field.",
+            "full_prose": "Input supports Result through one relationship field.",
+            "onscreen_source": "authored",
+            "onscreen_text": "Input\nResult",
             "must_not_include": [],
             "stage02_visual_input": {
                 "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
