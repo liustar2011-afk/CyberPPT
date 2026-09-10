@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from .delivery_cleanliness import argument_pattern_label, render_argument_chain, sanitize_delivery_prose, sanitize_relation_text
+from .semantic_contract.provenance_markdown import render_provenance_markdown
 
 PAGE_TYPE_LABELS = {"cover": "封面", "contents": "目录", "chapter": "章节页", "content": "内容页", "closing": "封底"}
 DETAIL_LABEL_RE = re.compile(r"^[^\s：:，,。；;、]{2,24}[：:]")
@@ -48,46 +49,6 @@ def _render_onscreen(sections: list[dict[str, Any]]) -> list[str]:
         elif heading: lines.append(f"- {heading}")
         elif body: lines.append(f"- {body}")
         for item in items: lines.append(f"  - {item}")
-    return lines
-
-def _render_provenance(sections: list[dict[str, Any]]) -> list[str]:
-    """Render audit-only module evidence bindings without changing visible copy."""
-
-    lines: list[str] = []
-    for section in sections:
-        provenance = section.get("provenance")
-        if not isinstance(provenance, dict):
-            continue
-        module_id = _single_line(section.get("id"))
-        derivation = _single_line(provenance.get("derivation"))
-        claim_refs = [
-            _single_line(item)
-            for item in (provenance.get("claim_refs") or [])
-            if _text(item)
-        ]
-        if not module_id:
-            continue
-        summary = f"- {module_id}"
-        if derivation:
-            summary += f" | {derivation}"
-        if claim_refs:
-            summary += f" | claims={','.join(claim_refs)}"
-        lines.append(summary)
-        for binding in provenance.get("bindings") or []:
-            if not isinstance(binding, dict):
-                continue
-            target = _single_line(binding.get("target"))
-            source_refs = [
-                _single_line(item)
-                for item in (binding.get("source_refs") or [])
-                if _text(item)
-            ]
-            relation = _single_line(binding.get("relation"))
-            if not target:
-                continue
-            sources = ",".join(source_refs) if source_refs else "∅"
-            suffix = f" ({relation})" if relation else ""
-            lines.append(f"  - {target} <= {sources}{suffix}")
     return lines
 
 def _render_visual(slide: dict[str, Any]) -> list[str]:
@@ -141,11 +102,11 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
             # authored onscreen projection; old payloads without that field may
             # still be rendered without silently losing their body copy.
             lines.extend(["", "### 上屏文字", "", full_copy])
-        provenance_lines = _render_provenance(onscreen_sections)
+        provenance_lines = render_provenance_markdown(onscreen_sections)
         if provenance_lines:
-            # Reuse the existing parser-recognized 证据映射 field boundary so
-            # module provenance can never be consumed as visible 上屏文字.
-            lines.extend(["", "### 证据映射（模块级｜不上屏）", "", *provenance_lines])
+            # The heading starts with the parser-recognized 证据映射 field, so
+            # this audit-only block cannot be consumed as visible 上屏文字.
+            lines.extend(["", *provenance_lines])
         notes = sanitize_delivery_prose(slide.get("speaker_notes"))
         if notes: lines.extend(["", "### 演讲者备注", "", notes])
         source_refs = [_text(item) for item in (slide.get("source_refs") or []) if _text(item)]
