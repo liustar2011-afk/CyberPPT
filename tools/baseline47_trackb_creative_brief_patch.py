@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import sys
 from pathlib import Path
 
 
@@ -18,159 +21,138 @@ def replace_exact(path: str, old: str, new: str, *, count: int = 1) -> None:
         handle.write(text)
 
 
-# B5: one production diagnostics compatibility fix plus three wording migrations.
-# Diagnostics must recognize both legacy and current deliverable prompt content markers.
-replace_exact(
-    "scripts/imagegen_pipeline/prompt_diagnostics.py",
-    '''_CONTENT_START = "【上屏文字参考】"
-_CONTENT_END = "【构图指令】"
+def c1() -> None:
+    replace_exact(
+        "tests/test_content_route.py",
+        '''    issues, warnings = audit_deck_plan(_plan(page), _foundation())
+    assert any("AUTHOR_FIELDS_FORBIDDEN" in issue for issue in issues)
+    assert warnings == []
 ''',
-    '''_CONTENT_STARTS = (
-    "【上屏文字参考】",
-    "【内容锁定】",
-    "【源文案语义输入】",
-)
-_CONTENT_END = "【构图指令】"
+        '''    issues, warnings = audit_deck_plan(_plan(page), _foundation())
+    assert any("AUTHOR_FIELDS_FORBIDDEN" in issue for issue in issues)
+    assert any("PLAN_PAGE_WITHOUT_EVIDENCE" in warning for warning in warnings)
 ''',
-)
-replace_exact(
-    "scripts/imagegen_pipeline/prompt_diagnostics.py",
-    '''_CONTENT_FIRST_STARTS = (
-    "【页面任务｜",
-    "页面任务：",
-)
-''',
-    '''_CONTENT_FIRST_STARTS = (
-    "【页面使命（不上屏）】",
-    "【页面任务｜",
-    "页面任务：",
-)
-''',
-)
-replace_exact(
-    "scripts/imagegen_pipeline/prompt_diagnostics.py",
-    '''def _section(text: str, start: str, end: str | None = None) -> str:
-    if start not in text:
-        return ""
-    value = text.split(start, 1)[1]
-    if end and end in value:
-        value = value.split(end, 1)[0]
-    return value.strip()
-
-
-def _content_first_page_section(text: str) -> str:
-''',
-    '''def _section(text: str, start: str, end: str | None = None) -> str:
-    if start not in text:
-        return ""
-    value = text.split(start, 1)[1]
-    if end and end in value:
-        value = value.split(end, 1)[0]
-    return value.strip()
-
-
-def _first_marker(text: str, markers: tuple[str, ...]) -> str:
-    """Return the earliest supported marker present in a compiled prompt."""
-
-    present = [(text.index(marker), marker) for marker in markers if marker in text]
-    return min(present)[1] if present else ""
-
-
-def _content_first_page_section(text: str) -> str:
-''',
-)
-replace_exact(
-    "scripts/imagegen_pipeline/prompt_diagnostics.py",
-    '''    content = _section(prompt, _CONTENT_START, _CONTENT_END)
-    if not content:
-        content = _content_first_page_section(prompt)
-    composition = ""
-    if _COMPOSITION_START in prompt and _CONTENT_START in prompt:
-        composition = prompt.split(_COMPOSITION_START, 1)[1].split(_CONTENT_START, 1)[0]
-''',
-    '''    content_start = _first_marker(prompt, _CONTENT_STARTS)
-    content = _section(prompt, content_start, _CONTENT_END) if content_start else ""
-    if not content:
-        content = _content_first_page_section(prompt)
-    composition = ""
-    if _COMPOSITION_START in prompt and content_start:
-        composition = prompt.split(_COMPOSITION_START, 1)[1].split(content_start, 1)[0]
-''',
-)
-
-# Page Manifest: retain provenance/authority checks, migrate retired prompt labels and
-# Style09 English section headings to the current Chinese live contract.
-replace_exact(
-    "tests/_imagegen_page_manifest_base.py",
-    '''        self.assertIn("【锁定关键文字】", prompt)
-        self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
-''',
-    '''        self.assertIn("【核心判断（不上屏）】", prompt)
-        self.assertIn("【页面内容素材｜允许提炼、改写、重组】", prompt)
-''',
-)
-replace_exact(
-    "tests/test_imagegen_page_manifest.py",
-    '''        self.assertIn("### 1. Style identity and semantic principle — hard", prompt)
-        self.assertIn("### 2. Semantic anchor and composition — hard", prompt)
-        self.assertIn("### 6. Depth, material and icon discipline — hard", prompt)
-''',
-    '''        self.assertIn("# 视觉风格09：纯白 + 深蓝领导汇报｜GPT Image 2.5 Artifact Spec 执行版", prompt)
-        self.assertIn("## 00｜任务契约：先定义成品，再执行风格", prompt)
-        self.assertIn("## 02｜Artifact Spec 内部编译：先把页面变成“可验收规格”", prompt)
-''',
-)
-
-# Visual Grammar: align the exact snapshot with the current source-boundary wording.
-replace_exact(
-    "tests/test_visual_grammar.py",
-    '''        "graphical state unless that text is present in the locked on-screen content."
-''',
-    '''        "graphical state unless that text is supported by the on-screen content reference."
-''',
-)
-
-# Add current-marker diagnostic coverage so the production fix is pinned independently
-# of the legacy 【内容锁定】 fixture.
-replace_exact(
-    "tests/test_imagegen_prompt_diagnostics.py",
-    '''def test_analyze_prompt_is_read_only() -> None:
-    original = PROMPT
-    analyze_prompt(PROMPT, onscreen_text="正文")
-    assert PROMPT == original
-
-
-def test_analyze_prompt_measures_content_first_page_sections() -> None:
-''',
-    '''def test_analyze_prompt_is_read_only() -> None:
-    original = PROMPT
-    analyze_prompt(PROMPT, onscreen_text="正文")
-    assert PROMPT == original
-
-
-def test_analyze_prompt_measures_current_deliverable_source_section() -> None:
-    prompt = """【页面编码】P02｜测试页
-【源文案语义输入】
-- **治理层｜质量与授权**
-- 2025年完成率 95%。
-
-【构图指令】
-保持事实准确。
-"""
-    metrics = analyze_prompt(
-        prompt,
-        onscreen_text="**治理层｜质量与授权**\\n2025年完成率 95%。",
     )
 
-    assert metrics.page_content_chars > 0
-    assert metrics.global_rule_chars > 0
-    assert 0 < metrics.page_specific_ratio < 1
-    assert metrics.locked_text_preserved is True
-    assert metrics.exact_facts_preserved is True
 
-
-def test_analyze_prompt_measures_content_first_page_sections() -> None:
+def c2() -> None:
+    replace_exact(
+        "tests/_final_script_pages_base.py",
+        '''            self.assertIn("Do not render title, subtitle, logo, page number, footer, or template frame.", prompt)
 ''',
-)
+        '''            self.assertIn("不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚", prompt)
+''',
+    )
+    replace_exact(
+        "tests/_final_script_pages_base.py",
+        '''            "【核心意思表达要求", 1
+''',
+        '''            "【输出尺寸｜不上屏】", 1
+''',
+        count=2,
+    )
 
-print("Track B5 manifest/diagnostics/visual-grammar patch applied")
+
+def c3() -> None:
+    for path in (
+        "tests/fixtures/script_quality_contract_baseline.json",
+        "tests/fixtures/script_quality_contract_baseline_2.json",
+    ):
+        replace_exact(
+            path,
+            '''        "onscreen_judgment_mode": "",
+        "onscreen_text":''',
+            '''        "onscreen_judgment_mode": "",
+        "onscreen_source": "authored",
+        "onscreen_text":''',
+        )
+
+
+def c4() -> None:
+    replace_exact(
+        "tests/test_skill_contract.py",
+        '''PROJECT_AGENTS = ROOT / "projects" / "AGENTS.md"
+''',
+        '''''',
+    )
+    replace_exact(
+        "tests/test_skill_contract.py",
+        '''    def test_default_project_route_uses_current_strict_pipeline(self) -> None:
+        agents = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
+        workflow = WORKFLOW.read_text(encoding="utf-8-sig")
+        source_skill = SOURCE_SKILL.read_text(encoding="utf-8-sig")
+        self.assertIn("New source-to-script projects use the `strict/legacy` profile by default", agents)
+        self.assertIn("一次业务语义理解", workflow)
+''',
+        '''    def test_default_project_route_uses_current_profile_router(self) -> None:
+        agents = AGENTS.read_text(encoding="utf-8-sig")
+        workflow = WORKFLOW.read_text(encoding="utf-8-sig")
+        source_skill = SOURCE_SKILL.read_text(encoding="utf-8-sig")
+        self.assertIn("默认使用快速、忠实的 `script` profile", agents)
+        self.assertIn("strict/legacy", agents)
+        self.assertIn("一次业务语义理解", workflow)
+''',
+    )
+
+
+def c5() -> None:
+    replace_exact(
+        "scripts/image_to_pptx_runtime/authored_layers.py",
+        '''    temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+''',
+        '''    temporary.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n",
+        encoding="utf-8",
+        newline="\\n",
+    )
+''',
+    )
+    replace_exact(
+        "scripts/image_to_pptx_runtime/template_assembly.py",
+        '''        output.write_text(ET.tostring(root, encoding="unicode") + "\\n", encoding="utf-8")
+''',
+        '''        output.write_text(
+            ET.tostring(root, encoding="unicode") + "\\n",
+            encoding="utf-8",
+            newline="\\n",
+        )
+''',
+    )
+    replace_exact(
+        "scripts/image_to_pptx_runtime/text_measure.py",
+        '''        output_path.write_text(rendered_json + '\\n', encoding='utf-8')
+''',
+        '''        output_path.write_text(rendered_json + '\\n', encoding='utf-8', newline='\\n')
+''',
+    )
+    replace_exact(
+        "scripts/image_to_pptx_runtime/svg_quality/checker.py",
+        '''        report_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + '\\n',
+            encoding='utf-8',
+        )
+''',
+        '''        report_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + '\\n',
+            encoding='utf-8',
+            newline='\\n',
+        )
+''',
+    )
+
+
+PHASES = {"c1": c1, "c2": c2, "c3": c3, "c4": c4, "c5": c5}
+
+
+def main() -> int:
+    if len(sys.argv) != 2 or sys.argv[1] not in PHASES:
+        print(f"usage: {Path(sys.argv[0]).name} <{'|'.join(PHASES)}>", file=sys.stderr)
+        return 2
+    phase = sys.argv[1]
+    PHASES[phase]()
+    print(f"Track C {phase.upper()} patch applied")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
