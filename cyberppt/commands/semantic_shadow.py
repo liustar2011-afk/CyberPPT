@@ -111,6 +111,14 @@ def _codes(value: object) -> str:
     return ", ".join(str(item) for item in value)
 
 
+def _parity_label(value: object) -> str:
+    if value is True:
+        return "match"
+    if value is False:
+        return "diverged"
+    return "unknown"
+
+
 def render_semantic_shadow_summary(report: dict[str, Any]) -> str:
     """Render a compact operator-facing comparison while retaining JSON output."""
 
@@ -134,6 +142,11 @@ def render_semantic_shadow_summary(report: dict[str, Any]) -> str:
             "semantic shadow: {} blocker(s), {} review finding(s)".format(
                 len(semantic.get("blockers") or []),
                 len(semantic.get("reviews") or []),
+            ),
+            "blocking outcome: {} (legacy={}, semantic={})".format(
+                _parity_label(diff.get("blocking_outcome_matches")),
+                legacy.get("status", "unknown"),
+                semantic.get("status", "unknown"),
             ),
             f"blockers only in legacy: {_codes(diff.get('blocker_codes_only_legacy'))}",
             f"blockers only in semantic: {_codes(diff.get('blocker_codes_only_semantic'))}",
