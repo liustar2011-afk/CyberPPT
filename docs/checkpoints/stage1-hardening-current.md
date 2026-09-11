@@ -5,12 +5,13 @@ PR：#34
 
 ## 已完成
 
-当前完成到批次 `8 / 子步骤 1`。
+当前完成到收口批次 `9 / 子步骤 1`。
 
 ### 批次 5：Final Script Source Provenance
 
 - Final Script 内容页强制要求 `source_provenance`。
-- 标准 lineage 为：`packet_sha256 + source_refs + unit_ids`。
+- 标准 page lineage 为：`packet_sha256 + source_refs + unit_ids`。
+- Final Script 1.1 同时保留 module / item 级 provenance；页面级 lineage 与模块级 semantic binding 职责分离。
 - `audit-final` 与 `render-stage02` 均验证 Final Script provenance 与当前 Author Preflight 一致性。
 
 ### 批次 6：Native-source Fidelity Audit
@@ -22,63 +23,76 @@ PR：#34
 
 ### 批次 7：Project Status 接入 Stage1 Gate
 
-- `script_engine/project_status.py` 新增正式 `stage1` 状态区，集中输出：
-  - `source_index`
-  - `foundation`
-  - `deck_plan`
-  - `author_preflight`
-  - `final_script`
-  - `final_audit`
+- `script_engine/project_status.py` 新增正式 `stage1` 状态区，集中输出：`source_index / foundation / deck_plan / author_preflight / final_script / final_audit`。
 - Author Preflight 状态不信任静态 Manifest，而是先重建 current preflight，再校验 Manifest 是否仍代表当前状态。
 - `author_preflight.pages` 输出逐页 `gate_status / freshness / exact_source_status / source_refs / unit_ids / issues`。
 - 顶层 `stage` 不再允许“无 Preflight 但 Final Script 存在”显示为已就绪。
 - 只有 `final_audit_report()` 真正通过后，项目才显示“可进入 Stage02”。
-- `tests/script_engine/test_project_status_stage1_gate.py` 已覆盖五类状态：
-  1. fresh Preflight：页面 `passed + fresh + exact source available`；
-  2. Deck Plan 更新：原 Packet 立即显示 `stale`；
-  3. Manifest 缺失：即使当前 Packet 可重新计算为 passed，仍不得放行；
-  4. Packet 自身为 `blocked`：逐页明确输出 `gate_status=blocked` 及阻断原因；
-  5. Preflight 与 provenance 均合法、但 Final Script 新增原文不存在的数字：`final_audit=failed`，顶层状态明确“不得进入 Stage02”。
-- 所有旧 `status` 契约测试已迁移：
-  - 无 Source Index / Manifest 时明确显示 Preflight 未通过；
-  - lint/advisory 可以继续独立报告，但不能绕过 Stage1 Gate；
-  - 旧“脚本文件存在即确定性检查通过”的契约已取消。
+- focused status tests 已覆盖：fresh / stale / manifest missing / packet blocked / final native fidelity failed。
 
-### 批次 8 / 子步骤 1：历史失败基线治理
+### 批次 8：测试与 CI 基线治理
 
-已逐项处理此前 3 个 `main` 基线失败：
+此前 3 个历史失败已完成治理：
 
-1. `FAITHFUL_RELATION_PROMOTED`
-   - 规则注册表已明确其为低置信度 `warning`；
-   - 测试已迁移为检查 warnings，不再错误要求 blocker。
-2. identified onscreen item code-only fixture
-   - 原测试使用 `A→B`，与当前 taxonomy-code 合同不一致；
-   - 改为正式 taxonomy code 形态 `A1+B2`，继续验证 object item 不会绕过可见文本审计。
-3. Style 09 样例尺寸
-   - 旧测试固定要求 `(2048, 1024)` / 2:1；
-   - 当前正式参考图为 16:9；
-   - 新契约改为至少 `1600×900` 且接近 16:9，不再把历史像素尺寸写死为业务契约。
+1. `FAITHFUL_RELATION_PROMOTED` 按现有 rule registry 的低置信度 warning 契约迁移测试；
+2. object-item code-only fixture 改为当前 taxonomy code 形态 `A1+B2`；
+3. Style 09 样例测试从过期 2:1 固定像素改为当前 16:9 高分辨率合同。
 
-### 最近一次全量 CI
+旧 status 测试也全部迁移到新的 Stage1 Gate 契约，不保留“脚本文件存在即可就绪”的兼容行为。
 
-在批次 7 代码落地、旧 status 测试尚未迁移时：
+### 代码基线最终验证
 
-`7 failed, 2238 passed, 8 skipped, 49 subtests passed`
+GitHub Actions run `34585423986`，代码 head `cea6b706a7b8e6e74f25ea2bde994831777f561b`：
 
-其中：
+- Python 3.10：`2247 passed, 8 skipped, 42 warnings, 49 subtests passed`，0 failed；
+- Python 3.12：`2247 passed, 8 skipped, 42 warnings, 49 subtests passed`，0 failed；
+- OfficeCLI render smoke：passed；
+- Windows wheel smoke：passed；
+- macOS wheel smoke：passed；
+- workflow overall：success。
 
-- 4 项为旧 status 契约；已完成迁移；
-- 3 项为上述历史基线；已完成治理。
+至此，Stage1 hardening 代码层面已经恢复真实绿色基线。
 
-当前 head 已没有已知未处理失败，并补齐了 blocked page 与 final-audit-failed 两类状态验收用例，等待下一轮 GitHub Actions 全量验证。
+### 收口批次 9 / 子步骤 1：运行合同固化
+
+已新增：
+
+`.agents/skills/cyberppt-script-workflow/references/stage1-faithful-gate-contract.md`
+
+该合同正式固化：
+
+```text
+source-index.v2
+  → Page Source Packet v2
+  → Author Preflight v2
+  → AUTHOR
+  → Final Script source_provenance
+  → Native-source Fidelity Audit
+  → Stage02
+```
+
+并明确：
+
+- exact source 缺失、部分解析、binding 缺失、Packet stale/invalid 均硬阻断；
+- Foundation preview 不得充当 faithful factual fallback；
+- 当前 Stage1 faithful route 不再提供“无 v2 source index”的回退路径；
+- Final Script 页面 provenance 必须来自当前 passed Author Preflight；
+- `render-stage02` 必须重新验证 Preflight、page lineage 与 Native-source Fidelity。
+
+同时更新 `.agents/skills/cyberppt-script-workflow/AGENTS.md`，将该合同设为 AUTHOR / CRITIQUE / REWRITE / Final Audit / Stage02 handoff 的强制阅读入口。
+
+`final-script-provenance-contract.md` 也已改为双层 provenance 合同：
+
+- 页面级 exact-source lineage 证明当前精确来源证据；
+- module / item provenance 描述 Final Script 结构化语义归属；
+- Native Source Unit 是最终事实权威；Foundation 负责结构化语义索引与绑定。
 
 ## 下一步
 
-批次 `8 / 子步骤 2`：读取当前 head 的全量 CI。
+收口批次 `9 / 子步骤 2`：验证最新文档 head 的 GitHub Actions。
 
-验收目标：
+通过后：
 
-1. Python 3.10 / 3.12 均达到 `0 failed`；
-2. OfficeCLI、build package、artifact audit 保持通过；
-3. 若出现新失败，继续按“真实实现缺陷 / 过期测试 / 环境依赖”分类处理，不使用无理由 xfail；
-4. CI 绿色后进入收口批次：更新 Stage1 工作流文档、最终验收记录和 PR 描述，形成可合并状态。
+1. 生成最终 Stage1 Hardening 验收记录；
+2. 更新 PR #34 描述，写清架构变化、硬门禁、测试结果与不再兼容的旧行为；
+3. 确认 PR 处于可合并状态，不在未授权情况下自动合并。
