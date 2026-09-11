@@ -17,6 +17,14 @@ def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def _source_provenance() -> dict:
+    return {
+        "packet_sha256": "1" * 64,
+        "source_refs": ["F1"],
+        "unit_ids": ["SU-001"],
+    }
+
+
 def test_examples_validate_and_default_faithful_example_is_source_closed() -> None:
     foundation = json.loads(_read("examples/foundation.example.json"))
     plan = json.loads(_read("examples/deck-plan.example.json"))
@@ -175,6 +183,7 @@ def test_faithful_minimum_content_page_validates_and_lints_without_argument() ->
                     {"heading": "接口联调", "text": "开展接口联调"},
                 ],
                 "source_refs": ["F1"],
+                "source_provenance": _source_provenance(),
             }
         ],
     }
@@ -204,6 +213,7 @@ def test_analytical_mode_still_requires_analytical_supporting_fields() -> None:
                     {"heading": "资源治理需要统一组织", "text": "资源治理需要统一组织并形成清晰的分析结构"}
                 ],
                 "source_refs": ["F1"],
+                "source_provenance": _source_provenance(),
             }
         ],
     }
