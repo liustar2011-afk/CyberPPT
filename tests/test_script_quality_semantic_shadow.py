@@ -87,7 +87,7 @@ def test_shadow_semantic_blocker_does_not_replace_legacy_gate() -> None:
 
     report = build_semantic_shadow_report(script, _outline(), _source_truth())
 
-    assert "COMPOSED_TRACE_SOURCE_BOUNDARY" in report["semantic_shadow"]["blocker_codes"]
+    assert "FINAL_NUMBER_OUTSIDE_FOUNDATION" in report["semantic_shadow"]["blocker_codes"]
     assert report["effective_gate"] == "legacy"
     assert report["status"] == (
         "blocked"
