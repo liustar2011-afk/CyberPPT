@@ -1,6 +1,7 @@
 """Structured semantic-contract primitives for Stage 01."""
 
 from .audit import audit_final_script_semantic_contract
+from .authorization import validate_authoring_mode_authorization
 from .compatibility import (
     RELATION_ALLOWED_EVIDENCE_ROLES,
     collect_provenance_compatibility_diagnostics,
@@ -39,6 +40,7 @@ __all__ = [
     "partition_diagnostics",
     "provenance_records",
     "render_provenance_markdown",
+    "validate_authoring_mode_authorization",
     "validate_final_script_provenance",
     "validate_provenance_compatibility",
 ]
