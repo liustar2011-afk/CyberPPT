@@ -4,12 +4,13 @@ from pathlib import Path
 
 from script_engine.author_preflight import author_preflight_report
 from script_engine.cli import main
+from script_engine.final_source_provenance import source_provenance_for_page
 from script_engine.page_source_command import page_source_report
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _write_render_gate(tmp_path: Path) -> tuple[Path, Path]:
+def _write_render_gate(tmp_path: Path) -> tuple[Path, Path, dict]:
     script_dir = tmp_path / "stage1-gate" / "script"
     cache_dir = script_dir / ".cache"
     packet_dir = cache_dir / "page-source"
@@ -75,7 +76,25 @@ def _write_render_gate(tmp_path: Path) -> tuple[Path, Path]:
     )
     assert preflight_exit == 0
     assert manifest["summary"]["overall_status"] == "passed"
-    return plan_path, foundation_path
+    return plan_path, foundation_path, manifest
+
+
+def _write_gated_final(
+    tmp_path: Path,
+    payload: dict | None = None,
+    *,
+    filename: str = "gated-final-script.json",
+) -> tuple[Path, Path, Path]:
+    plan_path, foundation_path, manifest = _write_render_gate(tmp_path)
+    final_payload = payload or json.loads(
+        (ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8")
+    )
+    slide = final_payload["slides"][0]
+    slide["source_refs"] = list(manifest["pages"][0]["source_refs"])
+    slide["source_provenance"] = source_provenance_for_page(manifest, "P01")
+    final_path = tmp_path / filename
+    final_path.write_text(json.dumps(final_payload, ensure_ascii=False), encoding="utf-8")
+    return final_path, plan_path, foundation_path
 
 
 def _render_args(
@@ -249,9 +268,8 @@ def test_cli_trace_composed_reports_priorities_and_blocks_source_absent_number(
 
 
 def test_cli_render_stage02_writes_output_file(tmp_path, capsys) -> None:
-    input_path = ROOT / "examples" / "final-script.example.json"
+    input_path, plan_path, foundation_path = _write_gated_final(tmp_path)
     output_path = tmp_path / "nested" / "final-script.md"
-    plan_path, foundation_path = _write_render_gate(tmp_path)
     exit_code = main(_render_args(input_path, output_path, plan_path, foundation_path))
     printed = capsys.readouterr().out.strip()
     assert exit_code == 0
@@ -264,10 +282,12 @@ def test_cli_render_stage02_writes_output_file(tmp_path, capsys) -> None:
 def test_cli_render_stage02_fails_on_invalid_input(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     payload["slides"][0]["page_type"] = "sidebar"
-    broken = tmp_path / "broken.json"
-    broken.write_text(json.dumps(payload), encoding="utf-8")
+    broken, plan_path, foundation_path = _write_gated_final(
+        tmp_path,
+        payload,
+        filename="broken.json",
+    )
     output_path = tmp_path / "out.md"
-    plan_path, foundation_path = _write_render_gate(tmp_path)
     exit_code = main(_render_args(broken, output_path, plan_path, foundation_path))
     captured = capsys.readouterr()
     err = json.loads(captured.err)
@@ -281,10 +301,12 @@ def test_cli_render_stage02_allows_semantically_incomplete_heading_as_advisory(t
     payload["slides"][0]["onscreen"] = [
         {"heading": "建设框架：四大方向、八项能力", "text": "覆盖数据基础设施全生命周期"},
     ]
-    script = tmp_path / "advisory.json"
+    script, plan_path, foundation_path = _write_gated_final(
+        tmp_path,
+        payload,
+        filename="advisory.json",
+    )
     output_path = tmp_path / "final-script.md"
-    script.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
-    plan_path, foundation_path = _write_render_gate(tmp_path)
 
     exit_code = main(_render_args(script, output_path, plan_path, foundation_path))
     captured = capsys.readouterr()
@@ -563,9 +585,8 @@ def test_cli_outline_lists_slides_with_onscreen_module_counts(capsys) -> None:
 
 
 def test_cli_check_sync_passes_when_markdown_matches_fresh_render(tmp_path, capsys) -> None:
-    final_path = ROOT / "examples" / "final-script.example.json"
+    final_path, plan_path, foundation_path = _write_gated_final(tmp_path)
     markdown_path = tmp_path / "final-script.md"
-    plan_path, foundation_path = _write_render_gate(tmp_path)
     main(_render_args(final_path, markdown_path, plan_path, foundation_path))
     capsys.readouterr()
     exit_code = main(["check-sync", str(final_path), str(markdown_path)])
@@ -578,9 +599,8 @@ def test_cli_check_sync_passes_when_markdown_matches_fresh_render(tmp_path, caps
 
 
 def test_cli_check_sync_fails_when_markdown_is_stale(tmp_path, capsys) -> None:
-    final_path = ROOT / "examples" / "final-script.example.json"
+    final_path, plan_path, foundation_path = _write_gated_final(tmp_path)
     markdown_path = tmp_path / "final-script.md"
-    plan_path, foundation_path = _write_render_gate(tmp_path)
     main(_render_args(final_path, markdown_path, plan_path, foundation_path))
     capsys.readouterr()
     with markdown_path.open("a", encoding="utf-8") as handle:
