@@ -22,7 +22,6 @@ SCRIPT_ALIASES: dict[str, str] = {
     "merge-pages": "merge_verified_pages.py",
     "pair-manifest": "imagegen_pipeline/page_manifest.py",
     "rework-report": "build_rework_report.py",
-    "semantic-shadow": "semantic_shadow.py",
     "validate": "validate_pptx.py",
 }
 
