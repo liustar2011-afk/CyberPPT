@@ -183,11 +183,14 @@ def test_p01_compressed_copy_separates_protected_losses_from_lexical_review() ->
     issue_text = "\n".join(issues)
     warning_text = "\n".join(warnings)
 
+    assert "PROTECTED_NUMBER_MISSING" in issue_text
     assert "ST0035" in issue_text
-    assert "ST0036" in issue_text
-    assert "AUTHOR_CONDITION_LOST" in issue_text
-    assert "AUTHOR_RESPONSIBILITY_LOST" in issue_text
+    assert "AUTHOR_CONDITION_LOST" not in issue_text
+    assert "AUTHOR_RESPONSIBILITY_LOST" not in issue_text
 
+    assert "PROTECTED_CONDITION_REVIEW_REQUIRED" in warning_text
+    assert "PROTECTED_ACTOR_REVIEW_REQUIRED" in warning_text
+    assert "ST0036" in warning_text
     assert "ST0034" in warning_text
     assert "ST0037" in warning_text
     assert "AUTHOR_SOURCE_SEMANTICS_LOST" in warning_text
