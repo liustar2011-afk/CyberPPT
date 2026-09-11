@@ -36,8 +36,9 @@ def _exact_source_available(packet: Mapping[str, Any]) -> bool:
         exact_units = item.get("exact_source_units")
         if not isinstance(exact_units, list) or not exact_units:
             return False
-        if any(not _text(unit.get("text")) for unit in exact_units if isinstance(unit, Mapping)):
-            return False
+        for unit in exact_units:
+            if not isinstance(unit, Mapping) or not _text(unit.get("text")):
+                return False
     return True
 
 
