@@ -26,6 +26,40 @@ LOCKED_JUDGMENT_ROLES = {
 }
 VALID_CONTENT_LOADS = {"light", "standard", "dense"}
 
+# Legacy Script Quality still contains several text-shape / keyword heuristics
+# kept for diagnostic compatibility. Phase 3 removes their blocking authority:
+# these codes can surface review candidates, but they cannot fail a script solely
+# because a word, length threshold, similarity score, or inferred text role was
+# matched. Structured page-logic, provenance, source IDs, exact protected payload,
+# delivery cleanliness, and explicit policy checks keep their original severity.
+LEGACY_HEURISTIC_WARNING_CODES = frozenset(
+    {
+        "OFF_TOPIC_CONSTRAINT_MODULE",
+        "FACT_CERTAINTY_LOST",
+        "ONSCREEN_BOUNDARY_ASIDE",
+        "ONSCREEN_FALSE_PARENT_CHILD_RELATION",
+        "ONSCREEN_SUBORDINATE_FRAGMENT",
+        "ONSCREEN_FALSE_PARALLEL_SEMANTICS",
+        "ONSCREEN_COMPLETE_PROPOSITION_UNGROUNDED",
+        "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
+        "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
+        "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
+        "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL",
+        "ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY",
+        "ONSCREEN_COMPOUND_GROUP_HEADING",
+        "ONSCREEN_GROUP_ROLE_REPETITION",
+        "ONSCREEN_MODULE_INDEX_RESTATEMENT",
+        "VISUAL_STRUCTURE_STYLE_ONLY",
+        "PATH_ORDER_SIGNAL_MISSING",
+        "LOOP_RETURN_SIGNAL_MISSING",
+        "MATRIX_AXES_MISSING",
+        "LAYER_HIERARCHY_MISSING",
+        "CONTENT_PAGE_TOO_SPARSE",
+        "MODULE_HIERARCHY_MISSING",
+        "VISIBLE_NODE_OVERLOAD",
+    }
+)
+
 
 def resolve_judgment_mode(explicit_mode: str = "", judgment_role: str = "") -> str:
     """Resolve display policy from an explicit override, then semantic role."""
@@ -181,6 +215,8 @@ def _issue(
 ) -> ScriptQualityIssue:
     if severity not in {"error", "warning"}:
         raise ValueError(f"unsupported severity: {severity}")
+    if code in LEGACY_HEURISTIC_WARNING_CODES:
+        severity = "warning"
     return ScriptQualityIssue(
         code=code,
         severity=severity,
