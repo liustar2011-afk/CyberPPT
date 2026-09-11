@@ -11,7 +11,7 @@ from cyberppt.script_quality.audit import (
     COMPOSITION_PRIMITIVES, SPATIAL_SIGNALS, STRATEGY_ORDER, _TERM_HEDGE_LEAD_RE,
     _TERM_HEDGE_TRAIL_CONDITION_RE, _TERM_HEDGE_TRAIL_NEGATION_RE, _unhedged_terms,
     _unhedged_scope_terms, _claim_text, build_communication_review, script_retry_directive,
-    audit_script_quality as _audit_script_quality,
+    audit_script_quality,
 )
 
 from cyberppt.script_quality.models import (
@@ -109,14 +109,6 @@ from cyberppt.script_quality.relationships import (
     _relation_parallel_labels, _relation_values, _relation_visibility_signal,
     _relationship_prerequisite_issue, _relationship_strings, _same_page_responsibility,
 )
-
-from cyberppt.script_quality.severity import normalize_public_issue_severity
-
-
-def audit_script_quality(*args, **kwargs):
-    """Run the legacy audit with the governed public severity policy."""
-
-    return normalize_public_issue_severity(_audit_script_quality(*args, **kwargs))
 
 
 __all__ = (
