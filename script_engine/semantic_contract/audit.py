@@ -7,6 +7,7 @@ from typing import Any
 from .authorization import validate_authoring_mode_authorization
 from .compatibility import collect_provenance_compatibility_diagnostics
 from .diagnostics import partition_diagnostics
+from .onscreen_contract import collect_onscreen_contract_diagnostics
 from .protected_payload import collect_protected_payload_diagnostics
 from .provenance import validate_final_script_provenance
 from .relationships import validate_relationship_shape
@@ -25,11 +26,12 @@ def audit_final_script_semantic_contract(
 
     Structured authorization, source scope, relationship shape/topology,
     source-structure preservation, provenance, typed compatibility, protected
-    payload, exact numeric source boundary and explicit visibility are the new
-    semantic authority. During Phase 4, the historical Final Script auditor is
-    invoked here as a compatibility adapter so formal callers no longer need to
-    orchestrate two independent semantic engines. Its remaining capabilities can
-    now be migrated here one by one without changing the public audit boundary.
+    payload, objective source boundaries, explicit PLAN onscreen contracts and
+    explicit visibility are the new semantic authority. During Phase 4, the
+    historical Final Script auditor is invoked here as a compatibility adapter so
+    formal callers no longer need to orchestrate two independent semantic engines.
+    Its remaining capabilities can now be migrated here one by one without
+    changing the public audit boundary.
     """
 
     authorization_issues = validate_authoring_mode_authorization(final_script, plan)
@@ -45,6 +47,7 @@ def audit_final_script_semantic_contract(
         *collect_provenance_compatibility_diagnostics(final_script, foundation),
         *collect_protected_payload_diagnostics(final_script, foundation, plan),
         *collect_source_boundary_diagnostics(final_script, foundation),
+        *collect_onscreen_contract_diagnostics(final_script, plan, foundation),
         *collect_visibility_diagnostics(final_script, plan, foundation),
     ]
     structured_blockers, review_required, structured = partition_diagnostics(
