@@ -94,15 +94,40 @@
 
 核心模块、Schema 和 focused tests 已写入分支。远端 CI 尚未执行。
 
+---
+
+## 批次 4A：Author Preflight CLI
+
+状态：已完成
+
+### 已完成工作
+
+1. 新增 `author_preflight_report()`，负责加载 Deck Plan、Foundation、Source Index 和逐页 Packet，并生成/持久化 Manifest。
+2. 新增 CLI 命令：`author-preflight`。
+3. 默认来源：
+   - Source Index：`<foundation-dir>/.cache/source-index.json`
+   - Packet 目录：`<foundation-dir>/.cache/page-source`
+   - Manifest：`<foundation-dir>/.cache/author-preflight.json`
+4. 支持 `--source-index`、`--packet-dir`、`--output` 显式覆盖。
+5. `overall_status == passed` 时返回 0；任何 missing / stale / blocked / loader issue 返回非零退出码。
+6. 缺失或错误 Source Index 返回 `cyberppt.author_preflight_error.v1`，不生成伪造的有效 Manifest。
+7. 新增 `tests/script_engine/test_author_preflight_cli.py`，覆盖：
+   - Page Source → Author Preflight 正常链路；
+   - 默认 Manifest 路径写入；
+   - Packet 缺失时返回非零且持久化 blocked Manifest。
+
+### 当前验证状态
+
+CLI 入口、默认路径与 focused tests 已写入分支。尚未执行远端 CI。
+
 ### 下一步工作
 
-批次 4：Preflight CLI 与流程强制接入。
+批次 4B：把 Preflight 变成不可绕过的下游门禁。
 
 计划：
 
-1. 新增项目级 `author-preflight` 命令，默认读取 `script/deck-plan.json`、`script/foundation.json`、`script/.cache/source-index.json` 与 `script/.cache/page-source/*.json`。
-2. 默认输出 `script/.cache/author-preflight.json`。
-3. Preflight 非 passed 时 CLI 返回非零退出码。
-4. 在 `audit-final` 前强制验证 Preflight。
-5. 在 `render-stage02` 前强制验证 Preflight，形成第一条真正不可绕过的 Stage1 → Stage2 程序门禁。
-6. 补充 CLI / delivery focused tests。
+1. 增加统一 `validate_author_preflight_gate()`，重新读取当前 Packet 并与已持久化 Manifest 对比，防止 Manifest 或 Packet 在生成后失效。
+2. `audit-final` 强制要求当前 Preflight 存在、fresh、overall passed。
+3. `render-stage02` 强制要求当前 Preflight 存在、fresh、overall passed。
+4. 两个入口共用同一 Gate validator，不复制规则。
+5. 增加 audit / delivery focused tests，覆盖 missing / stale / blocked / passed 四种状态。
