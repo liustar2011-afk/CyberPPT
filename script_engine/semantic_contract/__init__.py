@@ -24,6 +24,7 @@ from .provenance_markdown import (
     render_provenance_markdown,
 )
 from .relationships import validate_relationship_shape
+from .source_scope import validate_source_scope
 from .source_structure import validate_source_structure_preservation
 
 __all__ = [
@@ -46,5 +47,6 @@ __all__ = [
     "validate_final_script_provenance",
     "validate_provenance_compatibility",
     "validate_relationship_shape",
+    "validate_source_scope",
     "validate_source_structure_preservation",
 ]
