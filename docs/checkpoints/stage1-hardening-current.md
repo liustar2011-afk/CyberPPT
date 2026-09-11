@@ -5,25 +5,24 @@ PR：#34
 
 ## 已完成
 
-当前完成到批次 `5C / 子步骤 1`。
+当前完成到批次 `5C / 子步骤 2`。
 
 - Final Script 正式 examples 已补充页面级 `source_provenance` 结构示例。
 - 新增 `source_provenance_for_page()`，AUTHOR / 测试只能从 passed Author Preflight 页面投影标准 lineage：`packet_sha256 + source_refs + unit_ids`。
-- `audit-final` 已在 Author Preflight Gate 通过后继续执行 `validate_final_source_provenance()`，来源链漂移进入 blocking issues。
-- `audit-final` 报告新增 `source_provenance_issues`，来源门禁与原有 semantic audit 分层呈现。
-- `render-stage02` 已在 schema 校验后、lint 和 Markdown 写出前强制执行同一 provenance 校验。
-- provenance 不一致时 `render-stage02` 返回 `kind=final-source-provenance` 并拒绝输出文件。
-- 端到端 Gate fixture 已迁移：Preflight 生成后由 `source_provenance_for_page()` 把真实 packet hash / unit ids 写入 Final Script。
-- 新增 Stage02 lineage drift 测试：Final Script 将 `SU-001` 篡改为 `SU-999` 时必须阻断。
+- `audit-final` 已在 Author Preflight Gate 通过后继续执行 `validate_final_source_provenance()`；`render-stage02` 在写出前执行同一校验。
+- provenance 不一致时 Stage02 返回 `kind=final-source-provenance` 并拒绝输出文件。
+- `tests/script_engine/test_cli.py` 的 render / check-sync 正向 fixture 已改为：先生成真实 Page Source Packet + Author Preflight，再由 `source_provenance_for_page()` 写入 Final Script；不再使用静态示例中的占位 hash 通过运行门禁。
+- `tests/script_engine/test_quality_policy_cli_integration.py` 的 render advisory 用例已同步迁移到真实 lineage。
+- `tests/script_engine/test_authoring_method.py` 中手工构造、预期 schema 合法的内容页已补齐 `source_provenance`。
+- 静态 example 保留规范结构示例作用，运行链测试使用动态真实 packet hash，二者职责已经分开。
 
 ## 下一步
 
-批次 `5C / 子步骤 2`：迁移现有 render / audit fixtures 并清理 provenance 契约回归。
+批次 `5C / 子步骤 3`：运行 PR #34 新一轮 GitHub Actions。
 
-计划：
+目标：
 
-1. `tests/script_engine/test_cli.py` 的 render 正向输入改为动态注入当前 Preflight provenance；
-2. `tests/script_engine/test_quality_policy_cli_integration.py` 同步迁移；
-3. 读取 PR #34 最新 CI，定位所有因内容页缺 `source_provenance` 引起的新失败；
-4. 逐项迁移正式 fixtures / tests，不增加 schema fallback 或自动兜底；
-5. 本分支新增失败归零后，5C 完成并进入 Native-source Fidelity Audit。
+1. 确认本轮 provenance 契约新增失败归零；
+2. 如仍有 fixture 遗漏，只迁移新增失败对应文件；
+3. 若仅剩已确认的 3 个 `main` 基线失败，则 5C 完成；
+4. 随后进入批次 6：Native-source Fidelity Audit。
