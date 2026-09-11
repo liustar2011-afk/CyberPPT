@@ -7,6 +7,8 @@ from .compatibility import (
     collect_provenance_compatibility_diagnostics,
     validate_provenance_compatibility,
 )
+from .content_route import collect_content_route_diagnostics
+from .delivery_cleanliness import collect_delivery_cleanliness_diagnostics
 from .diagnostics import dedupe_diagnostics, partition_diagnostics
 from .foundation_index import FoundationIndex
 from .models import (
@@ -30,6 +32,7 @@ from .source_boundary import collect_source_boundary_diagnostics
 from .source_scope import validate_source_scope
 from .source_structure import validate_source_structure_preservation
 from .visibility import collect_visibility_diagnostics
+from .voice_policy import collect_voice_policy_diagnostics
 
 __all__ = [
     "FoundationIndex",
@@ -40,12 +43,15 @@ __all__ = [
     "RELATION_ALLOWED_EVIDENCE_ROLES",
     "SemanticDiagnostic",
     "audit_final_script_semantic_contract",
+    "collect_content_route_diagnostics",
+    "collect_delivery_cleanliness_diagnostics",
     "collect_onscreen_composition_diagnostics",
     "collect_onscreen_contract_diagnostics",
     "collect_protected_payload_diagnostics",
     "collect_provenance_compatibility_diagnostics",
     "collect_source_boundary_diagnostics",
     "collect_visibility_diagnostics",
+    "collect_voice_policy_diagnostics",
     "dedupe_diagnostics",
     "parse_provenance_markdown",
     "partition_diagnostics",
