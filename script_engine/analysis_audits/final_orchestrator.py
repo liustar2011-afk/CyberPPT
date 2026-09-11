@@ -13,7 +13,6 @@ from .final_authoring import (
     _slide_text,
 )
 from .final_deck import (
-    _normalize_source_chapter_title,
     _source_text_for_refs,
     _whole_deck_authoring_warnings,
 )
@@ -61,10 +60,7 @@ def audit_final_script(
     issues.extend(hard_finding_messages(trace_composed(final_script, foundation)))
     items = foundation_items_by_id(foundation)
     pages = {p.get("id"): p for p in (plan.get("pages") or []) if isinstance(p, dict) and isinstance(p.get("id"), str)}
-    chapters = {c.get("id"): c for c in (plan.get("chapters") or []) if isinstance(c, dict) and isinstance(c.get("id"), str)}
-    structure = {x.get("id"): x for x in (foundation.get("source_structure") or []) if isinstance(x, dict) and isinstance(x.get("id"), str)}
     audience_scope = plan.get("audience_scope", "unspecified")
-    preserve_structure = plan.get("source_structure_mode") == "preserve"
     delivery_mode = str((final_script.get("deck") or {}).get("delivery_mode") or plan.get("delivery_mode") or "self_read")
     plan_authoring_mode = str(plan.get("authoring_mode") or "faithful")
     final_authoring_mode = str(
@@ -193,18 +189,6 @@ def audit_final_script(
             f"{scope}: {warning}"
             for warning in _onscreen_expression_warnings(page, slide)
         )
-
-        if preserve_structure and slide.get("page_type") == "chapter":
-            chapter_id = slide.get("chapter_id")
-            chapter = chapters.get(chapter_id) if isinstance(chapter_id, str) else None
-            source_ids = chapter.get("source_chapter_ids") if isinstance(chapter, dict) else None
-            if source_ids and len(source_ids) == 1:
-                node = structure.get(source_ids[0])
-                if isinstance(node, dict) and isinstance(node.get("title"), str):
-                    expected = _normalize_source_chapter_title(node["title"])
-                    actual = str(slide.get("title") or "").strip()
-                    if actual and expected and actual != expected:
-                        issues.append(f"{scope}: source_structure_mode='preserve' requires chapter title '{expected}', got '{actual}'")
 
     warnings.extend(_whole_deck_authoring_warnings(final_script))
     return issues, warnings
