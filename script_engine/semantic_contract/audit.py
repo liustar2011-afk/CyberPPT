@@ -7,6 +7,7 @@ from typing import Any
 from .authorization import validate_authoring_mode_authorization
 from .compatibility import collect_provenance_compatibility_diagnostics
 from .content_route import collect_content_route_diagnostics
+from .delivery_cleanliness import collect_delivery_cleanliness_diagnostics
 from .diagnostics import partition_diagnostics
 from .onscreen_composition import collect_onscreen_composition_diagnostics
 from .onscreen_contract import collect_onscreen_contract_diagnostics
@@ -29,11 +30,11 @@ def audit_final_script_semantic_contract(
     Structured authorization, source scope, relationship shape/topology,
     source-structure preservation, provenance, typed compatibility, protected
     payload, objective source boundaries, explicit PLAN content-route/onscreen
-    contracts, and explicit visibility are the new semantic authority. During
-    Phase 4, the historical Final Script auditor is invoked here as a compatibility
-    adapter so formal callers no longer need to orchestrate two independent
-    semantic engines. Its remaining capabilities can now be migrated here one by
-    one without changing the public audit boundary.
+    contracts, delivery cleanliness, and explicit visibility are the new semantic
+    authority. During Phase 4, the historical Final Script auditor is invoked here
+    as a compatibility adapter so formal callers no longer need to orchestrate two
+    independent semantic engines. Its remaining capabilities can now be migrated
+    here one by one without changing the public audit boundary.
     """
 
     authorization_issues = validate_authoring_mode_authorization(final_script, plan)
@@ -52,6 +53,7 @@ def audit_final_script_semantic_contract(
         *collect_content_route_diagnostics(final_script, plan),
         *collect_onscreen_composition_diagnostics(final_script, plan),
         *collect_onscreen_contract_diagnostics(final_script, plan, foundation),
+        *collect_delivery_cleanliness_diagnostics(final_script, plan, foundation),
         *collect_visibility_diagnostics(final_script, plan, foundation),
     ]
     structured_blockers, review_required, structured = partition_diagnostics(
