@@ -90,7 +90,7 @@
       "pages": [
         "p01"
       ],
-      "severity": "error",
+      "severity": "warning",
       "source_ids": [],
       "suggested_action": "Rewrite 上屏文字 as a high-information reading layer: retain the page subject, source-supported facts, explicit relations, and the page implication needed to understand it without narration; do not add a formulaic conclusion when the source does not provide one."
     },
@@ -103,7 +103,7 @@
       "pages": [
         "p01"
       ],
-      "severity": "error",
+      "severity": "warning",
       "source_ids": [],
       "suggested_action": "Keep the visible conclusion, at least two evidence-bearing lines, one explicit business relationship, and a readable closure."
     },
@@ -144,7 +144,7 @@
       "pages": [
         "p01"
       ],
-      "severity": "error",
+      "severity": "warning",
       "source_ids": [],
       "suggested_action": "Add source-supported modules or merge this page with the adjacent business question."
     }
