@@ -82,21 +82,41 @@ def test_single_semantic_entry_routes_heuristic_identifier_drift_to_review() -> 
     )
 
 
-def test_single_semantic_entry_keeps_unknown_number_as_blocker() -> None:
+def test_raw_legacy_still_blocks_unknown_number_with_composed_trace() -> None:
     final_script, plan, foundation = _case(
         "来源事实用于说明边界，并新增99项处理要求。"
     )
 
-    issues, warnings, _ = audit_final_script_semantic_contract(
+    issues, _ = audit_legacy_final_script(final_script, plan, foundation)
+
+    assert any(
+        "COMPOSED_TRACE_SOURCE_BOUNDARY" in issue
+        and "99" in issue
+        for issue in issues
+    )
+
+
+def test_single_semantic_entry_owns_unknown_number_blocker() -> None:
+    final_script, plan, foundation = _case(
+        "来源事实用于说明边界，并新增99项处理要求。"
+    )
+
+    issues, warnings, diagnostics = audit_final_script_semantic_contract(
         final_script,
         plan,
         foundation,
     )
 
     assert any(
-        "COMPOSED_TRACE_SOURCE_BOUNDARY" in issue
+        "[FINAL_NUMBER_OUTSIDE_FOUNDATION]" in issue
         and "99" in issue
         for issue in issues
+    )
+    assert not any("COMPOSED_TRACE_SOURCE_BOUNDARY" in issue for issue in issues)
+    assert any(
+        diagnostic["code"] == "FINAL_NUMBER_OUTSIDE_FOUNDATION"
+        and "99" in diagnostic["reason"]
+        for diagnostic in diagnostics
     )
     assert not any(
         "COMPOSED_TRACE_IDENTIFIER_REVIEW_REQUIRED" in warning
