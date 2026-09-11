@@ -24,6 +24,7 @@ from .provenance_markdown import (
     render_provenance_markdown,
 )
 from .relationships import validate_relationship_shape
+from .source_boundary import collect_source_boundary_diagnostics
 from .source_scope import validate_source_scope
 from .source_structure import validate_source_structure_preservation
 from .visibility import collect_visibility_diagnostics
@@ -39,6 +40,7 @@ __all__ = [
     "audit_final_script_semantic_contract",
     "collect_protected_payload_diagnostics",
     "collect_provenance_compatibility_diagnostics",
+    "collect_source_boundary_diagnostics",
     "collect_visibility_diagnostics",
     "dedupe_diagnostics",
     "parse_provenance_markdown",
