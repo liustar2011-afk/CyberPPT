@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
+from .author_preflight import author_preflight_gate_report
 from .contracts import (
     check_declared_count,
     load_json,
@@ -56,13 +57,27 @@ def render_stage02_delivery(
     input_path: Path,
     output_path: Path,
     *,
+    plan_path: Path,
+    foundation_path: Path,
     final_lint_findings: FinalLintFindings,
 ) -> tuple[str | None, dict | None, int]:
-    """Validate, lint and write the Stage 02 Markdown boundary.
+    """Validate Stage1 gate, validate/lint Final Script, then write Stage02 Markdown."""
 
-    Returns ``(output_path, error_report, exit_code)`` so presentation policy stays
-    in the CLI while delivery behavior stays here.
-    """
+    preflight_report, preflight_exit = author_preflight_gate_report(
+        plan_path,
+        foundation_path,
+    )
+    if preflight_exit != 0:
+        return (
+            None,
+            {
+                "kind": "stage1-author-preflight",
+                "status": "failed",
+                "issues": preflight_report.get("issues") or [],
+                "author_preflight": preflight_report,
+            },
+            1,
+        )
 
     payload = load_json(input_path)
     issues = validate_final_script(payload)
