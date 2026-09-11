@@ -36,6 +36,16 @@ def _codes(messages: list[str]) -> list[str]:
     return sorted({_semantic_code(message) for message in messages})
 
 
+def _result_status(*, blockers: object, reviews_or_warnings: object) -> str:
+    blocker_values = blockers if isinstance(blockers, list) else []
+    review_values = reviews_or_warnings if isinstance(reviews_or_warnings, list) else []
+    if blocker_values:
+        return "blocked"
+    if review_values:
+        return "passed_with_warnings"
+    return "passed"
+
+
 def build_semantic_shadow_report(
     script: ScriptDocument,
     outline: dict[str, object],
@@ -69,25 +79,31 @@ def build_semantic_shadow_report(
     legacy_warning_codes = sorted({issue.code for issue in legacy_warnings})
     semantic_blocker_codes = _codes(semantic_blockers)
     semantic_review_codes = _codes(semantic_reviews)
+    legacy_blocked = bool(legacy_blockers)
+    semantic_blocked = bool(semantic_blockers)
+    legacy_status = _result_status(
+        blockers=legacy_blockers,
+        reviews_or_warnings=legacy_warnings,
+    )
+    semantic_status = _result_status(
+        blockers=semantic_blockers,
+        reviews_or_warnings=semantic_reviews,
+    )
 
     return {
         "schema": "cyberppt.script_quality_semantic_shadow.v1",
         "mode": "shadow",
         "effective_gate": "legacy",
-        "status": (
-            "blocked"
-            if legacy_blockers
-            else "passed_with_warnings"
-            if legacy_warnings
-            else "passed"
-        ),
+        "status": legacy_status,
         "legacy": {
+            "status": legacy_status,
             "blockers": _issue_dicts(legacy_blockers),
             "warnings": _issue_dicts(legacy_warnings),
             "blocker_codes": legacy_blocker_codes,
             "warning_codes": legacy_warning_codes,
         },
         "semantic_shadow": {
+            "status": semantic_status,
             "blockers": list(semantic_blockers),
             "reviews": list(semantic_reviews),
             "diagnostics": list(semantic_diagnostics),
@@ -95,6 +111,11 @@ def build_semantic_shadow_report(
             "review_codes": semantic_review_codes,
         },
         "diff": {
+            "legacy_blocked": legacy_blocked,
+            "semantic_blocked": semantic_blocked,
+            "blocking_outcome_matches": legacy_blocked == semantic_blocked,
+            "blocker_code_sets_match": set(legacy_blocker_codes)
+            == set(semantic_blocker_codes),
             "blocker_codes_only_legacy": sorted(
                 set(legacy_blocker_codes) - set(semantic_blocker_codes)
             ),
