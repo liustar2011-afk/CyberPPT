@@ -6,6 +6,7 @@ from pathlib import Path
 from script_engine import cli
 from script_engine.author_preflight import author_preflight_report
 from script_engine.contracts import load_json
+from script_engine.final_source_provenance import source_provenance_for_page
 from script_engine.onscreen_contracts import onscreen_alignment_advisories
 from script_engine.page_source_command import page_source_report
 from script_engine.render import render_stage02_markdown
@@ -20,7 +21,7 @@ def example_advisories():
     return onscreen_alignment_advisories(load_json(ROOT / "examples" / "final-script.example.json"))
 
 
-def _write_render_gate(tmp_path: Path) -> tuple[Path, Path]:
+def _write_render_gate(tmp_path: Path) -> tuple[Path, Path, dict]:
     script_dir = tmp_path / "stage1-gate" / "script"
     cache_dir = script_dir / ".cache"
     packet_dir = cache_dir / "page-source"
@@ -73,7 +74,7 @@ def _write_render_gate(tmp_path: Path) -> tuple[Path, Path]:
         output_path=preflight_path,
     )
     assert preflight_exit == 0 and manifest["summary"]["overall_status"] == "passed"
-    return plan_path, foundation_path
+    return plan_path, foundation_path, manifest
 
 
 def test_lint_advisory_only_passes_with_advisory_status(monkeypatch, capsys) -> None:
@@ -103,9 +104,13 @@ def test_lint_unknown_finding_remains_blocking(monkeypatch, capsys) -> None:
 
 
 def test_render_stage02_does_not_block_on_advisory(monkeypatch, tmp_path, capsys) -> None:
-    final_path = ROOT / "examples" / "final-script.example.json"
     output_path = tmp_path / "final-script.md"
-    plan_path, foundation_path = _write_render_gate(tmp_path)
+    plan_path, foundation_path, manifest = _write_render_gate(tmp_path)
+    payload = load_json(ROOT / "examples" / "final-script.example.json")
+    payload["slides"][0]["source_refs"] = list(manifest["pages"][0]["source_refs"])
+    payload["slides"][0]["source_provenance"] = source_provenance_for_page(manifest, "P01")
+    final_path = tmp_path / "gated-final-script.json"
+    final_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     monkeypatch.setattr(cli, "_final_lint_issues", lambda payload, markdown: [ADVISORY])
 
     exit_code = cli.main(
