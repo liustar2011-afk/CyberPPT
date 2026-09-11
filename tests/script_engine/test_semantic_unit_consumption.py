@@ -247,7 +247,7 @@ def test_final_requests_review_for_lexically_disconnected_onscreen_claim() -> No
     assert not any("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED" in issue for issue in issues)
 
 
-def test_final_rejects_protected_full_copy_number_lost_from_onscreen() -> None:
+def test_final_reviews_protected_full_copy_number_lost_from_onscreen() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
@@ -255,12 +255,18 @@ def test_final_rejects_protected_full_copy_number_lost_from_onscreen() -> None:
         onscreen_items=["国家建设进入全面实施阶段", "行业协会负责标准宣贯与监督"],
     )
 
-    issues, _ = audit_final_script(final, _plan(), _foundation())
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
 
-    assert any("AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST" in issue and "6项" in issue for issue in issues)
+    assert not any("AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST" in issue for issue in issues)
+    assert any(
+        "LEGACY_ONSCREEN_PROTECTED_NUMBER_REVIEW_REQUIRED" in warning
+        and "ST0002" in warning
+        and "6项" in warning
+        for warning in warnings
+    )
 
 
-def test_final_rejects_protected_responsibility_lost_from_onscreen() -> None:
+def test_final_reviews_protected_responsibility_lost_from_onscreen() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段，明确总体架构。\n\n"
@@ -268,9 +274,15 @@ def test_final_rejects_protected_responsibility_lost_from_onscreen() -> None:
         onscreen_items=["国家建设进入全面实施阶段", "电力行业已形成6项配套技术文件"],
     )
 
-    issues, _ = audit_final_script(final, _plan(), _foundation())
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
 
-    assert any("AUTHOR_ONSCREEN_RESPONSIBILITY_LOST" in issue for issue in issues)
+    assert not any("AUTHOR_ONSCREEN_RESPONSIBILITY_LOST" in issue for issue in issues)
+    assert any(
+        "PROTECTED_ACTOR_REVIEW_REQUIRED" in warning
+        and "ST0003" in warning
+        and "target=onscreen" in warning
+        for warning in warnings
+    )
 
 
 def test_final_accepts_verbatim_full_copy_as_safe_onscreen_fallback() -> None:
