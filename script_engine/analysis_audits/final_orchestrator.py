@@ -36,6 +36,7 @@ from .final_onscreen import (
     _audit_self_reading_density,
 )
 from .onscreen_contract_heuristics import (
+    onscreen_composition_hierarchy_review_findings,
     onscreen_contract_colocation_review_findings,
 )
 
@@ -259,12 +260,18 @@ def audit_final_script(
                     "without the same lexical baseline in source or plan; Critic review is required",
                 )
 
-        for finding in _audit_authored_onscreen_composition(
-            page,
-            slide,
-            authoring_mode=final_authoring_mode,
-        ):
-            _append_governed_finding(issues, warnings, scope, finding)
+        if compatibility_mode:
+            warnings.extend(
+                f"{scope}: {finding}"
+                for finding in onscreen_composition_hierarchy_review_findings(page, slide)
+            )
+        else:
+            for finding in _audit_authored_onscreen_composition(
+                page,
+                slide,
+                authoring_mode=final_authoring_mode,
+            ):
+                _append_governed_finding(issues, warnings, scope, finding)
         for finding in _audit_self_reading_density(delivery_mode, page, slide):
             _append_governed_finding(issues, warnings, scope, finding)
         if compatibility_mode:
