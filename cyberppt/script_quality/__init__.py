@@ -39,10 +39,29 @@ def audit_script_quality(*args, **kwargs):
     return normalize_public_issue_severity(_audit_script_quality(*args, **kwargs))
 
 
+def audit_script_semantic_contract(
+    script: ScriptDocument,
+    outline: dict[str, object],
+    source_truth: dict[str, object],
+):
+    """Audit legacy artifacts through the authoritative Stage 01 semantic core.
+
+    This is the explicit Phase 4 migration entry. ``audit_script_quality`` keeps
+    its historical default behavior until callers opt in project by project.
+    Import the adapter lazily so the legacy package can continue supplying helper
+    modules to ``script_engine`` without creating an import cycle.
+    """
+
+    from .semantic_adapter import audit_legacy_script_semantics
+
+    return audit_legacy_script_semantics(script, outline, source_truth)
+
+
 __all__ = [
     "assert_imagegen_onscreen_readiness",
     "audit_final_manuscript_form",
     "audit_script_quality",
+    "audit_script_semantic_contract",
     "audience_facing_group_label", "extract_page_contract_receipt",
     "build_communication_review",
     "extract_speaker_notes", "load_page_contract_sidecar",
