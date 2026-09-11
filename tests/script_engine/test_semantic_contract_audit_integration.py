@@ -9,6 +9,7 @@ from script_engine.semantic_contract import (
     audit_final_script_semantic_contract,
     validate_authoring_mode_authorization,
     validate_relationship_shape,
+    validate_source_scope,
     validate_source_structure_preservation,
 )
 
@@ -27,6 +28,41 @@ def _examples() -> tuple[dict, dict, dict]:
     foundation = json.loads(
         (EXAMPLES / "foundation.example.json").read_text(encoding="utf-8")
     )
+    return final_script, plan, foundation
+
+
+def _strict_source_scope_case() -> tuple[dict, dict, dict]:
+    final_script = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "source_refs": ["F1"],
+            }
+        ]
+    }
+    plan = {
+        "pages": [
+            {
+                "id": "P01",
+                "page_role": "content",
+                "source_refs": ["F1", "F2"],
+            }
+        ]
+    }
+    foundation = {
+        "source_consumption_policy": "required",
+        "facts": [
+            {"id": "F1", "statement": "事实一"},
+            {"id": "F2", "statement": "事实二"},
+        ],
+        "concepts": [],
+        "entities": [],
+        "relations": [],
+        "arguments": [],
+        "constraints": [],
+        "numbers": [],
+    }
     return final_script, plan, foundation
 
 
@@ -109,6 +145,53 @@ def test_single_semantic_entry_combines_structured_and_compatibility_findings() 
         finding["code"] == "EVIDENCE_ROLE_INCOMPATIBLE"
         for finding in diagnostics
     )
+
+
+def test_structured_source_scope_requires_actual_refs_for_strict_page() -> None:
+    final_script, plan, foundation = _strict_source_scope_case()
+    final_script["slides"][0]["source_refs"] = []
+
+    assert validate_source_scope(final_script, plan, foundation) == [
+        "slides.0 (P01): AUTHOR_SOURCE_CONSUMPTION_MISSING: strict sourced content page "
+        "requires slide.source_refs to declare the Foundation records AUTHOR actually used"
+    ]
+
+
+def test_structured_source_scope_rejects_unknown_ref() -> None:
+    final_script, plan, foundation = _strict_source_scope_case()
+    final_script["slides"][0]["source_refs"] = ["F1", "UNKNOWN"]
+
+    assert validate_source_scope(final_script, plan, foundation) == [
+        "slides.0 (P01): AUTHOR_SOURCE_REF_UNKNOWN: slide.source_refs cites unknown "
+        "foundation records ['UNKNOWN']"
+    ]
+
+
+def test_structured_source_scope_rejects_ref_outside_plan_page() -> None:
+    final_script, plan, foundation = _strict_source_scope_case()
+    foundation["facts"].append({"id": "F3", "statement": "事实三"})
+    final_script["slides"][0]["source_refs"] = ["F1", "F3"]
+
+    assert validate_source_scope(final_script, plan, foundation) == [
+        "slides.0 (P01): AUTHOR_SOURCE_REF_OUTSIDE_PLAN_SCOPE: slide.source_refs "
+        "['F3'] fall outside the page's PLAN-approved source_refs boundary"
+    ]
+
+
+def test_structured_source_scope_exempts_plan_structural_page_alias() -> None:
+    final_script, plan, foundation = _strict_source_scope_case()
+    plan["pages"][0]["page_role"] = "agenda"
+    final_script["slides"][0]["source_refs"] = []
+
+    assert validate_source_scope(final_script, plan, foundation) == []
+
+
+def test_structured_source_scope_is_inactive_without_required_policy() -> None:
+    final_script, plan, foundation = _strict_source_scope_case()
+    foundation.pop("source_consumption_policy")
+    final_script["slides"][0]["source_refs"] = []
+
+    assert validate_source_scope(final_script, plan, foundation) == []
 
 
 def test_structured_relationship_shape_rejects_missing_endpoint() -> None:
