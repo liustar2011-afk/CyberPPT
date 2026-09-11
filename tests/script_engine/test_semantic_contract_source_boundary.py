@@ -43,6 +43,20 @@ def test_foundation_number_is_allowed() -> None:
     assert diagnostics == []
 
 
+def test_typed_number_value_list_is_allowed() -> None:
+    foundation = _foundation("范围由结构化数值记录给出。")
+    foundation["numbers"] = [
+        {"id": "N1", "value": [12, 18], "unit": "项"}
+    ]
+
+    diagnostics = collect_source_boundary_diagnostics(
+        _script("范围为12至18项。"),
+        foundation,
+    )
+
+    assert diagnostics == []
+
+
 def test_unknown_number_is_structured_blocker() -> None:
     diagnostics = collect_source_boundary_diagnostics(
         _script("新增99项处理要求。"),
@@ -110,11 +124,6 @@ def test_relationship_numeric_payload_is_checked() -> None:
         _foundation("来源事实不包含阶段编号。"),
     )
 
-    assert {"1", "2"}.issubset(
-        {
-            token
-            for diagnostic in diagnostics
-            for token in ("1", "2")
-            if token in diagnostic.message
-        }
-    )
+    messages = "\n".join(diagnostic.message for diagnostic in diagnostics)
+    assert "1" in messages
+    assert "2" in messages
