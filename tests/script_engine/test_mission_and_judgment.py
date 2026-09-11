@@ -87,11 +87,12 @@ def test_parallel_judgments_remain_in_modules_without_synthetic_core():
     assert "核心结论：" not in rendered
 
 
-def test_unsupported_core_is_still_checked_against_source():
+def test_unsupported_core_is_still_reviewed_against_source():
     plan, foundation, final = artifacts()
     final["slides"][0]["core_message"] = "只有先建设目录服务才能开展质量服务"
-    issues, _ = audit_final_script(final, plan, foundation)
-    assert any("FAITHFUL_RELATION_PROMOTED" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, plan, foundation)
+    assert not any("FAITHFUL_RELATION_PROMOTED" in issue for issue in issues)
+    assert any("FAITHFUL_RELATION_PROMOTED" in warning for warning in warnings)
 
 
 def test_mission_difference_is_review_only_and_never_becomes_onscreen_copy():
