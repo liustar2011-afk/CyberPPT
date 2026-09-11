@@ -6,6 +6,7 @@ from pathlib import Path
 from script_engine.audit_reports import final_audit_report
 from script_engine.author_preflight import author_preflight_gate_report, author_preflight_report
 from script_engine.delivery_commands import render_stage02_delivery
+from script_engine.final_source_provenance import source_provenance_for_page
 from script_engine.page_source_command import page_source_report
 
 
@@ -144,6 +145,13 @@ def _prepare_gate(paths: dict[str, Path]) -> None:
     assert preflight_exit == 0
     assert manifest["summary"]["overall_status"] == "passed"
 
+    final_script = json.loads(paths["final"].read_text(encoding="utf-8"))
+    final_script["slides"][0]["source_provenance"] = source_provenance_for_page(
+        manifest,
+        "P01",
+    )
+    _write_json(paths["final"], final_script)
+
 
 def test_gate_passes_when_manifest_and_packets_match_current_inputs(tmp_path: Path) -> None:
     paths = _build_project(tmp_path)
@@ -228,3 +236,28 @@ def test_stage02_render_passes_after_fresh_preflight(tmp_path: Path) -> None:
     assert error_report is None
     assert rendered == str(paths["output"].resolve())
     assert paths["output"].is_file()
+
+
+def test_stage02_render_blocks_final_provenance_drift(tmp_path: Path) -> None:
+    paths = _build_project(tmp_path)
+    _prepare_gate(paths)
+    final_script = json.loads(paths["final"].read_text(encoding="utf-8"))
+    final_script["slides"][0]["source_provenance"]["unit_ids"] = ["SU-999"]
+    _write_json(paths["final"], final_script)
+
+    rendered, error_report, exit_code = render_stage02_delivery(
+        paths["final"],
+        paths["output"],
+        plan_path=paths["plan"],
+        foundation_path=paths["foundation"],
+        final_lint_findings=lambda _payload, _markdown: ([], []),
+    )
+
+    assert exit_code == 1
+    assert rendered is None
+    assert error_report is not None
+    assert error_report["kind"] == "final-source-provenance"
+    assert error_report["issues"] == [
+        "FINAL_SOURCE_PROVENANCE_UNIT_IDS_MISMATCH: P01"
+    ]
+    assert not paths["output"].exists()
