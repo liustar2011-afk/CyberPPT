@@ -166,25 +166,27 @@ def test_final_flags_protected_number_lost() -> None:
         "行业协会负责统筹标准宣贯与执行监督工作。",
     )
     issues, _ = audit_final_script(final, _plan(), _foundation())
-    assert any("AUTHOR_NUMBER_OR_DATE_LOST" in issue and "ST0002" in issue for issue in issues)
+    assert any("PROTECTED_NUMBER_MISSING" in issue and "ST0002" in issue for issue in issues)
 
 
-def test_final_flags_protected_entity_lost() -> None:
+def test_final_routes_protected_entity_loss_to_review() -> None:
     final = _final(
         ["ST0001", "ST0002", "ST0003"],
         "国家数据基础设施建设进入全面实施阶段，明确总体架构。"
         "电力行业已形成六项配套技术文件，为标准落地提供统一依据。"
         "有关方面负责统筹标准宣贯与执行监督工作。",
     )
-    issues, _ = audit_final_script(final, _plan(), _foundation())
-    assert any("AUTHOR_RESPONSIBILITY_LOST" in issue and "ST0003" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(), _foundation())
+    assert not any("AUTHOR_RESPONSIBILITY_LOST" in issue for issue in issues)
+    assert any("PROTECTED_ACTOR_REVIEW_REQUIRED" in warning and "ST0003" in warning for warning in warnings)
 
 
-def test_final_flags_protected_condition_lost() -> None:
+def test_final_routes_protected_condition_loss_to_review() -> None:
     page = _page(["ST0004"])
     final = _final(["ST0004"], "试点单位已完成首批数据接口改造并进入验收阶段。")
-    issues, _ = audit_final_script(final, _plan(page), _foundation())
-    assert any("AUTHOR_CONDITION_LOST" in issue and "ST0004" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(page), _foundation())
+    assert not any("AUTHOR_CONDITION_LOST" in issue for issue in issues)
+    assert any("PROTECTED_CONDITION_REVIEW_REQUIRED" in warning and "ST0004" in warning for warning in warnings)
 
 
 def test_final_passes_for_a_well_authored_lean_page() -> None:
