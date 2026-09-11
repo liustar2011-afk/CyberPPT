@@ -10,6 +10,7 @@ from .analysis_audit import (
     validate_source_index_coverage,
 )
 from .analysis_audits.composed_trace import critic_priorities, trace_composed
+from .author_preflight import author_preflight_gate_report
 from .contracts import (
     load_json,
     validate_deck_plan,
@@ -113,11 +114,20 @@ def final_audit_report(
     final_payload = load_json(final_path)
     plan = load_json(plan_path)
     foundation = load_json(foundation_path)
+    preflight_report, preflight_exit = author_preflight_gate_report(
+        plan_path,
+        foundation_path,
+    )
     issues = (
         validate_final_script(final_payload)
         + validate_deck_plan(plan)
         + validate_foundation(foundation)
     )
+    if preflight_exit != 0:
+        issues += [
+            f"AUTHOR_PREFLIGHT_GATE: {issue}"
+            for issue in preflight_report.get("issues") or []
+        ]
     semantic_issues, warnings, semantic_diagnostics = (
         audit_final_script_semantic_contract(final_payload, plan, foundation)
     )
@@ -131,6 +141,7 @@ def final_audit_report(
             "final": str(final_path.resolve()),
             "plan": str(plan_path.resolve()),
             "foundation": str(foundation_path.resolve()),
+            "author_preflight": preflight_report,
             "status": "passed" if not issues else "failed",
             "issues": issues,
             "warnings": warnings,
