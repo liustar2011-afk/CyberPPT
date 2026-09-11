@@ -30,6 +30,7 @@ from .parsing import (
     strip_authoring_group_marker,
 )
 from .semantic_adapter import audit_legacy_script_semantics
+from .semantic_shadow import build_semantic_shadow_report
 from .severity import normalize_public_issue_severity
 from .source_coverage import normalized_tokens, text_similarity
 
@@ -59,6 +60,7 @@ __all__ = [
     "audit_final_manuscript_form",
     "audit_script_quality",
     "audit_script_semantic_contract",
+    "build_semantic_shadow_report",
     "audience_facing_group_label", "extract_page_contract_receipt",
     "build_communication_review",
     "extract_speaker_notes", "load_page_contract_sidecar",
