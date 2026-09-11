@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 from typing import Any, Mapping
+
+from .author_preflight import load_page_source_packets
 
 
 _NUMBER_RE = re.compile(
@@ -19,6 +22,17 @@ _QUALIFIERS = (
     "超过",
     "约",
     "近",
+)
+_SCOPE_MARKERS = (
+    "不含",
+    "首批",
+    "当前",
+    "主要",
+    "部分",
+    "仅",
+)
+_SCOPE_RE = re.compile(
+    rf"({'|'.join(re.escape(marker) for marker in _SCOPE_MARKERS)})([^，。；：\n]{{2,12}})"
 )
 _ACHIEVED_RE = re.compile(r"已(?:完成|形成|实现|建立|具备|明确|建成|上线|投入|发布|通过|纳入)")
 _TENTATIVE_RE = re.compile(r"计划|拟|预计|可能|有望|可望")
@@ -109,6 +123,33 @@ def _number_has_qualifier(text: str, token: str, qualifier: str) -> bool:
     return False
 
 
+def _scope_bindings(text: str) -> list[tuple[str, str]]:
+    """Return conservative marker-to-anchor bindings for explicit source scope."""
+
+    bindings: list[tuple[str, str]] = []
+    for match in _SCOPE_RE.finditer(text):
+        marker = match.group(1)
+        anchor = match.group(2).strip()
+        if len(anchor) < 2:
+            continue
+        binding = (marker, anchor)
+        if binding not in bindings:
+            bindings.append(binding)
+    return bindings
+
+
+def _scope_marker_preserved(text: str, marker: str, anchor: str) -> bool:
+    """Return True when each matched anchor use keeps its source scope marker nearby."""
+
+    found_anchor = False
+    for match in re.finditer(re.escape(anchor), text):
+        found_anchor = True
+        prefix = text[max(0, match.start() - 8):match.start()]
+        if marker in prefix:
+            return True
+    return not found_anchor
+
+
 def native_source_fidelity_issues(
     final_script: Mapping[str, Any],
     packets_by_page: Mapping[str, Mapping[str, Any]],
@@ -133,6 +174,7 @@ def native_source_fidelity_issues(
 
         source_numbers = set(_NUMBER_RE.findall(source_text))
         source_qualified_numbers = _qualified_numbers(source_text)
+        source_scope_bindings = _scope_bindings(source_text)
         source_has_achieved = bool(_ACHIEVED_RE.search(source_text))
         source_has_tentative = bool(_TENTATIVE_RE.search(source_text))
         source_has_obligation = bool(_OBLIGATION_RE.search(source_text))
@@ -152,6 +194,13 @@ def native_source_fidelity_issues(
                             "NATIVE_NUMERIC_QUALIFIER_DROPPED: "
                             f"{page_id}.{field}: source qualifier '{qualifier}' for '{token}' is missing"
                         )
+
+            for marker, anchor in source_scope_bindings:
+                if anchor in text and not _scope_marker_preserved(text, marker, anchor):
+                    issues.append(
+                        "NATIVE_SCOPE_QUALIFIER_DROPPED: "
+                        f"{page_id}.{field}: source marker '{marker}' for '{anchor}' is missing"
+                    )
 
             achieved = sorted(set(_ACHIEVED_RE.findall(text)))
             if achieved and not source_has_achieved:
@@ -175,4 +224,20 @@ def native_source_fidelity_issues(
     return list(dict.fromkeys(issues))
 
 
-__all__ = ["exact_source_text", "native_source_fidelity_issues"]
+def native_source_fidelity_gate_issues(
+    final_script: Mapping[str, Any],
+    packet_dir: Path,
+) -> list[str]:
+    """Load current Page Source Packets and return one shared downstream gate result."""
+
+    packets, _packet_paths, loader_issues = load_page_source_packets(packet_dir)
+    issues = [f"NATIVE_SOURCE_PACKET_LOAD: {issue}" for issue in loader_issues]
+    issues += native_source_fidelity_issues(final_script, packets)
+    return list(dict.fromkeys(issues))
+
+
+__all__ = [
+    "exact_source_text",
+    "native_source_fidelity_gate_issues",
+    "native_source_fidelity_issues",
+]
