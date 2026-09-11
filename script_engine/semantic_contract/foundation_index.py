@@ -89,14 +89,36 @@ class FoundationIndex:
         ).strip()
 
     def actors(self, ref: str) -> tuple[str, ...]:
+        """Return explicitly typed actors, including referenced entity names.
+
+        This is a read-only projection of Foundation structure. It does not infer
+        actors from prose or business keywords.
+        """
+
         record = self.record(ref)
         if record is None:
             return ()
+
+        actors: list[str] = []
         value = record.payload.get("actors") or record.payload.get("actor")
         if isinstance(value, list):
-            return tuple(str(item).strip() for item in value if str(item).strip())
-        text = str(value or "").strip()
-        return (text,) if text else ()
+            actors.extend(str(item).strip() for item in value if str(item).strip())
+        else:
+            text = str(value or "").strip()
+            if text:
+                actors.append(text)
+
+        for entity_ref in record.payload.get("entity_refs") or []:
+            if not isinstance(entity_ref, str) or not entity_ref.strip():
+                continue
+            entity = self.record(entity_ref)
+            if entity is None:
+                continue
+            name = str(entity.payload.get("name") or "").strip()
+            if name:
+                actors.append(name)
+
+        return tuple(dict.fromkeys(actors))
 
     def conditions(self, ref: str) -> tuple[str, ...]:
         record = self.record(ref)
