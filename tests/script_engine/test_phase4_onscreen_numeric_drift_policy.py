@@ -72,7 +72,7 @@ def test_single_semantic_entry_reviews_layer_drift_when_foundation_supports_numb
 
     assert not any("AUTHOR_ONSCREEN_PROTECTED_FACT_DRIFTED" in issue for issue in issues)
     assert not any(
-        "COMPOSED_TRACE_SOURCE_BOUNDARY" in issue and "7" in issue
+        "FINAL_NUMBER_OUTSIDE_FOUNDATION" in issue and "7" in issue
         for issue in issues
     )
     assert any(
@@ -88,13 +88,19 @@ def test_single_semantic_entry_still_blocks_onscreen_number_absent_from_foundati
         source_statement="来源事实用于说明服务输出。",
     )
 
-    issues, _, _ = audit_final_script_semantic_contract(
+    issues, _, diagnostics = audit_final_script_semantic_contract(
         final_script,
         plan,
         foundation,
     )
 
     assert any(
-        "COMPOSED_TRACE_SOURCE_BOUNDARY" in issue and "9" in issue
+        "[FINAL_NUMBER_OUTSIDE_FOUNDATION]" in issue and "9" in issue
         for issue in issues
+    )
+    assert not any("COMPOSED_TRACE_SOURCE_BOUNDARY" in issue for issue in issues)
+    assert any(
+        diagnostic["code"] == "FINAL_NUMBER_OUTSIDE_FOUNDATION"
+        and "9" in diagnostic["reason"]
+        for diagnostic in diagnostics
     )
