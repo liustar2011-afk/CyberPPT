@@ -153,14 +153,40 @@ CLI 入口、默认路径与 focused tests 已写入分支。尚未执行远端 
 
 代码和 focused tests 已写入分支。由于本批次主动改变 `render-stage02` 与 `audit-final` 的运行契约，现有仓库测试和调用点需要按新契约同步更新；不保留历史兼容入口。
 
+---
+
+## 批次 4C-1：PR 与首轮 CI 诊断
+
+状态：已完成
+
+### 已完成工作
+
+1. 已创建 PR #34：`stage1-hardening → main`。
+2. GitHub Actions 首轮 Python 3.12 结果：`13 failed, 2206 passed, 8 skipped, 49 subtests passed`。
+3. 已将 13 个失败拆分为两类：
+   - 本分支新契约导致的明确迁移项：10 个；
+   - 当前 `main` 基线在本分支建立前刚引入的 mission/judgment、onscreen object item、palette sample 相关问题：3 个。
+4. 本分支新增的 10 个回归具体为：
+   - `tests/script_engine/test_cli.py`：5 个旧 `render-stage02` 调用未提供 `--plan` / `--foundation`；
+   - `tests/script_engine/test_quality_policy_cli_integration.py`：1 个旧 render 调用；
+   - `tests/script_engine/test_page_source_cli.py`：2 个仍断言 `rewrite_required`；
+   - `tests/script_engine/test_stage01_current_entry_convergence.py`：1 个旧 final-audit 精确 issue 集合未包含新的 Preflight Gate；
+   - `tests/test_script_cli_modularization.py`：1 个 CLI 文件体积阈值被新增适配代码突破。
+5. 与本批次无关的 3 个失败暂不在 Stage1 hardening 中混改：
+   - `test_mission_and_judgment.py::test_unsupported_core_is_still_checked_against_source`；
+   - `test_onscreen_object_items.py::test_identified_items_still_detect_bad_hierarchy_and_code_only_mapping`；
+   - `test_extended_style_9_assets.py::test_style_nine_sample_is_available_and_matches_runtime_registry`。
+6. Wheel smoke（macOS / Windows）已通过；OfficeCLI smoke 首轮也完成核心步骤成功。
+
 ### 下一步工作
 
-批次 4C：建立 PR、运行远端 CI 并清理本分支新增回归。
+批次 4C-2：新契约调用迁移。
 
 计划：
 
-1. 创建 `stage1-hardening → main` PR，触发 GitHub Actions。
-2. 将 CI 失败区分为主分支历史失败与本分支新增失败。
-3. 优先修复因新 Gate 契约导致的现有测试/调用点失效，尤其是旧 `render-stage02` 调用未提供 `--plan` / `--foundation`、旧 `audit-final` 正向用例缺少 Preflight 等问题。
-4. 不增加兼容分支；直接把现有测试、示例和正式调用方式迁移到新契约。
-5. CI 完成第一轮回归清理后，再进入 Final Script provenance、Native-source Fidelity Audit 和 project status 三项后续改造。
+1. 先将 `page-source` CLI 旧状态断言统一迁移为 `blocked`。
+2. 为 CLI render 测试建立标准 Stage1 Gate fixture，并将所有 `render-stage02` 正向测试显式接入 `--plan` / `--foundation`。
+3. 迁移 quality-policy render 测试到同一 Gate 契约。
+4. 调整 final-audit convergence 测试，使其明确验证“语义问题 + Preflight Gate”两个独立层次，不再假设 final report 仅包含 semantic issues。
+5. 继续拆薄 `script_engine/cli.py`，把新增 Stage1 adapter 移出 CLI，以恢复模块化体积约束。
+6. 完成后重新读取 PR Actions；目标是本分支新增失败归零，仅保留已确认的非本批次基线失败。
