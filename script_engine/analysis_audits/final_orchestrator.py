@@ -33,6 +33,41 @@ from .final_onscreen import (
 )
 
 
+_MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
+    {
+        "AUTHOR_SOURCE_CONSUMPTION_MISSING",
+        "AUTHOR_SOURCE_REF_UNKNOWN",
+        "AUTHOR_SOURCE_REF_OUTSIDE_PLAN_SCOPE",
+        "AUTHOR_RELATIONSHIP_NOT_MATERIALIZED",
+    }
+)
+
+
+def _compatibility_findings(
+    findings: list[str],
+    *,
+    compatibility_mode: bool,
+) -> list[str]:
+    """Suppress findings whose formal owner has moved to semantic_contract.
+
+    Raw legacy callers use the default ``compatibility_mode=False`` and retain
+    historical behavior. The single semantic entry calls this orchestrator in
+    compatibility mode, where migrated structured findings are already emitted by
+    their authoritative validators and must not be recomputed as a second owner.
+    """
+
+    if not compatibility_mode:
+        return findings
+    return [
+        finding
+        for finding in findings
+        if not any(
+            finding.startswith(f"{code}:")
+            for code in _MIGRATED_STRUCTURED_FINDING_CODES
+        )
+    ]
+
+
 def _append_governed_finding(
     issues: list[str],
     warnings: list[str],
@@ -54,6 +89,8 @@ def audit_final_script(
     final_script: dict[str, Any],
     plan: dict[str, Any],
     foundation: dict[str, Any],
+    *,
+    compatibility_mode: bool = False,
 ) -> tuple[list[str], list[str]]:
     issues: list[str] = audit_final_internal_expert_voice(final_script, plan)
     warnings: list[str] = []
@@ -159,14 +196,22 @@ def audit_final_script(
             _append_governed_finding(issues, warnings, scope, finding)
         for finding in _audit_authored_onscreen_contract(page, slide, items):
             _append_governed_finding(issues, warnings, scope, finding)
-        for finding in _audit_lean_authored_source_consumption(page, slide, items, foundation):
+        source_consumption_findings = _compatibility_findings(
+            _audit_lean_authored_source_consumption(page, slide, items, foundation),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in source_consumption_findings:
             _append_governed_finding(issues, warnings, scope, finding)
         for finding in _audit_lean_onscreen_full_copy_alignment(slide):
             _append_governed_finding(issues, warnings, scope, finding)
         retained_evidence = _support_items(slide.get("source_refs") or [], items)
         for finding in _audit_lean_onscreen_protected_retention(slide, retained_evidence, items):
             _append_governed_finding(issues, warnings, scope, finding)
-        for finding in _audit_lean_relationship_visibility(slide):
+        relationship_findings = _compatibility_findings(
+            _audit_lean_relationship_visibility(slide),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in relationship_findings:
             _append_governed_finding(issues, warnings, scope, finding)
         for finding in _audit_authored_content_coverage(page, slide):
             _append_governed_finding(issues, warnings, scope, finding)
