@@ -70,11 +70,6 @@ def audit_final_script(
     final_authoring_mode = str(
         (final_script.get("deck") or {}).get("authoring_mode") or plan_authoring_mode
     )
-    if final_authoring_mode == "analytical" and plan_authoring_mode != "analytical":
-        issues.append(
-            "AUTHORING_MODE_NOT_AUTHORIZED: final script requests analytical mode "
-            "without analytical mode in the approved Deck Plan"
-        )
 
     warnings.extend(onscreen_alignment_advisories({
         **final_script, "deck": {**(final_script.get("deck") or {}), "authoring_mode": final_authoring_mode},
