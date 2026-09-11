@@ -211,6 +211,96 @@ def build_author_preflight(
     }
 
 
+def _manifest_page_map(
+    manifest: Mapping[str, Any],
+) -> tuple[dict[str, Mapping[str, Any]], list[str]]:
+    mapped: dict[str, Mapping[str, Any]] = {}
+    issues: list[str] = []
+    pages = manifest.get("pages")
+    if not isinstance(pages, list):
+        return mapped, ["AUTHOR_PREFLIGHT_MANIFEST_PAGES_INVALID"]
+    for item in pages:
+        if not isinstance(item, Mapping):
+            issues.append("AUTHOR_PREFLIGHT_MANIFEST_PAGE_INVALID")
+            continue
+        page_id = _text(item.get("page_id"))
+        if not page_id:
+            issues.append("AUTHOR_PREFLIGHT_MANIFEST_PAGE_ID_MISSING")
+            continue
+        if page_id in mapped:
+            issues.append(f"AUTHOR_PREFLIGHT_MANIFEST_PAGE_DUPLICATE: {page_id}")
+            continue
+        mapped[page_id] = item
+    return mapped, issues
+
+
+def validate_author_preflight_gate(
+    manifest: Mapping[str, Any],
+    deck_plan: Mapping[str, Any],
+    foundation: Mapping[str, Any],
+    source_index: Mapping[str, Any],
+    packets_by_page: Mapping[str, Mapping[str, Any]],
+    *,
+    packet_paths: Mapping[str, str] | None = None,
+    loader_issues: list[str] | None = None,
+) -> list[str]:
+    """Verify a persisted manifest still exactly represents current gate state."""
+
+    issues: list[str] = []
+    if manifest.get("schema") != AUTHOR_PREFLIGHT_SCHEMA:
+        return ["AUTHOR_PREFLIGHT_MANIFEST_SCHEMA_INVALID"]
+    if manifest.get("builder_version") != AUTHOR_PREFLIGHT_BUILDER_VERSION:
+        issues.append("AUTHOR_PREFLIGHT_MANIFEST_BUILDER_INVALID")
+
+    current = build_author_preflight(
+        deck_plan,
+        foundation,
+        source_index,
+        packets_by_page,
+        packet_paths=packet_paths,
+        loader_issues=loader_issues,
+    )
+
+    if manifest.get("authoring_mode") != current["authoring_mode"]:
+        issues.append("AUTHOR_PREFLIGHT_MANIFEST_AUTHORING_MODE_STALE")
+    if manifest.get("inputs") != current["inputs"]:
+        issues.append("AUTHOR_PREFLIGHT_MANIFEST_INPUTS_STALE")
+
+    stored_summary = manifest.get("summary")
+    if not isinstance(stored_summary, Mapping):
+        issues.append("AUTHOR_PREFLIGHT_MANIFEST_SUMMARY_INVALID")
+    elif stored_summary.get("overall_status") != "passed":
+        issues.append("AUTHOR_PREFLIGHT_MANIFEST_BLOCKED")
+    if current["summary"]["overall_status"] != "passed":
+        issues.append("AUTHOR_PREFLIGHT_CURRENT_STATE_BLOCKED")
+
+    stored_pages, page_shape_issues = _manifest_page_map(manifest)
+    current_pages, current_shape_issues = _manifest_page_map(current)
+    issues.extend(page_shape_issues)
+    issues.extend(current_shape_issues)
+
+    if set(stored_pages) != set(current_pages):
+        issues.append("AUTHOR_PREFLIGHT_MANIFEST_PAGE_SET_STALE")
+    else:
+        compared_fields = (
+            "source_refs",
+            "gate_status",
+            "freshness",
+            "exact_source_status",
+            "packet_sha256",
+        )
+        for page_id in current_pages:
+            stored_page = stored_pages[page_id]
+            current_page = current_pages[page_id]
+            for field in compared_fields:
+                if stored_page.get(field) != current_page.get(field):
+                    issues.append(
+                        f"AUTHOR_PREFLIGHT_MANIFEST_PAGE_STALE: {page_id}.{field}"
+                    )
+
+    return list(dict.fromkeys(issues))
+
+
 def author_preflight_report(
     plan_path: Path,
     foundation_path: Path,
@@ -270,10 +360,99 @@ def author_preflight_report(
     return manifest, 0 if manifest["summary"]["overall_status"] == "passed" else 1
 
 
+def author_preflight_gate_report(
+    plan_path: Path,
+    foundation_path: Path,
+    *,
+    source_index_path: Path | None = None,
+    packet_dir: Path | None = None,
+    manifest_path: Path | None = None,
+) -> tuple[dict[str, Any], int]:
+    """Revalidate the persisted manifest against the current project artifacts."""
+
+    resolved_source_index = (
+        source_index_path or foundation_path.parent / ".cache" / "source-index.json"
+    )
+    resolved_packet_dir = packet_dir or foundation_path.parent / ".cache" / "page-source"
+    resolved_manifest = (
+        manifest_path or foundation_path.parent / ".cache" / "author-preflight.json"
+    )
+
+    missing: list[str] = []
+    for label, path in (
+        ("SOURCE_INDEX", resolved_source_index),
+        ("MANIFEST", resolved_manifest),
+    ):
+        if not path.is_file():
+            missing.append(f"AUTHOR_PREFLIGHT_{label}_MISSING: {path}")
+    if missing:
+        report = {
+            "kind": "author-preflight-gate",
+            "status": "failed",
+            "manifest": str(resolved_manifest.resolve()),
+            "issues": missing,
+        }
+        return report, 1
+
+    plan = load_json(plan_path)
+    foundation = load_json(foundation_path)
+    source_index = load_json(resolved_source_index)
+    if source_index.get("schema") != "cyberppt.source_index.v2":
+        report = {
+            "kind": "author-preflight-gate",
+            "status": "failed",
+            "manifest": str(resolved_manifest.resolve()),
+            "issues": [
+                "AUTHOR_PREFLIGHT_SOURCE_INDEX_SCHEMA_INVALID: expected cyberppt.source_index.v2"
+            ],
+        }
+        return report, 1
+
+    try:
+        manifest = json.loads(resolved_manifest.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        report = {
+            "kind": "author-preflight-gate",
+            "status": "failed",
+            "manifest": str(resolved_manifest.resolve()),
+            "issues": [f"AUTHOR_PREFLIGHT_MANIFEST_INVALID_JSON: {exc}"],
+        }
+        return report, 1
+    if not isinstance(manifest, Mapping):
+        report = {
+            "kind": "author-preflight-gate",
+            "status": "failed",
+            "manifest": str(resolved_manifest.resolve()),
+            "issues": ["AUTHOR_PREFLIGHT_MANIFEST_INVALID_OBJECT"],
+        }
+        return report, 1
+
+    packets, packet_paths, loader_issues = load_page_source_packets(resolved_packet_dir)
+    issues = validate_author_preflight_gate(
+        manifest,
+        plan,
+        foundation,
+        source_index,
+        packets,
+        packet_paths=packet_paths,
+        loader_issues=loader_issues,
+    )
+    report = {
+        "kind": "author-preflight-gate",
+        "status": "passed" if not issues else "failed",
+        "manifest": str(resolved_manifest.resolve()),
+        "packet_dir": str(resolved_packet_dir.resolve()),
+        "issues": issues,
+    }
+    return report, 0 if not issues else 1
+
+
 __all__ = [
     "AUTHOR_PREFLIGHT_BUILDER_VERSION",
     "AUTHOR_PREFLIGHT_SCHEMA",
+    "author_preflight_gate_report",
     "author_preflight_report",
     "build_author_preflight",
     "load_page_source_packets",
+    "validate_author_preflight_gate",
 ]
