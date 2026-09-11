@@ -5,23 +5,28 @@ PR：#34
 
 ## 已完成
 
-当前完成到批次 `4C-2 / 子步骤 3`。
+当前完成到批次 `4C-3`。
 
-- 首轮 CI 已完成诊断：13 个失败中，10 个属于本分支新契约迁移，3 个属于当前 main 基线问题。
-- `page-source` CLI 旧状态断言已从 `rewrite_required` 迁移到 `blocked`。
-- `script_engine/cli.py` 已拆薄，不通过放宽模块化体积阈值解决回归。
-- `tests/script_engine/test_cli.py` 的旧 `render-stage02` 调用已迁移：先构造 fresh Page Source Packet + Author Preflight Manifest，再显式提供 `--plan` / `--foundation`。
-- `tests/script_engine/test_quality_policy_cli_integration.py` 的 render 正向用例已同步迁移到同一 Stage1 Gate 契约。
-- `tests/script_engine/test_stage01_current_entry_convergence.py` 已拆分语义阻断与 Author Preflight Gate 阻断断言；既有 semantic audit 一致性覆盖保留。
-- 未增加无 Gate 的兼容路径。
+- PR #34 第二轮 Python 3.12 CI：`3 failed, 2216 passed, 8 skipped, 49 subtests passed`。
+- 首轮由 Stage1 hardening 新契约引起的 10 个回归已全部清零。
+- 剩余 3 个失败与本批次无关，均已在分支建立前的 `main` 基线出现对应改动：
+  - mission / judgment 来源校验；
+  - onscreen object code-context 校验；
+  - style 09 sample 尺寸。
+- Stage1 hardening 不混改这 3 个基线问题。
+- Wheel smoke（Windows / macOS）继续通过。
+- `page-source → author-preflight → audit-final / render-stage02` 的硬门禁调用迁移已完成，不保留历史兼容入口。
 
 ## 下一步
 
-`4C-3`：读取 PR #34 新一轮 GitHub Actions。
+批次 `5A`：把 resolved source unit lineage 纳入 Author Preflight。
 
-目标：
+计划：
 
-1. 确认本分支新增的 10 个回归是否已归零；
-2. 若出现新的 fixture / contract 问题，继续在本分支修复；
-3. 新契约回归清零后进入批次 5：Final Script provenance；
-4. 当前 main 已存在的 3 个非本批次失败单独记录，不与 Stage1 hardening 混改。
+1. 从每个 fresh Page Source Packet 汇总稳定、去重的 `unit_ids`；
+2. Author Preflight 每个内容页写入 `unit_ids`；
+3. Manifest Schema 将 `unit_ids` 固化为内容页 provenance 基础字段；
+4. persisted Manifest 与当前状态比较时同时校验 `unit_ids`；
+5. 增加 focused tests，验证 unit lineage 的稳定性和 stale 检测。
+
+完成 5A 后进入 `5B`：Final Script `source_provenance` 数据契约。
