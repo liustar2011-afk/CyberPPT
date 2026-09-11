@@ -309,8 +309,12 @@ def audit_final_script(
         )
         for finding in relationship_findings:
             _append_governed_finding(issues, warnings, scope, finding)
-        for finding in _audit_authored_content_coverage(page, slide):
-            _append_governed_finding(issues, warnings, scope, finding)
+        if not compatibility_mode:
+            # Exact PLAN-declared meaning-signal retention is now owned by
+            # semantic_contract.content_route on the formal path. Keep the raw
+            # legacy implementation intact only for direct compatibility callers.
+            for finding in _audit_authored_content_coverage(page, slide):
+                _append_governed_finding(issues, warnings, scope, finding)
         for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
             _append_governed_finding(
                 issues,
