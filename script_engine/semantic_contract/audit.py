@@ -10,6 +10,7 @@ from .diagnostics import partition_diagnostics
 from .protected_payload import collect_protected_payload_diagnostics
 from .provenance import validate_final_script_provenance
 from .relationships import validate_relationship_shape
+from .source_boundary import collect_source_boundary_diagnostics
 from .source_scope import validate_source_scope
 from .source_structure import validate_source_structure_preservation
 from .visibility import collect_visibility_diagnostics
@@ -24,11 +25,11 @@ def audit_final_script_semantic_contract(
 
     Structured authorization, source scope, relationship shape/topology,
     source-structure preservation, provenance, typed compatibility, protected
-    payload and explicit visibility are the new semantic authority. During Phase
-    4, the historical Final Script auditor is invoked here as a compatibility
-    adapter so formal callers no longer need to orchestrate two independent
-    semantic engines. Its remaining capabilities can now be migrated here one by
-    one without changing the public audit boundary.
+    payload, exact numeric source boundary and explicit visibility are the new
+    semantic authority. During Phase 4, the historical Final Script auditor is
+    invoked here as a compatibility adapter so formal callers no longer need to
+    orchestrate two independent semantic engines. Its remaining capabilities can
+    now be migrated here one by one without changing the public audit boundary.
     """
 
     authorization_issues = validate_authoring_mode_authorization(final_script, plan)
@@ -43,6 +44,7 @@ def audit_final_script_semantic_contract(
     diagnostics = [
         *collect_provenance_compatibility_diagnostics(final_script, foundation),
         *collect_protected_payload_diagnostics(final_script, foundation, plan),
+        *collect_source_boundary_diagnostics(final_script, foundation),
         *collect_visibility_diagnostics(final_script, plan, foundation),
     ]
     structured_blockers, review_required, structured = partition_diagnostics(
