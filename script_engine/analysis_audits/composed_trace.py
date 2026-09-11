@@ -14,6 +14,8 @@ from .composed_trace_core import (
     final_script_lines,
     trace_composed,
     hard_finding_messages,
+    hard_numeric_finding_messages,
+    identifier_review_messages,
 )
 from .composed_trace_priorities import _external_check_page_ids, critic_priorities
 
@@ -27,4 +29,6 @@ __all__ = [
     "trace_composed",
     "critic_priorities",
     "hard_finding_messages",
+    "hard_numeric_finding_messages",
+    "identifier_review_messages",
 ]
