@@ -18,6 +18,7 @@ from .contracts import (
     validate_foundation,
     validate_source_refs_coverage,
 )
+from .final_source_provenance import validate_final_source_provenance
 from .plan_review import render_plan_review
 from .semantic_contract import audit_final_script_semantic_contract
 from .source_index import (
@@ -123,11 +124,22 @@ def final_audit_report(
         + validate_deck_plan(plan)
         + validate_foundation(foundation)
     )
+    provenance_issues: list[str] = []
     if preflight_exit != 0:
         issues += [
             f"AUTHOR_PREFLIGHT_GATE: {issue}"
             for issue in preflight_report.get("issues") or []
         ]
+    else:
+        preflight_manifest = load_json(
+            foundation_path.parent / ".cache" / "author-preflight.json"
+        )
+        provenance_issues = validate_final_source_provenance(
+            final_payload,
+            preflight_manifest,
+        )
+        issues += provenance_issues
+
     semantic_issues, warnings, semantic_diagnostics = (
         audit_final_script_semantic_contract(final_payload, plan, foundation)
     )
@@ -142,6 +154,7 @@ def final_audit_report(
             "plan": str(plan_path.resolve()),
             "foundation": str(foundation_path.resolve()),
             "author_preflight": preflight_report,
+            "source_provenance_issues": provenance_issues,
             "status": "passed" if not issues else "failed",
             "issues": issues,
             "warnings": warnings,
