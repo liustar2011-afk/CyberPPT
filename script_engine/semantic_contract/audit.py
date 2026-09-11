@@ -15,7 +15,15 @@ def audit_final_script_semantic_contract(
     plan: dict[str, Any] | None,
     foundation: dict[str, Any] | None,
 ) -> tuple[list[str], list[str], list[dict[str, object]]]:
-    """Run all structured Final Script semantic checks through one entry point."""
+    """Run the authoritative Final Script semantic audit through one entry point.
+
+    Structured provenance, typed compatibility and protected payload are the new
+    semantic authority. During Phase 4, the historical Final Script auditor is
+    invoked here as a compatibility adapter so formal callers no longer need to
+    orchestrate two independent semantic engines. Its capabilities can now be
+    migrated into this package one by one without changing the public audit
+    boundary.
+    """
 
     provenance_issues = validate_final_script_provenance(
         final_script, plan, foundation
@@ -24,5 +32,27 @@ def audit_final_script_semantic_contract(
         *collect_provenance_compatibility_diagnostics(final_script, foundation),
         *collect_protected_payload_diagnostics(final_script, foundation),
     ]
-    blockers, review_required, structured = partition_diagnostics(diagnostics)
-    return [*provenance_issues, *blockers], review_required, structured
+    structured_blockers, review_required, structured = partition_diagnostics(
+        diagnostics
+    )
+
+    # Import lazily to keep the structured semantic package independent from the
+    # legacy helper graph at module-import time. Phase 4 removes this adapter as
+    # its remaining deterministic responsibilities are migrated here.
+    from script_engine.analysis_audits.final_orchestrator import (
+        audit_final_script as audit_legacy_final_script,
+    )
+
+    legacy_issues, legacy_warnings = audit_legacy_final_script(
+        final_script,
+        plan if isinstance(plan, dict) else {},
+        foundation if isinstance(foundation, dict) else {},
+    )
+
+    issues = list(
+        dict.fromkeys(
+            [*provenance_issues, *structured_blockers, *legacy_issues]
+        )
+    )
+    warnings = list(dict.fromkeys([*legacy_warnings, *review_required]))
+    return issues, warnings, structured
