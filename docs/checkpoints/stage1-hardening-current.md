@@ -5,7 +5,7 @@ PR：#34
 
 ## 已完成
 
-当前完成到收口批次 `9 / 子步骤 1`。
+当前完成到收口批次 `9 / 子步骤 2`。
 
 ### 批次 5：Final Script Source Provenance
 
@@ -53,20 +53,26 @@ GitHub Actions run `34585423986`，代码 head `cea6b706a7b8e6e74f25ea2bde994831
 
 至此，Stage1 hardening 代码层面已经恢复真实绿色基线。
 
-### 收口批次 9 / 子步骤 1：运行合同固化
+### 收口批次 9：运行合同固化
 
 已新增：
 
 `.agents/skills/cyberppt-script-workflow/references/stage1-faithful-gate-contract.md`
 
-该合同正式固化：
+合同区分两组关系：
+
+1. 事实权威：Native Source Unit 为最终事实权威；Foundation 是结构化语义索引；Deck Plan 是页面规划与来源范围权威；Final Script 是受约束的作者输出；
+2. 执行流水线：
 
 ```text
-source-index.v2
-  → Page Source Packet v2
-  → Author Preflight v2
+Native Sources
+  → Source Index
+  → Foundation
+  → Deck Plan
+  → Page Source Packet
+  → Author Preflight
   → AUTHOR
-  → Final Script source_provenance
+  → Final Script
   → Native-source Fidelity Audit
   → Stage02
 ```
@@ -79,17 +85,27 @@ source-index.v2
 - Final Script 页面 provenance 必须来自当前 passed Author Preflight；
 - `render-stage02` 必须重新验证 Preflight、page lineage 与 Native-source Fidelity。
 
-同时更新 `.agents/skills/cyberppt-script-workflow/AGENTS.md`，将该合同设为 AUTHOR / CRITIQUE / REWRITE / Final Audit / Stage02 handoff 的强制阅读入口。
+`.agents/skills/cyberppt-script-workflow/AGENTS.md` 已将该合同设为 AUTHOR / CRITIQUE / REWRITE / Final Audit / Stage02 handoff 的强制阅读入口。
 
-`final-script-provenance-contract.md` 也已改为双层 provenance 合同：
+`final-script-provenance-contract.md` 已统一为双层 provenance 合同：
 
 - 页面级 exact-source lineage 证明当前精确来源证据；
 - module / item provenance 描述 Final Script 结构化语义归属；
 - Native Source Unit 是最终事实权威；Foundation 负责结构化语义索引与绑定。
 
+### 文档合同回归及修复
+
+首次文档 CI run `34585969438` 暴露 1 项 skill-contract 失败：
+
+`test_workflow_routes_to_exactly_one_mode_specific_authoring_contract`
+
+原因不是架构逻辑，而是测试要求 AGENTS 保留精确短语 `Do not merge`，文档换行导致字符串不连续。已恢复该固定短语，且不改变“单次动作只能使用一个 mode-specific contract”的含义。
+
+该次 CI 其余测试为 `2246 passed, 8 skipped`，OfficeCLI 与 wheel jobs 正常。
+
 ## 下一步
 
-收口批次 `9 / 子步骤 2`：验证最新文档 head 的 GitHub Actions。
+收口批次 `9 / 子步骤 3`：验证修复后的最新 head GitHub Actions。
 
 通过后：
 
