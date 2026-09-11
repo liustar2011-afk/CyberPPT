@@ -76,10 +76,29 @@ def test_author_preflight_passes_fresh_content_and_marks_structural_page_not_app
         "overall_status": "passed",
     }
     assert manifest["pages"][0]["gate_status"] == "not_applicable"
+    assert manifest["pages"][0]["unit_ids"] == []
     assert manifest["pages"][1]["gate_status"] == "passed"
     assert manifest["pages"][1]["freshness"] == "fresh"
     assert manifest["pages"][1]["exact_source_status"] == "available"
+    assert manifest["pages"][1]["unit_ids"] == ["SU-001"]
     assert len(manifest["pages"][1]["packet_sha256"]) == 64
+
+
+def test_author_preflight_deduplicates_unit_lineage_in_stable_packet_order() -> None:
+    plan, foundation, source_index, packet = _fixture()
+    packet["evidence"].append(deepcopy(packet["evidence"][0]))
+    packet["inputs"] = build_input_fingerprints(plan, foundation, source_index)
+
+    manifest = build_author_preflight(
+        plan,
+        foundation,
+        source_index,
+        {"P01": packet},
+    )
+
+    content = manifest["pages"][1]
+    assert content["gate_status"] == "passed"
+    assert content["unit_ids"] == ["SU-001"]
 
 
 def test_author_preflight_blocks_missing_content_packet() -> None:
@@ -90,6 +109,7 @@ def test_author_preflight_blocks_missing_content_packet() -> None:
     content = manifest["pages"][1]
     assert content["gate_status"] == "missing"
     assert content["freshness"] == "missing"
+    assert content["unit_ids"] == []
     assert content["issues"] == ["AUTHOR_PREFLIGHT_PACKET_MISSING"]
     assert manifest["summary"]["overall_status"] == "blocked"
 
@@ -109,6 +129,7 @@ def test_author_preflight_marks_packet_stale_after_plan_change() -> None:
     content = manifest["pages"][1]
     assert content["gate_status"] == "stale"
     assert content["freshness"] == "stale"
+    assert content["unit_ids"] == []
     assert content["issues"] == ["AUTHOR_PREFLIGHT_PACKET_STALE"]
     assert manifest["summary"]["stale"] == 1
     assert manifest["summary"]["overall_status"] == "blocked"
@@ -143,6 +164,7 @@ def test_author_preflight_blocks_packet_that_failed_exact_source_gate() -> None:
     assert content["gate_status"] == "blocked"
     assert content["freshness"] == "fresh"
     assert content["exact_source_status"] == "unavailable"
+    assert content["unit_ids"] == []
     assert "AUTHOR_PREFLIGHT_PACKET_BLOCKED" in content["issues"]
     assert "AUTHOR_PREFLIGHT_EXACT_SOURCE_UNAVAILABLE" in content["issues"]
     assert manifest["summary"]["blocked"] == 1
@@ -164,4 +186,5 @@ def test_author_preflight_blocks_invalid_exact_source_unit_shape() -> None:
     content = manifest["pages"][1]
     assert content["gate_status"] == "blocked"
     assert content["exact_source_status"] == "unavailable"
+    assert content["unit_ids"] == []
     assert "AUTHOR_PREFLIGHT_EXACT_SOURCE_UNAVAILABLE" in content["issues"]
