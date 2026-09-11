@@ -41,7 +41,7 @@ def audit_final_script_semantic_contract(
     )
     diagnostics = [
         *collect_provenance_compatibility_diagnostics(final_script, foundation),
-        *collect_protected_payload_diagnostics(final_script, foundation),
+        *collect_protected_payload_diagnostics(final_script, foundation, plan),
     ]
     structured_blockers, review_required, structured = partition_diagnostics(
         diagnostics
