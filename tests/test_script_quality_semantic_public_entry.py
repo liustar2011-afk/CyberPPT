@@ -41,8 +41,12 @@ def test_public_legacy_semantic_entry_routes_through_script_engine() -> None:
     )
 
     assert any(
-        "COMPOSED_TRACE_SOURCE_BOUNDARY" in issue and "9" in issue
+        "[FINAL_NUMBER_OUTSIDE_FOUNDATION]" in issue and "9" in issue
         for issue in issues
+    )
+    assert any(
+        diagnostic["code"] == "FINAL_NUMBER_OUTSIDE_FOUNDATION"
+        for diagnostic in diagnostics
     )
     assert isinstance(warnings, list)
     assert isinstance(diagnostics, list)
