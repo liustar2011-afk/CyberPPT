@@ -8,6 +8,7 @@ from .authorization import validate_authoring_mode_authorization
 from .compatibility import collect_provenance_compatibility_diagnostics
 from .content_route import collect_content_route_diagnostics
 from .delivery_cleanliness import collect_delivery_cleanliness_diagnostics
+from .delivery_readiness import collect_delivery_readiness_diagnostics
 from .diagnostics import partition_diagnostics
 from .onscreen_composition import collect_onscreen_composition_diagnostics
 from .onscreen_contract import collect_onscreen_contract_diagnostics
@@ -31,11 +32,12 @@ def audit_final_script_semantic_contract(
     Structured authorization, source scope, relationship shape/topology,
     source-structure preservation, provenance, typed compatibility, protected
     payload, objective source boundaries, explicit PLAN content-route/onscreen
-    contracts, delivery cleanliness and voice policy, and explicit visibility are
-    the new semantic authority. During Phase 4, the historical Final Script auditor
-    is invoked here as a compatibility adapter so formal callers no longer need to
-    orchestrate two independent semantic engines. Its remaining capabilities can
-    now be migrated here one by one without changing the public audit boundary.
+    contracts, delivery cleanliness/readiness and voice policy, and explicit
+    visibility are the new semantic authority. During Phase 4, the historical
+    Final Script auditor is invoked here as a compatibility adapter so formal
+    callers no longer need to orchestrate two independent semantic engines. Its
+    remaining review capabilities can now be retired without changing the public
+    audit boundary.
     """
 
     authorization_issues = validate_authoring_mode_authorization(final_script, plan)
@@ -55,6 +57,7 @@ def audit_final_script_semantic_contract(
         *collect_onscreen_composition_diagnostics(final_script, plan),
         *collect_onscreen_contract_diagnostics(final_script, plan, foundation),
         *collect_delivery_cleanliness_diagnostics(final_script, plan, foundation),
+        *collect_delivery_readiness_diagnostics(final_script, plan),
         *collect_voice_policy_diagnostics(final_script, plan),
         *collect_visibility_diagnostics(final_script, plan, foundation),
     ]
@@ -63,10 +66,9 @@ def audit_final_script_semantic_contract(
     )
 
     # Import lazily to keep the structured semantic package independent from the
-    # legacy helper graph at module-import time. Phase 4 removes this adapter as
-    # its remaining deterministic responsibilities are migrated here. The adapter
-    # runs in compatibility mode so checks already owned by structured validators
-    # are not recomputed by legacy code.
+    # legacy helper graph at module-import time. Phase 4 keeps this adapter only
+    # for review/warning compatibility; deterministic blocker ownership has moved
+    # into semantic_contract.
     from script_engine.analysis_audits.final_orchestrator import (
         audit_final_script as audit_legacy_final_script,
     )
