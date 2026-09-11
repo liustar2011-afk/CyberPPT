@@ -54,8 +54,11 @@ LEGACY_HEURISTIC_WARNING_CODES = frozenset(
         "MATRIX_AXES_MISSING",
         "LAYER_HIERARCHY_MISSING",
         "CONTENT_PAGE_TOO_SPARSE",
+        "CONTENT_PAGE_TOO_FRAGMENTED",
         "MODULE_HIERARCHY_MISSING",
         "VISIBLE_NODE_OVERLOAD",
+        "ONSCREEN_STORY_DENSITY_LOW",
+        "ONSCREEN_STORY_NOT_CLOSED",
         # These checks are also driven by lexical similarity or generic text
         # shape. Keep them visible for Critic review but never production-block
         # solely on the heuristic score.
