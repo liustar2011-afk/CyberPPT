@@ -54,6 +54,21 @@ _FOUNDATION_PASSTHROUGH_FIELDS = (
     "coverage_anchors",
 )
 
+# These PLAN fields are copied only when the legacy Outline already stores them.
+# They are semantic-contract inputs, not values the adapter is allowed to infer.
+_PLAN_PAGE_PASSTHROUGH_FIELDS = (
+    "content_load",
+    "content_route",
+    "onscreen_composition",
+    "onscreen_contract",
+    "proof",
+    "analysis_basis",
+    "evidence_fit_review",
+    "question",
+    "message",
+    "logic",
+)
+
 
 def _strings(value: object) -> tuple[str, ...]:
     if not isinstance(value, (list, tuple)):
@@ -144,11 +159,14 @@ def _project_plan_page(page: dict[str, object]) -> dict[str, object] | None:
     for field in ("primary_relation", "secondary_relations"):
         if field in page:
             projected[field] = deepcopy(page[field])
+    for field in _PLAN_PAGE_PASSTHROUGH_FIELDS:
+        if field in page:
+            projected[field] = deepcopy(page[field])
     return projected
 
 
 def project_outline_to_deck_plan(outline: dict[str, object]) -> dict[str, object]:
-    """Project only the PLAN fields consumed by the semantic-contract adapter."""
+    """Project only explicit PLAN fields consumed by the semantic contract."""
 
     pages = [
         projected
@@ -159,6 +177,9 @@ def project_outline_to_deck_plan(outline: dict[str, object]) -> dict[str, object
         "authoring_mode": str(outline.get("authoring_mode") or "faithful"),
         "pages": pages,
     }
+    delivery_mode = str(outline.get("delivery_mode") or "").strip()
+    if delivery_mode:
+        plan["delivery_mode"] = delivery_mode
     audience_scope = str(outline.get("audience_scope") or "").strip()
     if audience_scope:
         plan["audience_scope"] = audience_scope
@@ -199,6 +220,10 @@ def _project_slide(page: ScriptPage) -> dict[str, object]:
         "title": page.title or page.heading or page.page_id,
         "source_refs": _merged_refs(page.source_refs, page.boundary_source_refs),
     }
+    if page.subtitle:
+        slide["subtitle"] = page.subtitle
+    if page.content_load:
+        slide["content_load"] = page.content_load
     if page.main_message:
         slide["core_message"] = page.main_message
     if page.full_prose:
@@ -222,16 +247,20 @@ def project_script_document_to_final_script(
     """Project a legacy ScriptDocument into provenance-less Final Script 1.0."""
 
     outline = outline if isinstance(outline, dict) else {}
+    deck: dict[str, object] = {
+        "authoring_mode": str(outline.get("authoring_mode") or "faithful"),
+        "title": str(outline.get("title") or "Legacy Script Quality projection"),
+        "communication_goal": str(
+            outline.get("communication_goal") or "Legacy semantic compatibility audit"
+        ),
+    }
+    delivery_mode = str(outline.get("delivery_mode") or "").strip()
+    if delivery_mode:
+        deck["delivery_mode"] = delivery_mode
     return {
         "contract": "cyberppt.final-script",
         "version": "1.0",
-        "deck": {
-            "authoring_mode": str(outline.get("authoring_mode") or "faithful"),
-            "title": str(outline.get("title") or "Legacy Script Quality projection"),
-            "communication_goal": str(
-                outline.get("communication_goal") or "Legacy semantic compatibility audit"
-            ),
-        },
+        "deck": deck,
         "slides": [_project_slide(page) for page in script.pages],
     }
 
