@@ -4,7 +4,12 @@ from __future__ import annotations
 from ..onscreen_contracts import onscreen_alignment_advisories
 from ..quality_policy import ADVISORY, classify_issue
 from .common import *
-from .composed_trace import hard_finding_messages, trace_composed
+from .composed_trace import (
+    hard_finding_messages,
+    hard_numeric_finding_messages,
+    identifier_review_messages,
+    trace_composed,
+)
 from .final_authoring import (
     _audit_authored_content_coverage,
     _authored_bare_label_detail_issues,
@@ -100,7 +105,12 @@ def audit_final_script(
 ) -> tuple[list[str], list[str]]:
     issues: list[str] = audit_final_internal_expert_voice(final_script, plan)
     warnings: list[str] = []
-    issues.extend(hard_finding_messages(trace_composed(final_script, foundation)))
+    composed_trace = trace_composed(final_script, foundation)
+    if compatibility_mode:
+        issues.extend(hard_numeric_finding_messages(composed_trace))
+        warnings.extend(identifier_review_messages(composed_trace))
+    else:
+        issues.extend(hard_finding_messages(composed_trace))
     items = foundation_items_by_id(foundation)
     pages = {p.get("id"): p for p in (plan.get("pages") or []) if isinstance(p, dict) and isinstance(p.get("id"), str)}
     audience_scope = plan.get("audience_scope", "unspecified")
