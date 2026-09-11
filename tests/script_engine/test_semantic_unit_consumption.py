@@ -280,7 +280,7 @@ def test_final_reviews_protected_responsibility_lost_from_onscreen() -> None:
     assert any(
         "PROTECTED_ACTOR_REVIEW_REQUIRED" in warning
         and "ST0003" in warning
-        and "target=onscreen" in warning
+        and "P01/onscreen" in warning
         for warning in warnings
     )
 
