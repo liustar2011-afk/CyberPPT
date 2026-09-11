@@ -73,6 +73,38 @@ def test_native_source_fidelity_blocks_dropped_numeric_qualifier() -> None:
     ]
 
 
+def test_native_source_fidelity_blocks_dropped_scope_qualifier() -> None:
+    final = _final("服务面向高校开放。")
+    packet = _packet("服务仅面向高校开放。")
+
+    issues = native_source_fidelity_issues(final, {"P01": packet})
+
+    assert issues == [
+        "NATIVE_SCOPE_QUALIFIER_DROPPED: P01.full_copy: source marker '仅' for '面向高校开放' is missing"
+    ]
+
+
+def test_native_source_fidelity_preserves_explicit_scope_marker() -> None:
+    final = _final("服务仅面向高校开放。")
+    packet = _packet("服务仅面向高校开放。")
+
+    assert native_source_fidelity_issues(final, {"P01": packet}) == []
+
+
+def test_native_source_fidelity_blocks_removed_exclusion_scope() -> None:
+    final = _final("数据集包含用户明细数据。")
+    packet = _packet("数据集不含用户明细数据。")
+
+    issues = native_source_fidelity_issues(final, {"P01": packet})
+
+    assert any(
+        "NATIVE_SCOPE_QUALIFIER_DROPPED" in issue
+        and "'不含'" in issue
+        and "用户明细数据" in issue
+        for issue in issues
+    )
+
+
 def test_native_source_fidelity_blocks_tentative_to_achieved_status_promotion() -> None:
     final = _final("项目已完成3项工作。")
     packet = _packet("项目计划完成3项工作。")
