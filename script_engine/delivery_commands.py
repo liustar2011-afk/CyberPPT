@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from .author_preflight import author_preflight_gate_report, load_page_source_packets
+from .author_preflight import author_preflight_gate_report
 from .contracts import (
     check_declared_count,
     load_json,
@@ -12,7 +12,7 @@ from .contracts import (
     validate_final_script,
 )
 from .final_source_provenance import validate_final_source_provenance
-from .native_source_fidelity import native_source_fidelity_issues
+from .native_source_fidelity import native_source_fidelity_gate_issues
 from .render import render_stage02_markdown
 from .text_io import write_text_lf
 
@@ -101,14 +101,10 @@ def render_stage02_delivery(
             1,
         )
 
-    packets, _packet_paths, loader_issues = load_page_source_packets(
-        foundation_path.parent / ".cache" / "page-source"
+    native_fidelity_issues = native_source_fidelity_gate_issues(
+        payload,
+        foundation_path.parent / ".cache" / "page-source",
     )
-    native_fidelity_issues = [
-        f"NATIVE_SOURCE_PACKET_LOAD: {issue}" for issue in loader_issues
-    ]
-    native_fidelity_issues += native_source_fidelity_issues(payload, packets)
-    native_fidelity_issues = list(dict.fromkeys(native_fidelity_issues))
     if native_fidelity_issues:
         return (
             None,
