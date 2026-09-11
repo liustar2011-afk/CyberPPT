@@ -149,7 +149,7 @@ def test_check_sync_reports_advisory_without_failing(monkeypatch, tmp_path, caps
     assert report["advisories"] == [ADVISORY, *example_advisories()]
 
 
-def test_status_keeps_advisory_only_final_script_ready(monkeypatch, tmp_path, capsys) -> None:
+def test_status_reports_advisories_without_bypassing_stage1_gate(monkeypatch, tmp_path, capsys) -> None:
     project = tmp_path / "project"
     (project / "sources").mkdir(parents=True)
     (project / "sources" / "brief.md").write_text("source", encoding="utf-8")
@@ -174,4 +174,5 @@ def test_status_keeps_advisory_only_final_script_ready(monkeypatch, tmp_path, ca
     assert exit_code == 0
     assert report["final_script"]["lint"] == "passed_with_advisories"
     assert report["final_script"]["lint_advisories"] == [ADVISORY, *example_advisories()]
-    assert report["stage"] == "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"
+    assert report["stage"] == "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
+    assert report["stage1"]["author_preflight"]["status"] == "not_run"
