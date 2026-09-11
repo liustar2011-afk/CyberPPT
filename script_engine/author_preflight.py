@@ -5,12 +5,14 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
+from .contracts import load_json
 from .source_freshness import (
     build_input_fingerprints,
     canonical_json_sha256,
     packet_freshness,
     utc_now_iso,
 )
+from .text_io import write_text_lf
 
 
 AUTHOR_PREFLIGHT_SCHEMA = "cyberppt.author_preflight.v1"
@@ -209,9 +211,69 @@ def build_author_preflight(
     }
 
 
+def author_preflight_report(
+    plan_path: Path,
+    foundation_path: Path,
+    *,
+    source_index_path: Path | None = None,
+    packet_dir: Path | None = None,
+    output_path: Path | None = None,
+) -> tuple[dict[str, Any], int]:
+    """Load project artifacts, build the preflight manifest and optionally persist it."""
+
+    plan = load_json(plan_path)
+    foundation = load_json(foundation_path)
+    resolved_source_index = (
+        source_index_path or foundation_path.parent / ".cache" / "source-index.json"
+    )
+    if not resolved_source_index.is_file():
+        return (
+            {
+                "schema": "cyberppt.author_preflight_error.v1",
+                "status": "blocked",
+                "issues": [
+                    f"AUTHOR_PREFLIGHT_SOURCE_INDEX_MISSING: {resolved_source_index}"
+                ],
+            },
+            1,
+        )
+
+    source_index = load_json(resolved_source_index)
+    if source_index.get("schema") != "cyberppt.source_index.v2":
+        return (
+            {
+                "schema": "cyberppt.author_preflight_error.v1",
+                "status": "blocked",
+                "issues": [
+                    "AUTHOR_PREFLIGHT_SOURCE_INDEX_SCHEMA_INVALID: expected cyberppt.source_index.v2"
+                ],
+            },
+            1,
+        )
+
+    resolved_packet_dir = packet_dir or foundation_path.parent / ".cache" / "page-source"
+    packets, packet_paths, loader_issues = load_page_source_packets(resolved_packet_dir)
+    manifest = build_author_preflight(
+        plan,
+        foundation,
+        source_index,
+        packets,
+        packet_paths=packet_paths,
+        loader_issues=loader_issues,
+    )
+
+    if output_path is not None:
+        output_path = output_path.expanduser().resolve()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        write_text_lf(output_path, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+
+    return manifest, 0 if manifest["summary"]["overall_status"] == "passed" else 1
+
+
 __all__ = [
     "AUTHOR_PREFLIGHT_BUILDER_VERSION",
     "AUTHOR_PREFLIGHT_SCHEMA",
+    "author_preflight_report",
     "build_author_preflight",
     "load_page_source_packets",
 ]
