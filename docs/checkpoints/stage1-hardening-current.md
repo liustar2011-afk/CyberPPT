@@ -33,7 +33,12 @@ PR：#34
 - `author_preflight.pages` 输出逐页 `gate_status / freshness / exact_source_status / source_refs / unit_ids / issues`。
 - 顶层 `stage` 不再允许“无 Preflight 但 Final Script 存在”显示为已就绪。
 - 只有 `final_audit_report()` 真正通过后，项目才显示“可进入 Stage02”。
-- `tests/script_engine/test_project_status_stage1_gate.py` 已覆盖 fresh / stale / Manifest missing。
+- `tests/script_engine/test_project_status_stage1_gate.py` 已覆盖五类状态：
+  1. fresh Preflight：页面 `passed + fresh + exact source available`；
+  2. Deck Plan 更新：原 Packet 立即显示 `stale`；
+  3. Manifest 缺失：即使当前 Packet 可重新计算为 passed，仍不得放行；
+  4. Packet 自身为 `blocked`：逐页明确输出 `gate_status=blocked` 及阻断原因；
+  5. Preflight 与 provenance 均合法、但 Final Script 新增原文不存在的数字：`final_audit=failed`，顶层状态明确“不得进入 Stage02”。
 - 所有旧 `status` 契约测试已迁移：
   - 无 Source Index / Manifest 时明确显示 Preflight 未通过；
   - lint/advisory 可以继续独立报告，但不能绕过 Stage1 Gate；
@@ -65,7 +70,7 @@ PR：#34
 - 4 项为旧 status 契约；已完成迁移；
 - 3 项为上述历史基线；已完成治理。
 
-因此当前 head 已没有已知未处理失败，等待下一轮 GitHub Actions 全量验证。
+当前 head 已没有已知未处理失败，并补齐了 blocked page 与 final-audit-failed 两类状态验收用例，等待下一轮 GitHub Actions 全量验证。
 
 ## 下一步
 
