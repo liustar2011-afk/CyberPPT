@@ -171,7 +171,10 @@ def test_legacy_adapter_can_run_authoritative_semantic_entry() -> None:
     )
 
     assert any(
-        "COMPOSED_TRACE_SOURCE_BOUNDARY" in issue and "9" in issue
+        "[FINAL_NUMBER_OUTSIDE_FOUNDATION]" in issue and "9" in issue
         for issue in issues
     )
-    assert isinstance(diagnostics, list)
+    assert any(
+        diagnostic["code"] == "FINAL_NUMBER_OUTSIDE_FOUNDATION"
+        for diagnostic in diagnostics
+    )
