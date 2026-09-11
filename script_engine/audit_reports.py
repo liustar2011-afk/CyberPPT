@@ -10,7 +10,7 @@ from .analysis_audit import (
     validate_source_index_coverage,
 )
 from .analysis_audits.composed_trace import critic_priorities, trace_composed
-from .author_preflight import author_preflight_gate_report, load_page_source_packets
+from .author_preflight import author_preflight_gate_report
 from .contracts import (
     load_json,
     validate_deck_plan,
@@ -19,7 +19,7 @@ from .contracts import (
     validate_source_refs_coverage,
 )
 from .final_source_provenance import validate_final_source_provenance
-from .native_source_fidelity import native_source_fidelity_issues
+from .native_source_fidelity import native_source_fidelity_gate_issues
 from .plan_review import render_plan_review
 from .semantic_contract import audit_final_script_semantic_contract
 from .source_index import (
@@ -142,17 +142,10 @@ def final_audit_report(
         )
         issues += provenance_issues
         if not provenance_issues:
-            packets, _packet_paths, loader_issues = load_page_source_packets(
-                foundation_path.parent / ".cache" / "page-source"
-            )
-            native_fidelity_issues = [
-                f"NATIVE_SOURCE_PACKET_LOAD: {issue}" for issue in loader_issues
-            ]
-            native_fidelity_issues += native_source_fidelity_issues(
+            native_fidelity_issues = native_source_fidelity_gate_issues(
                 final_payload,
-                packets,
+                foundation_path.parent / ".cache" / "page-source",
             )
-            native_fidelity_issues = list(dict.fromkeys(native_fidelity_issues))
             issues += native_fidelity_issues
 
     semantic_issues, warnings, semantic_diagnostics = (
