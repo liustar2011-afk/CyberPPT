@@ -42,7 +42,7 @@ def test_identified_items_still_detect_status_promotion_and_lost_conditions():
 def test_identified_items_still_detect_bad_hierarchy_and_code_only_mapping():
     final = {'slides': [{'page_type': 'content', 'onscreen': [
         {'items': [{'id': 'M1', 'text': '部署：方式：本地部署'}]},
-        {'items': [{'id': 'M2', 'text': 'A→B'}]},
+        {'items': [{'id': 'M2', 'text': 'A1+B2'}]},
     ]}]}
     assert check_onscreen_hierarchy_punctuation(final)
     assert check_onscreen_code_context(final)
