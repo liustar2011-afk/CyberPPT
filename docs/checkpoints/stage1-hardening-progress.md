@@ -55,15 +55,54 @@
 
 代码、Schema 和单元测试均已写入分支。尚未执行远端 CI；后续 PR 建立后统一读取 Actions 结果并继续修正。
 
-### 下一步工作
+---
 
-批次 3：Author Preflight Manifest。
+## 批次 3：Author Preflight Manifest
 
-计划：
+状态：已完成
+
+### 已完成工作
 
 1. 新增 `script_engine/author_preflight.py`。
 2. 新增 `contracts/author-preflight.schema.json`。
-3. 基于 Deck Plan 逐页检查 Page Source Packet：`passed / blocked / missing / stale / not_applicable`。
-4. 结构页显式标记 `not_applicable`，内容页必须具备 fresh + passed 的 exact source Packet。
-5. 输出项目级 `overall_status` 和汇总计数。
-6. 建立 Preflight 单元测试，为后续 AUTHOR / audit-final / render-stage02 强制接入提供唯一门禁依据。
+3. Preflight 基于当前 Deck Plan、Foundation、Source Index 与逐页 Packet 构建项目级门禁结果。
+4. 页面状态统一为：
+   - `passed`
+   - `blocked`
+   - `missing`
+   - `stale`
+   - `not_applicable`
+5. 当前规则以 `source_refs` 是否为空区分内容页与结构页：无来源页为 `not_applicable`；有来源页必须具备 fresh + passed 的 v2 Packet。
+6. Preflight 同时校验：
+   - Packet schema / fingerprints；
+   - page_id；
+   - authoring_mode；
+   - page_source_refs；
+   - Packet 自身 gate status；
+   - exact source evidence 是否真实存在且结构有效。
+7. 每个已加载 Packet 计算 `packet_sha256`，为后续 Final Script provenance 与 Stage02 复核提供稳定标识。
+8. 新增 Packet 目录加载逻辑，错误 JSON、缺 page_id、重复 page_id 均形成阻断性 loader issue。
+9. 新增 `tests/script_engine/test_author_preflight.py`，覆盖：
+   - 内容页 passed + 结构页 N/A；
+   - Packet 缺失；
+   - 上游变更导致 stale；
+   - Packet 已被 Exact Source Gate 阻断；
+   - malformed exact source unit 被阻断。
+10. 修复 exact source 检查边界：非对象 source unit 或空 text 均不能通过 Preflight。
+
+### 当前验证状态
+
+核心模块、Schema 和 focused tests 已写入分支。远端 CI 尚未执行。
+
+### 下一步工作
+
+批次 4：Preflight CLI 与流程强制接入。
+
+计划：
+
+1. 新增项目级 `author-preflight` 命令，默认读取 `script/deck-plan.json`、`script/foundation.json`、`script/.cache/source-index.json` 与 `script/.cache/page-source/*.json`。
+2. 默认输出 `script/.cache/author-preflight.json`。
+3. Preflight 非 passed 时 CLI 返回非零退出码。
+4. 在 `audit-final` 前强制验证 Preflight。
+5. 在 `render-stage02` 前强制验证 Preflight，形成第一条真正不可绕过的 Stage1 → Stage2 程序门禁。
+6. 补充 CLI / delivery focused tests。
