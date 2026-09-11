@@ -245,7 +245,7 @@ def test_onscreen_composition_enforces_evidence_first_and_selective_leads() -> N
     assert not any("onscreen_composition" in issue for issue in issues)
 
 
-def test_evidence_first_rejects_a_hidden_first_item_lead() -> None:
+def test_evidence_first_hidden_first_item_lead_is_review_only() -> None:
     final = {
         "slides": [{
             "id": "P06",
@@ -264,16 +264,20 @@ def test_evidence_first_rejects_a_hidden_first_item_lead() -> None:
         }]
     }
     page = _page(onscreen_composition={"mode": "evidence_first"})
-    issues, _ = audit_final_script(final, _plan(page), _foundation())
-    assert any("lead-like first item" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(page), _foundation())
+    assert any("AUTHOR_EVIDENCE_FIRST_HIERARCHY_HEURISTIC" in warning for warning in warnings)
+    assert not any("AUTHOR_EVIDENCE_FIRST_HIERARCHY_HEURISTIC" in issue for issue in issues)
 
     final["slides"][0]["onscreen"][0]["items"] = [
         "参考架构",
         "标识管理与目录描述",
         "接入连接器",
     ]
-    issues, _ = audit_final_script(final, _plan(page), _foundation())
-    assert not any("lead-like first item" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(page), _foundation())
+    assert not any(
+        "AUTHOR_EVIDENCE_FIRST_HIERARCHY_HEURISTIC" in item
+        for item in (*issues, *warnings)
+    )
 
 
 def test_evidence_first_keeps_parallel_complete_facts() -> None:
@@ -295,8 +299,11 @@ def test_evidence_first_keeps_parallel_complete_facts() -> None:
         }]
     }
     page = _page(onscreen_composition={"mode": "evidence_first"})
-    issues, _ = audit_final_script(final, _plan(page), _foundation())
-    assert not any("lead-like first item" in issue for issue in issues)
+    issues, warnings = audit_final_script(final, _plan(page), _foundation())
+    assert not any(
+        "AUTHOR_EVIDENCE_FIRST_HIERARCHY_HEURISTIC" in item
+        for item in (*issues, *warnings)
+    )
 
 
 def test_page_logic_review_renders_resolved_content_route() -> None:
