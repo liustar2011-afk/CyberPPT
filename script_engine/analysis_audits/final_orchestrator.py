@@ -42,6 +42,9 @@ _MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
         "AUTHOR_NUMBER_OR_DATE_LOST",
         "AUTHOR_CONDITION_LOST",
         "AUTHOR_RESPONSIBILITY_LOST",
+        "AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST",
+        "AUTHOR_ONSCREEN_CONDITION_LOST",
+        "AUTHOR_ONSCREEN_RESPONSIBILITY_LOST",
     }
 )
 
@@ -228,7 +231,11 @@ def audit_final_script(
         for finding in _audit_lean_onscreen_full_copy_alignment(slide):
             _append_governed_finding(issues, warnings, scope, finding)
         retained_evidence = _support_items(slide.get("source_refs") or [], items)
-        for finding in _audit_lean_onscreen_protected_retention(slide, retained_evidence, items):
+        protected_retention_findings = _compatibility_findings(
+            _audit_lean_onscreen_protected_retention(slide, retained_evidence, items),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in protected_retention_findings:
             _append_governed_finding(issues, warnings, scope, finding)
         relationship_findings = _compatibility_findings(
             _audit_lean_relationship_visibility(slide),
