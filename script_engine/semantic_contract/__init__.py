@@ -9,6 +9,7 @@ from .compatibility import (
 )
 from .content_route import collect_content_route_diagnostics
 from .delivery_cleanliness import collect_delivery_cleanliness_diagnostics
+from .delivery_readiness import collect_delivery_readiness_diagnostics
 from .diagnostics import dedupe_diagnostics, partition_diagnostics
 from .foundation_index import FoundationIndex
 from .models import (
@@ -45,6 +46,7 @@ __all__ = [
     "audit_final_script_semantic_contract",
     "collect_content_route_diagnostics",
     "collect_delivery_cleanliness_diagnostics",
+    "collect_delivery_readiness_diagnostics",
     "collect_onscreen_composition_diagnostics",
     "collect_onscreen_contract_diagnostics",
     "collect_protected_payload_diagnostics",
