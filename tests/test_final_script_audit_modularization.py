@@ -143,7 +143,6 @@ def test_final_script_runtime_routes_orchestrator_to_focused_module() -> None:
         "_audit_self_reading_density": final_onscreen._audit_self_reading_density,
         "_audit_authored_onscreen_contract": final_onscreen._audit_authored_onscreen_contract,
         "_source_text_for_refs": final_deck._source_text_for_refs,
-        "_normalize_source_chapter_title": final_deck._normalize_source_chapter_title,
         "_whole_deck_authoring_warnings": final_deck._whole_deck_authoring_warnings,
     }
     for name, value in expected_globals.items():
