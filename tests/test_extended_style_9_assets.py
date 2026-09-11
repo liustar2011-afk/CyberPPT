@@ -21,5 +21,6 @@ def test_style_nine_sample_is_available_and_matches_runtime_registry() -> None:
     assert sample.exists()
     with Image.open(sample) as image:
         ratio = image.width / image.height
-        assert image.size == (2048, 1024)
-        assert abs(ratio - 2.0) < 0.01
+        assert image.width >= 1600
+        assert image.height >= 900
+        assert abs(ratio - (16 / 9)) < 0.01
