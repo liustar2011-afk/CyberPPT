@@ -6,7 +6,6 @@ from ..quality_policy import ADVISORY, classify_issue
 from .common import *
 from .composed_trace import (
     hard_finding_messages,
-    hard_numeric_finding_messages,
     identifier_review_messages,
     trace_composed,
 )
@@ -134,7 +133,9 @@ def audit_final_script(
     warnings: list[str] = []
     composed_trace = trace_composed(final_script, foundation)
     if compatibility_mode:
-        issues.extend(hard_numeric_finding_messages(composed_trace))
+        # Exact numeric source-boundary blocking is now owned by
+        # semantic_contract.source_boundary. Keep only the heuristic identifier
+        # discovery signal at this legacy compatibility edge.
         warnings.extend(identifier_review_messages(composed_trace))
     else:
         issues.extend(hard_finding_messages(composed_trace))
