@@ -58,26 +58,42 @@ def _numeric_tokens(value: object) -> set[str]:
     return set(_NUMBER_RE.findall(str(value or "")))
 
 
-def _source_strings(value: object) -> Iterable[str]:
-    """Yield the same explicit Foundation source fields used by legacy tracing.
+def _selected_source_strings(value: object) -> Iterable[str]:
+    """Yield scalar values nested below an explicitly selected source field."""
 
-    Field names are structural contract keys, not business vocabulary. Keeping
-    this projection stable preserves the existing source boundary while moving
-    ownership out of the legacy semantic engine.
+    if isinstance(value, (str, int, float)):
+        if str(value).strip():
+            yield str(value)
+        return
+    if isinstance(value, list):
+        for child in value:
+            yield from _selected_source_strings(child)
+        return
+    if isinstance(value, dict):
+        for child in value.values():
+            yield from _selected_source_strings(child)
+
+
+def _source_strings(value: object) -> Iterable[str]:
+    """Yield explicit Foundation source fields without business-word inference.
+
+    Field names are structural contract keys, not business vocabulary. Compared
+    with legacy composed tracing, this projection also preserves scalar values
+    nested inside an explicit ``value``/text field (for example a numeric value
+    list), so typed Foundation payload cannot be rejected merely because it is
+    represented as an array.
     """
 
     if isinstance(value, dict):
         for key, child in value.items():
             if key in _SOURCE_TEXT_KEYS:
-                if isinstance(child, (str, int, float)) and str(child).strip():
-                    yield str(child)
-                elif isinstance(child, (list, dict)):
-                    yield from _source_strings(child)
+                yield from _selected_source_strings(child)
             elif isinstance(child, (list, dict)):
                 yield from _source_strings(child)
     elif isinstance(value, list):
         for child in value:
-            yield from _source_strings(child)
+            if isinstance(child, (list, dict)):
+                yield from _source_strings(child)
 
 
 def _foundation_number_tokens(foundation: dict[str, Any]) -> set[str]:
