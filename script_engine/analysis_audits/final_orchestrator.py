@@ -172,6 +172,16 @@ def audit_final_script(
         if page is None:
             warnings.append(f"{scope}: no matching deck-plan page; semantic inheritance cannot be audited")
             continue
+        mission = str(slide.get("mission") or "").strip()
+        planned_mission = str(page.get("logic") or "").strip()
+        if (slide.get("page_type") == "content" and mission and planned_mission
+                and "".join(mission.split()) != "".join(planned_mission.split())):
+            warnings.append(
+                f"slides.{index} ({slide_id}): AUTHOR_MISSION_PLAN_REVIEW: "
+                f"mission differs from PLAN logic; review actual content and page scope. "
+                f"PLAN: {planned_mission} AUTHOR: {mission}. Equivalent wording is allowed; "
+                "repair PLAN first if the content duty changed"
+            )
         final_text = _slide_text(slide)
         plan_text = _page_text(page)
         page_source_refs = {

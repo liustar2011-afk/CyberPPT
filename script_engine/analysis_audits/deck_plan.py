@@ -124,6 +124,13 @@ def _contract_issues(plan: dict[str, Any]) -> list[str]:
                 issues.append(f"chapters.{index}: PLAN_CHAPTER_AUTHOR_FIELDS_FORBIDDEN: {unknown}")
     for index, page in enumerate(plan.get("pages") or []):
         if isinstance(page, dict):
+            if _text(page.get("page_role")) not in _STRUCTURAL_PAGE_ROLES and (
+                not isinstance(page.get("logic"), str) or not page["logic"].strip()
+            ):
+                issues.append(
+                    f"pages.{index} ({page.get('id') or '?'}): PLAN_PAGE_MISSION_REQUIRED: "
+                    "content pages require a concrete page duty in logic; define scope and role before AUTHOR"
+                )
             unknown = sorted(set(page) - _PAGE_FIELDS)
             if unknown:
                 issues.append(

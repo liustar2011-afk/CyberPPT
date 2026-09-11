@@ -1,6 +1,8 @@
 """Focused AUTHOR visible-expression and execution audit helpers."""
 from __future__ import annotations
 
+from ..semantic_text_primitives import onscreen_item_text
+
 from .common import *
 
 
@@ -27,7 +29,7 @@ def _onscreen_module_lines(module: dict[str, Any]) -> list[str]:
     text = module.get("text")
     if isinstance(text, str) and text.strip():
         lines.append(text.strip())
-    for item in module.get("items") or []:
+    for item in (onscreen_item_text(value) for value in module.get("items") or []):
         if isinstance(item, str) and item.strip():
             lines.append(item.strip())
     return lines
@@ -49,7 +51,7 @@ def _evidence_first_item_hierarchy_issues(
 
     items = [
         item.strip()
-        for item in module.get("items") or []
+        for item in (onscreen_item_text(value) for value in module.get("items") or [])
         if isinstance(item, str) and item.strip()
     ]
     if len(items) < 2 or not _is_lead_like_evidence_item(items[0]):

@@ -6,11 +6,18 @@ from pathlib import Path
 from script_engine import cli
 from script_engine.contracts import load_json
 from script_engine.render import render_stage02_markdown
+from script_engine.onscreen_contracts import onscreen_alignment_advisories
 
 
 ROOT = Path(__file__).resolve().parents[2]
 ADVISORY = "AUTHOR_MISSION_GENERIC: slides.0.mission: wording heuristic"
 BLOCKER = "SOME_NEW_GATE: future deterministic issue"
+
+
+def example_advisories():
+    # Policy assertions include real projection hints as well as the injected
+    # classification finding; neither kind may become a hard delivery error.
+    return onscreen_alignment_advisories(load_json(ROOT / "examples" / "final-script.example.json"))
 
 
 def test_lint_advisory_only_passes_with_advisory_status(monkeypatch, capsys) -> None:
@@ -23,7 +30,7 @@ def test_lint_advisory_only_passes_with_advisory_status(monkeypatch, capsys) -> 
     assert exit_code == 0
     assert report["status"] == "passed_with_advisories"
     assert report["issues"] == []
-    assert report["advisories"] == [ADVISORY]
+    assert report["advisories"] == [ADVISORY, *example_advisories()]
 
 
 def test_lint_unknown_finding_remains_blocking(monkeypatch, capsys) -> None:
@@ -36,7 +43,7 @@ def test_lint_unknown_finding_remains_blocking(monkeypatch, capsys) -> None:
     assert exit_code == 1
     assert report["status"] == "failed"
     assert report["issues"] == [BLOCKER]
-    assert report["advisories"] == []
+    assert report["advisories"] == example_advisories()
 
 
 def test_render_stage02_does_not_block_on_advisory(monkeypatch, tmp_path, capsys) -> None:
@@ -66,7 +73,7 @@ def test_check_sync_reports_advisory_without_failing(monkeypatch, tmp_path, caps
     assert exit_code == 0
     assert report["status"] == "passed_with_advisories"
     assert report["issues"] == []
-    assert report["advisories"] == [ADVISORY]
+    assert report["advisories"] == [ADVISORY, *example_advisories()]
 
 
 def test_status_keeps_advisory_only_final_script_ready(monkeypatch, tmp_path, capsys) -> None:
@@ -93,5 +100,5 @@ def test_status_keeps_advisory_only_final_script_ready(monkeypatch, tmp_path, ca
 
     assert exit_code == 0
     assert report["final_script"]["lint"] == "passed_with_advisories"
-    assert report["final_script"]["lint_advisories"] == [ADVISORY]
+    assert report["final_script"]["lint_advisories"] == [ADVISORY, *example_advisories()]
     assert report["stage"] == "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"

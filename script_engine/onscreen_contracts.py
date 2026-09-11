@@ -1,6 +1,8 @@
 """Deterministic onscreen semantic projection checks."""
 from __future__ import annotations
 
+from .semantic_text_primitives import onscreen_item_text
+
 import re
 from typing import Any
 
@@ -45,7 +47,6 @@ def _uses_structured_authoring(mode: str, slide: dict[str, Any]) -> bool:
     return (
         mode == "analytical"
         or isinstance(slide.get("argument"), dict)
-        or bool(str(slide.get("core_message") or "").strip())
     )
 
 
@@ -98,7 +99,7 @@ def check_onscreen_heading_semantics(final_script: dict[str, Any]) -> list[str]:
                 issues.append(
                     f"ONSCREEN_HEADING_INCOMPLETE: slides.{index} ({slide_id}).onscreen[{module_index}].heading: "
                     f"'{heading}' is only a category label; use a source-native minimal page for label-led structure, "
-                    "or make the heading a complete point when core/argument authoring is explicitly declared"
+                    "or make the heading a complete point when argument authoring is explicitly declared"
                 )
     return issues
 
@@ -122,7 +123,7 @@ def check_onscreen_detail_semantics(final_script: dict[str, Any]) -> list[str]:
                 lines.append(("text", text.strip()))
             lines.extend(
                 (f"items[{item_index}]", item.strip())
-                for item_index, item in enumerate(module.get("items") or [])
+                for item_index, item in enumerate(onscreen_item_text(value) for value in module.get("items") or [])
                 if isinstance(item, str) and item.strip()
             )
             for field, line in lines:
@@ -159,7 +160,7 @@ def check_onscreen_projection_structure(final_script: dict[str, Any]) -> list[st
             continue
         has_payload_layer = any(
             (isinstance(module.get("text"), str) and module.get("text", "").strip())
-            or any(isinstance(item, str) and item.strip() for item in module.get("items") or [])
+            or any(isinstance(item, str) and item.strip() for item in (onscreen_item_text(value) for value in module.get("items") or []))
             for module in modules
         )
         if not has_payload_layer:
@@ -190,7 +191,7 @@ def check_onscreen_hierarchy_punctuation(final_script: dict[str, Any]) -> list[s
                 lines.append(("text", text.strip()))
             lines.extend(
                 (f"items[{item_index}]", item.strip())
-                for item_index, item in enumerate(module.get("items") or [])
+                for item_index, item in enumerate(onscreen_item_text(value) for value in module.get("items") or [])
                 if isinstance(item, str) and item.strip()
             )
             for field, line in lines:
@@ -214,7 +215,7 @@ def check_onscreen_code_context(final_script: dict[str, Any]) -> list[str]:
         for module_index, module in enumerate(slide.get("onscreen") or []):
             if not isinstance(module, dict):
                 continue
-            for item_index, item in enumerate(module.get("items") or []):
+            for item_index, item in enumerate(onscreen_item_text(value) for value in module.get("items") or []):
                 if not isinstance(item, str) or not item.strip():
                     continue
                 parts = _LABEL_SPLIT_RE.split(item.strip(), maxsplit=1)
@@ -238,7 +239,7 @@ def _onscreen_text(slide: dict[str, Any]) -> str:
         if not isinstance(module, dict):
             continue
         values.extend(str(module.get(key) or "") for key in ("heading", "text"))
-        values.extend(str(item) for item in module.get("items") or [] if isinstance(item, str))
+        values.extend(str(item) for item in (onscreen_item_text(value) for value in module.get("items") or []) if isinstance(item, str))
     return " ".join(values)
 
 
@@ -253,7 +254,7 @@ def _onscreen_entries(slide: dict[str, Any]) -> list[tuple[str, str]]:
                 entries.append((f"onscreen[{module_index}].{key}", value.strip()))
         entries.extend(
             (f"onscreen[{module_index}].items[{item_index}]", item.strip())
-            for item_index, item in enumerate(module.get("items") or [])
+            for item_index, item in enumerate(onscreen_item_text(value) for value in module.get("items") or [])
             if isinstance(item, str) and item.strip()
         )
     return entries

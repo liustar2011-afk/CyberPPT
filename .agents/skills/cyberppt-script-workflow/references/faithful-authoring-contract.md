@@ -38,6 +38,8 @@ Run these steps in order for every faithful content page.
 Read:
 
 - page title and page role;
+- the approved page mission in Deck Plan `logic` (also carried as `page_mission`
+  in the derived page-source packet);
 - page-bound `source_refs`;
 - adjacent-page boundary;
 - source chapter heading and relevant source structure;
@@ -45,6 +47,12 @@ Read:
 
 The Deck Plan defines the available evidence scope. It does not authorize AUTHOR to
 invent a stronger question, conclusion, mechanism, or value thesis.
+
+PLAN `logic` owns the page mission: state the specific business scope, communication
+duty and division of work with adjacent pages. Check the completed full copy against
+that duty. An optional Final Script `mission` only restates the approved duty for
+review; update PLAN first if scope changes. Neither mission field is audience copy
+or evidence for a business judgment.
 
 ### Step 2 — Resolve exact source evidence
 
@@ -199,6 +207,23 @@ existing planning route. Preserve the text until that repair is resolved.
 When an equivalent rewrite is uncertain, retain the original complete expression.
 Do not generate multiple candidates or run a scoring helper as a prerequisite.
 
+Before writing the visible modules, identify the source-native grouping within the
+reviewed full copy. A paragraph may contain a topic statement and several parallel
+business propositions. Give the heading and body distinct jobs: when the heading
+already carries the topic statement, omit only its equivalent repeated body opening.
+Express independent propositions as separate items when that makes their existing
+structure visible. Keep each action with its object, conditions and stated effects;
+retain a shared qualifier visibly over every item it governs. Do not split on every
+semicolon: punctuation can also separate dependent clauses or stages in one process.
+Do not invent one-to-one problem/measure mappings or new overarching effects.
+
+For example, two source paragraphs containing four supply conditions and three
+construction actions may become two modules with four and three complete items.
+This is source-native grouping, not a mandatory item count for other pages. Preserve
+source numbering across pages when useful; starting at “三是” is not itself an error.
+Exact copying remains valid for a self-contained passage. It does not replace the
+editorial check for duplicated headings and hidden parallel structure.
+
 ### Step 7 — Compare meanings and rewrite
 
 The current main Agent reads the complete `full_copy` and complete `onscreen`
@@ -249,6 +274,19 @@ If `core_message` is used, it must be a source-explicit conclusion or a minimal
 consolidation whose claim strength and relationship are already explicit in the
 source. It cannot answer a newly invented "so what" question.
 
+Choose the judgment form after examining the exact source and reviewing full copy:
+
+- one source-supported main judgment: optional `core_message`;
+- multiple parallel source judgments: preserve them separately in full copy and
+  onscreen modules, with no required page-wide synthesis;
+- definitions, classifications or tasks without a total judgment: omit
+  `core_message` and preserve the source-native structure.
+
+A source-supported `core_message` alone does not opt the page into argument-led
+paragraphs or conclusion-style module headings. Explicit `argument` remains a
+separate choice that must itself be supported by the source. No placeholder or
+"no judgment" field is needed when the optional core is absent.
+
 If `argument` is used, its topology must already exist in the source. Do not invent an
 argument chain from parallel facts.
 
@@ -265,6 +303,8 @@ transition. It may not contain a stronger claim than the visible copy.
 
 Check:
 
+- fulfilment of each PLAN mission by the actual page content, separately from
+  whether the page has one, several or no source-supported judgments;
 - source chapter coverage and order;
 - page-bound source scope;
 - adjacent-page duplication and omissions;

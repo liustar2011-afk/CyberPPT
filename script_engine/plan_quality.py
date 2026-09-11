@@ -8,6 +8,7 @@ from typing import Any
 
 _SUMMARY_CONNECTOR_RE = re.compile(r"(?:明确|构成|提供|形成|包括|涵盖).{0,28}(?:，|、).{0,40}(?:明确|构成|提供|形成|包括|涵盖)")
 _STRUCTURAL_ROLES = {"cover", "agenda", "contents", "chapter", "transition", "ending", "closing"}
+_GENERIC_MISSION_RE = re.compile(r"^(?:说明|介绍|呈现|梳理|明确)(?:相关|有关|主要)?(?:内容|情况|工作|事项)[。.]?$")
 
 
 def plan_critic_priorities(plan: dict[str, Any]) -> list[dict[str, str]]:
@@ -19,6 +20,12 @@ def plan_critic_priorities(plan: dict[str, Any]) -> list[dict[str, str]]:
     for page in content:
         page_id = str(page.get("id") or "?")
         logic = str(page.get("logic") or "").strip()
+        if _GENERIC_MISSION_RE.fullmatch(logic):
+            findings.append({
+                "code": "PLAN_MISSION_GENERIC",
+                "page_id": page_id,
+                "reason": "页面使命缺少具体业务对象，请明确内容范围、页面职责及相邻页分工；无需预写核心判断",
+            })
         if _SUMMARY_CONNECTOR_RE.search(logic):
             findings.append({
                 "code": "PLAN_LOGIC_COVERAGE_SUMMARY",
@@ -39,7 +46,7 @@ def plan_critic_priorities(plan: dict[str, Any]) -> list[dict[str, str]]:
             findings.append({
                 "code": "PLAN_ADJACENT_ARGUMENT_REPEAT",
                 "page_id": f"{left.get('id') or '?'}->{right.get('id') or '?'}",
-                "reason": f"相邻核心判断相似度 {similarity:.0%}，需要重写页面边界或合并",
+                "reason": f"相邻页面使命相似度 {similarity:.0%}，需核对页面边界和分工；相似度不直接裁定合并",
             })
     return findings
 

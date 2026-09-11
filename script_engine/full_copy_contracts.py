@@ -28,12 +28,11 @@ def _authoring_mode(final_script: dict[str, Any]) -> str:
 
 
 def _uses_structured_authoring(mode: str, slide: dict[str, Any]) -> bool:
-    """Return whether this page opted into an explicit argument/core structure."""
+    """A source-explicit core alone does not opt faithful prose into an argument."""
 
     return (
         mode == "analytical"
         or isinstance(slide.get("argument"), dict)
-        or bool(str(slide.get("core_message") or "").strip())
     )
 
 
@@ -68,7 +67,7 @@ def check_full_copy_structure(final_script: dict[str, Any]) -> list[str]:
 def check_full_copy_topic_semantics(final_script: dict[str, Any]) -> list[str]:
     """Protect source specificity without forcing minimal faithful pages into judgments.
 
-    If a faithful page explicitly authors a core/argument structure, its paragraph
+    If a faithful page explicitly authors an argument structure, its paragraph
     openings are checked for the same structural coherence as analytical pages.
     Source-native faithful pages without that opt-in remain free to use definitions,
     task labels, taxonomy labels, and stages directly.

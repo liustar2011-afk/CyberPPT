@@ -360,8 +360,10 @@ def test_cli_lint_passes_on_example(capsys) -> None:
     exit_code = main(["lint", str(path)])
     out = json.loads(capsys.readouterr().out)
     assert exit_code == 0
-    assert out["status"] == "passed"
+    assert out["status"] == "passed_with_advisories"
     assert out["issues"] == []
+    assert len(out["advisories"]) == 2
+    assert all("ONSCREEN_HEADING_REPEATED_IN_BODY" in item for item in out["advisories"])
 
 
 def test_cli_lint_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, capsys) -> None:
@@ -473,8 +475,10 @@ def test_cli_check_sync_passes_when_markdown_matches_fresh_render(tmp_path, caps
     exit_code = main(["check-sync", str(final_path), str(markdown_path)])
     out = json.loads(capsys.readouterr().out)
     assert exit_code == 0
-    assert out["status"] == "passed"
+    assert out["status"] == "passed_with_advisories"
     assert out["issues"] == []
+    assert len(out["advisories"]) == 2
+    assert all("ONSCREEN_HEADING_REPEATED_IN_BODY" in item for item in out["advisories"])
 
 
 def test_cli_check_sync_fails_when_markdown_is_stale(tmp_path, capsys) -> None:

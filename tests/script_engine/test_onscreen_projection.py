@@ -176,6 +176,53 @@ def test_existing_critic_context_contains_bidirectional_evidence():
     assert all(not item["verified"] for item in packet["candidate_mappings"])
 
 
+def test_source_native_grouping_is_an_advisory_and_never_rewrites_copy():
+    from copy import deepcopy
+    from script_engine.analysis_audits.final_orchestrator import audit_final_script
+    from script_engine.lint_contracts import lint_final_script
+
+    heading = "分散资源尚未形成稳定的行业服务供给"
+    details = [
+        "目录标识和授权条件不统一，技术适配成本较高",
+        "资源说明和质量标准尚未形成统一规范，难以快速组合使用",
+        "资源方关注控制权，需求方关注交付稳定性，信任机制仍需完善",
+        "服务计量和价值结算尚未形成完整机制，资源价值难以持续释放",
+    ]
+    full_copy = "三是" + heading + "。" + "；".join(details) + "。"
+    slide = {"id": "P05", "page_type": "content", "title": "建设背景",
+             "full_copy": full_copy, "source_refs": ["F1"],
+             "onscreen": [{"heading": heading, "items": [full_copy]}]}
+    original = deepcopy(slide)
+    codes = {item["code"] for item in review_onscreen_projection(slide)["findings"]}
+    expected = {"ONSCREEN_HEADING_REPEATED_IN_BODY", "ONSCREEN_GROUPING_REVIEW"}
+    assert expected <= codes
+    assert slide == original
+    payload = {"deck": {"authoring_mode": "faithful"}, "slides": [slide]}
+    issues, warnings = audit_final_script(payload, {
+        "authoring_mode": "faithful", "pages": [{"id": "P05", "source_refs": ["F1"]}],
+    }, {"facts": [{"id": "F1", "statement": full_copy}]})
+    for code in expected:
+        assert any(code in warning for warning in warnings)
+        assert not any(code in issue for issue in issues + lint_final_script(payload))
+    slide["onscreen"] = [{"heading": "三、" + heading, "items": details}]
+    corrected = review_onscreen_projection(slide)
+    assert not expected.intersection(item["code"] for item in corrected["findings"])
+
+
+def test_grouping_hint_does_not_claim_semantic_independence():
+    text = "在授权有效期内，执行查询；记录调用；输出约定结果。"
+    result = review(text, [{"text": text}])
+    hint = next(item for item in result["findings"] if item["code"] == "ONSCREEN_GROUPING_REVIEW")
+    assert "do not auto-split" in hint["detail"]
+    assert result["semantic_review_required"]
+
+
+def test_continuous_numbering_and_supported_heading_are_not_repetition():
+    text = "三是安全保障。访问控制尚待完善。"
+    result = review(text, [{"heading": "安全保障", "items": ["访问控制尚待完善"]}])
+    assert not any(item["code"] == "ONSCREEN_HEADING_REPEATED_IN_BODY" for item in result["findings"])
+
+
 def test_lint_and_final_audit_report_projection_heuristics_as_advisories():
     from script_engine.lint_contracts import lint_final_script
     from script_engine.analysis_audits.final_orchestrator import audit_final_script

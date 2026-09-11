@@ -68,6 +68,29 @@ migrated to v2 lean before entering this workflow.
 
 ### Faithful AUTHOR
 
+#### Mission and judgment ownership
+
+PLAN writes a concrete mission for every content page in the existing `logic`
+field: the business scope, the page's communication duty and its distinction from
+adjacent pages. Do not introduce a second PLAN `mission` field or pre-author a
+`core_message`. The page-source packet carries `page_mission` as a disposable copy
+of `logic` so AUTHOR reads the mission together with exact evidence.
+
+During AUTHOR, check that the full copy actually fulfils this mission. A Final
+Script `mission`, when supplied, is a review-only restatement of PLAN `logic`;
+repair PLAN first if the page duty changes. A wording difference is a review hint,
+not proof of a semantic conflict. Do not render the mission as onscreen content.
+
+After reviewing source meaning and full copy, choose the faithful judgment form:
+one source-supported main judgment may use optional `core_message`; multiple
+parallel judgments stay in their source order within full copy and onscreen
+modules; a definition, classification or task list may omit a page-wide judgment.
+Do not add a synthetic conclusion to fill a field. Presence of `core_message`
+alone does not authorize analytical or argument-led writing. CRITIQUE reviews
+mission fulfilment separately from judgment support, qualifiers and strength.
+
+#### Faithful full copy and onscreen writing
+
 `faithful` is source-native editorial transduction. AUTHOR writes `full_copy` as
 the complete page-ready manuscript from the source-native structure, then writes
 `onscreen` only from the reviewed `full_copy`.

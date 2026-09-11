@@ -25,6 +25,12 @@ GENERIC_TRANSFORMATION_CLAIM_RE = re.compile(
 )
 
 
+def onscreen_item_text(item: object) -> str:
+    """Read visible text from legacy strings or v1.1 identified items."""
+    value = item.get("text") if isinstance(item, dict) else item
+    return value.strip() if isinstance(value, str) else ""
+
+
 def normalize_item_text(text: str) -> str:
     """Strip whitespace and punctuation for semantic/similarity comparisons."""
 

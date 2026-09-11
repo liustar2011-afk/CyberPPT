@@ -6,6 +6,8 @@ which general propositions may be omitted. That decision belongs to the Critic.
 """
 from __future__ import annotations
 
+from .semantic_text_primitives import onscreen_item_text
+
 import re
 from difflib import SequenceMatcher
 from typing import Any
@@ -19,6 +21,7 @@ _RESPONSIBILITY = re.compile(r"([^，,。；;\n]+?)负责([^，,。；;\n]+)")
 _TRANSFORM = re.compile(r"把([^，,。；;\n]+?)(?:加工成|转化为|转换为|转化成)([^，,。；;\n]+)")
 _CONDITION = re.compile(r"^在(.+?(?:后|前|时|条件下|前提下))[，,](.+)$")
 _EXAMPLE = re.compile(r"^(?:例如|比如|举例)")
+_ORDINAL = re.compile(r"^(?:[一二三四五六七八九十百]+是|[一二三四五六七八九十百]+[、．.]|\d+[、．.])\s*")
 
 
 def _compact(value: str) -> str:
@@ -51,7 +54,7 @@ def _modules(slide: dict[str, Any]) -> list[dict[str, Any]]:
         heading = str(module.get("heading") or "")
         body = str(module.get("text") or "")
         entries = [("heading", heading), ("text", body)]
-        entries.extend((f"items[{i}]", item) for i, item in enumerate(module.get("items") or []) if isinstance(item, str))
+        entries.extend((f"items[{i}]", item) for i, item in enumerate(onscreen_item_text(value) for value in module.get("items") or []) if isinstance(item, str))
         modules.append({
             "field": f"onscreen[{index}]",
             "text": "\n".join(value for _, value in entries if value.strip()),
@@ -95,7 +98,20 @@ def review_onscreen_projection(slide: dict[str, Any]) -> dict[str, Any]:
             findings.append(finding)
 
     for module in modules:
+        heading = next((entry["text"] for entry in module["entries"]
+                        if entry["field"].endswith(".heading")), "")
         for entry in module["entries"]:
+            if not entry["field"].endswith(".heading"):
+                opening = re.split(r"[。！？\n]", entry["text"], maxsplit=1)[0].strip()
+                if heading and _compact(_ORDINAL.sub("", opening)) == _compact(_ORDINAL.sub("", heading.strip())):
+                    add("ONSCREEN_HEADING_REPEATED_IN_BODY", entry["field"], entry["text"],
+                        "The body opening repeats its module heading. Review removing only the redundant opening, "
+                        "keeping every substantive detail and qualifier.")
+                if len([part for part in re.split(r"[；;]", entry["text"]) if part.strip()]) >= 3:
+                    add("ONSCREEN_GROUPING_REVIEW", entry["field"], entry["text"],
+                        "One visible entry contains several semicolon-separated clauses. Review whether source-native "
+                        "parallel propositions should be separate items. Punctuation does not prove independence: "
+                        "keep shared conditions, action/result pairs and relation direction; do not auto-split.")
             parent = _parent(entry["context"], passages)
             mappings.append({**entry, "candidate_parent": parent, "verified": False})
             if parent is None:
@@ -173,6 +189,8 @@ def review_onscreen_projection(slide: dict[str, Any]) -> dict[str, Any]:
             "Check actor, action, object, status, responsibility, quantity with unit/scope, condition and relation direction. "
             "Candidate mappings and findings are unverified hints only. Preserve substantive examples and background; "
             "repair meaning changes using the complete full_copy and onscreen texts, regardless of these hints."
+            " Also review source-native grouping, heading/body responsibilities and independently readable items. "
+            "Continuous source numbering and verbatim faithful prose are valid; neither alone is a defect."
         ),
     }
 

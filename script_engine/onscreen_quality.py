@@ -1,6 +1,8 @@
 """Onscreen-Critic context and measurements; never generates presentation copy."""
 from __future__ import annotations
 
+from .semantic_text_primitives import onscreen_item_text
+
 import re
 from collections import Counter
 from typing import Any
@@ -31,7 +33,7 @@ def _onscreen_text(onscreen: object) -> str:
         if not isinstance(module, dict):
             continue
         parts.extend(str(module.get(key) or "") for key in ("heading", "text"))
-        parts.extend(str(item) for item in module.get("items") or [])
+        parts.extend(str(item) for item in (onscreen_item_text(value) for value in module.get("items") or []))
     return "\n".join(parts)
 
 
@@ -51,6 +53,7 @@ def build_onscreen_critic_context(
 
     return {
         "page_id": page.get("id"),
+        "page_mission": page.get("logic"),
         "question": page.get("question"),
         "approved_message": page.get("message"),
         "page_role": page.get("page_role"),
@@ -68,7 +71,8 @@ def build_onscreen_critic_context(
             for candidate in candidates
         ],
         "review_dimensions": [
-            "主判断可见性", "十秒理解", "文字密度", "信息重复", "关系可见性", "语义完整性",
+            "页面使命与实际内容一致性", "来源判断保全（允许并列或无总判断）",
+            "阅读层级", "文字密度", "信息重复", "关系可见性", "语义完整性",
         ],
         "rewrite_rule": "任一关键维度失败时重写整页信息组织，保留批准命题和来源边界",
     }

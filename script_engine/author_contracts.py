@@ -1,6 +1,8 @@
 """Deterministic AUTHOR supporting-field contracts for content slides."""
 from __future__ import annotations
 
+from .semantic_text_primitives import onscreen_item_text
+
 import difflib
 import re
 from typing import Any
@@ -42,7 +44,7 @@ def _onscreen_lines(slide: dict[str, Any]) -> list[str]:
                 lines.append(value.strip())
         lines.extend(
             item.strip()
-            for item in module.get("items") or []
+            for item in (onscreen_item_text(value) for value in module.get("items") or [])
             if isinstance(item, str) and item.strip()
         )
     return lines
@@ -52,7 +54,7 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
     """Enforce mode-aware mechanical AUTHOR field requirements.
 
     Faithful pages may use the source-native minimum. When a faithful page opts in
-    to an explicit ``argument``/``core_message`` structure, the authored optional
+    to an explicit ``argument`` structure, the authored optional
     fields are checked for internal quality but are still not required on other
     faithful pages. Analytical pages retain the stronger supporting-field contract.
     """
@@ -92,7 +94,7 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
         argument = slide.get("argument")
         topology = None
         has_argument = isinstance(argument, dict)
-        structured_page = mode == "analytical" or has_argument or not _field_is_blank(slide.get("core_message"))
+        structured_page = mode == "analytical" or has_argument
         if not has_argument:
             if mode == "analytical":
                 issues.append(

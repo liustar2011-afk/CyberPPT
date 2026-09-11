@@ -231,6 +231,8 @@ def build_page_source_packet(
         "authoritative_chain": ["source", "foundation", "deck_plan", "final_script"],
         "page_id": _text(page.get("id")),
         "page_title": _text(page.get("title")),
+        # PLAN owns the mission. This runtime copy is not a new content authority.
+        "page_mission": _text(page.get("logic")),
         "authoring_mode": _text(page.get("authoring_mode")) or "faithful",
         "page_source_refs": page_refs,
         "evidence": evidence,

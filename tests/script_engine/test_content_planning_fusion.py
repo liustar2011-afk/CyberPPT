@@ -373,7 +373,11 @@ def test_onscreen_quality_measures_candidates_without_generating_copy() -> None:
         {"strategy": "evidence_led", "onscreen": [{"heading": "证据", "items": ["节点能力", "阶段成果"]}]},
     ]
     context = build_onscreen_critic_context(page=page, full_copy="完整页面论证", candidates=candidates)
-    assert context["review_dimensions"] == ["主判断可见性", "十秒理解", "文字密度", "信息重复", "关系可见性", "语义完整性"]
+    assert context["page_mission"] == page["logic"]
+    assert context["review_dimensions"] == [
+        "页面使命与实际内容一致性", "来源判断保全（允许并列或无总判断）",
+        "阅读层级", "文字密度", "信息重复", "关系可见性", "语义完整性",
+    ]
     assert context["candidates"][0]["visible_characters"] == visible_character_count(candidates[0]["onscreen"])
     assert "winner" not in context
     score = record_candidate_score(
