@@ -18,6 +18,7 @@ from .source_boundary import collect_source_boundary_diagnostics
 from .source_scope import validate_source_scope
 from .source_structure import validate_source_structure_preservation
 from .visibility import collect_visibility_diagnostics
+from .voice_policy import collect_voice_policy_diagnostics
 
 
 def audit_final_script_semantic_contract(
@@ -30,11 +31,11 @@ def audit_final_script_semantic_contract(
     Structured authorization, source scope, relationship shape/topology,
     source-structure preservation, provenance, typed compatibility, protected
     payload, objective source boundaries, explicit PLAN content-route/onscreen
-    contracts, delivery cleanliness, and explicit visibility are the new semantic
-    authority. During Phase 4, the historical Final Script auditor is invoked here
-    as a compatibility adapter so formal callers no longer need to orchestrate two
-    independent semantic engines. Its remaining capabilities can now be migrated
-    here one by one without changing the public audit boundary.
+    contracts, delivery cleanliness and voice policy, and explicit visibility are
+    the new semantic authority. During Phase 4, the historical Final Script auditor
+    is invoked here as a compatibility adapter so formal callers no longer need to
+    orchestrate two independent semantic engines. Its remaining capabilities can
+    now be migrated here one by one without changing the public audit boundary.
     """
 
     authorization_issues = validate_authoring_mode_authorization(final_script, plan)
@@ -54,6 +55,7 @@ def audit_final_script_semantic_contract(
         *collect_onscreen_composition_diagnostics(final_script, plan),
         *collect_onscreen_contract_diagnostics(final_script, plan, foundation),
         *collect_delivery_cleanliness_diagnostics(final_script, plan, foundation),
+        *collect_voice_policy_diagnostics(final_script, plan),
         *collect_visibility_diagnostics(final_script, plan, foundation),
     ]
     structured_blockers, review_required, structured = partition_diagnostics(
