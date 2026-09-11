@@ -26,6 +26,7 @@ from .provenance_markdown import (
 from .relationships import validate_relationship_shape
 from .source_scope import validate_source_scope
 from .source_structure import validate_source_structure_preservation
+from .visibility import collect_visibility_diagnostics
 
 __all__ = [
     "FoundationIndex",
@@ -38,6 +39,7 @@ __all__ = [
     "audit_final_script_semantic_contract",
     "collect_protected_payload_diagnostics",
     "collect_provenance_compatibility_diagnostics",
+    "collect_visibility_diagnostics",
     "dedupe_diagnostics",
     "parse_provenance_markdown",
     "partition_diagnostics",
