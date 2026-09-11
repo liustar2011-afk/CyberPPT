@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .authorization import validate_authoring_mode_authorization
 from .compatibility import collect_provenance_compatibility_diagnostics
 from .diagnostics import partition_diagnostics
 from .protected_payload import collect_protected_payload_diagnostics
@@ -17,14 +18,15 @@ def audit_final_script_semantic_contract(
 ) -> tuple[list[str], list[str], list[dict[str, object]]]:
     """Run the authoritative Final Script semantic audit through one entry point.
 
-    Structured provenance, typed compatibility and protected payload are the new
-    semantic authority. During Phase 4, the historical Final Script auditor is
-    invoked here as a compatibility adapter so formal callers no longer need to
-    orchestrate two independent semantic engines. Its capabilities can now be
-    migrated into this package one by one without changing the public audit
-    boundary.
+    Structured authorization, provenance, typed compatibility and protected
+    payload are the new semantic authority. During Phase 4, the historical Final
+    Script auditor is invoked here as a compatibility adapter so formal callers
+    no longer need to orchestrate two independent semantic engines. Its remaining
+    capabilities can now be migrated here one by one without changing the public
+    audit boundary.
     """
 
+    authorization_issues = validate_authoring_mode_authorization(final_script, plan)
     provenance_issues = validate_final_script_provenance(
         final_script, plan, foundation
     )
@@ -51,7 +53,12 @@ def audit_final_script_semantic_contract(
 
     issues = list(
         dict.fromkeys(
-            [*provenance_issues, *structured_blockers, *legacy_issues]
+            [
+                *authorization_issues,
+                *provenance_issues,
+                *structured_blockers,
+                *legacy_issues,
+            ]
         )
     )
     warnings = list(dict.fromkeys([*legacy_warnings, *review_required]))
