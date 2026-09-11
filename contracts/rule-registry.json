@@ -1,0 +1,442 @@
+{
+  "version": "1.1",
+  "default_profile": "default",
+  "blocking_kinds": [
+    "schema",
+    "structural",
+    "delivery_cleanliness",
+    "delivery_policy",
+    "safety"
+  ],
+  "warning_kinds": [
+    "semantic_heuristic",
+    "style_heuristic"
+  ],
+  "forbidden_default_kinds": [
+    "project_specific"
+  ],
+  "sources": [
+    {
+      "id": "final-script-schema",
+      "path": "contracts/final-script.schema.json",
+      "profile": "default",
+      "kind": "schema",
+      "severity": "blocking",
+      "owner": "script_engine.schema_contracts"
+    },
+    {
+      "id": "module-semantic-contract",
+      "path": "script_engine/semantic_contract",
+      "profile": "default",
+      "kind": "structural",
+      "severity": "blocking",
+      "owner": "script_engine.semantic_contract"
+    },
+    {
+      "id": "banned-phrasing",
+      "path": "contracts/banned-phrasing.json",
+      "profile": "default",
+      "kind": "mixed",
+      "severity": "mixed",
+      "owner": "script_engine.lint_contracts"
+    },
+    {
+      "id": "legacy-script-quality",
+      "path": "cyberppt/script_quality/rules.yaml",
+      "profile": "legacy",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "owner": "cyberppt.script_quality",
+      "default_enabled": false
+    }
+  ],
+  "deterministic_findings": [
+    {
+      "code": "AUTHOR_MISSION_GENERIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Generic mission wording is an editorial review signal; wording alone cannot prove source-boundary failure."
+    },
+    {
+      "code": "AUTHOR_VISUAL_THESIS_NONRELATIONAL",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Visible relation grammar cannot be proven solely from lexical relation markers."
+    },
+    {
+      "code": "AUTHOR_VISUAL_TOPOLOGY_CONFLICT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Topology wording is a review candidate unless a structured semantic relation establishes the conflict."
+    },
+    {
+      "code": "AUTHOR_VISUAL_THESIS_RESTATEMENT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_supporting_fields",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "String similarity can flag possible restatement but cannot prove semantic duplication."
+    },
+    {
+      "code": "AUTHOR_RELATION_HIDDEN_INTERMEDIATE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_relationships",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "A lexical transition marker cannot deterministically prove an omitted business node."
+    },
+    {
+      "code": "AUTHOR_RELATION_ABSTRACT_TRANSFORMATION",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "author_relationships",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Generic transformation verbs are insufficient to prove an unsupported semantic relation."
+    },
+    {
+      "code": "AUTHOR_SPEAKER_NOTES_RESTATEMENT",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "speaker_notes",
+      "confidence": "medium",
+      "owner": "script_engine.author_contracts",
+      "severity_rationale": "Similarity can flag likely repetition but cannot prove that notes add no incremental context."
+    },
+    {
+      "code": "FULL_COPY_STRUCTURE_FLAT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Text-shape signals cannot determine whether the source-native structure is legitimately flat."
+    },
+    {
+      "code": "FULL_COPY_TOPIC_SOURCE_STRENGTH_ABSTRACTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Lexical abstraction hints require source-bound semantic evidence before blocking."
+    },
+    {
+      "code": "FULL_COPY_TOPIC_INCOMPLETE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "A short or generic topic can be source-native; completeness requires source context."
+    },
+    {
+      "code": "FULL_COPY_PARALLEL_SUBCONCLUSION_ABSTRACT",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Lexical abstraction cannot prove that a parallel source branch lacks a valid role."
+    },
+    {
+      "code": "FULL_COPY_PARALLEL_SUBCONCLUSION_INCOMPLETE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "full_copy",
+      "confidence": "medium",
+      "owner": "script_engine.full_copy_contracts",
+      "severity_rationale": "Predicate-shape checks are review signals and do not establish source-semantic incompleteness."
+    },
+    {
+      "code": "ONSCREEN_HEADING_OBJECT_OMITTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Context-dependent wording cannot prove that the business object is absent from the source-owned visible structure."
+    },
+    {
+      "code": "ONSCREEN_HEADING_ABSTRACT_TRANSFORMATION",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Generic transformation vocabulary is a Critic signal, not deterministic semantic evidence."
+    },
+    {
+      "code": "ONSCREEN_HEADING_INCOMPLETE",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Length and predicate heuristics cannot prove that a source-native heading is semantically incomplete."
+    },
+    {
+      "code": "ONSCREEN_DANGLING_MODIFIER",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Modifier syntax alone cannot prove that the visible parent fails to supply the business relation."
+    },
+    {
+      "code": "ONSCREEN_DETAIL_GENERIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Generic detail vocabulary is a review hint unless structured provenance proves an omitted payload."
+    },
+    {
+      "code": "ONSCREEN_FULL_COPY_MISALIGNED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Text similarity cannot establish semantic drift between full copy and onscreen projection."
+    },
+    {
+      "code": "ONSCREEN_CORE_MISALIGNED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "onscreen",
+      "confidence": "medium",
+      "owner": "script_engine.onscreen_contracts",
+      "severity_rationale": "Text overlap is an advisory proxy; structured provenance and Critic determine semantic alignment."
+    },
+    {
+      "code": "FINAL_PROGRESSION_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "Progression words can flag a possible relation promotion, but lexical markers do not prove that the structured source relation is absent."
+    },
+    {
+      "code": "FINAL_OPTIONALITY_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "Independence and deepening phrases are lexical proxies; optionality preservation must be decided from typed source status and Critic review."
+    },
+    {
+      "code": "FINAL_GROUP_STRENGTH_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "Universal quantifiers and completion verbs cannot by themselves prove that a group-level claim exceeds the structured support set."
+    },
+    {
+      "code": "FINAL_GAP_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_semantic_audit",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_orchestrator",
+      "severity_rationale": "A gap regex can identify review candidates but cannot determine whether an equivalent baseline is present under different wording."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_alignment",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "N-gram overlap can identify a likely disconnected projection but cannot prove semantic contradiction or unsupported meaning."
+    },
+    {
+      "code": "AUTHOR_RELATIONSHIP_CLAIM_HEURISTIC",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_relationship_visibility",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Relationship vocabulary without an explicit edge is a review signal; only malformed or unapproved structured edges remain blocking."
+    },
+    {
+      "code": "AUTHOR_EVIDENCE_FIRST_HIERARCHY_HEURISTIC",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_hierarchy",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_expression",
+      "severity_rationale": "Character-count and predicate-shape cues can suggest a hidden lead but cannot prove that the first evidence item is not a legitimate peer fact."
+    },
+    {
+      "code": "ONSCREEN_SELF_READ_MODULE_THIN",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_self_read_density",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_onscreen",
+      "severity_rationale": "A heading without locally counted payload may still be complete through source-native composition or adjacent visible context."
+    },
+    {
+      "code": "ONSCREEN_SELF_READ_DENSITY_LOW",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_self_read_density",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_onscreen",
+      "severity_rationale": "Visible unit-count thresholds are presentation heuristics and do not establish semantic insufficiency."
+    },
+    {
+      "code": "AUTHOR_MECHANICAL_SOURCE_CONCATENATION",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_full_copy",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_expression",
+      "severity_rationale": "Semicolon count and segment length can flag mechanical assembly but cannot prove that the resulting source-faithful prose is invalid."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_INCOMPLETE_DETAIL",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_expression",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_expression",
+      "severity_rationale": "Generic predicate and character-count tests cannot prove that a visible detail lacks a complete business meaning."
+    },
+    {
+      "code": "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_expression",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_authoring_structure",
+      "severity_rationale": "Bare-label detection depends on lexical shape and cannot prove omission of a source-native detail without structured provenance."
+    },
+    {
+      "code": "AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_consumption",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "A minimum distinct-fact count is a coverage heuristic; one authoritative fact can legitimately carry a page when the approved source boundary allows it."
+    },
+    {
+      "code": "AUTHOR_FULL_COPY_TOO_THIN",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "final_script_full_copy",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Paragraph-count thresholds are editorial heuristics and cannot prove insufficient source reasoning."
+    },
+    {
+      "code": "AUTHOR_FULL_COPY_PARAGRAPH_UNGROUNDED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_consumption",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "N-gram overlap is a weak grounding proxy and can miss paraphrases or source-native terminology changes."
+    },
+    {
+      "code": "AUTHOR_SOURCE_SEMANTICS_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_consumption",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Text overlap cannot deterministically prove that a cited source fact has lost its meaning under paraphrase."
+    },
+    {
+      "code": "AUTHOR_STATUS_STRENGTH_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_source_status",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Fixed status-marker lists cannot prove that equivalent modality or temporal status has been lost."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_CORE_SEMANTICS_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_projection",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Protected-role selection is structured, but the current loss decision is still based on text overlap and therefore requires Critic review rather than blocking."
+    },
+    {
+      "code": "AUTHOR_ONSCREEN_STATUS_STRENGTH_LOST",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_onscreen_projection",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "Fixed status-marker lists cannot prove that onscreen compression changed the source status when equivalent wording may be present."
+    },
+    {
+      "code": "AUTHOR_RELATIONSHIP_METADATA_ONLY",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "final_script_relationship_visibility",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_lean",
+      "severity_rationale": "N-gram overlap between a structured edge and copy layers is a visibility proxy; malformed or unapproved edges remain blocking separately."
+    },
+    {
+      "code": "FAITHFUL_RELATION_PROMOTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "A fixed relation-word list can flag possible promotion but cannot prove that an equivalent source relation is absent under different wording."
+    },
+    {
+      "code": "FAITHFUL_STATUS_PROMOTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "Achievement-status regexes are lexical proxies and cannot deterministically establish a source-status upgrade."
+    },
+    {
+      "code": "FAITHFUL_MODALITY_PROMOTED",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "Obligation regexes can identify review candidates but cannot prove modality strengthening without typed source semantics."
+    },
+    {
+      "code": "FAITHFUL_OUTSIDE_NARRATOR",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "Fixed outside-narrator phrases can flag a possible voice shift but cannot prove that an equivalent source-facing formulation is semantically invalid."
+    }
+  ]
+}

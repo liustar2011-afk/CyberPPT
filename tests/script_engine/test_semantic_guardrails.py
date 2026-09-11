@@ -61,14 +61,19 @@ def test_clean_v2_lean_example_passes_plan_and_final_audits() -> None:
     assert final_issues == []
 
 
-def test_relationship_metadata_cannot_replace_visible_reasoning() -> None:
+def test_relationship_wording_and_overlap_checks_are_review_only() -> None:
     foundation, plan, final = _example()
     broken = copy.deepcopy(final)
     broken["slides"][0]["relationships"] = [
         {"from": "甲", "to": "乙", "relation": "甲推动乙形成闭环"}
     ]
-    issues, _ = audit_final_script(broken, plan, foundation)
+    issues, warnings = audit_final_script(broken, plan, foundation)
     assert any(
+        "AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue
+        or "FAITHFUL_RELATION_PROMOTED" in issue
+        for issue in warnings
+    )
+    assert not any(
         "AUTHOR_RELATIONSHIP_METADATA_ONLY" in issue
         or "FAITHFUL_RELATION_PROMOTED" in issue
         for issue in issues

@@ -26,6 +26,48 @@ LOCKED_JUDGMENT_ROLES = {
 }
 VALID_CONTENT_LOADS = {"light", "standard", "dense"}
 
+# Legacy Script Quality still contains several text-shape / keyword heuristics
+# kept for diagnostic compatibility. Phase 3 removes their blocking authority at
+# the public ``audit_script_quality`` boundary. Low-level helpers keep their
+# historical severity so they remain implementation-local diagnostics; callers
+# must not treat those helpers as the production severity policy.
+LEGACY_HEURISTIC_WARNING_CODES = frozenset(
+    {
+        "OFF_TOPIC_CONSTRAINT_MODULE",
+        "FACT_CERTAINTY_LOST",
+        "ONSCREEN_BOUNDARY_ASIDE",
+        "ONSCREEN_FALSE_PARENT_CHILD_RELATION",
+        "ONSCREEN_SUBORDINATE_FRAGMENT",
+        "ONSCREEN_FALSE_PARALLEL_SEMANTICS",
+        "ONSCREEN_COMPLETE_PROPOSITION_UNGROUNDED",
+        "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
+        "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
+        "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
+        "ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL",
+        "ONSCREEN_SOURCE_COLOCATION_AS_HIERARCHY",
+        "ONSCREEN_COMPOUND_GROUP_HEADING",
+        "ONSCREEN_GROUP_ROLE_REPETITION",
+        "ONSCREEN_MODULE_INDEX_RESTATEMENT",
+        "VISUAL_STRUCTURE_STYLE_ONLY",
+        "PATH_ORDER_SIGNAL_MISSING",
+        "LOOP_RETURN_SIGNAL_MISSING",
+        "MATRIX_AXES_MISSING",
+        "LAYER_HIERARCHY_MISSING",
+        "CONTENT_PAGE_TOO_SPARSE",
+        "CONTENT_PAGE_TOO_FRAGMENTED",
+        "MODULE_HIERARCHY_MISSING",
+        "VISIBLE_NODE_OVERLOAD",
+        "ONSCREEN_STORY_DENSITY_LOW",
+        "ONSCREEN_STORY_NOT_CLOSED",
+        # These checks are also driven by lexical similarity or generic text
+        # shape. Keep them visible for Critic review but never production-block
+        # solely on the heuristic score.
+        "ONSCREEN_JUDGMENT_MISALIGNED",
+        "ADJACENT_MAIN_MESSAGE_DUPLICATE",
+        "ADJACENT_ONSCREEN_JUDGMENT_DUPLICATE",
+    }
+)
+
 
 def resolve_judgment_mode(explicit_mode: str = "", judgment_role: str = "") -> str:
     """Resolve display policy from an explicit override, then semantic role."""

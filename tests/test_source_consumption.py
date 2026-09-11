@@ -74,9 +74,9 @@ def test_non_strict_foundation_never_blocks_on_source_consumption() -> None:
     assert not any("AUTHOR_SOURCE" in issue for issue in issues)
 
 
-def test_author_gate_rejects_structural_metadata_concatenated_into_full_copy() -> None:
-    """Independent of source_consumption: AUTHOR must not paste document front
-    matter/TOC labels or semicolon-joined source rows into full_copy."""
+def test_author_gate_blocks_structural_metadata_but_reviews_mechanical_concatenation() -> None:
+    """Explicit front-matter leakage is deterministic; punctuation/length-based
+    mechanical-concatenation detection is review-only."""
     page = _page(["ST1", "ST2", "ST3", "META1", "META2"])
     foundation = _strict_foundation()
     foundation["facts"].extend([
@@ -88,10 +88,11 @@ def test_author_gate_rejects_structural_metadata_concatenated_into_full_copy() -
         "标准覆盖共同语言与资源治理；目 录；2026年7月；基础通用；数据资源；治理要求",
     )
 
-    issues, _ = audit_final_script(final, _plan(page), foundation)
+    issues, warnings = audit_final_script(final, _plan(page), foundation)
 
     assert any("AUTHOR_STRUCTURAL_METADATA_LEAK" in issue for issue in issues)
-    assert any("AUTHOR_MECHANICAL_SOURCE_CONCATENATION" in issue for issue in issues)
+    assert any("AUTHOR_MECHANICAL_SOURCE_CONCATENATION" in warning for warning in warnings)
+    assert not any("AUTHOR_MECHANICAL_SOURCE_CONCATENATION" in issue for issue in issues)
 
 
 def test_strict_foundation_missing_declaration_fails_at_author_not_plan() -> None:
@@ -171,21 +172,29 @@ def _p01_regression_case() -> tuple[dict, dict, dict]:
     return foundation, plan, page
 
 
-def test_p01_compressed_copy_reports_specific_source_losses() -> None:
+def test_p01_compressed_copy_separates_protected_losses_from_lexical_review() -> None:
     foundation, plan, _ = _p01_regression_case()
     final = _final(
         ["ST0034", "ST0035", "ST0036", "ST0037"],
         "绿色发展、分类分级、安全管理和可信流通共同构成标准重点。",
     )
 
-    issues, _ = audit_final_script(final, plan, foundation)
-    joined = "\n".join(issues)
+    issues, warnings = audit_final_script(final, plan, foundation)
+    issue_text = "\n".join(issues)
+    warning_text = "\n".join(warnings)
 
-    for ref in ("ST0034", "ST0035", "ST0036", "ST0037"):
-        assert ref in joined
-    assert "AUTHOR_CONDITION_LOST" in joined
-    assert "AUTHOR_RESPONSIBILITY_LOST" in joined
-    assert "AUTHOR_STATUS_STRENGTH_LOST" in joined
+    assert "PROTECTED_NUMBER_MISSING" in issue_text
+    assert "ST0035" in issue_text
+    assert "AUTHOR_CONDITION_LOST" not in issue_text
+    assert "AUTHOR_RESPONSIBILITY_LOST" not in issue_text
+
+    assert "PROTECTED_CONDITION_REVIEW_REQUIRED" in warning_text
+    assert "PROTECTED_ACTOR_REVIEW_REQUIRED" in warning_text
+    assert "ST0036" in warning_text
+    assert "ST0034" in warning_text
+    assert "ST0037" in warning_text
+    assert "AUTHOR_SOURCE_SEMANTICS_LOST" in warning_text
+    assert "AUTHOR_STATUS_STRENGTH_LOST" in warning_text
 
 
 def test_p01_source_specific_full_copy_passes_clean() -> None:

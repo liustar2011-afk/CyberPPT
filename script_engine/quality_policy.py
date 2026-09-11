@@ -3,6 +3,12 @@
 This layer separates structural/source-safety failures from expression-quality
 heuristics. Unknown findings remain blocking by default so introducing the
 policy cannot silently weaken an existing gate.
+
+Phase 3 advisory policy is registry-driven:
+
+1. governed phrasing rules whose rule entry declares ``severity=warning``;
+2. deterministic finding codes registered as semantic/style heuristics in the
+   central rule registry.
 """
 
 from __future__ import annotations
@@ -14,24 +20,39 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from .contracts import lint_final_script, load_json, validate_final_script
+from .lint_contracts import load_banned_phrasing
+from .rule_registry import load_rule_registry
 
 
 BLOCKER = "blocker"
 ADVISORY = "advisory"
 
-# These checks are useful editorial signals but are not reliable enough to be
-# semantic truth gates. They depend on wording/grammar patterns and should be
-# reviewed by AUTHOR/Critic rather than forcing content to satisfy regexes.
-ADVISORY_CODES = frozenset(
-    {
-        "AUTHOR_MISSION_GENERIC",
-        "AUTHOR_VISUAL_THESIS_NONRELATIONAL",
-        "AUTHOR_VISUAL_TOPOLOGY_CONFLICT",
-    }
-)
+
+def _configured_warning_rule_ids() -> frozenset[str]:
+    return frozenset(
+        str(rule.get("id") or "").strip()
+        for rule in load_banned_phrasing()
+        if rule.get("severity") == "warning" and str(rule.get("id") or "").strip()
+    )
+
+
+def _configured_advisory_finding_codes() -> frozenset[str]:
+    registry = load_rule_registry()
+    return frozenset(
+        str(rule.get("code") or "").strip()
+        for rule in registry.get("deterministic_findings") or []
+        if isinstance(rule, dict)
+        and rule.get("severity") == "warning"
+        and str(rule.get("code") or "").strip()
+    )
+
+
+ADVISORY_CODES = _configured_advisory_finding_codes() | _configured_warning_rule_ids()
 
 _CODE_RE = re.compile(r"^(?P<code>[A-Z][A-Z0-9_]+):")
-_BRACKET_CODE_RE = re.compile(r"\[(?P<code>[A-Za-z0-9_.-]+)\]")
+# Finding paths legitimately contain list indexes such as ``onscreen[0]``.
+# Require a leading letter so those indexes cannot shadow a later ``[rule-id]``.
+_BRACKET_CODE_RE = re.compile(r"\[(?P<code>[A-Za-z][A-Za-z0-9_.-]*)\]")
 
 
 def issue_code(issue: str) -> str:

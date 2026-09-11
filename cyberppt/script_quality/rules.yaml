@@ -56,43 +56,35 @@ page_composition:
     min_similarity: 0.55
     aux_similarity: 0.42
     level: WARN
-  # 辅助区过载：宜短；反误读口号默认不上屏
+  # 辅助区过载：宜短；历史项目专用反误读口号已从全局规则移除。
   auxiliary:
     max_chars: 48
     level: WARN
-    slogan_ban_patterns:
-      - "拟建≠已建"
-      - "同意摸底≠"
-      - "不锁投资"
-      - "不锁定投资"
-      - "≠已建"
-      - "≠全面实施"
+    slogan_ban_patterns: []
     slogan_ban_level: WARN
-    rule: 辅助区只承载短成果/口径；反误读口号进讲解词边界或后台约束信息。
-  # ①②③之后、辅助区之前出现未编号业务块（如「摸底产出」）
+    rule: 辅助区只承载短成果或口径；项目专用反误读口号不得进入全局规则。
+  # ①②③之后、辅助区之前出现未编号业务块。
   orphan_blocks:
     enabled: true
     level: WARN
-  # 模块之间正文大段同字（如②③重复同一批主体名）
+  # 模块之间正文大段同字。
   module_body_overlap:
     enabled: true
     ngram_chars: 8
     level: WARN
-  # 模块标题与首条要点同义空转（如「指标口径／指标口径统一」）
+  # 模块标题与首条要点同义空转。
   module_title_tautology:
     enabled: true
     level: WARN
-  # 视觉转译接口与上屏字段不一致（如写「采用主判断」但上屏无主判断）
+  # 视觉转译接口与上屏字段不一致（如写「采用主判断」但上屏无主判断）。
   interface_consistency:
     enabled: true
     level: WARN
-  # 跨页指纹：完整闭环链、追溯五问等只允许一页完整展开
+  # 历史项目专用跨页内容指纹已移除；默认使用通用 adjacent/module overlap 信号。
   cross_page_fingerprints:
-    enabled: true
+    enabled: false
     level: WARN
-    patterns:
-      - {id: trace-five-q, label: 追溯五问, match: "哪版数据.{0,8}哪版口径.{0,8}哪版模型"}
-      - {id: closed-loop-chain, label: 业务闭环链路, match: "数据接入.{0,6}质量治理.{0,6}模型预测|数据接入与质量治理.{0,20}供需模型预测"}
+    patterns: []
   backend_fields:
     enforce: true
     level: WARN
@@ -117,7 +109,7 @@ page_composition:
     上屏模块数默认2—3，超过3须有层级/顺序信号；高密度页上限5（超高密度专项除外）。
     后台声明的“N项/N类”须与上屏模块数同构，或副标题以·/、短名列出N项；仅写“五项”字样不算同构。
     同页字段与相邻页上屏不得换词重复同一判断；副标题不得复述模块标题长句。
-    辅助区宜短（默认≤72字），完整闭环链/追溯五问等指纹论据只在一页完整出现。
+    辅助区宜短（默认≤72字）；跨页重复只使用通用相似度和结构信号，不使用项目专用内容指纹。
     ①②③之后不得夹未编号业务块；模块标题不得与首条要点同义空转；
     视觉转译重点不得引用未填写的主判断等上屏字段。
 

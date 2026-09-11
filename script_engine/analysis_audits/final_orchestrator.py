@@ -2,8 +2,13 @@
 from __future__ import annotations
 
 from ..onscreen_contracts import onscreen_alignment_advisories
+from ..quality_policy import ADVISORY, classify_issue
 from .common import *
-from .composed_trace import hard_finding_messages, trace_composed
+from .composed_trace import (
+    hard_finding_messages,
+    identifier_review_messages,
+    trace_composed,
+)
 from .final_authoring import (
     _audit_authored_content_coverage,
     _authored_bare_label_detail_issues,
@@ -12,7 +17,6 @@ from .final_authoring import (
     _slide_text,
 )
 from .final_deck import (
-    _normalize_source_chapter_title,
     _source_text_for_refs,
     _whole_deck_authoring_warnings,
 )
@@ -31,32 +35,129 @@ from .final_onscreen import (
     _audit_authored_onscreen_contract,
     _audit_self_reading_density,
 )
+from .onscreen_contract_heuristics import (
+    onscreen_composition_hierarchy_review_findings,
+    onscreen_contract_colocation_review_findings,
+)
+
+
+_MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
+    {
+        "AUTHOR_SOURCE_CONSUMPTION_MISSING",
+        "AUTHOR_SOURCE_REF_UNKNOWN",
+        "AUTHOR_SOURCE_REF_OUTSIDE_PLAN_SCOPE",
+        "AUTHOR_RELATIONSHIP_NOT_MATERIALIZED",
+        "AUTHOR_NUMBER_OR_DATE_LOST",
+        "AUTHOR_CONDITION_LOST",
+        "AUTHOR_RESPONSIBILITY_LOST",
+        "AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST",
+        "AUTHOR_ONSCREEN_CONDITION_LOST",
+        "AUTHOR_ONSCREEN_RESPONSIBILITY_LOST",
+        "AUTHOR_STRUCTURAL_METADATA_LEAK",
+        "AUTHOR_ONSCREEN_TABLE_FRAGMENT",
+        "ONSCREEN_SELF_READ_PAYLOAD_MISSING",
+        "FAITHFUL_NUMBER_ADDED",
+        "FAITHFUL_FORMAL_INSTRUMENT_ADDED",
+    }
+)
+
+
+def _compatibility_findings(
+    findings: list[str],
+    *,
+    compatibility_mode: bool,
+) -> list[str]:
+    """Suppress findings whose formal owner has moved to semantic_contract.
+
+    Raw legacy callers use the default ``compatibility_mode=False`` and retain
+    historical behavior. The single semantic entry calls this orchestrator in
+    compatibility mode, where migrated structured findings are already emitted by
+    their authoritative validators and must not be recomputed as a second owner.
+    """
+
+    if not compatibility_mode:
+        return findings
+    return [
+        finding
+        for finding in findings
+        if not any(
+            finding.startswith(f"{code}:")
+            for code in _MIGRATED_STRUCTURED_FINDING_CODES
+        )
+    ]
+
+
+def _append_governed_finding(
+    issues: list[str],
+    warnings: list[str],
+    scope: str,
+    finding: str,
+) -> None:
+    """Route one deterministic finding through the central Phase 3 registry.
+
+    Unknown findings remain blocking by policy. Only codes explicitly registered
+    as advisory can move to ``warnings``. Classify the raw finding before adding
+    the slide scope so leading finding codes remain machine-readable.
+    """
+
+    target = warnings if classify_issue(finding)["severity"] == ADVISORY else issues
+    target.append(f"{scope}: {finding}")
+
+
+def _append_onscreen_alignment_finding(
+    issues: list[str],
+    warnings: list[str],
+    scope: str,
+    finding: str,
+    *,
+    compatibility_mode: bool,
+) -> None:
+    """Route legacy full-copy/onscreen alignment at the formal compatibility edge.
+
+    A number that is visible onscreen but absent from ``full_copy`` is a layer
+    consistency signal, not proof that the number is outside Foundation. In the
+    formal path the Foundation source-boundary checks own that question, so this
+    legacy condition becomes review-only. Raw legacy behavior remains unchanged.
+    """
+
+    code = "AUTHOR_ONSCREEN_PROTECTED_FACT_DRIFTED:"
+    if compatibility_mode and finding.startswith(code):
+        detail = finding[len(code):].strip()
+        warnings.append(
+            f"{scope}: LEGACY_ONSCREEN_PROTECTED_FACT_REVIEW_REQUIRED: {detail}; "
+            "confirm the value against the cited Foundation evidence"
+        )
+        return
+    _append_governed_finding(issues, warnings, scope, finding)
 
 
 def audit_final_script(
     final_script: dict[str, Any],
     plan: dict[str, Any],
     foundation: dict[str, Any],
+    *,
+    compatibility_mode: bool = False,
 ) -> tuple[list[str], list[str]]:
-    issues: list[str] = audit_final_internal_expert_voice(final_script, plan)
+    issues: list[str] = (
+        [] if compatibility_mode else audit_final_internal_expert_voice(final_script, plan)
+    )
     warnings: list[str] = []
-    issues.extend(hard_finding_messages(trace_composed(final_script, foundation)))
+    composed_trace = trace_composed(final_script, foundation)
+    if compatibility_mode:
+        # Exact numeric source-boundary blocking is now owned by
+        # semantic_contract.source_boundary. Keep only the heuristic identifier
+        # discovery signal at this legacy compatibility edge.
+        warnings.extend(identifier_review_messages(composed_trace))
+    else:
+        issues.extend(hard_finding_messages(composed_trace))
     items = foundation_items_by_id(foundation)
     pages = {p.get("id"): p for p in (plan.get("pages") or []) if isinstance(p, dict) and isinstance(p.get("id"), str)}
-    chapters = {c.get("id"): c for c in (plan.get("chapters") or []) if isinstance(c, dict) and isinstance(c.get("id"), str)}
-    structure = {x.get("id"): x for x in (foundation.get("source_structure") or []) if isinstance(x, dict) and isinstance(x.get("id"), str)}
     audience_scope = plan.get("audience_scope", "unspecified")
-    preserve_structure = plan.get("source_structure_mode") == "preserve"
     delivery_mode = str((final_script.get("deck") or {}).get("delivery_mode") or plan.get("delivery_mode") or "self_read")
     plan_authoring_mode = str(plan.get("authoring_mode") or "faithful")
     final_authoring_mode = str(
         (final_script.get("deck") or {}).get("authoring_mode") or plan_authoring_mode
     )
-    if final_authoring_mode == "analytical" and plan_authoring_mode != "analytical":
-        issues.append(
-            "AUTHORING_MODE_NOT_AUTHORIZED: final script requests analytical mode "
-            "without analytical mode in the approved Deck Plan"
-        )
 
     warnings.extend(onscreen_alignment_advisories({
         **final_script, "deck": {**(final_script.get("deck") or {}), "authoring_mode": final_authoring_mode},
@@ -66,9 +167,10 @@ def audit_final_script(
         if not isinstance(slide, dict):
             continue
         slide_id = slide.get("id") or f"#{index}"
+        scope = f"slides.{index} ({slide_id})"
         page = pages.get(slide_id)
         if page is None:
-            warnings.append(f"slides.{index} ({slide_id}): no matching deck-plan page; semantic inheritance cannot be audited")
+            warnings.append(f"{scope}: no matching deck-plan page; semantic inheritance cannot be audited")
             continue
         final_text = _slide_text(slide)
         plan_text = _page_text(page)
@@ -78,32 +180,49 @@ def audit_final_script(
         evidence_ids = _page_evidence_ids(page) | page_source_refs
         evidence = _support_items(sorted(evidence_ids), items)
         if final_authoring_mode == "faithful":
-            issues.extend(
-                f"slides.{index} ({slide_id}): {issue}"
-                for issue in faithful_relation_promotion_issues(slide, evidence)
+            for finding in faithful_relation_promotion_issues(slide, evidence):
+                _append_governed_finding(issues, warnings, scope, finding)
+            semantic_addition_findings = _compatibility_findings(
+                faithful_semantic_addition_issues(slide, evidence, items),
+                compatibility_mode=compatibility_mode,
             )
-            issues.extend(
-                f"slides.{index} ({slide_id}): {issue}"
-                for issue in faithful_semantic_addition_issues(slide, evidence, items)
-            )
+            for finding in semantic_addition_findings:
+                _append_governed_finding(issues, warnings, scope, finding)
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
         plan_logic = str(page.get("logic") or "")
         plan_is_classification = any(token in plan_model for token in ("classification", "taxonomy", "typology")) or "分类" in plan_logic
         plan_allows_progression = bool(PROGRESSION_RE.search(plan_text) or any(token in plan_model for token in ("progression", "maturity")))
         if plan_is_classification and not plan_allows_progression and PROGRESSION_RE.search(final_text):
-            issues.append(f"slides.{index} ({slide_id}): AUTHOR upgraded a classification/taxonomy plan into a progression chain")
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                "FINAL_PROGRESSION_HEURISTIC: AUTHOR may have upgraded a classification/taxonomy plan "
+                "into a progression chain; lexical progression markers require Critic review",
+            )
 
         if _has_optionality(evidence) and not _preserves_optionality(final_text):
-            issues.append(f"slides.{index} ({slide_id}): final script lost source optionality; it must preserve independent choice and progressive deepening")
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                "FINAL_OPTIONALITY_HEURISTIC: final script may have lost source optionality; "
+                "lexical independence/deepening markers require Critic review",
+            )
 
         group_issue = _group_strength_issue(str(slide.get("core_message") or ""), evidence)
         if group_issue:
-            issues.append(f"slides.{index} ({slide_id}): {group_issue}")
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                f"FINAL_GROUP_STRENGTH_HEURISTIC: {group_issue}",
+            )
 
         internal = [item for item in evidence if effective_visibility(item) == "internal_only"]
         if audience_scope == "external" and internal:
-            exposed: list[str] = []
+            exposed_items: list[dict[str, Any]] = []
             for item in internal:
                 item_text = _item_text(item)
                 values = [str(item.get("value") or "")]
@@ -111,69 +230,123 @@ def audit_final_script(
                     values.append(match)
                 normalized_final = final_text.replace("至", "-").replace("—", "-")
                 if any(value and value.replace("至", "-").replace("—", "-") in normalized_final for value in values):
-                    exposed.append(str(item.get("id") or "?"))
-            if exposed:
-                issues.append(f"slides.{index} ({slide_id}): external final script exposes internal-only evidence {sorted(set(exposed))}")
+                    exposed_items.append(item)
+            if exposed_items:
+                if compatibility_mode:
+                    marker_inferred = sorted(
+                        {
+                            str(item.get("id") or "?")
+                            for item in exposed_items
+                            if str(item.get("visibility") or "").strip() != "internal_only"
+                        }
+                    )
+                    if marker_inferred:
+                        warnings.append(
+                            f"{scope}: legacy visibility review: text markers classify evidence "
+                            f"{marker_inferred} as internal-only and matching values appear in "
+                            "the external Final Script; confirm against explicit visibility policy"
+                        )
+                else:
+                    exposed = sorted(
+                        {str(item.get("id") or "?") for item in exposed_items}
+                    )
+                    issues.append(
+                        f"{scope}: external final script exposes internal-only evidence {exposed}"
+                    )
 
         if GAP_RE.search(final_text):
             source_text = _source_text_for_refs(page.get("source_refs") or [], foundation)
             if not GAP_RE.search(plan_text) and not GAP_RE.search(source_text):
-                issues.append(f"slides.{index} ({slide_id}): final script introduces a current-vs-target gap judgment without a source or plan baseline")
+                _append_governed_finding(
+                    issues,
+                    warnings,
+                    scope,
+                    "FINAL_GAP_HEURISTIC: final script may introduce a current-vs-target gap judgment "
+                    "without the same lexical baseline in source or plan; Critic review is required",
+                )
 
-        for composition_issue in _audit_authored_onscreen_composition(
-            page,
-            slide,
-            authoring_mode=final_authoring_mode,
-        ):
-            issues.append(f"slides.{index} ({slide_id}): {composition_issue}")
-        for density_issue in _audit_self_reading_density(delivery_mode, page, slide):
-            issues.append(f"slides.{index} ({slide_id}): {density_issue}")
-        for contract_issue in _audit_authored_onscreen_contract(page, slide, items):
-            issues.append(f"slides.{index} ({slide_id}): {contract_issue}")
-        for consumption_issue in _audit_lean_authored_source_consumption(page, slide, items, foundation):
-            issues.append(f"slides.{index} ({slide_id}): {consumption_issue}")
-        for alignment_issue in _audit_lean_onscreen_full_copy_alignment(slide):
-            target = warnings if (
-                final_authoring_mode == "faithful"
-                and alignment_issue.startswith("AUTHOR_ONSCREEN_FULL_COPY_DISCONNECTED")
-            ) else issues
-            target.append(f"slides.{index} ({slide_id}): {alignment_issue}")
-        retained_evidence = _support_items(slide.get("source_refs") or [], items)
-        for retention_issue in _audit_lean_onscreen_protected_retention(slide, retained_evidence, items):
-            issues.append(f"slides.{index} ({slide_id}): {retention_issue}")
-        for relationship_issue in _audit_lean_relationship_visibility(slide):
-            issues.append(f"slides.{index} ({slide_id}): {relationship_issue}")
-        for coverage_issue in _audit_authored_content_coverage(page, slide):
-            issues.append(f"slides.{index} ({slide_id}): {coverage_issue}")
-        for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
-            issues.append(
-                f"slides.{index} ({slide_id}): ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: "
-                f"{detail_issue}"
+        if compatibility_mode:
+            warnings.extend(
+                f"{scope}: {finding}"
+                for finding in onscreen_composition_hierarchy_review_findings(page, slide)
             )
-        for author_issue in _author_execution_issues(
-            delivery_mode,
-            page,
-            slide,
-            items,
-            authoring_mode=final_authoring_mode,
-        ):
-            issues.append(f"slides.{index} ({slide_id}): {author_issue}")
+        else:
+            for finding in _audit_authored_onscreen_composition(
+                page,
+                slide,
+                authoring_mode=final_authoring_mode,
+            ):
+                _append_governed_finding(issues, warnings, scope, finding)
+        self_read_findings = _compatibility_findings(
+            _audit_self_reading_density(delivery_mode, page, slide),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in self_read_findings:
+            _append_governed_finding(issues, warnings, scope, finding)
+        if compatibility_mode:
+            warnings.extend(
+                f"{scope}: {finding}"
+                for finding in onscreen_contract_colocation_review_findings(page, items)
+            )
+        else:
+            for finding in _audit_authored_onscreen_contract(page, slide, items):
+                _append_governed_finding(issues, warnings, scope, finding)
+        source_consumption_findings = _compatibility_findings(
+            _audit_lean_authored_source_consumption(page, slide, items, foundation),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in source_consumption_findings:
+            _append_governed_finding(issues, warnings, scope, finding)
+        for finding in _audit_lean_onscreen_full_copy_alignment(slide):
+            _append_onscreen_alignment_finding(
+                issues,
+                warnings,
+                scope,
+                finding,
+                compatibility_mode=compatibility_mode,
+            )
+        retained_evidence = _support_items(slide.get("source_refs") or [], items)
+        protected_retention_findings = _compatibility_findings(
+            _audit_lean_onscreen_protected_retention(slide, retained_evidence, items),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in protected_retention_findings:
+            _append_governed_finding(issues, warnings, scope, finding)
+        relationship_findings = _compatibility_findings(
+            _audit_lean_relationship_visibility(slide),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in relationship_findings:
+            _append_governed_finding(issues, warnings, scope, finding)
+        if not compatibility_mode:
+            # Exact PLAN-declared meaning-signal retention is now owned by
+            # semantic_contract.content_route on the formal path. Keep the raw
+            # legacy implementation intact only for direct compatibility callers.
+            for finding in _audit_authored_content_coverage(page, slide):
+                _append_governed_finding(issues, warnings, scope, finding)
+        for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
+            _append_governed_finding(
+                issues,
+                warnings,
+                scope,
+                f"ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: {detail_issue}",
+            )
+        author_execution_findings = _compatibility_findings(
+            _author_execution_issues(
+                delivery_mode,
+                page,
+                slide,
+                items,
+                authoring_mode=final_authoring_mode,
+            ),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in author_execution_findings:
+            _append_governed_finding(issues, warnings, scope, finding)
         warnings.extend(
-            f"slides.{index} ({slide_id}): {warning}"
+            f"{scope}: {warning}"
             for warning in _onscreen_expression_warnings(page, slide)
         )
-
-        if preserve_structure and slide.get("page_type") == "chapter":
-            chapter_id = slide.get("chapter_id")
-            chapter = chapters.get(chapter_id) if isinstance(chapter_id, str) else None
-            source_ids = chapter.get("source_chapter_ids") if isinstance(chapter, dict) else None
-            if source_ids and len(source_ids) == 1:
-                node = structure.get(source_ids[0])
-                if isinstance(node, dict) and isinstance(node.get("title"), str):
-                    expected = _normalize_source_chapter_title(node["title"])
-                    actual = str(slide.get("title") or "").strip()
-                    if actual and expected and actual != expected:
-                        issues.append(f"slides.{index} ({slide_id}): source_structure_mode='preserve' requires chapter title '{expected}', got '{actual}'")
 
     warnings.extend(_whole_deck_authoring_warnings(final_script))
     return issues, warnings

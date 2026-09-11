@@ -43,7 +43,14 @@ def numbers(value: str) -> set[str]:
 
 
 def _specific_identifiers(value: str) -> set[str]:
-    """Narrow upstream Latin tokens to objectively checkable identifiers."""
+    """Return heuristic Latin identifier candidates.
+
+    The classifier intentionally remains available for legacy diagnostics, but
+    its shape rules (separator/digit/acronym/proper-name-like capitalization) are
+    not semantic proof. Phase 4 therefore treats absent identifiers as review
+    candidates in the formal compatibility path while preserving raw legacy
+    behavior.
+    """
 
     result: set[str] = set()
     for token in latin_tokens(value):
@@ -159,7 +166,7 @@ def trace_composed(
 
 
 def hard_finding_messages(trace: dict[str, Any]) -> list[str]:
-    """Render hard trace records for the existing final audit issue channel."""
+    """Render raw legacy hard trace records without changing historical behavior."""
 
     result: list[str] = []
     for record in trace.get("hard_findings") or []:
@@ -175,6 +182,42 @@ def hard_finding_messages(trace: dict[str, Any]) -> list[str]:
     return result
 
 
+def hard_numeric_finding_messages(trace: dict[str, Any]) -> list[str]:
+    """Render only exact new-number drift as a formal compatibility blocker."""
+
+    result: list[str] = []
+    for record in trace.get("hard_findings") or []:
+        absent_numbers = record.get("absent_numbers") or []
+        if not absent_numbers:
+            continue
+        result.append(
+            f"{record.get('field')}: COMPOSED_TRACE_SOURCE_BOUNDARY: "
+            f"numbers={absent_numbers} absent from Foundation source surface"
+        )
+    return result
+
+
+def identifier_review_messages(trace: dict[str, Any]) -> list[str]:
+    """Render heuristic identifier drift as review-required diagnostics.
+
+    Capitalization, acronym shape, digits and separators are useful discovery
+    signals but do not prove that a Latin token is a protected identifier. Keep
+    the signal visible to Critic without granting it blocking authority.
+    """
+
+    result: list[str] = []
+    for record in trace.get("hard_findings") or []:
+        absent_identifiers = record.get("absent_identifiers") or []
+        if not absent_identifiers:
+            continue
+        result.append(
+            f"{record.get('field')}: COMPOSED_TRACE_IDENTIFIER_REVIEW_REQUIRED: "
+            f"identifier candidates={absent_identifiers} are absent from Foundation source "
+            "surface; confirm whether they are protected names or legitimate author wording"
+        )
+    return result
+
+
 __all__ = [
     "cjk_ngrams",
     "latin_tokens",
@@ -183,4 +226,6 @@ __all__ = [
     "final_script_lines",
     "trace_composed",
     "hard_finding_messages",
+    "hard_numeric_finding_messages",
+    "identifier_review_messages",
 ]

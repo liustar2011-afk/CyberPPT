@@ -6,7 +6,6 @@ from pathlib import Path
 
 from .analysis_audit import (
     audit_deck_plan,
-    audit_final_script,
     audit_foundation_analysis,
     validate_source_index_coverage,
 )
@@ -119,14 +118,12 @@ def final_audit_report(
         + validate_deck_plan(plan)
         + validate_foundation(foundation)
     )
-    semantic_issues, semantic_warnings, semantic_diagnostics = (
+    semantic_issues, warnings, semantic_diagnostics = (
         audit_final_script_semantic_contract(final_payload, plan, foundation)
     )
     issues += semantic_issues
-    audit_issues, warnings = audit_final_script(final_payload, plan, foundation)
-    issues += audit_issues
     issues = list(dict.fromkeys(issues))
-    warnings = list(dict.fromkeys([*warnings, *semantic_warnings]))
+    warnings = list(dict.fromkeys(warnings))
     trace = trace_composed(final_payload, foundation)
     return (
         {

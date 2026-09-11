@@ -4,6 +4,7 @@ import ast
 from pathlib import Path
 
 import script_engine.analysis_audit as facade
+import script_engine.analysis_audits as audits_package
 import script_engine.analysis_audits.final_authoring as final_authoring
 import script_engine.analysis_audits.final_authoring_expression as final_authoring_expression
 import script_engine.analysis_audits.final_authoring_structure as final_authoring_structure
@@ -124,11 +125,10 @@ def test_final_script_runtime_routes_deck_helpers_to_focused_module() -> None:
     _assert_public_facades_route(_PUBLIC_DECK_HELPERS, final_deck)
 
 
-def test_final_script_runtime_routes_orchestrator_to_focused_module() -> None:
+def test_final_script_runtime_keeps_raw_legacy_orchestrator() -> None:
     focused = final_orchestrator.audit_final_script
     assert legacy_final_script.audit_final_script is focused
     assert runtime.audit_final_script is focused
-    assert facade.audit_final_script is focused
 
     expected_globals = {
         "_slide_text": final_authoring._slide_text,
@@ -143,11 +143,16 @@ def test_final_script_runtime_routes_orchestrator_to_focused_module() -> None:
         "_audit_self_reading_density": final_onscreen._audit_self_reading_density,
         "_audit_authored_onscreen_contract": final_onscreen._audit_authored_onscreen_contract,
         "_source_text_for_refs": final_deck._source_text_for_refs,
-        "_normalize_source_chapter_title": final_deck._normalize_source_chapter_title,
         "_whole_deck_authoring_warnings": final_deck._whole_deck_authoring_warnings,
     }
     for name, value in expected_globals.items():
         assert focused.__globals__[name] is value
+
+
+def test_public_final_audit_routes_through_single_semantic_entry() -> None:
+    assert facade.audit_final_script is audits_package.audit_final_script
+    assert facade.audit_final_script is not runtime.audit_final_script
+    assert audits_package.audit_final_script.__module__ == "script_engine.analysis_audits"
 
 
 def test_legacy_final_script_is_thin_compatibility_facade() -> None:
@@ -191,11 +196,13 @@ def test_final_script_runtime_is_static_compatibility_facade() -> None:
     assert "final_orchestrator" not in source
 
 
-def test_final_script_public_facades_use_runtime_facade() -> None:
+def test_final_script_public_facades_converge_on_semantic_contract() -> None:
     package_init = (ROOT / "script_engine" / "analysis_audits" / "__init__.py").read_text(encoding="utf-8")
     compatibility = (ROOT / "script_engine" / "analysis_audit.py").read_text(encoding="utf-8")
 
-    assert "from .final_script_runtime import audit_final_script" in package_init
+    assert "from ..semantic_contract import audit_final_script_semantic_contract" in package_init
+    assert "def audit_final_script(" in package_init
+    assert "from .final_script_runtime import audit_final_script" not in package_init
     assert "from .analysis_audits.final_script_runtime import *" in compatibility
-    assert "from .final_script import audit_final_script" not in package_init
+    assert "from .analysis_audits import audit_final_script as audit_final_script" in compatibility
     assert "from .analysis_audits.final_script import *" not in compatibility

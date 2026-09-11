@@ -3,6 +3,10 @@
 The checker uses only Foundation fields and exact/normalized values. It never
 classifies visible prose by business keywords. Values that can be paraphrased
 legitimately are routed to review instead of becoming blocking lexical rules.
+
+Final Script 1.1 is checked at module/item provenance scope. Final Script 1.0
+has no module provenance, so its compatibility projection is limited to the
+slide-level source refs already declared by AUTHOR and the PLAN source boundary.
 """
 
 from __future__ import annotations
@@ -13,6 +17,10 @@ from typing import Any
 
 from .foundation_index import FoundationIndex
 from .models import SemanticDiagnostic
+from .source_scope import _requires_source_consumption
+
+
+_TIME_LIKE_UNITS = frozenset({"时间", "年份", "生效日期"})
 
 
 def _text(value: object) -> str:
@@ -78,29 +86,213 @@ def _as_literals(value: object) -> tuple[str, ...]:
     return (text,) if text else ()
 
 
-def _number_literal(index: FoundationIndex, ref: str) -> str:
-    record = index.record(ref)
-    if record is None:
-        return ""
-    value = record.payload.get("value")
+def _scalar_text(value: object) -> str:
     if value is None or isinstance(value, bool):
         return ""
     if isinstance(value, float) and value.is_integer():
-        number = str(int(value))
-    else:
-        number = str(value).strip()
+        return str(int(value))
+    return str(value).strip()
+
+
+def _number_literals(index: FoundationIndex, ref: str) -> tuple[str, ...]:
+    """Return canonical exact display literals from one typed number record."""
+
+    record = index.record(ref)
+    if record is None:
+        return ()
+    raw_value = record.payload.get("value")
+    values = raw_value if isinstance(raw_value, list) else [raw_value]
     unit = _text(record.payload.get("unit"))
-    return f"{number}{unit}" if number else ""
+    literals: list[str] = []
+    for raw in values:
+        number = _scalar_text(raw)
+        if not number:
+            continue
+        if (
+            not isinstance(raw_value, list)
+            and unit
+            and unit not in _TIME_LIKE_UNITS
+            and not number.endswith(unit)
+        ):
+            literals.append(f"{number}{unit}")
+        else:
+            literals.append(number)
+    return tuple(dict.fromkeys(literals))
+
+
+def _legacy_onscreen_text(slide: dict[str, Any]) -> str:
+    return "\n".join(
+        value
+        for module in slide.get("onscreen") or []
+        if isinstance(module, dict)
+        for value in (_module_text(module),)
+        if value
+    )
+
+
+def _legacy_slide_protected_payload_diagnostics(
+    final_script: dict[str, Any],
+    plan: dict[str, Any] | None,
+    foundation: dict[str, Any],
+) -> list[SemanticDiagnostic]:
+    """Project typed payload checks onto a provenance-less Final Script 1.0.
+
+    Exact typed values missing from complete copy remain deterministic. On-screen
+    compression has no provenance in 1.0, so omission there is review-only.
+    Conditions and actors can also be paraphrased or inherited and therefore route
+    to review rather than becoming lexical blockers.
+    """
+
+    plan = plan if isinstance(plan, dict) else {}
+    pages = {
+        page.get("id"): page
+        for page in plan.get("pages") or []
+        if isinstance(page, dict) and isinstance(page.get("id"), str)
+    }
+    index = FoundationIndex(foundation)
+    diagnostics: list[SemanticDiagnostic] = []
+
+    for slide in final_script.get("slides") or []:
+        if not isinstance(slide, dict) or _text(slide.get("page_type")) != "content":
+            continue
+        slide_id = _text(slide.get("id"))
+        page = pages.get(slide_id)
+        if not isinstance(page, dict) or not _requires_source_consumption(page, foundation):
+            continue
+
+        page_refs = set(_refs(page.get("source_refs")))
+        usable_refs = tuple(
+            dict.fromkeys(
+                ref
+                for ref in _refs(slide.get("source_refs"))
+                if ref in page_refs and index.contains(ref)
+            )
+        )
+        full_copy = _text(slide.get("full_copy"))
+        onscreen = _legacy_onscreen_text(slide)
+
+        for ref in usable_refs:
+            record = index.record(ref)
+            if record is None:
+                continue
+            payload = record.payload
+
+            for number_ref in _refs(payload.get("number_refs")):
+                for literal in _number_literals(index, number_ref):
+                    if not _contains(full_copy, literal):
+                        diagnostics.append(
+                            SemanticDiagnostic(
+                                code="PROTECTED_NUMBER_MISSING",
+                                message=(
+                                    "legacy slide full_copy does not preserve exact "
+                                    f"number/date {literal!r}"
+                                ),
+                                slide_id=slide_id,
+                                target="full_copy",
+                                severity="blocking",
+                                evidence_refs=(ref,),
+                                relation="preserves",
+                            )
+                        )
+                    elif not _contains(onscreen, literal):
+                        diagnostics.append(
+                            SemanticDiagnostic(
+                                code="LEGACY_ONSCREEN_PROTECTED_NUMBER_REVIEW_REQUIRED",
+                                message=(
+                                    f"legacy onscreen copy omits typed number/date {literal!r}; "
+                                    "1.0 has no module provenance, so compression requires review"
+                                ),
+                                slide_id=slide_id,
+                                target="onscreen",
+                                severity="review_required",
+                                evidence_refs=(ref,),
+                                relation="preserves",
+                            )
+                        )
+
+            for condition in index.conditions(ref):
+                if not _contains(full_copy, condition):
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            code="PROTECTED_CONDITION_REVIEW_REQUIRED",
+                            message=(
+                                f"condition {condition!r} is not present verbatim in legacy "
+                                "full_copy; semantic preservation requires review"
+                            ),
+                            slide_id=slide_id,
+                            target="full_copy",
+                            severity="review_required",
+                            evidence_refs=(ref,),
+                            relation="preserves",
+                        )
+                    )
+                elif not _contains(onscreen, condition):
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            code="PROTECTED_CONDITION_REVIEW_REQUIRED",
+                            message=(
+                                f"condition {condition!r} is omitted from legacy onscreen copy; "
+                                "compression without module provenance requires review"
+                            ),
+                            slide_id=slide_id,
+                            target="onscreen",
+                            severity="review_required",
+                            evidence_refs=(ref,),
+                            relation="preserves",
+                        )
+                    )
+
+            for actor in index.actors(ref):
+                if not _contains(full_copy, actor):
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            code="PROTECTED_ACTOR_REVIEW_REQUIRED",
+                            message=(
+                                f"actor {actor!r} is not present verbatim in legacy full_copy; "
+                                "alias or inherited-subject preservation requires review"
+                            ),
+                            slide_id=slide_id,
+                            target="full_copy",
+                            severity="review_required",
+                            evidence_refs=(ref,),
+                            relation="preserves",
+                        )
+                    )
+                elif not _contains(onscreen, actor):
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            code="PROTECTED_ACTOR_REVIEW_REQUIRED",
+                            message=(
+                                f"actor {actor!r} is omitted from legacy onscreen copy; alias "
+                                "or inherited-subject preservation requires review"
+                            ),
+                            slide_id=slide_id,
+                            target="onscreen",
+                            severity="review_required",
+                            evidence_refs=(ref,),
+                            relation="preserves",
+                        )
+                    )
+
+    return diagnostics
 
 
 def collect_protected_payload_diagnostics(
     final_script: dict[str, Any],
     foundation: dict[str, Any] | None,
+    plan: dict[str, Any] | None = None,
 ) -> list[SemanticDiagnostic]:
-    """Check exact protected values against each module's aggregate visible copy."""
+    """Check typed protected values at the strongest available semantic scope."""
 
-    if _text(final_script.get("version")) != "1.1" or not isinstance(foundation, dict):
+    if not isinstance(foundation, dict):
         return []
+
+    if _text(final_script.get("version")) != "1.1":
+        return _legacy_slide_protected_payload_diagnostics(
+            final_script,
+            plan,
+            foundation,
+        )
 
     diagnostics: list[SemanticDiagnostic] = []
     index = FoundationIndex(foundation)
@@ -131,8 +323,7 @@ def collect_protected_payload_diagnostics(
                     for literal in _as_literals(payload.get(key)):
                         exact_literals.append(("formal_name", literal))
                 for number_ref in _refs(payload.get("number_refs")):
-                    literal = _number_literal(index, number_ref)
-                    if literal:
+                    for literal in _number_literals(index, number_ref):
                         exact_literals.append(("number", literal))
 
                 for kind, literal in exact_literals:

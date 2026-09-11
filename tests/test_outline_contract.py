@@ -313,7 +313,6 @@ class OutlineContractTests(unittest.TestCase):
 
         self.assertNotIn("SOURCE_GROUNDING_MODULE_INVALID", codes)
 
-
     def test_formal_v2_outline_defaults_to_plain_declarative_titles(self) -> None:
         payload = outline(
             page(1, "content", "为什么需要运营型数据基础设施", message="需要建设运营基础"),
@@ -648,7 +647,7 @@ class OutlineContractTests(unittest.TestCase):
         self.assertIn("RELATION_STRENGTH_UPGRADED", codes)
         self.assertIn("MODALITY_STRENGTH_UPGRADED", codes)
 
-    def test_argument_chain_rejects_unsupported_current_platform_output(self) -> None:
+    def test_argument_chain_does_not_apply_a_global_output_object_taxonomy(self) -> None:
         content = page(
             1,
             "content",
@@ -658,20 +657,21 @@ class OutlineContractTests(unittest.TestCase):
         )
         content["argument_chain"] = [{
             "role": "implementation",
-            "statement": "形成课程、场景、平台和付费项目四类成果。",
+            "statement": "形成服务组件、验证对象和运营工具三类成果。",
             "evidence": {
                 "normalized_fact_ids": ["NF-0010", "NF-0016", "NF-0017"],
             },
         }]
         truth = {"facts": [
-            {"normalized_fact_id": "NF-0010", "statement": "先形成1门标准课程、1套可操作实训场景。"},
-            {"normalized_fact_id": "NF-0016", "statement": "产品目标是1门可销售课程和1个历史场景实训脚本。"},
-            {"normalized_fact_id": "NF-0017", "statement": "客户目标是1—2个真实付费项目。"},
+            {"normalized_fact_id": "NF-0010", "statement": "先形成服务组件和验证对象。"},
+            {"normalized_fact_id": "NF-0016", "statement": "后续可研究运营工具。"},
+            {"normalized_fact_id": "NF-0017", "statement": "首期完成真实业务验证。"},
         ]}
 
         codes = {item.code for item in audit_outline(outline(content), truth)}
 
-        self.assertIn("ARGUMENT_CHAIN_OUTPUT_UNSUPPORTED", codes)
+        self.assertNotIn("ARGUMENT_CHAIN_OUTPUT_UNSUPPORTED", codes)
+        self.assertNotIn("ARGUMENT_CHAIN_OUTPUT_POLARITY_CONFLICT", codes)
 
     def test_argument_chain_accepts_source_supported_current_outputs(self) -> None:
         content = page(
@@ -683,12 +683,12 @@ class OutlineContractTests(unittest.TestCase):
         )
         content["argument_chain"] = [{
             "role": "implementation",
-            "statement": "形成课程、场景和付费试点。",
+            "statement": "形成服务组件、验证对象和业务试点。",
             "evidence": {"normalized_fact_ids": ["NF-0010"]},
         }]
         truth = {"facts": [{
             "normalized_fact_id": "NF-0010",
-            "statement": "先形成1门标准课程、1套可操作实训场景和1—2个真实付费试点。",
+            "statement": "先形成服务组件、验证对象和真实业务试点。",
         }]}
 
         codes = {item.code for item in audit_outline(outline(content), truth)}
@@ -696,7 +696,7 @@ class OutlineContractTests(unittest.TestCase):
         self.assertNotIn("ARGUMENT_CHAIN_OUTPUT_UNSUPPORTED", codes)
         self.assertNotIn("ARGUMENT_CHAIN_OUTPUT_POLARITY_CONFLICT", codes)
 
-    def test_argument_chain_accepts_conditional_platform_research(self) -> None:
+    def test_argument_chain_accepts_conditional_future_research(self) -> None:
         content = page(
             1,
             "content",
@@ -706,12 +706,12 @@ class OutlineContractTests(unittest.TestCase):
         )
         content["argument_chain"] = [{
             "role": "condition",
-            "statement": "满足条件后研究平台。",
+            "statement": "满足条件后研究独立运营工具。",
             "evidence": {"normalized_fact_ids": ["NF-0024"]},
         }]
         truth = {"facts": [{
             "normalized_fact_id": "NF-0024",
-            "statement": "完成首期验证后，再研究独立SaaS平台。",
+            "statement": "完成首期验证后，再研究独立运营工具。",
         }]}
 
         codes = {item.code for item in audit_outline(outline(content), truth)}
@@ -719,26 +719,26 @@ class OutlineContractTests(unittest.TestCase):
         self.assertNotIn("ARGUMENT_CHAIN_OUTPUT_UNSUPPORTED", codes)
         self.assertNotIn("ARGUMENT_CHAIN_OUTPUT_POLARITY_CONFLICT", codes)
 
-    def test_core_message_rejects_training_audience_to_procurement_actor_substitution(self) -> None:
+    def test_core_message_does_not_apply_a_global_actor_role_taxonomy(self) -> None:
         content = page(
             1,
             "content",
-            "培训对象分析",
-            message="采购主体需要明确。",
+            "对象分析",
+            message="责任角色需要明确。",
             refs=["NF-0060"],
         )
         content["core_message_derivation"] = {
             "source_refs": ["NF-0060"],
-            "supporting_statements": ["培训对象是谁。"],
+            "supporting_statements": ["服务对象需要明确。"],
             "derivation": "保留来源对象角色。",
             "introduced_relations": [],
             "introduced_modalities": [],
         }
-        truth = {"records": [{"id": "NF-0060", "statement": "培训对象是谁。"}]}
+        truth = {"records": [{"id": "NF-0060", "statement": "服务对象需要明确。"}]}
 
         codes = {item.code for item in audit_outline(outline(content), truth)}
 
-        self.assertIn("ACTOR_ROLE_SUBSTITUTED", codes)
+        self.assertNotIn("ACTOR_ROLE_SUBSTITUTED", codes)
 
     def test_author_judgment_requires_a_traceable_derivation_and_structured_evidence_roles(self) -> None:
         content = page(1, "content", "合作启动判断", message="来源已明确合作基础", refs=["S021"])
