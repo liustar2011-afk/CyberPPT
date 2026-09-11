@@ -10,6 +10,12 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from .source_freshness import (
+    PAGE_SOURCE_BUILDER_VERSION,
+    PAGE_SOURCE_PACKET_SCHEMA,
+    utc_now_iso,
+)
+
 
 _CITABLE_KEYS = (
     "facts",
@@ -228,7 +234,9 @@ def build_page_source_packet(
         )
 
     return {
-        "schema": "cyberppt.page_source_packet.v1",
+        "schema": PAGE_SOURCE_PACKET_SCHEMA,
+        "builder_version": PAGE_SOURCE_BUILDER_VERSION,
+        "generated_at": utc_now_iso(),
         "authority": "derived_runtime_context",
         "authoritative_chain": ["source", "foundation", "deck_plan", "final_script"],
         "page_id": _text(page.get("id")),
