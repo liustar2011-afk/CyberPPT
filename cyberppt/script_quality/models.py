@@ -27,11 +27,10 @@ LOCKED_JUDGMENT_ROLES = {
 VALID_CONTENT_LOADS = {"light", "standard", "dense"}
 
 # Legacy Script Quality still contains several text-shape / keyword heuristics
-# kept for diagnostic compatibility. Phase 3 removes their blocking authority:
-# these codes can surface review candidates, but they cannot fail a script solely
-# because a word, length threshold, similarity score, or inferred text role was
-# matched. Structured page-logic, provenance, source IDs, exact protected payload,
-# delivery cleanliness, and explicit policy checks keep their original severity.
+# kept for diagnostic compatibility. Phase 3 removes their blocking authority at
+# the public ``audit_script_quality`` boundary. Low-level helpers keep their
+# historical severity so they remain implementation-local diagnostics; callers
+# must not treat those helpers as the production severity policy.
 LEGACY_HEURISTIC_WARNING_CODES = frozenset(
     {
         "OFF_TOPIC_CONSTRAINT_MODULE",
@@ -57,6 +56,12 @@ LEGACY_HEURISTIC_WARNING_CODES = frozenset(
         "CONTENT_PAGE_TOO_SPARSE",
         "MODULE_HIERARCHY_MISSING",
         "VISIBLE_NODE_OVERLOAD",
+        # These checks are also driven by lexical similarity or generic text
+        # shape. Keep them visible for Critic review but never production-block
+        # solely on the heuristic score.
+        "ONSCREEN_JUDGMENT_MISALIGNED",
+        "ADJACENT_MAIN_MESSAGE_DUPLICATE",
+        "ADJACENT_ONSCREEN_JUDGMENT_DUPLICATE",
     }
 )
 
@@ -215,8 +220,6 @@ def _issue(
 ) -> ScriptQualityIssue:
     if severity not in {"error", "warning"}:
         raise ValueError(f"unsupported severity: {severity}")
-    if code in LEGACY_HEURISTIC_WARNING_CODES:
-        severity = "warning"
     return ScriptQualityIssue(
         code=code,
         severity=severity,
