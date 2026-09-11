@@ -174,10 +174,17 @@ def _status(project_dir: Path) -> int:
     return 0
 
 
-def _render(input_path: Path, output_path: Path) -> int:
+def _render(
+    input_path: Path,
+    output_path: Path,
+    plan_path: Path,
+    foundation_path: Path,
+) -> int:
     rendered_path, error_report, exit_code = render_stage02_delivery(
         input_path,
         output_path,
+        plan_path=plan_path,
+        foundation_path=foundation_path,
         final_lint_findings=_final_lint_findings,
     )
     if error_report is not None:
@@ -226,7 +233,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "audit-final": return _audit_final(Path(args.final), Path(args.plan), Path(args.foundation))
     if args.command == "trace-composed": return _trace_composed(Path(args.final), Path(args.foundation), args.n)
     if args.command == "build-source-index": return _build_source_index(Path(args.source_extract), Path(args.output), args.source_file)
-    if args.command == "render-stage02": return _render(Path(args.input), Path(args.output))
+    if args.command == "render-stage02": return _render(
+        Path(args.input),
+        Path(args.output),
+        Path(args.plan),
+        Path(args.foundation),
+    )
     if args.command == "check-refs": return _check_refs(Path(args.final), Path(args.foundation), Path(args.source_index) if args.source_index else None)
     if args.command == "lint": return _lint(Path(args.final))
     if args.command == "outline": return _outline(Path(args.final))
