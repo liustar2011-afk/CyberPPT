@@ -13,6 +13,14 @@ from script_engine.rule_registry import (
 ROOT = Path(__file__).resolve().parents[2]
 BANNED = ROOT / "contracts" / "banned-phrasing.json"
 LEGACY_RULES = ROOT / "cyberppt" / "script_quality" / "rules.yaml"
+ANALYTICAL_AUTHOR_CONTRACT = (
+    ROOT
+    / ".agents"
+    / "skills"
+    / "cyberppt-script-workflow"
+    / "references"
+    / "authoring-contract.md"
+)
 
 
 def test_default_rule_registry_is_policy_valid() -> None:
@@ -104,3 +112,31 @@ def test_legacy_rule_file_no_longer_contains_project_content_fingerprints() -> N
         assert phrase not in text
     assert "cross_page_fingerprints:\n    enabled: false" in text
     assert "slogan_ban_patterns: []" in text
+
+
+def test_analytical_author_contract_is_domain_neutral() -> None:
+    """Operational AUTHOR rules must describe methods, not preserve one project's facts."""
+
+    text = ANALYTICAL_AUTHOR_CONTRACT.read_text(encoding="utf-8")
+    for phrase in (
+        "中电联",
+        "中国电力企业联合会",
+        "先行先试",
+        "国家数据基础设施",
+        "电力领域数据基础设施",
+        "电力数据基础设施",
+        "电力行业",
+        "GB/T 13016",
+        "DL/T 890",
+        "CIM",
+        "CIS",
+        "五层两贯穿",
+        "五维差距",
+        "five-dimensional gap",
+    ):
+        assert phrase not in text
+
+    # Standards and project identifiers belong to Foundation evidence, not to
+    # the reusable authoring method contract.
+    assert "GB/T " not in text
+    assert "DL/T " not in text
