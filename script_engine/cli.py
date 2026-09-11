@@ -16,6 +16,7 @@ from .audit_reports import (
     source_refs_report,
     validate_artifact_report,
 )
+from .author_preflight import author_preflight_report
 from .cli_parser import build_parser as _build_parser
 from .delivery_commands import (
     delivery_sync_report,
@@ -76,6 +77,26 @@ def _page_source(
         page_id,
         source_index_path=source_index_path,
         output_path=output_path,
+    )
+    _print_report(report, stderr=exit_code != 0)
+    return exit_code
+
+
+def _author_preflight(
+    plan_path: Path,
+    foundation_path: Path,
+    *,
+    source_index_path: Path | None = None,
+    packet_dir: Path | None = None,
+    output_path: Path | None = None,
+) -> int:
+    resolved_output = output_path or foundation_path.parent / ".cache" / "author-preflight.json"
+    report, exit_code = author_preflight_report(
+        plan_path,
+        foundation_path,
+        source_index_path=source_index_path,
+        packet_dir=packet_dir,
+        output_path=resolved_output,
     )
     _print_report(report, stderr=exit_code != 0)
     return exit_code
@@ -193,6 +214,13 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.foundation),
         args.page_id,
         source_index_path=Path(args.source_index) if args.source_index else None,
+        output_path=Path(args.output) if args.output else None,
+    )
+    if args.command == "author-preflight": return _author_preflight(
+        Path(args.plan),
+        Path(args.foundation),
+        source_index_path=Path(args.source_index) if args.source_index else None,
+        packet_dir=Path(args.packet_dir) if args.packet_dir else None,
         output_path=Path(args.output) if args.output else None,
     )
     if args.command == "audit-final": return _audit_final(Path(args.final), Path(args.plan), Path(args.foundation))
