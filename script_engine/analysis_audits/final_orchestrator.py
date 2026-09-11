@@ -96,6 +96,33 @@ def _append_governed_finding(
     target.append(f"{scope}: {finding}")
 
 
+def _append_onscreen_alignment_finding(
+    issues: list[str],
+    warnings: list[str],
+    scope: str,
+    finding: str,
+    *,
+    compatibility_mode: bool,
+) -> None:
+    """Route legacy full-copy/onscreen alignment at the formal compatibility edge.
+
+    A number that is visible onscreen but absent from ``full_copy`` is a layer
+    consistency signal, not proof that the number is outside Foundation. In the
+    formal path the Foundation source-boundary checks own that question, so this
+    legacy condition becomes review-only. Raw legacy behavior remains unchanged.
+    """
+
+    code = "AUTHOR_ONSCREEN_PROTECTED_FACT_DRIFTED:"
+    if compatibility_mode and finding.startswith(code):
+        detail = finding[len(code):].strip()
+        warnings.append(
+            f"{scope}: LEGACY_ONSCREEN_PROTECTED_FACT_REVIEW_REQUIRED: {detail}; "
+            "confirm the value against the cited Foundation evidence"
+        )
+        return
+    _append_governed_finding(issues, warnings, scope, finding)
+
+
 def audit_final_script(
     final_script: dict[str, Any],
     plan: dict[str, Any],
@@ -239,7 +266,13 @@ def audit_final_script(
         for finding in source_consumption_findings:
             _append_governed_finding(issues, warnings, scope, finding)
         for finding in _audit_lean_onscreen_full_copy_alignment(slide):
-            _append_governed_finding(issues, warnings, scope, finding)
+            _append_onscreen_alignment_finding(
+                issues,
+                warnings,
+                scope,
+                finding,
+                compatibility_mode=compatibility_mode,
+            )
         retained_evidence = _support_items(slide.get("source_refs") or [], items)
         protected_retention_findings = _compatibility_findings(
             _audit_lean_onscreen_protected_retention(slide, retained_evidence, items),
