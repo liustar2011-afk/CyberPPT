@@ -11,6 +11,7 @@ from .contracts import (
     outline_final_script,
     validate_final_script,
 )
+from .final_source_provenance import validate_final_source_provenance
 from .render import render_stage02_markdown
 from .text_io import write_text_lf
 
@@ -61,7 +62,7 @@ def render_stage02_delivery(
     foundation_path: Path,
     final_lint_findings: FinalLintFindings,
 ) -> tuple[str | None, dict | None, int]:
-    """Validate Stage1 gate, validate/lint Final Script, then write Stage02 Markdown."""
+    """Validate Stage1 gate, Final Script lineage/lint, then write Stage02 Markdown."""
 
     preflight_report, preflight_exit = author_preflight_gate_report(
         plan_path,
@@ -83,6 +84,21 @@ def render_stage02_delivery(
     issues = validate_final_script(payload)
     if issues:
         return None, {"status": "failed", "issues": issues}, 1
+
+    preflight_manifest = load_json(
+        foundation_path.parent / ".cache" / "author-preflight.json"
+    )
+    provenance_issues = validate_final_source_provenance(payload, preflight_manifest)
+    if provenance_issues:
+        return (
+            None,
+            {
+                "kind": "final-source-provenance",
+                "status": "failed",
+                "issues": provenance_issues,
+            },
+            1,
+        )
 
     markdown = render_stage02_markdown(payload)
     lint_blockers, _ = final_lint_findings(payload, markdown)
