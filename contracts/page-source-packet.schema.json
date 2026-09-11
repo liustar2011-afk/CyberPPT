@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cyberppt.local/contracts/page-source-packet.schema.json",
+  "title": "CyberPPT Page Source Packet v2",
+  "type": "object",
+  "required": [
+    "schema",
+    "builder_version",
+    "generated_at",
+    "authority",
+    "authoritative_chain",
+    "page_id",
+    "page_title",
+    "page_mission",
+    "authoring_mode",
+    "page_source_refs",
+    "evidence",
+    "status",
+    "issues",
+    "warnings",
+    "inputs",
+    "source_index"
+  ],
+  "properties": {
+    "schema": {"const": "cyberppt.page_source_packet.v2"},
+    "builder_version": {"const": "stage1-page-source-v2"},
+    "generated_at": {"type": "string", "minLength": 1},
+    "authority": {"const": "derived_runtime_context"},
+    "authoritative_chain": {
+      "const": ["source", "foundation", "deck_plan", "final_script"]
+    },
+    "page_id": {"type": "string", "minLength": 1},
+    "page_title": {"type": "string"},
+    "page_mission": {"type": "string"},
+    "authoring_mode": {
+      "type": "string",
+      "enum": ["faithful", "analytical"]
+    },
+    "page_source_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "evidence": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "blocked"]
+    },
+    "issues": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "inputs": {"$ref": "#/$defs/inputs"},
+    "source_index": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "inputs": {
+      "type": "object",
+      "required": [
+        "deck_plan_sha256",
+        "foundation_sha256",
+        "source_index_sha256"
+      ],
+      "properties": {
+        "deck_plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "foundation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "source_index_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "foundation_ref",
+        "kind",
+        "statement",
+        "source_unit_refs",
+        "exact_source_units",
+        "protected"
+      ],
+      "properties": {
+        "foundation_ref": {
+          "type": ["string", "null"]
+        },
+        "kind": {"type": "string", "minLength": 1},
+        "statement": {"type": "string"},
+        "source_unit_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "exact_source_units": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/source_unit"}
+        },
+        "semantic_units": {"type": "array"},
+        "protected": {"$ref": "#/$defs/protected"}
+      },
+      "additionalProperties": false
+    },
+    "source_unit": {
+      "type": "object",
+      "required": ["unit_id", "source_id", "kind", "heading_id", "text", "locator"],
+      "properties": {
+        "unit_id": {"type": "string", "minLength": 1},
+        "source_id": {"type": "string"},
+        "kind": {"type": "string"},
+        "heading_id": {"type": "string"},
+        "text": {"type": "string", "minLength": 1},
+        "locator": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "protected": {
+      "type": "object",
+      "required": [
+        "actors",
+        "numbers",
+        "conditions",
+        "status",
+        "strength",
+        "claim_origin",
+        "visibility"
+      ],
+      "properties": {
+        "actors": {"type": "array"},
+        "numbers": {"type": "array"},
+        "conditions": {"type": "array", "items": {"type": "string"}},
+        "status": {"type": "string"},
+        "strength": {"type": "string"},
+        "claim_origin": {"type": "string"},
+        "visibility": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+}
