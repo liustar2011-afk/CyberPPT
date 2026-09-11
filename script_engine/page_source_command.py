@@ -6,16 +6,24 @@ from pathlib import Path
 
 from .contracts import load_json
 from .page_source_packet import build_page_source_packet
+from .source_freshness import (
+    PAGE_SOURCE_BUILDER_VERSION,
+    PAGE_SOURCE_PACKET_SCHEMA,
+    build_input_fingerprints,
+    utc_now_iso,
+)
 from .text_io import write_text_lf
 
 
 def _failure(page_id: str, issue: str) -> tuple[dict, int]:
     return (
         {
-            "schema": "cyberppt.page_source_packet.v1",
+            "schema": PAGE_SOURCE_PACKET_SCHEMA,
+            "builder_version": PAGE_SOURCE_BUILDER_VERSION,
+            "generated_at": utc_now_iso(),
             "authority": "derived_runtime_context",
             "page_id": page_id,
-            "status": "rewrite_required",
+            "status": "blocked",
             "issues": [issue],
             "warnings": [],
         },
@@ -68,6 +76,7 @@ def page_source_report(
     page_context = dict(page)
     page_context["authoring_mode"] = str(plan.get("authoring_mode") or "faithful")
     packet = build_page_source_packet(page_context, foundation, source_index)
+    packet["inputs"] = build_input_fingerprints(plan, foundation, source_index)
     packet["source_index"] = str(resolved_source_index.resolve())
 
     if output_path is not None:
