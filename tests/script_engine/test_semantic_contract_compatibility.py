@@ -155,14 +155,17 @@ def test_unknown_typed_role_routes_to_review_instead_of_keyword_guess() -> None:
 
 def test_unified_semantic_auditor_partitions_blockers_and_review_findings() -> None:
     final_script = _page(claim_ref="F1", evidence_ref="F2")
-    blockers, review_required, structured = audit_final_script_semantic_contract(
+    blockers, warnings, structured = audit_final_script_semantic_contract(
         final_script,
         _plan(),
         _foundation(),
     )
 
     assert any("[EVIDENCE_ROLE_INCOMPATIBLE]" in issue for issue in blockers)
-    assert review_required == []
+    # Phase 4's single entry also carries compatibility advisories. Structured
+    # diagnostic severity is asserted independently below rather than requiring
+    # the aggregate warning list to be empty.
+    assert not any("EVIDENCE_ROLE_UNKNOWN" in warning for warning in warnings)
     assert any(
         finding["code"] == "EVIDENCE_ROLE_INCOMPATIBLE"
         and finding["severity"] == "blocking"
