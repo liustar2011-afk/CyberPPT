@@ -5,7 +5,11 @@ import json
 from pathlib import Path
 
 from script_engine.audit_reports import final_audit_report
-from script_engine.semantic_contract import audit_final_script_semantic_contract
+from script_engine.semantic_contract import (
+    audit_final_script_semantic_contract,
+    validate_authoring_mode_authorization,
+    validate_source_structure_preservation,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,7 +58,21 @@ def test_final_audit_report_surfaces_structured_role_diagnostic(tmp_path: Path) 
     )
 
 
-def test_single_semantic_entry_preserves_legacy_compatibility_blocker() -> None:
+def test_structured_authoring_mode_authorization_rejects_unapproved_escalation() -> None:
+    final_script, plan, _ = _examples()
+    final_script = copy.deepcopy(final_script)
+    final_script["deck"]["authoring_mode"] = "analytical"
+    plan["authoring_mode"] = "faithful"
+
+    issues = validate_authoring_mode_authorization(final_script, plan)
+
+    assert issues == [
+        "AUTHORING_MODE_NOT_AUTHORIZED: final script requests analytical mode "
+        "without analytical mode in the approved Deck Plan"
+    ]
+
+
+def test_single_semantic_entry_preserves_structured_authorization_blocker() -> None:
     final_script, plan, foundation = _examples()
     final_script = copy.deepcopy(final_script)
     final_script["deck"]["authoring_mode"] = "analytical"
@@ -71,7 +89,7 @@ def test_single_semantic_entry_preserves_legacy_compatibility_blocker() -> None:
     assert isinstance(diagnostics, list)
 
 
-def test_single_semantic_entry_combines_structured_and_legacy_findings() -> None:
+def test_single_semantic_entry_combines_structured_and_compatibility_findings() -> None:
     final_script, plan, foundation = _examples()
     foundation["facts"][1]["argument_duty"] = "response"
     final_script = copy.deepcopy(final_script)
@@ -90,3 +108,104 @@ def test_single_semantic_entry_combines_structured_and_legacy_findings() -> None
         finding["code"] == "EVIDENCE_ROLE_INCOMPATIBLE"
         for finding in diagnostics
     )
+
+
+def test_structured_source_preservation_rejects_changed_single_source_chapter_title() -> None:
+    final_script = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "chapter",
+                "chapter_id": "C01",
+                "title": "改写后的章节名",
+            }
+        ]
+    }
+    plan = {
+        "source_structure_mode": "preserve",
+        "chapters": [
+            {
+                "id": "C01",
+                "source_chapter_ids": ["CH01"],
+            }
+        ],
+    }
+    foundation = {
+        "source_structure": [
+            {
+                "id": "CH01",
+                "title": "第一章 原始章节名",
+            }
+        ]
+    }
+
+    issues = validate_source_structure_preservation(final_script, plan, foundation)
+
+    assert issues == [
+        "slides.0 (P01): source_structure_mode='preserve' requires chapter title "
+        "'原始章节名', got '改写后的章节名'"
+    ]
+
+
+def test_structured_source_preservation_accepts_normalized_source_chapter_title() -> None:
+    final_script = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "chapter",
+                "chapter_id": "C01",
+                "title": "原始章节名",
+            }
+        ]
+    }
+    plan = {
+        "source_structure_mode": "preserve",
+        "chapters": [
+            {
+                "id": "C01",
+                "source_chapter_ids": ["CH01"],
+            }
+        ],
+    }
+    foundation = {
+        "source_structure": [
+            {
+                "id": "CH01",
+                "title": "第一章 原始章节名",
+            }
+        ]
+    }
+
+    assert validate_source_structure_preservation(final_script, plan, foundation) == []
+
+
+def test_source_preservation_is_inactive_without_preserve_mode() -> None:
+    final_script = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "chapter",
+                "chapter_id": "C01",
+                "title": "允许改写",
+            }
+        ]
+    }
+    plan = {
+        "source_structure_mode": "reorganize",
+        "chapters": [
+            {
+                "id": "C01",
+                "source_chapter_ids": ["CH01"],
+            }
+        ],
+    }
+    foundation = {
+        "source_structure": [
+            {
+                "id": "CH01",
+                "title": "第一章 原始章节名",
+            }
+        ]
+    }
+
+    assert validate_source_structure_preservation(final_script, plan, foundation) == []
