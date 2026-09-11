@@ -67,7 +67,11 @@ def _foundation() -> dict:
     }
 
 
-def _legacy_case(full_copy: str) -> tuple[dict, dict, dict]:
+def _legacy_case(
+    full_copy: str,
+    *,
+    onscreen_text: str = "历史兼容内容",
+) -> tuple[dict, dict, dict]:
     final_script = {
         "contract": "cyberppt.final-script",
         "version": "1.0",
@@ -82,7 +86,7 @@ def _legacy_case(full_copy: str) -> tuple[dict, dict, dict]:
                 "title": "实施要求",
                 "source_refs": ["F1"],
                 "full_copy": full_copy,
-                "onscreen": [{"heading": "实施要求", "text": "历史兼容内容"}],
+                "onscreen": [{"heading": "实施要求", "text": onscreen_text}],
             }
         ],
     }
@@ -193,9 +197,45 @@ def test_legacy_v10_exact_date_loss_blocks_but_actor_and_condition_route_to_revi
     assert "项目单位" in by_code["PROTECTED_ACTOR_REVIEW_REQUIRED"].message
 
 
-def test_legacy_v10_typed_protected_payload_passes_when_preserved() -> None:
+def test_legacy_v10_onscreen_omissions_are_review_only_without_provenance() -> None:
+    full_copy = "相关要求自2026年7月1日起施行，由项目单位在经批准后实施。"
     final_script, plan, foundation = _legacy_case(
-        "相关要求自2026年7月1日起施行，由项目单位在经批准后实施。"
+        full_copy,
+        onscreen_text="相关要求进入实施阶段。",
+    )
+
+    diagnostics = collect_protected_payload_diagnostics(
+        final_script,
+        foundation,
+        plan,
+    )
+
+    by_code = {}
+    for finding in diagnostics:
+        by_code.setdefault(finding.code, []).append(finding)
+
+    number = by_code["LEGACY_ONSCREEN_PROTECTED_NUMBER_REVIEW_REQUIRED"][0]
+    assert number.severity == "review_required"
+    assert number.target == "onscreen"
+    assert "2026年7月1日" in number.message
+
+    condition = by_code["PROTECTED_CONDITION_REVIEW_REQUIRED"][0]
+    assert condition.severity == "review_required"
+    assert condition.target == "onscreen"
+
+    actor = by_code["PROTECTED_ACTOR_REVIEW_REQUIRED"][0]
+    assert actor.severity == "review_required"
+    assert actor.target == "onscreen"
+    assert "项目单位" in actor.message
+
+    assert not [finding for finding in diagnostics if finding.severity == "blocking"]
+
+
+def test_legacy_v10_typed_protected_payload_passes_when_preserved() -> None:
+    full_copy = "相关要求自2026年7月1日起施行，由项目单位在经批准后实施。"
+    final_script, plan, foundation = _legacy_case(
+        full_copy,
+        onscreen_text=full_copy,
     )
 
     diagnostics = collect_protected_payload_diagnostics(
