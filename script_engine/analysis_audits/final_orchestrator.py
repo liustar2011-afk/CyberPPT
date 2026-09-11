@@ -35,6 +35,9 @@ from .final_onscreen import (
     _audit_authored_onscreen_contract,
     _audit_self_reading_density,
 )
+from .onscreen_contract_heuristics import (
+    onscreen_contract_colocation_review_findings,
+)
 
 
 _MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
@@ -264,8 +267,14 @@ def audit_final_script(
             _append_governed_finding(issues, warnings, scope, finding)
         for finding in _audit_self_reading_density(delivery_mode, page, slide):
             _append_governed_finding(issues, warnings, scope, finding)
-        for finding in _audit_authored_onscreen_contract(page, slide, items):
-            _append_governed_finding(issues, warnings, scope, finding)
+        if compatibility_mode:
+            warnings.extend(
+                f"{scope}: {finding}"
+                for finding in onscreen_contract_colocation_review_findings(page, items)
+            )
+        else:
+            for finding in _audit_authored_onscreen_contract(page, slide, items):
+                _append_governed_finding(issues, warnings, scope, finding)
         source_consumption_findings = _compatibility_findings(
             _audit_lean_authored_source_consumption(page, slide, items, foundation),
             compatibility_mode=compatibility_mode,
