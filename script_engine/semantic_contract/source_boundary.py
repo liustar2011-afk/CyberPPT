@@ -43,6 +43,17 @@ _SOURCE_TEXT_KEYS = frozenset(
         "meaning",
         "label",
         "text",
+        # Explicit typed payload that can legitimately carry exact source-bound
+        # numbers, dates, actors or formal instrument names. These are Foundation
+        # contract fields, not business vocabulary.
+        "conditions",
+        "condition",
+        "actors",
+        "actor",
+        "protected_literals",
+        "formal_document_name",
+        "document_name",
+        "instrument_name",
     }
 )
 _FINAL_SCALAR_FIELDS = (
@@ -86,9 +97,9 @@ def _source_strings(value: object) -> Iterable[str]:
 
     Field names are structural contract keys, not business vocabulary. Compared
     with legacy composed tracing, this projection also preserves scalar values
-    nested inside an explicit ``value``/text field (for example a numeric value
-    list), so typed Foundation payload cannot be rejected merely because it is
-    represented as an array.
+    nested inside an explicit ``value``/text/typed-protection field (for example
+    a numeric value list or source condition), so typed Foundation payload cannot
+    be rejected merely because it is represented outside the main statement.
     """
 
     if isinstance(value, dict):
@@ -169,7 +180,12 @@ def _refs(value: object) -> tuple[str, ...]:
 def _final_text_fields(
     final_script: dict[str, Any],
 ) -> Iterable[tuple[str, str, str, tuple[str, ...]]]:
-    """Yield ``(slide_id, target, text, source_refs)`` for audience-facing text."""
+    """Yield ``(slide_id, target, text, source_refs)`` for audited Final Script text.
+
+    The field surface intentionally matches the deterministic legacy faithful
+    checker while also supporting v1.1 object-shaped onscreen items. This avoids
+    losing coverage when formal blocker ownership moves out of legacy code.
+    """
 
     for slide_index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
@@ -181,6 +197,17 @@ def _final_text_fields(
             value = slide.get(field)
             if isinstance(value, str) and value.strip():
                 yield slide_id, f"{prefix}.{field}", value, source_refs
+
+        argument = slide.get("argument")
+        if isinstance(argument, dict):
+            for item_index, value in enumerate(argument.get("chain") or []):
+                if isinstance(value, str) and value.strip():
+                    yield (
+                        slide_id,
+                        f"{prefix}.argument.chain[{item_index}]",
+                        value,
+                        source_refs,
+                    )
 
         for module_index, module in enumerate(slide.get("onscreen") or []):
             if not isinstance(module, dict):
