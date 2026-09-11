@@ -2,21 +2,35 @@
 
 本文件是 Stage 01 来源门禁的运行合同。进入 faithful AUTHOR、CRITIQUE、REWRITE、单页实质修订、全稿审计或 Stage02 交付前必须遵守本合同。
 
-## 1. 权威链
+## 1. 事实权威与执行流水线
 
-Stage 01 的事实权威按以下顺序单向传递：
+Stage 01 必须区分“谁对事实负责”和“程序按什么顺序执行”。
 
-```text
-Native Source Unit
-  → Page Source Packet
-  → Foundation
-  → Deck Plan
-  → Final Script
-```
+### 事实权威
 
-Native Source Unit 是最终事实权威。Foundation 用于结构化理解和索引，Deck Plan 用于页面规划，Final Script 是作者输出。低层产物不得反向证明高层事实。
+- **Native Source Unit**：最终事实权威，数字、日期、主体、状态、责任、条件、范围和原文强度最终以其为准；
+- **Foundation**：受 Native Source 约束的结构化语义索引，用于实体、事实、关系、论证和页面规划，不得覆盖或替代原文；
+- **Deck Plan**：页面规划与来源范围权威，决定页面允许消费哪些 Foundation refs；
+- **Final Script**：AUTHOR 输出，必须同时受 Deck Plan 来源边界和 Native Source 事实约束。
 
 Page Source Packet 和 Author Preflight Manifest 是确定性运行证据，不构成新的内容权威。
+
+### 执行流水线
+
+```text
+Native Sources
+  → Source Index
+  → Foundation
+  → Deck Plan
+  → Page Source Packet
+  → Author Preflight
+  → AUTHOR
+  → Final Script
+  → Native-source Fidelity Audit
+  → Stage02
+```
+
+任何下游产物都不能反向证明上游事实；任何派生运行证据也不能升级为新的事实来源。
 
 ## 2. Page Source Packet v2
 
