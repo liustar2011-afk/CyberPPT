@@ -29,6 +29,7 @@ from .parsing import (
     parse_script_path,
     strip_authoring_group_marker,
 )
+from .semantic_adapter import audit_legacy_script_semantics
 from .severity import normalize_public_issue_severity
 from .source_coverage import normalized_tokens, text_similarity
 
@@ -48,11 +49,7 @@ def audit_script_semantic_contract(
 
     This is the explicit Phase 4 migration entry. ``audit_script_quality`` keeps
     its historical default behavior until callers opt in project by project.
-    Import the adapter lazily so the legacy package can continue supplying helper
-    modules to ``script_engine`` without creating an import cycle.
     """
-
-    from .semantic_adapter import audit_legacy_script_semantics
 
     return audit_legacy_script_semantics(script, outline, source_truth)
 
