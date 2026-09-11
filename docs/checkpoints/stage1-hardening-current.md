@@ -5,33 +5,25 @@ PR：#34
 
 ## 已完成
 
-当前完成到批次 `5B`。
+当前完成到批次 `5C / 子步骤 1`。
 
-- Stage1 hardening 在上一轮 CI 中新增回归已清零；当前仅保留 3 个已确认的 `main` 基线失败。
-- Author Preflight v2 已提供逐页 `packet_sha256 + source_refs + unit_ids` 三元 lineage。
-- `contracts/final-script.schema.json` 新增独立的页面级 `source_provenance`，与既有 onscreen module provenance 分层管理。
-- 每个 `content` 页面现在强制要求：
-  - `packet_sha256`：64 位 SHA-256；
-  - `source_refs`：非空、唯一；
-  - `unit_ids`：非空、唯一。
-- 非 `content` 的结构页明确禁止携带 `source_provenance`，避免伪造来源链。
-- 新增 `script_engine/final_source_provenance.py`，提供纯语义校验：
-  - Final Script packet hash 必须与 Author Preflight 一致；
-  - provenance source refs 必须同时与 slide `source_refs`、Preflight `source_refs` 一致；
-  - provenance unit ids 必须与 Preflight `unit_ids` 一致；
-  - Preflight 页面缺失或 gate 非 passed 时直接阻断；
-  - 结构页携带 lineage 直接报错。
-- 新增 `tests/script_engine/test_final_source_provenance.py`，覆盖 schema 强制、结构页禁止、正常匹配和四类 drift。
+- Final Script 正式 examples 已补充页面级 `source_provenance` 结构示例。
+- 新增 `source_provenance_for_page()`，AUTHOR / 测试只能从 passed Author Preflight 页面投影标准 lineage：`packet_sha256 + source_refs + unit_ids`。
+- `audit-final` 已在 Author Preflight Gate 通过后继续执行 `validate_final_source_provenance()`，来源链漂移进入 blocking issues。
+- `audit-final` 报告新增 `source_provenance_issues`，来源门禁与原有 semantic audit 分层呈现。
+- `render-stage02` 已在 schema 校验后、lint 和 Markdown 写出前强制执行同一 provenance 校验。
+- provenance 不一致时 `render-stage02` 返回 `kind=final-source-provenance` 并拒绝输出文件。
+- 端到端 Gate fixture 已迁移：Preflight 生成后由 `source_provenance_for_page()` 把真实 packet hash / unit ids 写入 Final Script。
+- 新增 Stage02 lineage drift 测试：Final Script 将 `SU-001` 篡改为 `SU-999` 时必须阻断。
 
 ## 下一步
 
-批次 `5C`：迁移正式 Final Script 产物并接入运行门禁。
+批次 `5C / 子步骤 2`：迁移现有 render / audit fixtures 并清理 provenance 契约回归。
 
 计划：
 
-1. 迁移仓库 `examples/final-script*.json`，使正式示例具备 `source_provenance`；
-2. 根据最新 CI 结果迁移测试 fixtures 中的内容页来源链，不增加兼容逻辑；
-3. `audit-final` 在 Author Preflight Gate 通过后执行 `validate_final_source_provenance()`；
-4. `render-stage02` 在写出 Markdown 前强制执行同一 provenance 校验；
-5. Gate report 暴露当前经过复核的 Manifest 页面 lineage，避免下游自行拼接证据；
-6. 完成迁移后重新运行 PR Actions，要求本分支新增失败再次归零。
+1. `tests/script_engine/test_cli.py` 的 render 正向输入改为动态注入当前 Preflight provenance；
+2. `tests/script_engine/test_quality_policy_cli_integration.py` 同步迁移；
+3. 读取 PR #34 最新 CI，定位所有因内容页缺 `source_provenance` 引起的新失败；
+4. 逐项迁移正式 fixtures / tests，不增加 schema fallback 或自动兜底；
+5. 本分支新增失败归零后，5C 完成并进入 Native-source Fidelity Audit。
