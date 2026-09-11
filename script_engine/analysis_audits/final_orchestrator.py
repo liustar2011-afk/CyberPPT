@@ -137,7 +137,9 @@ def audit_final_script(
     *,
     compatibility_mode: bool = False,
 ) -> tuple[list[str], list[str]]:
-    issues: list[str] = audit_final_internal_expert_voice(final_script, plan)
+    issues: list[str] = (
+        [] if compatibility_mode else audit_final_internal_expert_voice(final_script, plan)
+    )
     warnings: list[str] = []
     composed_trace = trace_composed(final_script, foundation)
     if compatibility_mode:
