@@ -53,6 +53,8 @@ _MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
         "AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST",
         "AUTHOR_ONSCREEN_CONDITION_LOST",
         "AUTHOR_ONSCREEN_RESPONSIBILITY_LOST",
+        "AUTHOR_STRUCTURAL_METADATA_LEAK",
+        "AUTHOR_ONSCREEN_TABLE_FRAGMENT",
         "FAITHFUL_NUMBER_ADDED",
         "FAITHFUL_FORMAL_INSTRUMENT_ADDED",
     }
@@ -322,13 +324,17 @@ def audit_final_script(
                 scope,
                 f"ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: {detail_issue}",
             )
-        for finding in _author_execution_issues(
-            delivery_mode,
-            page,
-            slide,
-            items,
-            authoring_mode=final_authoring_mode,
-        ):
+        author_execution_findings = _compatibility_findings(
+            _author_execution_issues(
+                delivery_mode,
+                page,
+                slide,
+                items,
+                authoring_mode=final_authoring_mode,
+            ),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in author_execution_findings:
             _append_governed_finding(issues, warnings, scope, finding)
         warnings.extend(
             f"{scope}: {warning}"
