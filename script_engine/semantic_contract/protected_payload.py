@@ -95,13 +95,7 @@ def _scalar_text(value: object) -> str:
 
 
 def _number_literals(index: FoundationIndex, ref: str) -> tuple[str, ...]:
-    """Return exact display literals from one typed Foundation number record.
-
-    Semantic unit labels such as ``时间`` describe the value and are not literal
-    suffixes. Physical/business units such as ``年``、``%``、``万元`` remain part
-    of the protected visible value. List-valued records preserve each explicit
-    member without inventing a combined representation.
-    """
+    """Return canonical exact display literals from one typed number record."""
 
     record = index.record(ref)
     if record is None:
@@ -114,7 +108,6 @@ def _number_literals(index: FoundationIndex, ref: str) -> tuple[str, ...]:
         number = _scalar_text(raw)
         if not number:
             continue
-        literals.append(number)
         if (
             not isinstance(raw_value, list)
             and unit
@@ -122,7 +115,19 @@ def _number_literals(index: FoundationIndex, ref: str) -> tuple[str, ...]:
             and not number.endswith(unit)
         ):
             literals.append(f"{number}{unit}")
+        else:
+            literals.append(number)
     return tuple(dict.fromkeys(literals))
+
+
+def _legacy_onscreen_text(slide: dict[str, Any]) -> str:
+    return "\n".join(
+        value
+        for module in slide.get("onscreen") or []
+        if isinstance(module, dict)
+        for value in (_module_text(module),)
+        if value
+    )
 
 
 def _legacy_slide_protected_payload_diagnostics(
@@ -132,10 +137,10 @@ def _legacy_slide_protected_payload_diagnostics(
 ) -> list[SemanticDiagnostic]:
     """Project typed payload checks onto a provenance-less Final Script 1.0.
 
-    The projection deliberately uses only explicit slide/page refs and typed
-    Foundation fields. Exact number/date loss is deterministic. Conditions and
-    actors can be paraphrased or inherited, so absence of the literal is a review
-    finding rather than a blocker.
+    Exact typed values missing from complete copy remain deterministic. On-screen
+    compression has no provenance in 1.0, so omission there is review-only.
+    Conditions and actors can also be paraphrased or inherited and therefore route
+    to review rather than becoming lexical blockers.
     """
 
     plan = plan if isinstance(plan, dict) else {}
@@ -164,6 +169,7 @@ def _legacy_slide_protected_payload_diagnostics(
             )
         )
         full_copy = _text(slide.get("full_copy"))
+        onscreen = _legacy_onscreen_text(slide)
 
         for ref in usable_refs:
             record = index.record(ref)
@@ -173,58 +179,100 @@ def _legacy_slide_protected_payload_diagnostics(
 
             for number_ref in _refs(payload.get("number_refs")):
                 for literal in _number_literals(index, number_ref):
-                    if _contains(full_copy, literal):
-                        continue
+                    if not _contains(full_copy, literal):
+                        diagnostics.append(
+                            SemanticDiagnostic(
+                                code="PROTECTED_NUMBER_MISSING",
+                                message=(
+                                    "legacy slide full_copy does not preserve exact "
+                                    f"number/date {literal!r}"
+                                ),
+                                slide_id=slide_id,
+                                target="full_copy",
+                                severity="blocking",
+                                evidence_refs=(ref,),
+                                relation="preserves",
+                            )
+                        )
+                    elif not _contains(onscreen, literal):
+                        diagnostics.append(
+                            SemanticDiagnostic(
+                                code="LEGACY_ONSCREEN_PROTECTED_NUMBER_REVIEW_REQUIRED",
+                                message=(
+                                    f"legacy onscreen copy omits typed number/date {literal!r}; "
+                                    "1.0 has no module provenance, so compression requires review"
+                                ),
+                                slide_id=slide_id,
+                                target="onscreen",
+                                severity="review_required",
+                                evidence_refs=(ref,),
+                                relation="preserves",
+                            )
+                        )
+
+            for condition in index.conditions(ref):
+                if not _contains(full_copy, condition):
                     diagnostics.append(
                         SemanticDiagnostic(
-                            code="PROTECTED_NUMBER_MISSING",
+                            code="PROTECTED_CONDITION_REVIEW_REQUIRED",
                             message=(
-                                f"legacy slide full_copy does not preserve exact number/date "
-                                f"{literal!r}"
+                                f"condition {condition!r} is not present verbatim in legacy "
+                                "full_copy; semantic preservation requires review"
                             ),
                             slide_id=slide_id,
                             target="full_copy",
-                            severity="blocking",
+                            severity="review_required",
+                            evidence_refs=(ref,),
+                            relation="preserves",
+                        )
+                    )
+                elif not _contains(onscreen, condition):
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            code="PROTECTED_CONDITION_REVIEW_REQUIRED",
+                            message=(
+                                f"condition {condition!r} is omitted from legacy onscreen copy; "
+                                "compression without module provenance requires review"
+                            ),
+                            slide_id=slide_id,
+                            target="onscreen",
+                            severity="review_required",
                             evidence_refs=(ref,),
                             relation="preserves",
                         )
                     )
 
-            for condition in index.conditions(ref):
-                if _contains(full_copy, condition):
-                    continue
-                diagnostics.append(
-                    SemanticDiagnostic(
-                        code="PROTECTED_CONDITION_REVIEW_REQUIRED",
-                        message=(
-                            f"condition {condition!r} is not present verbatim in legacy "
-                            "full_copy; semantic preservation requires review"
-                        ),
-                        slide_id=slide_id,
-                        target="full_copy",
-                        severity="review_required",
-                        evidence_refs=(ref,),
-                        relation="preserves",
-                    )
-                )
-
             for actor in index.actors(ref):
-                if _contains(full_copy, actor):
-                    continue
-                diagnostics.append(
-                    SemanticDiagnostic(
-                        code="PROTECTED_ACTOR_REVIEW_REQUIRED",
-                        message=(
-                            f"actor {actor!r} is not present verbatim in legacy full_copy; "
-                            "alias or inherited-subject preservation requires review"
-                        ),
-                        slide_id=slide_id,
-                        target="full_copy",
-                        severity="review_required",
-                        evidence_refs=(ref,),
-                        relation="preserves",
+                if not _contains(full_copy, actor):
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            code="PROTECTED_ACTOR_REVIEW_REQUIRED",
+                            message=(
+                                f"actor {actor!r} is not present verbatim in legacy full_copy; "
+                                "alias or inherited-subject preservation requires review"
+                            ),
+                            slide_id=slide_id,
+                            target="full_copy",
+                            severity="review_required",
+                            evidence_refs=(ref,),
+                            relation="preserves",
+                        )
                     )
-                )
+                elif not _contains(onscreen, actor):
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            code="PROTECTED_ACTOR_REVIEW_REQUIRED",
+                            message=(
+                                f"actor {actor!r} is omitted from legacy onscreen copy; alias "
+                                "or inherited-subject preservation requires review"
+                            ),
+                            slide_id=slide_id,
+                            target="onscreen",
+                            severity="review_required",
+                            evidence_refs=(ref,),
+                            relation="preserves",
+                        )
+                    )
 
     return diagnostics
 
