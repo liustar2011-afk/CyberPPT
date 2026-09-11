@@ -428,6 +428,15 @@
       "confidence": "low",
       "owner": "script_engine.analysis_audits.final_fidelity",
       "severity_rationale": "Obligation regexes can identify review candidates but cannot prove modality strengthening without typed source semantics."
+    },
+    {
+      "code": "FAITHFUL_OUTSIDE_NARRATOR",
+      "kind": "semantic_heuristic",
+      "severity": "warning",
+      "scope": "faithful_source_fidelity",
+      "confidence": "low",
+      "owner": "script_engine.analysis_audits.final_fidelity",
+      "severity_rationale": "Fixed outside-narrator phrases can flag a possible voice shift but cannot prove that an equivalent source-facing formulation is semantically invalid."
     }
   ]
 }
