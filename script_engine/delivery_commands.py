@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from .author_preflight import author_preflight_gate_report
+from .author_preflight import author_preflight_gate_report, load_page_source_packets
 from .contracts import (
     check_declared_count,
     load_json,
@@ -12,6 +12,7 @@ from .contracts import (
     validate_final_script,
 )
 from .final_source_provenance import validate_final_source_provenance
+from .native_source_fidelity import native_source_fidelity_issues
 from .render import render_stage02_markdown
 from .text_io import write_text_lf
 
@@ -62,7 +63,7 @@ def render_stage02_delivery(
     foundation_path: Path,
     final_lint_findings: FinalLintFindings,
 ) -> tuple[str | None, dict | None, int]:
-    """Validate Stage1 gate, Final Script lineage/lint, then write Stage02 Markdown."""
+    """Validate Stage1 gate, native fidelity, Final Script lineage/lint, then render."""
 
     preflight_report, preflight_exit = author_preflight_gate_report(
         plan_path,
@@ -96,6 +97,25 @@ def render_stage02_delivery(
                 "kind": "final-source-provenance",
                 "status": "failed",
                 "issues": provenance_issues,
+            },
+            1,
+        )
+
+    packets, _packet_paths, loader_issues = load_page_source_packets(
+        foundation_path.parent / ".cache" / "page-source"
+    )
+    native_fidelity_issues = [
+        f"NATIVE_SOURCE_PACKET_LOAD: {issue}" for issue in loader_issues
+    ]
+    native_fidelity_issues += native_source_fidelity_issues(payload, packets)
+    native_fidelity_issues = list(dict.fromkeys(native_fidelity_issues))
+    if native_fidelity_issues:
+        return (
+            None,
+            {
+                "kind": "native-source-fidelity",
+                "status": "failed",
+                "issues": native_fidelity_issues,
             },
             1,
         )
