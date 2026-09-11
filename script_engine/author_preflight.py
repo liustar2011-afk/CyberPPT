@@ -15,8 +15,8 @@ from .source_freshness import (
 from .text_io import write_text_lf
 
 
-AUTHOR_PREFLIGHT_SCHEMA = "cyberppt.author_preflight.v1"
-AUTHOR_PREFLIGHT_BUILDER_VERSION = "stage1-author-preflight-v1"
+AUTHOR_PREFLIGHT_SCHEMA = "cyberppt.author_preflight.v2"
+AUTHOR_PREFLIGHT_BUILDER_VERSION = "stage1-author-preflight-v2"
 _PAGE_STATUSES = ("passed", "blocked", "missing", "stale", "not_applicable")
 
 
@@ -28,20 +28,29 @@ def _source_refs(page: Mapping[str, Any]) -> list[str]:
     return [_text(value) for value in page.get("source_refs") or [] if _text(value)]
 
 
-def _exact_source_available(packet: Mapping[str, Any]) -> bool:
+def _resolved_unit_ids(packet: Mapping[str, Any]) -> list[str] | None:
+    """Return stable, de-duplicated exact unit ids or ``None`` for invalid evidence."""
+
     evidence = packet.get("evidence")
     if not isinstance(evidence, list) or not evidence:
-        return False
+        return None
+
+    unit_ids: list[str] = []
     for item in evidence:
         if not isinstance(item, Mapping):
-            return False
+            return None
         exact_units = item.get("exact_source_units")
         if not isinstance(exact_units, list) or not exact_units:
-            return False
+            return None
         for unit in exact_units:
             if not isinstance(unit, Mapping) or not _text(unit.get("text")):
-                return False
-    return True
+                return None
+            unit_id = _text(unit.get("unit_id"))
+            if not unit_id:
+                return None
+            if unit_id not in unit_ids:
+                unit_ids.append(unit_id)
+    return unit_ids or None
 
 
 def load_page_source_packets(
@@ -97,8 +106,8 @@ def build_author_preflight(
 
     Pages without source refs are structural and therefore ``not_applicable``.
     Every page with source refs must have one fresh, passed v2 Page Source Packet
-    whose page id, authoring mode, source refs, and exact evidence all agree with
-    the current upstream inputs.
+    whose page id, authoring mode, source refs, exact evidence and resolved unit
+    lineage all agree with the current upstream inputs.
     """
 
     authoring_mode = _text(deck_plan.get("authoring_mode")) or "faithful"
@@ -118,6 +127,7 @@ def build_author_preflight(
             "page_id": page_id,
             "page_role": _text(page.get("page_role")),
             "source_refs": refs,
+            "unit_ids": [],
             "gate_status": "not_applicable" if not refs else "missing",
             "freshness": "not_applicable" if not refs else "missing",
             "exact_source_status": "not_applicable" if not refs else "unavailable",
@@ -172,8 +182,10 @@ def build_author_preflight(
             result["gate_status"] = "blocked"
             result["issues"].append("AUTHOR_PREFLIGHT_PACKET_BLOCKED")
 
-        if _exact_source_available(packet):
+        unit_ids = _resolved_unit_ids(packet)
+        if unit_ids is not None:
             result["exact_source_status"] = "available"
+            result["unit_ids"] = unit_ids
         else:
             result["gate_status"] = "blocked"
             result["exact_source_status"] = "unavailable"
@@ -284,6 +296,7 @@ def validate_author_preflight_gate(
     else:
         compared_fields = (
             "source_refs",
+            "unit_ids",
             "gate_status",
             "freshness",
             "exact_source_status",
