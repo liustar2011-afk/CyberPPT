@@ -8,6 +8,7 @@ from script_engine.audit_reports import final_audit_report
 from script_engine.semantic_contract import (
     audit_final_script_semantic_contract,
     validate_authoring_mode_authorization,
+    validate_relationship_shape,
     validate_source_structure_preservation,
 )
 
@@ -108,6 +109,41 @@ def test_single_semantic_entry_combines_structured_and_compatibility_findings() 
         finding["code"] == "EVIDENCE_ROLE_INCOMPATIBLE"
         for finding in diagnostics
     )
+
+
+def test_structured_relationship_shape_rejects_missing_endpoint() -> None:
+    final_script = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "relationships": [
+                    {"from": "数据输入", "relation": "支撑"},
+                ],
+            }
+        ]
+    }
+
+    assert validate_relationship_shape(final_script) == [
+        "slides.0 (P01): AUTHOR_RELATIONSHIP_NOT_MATERIALIZED: "
+        "relationships[0] is missing ['to']"
+    ]
+
+
+def test_structured_relationship_shape_accepts_complete_edge() -> None:
+    final_script = {
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "relationships": [
+                    {"from": "数据输入", "to": "服务输出", "relation": "支撑"},
+                ],
+            }
+        ]
+    }
+
+    assert validate_relationship_shape(final_script) == []
 
 
 def test_structured_source_preservation_rejects_changed_single_source_chapter_title() -> None:
