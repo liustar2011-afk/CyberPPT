@@ -77,12 +77,7 @@ jobs:
 
   officecli-smoke:
     name: OfficeCLI render smoke
-    # Keep the vendor-binary render lane on a stable hosted image. OfficeCLI
-    # 1.0.148's HTML/render path regressed on the 2026-09-07 ubuntu-24.04 image
-    # with a System.Private.Xml assembly-load failure, while the same pinned
-    # binary passed this repository's full render smoke on the prior image.
-    # Main Python tests continue to use ubuntu-latest.
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
