@@ -11,6 +11,8 @@ from .analysis_audit import (
     audit_foundation_analysis,
     validate_source_index_coverage,
 )
+from .audit_reports import final_audit_report
+from .author_preflight import author_preflight_gate_report, author_preflight_report
 from .contracts import (
     check_declared_count,
     load_json,
@@ -63,12 +65,93 @@ def _artifact_report(path: Path, kind: str) -> dict:
     return entry
 
 
+def _artifact_state(entry: dict) -> str:
+    if not entry.get("exists"):
+        return "missing"
+    return "passed" if entry.get("valid") else "failed"
+
+
+def _source_index_report(path: Path) -> dict:
+    report: dict = {
+        "path": str(path),
+        "exists": path.exists(),
+        "updated": _mtime(path),
+        "status": "missing",
+    }
+    if not path.exists():
+        return report
+    try:
+        payload = load_json(path)
+    except Exception as error:
+        report["status"] = "failed"
+        report["issues"] = [str(error)]
+        return report
+    if payload.get("schema") != "cyberppt.source_index.v2":
+        report["status"] = "failed"
+        report["issues"] = ["SOURCE_INDEX_SCHEMA_INVALID: expected cyberppt.source_index.v2"]
+        return report
+    report["status"] = "passed"
+    return report
+
+
+def _author_preflight_status(
+    plan_path: Path,
+    foundation_path: Path,
+    source_index_path: Path,
+    *,
+    upstream_ready: bool,
+) -> dict:
+    manifest_path = foundation_path.parent / ".cache" / "author-preflight.json"
+    packet_dir = foundation_path.parent / ".cache" / "page-source"
+    status: dict = {
+        "manifest": str(manifest_path),
+        "manifest_exists": manifest_path.is_file(),
+        "packet_dir": str(packet_dir),
+        "status": "not_run" if not upstream_ready else "blocked",
+        "pages": [],
+        "issues": [],
+    }
+    if not upstream_ready:
+        return status
+
+    current, _current_exit = author_preflight_report(
+        plan_path,
+        foundation_path,
+        source_index_path=source_index_path,
+        packet_dir=packet_dir,
+    )
+    if current.get("schema") == "cyberppt.author_preflight.v2":
+        status["current_summary"] = current.get("summary") or {}
+        status["pages"] = current.get("pages") or []
+        if current.get("issues"):
+            status["current_issues"] = current.get("issues")
+    else:
+        status["current_status"] = current.get("status", "blocked")
+        status["current_issues"] = current.get("issues") or []
+
+    gate_report, gate_exit = author_preflight_gate_report(
+        plan_path,
+        foundation_path,
+        source_index_path=source_index_path,
+        packet_dir=packet_dir,
+        manifest_path=manifest_path,
+    )
+    status["issues"] = gate_report.get("issues") or []
+    if gate_exit == 0:
+        status["status"] = "passed"
+    elif not manifest_path.is_file():
+        status["status"] = "missing"
+    else:
+        status["status"] = "blocked"
+    return status
+
+
 def build_project_status(
     project_dir: Path,
     *,
     final_lint_findings: FinalLintFindings,
 ) -> dict:
-    """Build the existing CLI status payload without performing presentation I/O."""
+    """Build project status from current Stage1 artifacts and hard gates."""
 
     script_dir = project_dir / "script"
     uses_repository_layout = any(
@@ -106,6 +189,7 @@ def build_project_status(
     foundation = _artifact_report(foundation_path, "foundation")
     plan = _artifact_report(plan_path, "plan")
     final = _artifact_report(final_path, "final")
+    source_index = _source_index_report(source_index_path)
     analysis: dict = {}
 
     if foundation.get("valid"):
@@ -115,10 +199,10 @@ def build_project_status(
             project_profile_for_foundation(foundation_path) not in {"strict", "legacy"}
             and source_index_path.exists()
         ):
-            source_index = load_json(source_index_path)
-            if source_index.get("schema") == "cyberppt.source_index.v2":
+            indexed_payload = load_json(source_index_path)
+            if indexed_payload.get("schema") == "cyberppt.source_index.v2":
                 foundation_issues.extend(
-                    validate_script_foundation_against_index(foundation_payload, source_index)
+                    validate_script_foundation_against_index(foundation_payload, indexed_payload)
                 )
                 foundation_issues = list(dict.fromkeys(foundation_issues))
         analysis["foundation"] = {
@@ -137,6 +221,18 @@ def build_project_status(
             "issues": plan_issues,
             "warnings": plan_warnings,
         }
+
+    upstream_ready = bool(
+        foundation.get("valid")
+        and plan.get("valid")
+        and source_index.get("status") == "passed"
+    )
+    preflight = _author_preflight_status(
+        plan_path,
+        foundation_path,
+        source_index_path,
+        upstream_ready=upstream_ready,
+    )
 
     if final.get("exists") and final.get("valid"):
         payload = load_json(final_path)
@@ -175,6 +271,34 @@ def build_project_status(
             if index_issues:
                 final["source_index_issues"] = index_issues
 
+    final_audit: dict = {"status": "not_run", "issues": []}
+    if final.get("valid") and foundation.get("valid") and plan.get("valid"):
+        report, audit_exit = final_audit_report(final_path, plan_path, foundation_path)
+        final_audit = {
+            "status": "passed" if audit_exit == 0 else "failed",
+            "issues": report.get("issues") or [],
+            "source_provenance_issues": report.get("source_provenance_issues") or [],
+            "native_source_fidelity_issues": report.get("native_source_fidelity_issues") or [],
+        }
+
+    stage1 = {
+        "source_index": source_index,
+        "foundation": {
+            "status": _artifact_state(foundation),
+            "analysis_status": analysis.get("foundation", {}).get("status", "not_run"),
+        },
+        "deck_plan": {
+            "status": _artifact_state(plan),
+            "analysis_status": analysis.get("plan", {}).get("status", "not_run"),
+        },
+        "author_preflight": preflight,
+        "final_script": {
+            "status": _artifact_state(final),
+            "lint": final.get("lint", "not_run"),
+        },
+        "final_audit": final_audit,
+    }
+
     if not project_dir.exists():
         stage = "项目目录不存在"
     elif not sources:
@@ -191,30 +315,29 @@ def build_project_status(
         stage = "deck-plan.json 校验未通过，需要修复"
     elif analysis.get("plan", {}).get("status") == "failed":
         stage = "deck-plan.json 源结构/语义边界审计未通过，需要修复"
+    elif preflight.get("status") != "passed":
+        stage = "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
     elif not final["exists"]:
-        stage = "脚本规划待确认 / 待写作：deck-plan.json 已就绪，尚未生成最终脚本"
+        stage = "Stage1 Author Preflight 已通过，待写作最终脚本"
     elif not final.get("valid"):
         stage = "final-script.json 校验未通过，需要修复"
     elif final.get("lint") == "failed":
         stage = "最终脚本文件已就绪，但语言风格/结构/交付清洁度检查未通过，需要修复"
-    elif analysis.get("final", {}).get("status") == "failed":
-        stage = "最终脚本文件已就绪，但 PLAN→AUTHOR 语义继承审计未通过，需要修复"
+    elif final_audit.get("status") == "failed":
+        stage = "最终脚本文件已就绪，但 Stage1 最终审计未通过，不得进入 Stage02"
     else:
-        stage = "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"
+        stage = "最终脚本文件已就绪，Stage1 确定性门禁与最终审计通过，可进入 Stage02"
 
     return {
         "project": str(project_dir.resolve()),
         "stage": stage,
         "sources": sources,
-        "source_index": {
-            "path": str(source_index_path),
-            "exists": source_index_path.exists(),
-            "updated": _mtime(source_index_path),
-        },
+        "source_index": source_index,
         "foundation": foundation,
         "deck_plan": plan,
         "analysis_audit": analysis,
         "final_script": final,
+        "stage1": stage1,
     }
 
 
