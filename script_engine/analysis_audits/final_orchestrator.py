@@ -55,6 +55,7 @@ _MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
         "AUTHOR_ONSCREEN_RESPONSIBILITY_LOST",
         "AUTHOR_STRUCTURAL_METADATA_LEAK",
         "AUTHOR_ONSCREEN_TABLE_FRAGMENT",
+        "ONSCREEN_SELF_READ_PAYLOAD_MISSING",
         "FAITHFUL_NUMBER_ADDED",
         "FAITHFUL_FORMAL_INSTRUMENT_ADDED",
     }
@@ -276,7 +277,11 @@ def audit_final_script(
                 authoring_mode=final_authoring_mode,
             ):
                 _append_governed_finding(issues, warnings, scope, finding)
-        for finding in _audit_self_reading_density(delivery_mode, page, slide):
+        self_read_findings = _compatibility_findings(
+            _audit_self_reading_density(delivery_mode, page, slide),
+            compatibility_mode=compatibility_mode,
+        )
+        for finding in self_read_findings:
             _append_governed_finding(issues, warnings, scope, finding)
         if compatibility_mode:
             warnings.extend(
