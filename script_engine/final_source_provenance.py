@@ -1,4 +1,4 @@
-"""Final Script page lineage validation against Author Preflight."""
+"""Final Script page lineage projection and validation against Author Preflight."""
 from __future__ import annotations
 
 from typing import Any, Mapping
@@ -23,6 +23,31 @@ def _preflight_pages(manifest: Mapping[str, Any]) -> dict[str, Mapping[str, Any]
         if page_id:
             pages[page_id] = item
     return pages
+
+
+def source_provenance_for_page(
+    preflight_manifest: Mapping[str, Any],
+    page_id: str,
+) -> dict[str, Any]:
+    """Project the only valid Final Script lineage payload for one passed page."""
+
+    page = _preflight_pages(preflight_manifest).get(_text(page_id))
+    if page is None:
+        raise ValueError(f"AUTHOR_PREFLIGHT_PAGE_MISSING: {page_id}")
+    if page.get("gate_status") != "passed":
+        raise ValueError(f"AUTHOR_PREFLIGHT_PAGE_NOT_PASSED: {page_id}")
+
+    packet_sha256 = _text(page.get("packet_sha256"))
+    source_refs = _strings(page.get("source_refs"))
+    unit_ids = _strings(page.get("unit_ids"))
+    if not packet_sha256 or not source_refs or not unit_ids:
+        raise ValueError(f"AUTHOR_PREFLIGHT_LINEAGE_INCOMPLETE: {page_id}")
+
+    return {
+        "packet_sha256": packet_sha256,
+        "source_refs": source_refs,
+        "unit_ids": unit_ids,
+    }
 
 
 def validate_final_source_provenance(
@@ -79,4 +104,4 @@ def validate_final_source_provenance(
     return list(dict.fromkeys(issues))
 
 
-__all__ = ["validate_final_source_provenance"]
+__all__ = ["source_provenance_for_page", "validate_final_source_provenance"]
