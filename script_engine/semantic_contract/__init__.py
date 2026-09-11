@@ -23,6 +23,7 @@ from .provenance_markdown import (
     provenance_records,
     render_provenance_markdown,
 )
+from .source_structure import validate_source_structure_preservation
 
 __all__ = [
     "FoundationIndex",
@@ -43,4 +44,5 @@ __all__ = [
     "validate_authoring_mode_authorization",
     "validate_final_script_provenance",
     "validate_provenance_compatibility",
+    "validate_source_structure_preservation",
 ]
