@@ -2,7 +2,8 @@
 
 A Page Source Packet is runtime context, not a fourth semantic authority. It
 resolves a Deck Plan page's Foundation refs back to exact ``source-index.v2``
-units so AUTHOR does not draft precise faithful copy from long-mode previews.
+units so AUTHOR never drafts faithful copy from summaries or incomplete source
+bindings.
 """
 from __future__ import annotations
 
@@ -124,11 +125,10 @@ def build_page_source_packet(
 ) -> dict[str, Any]:
     """Resolve one Deck Plan page to exact source units and protected payload.
 
-    The returned packet is intentionally derived and disposable. Its ``authority``
-    field documents that Foundation, Deck Plan and source files remain authoritative.
-    Unknown page refs are blocking issues; missing exact source-unit bindings are
-    warnings because strict/legacy or compatibility Foundations may use another
-    source-reference namespace.
+    Faithful authoring requires complete exact-source resolution for every cited
+    Foundation item. Unknown refs, missing source-unit bindings, unresolved refs,
+    and partially resolved refs are all blocking issues. Foundation text remains
+    useful context, but it is never a fallback factual authority for AUTHOR.
     """
 
     items, kinds = _foundation_items(foundation)
@@ -178,7 +178,9 @@ def build_page_source_packet(
                     }
                 )
                 continue
-            issues.append(f"PAGE_SOURCE_REF_UNKNOWN: page source ref '{ref}' is not in Foundation or source index")
+            issues.append(
+                f"PAGE_SOURCE_REF_UNKNOWN: page source ref '{ref}' is not in Foundation or source index"
+            )
             continue
 
         source_refs = _source_unit_refs(item)
@@ -200,17 +202,17 @@ def build_page_source_packet(
                 }
             )
 
-        if source_refs and not exact_units:
-            warnings.append(
+        if not source_refs:
+            issues.append(
+                f"PAGE_SOURCE_UNIT_BINDING_MISSING: {ref} has no source-unit refs"
+            )
+        elif not exact_units:
+            issues.append(
                 f"PAGE_SOURCE_EXACT_TEXT_UNRESOLVED: {ref} has source refs {source_refs} but none resolve in source-index.v2"
             )
         elif unresolved:
-            warnings.append(
+            issues.append(
                 f"PAGE_SOURCE_EXACT_TEXT_PARTIAL: {ref} has unresolved source refs {unresolved}"
-            )
-        elif not source_refs:
-            warnings.append(
-                f"PAGE_SOURCE_UNIT_BINDING_MISSING: {ref} has no source-unit refs; AUTHOR can use Foundation text but exact source text is unavailable"
             )
 
         evidence.append(
@@ -236,7 +238,7 @@ def build_page_source_packet(
         "authoring_mode": _text(page.get("authoring_mode")) or "faithful",
         "page_source_refs": page_refs,
         "evidence": evidence,
-        "status": "passed" if not issues else "rewrite_required",
+        "status": "passed" if not issues else "blocked",
         "issues": issues,
         "warnings": warnings,
     }
