@@ -96,9 +96,11 @@ def build_parser(validation_kinds: Iterable[str]) -> argparse.ArgumentParser:
 
     render = sub.add_parser(
         "render-stage02",
-        help="Render a lint-passing, Stage 02-compatible Markdown boundary",
+        help="Render a lint-passing Stage 02 boundary only after Stage 01 author preflight passes",
     )
     render.add_argument("input")
+    render.add_argument("--plan", required=True)
+    render.add_argument("--foundation", required=True)
     render.add_argument("--output", default="dist/final-script.md")
 
     check_refs = sub.add_parser(
