@@ -7,6 +7,30 @@ from typing import Any
 from cyberppt.semantic_group_review import source_colocation_grouping_mismatch
 
 from .common_primitives import _item_text
+from .final_authoring_expression import _evidence_first_item_hierarchy_issues
+
+
+def onscreen_composition_hierarchy_review_findings(
+    page: dict[str, Any],
+    slide: dict[str, Any],
+) -> list[str]:
+    """Keep lead-like first-item detection as review-only.
+
+    Whether a proposition-shaped first item is a synthesized lead or a legitimate
+    source-native peer cannot be established by length/predicate patterns.  The
+    explicit lead-text policy is enforced by semantic_contract; this helper keeps
+    only the historical lexical discovery signal for Critic.
+    """
+
+    composition = page.get("onscreen_composition")
+    if not isinstance(composition, dict) or composition.get("mode") != "evidence_first":
+        return []
+    slide_id = str(slide.get("id") or page.get("id") or "?")
+    findings: list[str] = []
+    for module in slide.get("onscreen") or []:
+        if isinstance(module, dict):
+            findings.extend(_evidence_first_item_hierarchy_issues(slide_id, module))
+    return findings
 
 
 def onscreen_contract_colocation_review_findings(
@@ -55,4 +79,7 @@ def onscreen_contract_colocation_review_findings(
     return findings
 
 
-__all__ = ["onscreen_contract_colocation_review_findings"]
+__all__ = [
+    "onscreen_composition_hierarchy_review_findings",
+    "onscreen_contract_colocation_review_findings",
+]
