@@ -6,22 +6,15 @@ from pathlib import Path
 
 from .contracts import load_json
 from .page_source_packet import build_page_source_packet
-from .source_freshness import (
-    PAGE_SOURCE_BUILDER_VERSION,
-    PAGE_SOURCE_PACKET_SCHEMA,
-    build_input_fingerprints,
-    utc_now_iso,
-)
+from .source_freshness import build_input_fingerprints, utc_now_iso
 from .text_io import write_text_lf
 
 
 def _failure(page_id: str, issue: str) -> tuple[dict, int]:
     return (
         {
-            "schema": PAGE_SOURCE_PACKET_SCHEMA,
-            "builder_version": PAGE_SOURCE_BUILDER_VERSION,
+            "schema": "cyberppt.page_source_error.v1",
             "generated_at": utc_now_iso(),
-            "authority": "derived_runtime_context",
             "page_id": page_id,
             "status": "blocked",
             "issues": [issue],
