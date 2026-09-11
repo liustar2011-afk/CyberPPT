@@ -5,6 +5,7 @@ from cyberppt.script_quality.models import (
     ScriptPage,
     _issue,
 )
+from cyberppt.script_quality.severity import normalize_public_issue_severity
 
 
 def _page() -> ScriptPage:
@@ -28,7 +29,7 @@ def _page() -> ScriptPage:
     )
 
 
-def test_audit_named_legacy_heuristics_are_forced_to_warning() -> None:
+def test_audit_named_legacy_heuristics_are_warning_at_public_boundary() -> None:
     expected = {
         "OFF_TOPIC_CONSTRAINT_MODULE",
         "FACT_CERTAINTY_LOST",
@@ -41,14 +42,18 @@ def test_audit_named_legacy_heuristics_are_forced_to_warning() -> None:
         "ONSCREEN_GROUP_ROLE_REPETITION",
         "ONSCREEN_MODULE_INDEX_RESTATEMENT",
         "CONTENT_PAGE_TOO_SPARSE",
+        "ONSCREEN_STORY_DENSITY_LOW",
+        "ONSCREEN_STORY_NOT_CLOSED",
         "VISIBLE_NODE_OVERLOAD",
     }
     assert expected <= LEGACY_HEURISTIC_WARNING_CODES
 
     page = _page()
     for code in expected:
-        issue = _issue(code, page, "review", "review", severity="error")
-        assert issue.severity == "warning", code
+        local = _issue(code, page, "review", "review", severity="error")
+        assert local.severity == "error", code
+        [public] = normalize_public_issue_severity([local])
+        assert public.severity == "warning", code
 
 
 def test_unregistered_structural_and_delivery_findings_remain_blocking() -> None:
@@ -62,17 +67,19 @@ def test_unregistered_structural_and_delivery_findings_remain_blocking() -> None
         "DECLARED_COUNT_MISMATCH",
     ):
         assert code not in LEGACY_HEURISTIC_WARNING_CODES
-        issue = _issue(code, page, "blocking", "fix", severity="error")
-        assert issue.severity == "error", code
+        local = _issue(code, page, "blocking", "fix", severity="error")
+        [public] = normalize_public_issue_severity([local])
+        assert public.severity == "error", code
 
 
-def test_explicit_warning_cannot_be_promoted_by_the_legacy_policy() -> None:
+def test_explicit_warning_cannot_be_promoted_by_the_public_policy() -> None:
     page = _page()
-    issue = _issue(
+    local = _issue(
         "ONSCREEN_REDUNDANT_RESTATEMENT",
         page,
         "review",
         "review",
         severity="warning",
     )
-    assert issue.severity == "warning"
+    [public] = normalize_public_issue_severity([local])
+    assert public.severity == "warning"
