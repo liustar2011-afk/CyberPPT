@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cyberppt.local/contracts/author-preflight.schema.json",
-  "title": "CyberPPT Author Preflight Manifest v1",
+  "title": "CyberPPT Author Preflight Manifest v2",
   "type": "object",
   "required": [
     "schema",
@@ -14,8 +14,8 @@
     "issues"
   ],
   "properties": {
-    "schema": {"const": "cyberppt.author_preflight.v1"},
-    "builder_version": {"const": "stage1-author-preflight-v1"},
+    "schema": {"const": "cyberppt.author_preflight.v2"},
+    "builder_version": {"const": "stage1-author-preflight-v2"},
     "generated_at": {"type": "string", "minLength": 1},
     "authoring_mode": {
       "type": "string",
@@ -54,6 +54,7 @@
         "page_id",
         "page_role",
         "source_refs",
+        "unit_ids",
         "gate_status",
         "freshness",
         "exact_source_status",
@@ -63,6 +64,11 @@
         "page_id": {"type": "string"},
         "page_role": {"type": "string"},
         "source_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "unit_ids": {
           "type": "array",
           "uniqueItems": true,
           "items": {"type": "string", "minLength": 1}
@@ -86,6 +92,16 @@
           "items": {"type": "string", "minLength": 1}
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"source_refs": {"minItems": 1}},
+            "required": ["source_refs"]
+          },
+          "then": {"properties": {"unit_ids": {"minItems": 1}}},
+          "else": {"properties": {"unit_ids": {"maxItems": 0}}}
+        }
+      ],
       "additionalProperties": false
     },
     "summary": {
