@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from script_engine.author_preflight import author_preflight_report
+from script_engine.final_source_provenance import source_provenance_for_page
 from script_engine.page_source_command import page_source_report
 from script_engine.project_status import build_project_status
 
@@ -161,3 +162,60 @@ def test_status_reports_missing_manifest_without_trusting_packets(tmp_path: Path
     assert preflight["pages"][0]["gate_status"] == "passed"
     assert any("MANIFEST_MISSING" in issue for issue in preflight["issues"])
     assert status["stage"] == "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
+
+
+def test_status_exposes_blocked_page_packet(tmp_path: Path) -> None:
+    project, _plan_path, _foundation_path, packet_path, _manifest_path = _project(tmp_path)
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    packet["status"] = "blocked"
+    packet["issues"] = ["TEST_BLOCKED_PACKET"]
+    _write_json(packet_path, packet)
+
+    status = _status(project)
+    preflight = status["stage1"]["author_preflight"]
+
+    assert preflight["status"] == "blocked"
+    assert preflight["pages"][0]["gate_status"] == "blocked"
+    assert preflight["pages"][0]["freshness"] == "fresh"
+    assert "AUTHOR_PREFLIGHT_PACKET_BLOCKED" in preflight["pages"][0]["issues"]
+    assert status["stage"] == "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
+
+
+def test_status_blocks_stage02_when_final_native_fidelity_fails(tmp_path: Path) -> None:
+    project, _plan_path, _foundation_path, _packet_path, manifest_path = _project(tmp_path)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    final_path = project / "script" / "dist" / "final-script.json"
+    final = {
+        "contract": "cyberppt.final-script",
+        "version": "1.0",
+        "deck": {
+            "title": "覆盖情况",
+            "communication_goal": "说明平台覆盖情况。",
+            "authoring_mode": "faithful",
+        },
+        "slides": [
+            {
+                "id": "P01",
+                "page_type": "content",
+                "title": "覆盖情况",
+                "full_copy": "平台覆盖700家主体。",
+                "onscreen": [
+                    {"heading": "覆盖情况", "text": "平台覆盖700家主体。"}
+                ],
+                "source_refs": ["F1"],
+                "source_provenance": source_provenance_for_page(manifest, "P01"),
+            }
+        ],
+    }
+    _write_json(final_path, final)
+
+    status = _status(project)
+
+    assert status["stage1"]["author_preflight"]["status"] == "passed"
+    assert status["stage1"]["final_script"]["status"] == "passed"
+    assert status["stage1"]["final_audit"]["status"] == "failed"
+    assert any(
+        "NATIVE_NUMBER_OR_DATE_ADDED" in issue
+        for issue in status["stage1"]["final_audit"]["native_source_fidelity_issues"]
+    )
+    assert status["stage"] == "最终脚本文件已就绪，但 Stage1 最终审计未通过，不得进入 Stage02"
