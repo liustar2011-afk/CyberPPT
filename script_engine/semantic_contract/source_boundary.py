@@ -4,7 +4,7 @@ This module owns objective audience-facing numeric and formal-instrument drift f
 the formal semantic contract. It deliberately does not reuse the legacy
 composed-trace classifier: CJK n-gram novelty and identifier shape remain
 compatibility/review signals, while exact numeric tokens and explicit formal
-instrument names can be checked against Foundation and slide-declared evidence
+instrument names can be checked against Foundation and explicitly bound evidence
 without business-word inference.
 """
 
@@ -129,11 +129,11 @@ def _record_source_strings(
     index: FoundationIndex,
     refs: tuple[str, ...],
 ) -> Iterable[str]:
-    """Yield source surface reachable from explicit slide evidence refs.
+    """Yield source surface reachable from explicit evidence refs.
 
-    The page-scoped boundary follows only direct Foundation records plus their
-    explicit ``number_refs`` and ``entity_refs``. It does not infer a support
-    chain from prose, relation vocabulary, or nearby records.
+    The scoped boundary follows only direct Foundation records plus their explicit
+    ``number_refs`` and ``entity_refs``. It does not infer a support chain from
+    prose, relation vocabulary, or nearby records.
     """
 
     seen: set[str] = set()
@@ -153,7 +153,7 @@ def _record_source_strings(
                 queue.extend(str(item).strip() for item in value if str(item).strip())
 
 
-def _slide_evidence_surface_tokens(
+def _evidence_surface_tokens(
     index: FoundationIndex,
     refs: tuple[str, ...],
 ) -> tuple[set[str], set[str]]:
@@ -177,16 +177,46 @@ def _refs(value: object) -> tuple[str, ...]:
     )
 
 
+def _binding_refs(
+    module: dict[str, Any],
+    target: str,
+    fallback: tuple[str, ...],
+    *,
+    use_provenance: bool,
+) -> tuple[str, ...]:
+    """Return the explicit v1.1 evidence binding for one visible target.
+
+    Missing/invalid provenance is validated separately. Falling back to slide
+    refs here prevents duplicate noise when provenance itself is already blocking.
+    """
+
+    if not use_provenance:
+        return fallback
+    provenance = module.get("provenance")
+    if not isinstance(provenance, dict):
+        return fallback
+    for binding in provenance.get("bindings") or []:
+        if not isinstance(binding, dict):
+            continue
+        if str(binding.get("target") or "").strip() != target:
+            continue
+        refs = _refs(binding.get("source_refs"))
+        return refs or fallback
+    return fallback
+
+
 def _final_text_fields(
     final_script: dict[str, Any],
 ) -> Iterable[tuple[str, str, str, tuple[str, ...]]]:
-    """Yield ``(slide_id, target, text, source_refs)`` for audited Final Script text.
+    """Yield ``(slide_id, target, text, evidence_refs)`` for audited script text.
 
-    The field surface intentionally matches the deterministic legacy faithful
-    checker while also supporting v1.1 object-shaped onscreen items. This avoids
-    losing coverage when formal blocker ownership moves out of legacy code.
+    Final Script 1.0 has only slide-level evidence, so it retains the historical
+    page-scoped boundary. Final Script 1.1 narrows each visible module target to
+    its explicit provenance binding; slide-level prose and relationship metadata
+    continue to use slide.source_refs.
     """
 
+    use_provenance = str(final_script.get("version") or "").strip() == "1.1"
     for slide_index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
             continue
@@ -216,15 +246,36 @@ def _final_text_fields(
             for field in ("heading", "text"):
                 value = module.get(field)
                 if isinstance(value, str) and value.strip():
-                    yield slide_id, f"{module_prefix}.{field}", value, source_refs
+                    yield (
+                        slide_id,
+                        f"{module_prefix}.{field}",
+                        value,
+                        _binding_refs(
+                            module,
+                            field,
+                            source_refs,
+                            use_provenance=use_provenance,
+                        ),
+                    )
             for item_index, item in enumerate(module.get("items") or []):
                 target = f"{module_prefix}.items[{item_index}]"
                 if isinstance(item, str) and item.strip():
                     yield slide_id, target, item, source_refs
                 elif isinstance(item, dict):
                     value = item.get("text")
+                    item_id = str(item.get("id") or "").strip()
                     if isinstance(value, str) and value.strip():
-                        yield slide_id, f"{target}.text", value, source_refs
+                        yield (
+                            slide_id,
+                            f"{target}.text",
+                            value,
+                            _binding_refs(
+                                module,
+                                item_id,
+                                source_refs,
+                                use_provenance=use_provenance,
+                            ),
+                        )
 
         for relation_index, relation in enumerate(slide.get("relationships") or []):
             if not isinstance(relation, dict):
@@ -240,14 +291,14 @@ def collect_source_boundary_diagnostics(
     final_script: dict[str, Any],
     foundation: dict[str, Any] | None,
 ) -> list[SemanticDiagnostic]:
-    """Block objective additions outside Foundation or declared slide evidence.
+    """Block objective additions outside Foundation or declared evidence.
 
     Global Foundation checks reject exact numeric tokens and explicit formal
-    instrument names that do not exist anywhere in source truth. When a slide
-    declares ``source_refs``, the same objective tokens must also be present in
-    the directly cited records (plus explicit number/entity references). A slide
-    with no ``source_refs`` is not page-scope checked here; source-scope validators
-    own the missing-reference contract.
+    instrument names that do not exist anywhere in source truth. Each text target
+    is then checked against its strongest available declared evidence scope:
+    slide.source_refs for legacy/slide-level copy, or the exact v1.1 provenance
+    binding for visible module targets. Missing source/provenance contracts are
+    owned by their dedicated validators.
 
     Identifier novelty, prose novelty and semantic similarity remain excluded.
     """
@@ -257,10 +308,10 @@ def collect_source_boundary_diagnostics(
 
     allowed_numbers, allowed_instruments = _foundation_surface_tokens(foundation)
     index = FoundationIndex(foundation)
-    page_surface_cache: dict[tuple[str, ...], tuple[set[str], set[str]]] = {}
+    evidence_surface_cache: dict[tuple[str, ...], tuple[set[str], set[str]]] = {}
     diagnostics: list[SemanticDiagnostic] = []
 
-    for slide_id, target, text, source_refs in _final_text_fields(final_script):
+    for slide_id, target, text, evidence_refs in _final_text_fields(final_script):
         text_numbers = _numeric_tokens(text)
         text_instruments = _formal_instruments(text)
 
@@ -299,49 +350,49 @@ def collect_source_boundary_diagnostics(
                 )
             )
 
-        if not source_refs:
+        if not evidence_refs:
             continue
-        page_numbers, page_instruments = page_surface_cache.setdefault(
-            source_refs,
-            _slide_evidence_surface_tokens(index, source_refs),
+        scoped_numbers, scoped_instruments = evidence_surface_cache.setdefault(
+            evidence_refs,
+            _evidence_surface_tokens(index, evidence_refs),
         )
 
-        outside_slide_numbers = sorted(
-            (text_numbers & allowed_numbers) - page_numbers
+        outside_scoped_numbers = sorted(
+            (text_numbers & allowed_numbers) - scoped_numbers
         )
-        if outside_slide_numbers:
+        if outside_scoped_numbers:
             diagnostics.append(
                 SemanticDiagnostic(
                     code="FINAL_NUMBER_OUTSIDE_SLIDE_EVIDENCE",
                     message=(
-                        f"Final Script uses numeric token(s) {outside_slide_numbers} that "
-                        "exist in Foundation but not in the slide-declared evidence surface"
+                        f"Final Script uses numeric token(s) {outside_scoped_numbers} that "
+                        "exist in Foundation but not in the target's declared evidence surface"
                     ),
                     slide_id=slide_id,
                     target=target,
                     severity="blocking",
-                    evidence_refs=source_refs,
-                    relation="bounded_by_slide_evidence",
+                    evidence_refs=evidence_refs,
+                    relation="bounded_by_declared_evidence",
                 )
             )
 
-        outside_slide_instruments = sorted(
-            (text_instruments & allowed_instruments) - page_instruments
+        outside_scoped_instruments = sorted(
+            (text_instruments & allowed_instruments) - scoped_instruments
         )
-        if outside_slide_instruments:
+        if outside_scoped_instruments:
             diagnostics.append(
                 SemanticDiagnostic(
                     code="FINAL_FORMAL_INSTRUMENT_OUTSIDE_SLIDE_EVIDENCE",
                     message=(
                         "Final Script uses formal instrument name(s) "
-                        f"{outside_slide_instruments} that exist in Foundation but not in "
-                        "the slide-declared evidence surface"
+                        f"{outside_scoped_instruments} that exist in Foundation but not in "
+                        "the target's declared evidence surface"
                     ),
                     slide_id=slide_id,
                     target=target,
                     severity="blocking",
-                    evidence_refs=source_refs,
-                    relation="bounded_by_slide_evidence",
+                    evidence_refs=evidence_refs,
+                    relation="bounded_by_declared_evidence",
                 )
             )
 
