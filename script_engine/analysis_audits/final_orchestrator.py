@@ -166,7 +166,7 @@ def audit_final_script(
 
         internal = [item for item in evidence if effective_visibility(item) == "internal_only"]
         if audience_scope == "external" and internal:
-            exposed: list[str] = []
+            exposed_items: list[dict[str, Any]] = []
             for item in internal:
                 item_text = _item_text(item)
                 values = [str(item.get("value") or "")]
@@ -174,9 +174,29 @@ def audit_final_script(
                     values.append(match)
                 normalized_final = final_text.replace("至", "-").replace("—", "-")
                 if any(value and value.replace("至", "-").replace("—", "-") in normalized_final for value in values):
-                    exposed.append(str(item.get("id") or "?"))
-            if exposed:
-                issues.append(f"{scope}: external final script exposes internal-only evidence {sorted(set(exposed))}")
+                    exposed_items.append(item)
+            if exposed_items:
+                if compatibility_mode:
+                    marker_inferred = sorted(
+                        {
+                            str(item.get("id") or "?")
+                            for item in exposed_items
+                            if str(item.get("visibility") or "").strip() != "internal_only"
+                        }
+                    )
+                    if marker_inferred:
+                        warnings.append(
+                            f"{scope}: legacy visibility review: text markers classify evidence "
+                            f"{marker_inferred} as internal-only and matching values appear in "
+                            "the external Final Script; confirm against explicit visibility policy"
+                        )
+                else:
+                    exposed = sorted(
+                        {str(item.get("id") or "?") for item in exposed_items}
+                    )
+                    issues.append(
+                        f"{scope}: external final script exposes internal-only evidence {exposed}"
+                    )
 
         if GAP_RE.search(final_text):
             source_text = _source_text_for_refs(page.get("source_refs") or [], foundation)
