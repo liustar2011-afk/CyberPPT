@@ -49,6 +49,8 @@ _MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
         "AUTHOR_ONSCREEN_NUMBER_OR_DATE_LOST",
         "AUTHOR_ONSCREEN_CONDITION_LOST",
         "AUTHOR_ONSCREEN_RESPONSIBILITY_LOST",
+        "FAITHFUL_NUMBER_ADDED",
+        "FAITHFUL_FORMAL_INSTRUMENT_ADDED",
     }
 )
 
@@ -171,7 +173,11 @@ def audit_final_script(
         if final_authoring_mode == "faithful":
             for finding in faithful_relation_promotion_issues(slide, evidence):
                 _append_governed_finding(issues, warnings, scope, finding)
-            for finding in faithful_semantic_addition_issues(slide, evidence, items):
+            semantic_addition_findings = _compatibility_findings(
+                faithful_semantic_addition_issues(slide, evidence, items),
+                compatibility_mode=compatibility_mode,
+            )
+            for finding in semantic_addition_findings:
                 _append_governed_finding(issues, warnings, scope, finding)
 
         plan_model = str((page.get("analysis_basis") or {}).get("model") or "").lower()
