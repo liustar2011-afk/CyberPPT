@@ -120,14 +120,47 @@
 
 CLI 入口、默认路径与 focused tests 已写入分支。尚未执行远端 CI。
 
+---
+
+## 批次 4B：下游不可绕过门禁
+
+状态：已完成
+
+### 已完成工作
+
+1. 新增 `validate_author_preflight_gate()`，不直接信任已持久化 Manifest，而是基于当前 Deck Plan、Foundation、Source Index 和 Page Source Packets 重新构建门禁状态。
+2. 持久化 Manifest 与当前状态逐项比较：
+   - authoring mode；
+   - 三个上游输入 fingerprints；
+   - 页面集合；
+   - 每页 source refs；
+   - gate status；
+   - freshness；
+   - exact source status；
+   - packet SHA-256。
+3. 新增 `author_preflight_gate_report()`，形成 `audit-final` 和 `render-stage02` 共用的唯一门禁验证入口。
+4. `audit-final` 已强制执行 Author Preflight Gate；Manifest 缺失、过期、blocked 或当前 Packet 已变化时，全稿审计无法通过。
+5. `render-stage02` 已强制执行 Author Preflight Gate，并且门禁检查发生在 Final Script 渲染之前。
+6. `render-stage02` CLI 现在强制要求 `--plan` 与 `--foundation`，不再允许脱离 Stage1 上游证据链单独渲染。
+7. 新增 `tests/script_engine/test_author_preflight_gate.py`，覆盖：
+   - 当前 Manifest 与 Packet 完全一致时通过；
+   - Packet 生成后发生变化、未重新生成 Manifest 时阻断；
+   - 缺失 Manifest 时 `audit-final` 阻断；
+   - 缺失 Manifest 时 `render-stage02` 在写文件前阻断；
+   - fresh Preflight 后 Stage02 允许继续。
+
+### 当前验证状态
+
+代码和 focused tests 已写入分支。由于本批次主动改变 `render-stage02` 与 `audit-final` 的运行契约，现有仓库测试和调用点需要按新契约同步更新；不保留历史兼容入口。
+
 ### 下一步工作
 
-批次 4B：把 Preflight 变成不可绕过的下游门禁。
+批次 4C：建立 PR、运行远端 CI 并清理本分支新增回归。
 
 计划：
 
-1. 增加统一 `validate_author_preflight_gate()`，重新读取当前 Packet 并与已持久化 Manifest 对比，防止 Manifest 或 Packet 在生成后失效。
-2. `audit-final` 强制要求当前 Preflight 存在、fresh、overall passed。
-3. `render-stage02` 强制要求当前 Preflight 存在、fresh、overall passed。
-4. 两个入口共用同一 Gate validator，不复制规则。
-5. 增加 audit / delivery focused tests，覆盖 missing / stale / blocked / passed 四种状态。
+1. 创建 `stage1-hardening → main` PR，触发 GitHub Actions。
+2. 将 CI 失败区分为主分支历史失败与本分支新增失败。
+3. 优先修复因新 Gate 契约导致的现有测试/调用点失效，尤其是旧 `render-stage02` 调用未提供 `--plan` / `--foundation`、旧 `audit-final` 正向用例缺少 Preflight 等问题。
+4. 不增加兼容分支；直接把现有测试、示例和正式调用方式迁移到新契约。
+5. CI 完成第一轮回归清理后，再进入 Final Script provenance、Native-source Fidelity Audit 和 project status 三项后续改造。
