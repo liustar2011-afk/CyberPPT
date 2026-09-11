@@ -10,6 +10,7 @@ from .diagnostics import partition_diagnostics
 from .protected_payload import collect_protected_payload_diagnostics
 from .provenance import validate_final_script_provenance
 from .relationships import validate_relationship_shape
+from .source_scope import validate_source_scope
 from .source_structure import validate_source_structure_preservation
 
 
@@ -20,15 +21,17 @@ def audit_final_script_semantic_contract(
 ) -> tuple[list[str], list[str], list[dict[str, object]]]:
     """Run the authoritative Final Script semantic audit through one entry point.
 
-    Structured authorization, relationship shape, source-structure preservation,
-    provenance, typed compatibility and protected payload are the new semantic
-    authority. During Phase 4, the historical Final Script auditor is invoked
-    here as a compatibility adapter so formal callers no longer need to
-    orchestrate two independent semantic engines. Its remaining capabilities can
-    now be migrated here one by one without changing the public audit boundary.
+    Structured authorization, source scope, relationship shape, source-structure
+    preservation, provenance, typed compatibility and protected payload are the
+    new semantic authority. During Phase 4, the historical Final Script auditor
+    is invoked here as a compatibility adapter so formal callers no longer need
+    to orchestrate two independent semantic engines. Its remaining capabilities
+    can now be migrated here one by one without changing the public audit
+    boundary.
     """
 
     authorization_issues = validate_authoring_mode_authorization(final_script, plan)
+    source_scope_issues = validate_source_scope(final_script, plan, foundation)
     relationship_issues = validate_relationship_shape(final_script)
     source_structure_issues = validate_source_structure_preservation(
         final_script, plan, foundation
@@ -61,6 +64,7 @@ def audit_final_script_semantic_contract(
         dict.fromkeys(
             [
                 *authorization_issues,
+                *source_scope_issues,
                 *relationship_issues,
                 *source_structure_issues,
                 *provenance_issues,
