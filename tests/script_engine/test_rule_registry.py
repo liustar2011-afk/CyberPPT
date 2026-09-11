@@ -13,6 +13,7 @@ from script_engine.rule_registry import (
 ROOT = Path(__file__).resolve().parents[2]
 BANNED = ROOT / "contracts" / "banned-phrasing.json"
 LEGACY_RULES = ROOT / "cyberppt" / "script_quality" / "rules.yaml"
+LEGACY_FIDELITY = ROOT / "cyberppt" / "semantic_fidelity.py"
 ANALYTICAL_AUTHOR_CONTRACT = (
     ROOT
     / ".agents"
@@ -112,6 +113,26 @@ def test_legacy_rule_file_no_longer_contains_project_content_fingerprints() -> N
         assert phrase not in text
     assert "cross_page_fingerprints:\n    enabled: false" in text
     assert "slogan_ban_patterns: []" in text
+
+
+def test_legacy_semantic_fidelity_has_no_business_object_taxonomy() -> None:
+    """Legacy compatibility code cannot regain project nouns as global semantics."""
+
+    text = LEGACY_FIDELITY.read_text(encoding="utf-8")
+    for symbol in ("OUTPUT_OBJECT_ALIASES", "ACTOR_ROLE_TERMS"):
+        assert symbol not in text
+    for phrase in (
+        "付费试点",
+        "付费项目",
+        "实训场景",
+        "可销售课程",
+        "SaaS",
+        "培训对象",
+        "采购主体",
+        "付费主体",
+        "交付主体",
+    ):
+        assert phrase not in text
 
 
 def test_analytical_author_contract_is_domain_neutral() -> None:
