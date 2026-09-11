@@ -49,7 +49,9 @@ def audit_final_script_semantic_contract(
 
     # Import lazily to keep the structured semantic package independent from the
     # legacy helper graph at module-import time. Phase 4 removes this adapter as
-    # its remaining deterministic responsibilities are migrated here.
+    # its remaining deterministic responsibilities are migrated here. The adapter
+    # runs in compatibility mode so checks already owned by structured validators
+    # are not recomputed by legacy code.
     from script_engine.analysis_audits.final_orchestrator import (
         audit_final_script as audit_legacy_final_script,
     )
@@ -58,6 +60,7 @@ def audit_final_script_semantic_contract(
         final_script,
         plan if isinstance(plan, dict) else {},
         foundation if isinstance(foundation, dict) else {},
+        compatibility_mode=True,
     )
 
     issues = list(
