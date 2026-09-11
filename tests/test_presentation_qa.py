@@ -84,8 +84,8 @@ class PresentationQaTests(unittest.TestCase):
 
     def test_officecli_version_is_pinned(self) -> None:
         # Known-good compatibility pin; advance only with OfficeCLI render-smoke validation.
-        self.assertEqual("1.0.148", OFFICECLI_VERSION)
-        self.assertIn("v1.0.148", str(repository_officecli_path()))
+        self.assertEqual("1.0.149", OFFICECLI_VERSION)
+        self.assertIn("v1.0.149", str(repository_officecli_path()))
 
     def test_explicit_soffice_renderer_skips_officecli(self) -> None:
         with TemporaryDirectory() as directory:
