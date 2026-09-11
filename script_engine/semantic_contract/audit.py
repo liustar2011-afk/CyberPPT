@@ -22,6 +22,12 @@ from .visibility import collect_visibility_diagnostics
 from .voice_policy import collect_voice_policy_diagnostics
 
 
+def _legacy_review_warning(issue: str) -> str:
+    """Render residual compatibility findings without granting blocking authority."""
+
+    return f"[LEGACY_COMPATIBILITY_REVIEW_REQUIRED] {issue}"
+
+
 def audit_final_script_semantic_contract(
     final_script: dict[str, Any],
     plan: dict[str, Any] | None,
@@ -33,11 +39,13 @@ def audit_final_script_semantic_contract(
     source-structure preservation, provenance, typed compatibility, protected
     payload, objective source boundaries, explicit PLAN content-route/onscreen
     contracts, delivery cleanliness/readiness and voice policy, and explicit
-    visibility are the new semantic authority. During Phase 4, the historical
-    Final Script auditor is invoked here as a compatibility adapter so formal
-    callers no longer need to orchestrate two independent semantic engines. Its
-    remaining review capabilities can now be retired without changing the public
-    audit boundary.
+    visibility are the blocking semantic authority.
+
+    During Phase 4 the historical Final Script auditor remains attached only as a
+    compatibility review adapter. Any residual ``legacy_issues`` are surfaced as
+    warnings so old code cannot silently regain formal blocking authority. Raw
+    legacy callers remain unchanged because they call the legacy orchestrator
+    directly with ``compatibility_mode=False``.
     """
 
     authorization_issues = validate_authoring_mode_authorization(final_script, plan)
@@ -66,9 +74,8 @@ def audit_final_script_semantic_contract(
     )
 
     # Import lazily to keep the structured semantic package independent from the
-    # legacy helper graph at module-import time. Phase 4 keeps this adapter only
-    # for review/warning compatibility; deterministic blocker ownership has moved
-    # into semantic_contract.
+    # legacy helper graph at module-import time. Compatibility mode preserves old
+    # review signals while formal blocking remains owned by semantic_contract.
     from script_engine.analysis_audits.final_orchestrator import (
         audit_final_script as audit_legacy_final_script,
     )
@@ -79,6 +86,9 @@ def audit_final_script_semantic_contract(
         foundation if isinstance(foundation, dict) else {},
         compatibility_mode=True,
     )
+    legacy_review_warnings = [
+        _legacy_review_warning(issue) for issue in legacy_issues
+    ]
 
     issues = list(
         dict.fromkeys(
@@ -89,9 +99,16 @@ def audit_final_script_semantic_contract(
                 *source_structure_issues,
                 *provenance_issues,
                 *structured_blockers,
-                *legacy_issues,
             ]
         )
     )
-    warnings = list(dict.fromkeys([*legacy_warnings, *review_required]))
+    warnings = list(
+        dict.fromkeys(
+            [
+                *legacy_warnings,
+                *legacy_review_warnings,
+                *review_required,
+            ]
+        )
+    )
     return issues, warnings, structured
