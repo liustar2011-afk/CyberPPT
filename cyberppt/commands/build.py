@@ -1,6 +1,6 @@
 """Small-tool build facade for CyberPPT.
 
-This module deliberately keeps the user-facing command thin.  The existing
+This module deliberately keeps the user-facing command thin. The existing
 Stage 02 implementation remains the production engine; ``cyberppt build`` only
 chooses practical defaults, infers the page range/workspace, and gives repeated
 runs a stable build id so successful pages can be reused automatically.
@@ -47,15 +47,15 @@ def _stable_build_id(
     *,
     script: Path,
     pages_raw: str,
-    mode: str,
     image_model: str | None,
     image_quality: str,
 ) -> str:
+    """Return a stable image-batch identity shared by image/editable/both modes."""
+
     material = {
         "script": str(script.expanduser().resolve()),
         "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
         "pages": pages_raw,
-        "mode": mode,
         "image_model": image_model or "<default>",
         "image_quality": image_quality,
     }
@@ -77,7 +77,7 @@ def build_presentation(
 ) -> dict[str, Any]:
     """Build a presentation through the existing production engine.
 
-    ``image`` is the zero-manual-step default.  ``editable`` and ``both`` use
+    ``image`` is the zero-manual-step default. ``editable`` and ``both`` use
     the same audited full image and may pause once for the existing local SVG
     author/review step; rerunning the same command resumes the same build.
     """
@@ -98,13 +98,12 @@ def build_presentation(
     resolved_build_id = build_id or _stable_build_id(
         script=source,
         pages_raw=pages,
-        mode=mode,
         image_model=image_model,
         image_quality=image_quality,
     )
 
     # A script outside an initialized project is treated as an external Stage 02
-    # input.  This is the common small-tool path and intentionally avoids asking
+    # input. This is the common small-tool path and intentionally avoids asking
     # the user to understand Stage 01 project state.
     external_script = detected_project is None or workspace != detected_project
 
