@@ -104,9 +104,7 @@ def locked_onscreen_text(
 ) -> str:
     """Legacy authored-copy helper retained for compatibility only.
 
-    New Stage 02 production must not use this helper as an exact-copy authority.
-    Exact bitmap copy is selected exclusively from ``page.fidelity_text`` by
-    :func:`select_image_locked_text`.
+    Final Script 1.2 does not use this helper as an exact-copy authority.
     """
 
     locked: list[str] = []
@@ -165,20 +163,56 @@ def _fidelity_literals(page: ScriptPage, *, visibility: str) -> tuple[str, ...]:
     return tuple(values)
 
 
+def _legacy_image_locked_text(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None,
+) -> str:
+    """Preserve pre-1.2 read/compile behavior during the version migration."""
+
+    raw = page.image_locked_text.strip() or locked_onscreen_text(page, visual_context)
+    if not raw and not page.field_order and page.title.strip():
+        raw = page.title.strip()
+    candidates = [line.strip(" -*") for line in raw.splitlines() if line.strip()]
+    selected: list[str] = []
+    total = 0
+    for line in candidates:
+        compact = re.sub(r"\s+", "", line)
+        if not compact or line in selected:
+            continue
+        if len(compact) > MAX_IMAGE_LOCKED_LINE_CHARS:
+            if re.search(r"\d", compact):
+                shortened = re.split(r"[，,；;。]", line, maxsplit=1)[0].strip()
+                if shortened and len(re.sub(r"\s+", "", shortened)) <= MAX_IMAGE_LOCKED_LINE_CHARS:
+                    line = shortened
+                    compact = re.sub(r"\s+", "", line)
+                else:
+                    continue
+            else:
+                continue
+        if len(selected) >= MAX_IMAGE_LOCKED_LINES or total + len(compact) > MAX_IMAGE_LOCKED_CHARS:
+            continue
+        selected.append(line)
+        total += len(compact)
+    return "\n".join(selected).strip()
+
+
 def select_image_locked_text(
     page: ScriptPage,
     visual_context: dict[str, str] | None = None,
 ) -> str:
-    """Return only explicit ``required`` fidelity literals.
+    """Return the exact-copy literals for this script generation.
 
-    ``visual_context`` remains in the signature for source compatibility, but
-    it is intentionally ignored.  Stage 02 must never infer pixel-exact text
-    from ordinary prose, module titles, numbers, dates, percentages, quoted
-    phrases, or legacy visual hints.
+    Final Script 1.2 exact-copy authority comes exclusively from explicit
+    ``fidelity_text`` items marked ``required``.  Legacy 1.0/1.1 pages retain
+    their historical selector only as a version-compatibility path; the new
+    contract never scans 1.2 prose, module titles, numbers, dates, percentages
+    or quoted phrases to invent locks.
     """
 
-    del visual_context
-    return "\n".join(_fidelity_literals(page, visibility="required")).strip()
+    required = _fidelity_literals(page, visibility="required")
+    if required or str(getattr(page, "onscreen_source", "") or "") == "full_copy_stage02_source":
+        return "\n".join(required).strip()
+    return _legacy_image_locked_text(page, visual_context)
 
 
 def select_conditional_fidelity_text(page: ScriptPage) -> str:
