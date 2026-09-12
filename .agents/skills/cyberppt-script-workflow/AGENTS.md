@@ -31,22 +31,35 @@ resolved or blocked source evidence stops the action.
 There is no Foundation-preview fallback and no no-source-index fallback for the current
 Stage1 faithful route. Repair the source index or source binding first.
 
-## Shared Final Script provenance contract
+## Current Final Script contract
 
-Before every new-project `AUTHOR`, and before any revision of a Final Script 1.1 artifact,
-read `references/final-script-provenance-contract.md` completely. This is a shared delivery
-contract, not a second authoring method.
+New projects author Final Script contract `cyberppt.final-script` version `1.2`.
+A 1.2 content page uses:
 
-Final Script content pages also carry page-level `source_provenance` from the current
-Author Preflight: `packet_sha256`, `source_refs`, and `unit_ids`. This page-level lineage
-proves that the page consumed the current exact-source gate. It is separate from the
-module/item provenance defined by `final-script-provenance-contract.md` and cannot be
-substituted by it.
+- `full_copy` as the complete Stage 01 semantic manuscript;
+- `fidelity_text` as the narrow exact-literal contract;
+- page-level `source_provenance` from the current Author Preflight;
+- no authored `onscreen` field.
 
-New projects author Final Script contract `cyberppt.final-script` version `1.1`. A 1.1
-content module must carry stable module/item IDs and explicit module provenance for every
-visible target. Missing module provenance or page-level source provenance blocks
-deterministic validation and delivery.
+`fidelity_text` items declare `required` or `if_rendered`. Ordinary full-copy prose,
+page conclusions and stylistic wording are not exact-copy literals merely because they
+may later appear in a generated image.
+
+Final Script 1.0/1.1 remains read-compatible for existing projects. Before revising an
+existing 1.1 artifact, read `references/final-script-provenance-contract.md` completely.
+That legacy shared delivery contract still governs 1.1 stable module/item IDs and module
+provenance. It is not a second authoring method and it does not make those 1.1 visible-
+module requirements part of new 1.2 authoring.
+
+All content pages continue to carry page-level `source_provenance`: `packet_sha256`,
+`source_refs`, and `unit_ids`. This page-level lineage proves that the page consumed the
+current exact-source gate and remains required independently of the 1.1 module/item
+provenance compatibility path.
+
+Stage 02 derives runtime `onscreen_text` from 1.2 `full_copy` and carries
+`fidelity_text` separately through handoff, manifest, prompt compilation, reuse identity
+and image-text QA. Stage 02 may rewrite ordinary content. Only fidelity literals receive
+exact-copy semantics.
 
 The shared provenance contracts do not authorize analytical inference. Source meaning,
 claim strength, relationship construction and prose methods still come exclusively from
@@ -99,15 +112,19 @@ Preflight `summary.overall_status` is `passed`. Packet and Preflight are derived
 evidence and do not become new semantic authorities. Generating them is evidence
 preparation only; it does not execute AUTHOR.
 
-After writing the Final Script, run `audit-final`. Stage02 delivery must use
-`render-stage02` with the current `--plan` and `--foundation`; that command revalidates the
-Preflight, page lineage and native-source fidelity before writing output.
+After `full_copy` passes the active mode-specific Critic, extract narrow `fidelity_text`
+from exact source-backed literals. Do not create an authored `onscreen` projection for
+Final Script 1.2. After writing the Final Script, run `audit-final`. Stage02 delivery must
+use `render-stage02` with the current `--plan` and `--foundation`; that command revalidates
+the Preflight, page lineage and native-source fidelity before writing output.
 
 ## Shared hard constraints
 
 Both modes remain subject to repository-level `AGENTS.md`, especially source scope,
-claim strength, issuer voice, protected facts, formal document identity, visibility,
-and the authoritative artifact chain.
+claim strength, issuer voice, protected facts, formal document identity and the
+authoritative artifact chain. Where repository-level text still describes the legacy
+1.0/1.1 authored-`onscreen` contract, the current Final Script 1.2 contract above governs
+new authoring; legacy behavior applies only to existing 1.0/1.1 artifacts.
 
 `faithful` is source-native editorial transduction. It must not be upgraded to the
 analytical contract merely because a page looks sparse, parallel, taxonomic, or lacks

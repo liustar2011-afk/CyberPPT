@@ -39,26 +39,56 @@ The only production route is `.venv/bin/python3 -m cyberppt final-script-pages` 
 `--production-build`; do not construct a final script or `page_image_pairs.json`
 by hand and do not call `run_stage02_reconstruction` directly.
 
-Default chain: final script + current `references/visual-system.md` style → audited
-full image → reconstruction visual-source binding → text-free base → high-fidelity authored SVG
-reconstruction → vendored Quick assembly → render and final-visible-text QA. The
-audited full image is the visual source for the editable reconstruction; authored SVG
-may reconstruct and decompose it but must not introduce a second visual design.
+Default chain: final script + current `references/visual-system.md` style → canonical
+Stage 02 intake → audited full image → reconstruction visual-source binding → text-free
+base → high-fidelity authored SVG reconstruction → vendored Quick assembly → render and
+final-visible-text QA. The audited full image is the visual source for the editable
+reconstruction; authored SVG may reconstruct and decompose it but must not introduce a
+second visual design.
 
 Stage 02 does not require or invoke a separate visual-structure preparation stage.
 
-When the user supplies an external manuscript, invoke the formal entry with
-`--external-script`. External scripts use the same content-first presentation
-contract as other Stage 02 inputs. The manifest, input identity, build context
-and resume command must retain `source_mode: external_script` so the external
-source and its semantic boundary remain traceable.
+## Canonical text intake and fidelity contract
 
-For a finalized Stage 01 script or a structured external script, `full_copy`
-(`完整文字稿`) and `onscreen` (`上屏文字`) have separate,
-non-interchangeable roles in the image prompt. `full_copy` is non-visible semantic
-context only. `onscreen` is optional source material for visible copy. Stage 02
-may select, rewrite, merge, shorten, reorder, split or replace its wording. OCR
-and release QA must not compare generated wording with `onscreen`.
+When the user supplies an external manuscript, invoke the formal entry with
+`--external-script`. External scripts use the same content-first presentation contract as
+other Stage 02 inputs. The manifest, input identity, build context and resume command must
+retain `source_mode: external_script` so the external source and its semantic boundary
+remain traceable.
+
+For current Final Script 1.2 internal input:
+
+- derive runtime `onscreen_text` / `content_text` from Stage 01 `full_copy`;
+- carry `fidelity_text` independently;
+- treat ordinary runtime content as rewriteable source material;
+- never infer exact-copy authority from ordinary prose merely because it is visible in a
+  prompt or generated page.
+
+For external input:
+
+- prefer the structured `内容` field as runtime content;
+- otherwise use the page's free body text;
+- accept optional `保真文字` / `fidelity_text` separately;
+- preserve `source_mode: external_script` in canonical intake and downstream identity.
+
+Final Script 1.0/1.1 authored `onscreen` remains a compatibility input for existing
+projects. It is not the authoring model for new 1.2 projects.
+
+Stage 02 may select, rewrite, merge, shorten, reorder, split or replace ordinary runtime
+content wording. `fidelity_text` is the only exact-literal channel:
+
+- `required`: the literal must be visible and exact;
+- `if_rendered`: the literal may be omitted, but if rendered it must be exact.
+
+The canonical intake is the single text authority consumed by handoff, manifest, prompt
+compilation, reuse identity and image-text QA. Any change to runtime content source,
+`content_text`, `fidelity_text`, source mode or their semantic hashes invalidates stale
+page receipts bound to the old identity. Do not reuse a passing image-text receipt merely
+because the PNG still exists.
+
+OCR and release QA must not compare generated wording with `full_copy`, runtime
+`onscreen_text`, or legacy authored `onscreen` as whole-text equality. Exact-copy checks
+apply only to fidelity literals.
 
 ## Per-page Quick checkpoint loop
 
@@ -68,18 +98,19 @@ authored SVG, run geometry and SVG quality QA, build one wrapped preview PPTX,
 render its OfficeCLI PNG, and write `quick_page_checkpoint` back to the active
 `page_image_pairs.json` immediately with `status: rendered_pending_visual_review`.
 The main agent must inspect that exact PNG before the page can pass. Check layout
-fidelity, typography, color and weight, wrapping, residual Chinese text, and
-readability; syntax, geometry, and file existence never substitute for this look.
-Record the result with `.venv/bin/python3 -m cyberppt review-quick-page ...`; the receipt is
-bound to the preview PNG hash, so a changed render automatically requires review.
+fidelity, typography, color and weight, wrapping, residual Chinese text, fidelity
+literals, and readability; syntax, geometry, and file existence never substitute for
+this look. Record the result with `.venv/bin/python3 -m cyberppt review-quick-page ...`;
+the receipt is bound to the preview PNG hash, so a changed render automatically requires
+review.
 
 A failed page records `status: failed` while later pages are still checked and
-checkpointed. On resume, reuse a visually reviewed passed page when its authored SVG, audited full
-image and clean base are unchanged and its target SVG, preview PPTX and preview
-PNG still exist. Changed inputs cause local revalidation, not a hash gate,
-full-image redraw, or whole-batch invalidation. Assemble the final deck once,
-after every requested page has a passed checkpoint; do not merge separately
-published one-page PPTX files.
+checkpointed. On resume, reuse a visually reviewed passed page only when its canonical
+text/fidelity identity, authored SVG, audited full image and clean base are unchanged and
+its target SVG, preview PPTX and preview PNG still exist. Changed page-local inputs cause
+local revalidation; do not use a passing checkpoint from an older semantic identity.
+Unrelated pages remain reusable. Assemble the final deck once, after every requested page
+has a passed checkpoint; do not merge separately published one-page PPTX files.
 
 For the high-fidelity Quick branch, use `final-script-pages --production-build
 --assembly-mode editable`. It consumes the text-audited full image, same-canvas
@@ -115,26 +146,27 @@ When the active manifest records `requires a hand-authored SVG from the image-to
 
 ## Text-free base policy
 
-Treat the locked script as text truth and OCR only as a coordinate anchor. Classify
-every visible body-graphic text item before removal:
+Treat canonical Stage 02 intake as semantic text truth and OCR only as a coordinate
+anchor. Classify every visible body-graphic text item before removal.
 
 For high-fidelity Quick reconstruction, the authoring step must provide a real,
-completed SVG on the normalized slide canvas. OCR supplies text truth and
-location evidence only; it does not authorize a production-time OCR-box SVG
-generator. The vendored Quick runtime consumes the authored SVG and preserves
-its explicit coordinates, font size, weight, and color.
+completed SVG on the normalized slide canvas. Runtime `onscreen_text` supplies the
+current visible-copy source, `fidelity_text` supplies exact literals, and OCR supplies
+location evidence; OCR does not authorize a production-time OCR-box SVG generator. The
+vendored Quick runtime consumes the authored SVG and preserves its explicit coordinates,
+font size, weight, and color.
 
 The current Codex main agent owns this reconstruction step, matching the source Quick
-workflow: inspect the normalized audited full image, clean base, source onscreen text
-and registered local assets, then reproduce the accepted visual composition as the
-complete page SVG on the same canvas. The authored SVG preserves the bound full
-image's spatial composition and visual hierarchy; it does not reopen visual design.
-`final-script-pages` prepares and validates the workspace; if an
+workflow: inspect the normalized audited full image, clean base, runtime onscreen text,
+fidelity literals and registered local assets, then reproduce the accepted visual
+composition as the complete page SVG on the same canvas. The authored SVG preserves the
+bound full image's spatial composition and visual hierarchy; it does not reopen visual
+design. `final-script-pages` prepares and validates the workspace; if an
 `authoring_svg` is absent it must stop for authoring, then resume the same build.
-Do not replace this step with an OCR-to-SVG generator or redraw an already-audited
-full image merely because its wording differs from the source onscreen copy. The
-authored SVG may retain or improve the accepted visible wording under the same
-semantic-fidelity constraints.
+Do not replace this step with an OCR-to-SVG generator or redraw an already-audited full
+image merely because ordinary wording differs from runtime source copy. The authored SVG
+may refine ordinary visible wording under the same semantic constraints; every fidelity
+literal retains its declared exact-copy rule.
 
 - `native_text`: all readable information, labels, figures, captions and ordinary
   text. Remove it from the base and rebuild it in SVG.
@@ -168,8 +200,11 @@ project's completed SVGs or invoke an external Quick backend. The official
 automatic cleaner. Historical v3 receipts remain readable for existing projects.
 Post-clean OCR remains diagnostic; final rendered-page review decides release.
 
-The release decision belongs after SVG rewrite and PPTX render. Check the final
-visible result for wrong Chinese characters and pseudo-Chinese only. Ignore
-punctuation, isolated digits, and English tokens. A real residual Chinese string
-that remains visible alongside, or instead of, its SVG rewrite blocks release;
-an OCR-only residual in the intermediate clean base does not.
+The release decision belongs after SVG rewrite and PPTX render. Check the final visible
+result for wrong Chinese characters, pseudo-Chinese, residual source text that should have
+been rebuilt, and fidelity-literal correctness. A `required` fidelity literal must remain
+visible and exact; an `if_rendered` literal may be absent but must be exact if present.
+Ignore punctuation, isolated digits, and English tokens for the generic glyph-quality
+gate unless they are themselves part of a fidelity literal. A real residual Chinese
+string that remains visible alongside, or instead of, its SVG rewrite blocks release; an
+OCR-only residual in the intermediate clean base does not.

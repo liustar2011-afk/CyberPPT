@@ -137,8 +137,8 @@ def test_faithful_contract_is_source_native_not_judgment_first() -> None:
         "Classify the source-native page structure",
         "Write `full_copy` directly from source meaning",
         "Run Source Fidelity Critic on `full_copy`",
-        "Create `onscreen` only from approved `full_copy`",
-        "Every visible proposition must have a direct semantic parent in `full_copy`",
+        "Extract narrow `fidelity_text`",
+        "For Final Script 1.2 content pages, do not create `onscreen`",
         "The faithful minimum content-page fields are",
         "The following fields are optional in faithful mode",
         "Parallel facts may remain peer facts",
@@ -155,9 +155,10 @@ def test_analytical_contract_retains_analytical_authoring_methods() -> None:
     contract = _read(
         ".agents/skills/cyberppt-script-workflow/references/authoring-contract.md"
     )
-    assert "Author the page conclusion" in contract
-    assert "judgment-first hierarchy" in contract
-    assert "Argument-topology method" in contract
+    assert "Define the analytical question and conclusion" in contract
+    assert "Build claim–argument–evidence logic" in contract
+    assert "Write analytical `full_copy`" in contract
+    assert "judgment-led analytical prose" in contract
 
 
 def test_faithful_minimum_content_page_validates_and_lints_without_argument() -> None:

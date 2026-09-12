@@ -7,16 +7,25 @@ targeted page revision, and whole-deck script review when the approved
 Read this file completely before those actions. Do not read or blend the analytical
 `authoring-contract.md` into a faithful action. Repository-level `AGENTS.md` remains a
 hard constraint; `.agents/skills/cyberppt-script-workflow/AGENTS.md` selects the active
-mode-specific contract.
+mode-specific contract and defines the current Final Script version.
 
 ## 1. Product responsibility
 
 Faithful authoring is **source-native editorial transduction**.
 
-Its job is to convert source material into page-ready complete copy and reader-facing
-onscreen copy while preserving the source's viewpoints, speaking position, facts,
-status, responsibilities, numbers, conditions, boundaries, formal instruments, claim
-strength, and explicit relationships.
+Its job is to convert source material into a complete, page-ready semantic manuscript
+while preserving the source's viewpoints, speaking position, facts, status,
+responsibilities, numbers, conditions, boundaries, formal instruments, claim strength,
+and explicit relationships.
+
+For new authoring, the target is Final Script 1.2:
+
+- Stage 01 authors `full_copy`;
+- Stage 01 extracts narrow `fidelity_text` literals;
+- Stage 01 does not author `onscreen`;
+- Stage 02 derives runtime `onscreen_text` from `full_copy` and may rewrite ordinary
+  content;
+- only `fidelity_text` receives exact-copy semantics.
 
 A faithful page is successful even when it has:
 
@@ -49,40 +58,42 @@ The Deck Plan defines the available evidence scope. It does not authorize AUTHOR
 invent a stronger question, conclusion, mechanism, or value thesis.
 
 PLAN `logic` owns the page mission: state the specific business scope, communication
-duty and division of work with adjacent pages. Check the completed full copy against
+duty and division of work with adjacent pages. Check the completed `full_copy` against
 that duty. An optional Final Script `mission` only restates the approved duty for
-review; update PLAN first if scope changes. Neither mission field is audience copy
-or evidence for a business judgment.
+review; update PLAN first if scope changes. Neither mission field is source evidence.
 
 ### Step 2 — Resolve exact source evidence
 
-For the default `script` profile, exact per-page source resolution is mandatory whenever
-`script/.cache/source-index.json` exists and has schema `cyberppt.source_index.v2`.
-Before drafting the page, run:
+For the default `script` profile, exact per-page source resolution is mandatory. The
+project must have a current `script/.cache/source-index.json` with schema
+`cyberppt.source_index.v2`. There is no Foundation-preview fallback and no
+no-source-index fallback.
+
+Run:
 
 ```bash
 .venv/bin/python3 -m script_engine.cli page-source \
   script/deck-plan.json \
   script/foundation.json \
   <PAGE_ID> \
+  --source-index script/.cache/source-index.json \
   --output script/.cache/page-source/<PAGE_ID>.json
 ```
 
-Use the resulting packet as disposable AUTHOR runtime context. It is marked
-`authority: derived_runtime_context`; it does not become a fourth semantic authority and
-does not change the chain `source -> foundation -> deck_plan -> final_script`.
+After all required page packets are current, run `author-preflight` and require a
+passed project/page state before drafting or materially rewriting content. Use the
+resulting packet as disposable AUTHOR runtime context. It is marked
+`authority: derived_runtime_context`; it does not become a fourth semantic authority
+and does not change the chain `source -> foundation -> deck_plan -> final_script`.
 
-The packet must be regenerated when the page `source_refs`, Foundation, or source index
-changes. If it returns `status: rewrite_required`, stop that page and repair the source
-boundary before drafting. Do not author around an unknown page reference. Warnings about
-missing exact unit bindings must be treated explicitly: use the Foundation surface only
-when the project/profile genuinely lacks a resolvable v2 source unit, and do not infer
-precise wording that the available evidence does not support.
+Missing, stale, invalid, partially resolved or blocked source index, packet or preflight
+state stops the action. Regenerate the packet and Preflight whenever page `source_refs`,
+Foundation or source index changes.
 
-For `strict/legacy`, use the strongest exact source context available through the
-projected Foundation / Source Truth bindings. If a compatible v2 source index is present,
-use the same `page-source` command; otherwise resolve the page's source units through the
-strict source-consumption bindings rather than reconstructing meaning from memory.
+For `strict/legacy`, use the strongest exact source context available through projected
+Foundation / Source Truth bindings. If a compatible v2 source index is present, use the
+same `page-source` route; otherwise resolve the page's source units through the strict
+source-consumption bindings rather than reconstructing meaning from memory.
 
 Read the Foundation records named by the page's `source_refs` and the exact underlying
 source text resolved for those records before drafting.
@@ -94,7 +105,7 @@ Record the protected payload:
 - action or status;
 - exact business object;
 - formal document or instrument and its type;
-- number and date;
+- number, date and unit;
 - responsibility;
 - condition and qualifier;
 - scope and boundary;
@@ -137,13 +148,12 @@ Forbidden conversions include:
 
 ### Step 4 — Write `full_copy` directly from source meaning
 
-`full_copy` is the page's complete, faithful, presentation-ready manuscript.
-
-It is not an author-created thesis layer.
+`full_copy` is the page's complete, faithful, presentation-ready semantic manuscript.
+It is not an author-created thesis layer and it is not a pre-compressed image caption.
 
 Allowed transformations:
 
-- remove repetition;
+- remove genuine repetition;
 - split long sentences;
 - merge genuinely equivalent repeated wording;
 - reorder locally inside the page scope when meaning and relationship direction do not
@@ -155,8 +165,8 @@ Allowed transformations:
 - lightly compress modifiers without changing certainty, responsibility, scope, or
   conditions.
 
-Do not write a synthesized lead merely because the source paragraph begins with a
-list, definition, task name, category name, or stage name.
+Do not write a synthesized lead merely because the source paragraph begins with a list,
+definition, task name, category name, or stage name.
 
 ### Step 5 — Run Source Fidelity Critic on `full_copy`
 
@@ -167,7 +177,7 @@ For every substantive proposition in `full_copy`, independently verify:
 - Is the object the same business matter?
 - Is status preserved?
 - Is responsibility preserved?
-- Are numbers and dates preserved exactly?
+- Are numbers, dates and units preserved exactly?
 - Are material conditions and qualifiers retained?
 - Is the relation explicit in the source?
 - Is modality / claim strength unchanged?
@@ -177,87 +187,44 @@ For every substantive proposition in `full_copy`, independently verify:
 If any answer fails, delete the addition or restore a closer source expression. Do not
 repair an unsupported statement by adding more explanation.
 
-### Step 6 — Create `onscreen` only from approved `full_copy`
+### Step 6 — Extract narrow `fidelity_text`
 
-Every visible proposition must have a direct semantic parent in `full_copy`.
-Preserve all substantive information while rewriting for the screen.
+After `full_copy` passes Source Fidelity Critic, identify only literals that need exact
+rendered spelling.
 
-The current main Agent performs this task directly using language understanding:
+Valid candidates include:
 
-> Rewrite the reviewed full_copy for independent reading on a PPT. Preserve all
-> substantive information and change only wording and organization. Use clear
-> groups, complete sentences or self-contained phrases as appropriate. Preserve
-> who does what, to which object, under which conditions, with what status, numbers,
-> responsibility and relationship direction. Remove only equivalent repetition and
-> connective wording that carries no substantive meaning. There is no word limit.
+- exact numbers with the minimum context or unit needed to identify them;
+- official names of policies, plans, standards, institutions, products or models;
+- user-designated proper nouns, model numbers or fixed strings.
 
-Read the entire page's reviewed `full_copy` together before rewriting. Treat its
-substantive content as already selected for this page. Do not select a smaller set
-of “core” propositions, rank sentences for deletion, replace concrete actions with
-umbrella labels, or move substantive examples/background into notes to save space.
-Content selection belongs upstream when establishing the page scope and full copy.
+Each item has:
 
-Organize by a shared business dimension. A child can inherit a common actor or
-condition from its own visible module heading when the meaning is unambiguous.
-Use natural language judgment to preserve relationships across the whole module.
-Retain complete sentences whenever phrases would obscure meaning. If density remains
-high, adjust grouping/layout or propose a page-scope/pagination repair through the
-existing planning route. Preserve the text until that repair is resolved.
+- `text` — the exact literal;
+- `visibility: required` — the literal must appear and must be exact; or
+- `visibility: if_rendered` — the model may omit it, but if it appears it must be exact.
 
-When an equivalent rewrite is uncertain, retain the original complete expression.
-Do not generate multiple candidates or run a scoring helper as a prerequisite.
+Do not add:
 
-Before writing the visible modules, identify the source-native grouping within the
-reviewed full copy. A paragraph may contain a topic statement and several parallel
-business propositions. Give the heading and body distinct jobs: when the heading
-already carries the topic statement, omit only its equivalent repeated body opening.
-Express independent propositions as separate items when that makes their existing
-structure visible. Keep each action with its object, conditions and stated effects;
-retain a shared qualifier visibly over every item it governs. Do not split on every
-semicolon: punctuation can also separate dependent clauses or stages in one process.
-Do not invent one-to-one problem/measure mappings or new overarching effects.
+- ordinary conclusions;
+- complete paragraphs;
+- labels that can safely be rewritten;
+- stylistic wording;
+- text included only because it seems important.
 
-For example, two source paragraphs containing four supply conditions and three
-construction actions may become two modules with four and three complete items.
-This is source-native grouping, not a mandatory item count for other pages. Preserve
-source numbering across pages when useful; starting at “三是” is not itself an error.
-Exact copying remains valid for a self-contained passage. It does not replace the
-editorial check for duplicated headings and hidden parallel structure.
+Every item must be traceable to `full_copy` or an explicit user fixed-string authority.
+Keep the list narrow. Do not use fidelity literals to recreate an authored visible-copy
+layer or to force whole-page OCR equality.
 
-### Step 7 — Compare meanings and rewrite
-
-The current main Agent reads the complete `full_copy` and complete `onscreen`
-side by side in a separate review pass, using the same page evidence. First check
-whether a reader receives all substantive information from full copy; then check
-whether the visible wording adds or changes any assertion. Do this comparison before
-reading optional machine hints so that hints do not define the review scope.
-
-Check responsibility, action/object, status, quantities, conditions, negation,
-relationship direction and formal names in their actual context. Equivalent wording
-and shared visible subjects are valid. Lexical overlap, keyword presence and zero
-machine findings cannot establish semantic equivalence.
-
-For each actual discrepancy, identify the original assertion, the visible wording
-or omission, and the concrete meaning lost or changed. Rewrite the affected module,
-then reread the complete page in both directions. A shorter or more polished result
-cannot compensate for lost information. Do not persist internal review reasoning,
-proposition ledgers, approval fields or a new workflow artifact.
-
-`build_onscreen_critic_context` is optional diagnostic assistance after this direct
-review. Its matches and findings are unverified hints; inspect them against the
-complete texts. Resolve real errors and disregard false matches with a concise
-explanation in an existing review summary when needed. Do not change correct wording
-merely to satisfy a heuristic. Deterministic test success reports software behavior;
-only the Agent's text comparison assesses the rewritten meaning.
-
-### Step 8 — Add supporting fields only when they are source-backed and useful
+### Step 7 — Review Final Script 1.2 field ownership
 
 The faithful minimum content-page fields are:
 
 - `title`;
 - `full_copy`;
-- `onscreen`;
-- `source_refs`.
+- `fidelity_text`;
+- `source_refs`;
+- `source_provenance`.
 
 The following fields are optional in faithful mode:
 
@@ -270,22 +237,24 @@ The following fields are optional in faithful mode:
 
 Do not create them simply to satisfy a template.
 
-If `core_message` is used, it must be a source-explicit conclusion or a minimal
-consolidation whose claim strength and relationship are already explicit in the
-source. It cannot answer a newly invented "so what" question.
+For Final Script 1.2 content pages, do not create `onscreen`. Existing 1.0/1.1 projects
+remain backward compatible under their legacy contract, but a new page or migrated 1.2
+page must not carry authored `onscreen` content.
 
-Choose the judgment form after examining the exact source and reviewing full copy:
+If `core_message` is used, it must be a source-explicit conclusion or a minimal
+consolidation whose claim strength and relationship are already explicit in the source.
+It cannot answer a newly invented "so what" question.
+
+Choose the judgment form after examining exact source and reviewing full copy:
 
 - one source-supported main judgment: optional `core_message`;
-- multiple parallel source judgments: preserve them separately in full copy and
-  onscreen modules, with no required page-wide synthesis;
-- definitions, classifications or tasks without a total judgment: omit
-  `core_message` and preserve the source-native structure.
+- multiple parallel source judgments: preserve them separately in `full_copy` with no
+  required page-wide synthesis;
+- definitions, classifications or tasks without a total judgment: omit `core_message`
+  and preserve the source-native structure.
 
-A source-supported `core_message` alone does not opt the page into argument-led
-paragraphs or conclusion-style module headings. Explicit `argument` remains a
-separate choice that must itself be supported by the source. No placeholder or
-"no judgment" field is needed when the optional core is absent.
+A source-supported `core_message` alone does not opt the page into argument-led prose.
+Explicit `argument` remains a separate choice that must itself be supported by source.
 
 If `argument` is used, its topology must already exist in the source. Do not invent an
 argument chain from parallel facts.
@@ -297,14 +266,14 @@ If `visual_thesis` is used, it may describe the source-explicit structure; it is
 license to create a new business relationship.
 
 If `speaker_notes` is used, it may add source-grounded subordinate context or a natural
-transition. It may not contain a stronger claim than the visible copy.
+transition. It may not contain a stronger claim than `full_copy`.
 
-### Step 9 — Run whole-deck faithful Critic
+### Step 8 — Run whole-deck faithful Critic
 
 Check:
 
-- fulfilment of each PLAN mission by the actual page content, separately from
-  whether the page has one, several or no source-supported judgments;
+- fulfilment of each PLAN mission by actual page content, separately from whether the
+  page has one, several or no source-supported judgments;
 - source chapter coverage and order;
 - page-bound source scope;
 - adjacent-page duplication and omissions;
@@ -315,12 +284,13 @@ Check:
 - accidental relation promotion;
 - accidental value / capability / mechanism synthesis;
 - exposure of internal or restricted content;
-- onscreen compression loss.
+- `fidelity_text` provenance, visibility choice and over-locking;
+- absence of authored `onscreen` on 1.2 content pages.
 
 Do not require every page to form a conclusion peak, every chapter to culminate in a
 new value thesis, or every set of facts to become a process.
 
-### Step 10 — Run deterministic validation
+### Step 9 — Run deterministic validation
 
 After generative Critic and Rewrite, run the repository's schema, lint, semantic audit,
 source-reference, and delivery checks. Deterministic success does not replace the
@@ -328,7 +298,8 @@ source-fidelity Critic.
 
 ## 3. Speaking position and issuer voice
 
-`full_copy` and `onscreen` inherit the source's speaking position.
+`full_copy`, optional analytical/supporting fields and speaker notes inherit the source's
+speaking position.
 
 When the source directly defines, requires, arranges, proposes, reports, or states a
 matter, the script directly states the same matter.
@@ -351,7 +322,8 @@ narrator.
 
 ## 4. Protected semantic payload
 
-The following payload is never optional when it materially changes meaning:
+The following payload is never optional when it materially changes meaning inside
+`full_copy` or another Stage 01 semantic field.
 
 ### 4.1 Actors and responsibility
 
@@ -360,7 +332,7 @@ Do not:
 - turn one actor's state into a group-wide state;
 - assign a task to an actor the source does not assign;
 - replace a named actor with an umbrella group that expands responsibility;
-- omit the actor when omission makes the responsibility ambiguous.
+- omit the actor when omission makes responsibility ambiguous.
 
 ### 4.2 Status
 
@@ -391,13 +363,15 @@ Do not convert:
 
 ### 4.4 Numbers and dates
 
-Do not add, round, infer, normalize, or silently omit a protected number or date.
+Do not add, round, infer, normalize, or silently omit a protected number, date or unit.
+When exact rendered spelling matters, add the narrow literal to `fidelity_text` instead
+of locking a larger sentence.
 
 ### 4.5 Conditions and boundaries
 
 A condition, exclusion, scope, time qualifier, authority boundary, or applicability
-limit that changes the claim must remain in the visible layer when the visible claim
-would otherwise be misleading.
+limit that changes the claim must remain in `full_copy` and any Stage 01 judgment that
+would otherwise become misleading.
 
 ### 4.6 Formal instruments
 
@@ -415,7 +389,8 @@ Preserve the actual identity of:
 - contract or agreement.
 
 Do not merge distinct instruments into author-created terms such as `国家规则` or
-`统一规范` unless the source itself uses that collective term.
+`统一规范` unless the source itself uses that collective term. When the formal name must
+render exactly, add only that name to `fidelity_text`.
 
 ## 5. Source-native page structures
 
@@ -451,13 +426,13 @@ unless that effect is explicit in the source.
 
 ### 5.4 Classification page
 
-A source taxonomy may use noun headings or codes when the meaning is visible. Do not
-turn categories into a maturity path or sequence.
+A source taxonomy may use noun headings or codes when meaning is explicit. Do not turn
+categories into a maturity path or sequence.
 
 ### 5.5 Explicit process / stage page
 
-Preserve the order only when the source states an order. Temporal adjacency alone is
-not causality.
+Preserve order only when the source states an order. Temporal adjacency alone is not
+causality.
 
 ### 5.6 Status page
 
@@ -465,9 +440,9 @@ Mixed statuses remain mixed. Do not synthesize them into `全面推进` or `已�
 
 ### 5.7 Explicit relationship page
 
-When the source explicitly states a relationship, show both endpoints and the source
-predicate. Do not strengthen `支撑` into `决定`, `可衔接` into `形成闭环`, or `在此基础上`
-into `缺一不可` unless the source uses that strength.
+When the source explicitly states a relationship, preserve both endpoints and the source
+predicate in `full_copy`. Do not strengthen `支撑` into `决定`, `可衔接` into `形成闭环`,
+or `在此基础上` into `缺一不可` unless the source uses that strength.
 
 ## 6. Title rules
 
@@ -495,33 +470,19 @@ Under faithful mode:
 - treat `logic` as pagination / organization duty;
 - do not inherit unsupported `why`, `so what`, transformation, mechanism, value, or
   conclusion language from PLAN into Final Script;
-- if PLAN wording exceeds the page evidence, repair PLAN before AUTHOR or ignore the
+- if PLAN wording exceeds page evidence, repair PLAN before AUTHOR or ignore the
   unsupported framing and report the mismatch.
 
-## 8. Meaning-preserving expression policy
+## 8. Stage 01 expression and Stage 02 boundary
 
-Readability improvements must retain all substantive information from `full_copy`.
+Stage 01 imposes no visual character-count target on `full_copy`. It must not pre-shorten
+semantic content for image layout. Resolve excessive semantic scope through page mission
+or pagination rather than dropping protected meaning.
 
-Stage 01 imposes no character-count limit on onscreen headings, text, or items.
-Do not shorten protected meaning to meet a phrase or sentence length target.
-Resolve readability through grouping, complete short sentences, layout or page scope;
-semantic and structural checks still apply.
-
-Prefer, in order:
-
-1. remove repetition;
-2. remove non-material modifiers;
-3. merge equivalent source-backed statements;
-4. retain substantive examples and background already selected into `full_copy`;
-5. paginate when the page remains too dense.
-
-Do not solve density by:
-
-- inventing umbrella concepts;
-- replacing concrete tasks with generic dimensions;
-- collapsing named objects into labels;
-- dropping conditions;
-- replacing several source propositions with one stronger author summary.
+Stage 02 is responsible for runtime visible-copy selection, rewriting, grouping and
+layout. For Final Script 1.2 it consumes `full_copy` as ordinary rewriteable content and
+`fidelity_text` as the separate literal contract. Stage 01 must therefore avoid using
+fidelity items as a hidden substitute for an authored visible script.
 
 ## 9. Critic failure and rewrite policy
 
@@ -530,11 +491,11 @@ When a page fails, rewrite from the earliest failed semantic layer:
 - wrong source scope -> repair PLAN/page scope;
 - unresolved page-source packet -> repair `source_refs` or source bindings before prose;
 - unsupported full-copy proposition -> repair `full_copy` first;
-- onscreen drift -> regenerate `onscreen` from the repaired `full_copy`;
+- invalid or over-broad fidelity literal -> repair `fidelity_text` after `full_copy`;
 - optional supporting-field drift -> delete or repair the optional field;
 - whole-deck duplication -> repair the smallest affected page boundary.
 
-Do not line-edit a downstream sentence while leaving its unsupported semantic parent in
+Do not line-edit a downstream field while leaving its unsupported semantic parent in
 place.
 
 ## 10. Analytical escalation is explicit
