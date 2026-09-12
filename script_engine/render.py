@@ -51,6 +51,17 @@ def _render_onscreen(sections: list[dict[str, Any]]) -> list[str]:
         for item in items: lines.append(f"  - {item}")
     return lines
 
+def _render_fidelity_text(items: object) -> list[str]:
+    lines: list[str] = []
+    for item in items if isinstance(items, list) else []:
+        if not isinstance(item, dict):
+            continue
+        text = _single_line(item.get("text"))
+        visibility = _single_line(item.get("visibility"))
+        if text and visibility:
+            lines.append(f"- [{visibility}] {text}")
+    return lines
+
 def _render_visual(slide: dict[str, Any]) -> list[str]:
     lines: list[str] = []
     thesis = _single_line(sanitize_delivery_prose(slide.get("visual_thesis")))
@@ -64,6 +75,8 @@ def _render_visual(slide: dict[str, Any]) -> list[str]:
 
 def render_stage02_markdown(payload: dict[str, Any]) -> str:
     deck = payload.get("deck") if isinstance(payload.get("deck"), dict) else {}
+    version = _text(payload.get("version")) or "1.0"
+    stage1_owns_onscreen = version in {"1.0", "1.1"}
     lines: list[str] = []
     title = _single_line(deck.get("title")); goal = _single_line(deck.get("communication_goal"))
     if title: lines.extend([f"# {title}", ""])
@@ -90,23 +103,30 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
             lines.append(f"- 主论证链：{value}")
         full_copy = sanitize_delivery_prose(slide.get("full_copy"))
         if full_copy: lines.extend(["", "### 完整文字稿", "", full_copy])
+        fidelity_lines = _render_fidelity_text(slide.get("fidelity_text"))
+        if version == "1.2":
+            lines.extend(["", "### 保真文字"])
+            if fidelity_lines:
+                lines.extend(["", *fidelity_lines])
+            else:
+                lines.extend(["", "（无）"])
         onscreen_sections = [
             section for section in (slide.get("onscreen") or [])
             if isinstance(section, dict)
         ]
-        onscreen_lines = _render_onscreen(onscreen_sections)
-        if onscreen_lines:
-            lines.extend(["", "### 上屏文字", "", *onscreen_lines])
-        elif full_copy:
-            # Legacy compatibility only. Current content contracts require an
-            # authored onscreen projection; old payloads without that field may
-            # still be rendered without silently losing their body copy.
-            lines.extend(["", "### 上屏文字", "", full_copy])
-        provenance_lines = render_provenance_markdown(onscreen_sections)
-        if provenance_lines:
-            # The heading starts with the parser-recognized 证据映射 field, so
-            # this audit-only block cannot be consumed as visible 上屏文字.
-            lines.extend(["", *provenance_lines])
+        if stage1_owns_onscreen:
+            onscreen_lines = _render_onscreen(onscreen_sections)
+            if onscreen_lines:
+                lines.extend(["", "### 上屏文字", "", *onscreen_lines])
+            elif full_copy:
+                # Legacy compatibility only. Final Script 1.2 must never project
+                # full_copy into an AUTHOR-owned onscreen field.
+                lines.extend(["", "### 上屏文字", "", full_copy])
+            provenance_lines = render_provenance_markdown(onscreen_sections)
+            if provenance_lines:
+                # The heading starts with the parser-recognized 证据映射 field, so
+                # this audit-only block cannot be consumed as visible 上屏文字.
+                lines.extend(["", *provenance_lines])
         notes = sanitize_delivery_prose(slide.get("speaker_notes"))
         if notes: lines.extend(["", "### 演讲者备注", "", notes])
         source_refs = [_text(item) for item in (slide.get("source_refs") or []) if _text(item)]
