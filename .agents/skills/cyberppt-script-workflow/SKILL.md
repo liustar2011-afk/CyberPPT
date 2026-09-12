@@ -53,7 +53,7 @@ Automatically:
 4. preserve source chapters and plan PPT pages within that structure;
 5. present **脚本规划待确认**;
 6. after ordinary approval, resolve `authoring_mode` and execute the matching mandatory authoring reference;
-7. for each faithful page, resolve exact page source context before drafting; when `script/.cache/source-index.json` is v2, generate the derived `page-source` packet first;
+7. for each faithful `script`-profile page, require a current `cyberppt.source_index.v2`, generate the derived `page-source` packet, and pass Author Preflight before drafting; missing, stale, invalid or partially resolved exact-source evidence blocks AUTHOR;
 8. run Critic, rewrite, deterministic audits and delivery validation;
 9. report **最终脚本已生成**.
 
@@ -96,21 +96,25 @@ the complete page-ready manuscript from the source-native structure, then writes
 `onscreen` only from the reviewed `full_copy`.
 
 Before writing a faithful content page, resolve the exact evidence for that page.
-For the default `script` profile, when `script/.cache/source-index.json` is a
-`cyberppt.source_index.v2` file, run:
+For the default `script` profile, `script/.cache/source-index.json` must be a current
+`cyberppt.source_index.v2` file. Missing, stale or invalid source index state blocks
+AUTHOR; do not fall back to Foundation previews or remembered source text. Run:
 
 ```bash
 .venv/bin/python3 -m script_engine.cli page-source \
   script/deck-plan.json \
   script/foundation.json \
   <PAGE_ID> \
+  --source-index script/.cache/source-index.json \
   --output script/.cache/page-source/<PAGE_ID>.json
 ```
 
-Read the packet before drafting. It is disposable `derived_runtime_context`, not a
-new content authority. A packet with `status: rewrite_required` blocks drafting of
-that page until its source boundary is repaired. Regenerate the packet whenever the
-page source refs, Foundation or source index changes.
+After all required page packets are current, run `author-preflight` and require a
+passed project/page state before drafting or materially rewriting content. Read the
+packet before drafting. It is disposable `derived_runtime_context`, not a new content
+authority. Missing, stale, invalid, partially resolved or blocked exact-source evidence
+stops the action. Regenerate the packet and Preflight whenever the page source refs,
+Foundation or source index changes.
 
 A faithful page may legitimately contain a definition, parallel facts, parallel
 tasks, a taxonomy, explicit stages, status statements or responsibilities without
@@ -184,10 +188,11 @@ authorizes whole-deck writing; do not ask the user to name an internal stage.
 Resolve the page/deck `authoring_mode` and read only the matching mandatory
 authoring reference. Then read the target page and adjacent pages, matching Deck
 Plan entry, `source_refs`, relevant Foundation records and exact page source text.
-In faithful mode, if a v2 source index exists, regenerate the target page's
-`page-source` packet before editing so the revision uses the current exact source
-units. Preserve source chapter boundaries unless the user explicitly authorizes
-structural change.
+In faithful `script` mode, require the current v2 source index, regenerate the target
+page's `page-source` packet, and rebuild Author Preflight before editing so the revision
+uses current exact source units. Missing, stale, invalid or blocked exact-source state
+stops the edit instead of falling back to previews or memory. Preserve source chapter
+boundaries unless the user explicitly authorizes structural change.
 
 In faithful mode, repair `full_copy` before `onscreen`; do not repair visible copy
 by inventing a stronger page conclusion. In analytical mode, follow the
@@ -202,10 +207,11 @@ progression, optionality, visibility, compression loss, formal register and the
 whole-deck checks in the active contract.
 
 Faithful review does not fail a page merely because it lacks an author-created
-conclusion or argument chain. When exact v2 source context exists, page-level
-faithful rewrites regenerate and reuse the corresponding page-source packet rather
-than drafting from previews or memory. Analytical review may evaluate conclusion
-and argument quality under the analytical contract.
+conclusion or argument chain. For `script`-profile faithful pages, page-level
+rewrites require current v2 exact-source packets and a passed Author Preflight;
+regenerate and reuse them rather than drafting from previews or memory. Missing,
+stale, invalid or blocked exact-source state stops the rewrite. Analytical review
+may evaluate conclusion and argument quality under the analytical contract.
 
 Repair the smallest affected page scope and rerun adjacent-page review. Do not
 expose Critic self-dialogue; return the rewritten result and a concise summary of
