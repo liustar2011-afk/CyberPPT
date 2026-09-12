@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 AGENTS = ROOT / "AGENTS.md"
 WORKFLOW = ROOT / "docs" / "CYBERPPT_WORKFLOW.md"
 SCRIPT_SKILL = ROOT / ".agents" / "skills" / "cyberppt-script-workflow" / "SKILL.md"
+SCRIPT_AGENTS = ROOT / ".agents" / "skills" / "cyberppt-script-workflow" / "AGENTS.md"
 SOURCE_SKILL = ROOT / ".agents" / "skills" / "cyberppt-source-foundation" / "SKILL.md"
 EDITABLE_PPTX_SKILL = ROOT / ".agents" / "skills" / "cyberppt-stage02-editable-pptx" / "SKILL.md"
 AUTHORED_SVG_CONTINUATION = EDITABLE_PPTX_SKILL.parent / "references" / "authored-svg-continuation.md"
@@ -41,6 +42,34 @@ class SkillContractTests(unittest.TestCase):
             self.assertIn(artifact, text)
         self.assertIn("The current main agent is the AUTHOR executor", text)
         self.assertIn("There is no separate AUTHOR", text)
+
+    def test_faithful_script_route_has_no_source_index_fallback(self) -> None:
+        skill = SCRIPT_SKILL.read_text(encoding="utf-8-sig")
+        local_agents = SCRIPT_AGENTS.read_text(encoding="utf-8-sig")
+        repo_agents = AGENTS.read_text(encoding="utf-8-sig")
+        workflow = WORKFLOW.read_text(encoding="utf-8-sig")
+
+        self.assertIn("must be a current", skill)
+        self.assertIn("cyberppt.source_index.v2", skill)
+        self.assertIn("author-preflight", skill)
+        self.assertIn("Missing, stale, invalid or blocked exact-source state", skill)
+        self.assertIn("no no-source-index fallback", local_agents)
+        self.assertIn("不得回退到 Foundation preview 或模型记忆", repo_agents)
+        self.assertIn("author-preflight", workflow)
+        self.assertIn("不得回退到 Foundation preview 或模型记忆", workflow)
+
+        stale_optional_phrases = (
+            "when `script/.cache/source-index.json` is v2",
+            "when `script/.cache/source-index.json` is a",
+            "if a v2 source index exists",
+            "When exact v2 source context exists",
+            "`script` profile 存在 v2 `.cache/source-index.json` 时",
+            "默认 `script` profile 存在 v2 `.cache/source-index.json` 时",
+        )
+        for phrase in stale_optional_phrases:
+            self.assertNotIn(phrase, skill)
+            self.assertNotIn(phrase, repo_agents)
+            self.assertNotIn(phrase, workflow)
 
     def test_default_project_route_uses_current_profile_router(self) -> None:
         agents = AGENTS.read_text(encoding="utf-8-sig")

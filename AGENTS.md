@@ -30,7 +30,7 @@ Stage 01 分两段，各有唯一权威路线，之间按 profile 使用直接 F
 
 **规划与写作段（PLAN/AUTHOR）**：两种 profile 均从 `script/foundation.json` 进入 `.agents/skills/cyberppt-script-workflow/SKILL.md` 编排的 `PLAN -> AUTHOR -> CRITIQUE -> REWRITE -> DELIVER`，产出 `script/deck-plan.json` 和 `script/dist/final-script.md`。strict/legacy 的 `project-foundation` 只做字段搬运，不重新分析。
 
-- PLAN 和 AUTHOR 的唯一执行者是当前主 Agent。UNDERSTAND 对全文只做一次语义建模；PLAN 读取 Foundation 和来源结构，AUTHOR 每套稿只加载一次全文主旨与目录，逐页只回读该页 `source_refs` 对应原文及相邻页面边界。`script` profile 存在 v2 `.cache/source-index.json` 时，faithful AUTHOR 写每页前必须先通过 `page-source` 解析该页精确 source units；该 packet 是派生运行时上下文，不新增内容权威。Critic 和 Rewrite 复用同一语义简报与证据范围，不得重新运行全文语义理解。只有源材料变化、Foundation 校验失败或来源边界无法支撑页面使命时，才返回 UNDERSTAND。
+- PLAN 和 AUTHOR 的唯一执行者是当前主 Agent。UNDERSTAND 对全文只做一次语义建模；PLAN 读取 Foundation 和来源结构，AUTHOR 每套稿只加载一次全文主旨与目录，逐页只回读该页 `source_refs` 对应原文及相邻页面边界。默认 `script` profile 的 faithful AUTHOR 写每页前必须使用当前 `cyberppt.source_index.v2` 通过 `page-source` 解析该页精确 source units，并在写作或实质重写前通过 Author Preflight；Source Index、Packet 或 Preflight 缺失、陈旧、无效、部分解析或阻断时停止，不得回退到 Foundation preview 或模型记忆。该 packet 与 Preflight 都是派生运行时证据，不新增内容权威。Critic 和 Rewrite 复用同一语义简报与证据范围，不得重新运行全文语义理解。只有源材料变化、Foundation 校验失败或来源边界无法支撑页面使命时，才返回 UNDERSTAND。
 - `authoring_mode: faithful` 下，完整文字稿按来源原生结构组织。并列事实、任务、阶段、分类、状态和职责可以保持并列，不要求额外生成段首总判断或分项结论；来源明确存在总判断、因果、流程或论证时按其原有方向保留。`authoring_mode: analytical` 下，才可按 analytical authoring contract 使用“段首核心结论—分项结论句—事实明细”等判断先行结构。
 - 上屏并列项必须共享一个明确维度，如主体、能力、阶段、问题、任务或结果。不得把主体、业务领域及该主体的评价结果放在同一层级。补充事实、成熟度评价、认证或结果先归入其修饰对象；faithful 模式按 `full_copy` 的来源层级组织全部实质信息，analytical 模式可围绕已批准的核心结论组织证据层。
 - 上屏明细必须保持命名对象的具体语义。标准编号、文件名称、框架名称、倡议、机构或分类清单在来源只提供名称时可以作为来源原生标签或追溯信息，不得臆造其作用；来源同时提供具体内容、职责、规定或关系时，应在需要自读的页面上保留相应业务语义。
