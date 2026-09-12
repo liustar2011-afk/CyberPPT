@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import copy
-
 from cyberppt.script_quality.parsing import parse_script_markdown
 from script_engine.contracts import (
     check_author_field_contract,
     lint_final_script,
     validate_final_script,
 )
+from script_engine.fidelity_text_contracts import FIDELITY_TEXT_MAX_ITEMS
 from script_engine.render import render_stage02_markdown
 
 
@@ -106,6 +105,17 @@ def test_v12_rejects_invalid_fidelity_visibility() -> None:
     payload["slides"][0]["fidelity_text"][0]["visibility"] = "always"
     issues = validate_final_script(payload)
     assert any("visibility" in issue for issue in issues)
+
+
+def test_v12_capacity_overage_is_not_a_schema_blocker() -> None:
+    payload = _v12_payload()
+    items = [
+        {"text": f"保真项{i}", "visibility": "required"}
+        for i in range(FIDELITY_TEXT_MAX_ITEMS + 1)
+    ]
+    payload["slides"][0]["fidelity_text"] = items
+    payload["slides"][0]["full_copy"] += "".join(item["text"] for item in items)
+    assert validate_final_script(payload) == []
 
 
 def test_v11_still_requires_authored_onscreen() -> None:
