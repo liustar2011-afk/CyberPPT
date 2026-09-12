@@ -27,6 +27,13 @@ def _parse_json(text: str) -> dict[str, Any]:
     return payload
 
 
+def _read_json_object(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"JSON root must be an object: {path}")
+    return payload
+
+
 def _rapidocr(image_path: Path) -> list[dict[str, Any]]:
     try:
         from rapidocr_onnxruntime import RapidOCR
@@ -92,6 +99,85 @@ def _canonical_fidelity_items(
         seen.add(key)
         values.append({"text": text, "visibility": visibility})
     return values
+
+
+def _resolve_path(raw: str, *, base: Path) -> Path:
+    candidate = Path(raw).expanduser()
+    if not candidate.is_absolute():
+        candidate = base / candidate
+    return candidate.resolve()
+
+
+def _resolve_fidelity_from_stage02_artifacts(
+    image_path: Path,
+) -> tuple[list[dict[str, str]], dict[str, Any] | None]:
+    """Resolve fidelity through the persisted manifest -> canonical intake link.
+
+    Stage 02 already persists ``stage02_script_input.path`` in the page manifest.
+    Reusing that pointer avoids a second copy of the literal-preservation contract
+    while still making production image QA consume the canonical intake.
+    """
+
+    manifest_path = image_path.parent / "page_image_pairs.json"
+    if not manifest_path.is_file():
+        return [], None
+    manifest = _read_json_object(manifest_path)
+    page_number: int | None = None
+    pair_input_path = ""
+    for pair in manifest.get("pairs") or []:
+        if not isinstance(pair, dict):
+            continue
+        full = pair.get("full") if isinstance(pair.get("full"), dict) else {}
+        raw_path = str(full.get("path") or "").strip()
+        if not raw_path:
+            continue
+        if _resolve_path(raw_path, base=manifest_path.parent) != image_path:
+            continue
+        try:
+            page_number = int(pair.get("page_number"))
+        except (TypeError, ValueError):
+            page_number = None
+        pair_input_path = str(pair.get("stage02_script_input") or "").strip()
+        break
+    if page_number is None:
+        return [], None
+
+    manifest_input = manifest.get("stage02_script_input")
+    root_input_path = (
+        str(manifest_input.get("path") or "").strip()
+        if isinstance(manifest_input, dict)
+        else ""
+    )
+    raw_input_path = root_input_path or pair_input_path
+    if not raw_input_path:
+        return [], None
+    intake_path = _resolve_path(raw_input_path, base=manifest_path.parent)
+    if not intake_path.is_file():
+        raise FileNotFoundError(
+            f"Stage 02 fidelity intake referenced by image manifest is missing: {intake_path}"
+        )
+    intake = _read_json_object(intake_path)
+    page_record = next(
+        (
+            page
+            for page in intake.get("pages") or []
+            if isinstance(page, dict)
+            and int(page.get("page_number") or 0) == page_number
+        ),
+        None,
+    )
+    if page_record is None:
+        raise ValueError(
+            f"Stage 02 fidelity intake has no page {page_number}: {intake_path}"
+        )
+    fidelity = _canonical_fidelity_items(page_record.get("fidelity_text") or [])
+    return fidelity, {
+        "mode": "canonical_stage02_intake",
+        "manifest": str(manifest_path.resolve()),
+        "intake": str(intake_path),
+        "page_number": page_number,
+        "intake_semantic_sha256": str(intake.get("semantic_sha256") or ""),
+    }
 
 
 def _ocr_text_values(items: list[dict[str, Any]]) -> list[str]:
@@ -189,12 +275,21 @@ def audit_generated_image_text(
     """Check rendered glyphs plus explicit fidelity literals before enhancement.
 
     Ordinary ``script_text`` remains semantic context only and is never used for
-    OCR exact-copy alignment. Only explicit ``fidelity_text`` participates in
-    literal-preservation QA.
+    OCR exact-copy alignment. If callers do not pass fidelity explicitly, the
+    gate resolves it through the persisted image manifest's canonical Stage 02
+    intake pointer. This keeps one literal authority across first generation,
+    imported-image revalidation, registered-source recovery and approved-image
+    import without duplicating fidelity into a second runtime store.
     """
     image_path = image_path.expanduser().resolve()
     if not image_path.is_file():
         raise FileNotFoundError(f"generated image for text audit not found: {image_path}")
+    fidelity_source: dict[str, Any] | None = None
+    if fidelity_text is None:
+        resolved_fidelity, fidelity_source = _resolve_fidelity_from_stage02_artifacts(image_path)
+        fidelity_text = resolved_fidelity
+    else:
+        fidelity_source = {"mode": "explicit_argument"}
     if vision_runner is None:
         from scripts.imagegen_pipeline.providers.codex_oauth_image import run_codex_vision_text
 
@@ -261,6 +356,7 @@ def audit_generated_image_text(
         "observed_text": payload.get("observed_text", []),
         "ocr_items": ocr_items,
         "fidelity_text": canonical_fidelity,
+        "fidelity_source": fidelity_source,
         "summary": str(payload.get("summary") or ""),
         "required_action": None if valid else "regenerate_image_for_text_integrity_before_enhancement",
     }

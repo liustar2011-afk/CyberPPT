@@ -20,6 +20,54 @@ def _vision(issues=None):
     )
 
 
+def _bind_stage02_fidelity(
+    image_path: Path,
+    *,
+    fidelity_text: list[dict[str, str]],
+    semantic_sha256: str = "semantic-hash",
+) -> Path:
+    project = image_path.parent / "project"
+    intake_path = project / "workbench/stages/02-input/script-intake.json"
+    intake_path.parent.mkdir(parents=True, exist_ok=True)
+    intake_path.write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.stage02_script_input.v1",
+                "semantic_sha256": semantic_sha256,
+                "pages": [
+                    {
+                        "page_number": 1,
+                        "page_id": "P01",
+                        "fidelity_text": fidelity_text,
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = image_path.parent / "page_image_pairs.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "stage02_script_input": {
+                    "path": str(intake_path),
+                    "schema": "cyberppt.stage02_script_input.v1",
+                },
+                "pairs": [
+                    {
+                        "page_number": 1,
+                        "full": {"path": str(image_path)},
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    return intake_path
+
+
 def test_text_gate_accepts_clean_text(tmp_path: Path) -> None:
     result = audit_generated_image_text(
         _image(tmp_path), script_text="数据产品\n数据服务", vision_runner=_vision(),
@@ -183,3 +231,74 @@ def test_ordinary_script_text_mismatch_still_does_not_create_exact_copy_failure(
     )
     assert result["valid"] is True
     assert result["scope"] == "typo_and_gibberish_only"
+
+
+def test_text_gate_resolves_required_fidelity_from_canonical_stage02_intake(tmp_path: Path) -> None:
+    image = _image(tmp_path)
+    intake = _bind_stage02_fidelity(
+        image,
+        fidelity_text=[{"text": "2028年", "visibility": "required"}],
+        semantic_sha256="fidelity-semantic-hash",
+    )
+
+    result = audit_generated_image_text(
+        image,
+        script_text="普通正文不再承担逐字锁定。",
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "到2028年完成", "confidence": .99, "bbox": []}
+        ],
+    )
+
+    assert result["valid"] is True
+    assert result["fidelity_text"] == [{"text": "2028年", "visibility": "required"}]
+    assert result["fidelity_source"]["mode"] == "canonical_stage02_intake"
+    assert result["fidelity_source"]["intake"] == str(intake.resolve())
+    assert result["fidelity_source"]["intake_semantic_sha256"] == "fidelity-semantic-hash"
+
+
+def test_text_gate_canonical_intake_required_fidelity_blocks_existing_image_reuse(tmp_path: Path) -> None:
+    image = _image(tmp_path)
+    _bind_stage02_fidelity(
+        image,
+        fidelity_text=[{"text": "统一入口", "visibility": "required"}],
+    )
+
+    result = audit_generated_image_text(
+        image,
+        script_text="正文允许重新组织。",
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "业务协同", "confidence": .99, "bbox": []}
+        ],
+    )
+
+    assert result["valid"] is False
+    assert result["issues"][0]["type"] == "fidelity_required_missing"
+    assert result["fidelity_source"]["page_number"] == 1
+
+
+def test_text_gate_does_not_silently_ignore_missing_bound_stage02_intake(tmp_path: Path) -> None:
+    image = _image(tmp_path)
+    missing = tmp_path / "missing-intake.json"
+    (tmp_path / "page_image_pairs.json").write_text(
+        json.dumps(
+            {
+                "stage02_script_input": {"path": str(missing)},
+                "pairs": [{"page_number": 1, "full": {"path": str(image)}}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    try:
+        audit_generated_image_text(
+            image,
+            script_text="正文",
+            vision_runner=_vision(),
+            ocr_runner=lambda _path: [],
+        )
+    except FileNotFoundError as exc:
+        assert "fidelity intake" in str(exc)
+    else:
+        raise AssertionError("bound Stage 02 intake must not disappear silently")
