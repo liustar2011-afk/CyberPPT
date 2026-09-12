@@ -221,6 +221,94 @@ class PageArtifactSpecTests(unittest.TestCase):
         self.assertNotIn("Do not discuss the next chapter", serialized)
         self.assertNotIn("SU-EXAMPLE-PARAGRAPH-01", serialized)
 
+    def test_runtime_content_sources_project_as_rewriteable_copy(self) -> None:
+        for onscreen_source in (
+            "full_copy_stage02_source",
+            "external_content_stage02_source",
+        ):
+            with self.subTest(onscreen_source=onscreen_source):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    handoff_page, visual_page, style_lock = self._inputs(root)
+                    handoff_page["onscreen_source"] = onscreen_source
+                    handoff_page["content_integrity"] = {
+                        "root_nodes": ["P07-R01", "P07-R02"],
+                        "nodes": [
+                            {
+                                "text_id": "P07-T01",
+                                "root_id": "P07-R01",
+                                "text": "Governed input",
+                                "ordinal": 1,
+                                "content_role": "detail",
+                                "source_level": 1,
+                            },
+                            {
+                                "text_id": "P07-T02",
+                                "root_id": "P07-R02",
+                                "text": "Traceable result",
+                                "ordinal": 2,
+                                "content_role": "detail",
+                                "source_level": 1,
+                            },
+                        ],
+                    }
+
+                    spec = build_page_artifact_spec(
+                        handoff_page=handoff_page,
+                        visual_page=visual_page,
+                        style_lock=style_lock,
+                        script_input_sha256="a" * 64,
+                        visual_source_sha256="b" * 64,
+                    )
+
+                self.assertIsNotNone(spec.copy_contract)
+                self.assertEqual((), spec.copy_contract.locked_copy)
+                self.assertEqual(
+                    ("Governed input", "Traceable result"),
+                    tuple(item.source_text for item in spec.copy_contract.rewriteable_copy),
+                )
+
+    def test_legacy_authored_source_remains_locked_in_artifact_copy_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            handoff_page["content_integrity"] = {
+                "root_nodes": ["P07-R01", "P07-R02"],
+                "nodes": [
+                    {
+                        "text_id": "P07-T01",
+                        "root_id": "P07-R01",
+                        "text": "Governed input",
+                        "ordinal": 1,
+                        "content_role": "detail",
+                        "source_level": 1,
+                    },
+                    {
+                        "text_id": "P07-T02",
+                        "root_id": "P07-R02",
+                        "text": "Traceable result",
+                        "ordinal": 2,
+                        "content_role": "detail",
+                        "source_level": 1,
+                    },
+                ],
+            }
+
+            spec = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=visual_page,
+                style_lock=style_lock,
+                script_input_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+
+        self.assertIsNotNone(spec.copy_contract)
+        self.assertEqual((), spec.copy_contract.rewriteable_copy)
+        self.assertEqual(
+            ("Governed input", "Traceable result"),
+            tuple(item.text for item in spec.copy_contract.locked_copy),
+        )
+
     def test_requires_authored_onscreen_text_as_the_only_visible_authority(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

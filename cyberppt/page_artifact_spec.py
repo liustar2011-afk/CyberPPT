@@ -810,8 +810,18 @@ def build_page_artifact_spec(
                 if existing and existing != region.id:
                     raise ValueError(f"visible text {text_id!r} is owned by multiple macro regions")
                 region_by_text_id[text_id] = region.id
+    rewriteable_source = str(handoff_page.get("onscreen_source") or "").strip()
+    rewriteable_text_ids = (
+        tuple(binding.text_id for binding in visible_text_bindings)
+        if rewriteable_source in {"full_copy_stage02_source", "external_content_stage02_source"}
+        else ()
+    )
     copy_contract = (
-        build_copy_contract(visible_text_bindings, region_by_text_id=region_by_text_id)
+        build_copy_contract(
+            visible_text_bindings,
+            region_by_text_id=region_by_text_id,
+            explicit_rewriteable_text_ids=rewriteable_text_ids,
+        )
         if visible_text_bindings
         else None
     )
