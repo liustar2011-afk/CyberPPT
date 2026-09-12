@@ -67,7 +67,7 @@ def _audit_lean_authored_source_consumption(
         issues.append(
             "AUTHOR_SOURCE_CONSUMPTION_TOO_NARROW: usable evidence covers only "
             f"{len(distinct_statements)} distinct source fact(s), fewer than the required "
-            f"{minimum_distinct}; a strict sourced page cannot rest the whole argument on one fact"
+            f"{minimum_distinct}; a strict sourced page cannot rest all source-backed content on one fact"
         )
 
     full_copy = str(slide.get("full_copy") or "")
@@ -88,8 +88,8 @@ def _audit_lean_authored_source_consumption(
             "AUTHOR_FULL_COPY_TOO_THIN: full_copy uses "
             f"{len(substantive_usable_refs)} substantive source facts but exposes only "
             f"{len(paragraphs)} substantive paragraph(s); at least {required_paragraphs} "
-            "argument paragraph(s) are required so the complete copy preserves an "
-            "audience-facing reasoning hierarchy before onscreen compression"
+            "source-backed content paragraph(s) are required so the complete copy preserves an "
+            "audience-facing content hierarchy"
         )
 
     selected_source_statements = [
