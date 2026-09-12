@@ -146,6 +146,9 @@ def locked_onscreen_text(
 MAX_IMAGE_LOCKED_LINES = 7
 MAX_IMAGE_LOCKED_LINE_CHARS = 14
 MAX_IMAGE_LOCKED_CHARS = 84
+_STAGE02_REWRITEABLE_SOURCES = frozenset(
+    {"full_copy_stage02_source", "external_content_stage02_source"}
+)
 
 
 def _fidelity_literals(page: ScriptPage, *, visibility: str) -> tuple[str, ...]:
@@ -202,15 +205,17 @@ def select_image_locked_text(
 ) -> str:
     """Return the exact-copy literals for this script generation.
 
-    Final Script 1.2 exact-copy authority comes exclusively from explicit
-    ``fidelity_text`` items marked ``required``.  Legacy 1.0/1.1 pages retain
-    their historical selector only as a version-compatibility path; the new
-    contract never scans 1.2 prose, module titles, numbers, dates, percentages
-    or quoted phrases to invent locks.
+    Final Script 1.2 and external Stage 02 content sources take exact-copy
+    authority exclusively from explicit ``fidelity_text`` items marked
+    ``required``. Legacy authored-onscreen pages retain their historical
+    selector only as a compatibility path; rewriteable Stage 02 content never
+    scans prose, module titles, numbers, dates, percentages or quoted phrases
+    to invent locks.
     """
 
     required = _fidelity_literals(page, visibility="required")
-    if required or str(getattr(page, "onscreen_source", "") or "") == "full_copy_stage02_source":
+    onscreen_source = str(getattr(page, "onscreen_source", "") or "").strip()
+    if required or onscreen_source in _STAGE02_REWRITEABLE_SOURCES:
         return "\n".join(required).strip()
     return _legacy_image_locked_text(page, visual_context)
 
