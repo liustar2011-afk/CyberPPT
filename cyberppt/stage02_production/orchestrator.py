@@ -10,6 +10,7 @@ from .models import (
     Stage02ProductionResult,
     Stage02RunOptions,
 )
+from .page_reuse import apply_page_local_reuse
 from .preflight import prepare_preflight, read_json, resolve_image_model, write_json
 from .reconstruction_stage import run_reconstruction_stage
 from .rhythm_stage import run_full_image_rhythm_stage
@@ -74,7 +75,17 @@ def run_production(
     deps = dependencies or default_stage02_dependencies()
     context = prepare_preflight(options)
     options = resolve_image_model(options, context.build_dir)
+    prior_manifest_path = context.build_dir / "page_image_pairs.json"
+    prior_manifest = read_json(prior_manifest_path) if prior_manifest_path.is_file() else None
     manifest = prepare_manifest(context, options)
+    apply_page_local_reuse(
+        manifest=manifest.manifest,
+        prior_manifest=prior_manifest,
+        project=context.project,
+        production_mode=context.production_mode,
+        manifest_path=manifest.manifest_path,
+        build_context_path=manifest.build_context_path,
+    )
     images = run_image_stage(context, manifest, options, deps)
     if options.require_images or (options.production_build and not options.dry_run_images):
         normalize_audited_manifest_images(
