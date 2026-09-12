@@ -173,7 +173,6 @@
           "full_copy": {"type": "string"},
           "fidelity_text": {
             "type": "array",
-            "maxItems": 8,
             "items": {"$ref": "#/$defs/fidelityItem"}
           },
           "onscreen": {
