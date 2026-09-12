@@ -336,6 +336,7 @@ def render_content_first_prompt(
         ]
     return relation, "\n".join(parts).strip() + "\n"
 
+
 def compile_page_prompt(
     page: ScriptPage,
     style_lock: Path,
@@ -516,6 +517,7 @@ def compile_page_prompt(
         assert_deliverable_prompt(prompt)
         if EVIDENCE_ID_RE.search(prompt):
             raise ValueError(f"{page.page_id} ImageGen prompt still contains evidence IDs")
+        fidelity_items = getattr(page, "fidelity_text", ()) or ()
         return CompiledPagePrompt(
             prompt=prompt,
             compiler_version=prompt_compiler,
@@ -549,7 +551,11 @@ def compile_page_prompt(
                 "style_lock": str(style_lock),
             },
             presentation=presentation,
-            image_locked_text=select_image_locked_text(page, visual_context),
+            image_locked_text=(
+                select_image_locked_text(page, visual_context)
+                if fidelity_items
+                else ""
+            ),
             editable_body_text=page.onscreen_text.strip(),
             semantic_structure=semantic_structure,
             text_render_mode=resolved_text_render_mode,
