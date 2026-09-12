@@ -146,6 +146,9 @@ def locked_onscreen_text(
 MAX_IMAGE_LOCKED_LINES = 7
 MAX_IMAGE_LOCKED_LINE_CHARS = 14
 MAX_IMAGE_LOCKED_CHARS = 84
+_STAGE02_REWRITEABLE_SOURCES = frozenset(
+    {"full_copy_stage02_source", "external_content_stage02_source"}
+)
 
 
 def _fidelity_literals(page: ScriptPage, *, visibility: str) -> tuple[str, ...]:
@@ -202,15 +205,17 @@ def select_image_locked_text(
 ) -> str:
     """Return the exact-copy literals for this script generation.
 
-    Final Script 1.2 exact-copy authority comes exclusively from explicit
-    ``fidelity_text`` items marked ``required``.  Legacy 1.0/1.1 pages retain
-    their historical selector only as a version-compatibility path; the new
-    contract never scans 1.2 prose, module titles, numbers, dates, percentages
-    or quoted phrases to invent locks.
+    Final Script 1.2 and external Stage 02 content sources take exact-copy
+    authority exclusively from explicit ``fidelity_text`` items marked
+    ``required``. Legacy 1.0/1.1 authored-onscreen pages retain their historical
+    selector only as a version-compatibility path; rewriteable content sources
+    never scan prose, module titles, numbers, dates, percentages or quoted
+    phrases to invent locks.
     """
 
     required = _fidelity_literals(page, visibility="required")
-    if required or str(getattr(page, "onscreen_source", "") or "") == "full_copy_stage02_source":
+    onscreen_source = str(getattr(page, "onscreen_source", "") or "").strip()
+    if required or onscreen_source in _STAGE02_REWRITEABLE_SOURCES:
         return "\n".join(required).strip()
     return _legacy_image_locked_text(page, visual_context)
 
@@ -218,11 +223,48 @@ def select_image_locked_text(
 def select_conditional_fidelity_text(page: ScriptPage) -> str:
     """Return explicit ``if_rendered`` fidelity literals.
 
-    These literals may be omitted from the image.  If ImageGen chooses to draw
+    These literals may be omitted from the image. If ImageGen chooses to draw
     one, downstream text QA must require an exact rendering.
     """
 
     return "\n".join(_fidelity_literals(page, visibility="if_rendered")).strip()
+
+
+def render_fidelity_prompt_contract(page: ScriptPage) -> str:
+    """Render the model-facing literal contract without upgrading normal copy.
+
+    ``required`` and ``if_rendered`` have deliberately different obligations:
+    the former must be visible and exact, while the latter may be absent and is
+    constrained only if it is rendered. Ordinary content remains governed by
+    the page's rewriteable content-material contract.
+    """
+
+    required = _fidelity_literals(page, visibility="required")
+    conditional = _fidelity_literals(page, visibility="if_rendered")
+    if not required and not conditional:
+        return ""
+
+    lines = [
+        "【保真文字｜逐字合同】",
+        "本区块只约束下列显式保真项；页面内容素材中的其他文字仍可按既有合同提炼、改写、合并、精简和重组。",
+    ]
+    if required:
+        lines.extend(
+            [
+                "Required｜必须出现且逐字准确：",
+                "以下每项必须在最终图片中可见地出现至少一次；文字必须逐字准确，不得改写、缩写、同义替换或遗漏；仅允许不改变字符内容的合理换行。",
+                *(f"- {text}" for text in required),
+            ]
+        )
+    if conditional:
+        lines.extend(
+            [
+                "If rendered｜可以省略，若出现则逐字准确：",
+                "以下每项可以完全不出现，不得为了满足本区块而强制添加；若最终图片中出现该项，必须使用下列完整准确写法，不得近似改写、缩写或替换。",
+                *(f"- {text}" for text in conditional),
+            ]
+        )
+    return "\n".join(lines).strip()
 
 
 def _semantic_phrase_digest(text: str, *, limit: int = 8) -> list[str]:
@@ -303,10 +345,10 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
     """Load a selected style with a non-weakenable Style 09 baseline.
 
     Project locks are snapshots and older Style 09 locks may contain experimental
-    scene-first wording.  Preserve their selected palette, but always compile
+    scene-first wording. Preserve their selected palette, but always compile
     Style 09 from the canonical library contract so a historical lock cannot
     silently weaken the text-led, single-medium presentation rules.
-"""
+    """
 
     payload = load_style_lock(style_lock)
     style = payload.get("style")
