@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cyberppt.local/contracts/author-preflight.schema.json",
+  "title": "CyberPPT Author Preflight Manifest v2",
+  "type": "object",
+  "required": [
+    "schema",
+    "builder_version",
+    "generated_at",
+    "authoring_mode",
+    "inputs",
+    "pages",
+    "summary",
+    "issues"
+  ],
+  "properties": {
+    "schema": {"const": "cyberppt.author_preflight.v2"},
+    "builder_version": {"const": "stage1-author-preflight-v2"},
+    "generated_at": {"type": "string", "minLength": 1},
+    "authoring_mode": {
+      "type": "string",
+      "enum": ["faithful", "analytical"]
+    },
+    "inputs": {"$ref": "#/$defs/inputs"},
+    "pages": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/page"}
+    },
+    "summary": {"$ref": "#/$defs/summary"},
+    "issues": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "inputs": {
+      "type": "object",
+      "required": [
+        "deck_plan_sha256",
+        "foundation_sha256",
+        "source_index_sha256"
+      ],
+      "properties": {
+        "deck_plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "foundation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "source_index_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "page": {
+      "type": "object",
+      "required": [
+        "page_id",
+        "page_role",
+        "source_refs",
+        "unit_ids",
+        "gate_status",
+        "freshness",
+        "exact_source_status",
+        "issues"
+      ],
+      "properties": {
+        "page_id": {"type": "string"},
+        "page_role": {"type": "string"},
+        "source_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "unit_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "gate_status": {
+          "type": "string",
+          "enum": ["passed", "blocked", "missing", "stale", "not_applicable"]
+        },
+        "freshness": {
+          "type": "string",
+          "enum": ["fresh", "stale", "invalid", "missing", "not_applicable"]
+        },
+        "exact_source_status": {
+          "type": "string",
+          "enum": ["available", "unavailable", "not_applicable"]
+        },
+        "packet_path": {"type": "string", "minLength": 1},
+        "packet_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "issues": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"source_refs": {"minItems": 1}},
+            "required": ["source_refs"]
+          },
+          "then": {"properties": {"unit_ids": {"minItems": 1}}},
+          "else": {"properties": {"unit_ids": {"maxItems": 0}}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "passed",
+        "blocked",
+        "missing",
+        "stale",
+        "not_applicable",
+        "overall_status"
+      ],
+      "properties": {
+        "passed": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "missing": {"type": "integer", "minimum": 0},
+        "stale": {"type": "integer", "minimum": 0},
+        "not_applicable": {"type": "integer", "minimum": 0},
+        "overall_status": {
+          "type": "string",
+          "enum": ["passed", "blocked"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

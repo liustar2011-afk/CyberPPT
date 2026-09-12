@@ -51,6 +51,25 @@ def build_parser(validation_kinds: Iterable[str]) -> argparse.ArgumentParser:
         help="Optional derived packet path, normally script/.cache/page-source/Pxx.json",
     )
 
+    author_preflight = sub.add_parser(
+        "author-preflight",
+        help="Build the project-level hard gate from fresh per-page exact-source packets",
+    )
+    author_preflight.add_argument("plan")
+    author_preflight.add_argument("foundation")
+    author_preflight.add_argument(
+        "--source-index",
+        help="Override source-index.v2 path; defaults to <foundation-dir>/.cache/source-index.json",
+    )
+    author_preflight.add_argument(
+        "--packet-dir",
+        help="Override Page Source Packet directory; defaults to <foundation-dir>/.cache/page-source",
+    )
+    author_preflight.add_argument(
+        "--output",
+        help="Override manifest path; defaults to <foundation-dir>/.cache/author-preflight.json",
+    )
+
     audit_final = sub.add_parser(
         "audit-final",
         help="Audit PLAN-to-AUTHOR semantic inheritance and high-risk source-boundary rules",
@@ -77,9 +96,11 @@ def build_parser(validation_kinds: Iterable[str]) -> argparse.ArgumentParser:
 
     render = sub.add_parser(
         "render-stage02",
-        help="Render a lint-passing, Stage 02-compatible Markdown boundary",
+        help="Render a lint-passing Stage 02 boundary only after Stage 01 author preflight passes",
     )
     render.add_argument("input")
+    render.add_argument("--plan", required=True)
+    render.add_argument("--foundation", required=True)
     render.add_argument("--output", default="dist/final-script.md")
 
     check_refs = sub.add_parser(

@@ -2,9 +2,117 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from script_engine.author_preflight import author_preflight_report
 from script_engine.cli import main
+from script_engine.final_source_provenance import source_provenance_for_page
+from script_engine.page_source_command import page_source_report
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _write_render_gate(tmp_path: Path) -> tuple[Path, Path, dict]:
+    script_dir = tmp_path / "stage1-gate" / "script"
+    cache_dir = script_dir / ".cache"
+    packet_dir = cache_dir / "page-source"
+    packet_dir.mkdir(parents=True)
+    plan_path = script_dir / "deck-plan.json"
+    foundation_path = script_dir / "foundation.json"
+    source_index_path = cache_dir / "source-index.json"
+    packet_path = packet_dir / "P01.json"
+    preflight_path = cache_dir / "author-preflight.json"
+
+    plan = {
+        "authoring_mode": "faithful",
+        "pages": [
+            {
+                "id": "P01",
+                "title": "来源页",
+                "page_role": "content",
+                "source_refs": ["F1"],
+            }
+        ],
+    }
+    foundation = {
+        "facts": [
+            {
+                "id": "F1",
+                "statement": "用于 CLI 渲染测试的精确来源事实。",
+                "source_refs": ["SU-001"],
+            }
+        ]
+    }
+    source_index = {
+        "schema": "cyberppt.source_index.v2",
+        "units": [
+            {
+                "unit_id": "SU-001",
+                "source_id": "SRC-1",
+                "kind": "paragraph",
+                "heading_id": "H-01",
+                "text": "用于 CLI 渲染测试的精确来源事实。",
+                "locator": {"paragraph": 1},
+            }
+        ],
+    }
+    plan_path.write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
+    foundation_path.write_text(json.dumps(foundation, ensure_ascii=False), encoding="utf-8")
+    source_index_path.write_text(json.dumps(source_index, ensure_ascii=False), encoding="utf-8")
+
+    packet, packet_exit = page_source_report(
+        plan_path,
+        foundation_path,
+        "P01",
+        source_index_path=source_index_path,
+        output_path=packet_path,
+    )
+    assert packet_exit == 0
+    assert packet["status"] == "passed"
+    manifest, preflight_exit = author_preflight_report(
+        plan_path,
+        foundation_path,
+        source_index_path=source_index_path,
+        packet_dir=packet_dir,
+        output_path=preflight_path,
+    )
+    assert preflight_exit == 0
+    assert manifest["summary"]["overall_status"] == "passed"
+    return plan_path, foundation_path, manifest
+
+
+def _write_gated_final(
+    tmp_path: Path,
+    payload: dict | None = None,
+    *,
+    filename: str = "gated-final-script.json",
+) -> tuple[Path, Path, Path]:
+    plan_path, foundation_path, manifest = _write_render_gate(tmp_path)
+    final_payload = payload or json.loads(
+        (ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8")
+    )
+    slide = final_payload["slides"][0]
+    slide["source_refs"] = list(manifest["pages"][0]["source_refs"])
+    slide["source_provenance"] = source_provenance_for_page(manifest, "P01")
+    final_path = tmp_path / filename
+    final_path.write_text(json.dumps(final_payload, ensure_ascii=False), encoding="utf-8")
+    return final_path, plan_path, foundation_path
+
+
+def _render_args(
+    input_path: Path,
+    output_path: Path,
+    plan_path: Path,
+    foundation_path: Path,
+) -> list[str]:
+    return [
+        "render-stage02",
+        str(input_path),
+        "--plan",
+        str(plan_path),
+        "--foundation",
+        str(foundation_path),
+        "--output",
+        str(output_path),
+    ]
 
 
 def test_cli_validate_final_passes_on_example(capsys) -> None:
@@ -160,9 +268,9 @@ def test_cli_trace_composed_reports_priorities_and_blocks_source_absent_number(
 
 
 def test_cli_render_stage02_writes_output_file(tmp_path, capsys) -> None:
-    input_path = ROOT / "examples" / "final-script.example.json"
+    input_path, plan_path, foundation_path = _write_gated_final(tmp_path)
     output_path = tmp_path / "nested" / "final-script.md"
-    exit_code = main(["render-stage02", str(input_path), "--output", str(output_path)])
+    exit_code = main(_render_args(input_path, output_path, plan_path, foundation_path))
     printed = capsys.readouterr().out.strip()
     assert exit_code == 0
     assert printed == str(output_path.resolve())
@@ -174,10 +282,13 @@ def test_cli_render_stage02_writes_output_file(tmp_path, capsys) -> None:
 def test_cli_render_stage02_fails_on_invalid_input(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     payload["slides"][0]["page_type"] = "sidebar"
-    broken = tmp_path / "broken.json"
-    broken.write_text(json.dumps(payload), encoding="utf-8")
+    broken, plan_path, foundation_path = _write_gated_final(
+        tmp_path,
+        payload,
+        filename="broken.json",
+    )
     output_path = tmp_path / "out.md"
-    exit_code = main(["render-stage02", str(broken), "--output", str(output_path)])
+    exit_code = main(_render_args(broken, output_path, plan_path, foundation_path))
     captured = capsys.readouterr()
     err = json.loads(captured.err)
     assert exit_code == 1
@@ -190,11 +301,14 @@ def test_cli_render_stage02_allows_semantically_incomplete_heading_as_advisory(t
     payload["slides"][0]["onscreen"] = [
         {"heading": "建设框架：四大方向、八项能力", "text": "覆盖数据基础设施全生命周期"},
     ]
-    script = tmp_path / "advisory.json"
+    script, plan_path, foundation_path = _write_gated_final(
+        tmp_path,
+        payload,
+        filename="advisory.json",
+    )
     output_path = tmp_path / "final-script.md"
-    script.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
-    exit_code = main(["render-stage02", str(script), "--output", str(output_path)])
+    exit_code = main(_render_args(script, output_path, plan_path, foundation_path))
     captured = capsys.readouterr()
 
     assert exit_code == 0
@@ -287,13 +401,16 @@ def test_cli_status_progresses_as_artifacts_are_added(tmp_path, capsys) -> None:
     (project_dir / "deck-plan.json").write_text(json.dumps(plan_payload), encoding="utf-8")
     exit_code = main(["status", str(project_dir)])
     out = json.loads(capsys.readouterr().out)
-    assert "脚本规划待确认" in out["stage"]
+    assert out["stage"] == "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
+    assert out["stage1"]["author_preflight"]["status"] == "not_run"
 
     final_payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     (project_dir / "dist" / "final-script.json").write_text(json.dumps(final_payload), encoding="utf-8")
     exit_code = main(["status", str(project_dir)])
     out = json.loads(capsys.readouterr().out)
-    assert out["stage"] == "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"
+    assert out["stage"] == "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
+    assert out["stage1"]["author_preflight"]["status"] == "not_run"
+    assert out["stage1"]["final_audit"]["status"] == "failed"
     assert out["final_script"]["page_count"] == len(final_payload["slides"])
 
 
@@ -315,7 +432,8 @@ def test_cli_status_supports_repository_source_and_script_layout(tmp_path, capsy
     out = json.loads(capsys.readouterr().out)
 
     assert exit_code == 0
-    assert "脚本规划待确认" in out["stage"]
+    assert out["stage"] == "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
+    assert out["stage1"]["author_preflight"]["status"] == "not_run"
     assert out["sources"] == ["brief.docx"]
     assert Path(out["foundation"]["path"]).parts[-2:] == ("script", "foundation.json")
     assert Path(out["deck_plan"]["path"]).parts[-2:] == ("script", "deck-plan.json")
@@ -350,7 +468,8 @@ def test_cli_status_does_not_apply_a_fixed_onscreen_density_floor(tmp_path, caps
     out = json.loads(capsys.readouterr().out)
 
     assert exit_code == 0
-    assert out["stage"] == "最终脚本文件已就绪，确定性检查通过；作者化完成情况由当前主 Agent 按 cyberppt-script-workflow 确认"
+    assert out["stage"] == "Stage1 Author Preflight 未通过：待补齐或刷新逐页精确来源证据"
+    assert out["stage1"]["author_preflight"]["status"] == "not_run"
     assert out["final_script"]["lint"] == "passed"
     assert out["final_script"].get("lint_warnings", []) == []
 
@@ -390,6 +509,7 @@ def test_cli_lint_reports_empty_warnings_list_on_clean_example(capsys) -> None:
     assert exit_code == 0
     assert out["warnings"] == []
 
+
 def test_cli_lint_fails_on_placeholder_speaker_notes(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
     payload["slides"][0]["speaker_notes"] = "过渡。"
@@ -400,6 +520,7 @@ def test_cli_lint_fails_on_placeholder_speaker_notes(tmp_path, capsys) -> None:
     assert exit_code == 1
     assert out["status"] == "failed"
     assert any("characters" in issue for issue in out["issues"])
+
 
 def test_cli_lint_declared_count_mismatch_is_a_warning_not_a_failure(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
@@ -427,6 +548,7 @@ def test_cli_lint_declared_count_mismatch_is_a_warning_not_a_failure(tmp_path, c
     assert exit_code == 0
     assert out["status"] == "passed"
     assert any("expects 5 visible peers" in warning for warning in out["warnings"])
+
 
 def test_cli_lint_flags_duplicate_onscreen_heading(tmp_path, capsys) -> None:
     payload = json.loads((ROOT / "examples" / "final-script.example.json").read_text(encoding="utf-8"))
@@ -468,9 +590,9 @@ def test_cli_outline_lists_slides_with_onscreen_module_counts(capsys) -> None:
 
 
 def test_cli_check_sync_passes_when_markdown_matches_fresh_render(tmp_path, capsys) -> None:
-    final_path = ROOT / "examples" / "final-script.example.json"
+    final_path, plan_path, foundation_path = _write_gated_final(tmp_path)
     markdown_path = tmp_path / "final-script.md"
-    main(["render-stage02", str(final_path), "--output", str(markdown_path)])
+    main(_render_args(final_path, markdown_path, plan_path, foundation_path))
     capsys.readouterr()
     exit_code = main(["check-sync", str(final_path), str(markdown_path)])
     out = json.loads(capsys.readouterr().out)
@@ -482,9 +604,9 @@ def test_cli_check_sync_passes_when_markdown_matches_fresh_render(tmp_path, caps
 
 
 def test_cli_check_sync_fails_when_markdown_is_stale(tmp_path, capsys) -> None:
-    final_path = ROOT / "examples" / "final-script.example.json"
+    final_path, plan_path, foundation_path = _write_gated_final(tmp_path)
     markdown_path = tmp_path / "final-script.md"
-    main(["render-stage02", str(final_path), "--output", str(markdown_path)])
+    main(_render_args(final_path, markdown_path, plan_path, foundation_path))
     capsys.readouterr()
     with markdown_path.open("a", encoding="utf-8") as handle:
         handle.write("\nhand-edited drift\n")

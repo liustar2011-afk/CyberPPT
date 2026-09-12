@@ -63,7 +63,9 @@ def test_current_semantic_api_entries_have_identical_blocking_results() -> None:
     assert set(facade_warnings) == set(semantic_warnings)
 
 
-def test_current_file_report_uses_the_same_semantic_blockers(tmp_path: Path) -> None:
+def test_current_file_report_adds_preflight_gate_without_changing_semantic_blockers(
+    tmp_path: Path,
+) -> None:
     final_script, plan, foundation = _authorization_blocker_case()
     semantic_issues, semantic_warnings, _ = audit_final_script_semantic_contract(
         final_script,
@@ -74,15 +76,9 @@ def test_current_file_report_uses_the_same_semantic_blockers(tmp_path: Path) -> 
     final_path = tmp_path / "final-script.json"
     plan_path = tmp_path / "deck-plan.json"
     foundation_path = tmp_path / "foundation.json"
-    final_path.write_text(
-        json.dumps(final_script, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    final_path.write_text(json.dumps(final_script, ensure_ascii=False), encoding="utf-8")
     plan_path.write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
-    foundation_path.write_text(
-        json.dumps(foundation, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    foundation_path.write_text(json.dumps(foundation, ensure_ascii=False), encoding="utf-8")
 
     report, exit_code = final_audit_report(
         final_path,
@@ -91,5 +87,11 @@ def test_current_file_report_uses_the_same_semantic_blockers(tmp_path: Path) -> 
     )
 
     assert exit_code == 1
-    assert set(report["issues"]) == set(semantic_issues)
+    assert set(semantic_issues) <= set(report["issues"])
+    gate_issues = [
+        issue for issue in report["issues"] if issue.startswith("AUTHOR_PREFLIGHT_GATE:")
+    ]
+    assert gate_issues
+    assert any("AUTHOR_PREFLIGHT_SOURCE_INDEX_MISSING" in issue for issue in gate_issues)
+    assert report["author_preflight"]["status"] == "failed"
     assert set(report["warnings"]) == set(semantic_warnings)

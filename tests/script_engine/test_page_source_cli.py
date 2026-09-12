@@ -92,7 +92,7 @@ def test_page_source_cli_fails_when_page_is_unknown(tmp_path, capsys) -> None:
     report = json.loads(captured.err)
 
     assert exit_code == 1
-    assert report["status"] == "rewrite_required"
+    assert report["status"] == "blocked"
     assert report["issues"] == ["PAGE_SOURCE_PAGE_UNKNOWN: page 'P99' is not in deck-plan.json"]
 
 
@@ -105,5 +105,5 @@ def test_page_source_cli_fails_when_source_index_is_missing(tmp_path, capsys) ->
     report = json.loads(captured.err)
 
     assert exit_code == 1
-    assert report["status"] == "rewrite_required"
+    assert report["status"] == "blocked"
     assert report["issues"][0].startswith("PAGE_SOURCE_INDEX_MISSING:")

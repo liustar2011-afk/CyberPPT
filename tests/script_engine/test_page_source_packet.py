@@ -108,27 +108,76 @@ def test_page_source_packet_blocks_unknown_page_source_ref() -> None:
         {"schema": "cyberppt.source_index.v2", "units": []},
     )
 
-    assert packet["status"] == "rewrite_required"
+    assert packet["status"] == "blocked"
     assert packet["evidence"] == []
     assert packet["issues"] == [
         "PAGE_SOURCE_REF_UNKNOWN: page source ref 'UNKNOWN' is not in Foundation or source index"
     ]
+    assert packet["warnings"] == []
 
 
-def test_page_source_packet_warns_when_legacy_source_ref_has_no_v2_unit() -> None:
+def test_page_source_packet_blocks_when_exact_source_is_unresolved() -> None:
     packet = build_page_source_packet(
-        {"id": "P04", "title": "兼容来源", "source_refs": ["F1"]},
+        {"id": "P04", "title": "缺少原文", "source_refs": ["F1"]},
         {
             "facts": [
-                {"id": "F1", "statement": "兼容来源事实。", "source_refs": ["ST001"]}
+                {"id": "F1", "statement": "只有 Foundation 摘要。", "source_refs": ["SU-MISSING"]}
             ]
         },
         {"schema": "cyberppt.source_index.v2", "units": []},
     )
 
-    assert packet["status"] == "passed"
-    assert packet["evidence"][0]["statement"] == "兼容来源事实。"
+    assert packet["status"] == "blocked"
+    assert packet["evidence"][0]["statement"] == "只有 Foundation 摘要。"
     assert packet["evidence"][0]["exact_source_units"] == []
-    assert packet["warnings"] == [
-        "PAGE_SOURCE_EXACT_TEXT_UNRESOLVED: F1 has source refs ['ST001'] but none resolve in source-index.v2"
+    assert packet["issues"] == [
+        "PAGE_SOURCE_EXACT_TEXT_UNRESOLVED: F1 has source refs ['SU-MISSING'] but none resolve in source-index.v2"
     ]
+    assert packet["warnings"] == []
+
+
+def test_page_source_packet_blocks_when_source_unit_binding_is_missing() -> None:
+    packet = build_page_source_packet(
+        {"id": "P05", "title": "缺少绑定", "source_refs": ["F1"]},
+        {"facts": [{"id": "F1", "statement": "Foundation 事实没有绑定原始单元。"}]},
+        {"schema": "cyberppt.source_index.v2", "units": []},
+    )
+
+    assert packet["status"] == "blocked"
+    assert packet["issues"] == [
+        "PAGE_SOURCE_UNIT_BINDING_MISSING: F1 has no source-unit refs"
+    ]
+    assert packet["warnings"] == []
+
+
+def test_page_source_packet_blocks_partial_exact_source_resolution() -> None:
+    packet = build_page_source_packet(
+        {"id": "P06", "title": "部分原文", "source_refs": ["F1"]},
+        {
+            "facts": [
+                {
+                    "id": "F1",
+                    "statement": "事实依赖两个原始单元。",
+                    "source_refs": ["SU-001", "SU-MISSING"],
+                }
+            ]
+        },
+        {
+            "schema": "cyberppt.source_index.v2",
+            "units": [
+                {
+                    "unit_id": "SU-001",
+                    "source_id": "SRC-1",
+                    "kind": "paragraph",
+                    "text": "只解析到了第一个原始单元。",
+                }
+            ],
+        },
+    )
+
+    assert packet["status"] == "blocked"
+    assert packet["evidence"][0]["exact_source_units"][0]["unit_id"] == "SU-001"
+    assert packet["issues"] == [
+        "PAGE_SOURCE_EXACT_TEXT_PARTIAL: F1 has unresolved source refs ['SU-MISSING']"
+    ]
+    assert packet["warnings"] == []
