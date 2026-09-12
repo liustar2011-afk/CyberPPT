@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from script_engine.contracts import (
+from script_engine.contracts import check_fidelity_text_contract, lint_final_script
+from script_engine.fidelity_text_contracts import (
     FIDELITY_TEXT_MAX_EFFECTIVE_CHARS,
     FIDELITY_TEXT_MAX_ITEMS,
     canonicalize_fidelity_text,
-    check_fidelity_text_contract,
-    lint_final_script,
 )
 
 
