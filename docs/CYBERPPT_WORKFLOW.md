@@ -154,7 +154,7 @@ Deck Plan 默认将相邻来源章节按受众问题、内容角色和承接关�
 
 ### 6. 汇总与交付最终全稿
 
-以当前项目的 Foundation、轻量 Deck Plan、目标页来源证据和相邻页边界为依据，一次处理一张内容页。全文主旨和目录每套稿只加载一次；逐页仅回读当前页 `source_refs` 对应证据。默认 `script` profile 存在 v2 `.cache/source-index.json` 时，faithful AUTHOR 写作或实质重写每页前必须运行 `page-source`，读取该页完整 source units；packet 仅作为 `derived_runtime_context`，不构成第四个权威内容产物。strict/legacy 项目通过 Foundation 追溯 Source Truth；存在兼容 v2 source index 时同样可使用 `page-source`，否则使用其精确 Source Truth/source-consumption 绑定，不在 AUTHOR 阶段重新运行语义理解。
+以当前项目的 Foundation、轻量 Deck Plan、目标页来源证据和相邻页边界为依据，一次处理一张内容页。全文主旨和目录每套稿只加载一次；逐页仅回读当前页 `source_refs` 对应证据。默认 `script` profile 的 faithful AUTHOR 写作或实质重写每页前必须使用当前 `cyberppt.source_index.v2` 运行 `page-source`，读取该页完整 source units；全部目标页 Packet 更新后必须运行 `author-preflight`，只有当前项目和页面均为 `passed` 且 Packet 为 `fresh` 时才可进入 AUTHOR。Source Index、Packet 或 Preflight 缺失、陈旧、无效、部分解析或阻断时直接停止，不得回退到 Foundation preview 或模型记忆。Packet 与 Preflight 仅作为 `derived_runtime_context` / 运行证据，不构成新的内容权威。strict/legacy 项目通过 Foundation 追溯 Source Truth；存在兼容 v2 source index 时同样可使用 `page-source`，否则使用其精确 Source Truth/source-consumption 绑定，不在 AUTHOR 阶段重新运行语义理解。
 
 faithful 页面按以下顺序完成：
 
@@ -316,7 +316,8 @@ PPTX 组装支持三个正式分支：`editable` 为默认输出，`image` 输�
 
 `script/foundation.json` 是统一语义 Foundation；
 `script/.cache/source-index.json` 是来源派生索引；
-`script/.cache/page-source/*.json` 是逐页精确证据的派生运行时上下文。二者均不构成新的内容权威。
+`script/.cache/page-source/*.json` 是逐页精确证据的派生运行时上下文；
+`script/.cache/author-preflight.json` 是当前 Packet 与上游输入一致性的派生运行门禁。三者均不构成新的内容权威。
 
 ### Strict/legacy Source Foundation 权威产物
 
@@ -346,7 +347,7 @@ Stage 01 的权威内容链为 `foundation.json → deck-plan.json → dist/fina
 
 1. 当前 profile 的 Foundation 和语义验证通过；strict/legacy 另需 Source Truth 验证通过。
 2. 轻量 Deck Plan 已完成章节、页数、页面使命、来源边界和来源锚点检查，并经过人工规划停点。
-3. AUTHOR 已按当前 `authoring_mode` 完成逐页写作闭环；faithful 页面已完成精确原文回读、`full_copy → onscreen` 投影和来源忠实审计。
+3. AUTHOR 已按当前 `authoring_mode` 完成逐页写作闭环；默认 `script` profile 的 faithful 页面已使用 current v2 Source Index 生成 fresh Page Source Packet、通过 Author Preflight，并完成精确原文回读、`full_copy → onscreen` 投影和来源忠实审计。
 4. Stage 02 已建立当前脚本绑定的 handoff，脚本可以来自本项目或外部路径。
 5. 风格已由用户确认，并生成有效的 JSON 风格锁。
 6. 实际提示词检查通过；视觉结构准备与审计不再是前置步骤。
