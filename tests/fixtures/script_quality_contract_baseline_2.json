@@ -13,6 +13,7 @@
         "evidence_map_refs": [
           "ST002"
         ],
+        "fidelity_text": [],
         "field_order": [
           "页面类型",
           "页面标题",
