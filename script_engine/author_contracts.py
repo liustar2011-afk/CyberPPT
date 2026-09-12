@@ -33,6 +33,12 @@ def _authoring_mode(final_script: dict[str, Any]) -> str:
     return "analytical" if deck.get("authoring_mode") == "analytical" else "faithful"
 
 
+def _stage1_owns_onscreen(final_script: dict[str, Any]) -> bool:
+    """Return whether this Final Script version still makes AUTHOR own onscreen copy."""
+
+    return str(final_script.get("version") or "1.0").strip() in {"1.0", "1.1"}
+
+
 def _onscreen_lines(slide: dict[str, Any]) -> list[str]:
     lines: list[str] = []
     for module in slide.get("onscreen") or []:
@@ -51,16 +57,21 @@ def _onscreen_lines(slide: dict[str, Any]) -> list[str]:
 
 
 def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
-    """Enforce mode-aware mechanical AUTHOR field requirements.
+    """Enforce mode- and version-aware mechanical AUTHOR field requirements.
 
     Faithful pages may use the source-native minimum. When a faithful page opts in
-    to an explicit ``argument`` structure, the authored optional
-    fields are checked for internal quality but are still not required on other
-    faithful pages. Analytical pages retain the stronger supporting-field contract.
+    to an explicit ``argument`` structure, the authored optional fields are checked
+    for internal quality but are still not required on other faithful pages.
+
+    Final Script 1.0/1.1 retain Stage 01-authored ``onscreen`` copy.  Version 1.2
+    moves presentation-copy derivation downstream: AUTHOR owns ``full_copy`` and
+    narrowly scoped ``fidelity_text`` instead, while its fidelity structure is
+    validated by :mod:`script_engine.fidelity_text_contracts`.
     """
 
     issues: list[str] = []
     mode = _authoring_mode(final_script)
+    stage1_owns_onscreen = _stage1_owns_onscreen(final_script)
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict) or slide.get("page_type") != "content":
             continue
@@ -78,11 +89,12 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
                     f"AUTHOR_FIELD_REQUIRED: {prefix}.{field}: {mode} content pages require a non-empty {field}"
                 )
 
-        onscreen = slide.get("onscreen")
-        if not isinstance(onscreen, list) or not any(isinstance(item, dict) for item in onscreen):
-            issues.append(
-                f"AUTHOR_ONSCREEN_REQUIRED: {prefix}.onscreen: content pages require at least one authored onscreen module"
-            )
+        if stage1_owns_onscreen:
+            onscreen = slide.get("onscreen")
+            if not isinstance(onscreen, list) or not any(isinstance(item, dict) for item in onscreen):
+                issues.append(
+                    f"AUTHOR_ONSCREEN_REQUIRED: {prefix}.onscreen: Final Script 1.0/1.1 content pages require at least one authored onscreen module"
+                )
 
         mission = str(slide.get("mission") or "").strip()
         if mission and _MISSION_GENERIC_RE.fullmatch(mission):
@@ -170,16 +182,15 @@ def check_author_field_contract(final_script: dict[str, Any]) -> list[str]:
                 )
 
         notes = normalize_item_text(str(slide.get("speaker_notes") or ""))
-        comparison_lines = [
-            normalize_item_text(str(slide.get("core_message") or "")),
-            *(normalize_item_text(line) for line in _onscreen_lines(slide)),
-        ]
+        comparison_lines = [normalize_item_text(str(slide.get("core_message") or ""))]
+        if stage1_owns_onscreen:
+            comparison_lines.extend(normalize_item_text(line) for line in _onscreen_lines(slide))
         if notes and any(
             line and len(line) >= 12 and difflib.SequenceMatcher(None, notes, line).ratio() >= 0.88
             for line in comparison_lines
         ):
             issues.append(
-                f"AUTHOR_SPEAKER_NOTES_RESTATEMENT: {prefix}.speaker_notes directly restates visible copy; "
+                f"AUTHOR_SPEAKER_NOTES_RESTATEMENT: {prefix}.speaker_notes directly restates authored presentation copy; "
                 "add only incremental source-grounded context or omit the optional note"
             )
     return issues
