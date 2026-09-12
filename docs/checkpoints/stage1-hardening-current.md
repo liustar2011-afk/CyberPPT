@@ -1,114 +1,134 @@
 # Stage1 Hardening 当前检查点
 
-分支：`stage1-hardening`
-PR：#34
+状态：**已完成并合并**
 
-## 已完成
+主线合并：
 
-当前完成到收口批次 `9 / 子步骤 2`。
+- PR #34 `feat(stage1): harden faithful authoring source gate`
+- squash merge：`3e4410b58e96ca3eb89d7ab622973488807585e5`
+- 后续合同收敛：PR #36 `fix(stage1): converge faithful source-index gate contracts`
+- PR #36 squash merge：`40a6abaaa9231d94ff21b90211506f344a4bc3f0`
 
-### 批次 5：Final Script Source Provenance
-
-- Final Script 内容页强制要求 `source_provenance`。
-- 标准 page lineage 为：`packet_sha256 + source_refs + unit_ids`。
-- Final Script 1.1 同时保留 module / item 级 provenance；页面级 lineage 与模块级 semantic binding 职责分离。
-- `audit-final` 与 `render-stage02` 均验证 Final Script provenance 与当前 Author Preflight 一致性。
-
-### 批次 6：Native-source Fidelity Audit
-
-- Final Script 内容页直接与逐页 exact native source units 做高风险事实一致性校验。
-- 覆盖新增数字/日期、数字限定词丢失、明确范围限定词丢失、状态提升、责任强度提升、结论强度提升。
-- `audit-final` 与 `render-stage02` 统一使用 `native_source_fidelity_gate_issues()`。
-- Stage02 发现事实漂移时返回 `kind=native-source-fidelity`，不写出输出文件。
-
-### 批次 7：Project Status 接入 Stage1 Gate
-
-- `script_engine/project_status.py` 新增正式 `stage1` 状态区，集中输出：`source_index / foundation / deck_plan / author_preflight / final_script / final_audit`。
-- Author Preflight 状态不信任静态 Manifest，而是先重建 current preflight，再校验 Manifest 是否仍代表当前状态。
-- `author_preflight.pages` 输出逐页 `gate_status / freshness / exact_source_status / source_refs / unit_ids / issues`。
-- 顶层 `stage` 不再允许“无 Preflight 但 Final Script 存在”显示为已就绪。
-- 只有 `final_audit_report()` 真正通过后，项目才显示“可进入 Stage02”。
-- focused status tests 已覆盖：fresh / stale / manifest missing / packet blocked / final native fidelity failed。
-
-### 批次 8：测试与 CI 基线治理
-
-此前 3 个历史失败已完成治理：
-
-1. `FAITHFUL_RELATION_PROMOTED` 按现有 rule registry 的低置信度 warning 契约迁移测试；
-2. object-item code-only fixture 改为当前 taxonomy code 形态 `A1+B2`；
-3. Style 09 样例测试从过期 2:1 固定像素改为当前 16:9 高分辨率合同。
-
-旧 status 测试也全部迁移到新的 Stage1 Gate 契约，不保留“脚本文件存在即可就绪”的兼容行为。
-
-### 代码基线最终验证
-
-GitHub Actions run `34585423986`，代码 head `cea6b706a7b8e6e74f25ea2bde994831777f561b`：
-
-- Python 3.10：`2247 passed, 8 skipped, 42 warnings, 49 subtests passed`，0 failed；
-- Python 3.12：`2247 passed, 8 skipped, 42 warnings, 49 subtests passed`，0 failed；
-- OfficeCLI render smoke：passed；
-- Windows wheel smoke：passed；
-- macOS wheel smoke：passed；
-- workflow overall：success。
-
-至此，Stage1 hardening 代码层面已经恢复真实绿色基线。
-
-### 收口批次 9：运行合同固化
-
-已新增：
-
-`.agents/skills/cyberppt-script-workflow/references/stage1-faithful-gate-contract.md`
-
-合同区分两组关系：
-
-1. 事实权威：Native Source Unit 为最终事实权威；Foundation 是结构化语义索引；Deck Plan 是页面规划与来源范围权威；Final Script 是受约束的作者输出；
-2. 执行流水线：
+## 最终执行链
 
 ```text
 Native Sources
-  → Source Index
+  → Source Index v2
   → Foundation
   → Deck Plan
-  → Page Source Packet
-  → Author Preflight
+  → Page Source Packet v2
+  → Author Preflight v2
   → AUTHOR
-  → Final Script
+  → Final Script source_provenance
   → Native-source Fidelity Audit
   → Stage02
 ```
 
-并明确：
+## 最终合同
 
-- exact source 缺失、部分解析、binding 缺失、Packet stale/invalid 均硬阻断；
-- Foundation preview 不得充当 faithful factual fallback；
-- 当前 Stage1 faithful route 不再提供“无 v2 source index”的回退路径；
-- Final Script 页面 provenance 必须来自当前 passed Author Preflight；
-- `render-stage02` 必须重新验证 Preflight、page lineage 与 Native-source Fidelity。
+### 1. Exact Source 硬门禁
 
-`.agents/skills/cyberppt-script-workflow/AGENTS.md` 已将该合同设为 AUTHOR / CRITIQUE / REWRITE / Final Audit / Stage02 handoff 的强制阅读入口。
+- unknown source ref → `blocked`
+- Foundation 无 source-unit binding → `blocked`
+- exact source 全部无法解析 → `blocked`
+- exact source 部分解析 → `blocked`
+- Foundation statement / preview 不得作为 faithful factual fallback
 
-`final-script-provenance-contract.md` 已统一为双层 provenance 合同：
+### 2. Page Source Packet v2
 
-- 页面级 exact-source lineage 证明当前精确来源证据；
-- module / item provenance 描述 Final Script 结构化语义归属；
-- Native Source Unit 是最终事实权威；Foundation 负责结构化语义索引与绑定。
+- schema：`cyberppt.page_source_packet.v2`
+- 持久化 `builder_version`、`generated_at`
+- 持久化 Deck Plan / Foundation / Source Index 三个 SHA-256 fingerprints
+- freshness：`fresh / stale / invalid`
+- 任一上游输入变化后旧 Packet 自动失效
 
-### 文档合同回归及修复
+### 3. Author Preflight v2
 
-首次文档 CI run `34585969438` 暴露 1 项 skill-contract 失败：
+- schema：`cyberppt.author_preflight.v2`
+- 页面状态：`passed / blocked / missing / stale / not_applicable`
+- 持久化并复核 exact source 状态、source refs、unit ids、packet hash 和问题原因
+- `audit-final`、`render-stage02`、project status 均基于当前输入重新验证，不直接信任历史 Manifest
 
-`test_workflow_routes_to_exactly_one_mode_specific_authoring_contract`
+### 4. Final Script 来源血缘
 
-原因不是架构逻辑，而是测试要求 AGENTS 保留精确短语 `Do not merge`，文档换行导致字符串不连续。已恢复该固定短语，且不改变“单次动作只能使用一个 mode-specific contract”的含义。
+内容页强制携带页面级 `source_provenance`：
 
-该次 CI 其余测试为 `2246 passed, 8 skipped`，OfficeCLI 与 wheel jobs 正常。
+```json
+{
+  "source_provenance": {
+    "packet_sha256": "...",
+    "source_refs": ["..."],
+    "unit_ids": ["..."]
+  }
+}
+```
 
-## 下一步
+页面级 exact-source lineage 与 Final Script 1.1 的 module/item provenance 分层存在；两者职责不同，互不替代。
 
-收口批次 `9 / 子步骤 3`：验证修复后的最新 head GitHub Actions。
+### 5. Native-source Fidelity Audit
 
-通过后：
+`audit-final` 与 `render-stage02` 共用 native-source fidelity gate，当前确定性 blocker 覆盖：
 
-1. 生成最终 Stage1 Hardening 验收记录；
-2. 更新 PR #34 描述，写清架构变化、硬门禁、测试结果与不再兼容的旧行为；
-3. 确认 PR 处于可合并状态，不在未授权情况下自动合并。
+- 新增数字 / 日期
+- 数字限定词丢失
+- 明确范围限定丢失
+- tentative → achieved 状态提升
+- 新增必须 / 应当 / 不得 / 严禁等责任强度
+- 新增必然 / 全面 / 显著等结论强度
+
+### 6. 不可旁路的 faithful route
+
+默认 `script + faithful` 当前正式路线要求：
+
+1. current `cyberppt.source_index.v2`；
+2. fresh Page Source Packet；
+3. passed Author Preflight；
+4. AUTHOR / targeted edit / whole-deck rewrite；
+5. Final Script page provenance；
+6. Native-source Fidelity Audit；
+7. Stage02 handoff 再验证。
+
+Source Index、Packet 或 Preflight 缺失、陈旧、无效、部分解析或阻断时必须停止。当前 Stage1 faithful route 不提供 no-source-index、Foundation-preview 或 model-memory fallback。
+
+## 运行合同
+
+当前强制入口：
+
+- `.agents/skills/cyberppt-script-workflow/references/stage1-faithful-gate-contract.md`
+- `.agents/skills/cyberppt-script-workflow/AGENTS.md`
+- `.agents/skills/cyberppt-script-workflow/SKILL.md`
+- `.agents/skills/cyberppt-script-workflow/references/final-script-provenance-contract.md`
+- 根级 `AGENTS.md`
+- `docs/CYBERPPT_WORKFLOW.md`
+
+PR #36 已将仓库级入口、主流程总览与 Script Skill 的旧条件式 “when/if v2 source index exists” 口径全部收敛为上述 hard gate，并新增 repository-wide contract regression guard。
+
+## 最终验证
+
+### PR #34
+
+GitHub Actions `CyberPPT tests` #1034 / run `34586183016`：
+
+- Python 3.10：success
+- Python 3.12：`2247 passed, 8 skipped, 42 warnings, 49 subtests passed`
+- OfficeCLI render smoke：success
+- Windows wheel smoke：success
+- macOS wheel smoke：success
+
+合并后 `main` push CI #1035 同样通过。
+
+### PR #36
+
+GitHub Actions `CyberPPT tests` #1046 / run `34671840174`：
+
+- Python 3.10：success
+- Python 3.12：`2248 passed, 8 skipped, 42 warnings, 49 subtests passed`
+- OfficeCLI production geometry/render smoke：success
+- Windows wheel smoke：success
+- macOS wheel smoke：success
+
+## 结论
+
+Stage1 hardening 已完成代码实现、Schema、CLI、运行门禁、Final Script provenance、native-source fidelity、project status、Agent/文档执行合同及 CI 回归守卫，并已进入 `main`。
+
+本检查点不再包含待执行事项。后续新增 Stage1 改造应单独建立新的开发任务或检查点，不再沿用 PR #34 的未完成状态。
