@@ -27,6 +27,18 @@ def _script(path: Path) -> Path:
     return path
 
 
+def test_root_help_is_small_tool_first() -> None:
+    output = io.StringIO()
+    with redirect_stdout(output):
+        code = entry.main([])
+
+    assert code == 0
+    text = output.getvalue()
+    assert "cyberppt build SCRIPT" in text
+    assert "--advanced-help" in text
+    assert "prepare-semantic-understanding" not in text
+
+
 def test_console_entry_routes_build_to_small_facade() -> None:
     with patch("cyberppt.commands.build_cli.main", return_value=0) as build_main:
         code = entry.main(["build", "deck.md", "--mode", "image"])
@@ -57,6 +69,22 @@ def test_build_defaults_to_all_pages_visible_workspace_and_image_mode() -> None:
         assert first_call["external_script"] is True
         assert first_call["build_id"] == second_call["build_id"]
         assert first_call["build_id"].startswith("build-")
+
+
+def test_image_editable_and_both_share_the_same_image_batch_id() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        script = _script(Path(tmp) / "deck.md")
+        with patch(
+            "cyberppt.commands.build.run_final_script_pages",
+            return_value={"status": "production_ready"},
+        ) as production:
+            build_presentation(script, mode="image")
+            build_presentation(script, mode="editable")
+            build_presentation(script, mode="both")
+
+        calls = [call.kwargs for call in production.call_args_list]
+        assert {call["assembly_mode"] for call in calls} == {"image", "editable", "both"}
+        assert len({call["build_id"] for call in calls}) == 1
 
 
 def test_build_uses_nearest_initialized_project_for_internal_script() -> None:
