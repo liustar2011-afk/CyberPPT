@@ -25,8 +25,14 @@ def _stable_sha256(payload: Any) -> str:
     return sha256(encoded).hexdigest()
 
 
-def attach_page_input_sha256(*, manifest: dict[str, Any], project: Path) -> None:
-    """Bind every manifest pair to its canonical Stage 02 page input.
+def attach_page_input_sha256(*, manifest: dict[str, Any], project: Path) -> bool:
+    """Bind manifest pairs to canonical Stage 02 page inputs when available.
+
+    The formal Final Script path persists canonical Stage 02 input before this
+    recovery layer runs. A few legacy/diagnostic production entrypoints still
+    exercise the orchestrator without that intake artifact; they retain the
+    existing whole-script recovery semantics and simply do not opt into
+    cross-script page-local reuse.
 
     The deck-level source-script hash remains the build provenance identity. This
     page hash is narrower: it lets an unchanged page survive a whole-script hash
@@ -34,7 +40,10 @@ def attach_page_input_sha256(*, manifest: dict[str, Any], project: Path) -> None
     page's image, clean-base, authored-SVG and Quick checkpoint receipts.
     """
 
-    stage02_input = load_stage02_input(project, required=True)
+    stage02_input = load_stage02_input(project, required=False)
+    if not isinstance(stage02_input, dict):
+        return False
+
     pages = input_page_map(stage02_input)
     for pair in manifest.get("pairs", []):
         if not isinstance(pair, dict) or pair.get("page_number") is None:
@@ -43,6 +52,7 @@ def attach_page_input_sha256(*, manifest: dict[str, Any], project: Path) -> None
         page_input = pages.get(page_number)
         if isinstance(page_input, dict):
             pair[PAGE_INPUT_SHA256_FIELD] = _stable_sha256(page_input)
+    return True
 
 
 def _same_prompt_identity(
@@ -166,11 +176,15 @@ def apply_page_local_reuse(
     manifest_path: Path,
     build_context_path: Path,
 ) -> tuple[int, ...]:
-    attach_page_input_sha256(manifest=manifest, project=project)
-    recovered = recover_page_local_artifacts(
-        manifest=manifest,
-        prior_manifest=prior_manifest,
-        production_mode=production_mode,
+    has_canonical_input = attach_page_input_sha256(manifest=manifest, project=project)
+    recovered = (
+        recover_page_local_artifacts(
+            manifest=manifest,
+            prior_manifest=prior_manifest,
+            production_mode=production_mode,
+        )
+        if has_canonical_input
+        else ()
     )
     write_json(manifest_path, manifest)
 
@@ -186,6 +200,7 @@ def apply_page_local_reuse(
         }
         build_context["page_local_reuse"] = {
             "identity_field": PAGE_INPUT_SHA256_FIELD,
+            "canonical_input_available": has_canonical_input,
             "recovered_pages": list(recovered),
         }
         write_json(build_context_path, build_context)
