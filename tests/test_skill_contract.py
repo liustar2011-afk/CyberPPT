@@ -10,6 +10,9 @@ AGENTS = ROOT / "AGENTS.md"
 WORKFLOW = ROOT / "docs" / "CYBERPPT_WORKFLOW.md"
 SCRIPT_SKILL = ROOT / ".agents" / "skills" / "cyberppt-script-workflow" / "SKILL.md"
 SCRIPT_AGENTS = ROOT / ".agents" / "skills" / "cyberppt-script-workflow" / "AGENTS.md"
+FAITHFUL_AUTHORING = SCRIPT_SKILL.parent / "references" / "faithful-authoring-contract.md"
+ANALYTICAL_AUTHORING = SCRIPT_SKILL.parent / "references" / "authoring-contract.md"
+FINAL_SCRIPT_SCHEMA = ROOT / "contracts" / "final-script.schema.json"
 SOURCE_SKILL = ROOT / ".agents" / "skills" / "cyberppt-source-foundation" / "SKILL.md"
 EDITABLE_PPTX_SKILL = ROOT / ".agents" / "skills" / "cyberppt-stage02-editable-pptx" / "SKILL.md"
 AUTHORED_SVG_CONTINUATION = EDITABLE_PPTX_SKILL.parent / "references" / "authored-svg-continuation.md"
@@ -70,6 +73,52 @@ class SkillContractTests(unittest.TestCase):
             self.assertNotIn(phrase, skill)
             self.assertNotIn(phrase, repo_agents)
             self.assertNotIn(phrase, workflow)
+
+    def test_stage01_authoring_docs_follow_final_script_12_fidelity_contract(self) -> None:
+        repo_agents = AGENTS.read_text(encoding="utf-8-sig")
+        workflow = WORKFLOW.read_text(encoding="utf-8-sig")
+        skill = SCRIPT_SKILL.read_text(encoding="utf-8-sig")
+        local_agents = SCRIPT_AGENTS.read_text(encoding="utf-8-sig")
+        faithful = FAITHFUL_AUTHORING.read_text(encoding="utf-8-sig")
+        analytical = ANALYTICAL_AUTHORING.read_text(encoding="utf-8-sig")
+        schema = FINAL_SCRIPT_SCHEMA.read_text(encoding="utf-8-sig")
+
+        self.assertIn("Final Script 1.2", repo_agents)
+        self.assertIn("Final Script 1.2", workflow)
+        self.assertIn("Final Script 1.2", skill)
+        self.assertIn("version `1.2`", local_agents)
+        self.assertIn("Final Script 1.2", faithful)
+        self.assertIn("Final Script 1.2", analytical)
+
+        for text in (repo_agents, workflow, skill, local_agents, faithful, analytical):
+            self.assertIn("fidelity_text", text)
+
+        self.assertIn("1.2 内容页不得 authored `onscreen`", repo_agents)
+        self.assertIn("Final Script 1.2 内容页不得 authored `onscreen`", workflow)
+        self.assertIn("does **not** author `onscreen`", skill)
+        self.assertIn("no authored `onscreen` field", local_agents)
+        self.assertIn("Stage 01 does not author `onscreen`", faithful)
+        self.assertIn("Stage 01 does not author `onscreen`", analytical)
+
+        stale_current_contract_phrases = (
+            "将已审定的 `full_copy` 直接改写为 `onscreen`",
+            "`full_copy → onscreen` 投影",
+            "`full_copy` 和 `onscreen` 同时继承",
+            "完整稿与上屏选择由 AUTHOR",
+            "new projects author Final Script contract `cyberppt.final-script` version `1.1`",
+            "then writes\n`onscreen` only from the reviewed `full_copy`",
+        )
+        for phrase in stale_current_contract_phrases:
+            self.assertNotIn(phrase, repo_agents)
+            self.assertNotIn(phrase, workflow)
+            self.assertNotIn(phrase, skill)
+            self.assertNotIn(phrase, local_agents)
+            self.assertNotIn(phrase, faithful)
+            self.assertNotIn(phrase, analytical)
+
+        self.assertIn('"version": {"enum": ["1.0", "1.1", "1.2"]}', schema)
+        self.assertIn('"required": ["fidelity_text"]', schema)
+        self.assertIn('"not": {"required": ["onscreen"]}', schema)
 
     def test_default_project_route_uses_current_profile_router(self) -> None:
         agents = AGENTS.read_text(encoding="utf-8-sig")
