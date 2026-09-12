@@ -102,7 +102,10 @@ def locked_onscreen_text(
     page: ScriptPage,
     visual_context: dict[str, str] | None = None,
 ) -> str:
-    """Return only verbatim-critical visible copy; keep the rest semantically flexible."""
+    """Legacy authored-copy helper retained for compatibility only.
+
+    Final Script 1.2 does not use this helper as an exact-copy authority.
+    """
 
     locked: list[str] = []
     if (
@@ -145,16 +148,29 @@ MAX_IMAGE_LOCKED_LINE_CHARS = 14
 MAX_IMAGE_LOCKED_CHARS = 84
 
 
-def select_image_locked_text(
+def _fidelity_literals(page: ScriptPage, *, visibility: str) -> tuple[str, ...]:
+    """Return canonical literal-preservation items for one visibility class."""
+
+    values: list[str] = []
+    for item in getattr(page, "fidelity_text", ()) or ():
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("visibility") or "").strip() != visibility:
+            continue
+        text = str(item.get("text") or "").strip()
+        if text and text not in values:
+            values.append(text)
+    return tuple(values)
+
+
+def _legacy_image_locked_text(
     page: ScriptPage,
-    visual_context: dict[str, str] | None = None,
+    visual_context: dict[str, str] | None,
 ) -> str:
-    """Return short, bitmap-safe text while leaving body copy editable."""
+    """Preserve pre-1.2 read/compile behavior during the version migration."""
 
     raw = page.image_locked_text.strip() or locked_onscreen_text(page, visual_context)
     if not raw and not page.field_order and page.title.strip():
-        # Older free-form final scripts do not expose structured fields.  Keep
-        # their page heading as the minimal safe visible anchor.
         raw = page.title.strip()
     candidates = [line.strip(" -*") for line in raw.splitlines() if line.strip()]
     selected: list[str] = []
@@ -164,8 +180,6 @@ def select_image_locked_text(
         if not compact or line in selected:
             continue
         if len(compact) > MAX_IMAGE_LOCKED_LINE_CHARS:
-            # Numeric fact lines often carry a long explanatory tail.  Preserve
-            # the compact fact as bitmap copy and leave the tail editable.
             if re.search(r"\d", compact):
                 shortened = re.split(r"[，,；;。]", line, maxsplit=1)[0].strip()
                 if shortened and len(re.sub(r"\s+", "", shortened)) <= MAX_IMAGE_LOCKED_LINE_CHARS:
@@ -180,6 +194,35 @@ def select_image_locked_text(
         selected.append(line)
         total += len(compact)
     return "\n".join(selected).strip()
+
+
+def select_image_locked_text(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None = None,
+) -> str:
+    """Return the exact-copy literals for this script generation.
+
+    Final Script 1.2 exact-copy authority comes exclusively from explicit
+    ``fidelity_text`` items marked ``required``.  Legacy 1.0/1.1 pages retain
+    their historical selector only as a version-compatibility path; the new
+    contract never scans 1.2 prose, module titles, numbers, dates, percentages
+    or quoted phrases to invent locks.
+    """
+
+    required = _fidelity_literals(page, visibility="required")
+    if required or str(getattr(page, "onscreen_source", "") or "") == "full_copy_stage02_source":
+        return "\n".join(required).strip()
+    return _legacy_image_locked_text(page, visual_context)
+
+
+def select_conditional_fidelity_text(page: ScriptPage) -> str:
+    """Return explicit ``if_rendered`` fidelity literals.
+
+    These literals may be omitted from the image.  If ImageGen chooses to draw
+    one, downstream text QA must require an exact rendering.
+    """
+
+    return "\n".join(_fidelity_literals(page, visibility="if_rendered")).strip()
 
 
 def _semantic_phrase_digest(text: str, *, limit: int = 8) -> list[str]:
