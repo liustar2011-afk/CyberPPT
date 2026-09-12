@@ -96,7 +96,7 @@ Deck Plan 的 `authoring_mode` 决定，不能回写或拔高 Foundation。
 
 语义模型验证通过后，运行 `.venv/bin/python3 -m cyberppt project-foundation <project>`，将 Source Truth 机械投影到脚本引擎的 `script/foundation.json`。该步骤只搬运已确认字段，不重新分析源材料。
 
-正式投影同时写入 `source_consumption_policy: required` 和 `source_consumption_contract_version: 2`，并保留后续忠实度检查所需的 `semantic_units`、`coverage_anchors`、条件、原文定位以及事实与主体/数字的显式绑定。版本 2 要求严格内容页在 `source_consumption.unit_dispositions` 中逐项声明语义单元进入完整稿、上屏、后续页面、追溯或有理由删减。历史 Foundation 缺少版本字段时继续使用兼容路径。历史项目重新运行 `project-foundation` 会单向进入严格模式；命令在覆盖旧 Foundation 前输出非交互警告，随后必须补齐 Deck Plan 的来源消费合同并重新通过 PLAN Gate。
+正式投影同时写入 `source_consumption_policy: required` 和 `source_consumption_contract_version: 2`，并保留后续忠实度检查所需的 `semantic_units`、`coverage_anchors`、条件、原文定位以及事实与主体/数字的显式绑定。版本 2 要求严格内容页在 `source_consumption.unit_dispositions` 中逐项声明语义单元进入完整稿、历史上屏兼容层、后续页面、追溯或有理由删减。历史 Foundation 缺少版本字段时继续使用兼容路径。历史项目重新运行 `project-foundation` 会单向进入严格模式；命令在覆盖旧 Foundation 前输出非交互警告，随后必须补齐 Deck Plan 的来源消费合同并重新通过 PLAN Gate。
 
 产物：
 
@@ -117,33 +117,19 @@ Deck Plan 是 AUTHOR 之前的轻量过渡产物，只负责确定：
 - 每个内容页允许使用的来源范围；
 - 确有必要时，相邻页面不得重复或越界的内容。
 
-核心判断、完整论证链、内容模块、证据取舍、上屏结构、视觉关系、讲述线索和
-阅读密度均由 AUTHOR 在完整读取来源后形成，不得在 Deck Plan 中提前编写。
-faithful 页面没有来源明示总判断或论证链时，可以不生成这些可选结构。
+核心判断、完整论证链、完整正文、保真项、视觉关系、讲述线索和阅读密度均由 AUTHOR 在完整读取来源后形成，不得在 Deck Plan 中提前编写。Final Script 1.2 的运行时上屏文案属于 Stage 02 派生层，不在 PLAN 中预制。faithful 页面没有来源明示总判断或论证链时，可以不生成这些可选结构。
 
-来源章节与汇报章节分层处理。Foundation 保留全部来源章节身份、边界与顺序；
-Deck Plan 默认将相邻来源章节按受众问题、内容角色和承接关系归并为汇报章节，
-展开全部 `source_chapter_ids` 后必须与来源顺序完全一致。正式汇报通常控制在
-4 个以内，6 个为默认上限；超过 6 个必须记录无法继续归并的具体理由。
-多章节汇报采用“封面—目录—逐章过渡页—内容页—封底”序列，每个汇报章节
-恰有一个过渡页并位于该章内容之前；单章节汇报仍不设置章节页。
+来源章节与汇报章节分层处理。Foundation 保留全部来源章节身份、边界与顺序；Deck Plan 默认将相邻来源章节按受众问题、内容角色和承接关系归并为汇报章节，展开全部 `source_chapter_ids` 后必须与来源顺序完全一致。正式汇报通常控制在 4 个以内，6 个为默认上限；超过 6 个必须记录无法继续归并的具体理由。多章节汇报采用“封面—目录—逐章过渡页—内容页—封底”序列，每个汇报章节恰有一个过渡页并位于该章内容之前；单章节汇报仍不设置章节页。
 
-`faithful` 模式下，内容页标题在 PLAN 阶段优先保留来源原标题。一个来源章节
-拆成多页时，在原标题后增加页内范围限定以区分页面；来源没有可用标题或用户
-明确要求分析型、结论型标题时，AUTHOR 才可重新拟题。副标题和核心判断属于
-最终脚本内容，不由 PLAN 锁定。
+`faithful` 模式下，内容页标题在 PLAN 阶段优先保留来源原标题。一个来源章节拆成多页时，在原标题后增加页内范围限定以区分页面；来源没有可用标题或用户明确要求分析型、结论型标题时，AUTHOR 才可重新拟题。副标题和核心判断属于最终脚本内容，不由 PLAN 锁定。
 
 所有项目统一使用 Deck Plan v2 lean。strict/legacy 与 `script` profile 的差异只作用于 Foundation 的理解深度、Source Truth 和来源保全方式；不得把 strict/legacy 的来源消费要求转换成 PLAN 中的核心判断、内容模块、证据处置、上屏合同或视觉关系。旧版 v1 Deck Plan 必须迁移后才能进入当前流程。
 
 主责 Skill：`cyberppt-script-workflow`。
 
-该 Skill 由当前主 Agent 直接执行。仓库不另设 AUTHOR CLI 或规则式作者生成器；
-“调用 Skill”要求主 Agent 实际读取 Foundation、来源正文、整份 Deck Plan 与相邻
-页面合同，完成生成式写作、Critic 和整页重写。仅生成合法字段、运行审计、生成
-`page-source` packet 或引用 Skill 名称均不构成 AUTHOR 执行。
+该 Skill 由当前主 Agent 直接执行。仓库不另设 AUTHOR CLI 或规则式作者生成器；“调用 Skill”要求主 Agent 实际读取 Foundation、来源正文、整份 Deck Plan 与相邻页面合同，完成生成式写作、Critic 和整页重写。仅生成合法字段、运行审计、生成 `page-source` packet 或引用 Skill 名称均不构成 AUTHOR 执行。
 
-进入 AUTHOR、CRITIQUE、REWRITE、单页修订或全稿审核前，主 Agent 必须先解析
-`authoring_mode`，随后且只读取一个模式合同：
+进入 AUTHOR、CRITIQUE、REWRITE、单页修订或全稿审核前，主 Agent 必须先解析 `authoring_mode`，随后且只读取一个模式合同：
 
 - `faithful` 或未声明：完整读取 `.agents/skills/cyberppt-script-workflow/references/faithful-authoring-contract.md`；
 - `analytical`：完整读取 `.agents/skills/cyberppt-script-workflow/references/authoring-contract.md`。
@@ -156,26 +142,24 @@ Deck Plan 默认将相邻来源章节按受众问题、内容角色和承接关�
 
 以当前项目的 Foundation、轻量 Deck Plan、目标页来源证据和相邻页边界为依据，一次处理一张内容页。全文主旨和目录每套稿只加载一次；逐页仅回读当前页 `source_refs` 对应证据。默认 `script` profile 的 faithful AUTHOR 写作或实质重写每页前必须使用当前 `cyberppt.source_index.v2` 运行 `page-source`，读取该页完整 source units；全部目标页 Packet 更新后必须运行 `author-preflight`，只有当前项目和页面均为 `passed` 且 Packet 为 `fresh` 时才可进入 AUTHOR。Source Index、Packet 或 Preflight 缺失、陈旧、无效、部分解析或阻断时直接停止，不得回退到 Foundation preview 或模型记忆。Packet 与 Preflight 仅作为 `derived_runtime_context` / 运行证据，不构成新的内容权威。strict/legacy 项目通过 Foundation 追溯 Source Truth；存在兼容 v2 source index 时同样可使用 `page-source`，否则使用其精确 Source Truth/source-consumption 绑定，不在 AUTHOR 阶段重新运行语义理解。
 
-faithful 页面按以下顺序完成：
+新项目统一作者化到 Final Script 1.2。faithful 页面按以下顺序完成：
 
 1. 锁定页面来源范围和相邻页边界；
 2. 解析并读取该页精确原文；
 3. 判断来源原生结构（定义、并列事实/任务、分类、阶段、状态、职责、来源明示关系或论证）；
 4. 直接从来源语义形成完整文字稿 `full_copy`；
 5. 对 `full_copy` 做 Source Fidelity Critic；
-6. 主 Agent 将已审定的 `full_copy` 直接改写为 `onscreen`，保留全部实质信息，仅调整措辞、组织和等义重复；
-7. 主 Agent 对照两份完整文本双向检查遗漏、新增和语义变化，修复后重读整页；机械提示仅作复核辅助，不要求调用匹配或评分工具；
+6. 从审定后的 `full_copy` 提取窄范围 `fidelity_text`，只保留精确数字及必要单位、正式全称、用户明确指定的专有名词或固定字符串，并标注 `required` 或 `if_rendered`；
+7. 复核每个保真项的来源、可见性和必要性，普通结论、整句、整段及可安全改写措辞不得进入保真项；Final Script 1.2 内容页不得 authored `onscreen`；
 8. 仅在来源支持且确有价值时增加可选的 `mission`、`core_message`、`argument`、`visual_thesis`、`relationships`、`speaker_notes`。
 
-analytical 页面按已批准的 analytical contract 在来源边界内形成核心判断、论证结构和分析性表达。分析模式可以组织 source-supported inferred relationship，但不得新增事实、数字、责任、承诺或无依据关系。
+analytical 页面按已批准的 analytical contract 在来源边界内形成核心判断、论证结构和分析性 `full_copy`，随后提取同样窄范围的 `fidelity_text`。分析模式可以组织 source-supported inferred relationship，但不得新增事实、数字、责任、承诺或无依据关系；Final Script 1.2 analytical 页面同样不 authored `onscreen`。
 
-`full_copy` 和 `onscreen` 同时继承原稿的发布主体和陈述立场。原稿直接
-陈述的定义、要求、安排和事实，脚本不得改写为“通知所称”、
-“材料指出”、“文件认为”或“在通知中已明确”等第三方转述语气。
+`full_copy`、可选判断/论证字段、演讲者备注和 `fidelity_text` 继承原稿的发布主体和陈述立场。原稿直接陈述的定义、要求、安排和事实，脚本不得改写为“通知所称”、“材料指出”、“文件认为”或“在通知中已明确”等第三方转述语气。
 
-faithful 模式下，`full_copy` 是页面完整、忠实、可读的正文稿，不承担额外“so what”推导任务。并列事实、任务、分类、阶段、状态和职责可以保持并列；来源没有单一中心判断时不强制生成核心结论。`onscreen` 以 `full_copy` 为唯一语义母本，不得新增主体、对象、动作、关系、状态、责任、数字、条件、机制、能力、价值、意义或结论力度。逐页完成作者化写作后，再运行确定性审计；审计负责发现问题，不代替 AUTHOR 生成或改写页面。
+faithful 模式下，`full_copy` 是页面完整、忠实、可读的正文语义稿，不承担额外“so what”推导任务。并列事实、任务、分类、阶段、状态和职责可以保持并列；来源没有单一中心判断时不强制生成核心结论。Stage 01 不为视觉密度预压缩完整稿；语义范围过大时调整页面使命或分页。逐页完成作者化写作后，再运行确定性审计；审计负责发现问题，不代替 AUTHOR 生成或改写页面。
 
-`self_read` 内容页必须可独立阅读：页面主题和来源结构清楚，理解所需的事实、范围、条件、状态、职责或明确关系完整。faithful 页面不因自读要求而强制添加来源没有的“核心判断”；analytical 页面按获批分析结构呈现核心判断及其依据。数字需要说明所指对象，分类与清单需要保留来源定义的归组维度；避免只剩抽象口号、无业务语义的标签和依赖讲解的提示词。
+`self_read` 的语义完整性在 Stage 01 由 `full_copy` 保证，实际页面可见表达由 Stage 02 在不改变保护语义的前提下完成。faithful 页面不因自读要求而强制添加来源没有的“核心判断”；analytical 页面按获批分析结构形成核心判断及其依据。数字需要说明所指对象，分类与清单需要保留来源定义的归组维度；避免只剩抽象口号、无业务语义的标签。
 
 内部汇报默认采用内部专家视角，以集团、企业、业务部门、项目团队或行业职责为真实主体。客户、市场、成交、价值实现、增长和商业化属于正常经营议题，只要来源或已确认交流目标提供支撑即可进入页面。质量检查聚焦叙述身份、责任主体、证据和行动依据；不得以这些经营词汇本身作为违规条件。面向内部或混合受众时，`建议贵司`、外部咨询顾问身份和无依据的泛化企业建议构成语气漂移。
 
@@ -183,17 +167,17 @@ v2 lean Deck Plan 只保留页面来源范围和必要的暴露边界，完整�
 
 Deck Plan 完成后运行 `cyberppt-script review-plan <deck-plan.json> <foundation.json>`，生成简洁 Markdown 审阅稿，展示章节、页面分配、暂定标题、页面问题、页面使命、来源范围和对应的简短来源锚点。该输出只用于“脚本规划待确认”的人工阅读，不新增权威内容产物、确认文件或审批状态。
 
-strict/legacy Foundation 的 `source_consumption_policy: required` 继续服务严格项目，但 v2 lean Deck Plan 不逐记录声明页面消费方式。完整稿与上屏选择由 AUTHOR 在来源边界内完成，机器审计直接检查引用、数字、责任、状态、条件与边界。
+strict/legacy Foundation 的 `source_consumption_policy: required` 继续服务严格项目，但 v2 lean Deck Plan 不逐记录声明页面消费方式。新建 Final Script 1.2 项目由 AUTHOR 在来源边界内形成完整稿并提取保真项；历史 1.0/1.1 项目继续按其 authored `onscreen` 合同原位兼容。机器审计直接检查引用、数字、责任、状态、条件与边界。
 
-AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态和分类层级。上屏审计验证代表来源的模块映射和可见特征。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
+AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态、分类层级以及保真项来源。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
-页面信息密度不使用固定字数或固定模块数门槛。Final Script 默认声明 `deck.delivery_mode: self_read`，内容页可在自身声明 `content_load`；最终审计依据实际上屏模块和语义信息单元检查阅读自洽性。用户明确选择演讲辅助型稿件时可声明 `presented`。Plan 不承担信息密度设计。
+页面信息密度不使用固定字数或固定模块数门槛。Final Script 默认声明 `deck.delivery_mode: self_read`，内容页可在自身声明 `content_load`；Stage 01 保留完整语义，Stage 02 决定实际可见信息组织。用户明确选择演讲辅助型稿件时可声明 `presented`。Plan 不承担信息密度设计。
 
 faithful 页面关系只有在来源明确表达时才能进入 Final Script；analytical 页面可以在已批准的分析模式下保留 source-supported inferred relationship。`audit-final` 直接对照 Foundation 检查无来源关系、数字、责任、状态和边界，不要求关系先在轻量 Plan 中预写。
 
 项目定位、能力、任务、职责和验证场景等明细项，来源提供对象、作用、任务或边界时，应保留其具体业务语义；来源只列分类名称且没有细节时可以保留来源原生标签，不得补写来源未说明的作用或结果。`audit-final` 与 `lint` 继续检查明细退化、同段误分组和来源边界问题。
 
-将已完成页面汇总为最终脚本后，执行真实存在的全稿检查，检查来源覆盖、事实强度、页面关系、标题层级、上屏文字、重复表达和脚本契约：
+将已完成页面汇总为最终脚本后，执行真实存在的全稿检查，检查来源覆盖、事实强度、页面关系、标题层级、完整文字稿、保真文字、重复表达和脚本契约：
 
 ```bash
 .venv/bin/python3 -m script_engine.cli audit-final <final-script.json> <deck-plan.json> <foundation.json>
@@ -238,11 +222,13 @@ Stage 02 制作、重制、模板/母版修复及重新组装均通过同一个 
 
 使用已确认的项目内或外部脚本，Stage 02 直接接收 `--script <path>` 指向的最终脚本文件，并在自身工作区建立输入快照。Stage 02 不读取 Stage 01 的 Foundation、Deck Plan、Source Truth、Outline 或流程状态。
 
-Stage 02 将所有输入复制到自有路径 `workbench/inputs/final-script.md` 作为运行快照。显式使用 `--external-script` 时，输入标记为 `external_script`，以保留外部来源身份、变更检测和续跑绑定。内部稿件与外部稿件采用同一规则：`onscreen` 只作为可选文字素材，视觉生产可自由选择、改写、合并、精简、重排、拆分或替换其措辞。原始文件暂时不可用时，仅在 Stage 02 已有快照及其字节哈希仍有效时允许续跑。
+Stage 02 将所有输入复制到自有路径 `workbench/inputs/final-script.md` 作为运行快照。当前 Final Script 1.2 内部稿执行 `full_copy → runtime.onscreen_text`，同时独立传递 `fidelity_text → runtime.fidelity_text`；显式使用 `--external-script` 时，优先将结构化 `内容` 字段映射为运行时文字素材，无该字段时使用页面标题下自由正文，外部 `保真文字` 可选并保持独立。Final Script 1.0/1.1 的 authored `onscreen` 仅作为历史兼容输入。运行时普通内容允许选择、改写、合并、精简、重排、拆分或替换措辞，保真项不参与普通改写。原始文件暂时不可用时，仅在 Stage 02 已有快照及其字节哈希仍有效时允许续跑。
 
 ### 2. Stage 02 script input
 
 Stage 02 以传入脚本文件为唯一跨阶段输入，并在自身工作区记录脚本快照与 SHA-256。脚本文件发生变化后，Stage 02 自行判定已有视觉产物失效。`business_relationships`、`content_load` 等字段如果出现在输入文件中，Stage 02 将其视为文件合同的一部分；semantic verifier 只校验输入文件内部关系是否自洽，并派生 `render_topology` 供视觉布局使用。对 hard/strong 关系出现 rejected 或 unresolved 时，Stage 02 拒绝当前输入文件，不推测其上游生产过程，也不修改关系后继续。`content_load` 未显式声明时按 `standard` 处理。
+
+Stage 02 的 canonical intake 同时保存普通内容来源、`content_text`、`fidelity_text` 及其哈希/来源身份。handoff、manifest、Prompt 编译、文字审计和续跑复用必须消费同一份 canonical intake；输入文本或保真项发生变化后，不得复用与旧语义身份绑定的 manifest、prompt hash 或文字审计回执。
 
 ### 3. 直接锁定视觉风格
 
@@ -252,13 +238,15 @@ Stage 02 默认直接读取 `references/visual-system.md` 中的 Style 09 正文
 
 ### 4. Prompt 和 Manifest
 
-编译每页实际送图提示词和 manifest，并检查以下内容彼此分离：
+编译每页实际送图提示词和 manifest，并保持以下职责严格分离：
 
-- 页面完整文字稿仅作为不可见语义上下文，用于理解业务对象、关系、条件和边界
-- `onscreen` 只作为可选文字素材，不控制图片中的最终措辞
-- 所选风格文件及其执行约束
+- `content_text` / 运行时 `onscreen_text` 是可改写的内容素材，模型可以选择、改写、合并、精简、重排和拆分；不得从普通正文自动推导大段 exact-copy / locked text；
+- `fidelity_text` 使用独立区块和独立哈希，`required` 表示必须出现且字面准确，`if_rendered` 表示可以不显示、显示时必须字面准确；
+- 所选风格文件及其执行约束只负责视觉表达，不成为新的业务内容权威。
 
-Stage 02 的文字 QA 只检查明确错字、乱码、伪中文和最终可读性，不以 `onscreen` 对生成文字做匹配、覆盖率或改字判定。
+Prompt hash、input fingerprint、manifest 复用判断和文字审计回执必须覆盖保真字段；保真项变化时相关页面必须重新编译、生成或验收。
+
+Stage 02 的文字 QA 分为两层：一是通用字形质量，继续检查明确错字、乱码、伪中文和最终可读性；二是保真项验收，仅对 `fidelity_text` 执行可见性与字面准确性检查。`required` 缺失或错写时失败；`if_rendered` 可以缺失，但一旦出现必须准确。不得将 `full_copy` 或运行时 `onscreen_text` 与 OCR 做全文匹配、覆盖率或逐字一致性判定。
 
 PNG 文件存在不等于提示词、批次或 QA 成功。必须检查实际落盘的 `prompts/pXX.txt`、manifest 和运行记录。
 
@@ -270,7 +258,7 @@ Stage 02 采用逐页检查点和同批次恢复：
 
 - 每页生成或文字审计结束后，立即把状态、图像路径和审计回执写入当前 manifest；
 - 单页失败时保留其他已通过页面，后续使用同一 `build_id`、输出目录和生产参数继续运行；
-- 恢复时只跳过“图像存在且文字审计通过”的页面，失败页、缺失页和无有效审计回执的页面必须重新处理；
+- 恢复时只跳过“图像存在且文字审计通过、且当前 canonical intake / fidelity identity 未变化”的页面，失败页、缺失页、语义身份变化页和无有效审计回执的页面必须重新处理；
 - 普通恢复不得使用 `--force-images`，该参数只用于用户明确要求的整批重绘；
 - 恢复命令必须保留 `--generate-images`、`--production-build` 和原 `--assembly-mode`，确保补齐页面后继续完成 PPTX 组装。
 
@@ -278,22 +266,22 @@ Stage 02 采用逐页检查点和同批次恢复：
 
 1. 生成并审计 full 图；可编辑重建分支将通过文字审计的 full 图写入 `reconstruction_visual_source` SHA-256 绑定，作为后续重建的视觉来源。后续阶段可以拆层、清字和重建原生文字，不重新设计已接受的视觉构图；
 2. 当前主 Agent 使用原生参考图编辑能力从 full 图准备同画布无文字底图，保留构图、图形身份和背景连续性；需要精确保留的照片、标志从原图裁切为局部图层。所有资产落在当前 build 内，正式编排不调用旧自动清底器；
-3. 当前 Codex 主 Agent 直接查看已绑定的归一化 full 图、无字底图、上屏文字参考和已注册局部图层，在同一画布坐标系中编写完整 authored SVG；该步骤承担高保真重建，不承担第二轮视觉设计。缺少 authored SVG 时生产编排停在该页，完成编写后用同一 build 续跑；
+3. 当前 Codex 主 Agent 直接查看已绑定的归一化 full 图、无字底图、运行时上屏文字参考和已注册局部图层，在同一画布坐标系中编写完整 authored SVG；该步骤承担高保真重建，不承担第二轮视觉设计。缺少 authored SVG 时生产编排停在该页，完成编写后用同一 build 续跑；
 4. 主 Agent 检查每张底图、局部图层与 SVG 渲染，完成文字分类，使用 `register-quick-page` 登记当前页；登记校验来源、底图、SVG、全部图层与文字策略的绑定，保留显式文字坐标和字号。续跑仅对当前页运行可编辑页策略、原生文字坐标和 SVG 质量检查，生成该页包装 SVG、单页 Quick PPTX、OfficeCLI PNG 与几何报告；
 5. 渲染前检查 `<text>` 及其全部 `<tspan>` 的坐标连续性；同一文字节点跨列或跨视觉区域跳转时直接阻断。渲染后立即以 `rendered_pending_visual_review` 写回检查点；主 Agent 必须查看该页实际 OfficeCLI PNG，逐项核对布局、字号字重、颜色、换行、中文残留和可读性，机器几何检查不得自动代替看图；
 6. 使用 `.venv/bin/python3 -m cyberppt review-quick-page ...` 把审核结论写入同一个检查点；回执绑定预览 PNG 哈希，预览变化后自动失效。续跑只复用输入未变化、预览仍存在且视觉审核通过的页面；
 7. 请求范围内全部页面通过逐页检查点后，统一组装整套可编辑 PPTX，并执行全稿文字与 OfficeCLI 交付 QA。
 
-逐页检查点用于失败隔离、视觉审核和续跑。审核回执写在现有 manifest 中，不新增审批文件或平行运行目录，也不得把每页单独发布的 PPTX 再合并成最终文件。页面输入摘要仅用于判断是否需要自动重验；不匹配时直接重验该页，不触发 full 图重绘或整批失效。
+逐页检查点用于失败隔离、视觉审核和续跑。审核回执写在现有 manifest 中，不新增审批文件或平行运行目录，也不得把每页单独发布的 PPTX 再合并成最终文件。页面输入摘要仅用于判断是否需要自动重验；不匹配时直接重验该页，不触发无关页 full 图重绘或整批失效。
 
 文字 QA 分为两个阶段，门禁对象必须区分：
 
-1. full 图进入 Quick 前，检查错中文字和伪中文；忽略标点、孤立数字和英文。未通过时只重绘该 full 图。
+1. full 图进入 Quick 前，检查错中文字、伪中文和保真项；`required` 保真项必须存在且准确，`if_rendered` 仅在实际出现时校验字面准确性。普通正文不做全文 OCR 对齐；未通过时只重绘该 full 图。
 2. 清图阶段的 OCR 仅记录文字清除诊断，不以“零残留”单独阻断。可编辑分支消费已经完成的高保真 authored SVG；生产编排不得根据 OCR 框自动合成文字 SVG。
 3. 新建页面采用仓库内置参考图编辑交接合同 `cyberppt.stage02.authored_clean_base.v1`。登记后重新计算实际资产哈希和画布尺寸，并核对来源构图、图形身份、文字清除与背景连续性审阅。旧 v3 掩膜合同仅用于历史产物验证；正式入口不运行旧清底生成器，不要求参考图编辑输出满足掩膜外逐像素一致。
 4. SVG 回写和 PPTX 渲染后，检查最终可见文字。残留的真实中文、错中文字或伪中文会阻断交付；仅存在于中间清图 OCR 结果中的残留不得触发重绘。
 
-因此，已有通过 full 图文字审计的页面在可编辑分支失败时，优先复用 full 图并继续“清图 + SVG 回写 + 最终可见结果 QA”。只有最终可见结果仍有错中文字、伪中文或未被 SVG 覆盖的真实中文，才重绘该页图像。
+因此，已有通过 full 图文字审计的页面在可编辑分支失败时，优先复用 full 图并继续“清图 + SVG 回写 + 最终可见结果 QA”。只有最终可见结果仍有错中文字、伪中文、保真项错误或未被 SVG 覆盖的真实中文，才重绘该页图像。
 
 进入图片转可编辑 PPTX 前，对配图内部的可读文字逐项分类：
 
@@ -325,12 +313,11 @@ PPTX 组装支持三个正式分支：`editable` 为默认输出，`image` 输�
 
 ### CyberPPT 投影产物
 
-`semantic-argument-model.json`、`source-truth.json` 和 `outline.json` 是
-strict/legacy 下游兼容投影，不得反向成为第二套语义权威。
+`semantic-argument-model.json`、`source-truth.json` 和 `outline.json` 是 strict/legacy 下游兼容投影，不得反向成为第二套语义权威。
 
 ### 页面脚本权威
 
-Stage 01 的权威内容链为 `foundation.json → deck-plan.json → dist/final-script.md`。最终脚本及其审计结果是 Stage 02 的内容输入。修改脚本后必须重新执行受影响的 handoff、manifest、提示词和 QA 环节。
+Stage 01 的权威内容链为 `foundation.json → deck-plan.json → dist/final-script.md`。最终脚本及其审计结果是 Stage 02 的内容输入。修改脚本后必须重新执行受影响的 canonical intake、handoff、manifest、提示词和 QA 环节；`full_copy` 或 `fidelity_text` 变化均不得沿用旧的相关回执。
 
 ## 七、禁止事项
 
@@ -347,9 +334,12 @@ Stage 01 的权威内容链为 `foundation.json → deck-plan.json → dist/fina
 
 1. 当前 profile 的 Foundation 和语义验证通过；strict/legacy 另需 Source Truth 验证通过。
 2. 轻量 Deck Plan 已完成章节、页数、页面使命、来源边界和来源锚点检查，并经过人工规划停点。
-3. AUTHOR 已按当前 `authoring_mode` 完成逐页写作闭环；默认 `script` profile 的 faithful 页面已使用 current v2 Source Index 生成 fresh Page Source Packet、通过 Author Preflight，并完成精确原文回读、`full_copy → onscreen` 投影和来源忠实审计。
-4. Stage 02 已建立当前脚本绑定的 handoff，脚本可以来自本项目或外部路径。
+3. AUTHOR 已按当前 `authoring_mode` 完成逐页写作闭环；新项目为 Final Script 1.2，默认 `script` profile 的 faithful 页面已使用 current v2 Source Index 生成 fresh Page Source Packet、通过 Author Preflight，并完成精确原文回读、`full_copy` 来源忠实审计和窄范围 `fidelity_text` 提取；1.2 内容页不存在 authored `onscreen`。
+4. Stage 02 已建立当前脚本绑定的 canonical intake 与 handoff；内部 1.2 稿完成 `full_copy → runtime.onscreen_text`，外部稿完成 `内容/自由正文 → runtime.onscreen_text`，`fidelity_text` 独立传递。
 5. 风格已由用户确认，并生成有效的 JSON 风格锁。
-6. 实际提示词检查通过；视觉结构准备与审计不再是前置步骤。
-7. 图片、PPTX、渲染和交付 QA 通过。
-8. 最终回复提交实际产物的绝对路径链接，并明确未验证事项。
+6. 实际提示词与 manifest 已将普通可改写内容和保真文字分离，prompt hash / input fingerprint / reuse identity 覆盖保真字段。
+7. 图片文字 QA 只对保真项执行精确字符串验收；普通正文不做全文逐字匹配。图片、PPTX、渲染和交付 QA 全部通过。
+8. 脚本、`full_copy` 或 `fidelity_text` 变化会使受影响页面的旧 manifest、prompt 与文字验收回执失效；同批次续跑只复用仍与当前输入身份一致且 QA 通过的页面。
+9. 定向测试、正式入口验证以及请求分支的端到端产物检查通过；无法执行的外部依赖验证必须明确列为未验证事项。
+10. `AGENTS.md`、`CYBERPPT_WORKFLOW.md`、Stage 01 AUTHOR 合同、Stage 02 Skill 与当前代码行为一致。
+11. 最终回复提交实际产物的绝对路径链接，并明确未验证事项。
