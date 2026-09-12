@@ -62,6 +62,10 @@ _MIGRATED_STRUCTURED_FINDING_CODES = frozenset(
 )
 
 
+def _stage1_owns_onscreen(final_script: dict[str, Any]) -> bool:
+    return str(final_script.get("version") or "1.0").strip() in {"1.0", "1.1"}
+
+
 def _compatibility_findings(
     findings: list[str],
     *,
@@ -142,6 +146,7 @@ def audit_final_script(
         [] if compatibility_mode else audit_final_internal_expert_voice(final_script, plan)
     )
     warnings: list[str] = []
+    stage1_owns_onscreen = _stage1_owns_onscreen(final_script)
     composed_trace = trace_composed(final_script, foundation)
     if compatibility_mode:
         # Exact numeric source-boundary blocking is now owned by
@@ -159,9 +164,10 @@ def audit_final_script(
         (final_script.get("deck") or {}).get("authoring_mode") or plan_authoring_mode
     )
 
-    warnings.extend(onscreen_alignment_advisories({
-        **final_script, "deck": {**(final_script.get("deck") or {}), "authoring_mode": final_authoring_mode},
-    }))
+    if stage1_owns_onscreen:
+        warnings.extend(onscreen_alignment_advisories({
+            **final_script, "deck": {**(final_script.get("deck") or {}), "authoring_mode": final_authoring_mode},
+        }))
 
     for index, slide in enumerate(final_script.get("slides") or []):
         if not isinstance(slide, dict):
@@ -275,72 +281,80 @@ def audit_final_script(
                     "without the same lexical baseline in source or plan; Critic review is required",
                 )
 
-        if compatibility_mode:
-            warnings.extend(
-                f"{scope}: {finding}"
-                for finding in onscreen_composition_hierarchy_review_findings(page, slide)
+        if stage1_owns_onscreen:
+            if compatibility_mode:
+                warnings.extend(
+                    f"{scope}: {finding}"
+                    for finding in onscreen_composition_hierarchy_review_findings(page, slide)
+                )
+            else:
+                for finding in _audit_authored_onscreen_composition(
+                    page,
+                    slide,
+                    authoring_mode=final_authoring_mode,
+                ):
+                    _append_governed_finding(issues, warnings, scope, finding)
+            self_read_findings = _compatibility_findings(
+                _audit_self_reading_density(delivery_mode, page, slide),
+                compatibility_mode=compatibility_mode,
             )
-        else:
-            for finding in _audit_authored_onscreen_composition(
-                page,
-                slide,
-                authoring_mode=final_authoring_mode,
-            ):
+            for finding in self_read_findings:
                 _append_governed_finding(issues, warnings, scope, finding)
-        self_read_findings = _compatibility_findings(
-            _audit_self_reading_density(delivery_mode, page, slide),
-            compatibility_mode=compatibility_mode,
-        )
-        for finding in self_read_findings:
-            _append_governed_finding(issues, warnings, scope, finding)
-        if compatibility_mode:
-            warnings.extend(
-                f"{scope}: {finding}"
-                for finding in onscreen_contract_colocation_review_findings(page, items)
-            )
-        else:
-            for finding in _audit_authored_onscreen_contract(page, slide, items):
-                _append_governed_finding(issues, warnings, scope, finding)
+            if compatibility_mode:
+                warnings.extend(
+                    f"{scope}: {finding}"
+                    for finding in onscreen_contract_colocation_review_findings(page, items)
+                )
+            else:
+                for finding in _audit_authored_onscreen_contract(page, slide, items):
+                    _append_governed_finding(issues, warnings, scope, finding)
+
         source_consumption_findings = _compatibility_findings(
             _audit_lean_authored_source_consumption(page, slide, items, foundation),
             compatibility_mode=compatibility_mode,
         )
         for finding in source_consumption_findings:
             _append_governed_finding(issues, warnings, scope, finding)
-        for finding in _audit_lean_onscreen_full_copy_alignment(slide):
-            _append_onscreen_alignment_finding(
-                issues,
-                warnings,
-                scope,
-                finding,
+
+        if stage1_owns_onscreen:
+            for finding in _audit_lean_onscreen_full_copy_alignment(slide):
+                _append_onscreen_alignment_finding(
+                    issues,
+                    warnings,
+                    scope,
+                    finding,
+                    compatibility_mode=compatibility_mode,
+                )
+            retained_evidence = _support_items(slide.get("source_refs") or [], items)
+            protected_retention_findings = _compatibility_findings(
+                _audit_lean_onscreen_protected_retention(slide, retained_evidence, items),
                 compatibility_mode=compatibility_mode,
             )
-        retained_evidence = _support_items(slide.get("source_refs") or [], items)
-        protected_retention_findings = _compatibility_findings(
-            _audit_lean_onscreen_protected_retention(slide, retained_evidence, items),
-            compatibility_mode=compatibility_mode,
-        )
-        for finding in protected_retention_findings:
-            _append_governed_finding(issues, warnings, scope, finding)
-        relationship_findings = _compatibility_findings(
-            _audit_lean_relationship_visibility(slide),
-            compatibility_mode=compatibility_mode,
-        )
-        for finding in relationship_findings:
-            _append_governed_finding(issues, warnings, scope, finding)
+            for finding in protected_retention_findings:
+                _append_governed_finding(issues, warnings, scope, finding)
+            relationship_findings = _compatibility_findings(
+                _audit_lean_relationship_visibility(slide),
+                compatibility_mode=compatibility_mode,
+            )
+            for finding in relationship_findings:
+                _append_governed_finding(issues, warnings, scope, finding)
+
         if not compatibility_mode:
             # Exact PLAN-declared meaning-signal retention is now owned by
             # semantic_contract.content_route on the formal path. Keep the raw
             # legacy implementation intact only for direct compatibility callers.
             for finding in _audit_authored_content_coverage(page, slide):
                 _append_governed_finding(issues, warnings, scope, finding)
-        for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
-            _append_governed_finding(
-                issues,
-                warnings,
-                scope,
-                f"ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: {detail_issue}",
-            )
+
+        if stage1_owns_onscreen:
+            for detail_issue in _authored_bare_label_detail_issues(page, slide, items):
+                _append_governed_finding(
+                    issues,
+                    warnings,
+                    scope,
+                    f"ONSCREEN_SOURCE_DETAIL_COLLAPSED_TO_LABEL: {detail_issue}",
+                )
+
         author_execution_findings = _compatibility_findings(
             _author_execution_issues(
                 delivery_mode,
@@ -351,12 +365,20 @@ def audit_final_script(
             ),
             compatibility_mode=compatibility_mode,
         )
+        if not stage1_owns_onscreen:
+            author_execution_findings = [
+                finding
+                for finding in author_execution_findings
+                if not finding.startswith("AUTHOR_ONSCREEN_")
+            ]
         for finding in author_execution_findings:
             _append_governed_finding(issues, warnings, scope, finding)
-        warnings.extend(
-            f"{scope}: {warning}"
-            for warning in _onscreen_expression_warnings(page, slide)
-        )
+
+        if stage1_owns_onscreen:
+            warnings.extend(
+                f"{scope}: {warning}"
+                for warning in _onscreen_expression_warnings(page, slide)
+            )
 
     warnings.extend(_whole_deck_authoring_warnings(final_script))
     return issues, warnings

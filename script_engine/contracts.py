@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from . import author_contracts as _author
 from . import delivery_contracts as _delivery
+from . import fidelity_text_contracts as _fidelity_text
 from . import full_copy_contracts as _full_copy
 from . import lint_contracts as _lint
 from . import onscreen_contracts as _onscreen
@@ -38,6 +39,7 @@ _FOCUSED_EXPORTS = {
     "iter_final_script_text_fields": _lint.iter_final_script_text_fields,
     "lint_final_script": _lint.lint_final_script,
     "check_author_field_contract": _author.check_author_field_contract,
+    "check_fidelity_text_contract": _fidelity_text.check_fidelity_text_contract,
     "check_full_copy_structure": _full_copy.check_full_copy_structure,
     "check_full_copy_topic_semantics": _full_copy.check_full_copy_topic_semantics,
     "check_full_copy_parallel_subconclusions": _full_copy.check_full_copy_parallel_subconclusions,

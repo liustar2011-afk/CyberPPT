@@ -28,6 +28,12 @@ def _legacy_review_warning(issue: str) -> str:
     return f"[LEGACY_COMPATIBILITY_REVIEW_REQUIRED] {issue}"
 
 
+def _stage1_owns_onscreen(final_script: dict[str, Any]) -> bool:
+    """Return whether the Final Script version still authors presentation copy."""
+
+    return str(final_script.get("version") or "1.0").strip() in {"1.0", "1.1"}
+
+
 def audit_final_script_semantic_contract(
     final_script: dict[str, Any],
     plan: dict[str, Any] | None,
@@ -37,9 +43,14 @@ def audit_final_script_semantic_contract(
 
     Structured authorization, source scope, relationship shape/topology,
     source-structure preservation, provenance, typed compatibility, protected
-    payload, objective source boundaries, explicit PLAN content-route/onscreen
-    contracts, delivery cleanliness/readiness and voice policy, and explicit
-    visibility are the blocking semantic authority.
+    payload, objective source boundaries, explicit PLAN content-route contracts,
+    delivery cleanliness and voice policy, and explicit visibility are the
+    blocking semantic authority.
+
+    Final Script 1.0/1.1 additionally own authored onscreen composition, PLAN
+    onscreen contracts and Stage 01 delivery-readiness modules. Final Script 1.2
+    moves presentation-copy derivation and those readiness decisions to Stage 02,
+    so the Stage 01 onscreen validators are not applicable there.
 
     During Phase 4 the historical Final Script auditor remains attached only as a
     compatibility review adapter. Any residual ``legacy_issues`` are surfaced as
@@ -62,13 +73,22 @@ def audit_final_script_semantic_contract(
         *collect_protected_payload_diagnostics(final_script, foundation, plan),
         *collect_source_boundary_diagnostics(final_script, foundation),
         *collect_content_route_diagnostics(final_script, plan),
-        *collect_onscreen_composition_diagnostics(final_script, plan),
-        *collect_onscreen_contract_diagnostics(final_script, plan, foundation),
-        *collect_delivery_cleanliness_diagnostics(final_script, plan, foundation),
-        *collect_delivery_readiness_diagnostics(final_script, plan),
-        *collect_voice_policy_diagnostics(final_script, plan),
-        *collect_visibility_diagnostics(final_script, plan, foundation),
     ]
+    if _stage1_owns_onscreen(final_script):
+        diagnostics.extend(
+            [
+                *collect_onscreen_composition_diagnostics(final_script, plan),
+                *collect_onscreen_contract_diagnostics(final_script, plan, foundation),
+                *collect_delivery_readiness_diagnostics(final_script, plan),
+            ]
+        )
+    diagnostics.extend(
+        [
+            *collect_delivery_cleanliness_diagnostics(final_script, plan, foundation),
+            *collect_voice_policy_diagnostics(final_script, plan),
+            *collect_visibility_diagnostics(final_script, plan, foundation),
+        ]
+    )
     structured_blockers, review_required, structured = partition_diagnostics(
         diagnostics
     )

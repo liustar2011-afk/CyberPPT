@@ -15,6 +15,7 @@ from collections.abc import Iterator
 from typing import Any
 
 from . import author_contracts as _author
+from . import fidelity_text_contracts as _fidelity_text
 from . import full_copy_contracts as _full_copy
 from . import onscreen_contracts as _onscreen
 from .schema_contracts import CONTRACTS, load_json
@@ -34,7 +35,10 @@ def iter_final_script_text_fields(
 
     Final Script 1.1 stores onscreen items as ``{"id", "text"}`` objects while
     1.0 uses strings. Both representations are scanned so delivery-cleanliness
-    rules cannot be bypassed by upgrading the contract version.
+    rules cannot be bypassed by upgrading the contract version. ``fidelity_text``
+    is literal data rather than ordinary prose, but it is still scanned so banned
+    output strings cannot bypass delivery-cleanliness rules by being moved into a
+    protected field.
     """
 
     deck = final_script.get("deck") or {}
@@ -59,6 +63,17 @@ def iter_final_script_text_fields(
             value = slide.get(key)
             if isinstance(value, str) and value:
                 yield f"{prefix}.{key}", key, value
+
+        for fidelity_index, fidelity_item in enumerate(slide.get("fidelity_text") or []):
+            if not isinstance(fidelity_item, dict):
+                continue
+            value = fidelity_item.get("text")
+            if isinstance(value, str) and value:
+                yield (
+                    f"{prefix}.fidelity_text[{fidelity_index}].text",
+                    "fidelity_text",
+                    value,
+                )
 
         argument = slide.get("argument") or {}
         pattern = argument.get("pattern")
@@ -111,9 +126,9 @@ def iter_final_script_text_fields(
 def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     """Collect banned-phrasing and deterministic semantic findings.
 
-    This function does not decide severity. Use ``quality_policy.partition_issues``
-    (or the CLI Final Script quality path) to distinguish blockers from review
-    advisories.
+    Final Script 1.2 removes Stage 01 ownership of presentation copy, so the
+    legacy onscreen-shape checks are intentionally not evaluated for that version.
+    Fidelity, source, full-copy, authoring and delivery-cleanliness checks remain.
     """
 
     rules = [
@@ -140,15 +155,18 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
                 )
 
     findings.extend(_author.check_author_field_contract(final_script))
+    findings.extend(_fidelity_text.check_fidelity_text_contract(final_script))
     findings.extend(_full_copy.check_full_copy_structure(final_script))
     findings.extend(_full_copy.check_full_copy_topic_semantics(final_script))
     findings.extend(_full_copy.check_full_copy_parallel_subconclusions(final_script))
-    findings.extend(_onscreen.check_onscreen_heading_semantics(final_script))
-    findings.extend(_onscreen.check_onscreen_detail_semantics(final_script))
-    findings.extend(_onscreen.check_onscreen_projection_structure(final_script))
-    findings.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
-    findings.extend(_onscreen.check_onscreen_code_context(final_script))
-    findings.extend(_onscreen.check_onscreen_core_alignment(final_script))
+
+    if str(final_script.get("version") or "1.0").strip() in {"1.0", "1.1"}:
+        findings.extend(_onscreen.check_onscreen_heading_semantics(final_script))
+        findings.extend(_onscreen.check_onscreen_detail_semantics(final_script))
+        findings.extend(_onscreen.check_onscreen_projection_structure(final_script))
+        findings.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
+        findings.extend(_onscreen.check_onscreen_code_context(final_script))
+        findings.extend(_onscreen.check_onscreen_core_alignment(final_script))
     return findings
 
 

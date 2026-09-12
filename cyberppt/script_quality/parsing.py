@@ -20,6 +20,9 @@ SINGLE_PAGE_TITLE_RE = re.compile(r"^#\s+(.+?)\s*$")
 FIELD_RE = re.compile(r"^-\s*([^：:\n]+)[：:]\s*(.*)$")
 HEADING_FIELD_RE = re.compile(r"^###\s+(.+?)\s*$")
 NON_ONSCREEN_VISUAL_HEADING_RE = re.compile(r"^【视觉结构[，,]\s*不上屏】\s*$")
+FIDELITY_ITEM_RE = re.compile(
+    r"^\s*[-*]\s*\[(required|if_rendered)\]\s*(.+?)\s*$"
+)
 
 # Current project scripts also use Markdown section headings for the page
 # contract fields. Keep the legacy ``- 字段：内容`` parser, but normalize these
@@ -32,6 +35,7 @@ HEADING_FIELD_ALIASES = {
     "证据": "证据",
     "边界依据": "边界依据",
     "边界": "边界",
+    "保真文字": "保真文字",
     "上屏文字": "上屏文字",
     "上屏结论": "上屏结论",
     "视觉意图类型": "视觉意图类型",
@@ -74,6 +78,7 @@ PAGE_CONTRACT_FIELDS = {
     "完整文字稿段落映射",
     "文字稿取舍说明",
     "证据映射",
+    "保真文字",
     "上屏文字",
     "上屏模块清单",
     "上屏顶层模块清单",
@@ -523,6 +528,24 @@ def _json_string_list(value: str) -> tuple[str, ...]:
     return tuple(str(item).strip() for item in payload if str(item).strip())
 
 
+def _parse_fidelity_text(value: str) -> tuple[dict[str, str], ...]:
+    """Parse canonical Final Script 1.2 literal-preservation entries."""
+
+    result: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for raw in str(value or "").splitlines():
+        match = FIDELITY_ITEM_RE.match(raw)
+        if not match:
+            continue
+        visibility, text = match.groups()
+        text = text.strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        result.append({"text": text, "visibility": visibility})
+    return tuple(result)
+
+
 def load_page_contract_sidecar(script_path: Path) -> dict[str, dict[str, object]]:
     """Load and verify the page-contract sidecar next to a final script.
 
@@ -570,19 +593,25 @@ def parse_script_markdown(
         fields = _field_blocks(body)
         page_type = _normalize_page_type(fields.get("页面类型", ""))
         full_prose = fields.get("完整文字稿", "").strip()
+        fidelity_text = _parse_fidelity_text(fields.get("保真文字", ""))
+        has_fidelity_contract = "保真文字" in fields
         # Keep the authored visible projection distinct from the complete copy.
-        # Legacy manuscripts without an 上屏文字 section may still fall back to
-        # full prose, but an explicit visible layer always wins.
+        # Final Script 1.2 has no AUTHOR-owned onscreen layer: presence of the
+        # fidelity section marks full_copy as Stage 02's rewriteable content
+        # source rather than as a legacy missing-onscreen fallback.
         onscreen_candidate = fields.get("上屏文字", "")
         # `_field_blocks` deliberately preserves indentation because module
         # hierarchy checks consume it.  Calling `.strip()` here erased the
         # first module's indentation while leaving later modules untouched.
         onscreen = onscreen_candidate if onscreen_candidate.strip() else full_prose
-        onscreen_source = (
-            "authored" if onscreen_candidate.strip() else "full_prose_fallback"
-        )
+        if onscreen_candidate.strip():
+            onscreen_source = "authored"
+        elif has_fidelity_contract:
+            onscreen_source = "full_copy_stage02_source"
+        else:
+            onscreen_source = "full_prose_fallback"
         module_lines: list[tuple[str, int]] = []
-        if page_type == "content":
+        if page_type == "content" and onscreen_source == "authored":
             for line in onscreen.splitlines():
                 title = _module_title(line)
                 if title is None:
@@ -644,6 +673,7 @@ def parse_script_markdown(
                 module_titles=modules,
                 raw_onscreen_text=onscreen,
                 onscreen_source=onscreen_source,
+                fidelity_text=fidelity_text,
                 top_level_module_titles=top_level_modules,
                 visual_proof=fields.get("视觉证明", "").strip(),
                 onscreen_judgment=fields.get("上屏结论", "").strip(),

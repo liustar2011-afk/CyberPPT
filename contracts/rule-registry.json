@@ -1,20 +1,9 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "default_profile": "default",
-  "blocking_kinds": [
-    "schema",
-    "structural",
-    "delivery_cleanliness",
-    "delivery_policy",
-    "safety"
-  ],
-  "warning_kinds": [
-    "semantic_heuristic",
-    "style_heuristic"
-  ],
-  "forbidden_default_kinds": [
-    "project_specific"
-  ],
+  "blocking_kinds": ["schema", "structural", "delivery_cleanliness", "delivery_policy", "safety"],
+  "warning_kinds": ["semantic_heuristic", "style_heuristic"],
+  "forbidden_default_kinds": ["project_specific"],
   "sources": [
     {
       "id": "final-script-schema",
@@ -51,6 +40,24 @@
     }
   ],
   "deterministic_findings": [
+    {
+      "code": "FIDELITY_TEXT_ITEM_LIMIT",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "fidelity_text",
+      "confidence": "high",
+      "owner": "script_engine.fidelity_text_contracts",
+      "severity_rationale": "The eight-item threshold is an authoring-density review budget; exceeding it does not invalidate exact source fidelity."
+    },
+    {
+      "code": "FIDELITY_TEXT_CHAR_LIMIT",
+      "kind": "style_heuristic",
+      "severity": "warning",
+      "scope": "fidelity_text",
+      "confidence": "high",
+      "owner": "script_engine.fidelity_text_contracts",
+      "severity_rationale": "The 120-character threshold is an authoring-density review budget; exceeding it requires review rather than truncation or blocking."
+    },
     {
       "code": "AUTHOR_MISSION_GENERIC",
       "kind": "semantic_heuristic",

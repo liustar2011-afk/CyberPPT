@@ -110,6 +110,7 @@ class ScriptPage:
     module_titles: tuple[str, ...]
     raw_onscreen_text: str = ""
     onscreen_source: str = "authored"
+    fidelity_text: tuple[dict[str, str], ...] = ()
     top_level_module_titles: tuple[str, ...] = ()
     subtitle: str = ""
     content_load: str = ""

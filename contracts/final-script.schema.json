@@ -3,284 +3,144 @@
   "$id": "https://cyberppt.local/contracts/final-script.schema.json",
   "title": "CyberPPT Final Script Contract",
   "type": "object",
-  "required": [
-    "contract",
-    "version",
-    "deck",
-    "slides"
-  ],
+  "required": ["contract", "version", "deck", "slides"],
   "$defs": {
     "sourceProvenance": {
       "type": "object",
-      "required": [
-        "packet_sha256",
-        "source_refs",
-        "unit_ids"
-      ],
+      "required": ["packet_sha256", "source_refs", "unit_ids"],
       "properties": {
-        "packet_sha256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        },
+        "packet_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "source_refs": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
+          "items": {"type": "string", "minLength": 1}
         },
         "unit_ids": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
+          "items": {"type": "string", "minLength": 1}
         }
       },
       "additionalProperties": false
     },
     "provenanceItem": {
       "type": "object",
-      "required": [
-        "id",
-        "text"
-      ],
+      "required": ["id", "text"],
       "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^M[A-Za-z0-9][A-Za-z0-9_-]*$"
-        },
-        "text": {
-          "type": "string",
-          "minLength": 1
-        }
+        "id": {"type": "string", "pattern": "^M[A-Za-z0-9][A-Za-z0-9_-]*$"},
+        "text": {"type": "string", "minLength": 1}
       },
       "additionalProperties": true
     },
     "provenanceBinding": {
       "type": "object",
-      "required": [
-        "target",
-        "source_refs",
-        "relation"
-      ],
+      "required": ["target", "source_refs", "relation"],
       "properties": {
-        "target": {
-          "type": "string",
-          "minLength": 1
-        },
+        "target": {"type": "string", "minLength": 1},
         "source_refs": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
+          "items": {"type": "string", "minLength": 1}
         },
         "relation": {
           "type": "string",
-          "enum": [
-            "expresses",
-            "supports",
-            "qualifies",
-            "implements",
-            "contrasts",
-            "sequences"
-          ]
+          "enum": ["expresses", "supports", "qualifies", "implements", "contrasts", "sequences"]
         }
       },
       "additionalProperties": true
     },
     "provenance": {
       "type": "object",
-      "required": [
-        "derivation",
-        "claim_refs",
-        "bindings"
-      ],
+      "required": ["derivation", "claim_refs", "bindings"],
       "properties": {
-        "derivation": {
-          "type": "string",
-          "enum": [
-            "direct",
-            "synthesis",
-            "relation"
-          ]
-        },
+        "derivation": {"type": "string", "enum": ["direct", "synthesis", "relation"]},
         "claim_refs": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
+          "items": {"type": "string", "minLength": 1}
         },
         "bindings": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "$ref": "#/$defs/provenanceBinding"
-          }
+          "items": {"$ref": "#/$defs/provenanceBinding"}
         }
       },
       "allOf": [
         {
-          "if": {
-            "properties": {
-              "derivation": {
-                "const": "direct"
-              }
-            },
-            "required": [
-              "derivation"
-            ]
-          },
-          "then": {
-            "properties": {
-              "claim_refs": {
-                "maxItems": 1
-              }
-            }
-          }
+          "if": {"properties": {"derivation": {"const": "direct"}}, "required": ["derivation"]},
+          "then": {"properties": {"claim_refs": {"maxItems": 1}}}
         },
         {
           "if": {
-            "properties": {
-              "derivation": {
-                "enum": [
-                  "synthesis",
-                  "relation"
-                ]
-              }
-            },
-            "required": [
-              "derivation"
-            ]
+            "properties": {"derivation": {"enum": ["synthesis", "relation"]}},
+            "required": ["derivation"]
           },
-          "then": {
-            "properties": {
-              "claim_refs": {
-                "minItems": 2
-              }
-            }
-          }
+          "then": {"properties": {"claim_refs": {"minItems": 2}}}
         }
       ],
       "additionalProperties": true
     },
     "onscreenModule": {
       "type": "object",
-      "required": [
-        "heading"
-      ],
+      "required": ["heading"],
       "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^M[A-Za-z0-9][A-Za-z0-9_-]*$"
-        },
-        "heading": {
-          "type": "string",
-          "minLength": 1
-        },
-        "text": {
-          "type": "string",
-          "minLength": 1
-        },
+        "id": {"type": "string", "pattern": "^M[A-Za-z0-9][A-Za-z0-9_-]*$"},
+        "heading": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
         "items": {
           "type": "array",
           "items": {
             "oneOf": [
-              {
-                "type": "string",
-                "minLength": 1
-              },
-              {
-                "$ref": "#/$defs/provenanceItem"
-              }
+              {"type": "string", "minLength": 1},
+              {"$ref": "#/$defs/provenanceItem"}
             ]
           }
         },
-        "provenance": {
-          "$ref": "#/$defs/provenance"
-        }
+        "provenance": {"$ref": "#/$defs/provenance"}
       },
       "additionalProperties": true
     },
     "onscreenModuleV11": {
       "allOf": [
-        {
-          "$ref": "#/$defs/onscreenModule"
-        },
+        {"$ref": "#/$defs/onscreenModule"},
         {
           "type": "object",
-          "required": [
-            "id",
-            "provenance"
-          ],
+          "required": ["id", "provenance"],
           "properties": {
             "items": {
               "type": "array",
-              "items": {
-                "$ref": "#/$defs/provenanceItem"
-              }
+              "items": {"$ref": "#/$defs/provenanceItem"}
             }
           }
         }
       ]
+    },
+    "fidelityItem": {
+      "type": "object",
+      "required": ["text", "visibility"],
+      "properties": {
+        "text": {"type": "string", "minLength": 1},
+        "visibility": {"type": "string", "enum": ["required", "if_rendered"]}
+      },
+      "additionalProperties": false
     }
   },
   "properties": {
-    "contract": {
-      "const": "cyberppt.final-script"
-    },
-    "version": {
-      "enum": [
-        "1.0",
-        "1.1"
-      ]
-    },
+    "contract": {"const": "cyberppt.final-script"},
+    "version": {"enum": ["1.0", "1.1", "1.2"]},
     "deck": {
       "type": "object",
-      "required": [
-        "title",
-        "communication_goal"
-      ],
+      "required": ["title", "communication_goal"],
       "properties": {
-        "title": {
-          "type": "string",
-          "minLength": 1
-        },
-        "communication_goal": {
-          "type": "string",
-          "minLength": 1
-        },
-        "audience": {
-          "type": "string"
-        },
-        "delivery_mode": {
-          "type": "string",
-          "enum": [
-            "presented",
-            "self_read"
-          ],
-          "default": "self_read"
-        },
-        "authoring_mode": {
-          "type": "string",
-          "enum": [
-            "faithful",
-            "analytical"
-          ],
-          "default": "faithful"
-        },
-        "narrative": {
-          "type": "string"
-        }
+        "title": {"type": "string", "minLength": 1},
+        "communication_goal": {"type": "string", "minLength": 1},
+        "audience": {"type": "string"},
+        "delivery_mode": {"type": "string", "enum": ["presented", "self_read"], "default": "self_read"},
+        "authoring_mode": {"type": "string", "enum": ["faithful", "analytical"], "default": "faithful"},
+        "narrative": {"type": "string"}
       },
       "additionalProperties": true
     },
@@ -289,206 +149,92 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "page_type",
-          "title"
-        ],
+        "required": ["id", "page_type", "title"],
         "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^[Pp]?\\d+$"
-          },
-          "page_type": {
-            "type": "string",
-            "enum": [
-              "cover",
-              "contents",
-              "chapter",
-              "content",
-              "closing"
-            ]
-          },
-          "title": {
-            "type": "string",
-            "minLength": 1
-          },
-          "subtitle": {
-            "type": "string",
-            "minLength": 1
-          },
-          "mission": {
-            "type": "string"
-          },
-          "core_message": {
-            "type": "string"
-          },
+          "id": {"type": "string", "pattern": "^[Pp]?\\d+$"},
+          "page_type": {"type": "string", "enum": ["cover", "contents", "chapter", "content", "closing"]},
+          "title": {"type": "string", "minLength": 1},
+          "subtitle": {"type": "string", "minLength": 1},
+          "mission": {"type": "string"},
+          "core_message": {"type": "string"},
           "argument": {
             "type": "object",
-            "required": [
-              "pattern",
-              "chain"
-            ],
+            "required": ["pattern", "chain"],
             "properties": {
-              "pattern": {
-                "type": "string",
-                "minLength": 1
-              },
+              "pattern": {"type": "string", "minLength": 1},
               "chain": {
                 "type": "array",
                 "minItems": 2,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
+                "items": {"type": "string", "minLength": 1}
               }
             },
             "additionalProperties": true
           },
-          "full_copy": {
-            "type": "string"
+          "full_copy": {"type": "string"},
+          "fidelity_text": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/fidelityItem"}
           },
           "onscreen": {
             "type": "array",
-            "items": {
-              "$ref": "#/$defs/onscreenModule"
-            }
+            "items": {"$ref": "#/$defs/onscreenModule"}
           },
-          "onscreen_expected_peer_count": {
-            "type": "integer",
-            "minimum": 1
-          },
+          "onscreen_expected_peer_count": {"type": "integer", "minimum": 1},
           "content_load": {
             "type": "string",
-            "enum": [
-              "light",
-              "standard",
-              "dense"
-            ],
+            "enum": ["light", "standard", "dense"],
             "default": "standard"
           },
-          "visual_thesis": {
-            "type": "string"
-          },
+          "visual_thesis": {"type": "string"},
           "relationships": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "from",
-                "to",
-                "relation"
-              ],
+              "required": ["from", "to", "relation"],
               "properties": {
-                "from": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "to": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "relation": {
-                  "type": "string",
-                  "minLength": 1
-                }
+                "from": {"type": "string", "minLength": 1},
+                "to": {"type": "string", "minLength": 1},
+                "relation": {"type": "string", "minLength": 1}
               },
               "additionalProperties": true
             }
           },
-          "speaker_notes": {
-            "type": "string"
-          },
+          "speaker_notes": {"type": "string"},
           "source_refs": {
             "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
+            "items": {"type": "string", "minLength": 1}
           },
-          "source_provenance": {
-            "$ref": "#/$defs/sourceProvenance"
-          }
+          "source_provenance": {"$ref": "#/$defs/sourceProvenance"}
         },
         "allOf": [
           {
             "if": {
-              "properties": {
-                "page_type": {
-                  "const": "content"
-                }
-              },
-              "required": [
-                "page_type"
-              ]
+              "properties": {"page_type": {"const": "content"}},
+              "required": ["page_type"]
             },
             "then": {
-              "required": [
-                "full_copy",
-                "onscreen",
-                "source_refs",
-                "source_provenance"
-              ],
+              "required": ["full_copy", "source_refs", "source_provenance"],
               "properties": {
-                "full_copy": {
-                  "minLength": 1
-                },
-                "onscreen": {
-                  "minItems": 1
-                },
-                "source_refs": {
-                  "minItems": 1
-                }
+                "full_copy": {"minLength": 1},
+                "source_refs": {"minItems": 1}
               }
             },
-            "else": {
-              "not": {
-                "required": [
-                  "source_provenance"
-                ]
-              }
-            }
+            "else": {"not": {"required": ["source_provenance"]}}
           },
           {
             "if": {
               "anyOf": [
-                {
-                  "required": [
-                    "core_message"
-                  ]
-                },
-                {
-                  "required": [
-                    "argument"
-                  ]
-                }
+                {"required": ["core_message"]},
+                {"required": ["argument"]}
               ]
             },
             "then": {
-              "required": [
-                "core_message",
-                "argument",
-                "full_copy",
-                "onscreen",
-                "visual_thesis",
-                "speaker_notes"
-              ],
+              "required": ["core_message", "argument", "full_copy", "visual_thesis", "speaker_notes"],
               "properties": {
-                "core_message": {
-                  "minLength": 1
-                },
-                "full_copy": {
-                  "minLength": 1
-                },
-                "onscreen": {
-                  "minItems": 1
-                },
-                "visual_thesis": {
-                  "minLength": 1
-                },
-                "speaker_notes": {
-                  "minLength": 1
-                }
+                "core_message": {"minLength": 1},
+                "full_copy": {"minLength": 1},
+                "visual_thesis": {"minLength": 1},
+                "speaker_notes": {"minLength": 1}
               }
             }
           }
@@ -500,14 +246,8 @@
   "allOf": [
     {
       "if": {
-        "properties": {
-          "version": {
-            "const": "1.1"
-          }
-        },
-        "required": [
-          "version"
-        ]
+        "properties": {"version": {"enum": ["1.0", "1.1"]}},
+        "required": ["version"]
       },
       "then": {
         "properties": {
@@ -516,23 +256,67 @@
               "allOf": [
                 {
                   "if": {
-                    "properties": {
-                      "page_type": {
-                        "const": "content"
-                      }
-                    },
-                    "required": [
-                      "page_type"
-                    ]
+                    "properties": {"page_type": {"const": "content"}},
+                    "required": ["page_type"]
+                  },
+                  "then": {
+                    "required": ["onscreen"],
+                    "properties": {"onscreen": {"minItems": 1}}
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"version": {"const": "1.1"}},
+        "required": ["version"]
+      },
+      "then": {
+        "properties": {
+          "slides": {
+            "items": {
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {"page_type": {"const": "content"}},
+                    "required": ["page_type"]
                   },
                   "then": {
                     "properties": {
                       "onscreen": {
-                        "items": {
-                          "$ref": "#/$defs/onscreenModuleV11"
-                        }
+                        "items": {"$ref": "#/$defs/onscreenModuleV11"}
                       }
                     }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"version": {"const": "1.2"}},
+        "required": ["version"]
+      },
+      "then": {
+        "properties": {
+          "slides": {
+            "items": {
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {"page_type": {"const": "content"}},
+                    "required": ["page_type"]
+                  },
+                  "then": {
+                    "required": ["fidelity_text"],
+                    "not": {"required": ["onscreen"]}
                   }
                 }
               ]
