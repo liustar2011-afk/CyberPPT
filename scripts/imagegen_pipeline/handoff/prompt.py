@@ -63,6 +63,7 @@ from scripts.imagegen_pipeline.handoff.text import (
     _selected_content_first_style,
     content_lock_text,
     diagnostic_onscreen_text,
+    render_fidelity_prompt_contract,
     render_semantic_visual_brief,
     resolve_onscreen_judgment_mode,
     resolve_text_render_mode,
@@ -101,7 +102,7 @@ def render_content_first_prompt(
     onscreen_body = _flatten_markdown_tables(
         _clean_onscreen_for_imagegen(page.onscreen_text)
     )
-    fact_anchors = select_image_locked_text(page, visual_context)
+    fidelity_contract = render_fidelity_prompt_contract(page)
     judgment_for_semantics = page.onscreen_conclusion.strip()
     core_meaning_for_semantics = page.core_message.strip() or page.title.strip()
     visible_judgment = (
@@ -112,8 +113,9 @@ def render_content_first_prompt(
         )
         else ""
     )
-    # Visible material comes from the authored onscreen projection. Full prose
-    # is supplied separately as non-visible context below.
+    # Visible material comes from the current Stage 02 content projection. Full
+    # prose is supplied separately as non-visible context below. Fidelity items
+    # remain a distinct literal contract and never upgrade the rest of the copy.
     complete_semantics = (
         onscreen_body
         if page.subtitle.strip()
@@ -251,6 +253,8 @@ def render_content_first_prompt(
             *nonvisible_page_context,
             SEMANTIC_VISUAL_TEXT_CONTRACT,
             "",
+            fidelity_contract,
+            "",
             SEMANTIC_VISUAL_FACTS_HEADER,
             f"- 页面核心意思：{core_meaning_for_semantics}",
             (
@@ -261,11 +265,6 @@ def render_content_first_prompt(
             (
                 f"- 页面任务：{page_mission.strip()}"
                 if page_mission.strip()
-                else ""
-            ),
-            (
-                f"- 关键事实锚点（仅供校验）：{fact_anchors}"
-                if fact_anchors
                 else ""
             ),
             "",
@@ -305,6 +304,8 @@ def render_content_first_prompt(
             *nonvisible_page_context,
             "【页面内容素材｜允许提炼、改写、重组】",
             complete_semantics,
+            "",
+            fidelity_contract,
             "",
             (
                 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
@@ -548,7 +549,7 @@ def compile_page_prompt(
                 "style_lock": str(style_lock),
             },
             presentation=presentation,
-            image_locked_text="",
+            image_locked_text=select_image_locked_text(page, visual_context),
             editable_body_text=page.onscreen_text.strip(),
             semantic_structure=semantic_structure,
             text_render_mode=resolved_text_render_mode,
