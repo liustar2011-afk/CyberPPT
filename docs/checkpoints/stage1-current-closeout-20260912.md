@@ -2,7 +2,7 @@
 
 日期：2026-09-12
 
-状态：实现完成，等待本分支 PR CI 验证。
+状态：已完成；PR #50 首轮 GitHub Actions run #1096 全绿。
 
 ## 一、本轮排查范围
 
@@ -73,3 +73,12 @@ source-addition audit 后续已经完成，但该诊断措辞仍存在于当前 
 1. 新增定向回归通过；
 2. 现有 Stage1 / script_engine 回归无新增失败；
 3. GitHub Actions 仓库 CI 通过后，本检查点可视为完成。
+
+首轮正式验证结果（PR #50，run #1096）：
+
+- Python 3.12 全量测试：2310 passed、8 skipped、53 subtests passed；
+- Python 3.10 全量测试：通过；
+- Windows wheel smoke：通过；
+- macOS wheel smoke：通过；
+- OfficeCLI render smoke：通过；
+- Workflow conclusion：success。
