@@ -66,6 +66,7 @@ from scripts.imagegen_pipeline.handoff.text import (
     render_semantic_visual_brief,
     resolve_onscreen_judgment_mode,
     resolve_text_render_mode,
+    select_conditional_fidelity_text,
     select_image_locked_text,
 )
 
@@ -75,6 +76,46 @@ __all__ = (
     "compile_page_prompt",
     "render_content_first_prompt",
 )
+
+
+def _fidelity_prompt_contract(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None = None,
+) -> tuple[str, str, str]:
+    """Render Final Script 1.2 fidelity semantics without locking normal prose.
+
+    ``required`` literals are mandatory visible copy. ``if_rendered`` literals
+    remain optional; if ImageGen chooses to draw them, spelling must be exact.
+    The block is a control contract, never audience-facing text.
+    """
+
+    if not page.fidelity_text:
+        return "", "", ""
+    required = select_image_locked_text(page, visual_context).strip()
+    conditional = select_conditional_fidelity_text(page).strip()
+    if not required and not conditional:
+        return "", "", ""
+
+    parts = [
+        "【保真文字合同｜控制指令，不上屏】",
+        "只有本区列出的字符串受逐字约束；页面内容素材中的普通文字仍允许提炼、改写、重组，不得从普通正文自行新增逐字锁定项。",
+    ]
+    if required:
+        parts.extend(
+            [
+                "【required｜必须出现且逐字准确】",
+                *[f"- {line}" for line in required.splitlines() if line.strip()],
+            ]
+        )
+    if conditional:
+        parts.extend(
+            [
+                "【if_rendered｜可不显示；若显示必须逐字准确】",
+                *[f"- {line}" for line in conditional.splitlines() if line.strip()],
+                "不得因为字符串列入 if_rendered 而强制其出现；仅在决定显示该字符串时按原文逐字呈现。",
+            ]
+        )
+    return "\n".join(parts), required, conditional
 
 
 def render_content_first_prompt(
@@ -101,7 +142,13 @@ def render_content_first_prompt(
     onscreen_body = _flatten_markdown_tables(
         _clean_onscreen_for_imagegen(page.onscreen_text)
     )
-    fact_anchors = select_image_locked_text(page, visual_context)
+    fidelity_contract, required_fidelity, _conditional_fidelity = _fidelity_prompt_contract(
+        page, visual_context
+    )
+    # Legacy/pre-1.2 diagnostics may still expose inferred fact anchors. Final
+    # Script 1.2 uses the dedicated fidelity block instead, so required literals
+    # are never weakened by a second "仅供校验" rendering.
+    fact_anchors = "" if fidelity_contract else select_image_locked_text(page, visual_context)
     judgment_for_semantics = page.onscreen_conclusion.strip()
     core_meaning_for_semantics = page.core_message.strip() or page.title.strip()
     visible_judgment = (
@@ -251,6 +298,8 @@ def render_content_first_prompt(
             *nonvisible_page_context,
             SEMANTIC_VISUAL_TEXT_CONTRACT,
             "",
+            fidelity_contract,
+            "",
             SEMANTIC_VISUAL_FACTS_HEADER,
             f"- 页面核心意思：{core_meaning_for_semantics}",
             (
@@ -305,6 +354,8 @@ def render_content_first_prompt(
             *nonvisible_page_context,
             "【页面内容素材｜允许提炼、改写、重组】",
             complete_semantics,
+            "",
+            fidelity_contract,
             "",
             (
                 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
@@ -515,6 +566,9 @@ def compile_page_prompt(
         assert_deliverable_prompt(prompt)
         if EVIDENCE_ID_RE.search(prompt):
             raise ValueError(f"{page.page_id} ImageGen prompt still contains evidence IDs")
+        fidelity_contract, required_fidelity, conditional_fidelity = _fidelity_prompt_contract(
+            page, visual_context
+        )
         return CompiledPagePrompt(
             prompt=prompt,
             compiler_version=prompt_compiler,
@@ -528,6 +582,8 @@ def compile_page_prompt(
                 "content.complete_page_semantics",
                 "content.independent_reading",
                 "fact.source_boundary",
+                *(('text.fidelity_required_exact',) if required_fidelity else ()),
+                *(('text.fidelity_if_rendered_exact',) if conditional_fidelity else ()),
                 "style.selected_lock",
                 "style.tone_only",
                 *(
@@ -548,7 +604,7 @@ def compile_page_prompt(
                 "style_lock": str(style_lock),
             },
             presentation=presentation,
-            image_locked_text="",
+            image_locked_text=required_fidelity,
             editable_body_text=page.onscreen_text.strip(),
             semantic_structure=semantic_structure,
             text_render_mode=resolved_text_render_mode,
