@@ -131,7 +131,8 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("required", skill)
         self.assertIn("if_rendered", skill)
         self.assertIn("canonical Stage 02 intake", skill)
-        self.assertIn("exact-copy checks\napply only to fidelity literals", skill)
+        self.assertIn("Exact-copy checks", skill)
+        self.assertIn("apply only to fidelity literals", skill)
 
         self.assertIn("full_copy → runtime.onscreen_text", workflow)
         self.assertIn("内容/自由正文 → runtime.onscreen_text", workflow)
