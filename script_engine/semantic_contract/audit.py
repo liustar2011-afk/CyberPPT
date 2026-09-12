@@ -44,12 +44,13 @@ def audit_final_script_semantic_contract(
     Structured authorization, source scope, relationship shape/topology,
     source-structure preservation, provenance, typed compatibility, protected
     payload, objective source boundaries, explicit PLAN content-route contracts,
-    delivery cleanliness/readiness and voice policy, and explicit visibility are
-    the blocking semantic authority.
+    delivery cleanliness and voice policy, and explicit visibility are the
+    blocking semantic authority.
 
-    Final Script 1.0/1.1 additionally own authored onscreen composition and PLAN
-    onscreen contracts. Final Script 1.2 moves presentation-copy derivation to
-    Stage 02, so those Stage 01 onscreen validators are not applicable there.
+    Final Script 1.0/1.1 additionally own authored onscreen composition, PLAN
+    onscreen contracts and Stage 01 delivery-readiness modules. Final Script 1.2
+    moves presentation-copy derivation and those readiness decisions to Stage 02,
+    so the Stage 01 onscreen validators are not applicable there.
 
     During Phase 4 the historical Final Script auditor remains attached only as a
     compatibility review adapter. Any residual ``legacy_issues`` are surfaced as
@@ -78,12 +79,12 @@ def audit_final_script_semantic_contract(
             [
                 *collect_onscreen_composition_diagnostics(final_script, plan),
                 *collect_onscreen_contract_diagnostics(final_script, plan, foundation),
+                *collect_delivery_readiness_diagnostics(final_script, plan),
             ]
         )
     diagnostics.extend(
         [
             *collect_delivery_cleanliness_diagnostics(final_script, plan, foundation),
-            *collect_delivery_readiness_diagnostics(final_script, plan),
             *collect_voice_policy_diagnostics(final_script, plan),
             *collect_visibility_diagnostics(final_script, plan, foundation),
         ]
