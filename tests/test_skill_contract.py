@@ -120,6 +120,31 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn('"required": ["fidelity_text"]', schema)
         self.assertIn('"not": {"required": ["onscreen"]}', schema)
 
+    def test_stage02_skill_uses_canonical_rewriteable_content_and_fidelity_contract(self) -> None:
+        workflow = WORKFLOW.read_text(encoding="utf-8-sig")
+        skill = EDITABLE_PPTX_SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("Final Script 1.2", skill)
+        self.assertIn("full_copy", skill)
+        self.assertIn("runtime `onscreen_text`", skill)
+        self.assertIn("fidelity_text", skill)
+        self.assertIn("required", skill)
+        self.assertIn("if_rendered", skill)
+        self.assertIn("canonical Stage 02 intake", skill)
+        self.assertIn("exact-copy checks\napply only to fidelity literals", skill)
+
+        self.assertIn("full_copy → runtime.onscreen_text", workflow)
+        self.assertIn("内容/自由正文 → runtime.onscreen_text", workflow)
+        self.assertIn("普通正文不做全文 OCR 对齐", workflow)
+
+        stale_stage02_phrases = (
+            "`full_copy` is non-visible semantic\ncontext only",
+            "`onscreen` is optional source material for visible copy",
+            "OCR\nand release QA must not compare generated wording with `onscreen`",
+        )
+        for phrase in stale_stage02_phrases:
+            self.assertNotIn(phrase, skill)
+
     def test_default_project_route_uses_current_profile_router(self) -> None:
         agents = AGENTS.read_text(encoding="utf-8-sig")
         workflow = WORKFLOW.read_text(encoding="utf-8-sig")
