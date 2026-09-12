@@ -51,6 +51,19 @@ def test_final_script_12_projects_full_copy_as_runtime_content() -> None:
     )
 
 
+def test_final_script_12_uses_one_content_authority_in_prompt() -> None:
+    directory, compiled = _compile()
+    try:
+        prompt = compiled.prompt
+        unique_copy = "预计到2028年形成稳定服务能力。普通业务说明允许模型根据版面进行提炼、改写、合并和重组"
+
+        assert "【页面内容素材｜允许提炼、改写、重组】" in prompt
+        assert "【完整文字稿（不上屏）】" not in prompt
+        assert prompt.count(unique_copy) == 1
+    finally:
+        directory.cleanup()
+
+
 def test_content_first_prompt_separates_required_and_if_rendered_fidelity() -> None:
     directory, compiled = _compile()
     try:
@@ -127,5 +140,6 @@ def test_semantic_visual_keeps_same_fidelity_semantics() -> None:
         assert "【required｜必须出现且逐字准确】" in prompt
         assert "【if_rendered｜可不显示；若显示必须逐字准确】" in prompt
         assert "关键事实锚点（仅供校验）：2028年" not in prompt
+        assert "【完整文字稿（不上屏）】" not in prompt
     finally:
         directory.cleanup()

@@ -159,8 +159,9 @@ def render_content_first_prompt(
         )
         else ""
     )
-    # Visible material comes from the authored onscreen projection. Full prose
-    # is supplied separately as non-visible context below.
+    # Runtime onscreen_text is the single visible-content authority. Full prose
+    # may still be supplied below only when it carries distinct supporting
+    # context that is not already identical to the runtime content payload.
     complete_semantics = (
         onscreen_body
         if page.subtitle.strip()
@@ -281,12 +282,14 @@ def render_content_first_prompt(
         core_meaning_for_semantics,
         "",
     ]
-    if page.full_prose.strip():
+    full_prose_context = page.full_prose.strip()
+    runtime_content = page.onscreen_text.strip()
+    if full_prose_context and full_prose_context != runtime_content:
         nonvisible_page_context.extend([
             "【完整文字稿（不上屏）】",
             "仅供理解业务对象、关系、条件和边界；不得将本段直接排版或改写为额外上屏文案。"
             "上屏文字范围仍由独立的页面内容素材及当前文字渲染模式约束。",
-            page.full_prose.strip(),
+            full_prose_context,
             "",
         ])
     if semantic_visual:
