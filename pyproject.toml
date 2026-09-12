@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cyberppt"
 version = "0.1.0"
-description = "CyberPPT project tooling for evidence-based, editable consulting PowerPoint workflows."
+description = "Build high-quality image or editable PowerPoint from a page script."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -45,7 +45,7 @@ dev = [
 ]
 
 [project.scripts]
-cyberppt = "cyberppt.cli:main"
+cyberppt = "cyberppt.__main__:main"
 cyberppt-script = "script_engine.cli:main"
 
 [tool.setuptools.packages.find]

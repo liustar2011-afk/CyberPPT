@@ -2,131 +2,166 @@
 
 [简体中文](README.md) | [繁體中文](README.zh-TW.md) | [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Português](README.pt.md) | [Español](README.es.md) | [العربية](README.ar.md)
 
-CyberPPT 是一个 Codex Skill，用于把文档、研究材料、方案材料和业务数据转化为结构合宜、高密度、可审计的 PowerPoint 演示文稿。
+CyberPPT 是一个把逐页脚本转换成 PowerPoint 的小工具。它优先解决三件事：
 
-适用场景：咨询风格 PPT，高信息密度，包括行业研究、消费品分析、品牌战略、电商分析、用户研究、高管汇报、董事会材料、客户提案和项目复盘。 不适用场景：字少的低信息密度风格，包括演讲、个人风格表达、叙事、分享、观点类 PPT。
+- 把脚本生成成完整 PPT 页面图片；
+- 已成功页面可以直接续跑，不重复生成；
+- 需要时把同一套页面继续转换为可编辑 PPTX。
 
-CyberPPT 的核心不是“套模板”，而是把源材料先转成可审计证据链，再按材料类型选择方案型或咨询型架构，通过页面密度规划、视觉蓝图和严格门禁生成 PPTX。方案、研究、建设、实施和立项材料默认使用 `solution`；`consulting` 与 SCR 仅在明确选用时启用。
+内部仍保留文字检查、构建记录和可编辑页验证，但普通使用不需要理解这些流程概念。
 
-## 核心能力
+## 最简单的用法
 
-- 从 DOCX、PDF、TXT、XLSX、研究报告、业务材料和原始数据中提取证据、事实、数字、判断和 caveat。
-- 建立 MBB 标准证据表，再做内容脑暴、故事线比较、SCR 收敛和逐页页面计划。
-- 默认提供 8 种固定 CyberPPT 视觉风格，每种风格都有独立 16:9 样张。
-- 根据逐页脚本生成完整正文视觉稿，锁定页面主体的构图、层级、密度、色板和图表语言。
-- 使用“完整图视觉保真 + 原生文字/形状可编辑”的重建策略生成 PPTX。
-- 第三阶段只使用已审计 full 图 → 可编辑 SVG → 原生 PPTX 的重建链。可编辑分支对通过审计的 full 图写入 SHA-256 视觉来源绑定；SVG 阶段负责高保真复刻和拆层，不重新设计页面。每页先盘点可还原区域和注册图层；未验证的数据图、标识或文字必须标记 `manual_required` 并阻断交付，禁止以整页截图蒙版回退。
-- 执行结构 QA、视觉 QA、可编辑性 QA、容器溢出 QA、空间锚点 QA 和曲线追踪 QA。
+准备一个带页码的 Markdown 脚本，然后执行：
 
-## 当前正式主流程
+```bash
+cyberppt build ./script.md
+```
 
-完整流程、人工停点、产物权威关系和 Stage 01 / Stage 02 边界统一见 [CyberPPT 主流程总览](docs/CYBERPPT_WORKFLOW.md)。
+默认行为：
 
-新建且包含正式源材料的 Stage 01 项目默认使用 `strict/legacy` 路线：
-`cyberppt-source-foundation → business-semantic-understanding → project-foundation → cyberppt-script-workflow`。
+- 自动识别脚本中的全部页面；
+- 自动创建 `<脚本名>.cyberppt` 工作目录；
+- 自动生成页面图片；
+- 默认输出图片版 PPTX；
+- 再次执行同一个命令时，自动复用已经通过的页面，只继续未完成部分。
 
-用户明确选择轻量模式时，使用 `script` 路线：
-`来源索引 → 一次 UNDERSTAND/Foundation → 轻量 Deck Plan → AUTHOR → CRITIQUE/REWRITE → 最终全稿`。
+如果脚本已经位于初始化过的 CyberPPT 项目中，会直接复用该项目，不再创建额外工作目录。
 
-默认流程只在“脚本规划待确认”和“最终脚本已生成”两处停下。AUTHOR 按页回读绑定证据，不重复建立全文语义模型。
+### 输出可编辑 PPT
 
-## 8 种视觉风格
+```bash
+cyberppt build ./script.md --mode editable
+```
 
-| 选项 | 名称 | 样张 |
-|---|---|---|
-| 01 | 经典深红咨询风 | ![Palette 01](assets/palette-samples/palette-01.png) |
-| 02 | 冷灰 + 勃艮第红 | ![Palette 02](assets/palette-samples/palette-02.png) |
-| 03 | 暖象牙白 + 暗酒红 | ![Palette 03](assets/palette-samples/palette-03.png) |
-| 04 | 象牙白 + 深蓝强调 | ![Palette 04](assets/palette-samples/palette-04.png) |
-| 05 | 浅灰白 + 墨绿 | ![Palette 05](assets/palette-samples/palette-05.png) |
-| 06 | 纸张米色 + 铜棕 | ![Palette 06](assets/palette-samples/palette-06.png) |
-| 07 | 纯净浅灰 + 黑金 | ![Palette 07](assets/palette-samples/palette-07.png) |
-| 08 | 冷白灰 + 深紫 | ![Palette 08](assets/palette-samples/palette-08.png) |
+### 同时输出图片版和可编辑版
 
-## 门禁机制
+```bash
+cyberppt build ./script.md --mode both
+```
 
-CyberPPT 内置多层门禁，防止“文件生成了，但证据、密度、可编辑性或视觉还原不合格”。
+可编辑模式沿用同一张已经验收的完整页面图。若当前页需要本地 SVG 拆层或视觉复核，命令会返回 `needs_action`；完成提示的当前页操作后，再执行同一个 `cyberppt build` 命令即可继续，不需要重新生成已经完成的页面。
 
-| 门禁 | 检查什么 | 失败后怎么处理 |
-|---|---|---|
-| Reference Gate | 每个阶段开始前是否读取对应 reference 文件 | 未读取不得进入阶段 |
-| Evidence Gate | 所有事实、数字、判断、建议是否可追溯到源材料 | 缺证据必须标记缺口或返工 |
-| Storyline Gate | 是否完成 2-3 条故事线脑暴、比较和 SCR 收敛 | 不能只交单版大纲 |
-| Communication Strategy Gate | 是否在提纲前确认沟通对象、沟通目的、决策任务和汇报方向 | 用户未选择方向，或提纲未绑定已选策略时不得继续 |
-| Density Gate | 每页是否有信息密度、组件清单、图表计划和 SO WHAT | 低密度页面必须补充或重排 |
-| Style Gate | 是否展示 8 张独立 16:9 风格样张，并锁定选定风格 | 不能只给文字风格说明 |
-| Blueprint Gate | 是否为全部页面生成逐页正文内容区 ImageGen 蓝图 | 蓝图未确认不得进入 PPTX |
-| Asset Admission Gate | 每页图片资产是否有来源、必要性和可编辑性影响说明 | 无必要性的图片必须改为原生重建 |
-| Editable Layer Gate | 主标题、正文、关键数字、图表标签、页脚、SO WHAT 是否可编辑 | 主要信息图片化即失败 |
-| Visual Semantics Gate | 图表语义、曲线、面板系统、底色、层级和视觉重心是否忠实蓝图 | 不能用“可编辑”解释视觉降级 |
-| Curve Trace Gate | 流线、弧线、异形边界、Ribbon、桑基图等是否精确追踪 | 粗略矩形、少点折线或默认曲线失败 |
-| Spatial Registration Gate | 图标、节点、标签、箭头、曲线是否按锚点对齐 | 没重叠不代表位置合格 |
-| Container Overflow Gate | 文字是否越过卡片、单元格、结论条、SO WHAT 或图表区 | 容器内溢出即失败 |
-| Typography Gate | 字号是否符合固定 C0/T1-T14 层级 | 不得用无限缩字解决密度 |
-| Render QA Gate | 是否逐页渲染并与蓝图对照 | 文件生成成功不等于完成 |
-| Strict QA Gate | `validate_pptx.py --strict` 是否通过 manifest 和 visual QA 检查 | 出现 errors 必须返工 |
+### 只生成部分页面
 
-关键原则：`结构可编辑` 和 `视觉还原` 是同等硬门槛；`strict QA` 通过不等于视觉合格；通过审计并完成来源绑定的 full 图是可编辑重建的视觉来源，后续拆层保持其已接受的视觉构图。
+```bash
+cyberppt build ./script.md --pages 3-6
+```
+
+也可以使用离散页码：
+
+```bash
+cyberppt build ./script.md --pages 1,3,5
+```
+
+### 指定工作目录
+
+```bash
+cyberppt build ./script.md --project ./my-ppt-workspace
+```
+
+### 强制重画
+
+默认会复用已经通过的页面。如果明确需要全部重新生成：
+
+```bash
+cyberppt build ./script.md --force
+```
+
+## 脚本格式
+
+最简单的脚本只需要页标题和正文：
+
+```markdown
+## P01 项目背景
+
+国家数据基础设施建设持续推进，行业侧需要形成稳定的数据资源组织、可信流通和应用服务能力。
+
+## P02 建设思路
+
+围绕数据资源、基础能力、业务场景和持续运营形成一体化建设路径。
+```
+
+也可以使用 CyberPPT 的结构化页面脚本。新脚本支持 `完整文字稿 + 保真文字`：普通正文允许在生成阶段提炼和改写，少量必须准确出现的数字、正式名称或固定字符串可以单独声明。
+
+例如：
+
+```markdown
+## P03 建设目标
+
+- 页面类型：内容页
+- 页面标题：建设目标
+
+### 完整文字稿
+
+到2028年形成稳定的数据服务能力，并持续服务真实业务场景。
+
+### 保真文字
+
+- [required] 2028年
+```
+
+`保真文字` 是一个小型文字保护功能，不是另一套上屏稿。普通文案不需要逐字锁定。
+
+## 从原始材料开始
+
+如果你只有 DOCX、PDF、TXT、XLSX、研究报告或业务材料，可以继续使用仓库现有的脚本工作流先生成 `final-script.md`，再交给 `cyberppt build`。
+
+默认的轻量脚本路线：
+
+```bash
+cyberppt init projects/example
+cyberppt prepare-source-context projects/example
+cyberppt prepare-script-foundation projects/example --profile script
+```
+
+随后由 Agent 完成分页、脚本撰写和必要审核。详细方法见 [CyberPPT 主流程总览](docs/CYBERPPT_WORKFLOW.md)。这些属于脚本生产能力，不是 `build` 的使用前置条件。
+
+## 高级入口
+
+`cyberppt build` 是普通使用入口。仓库仍保留原来的高级命令，供调试、迁移和精细控制使用，例如：
+
+```bash
+cyberppt final-script-pages ...
+cyberppt stage-script ...
+cyberppt script-status ...
+cyberppt stage02-handoff-check ...
+```
+
+这些命令继续复用现有 Stage 02 实现，但不再要求普通用户把内部阶段、审计回执和构建身份当作日常操作对象。
+
+## 当前视觉路线
+
+页面制作仍遵循一个简单原则：
+
+> 先生成完整页面视觉稿，再在需要时基于这张图进行可编辑重建。
+
+这样可以优先保证构图、层级、配色和整体视觉质量，同时保留后续可编辑输出能力。仓库当前正式可编辑路线仍是 full image → SVG → PPTX；底层 QA 和复用机制继续存在，但由工具自动管理。
 
 ## 安装
 
-克隆仓库后，从仓库根目录启动 Codex。仓库级 Skills 位于 `.agents/skills/`，无需复制或安装根目录 Skill。
-
-```powershell
+```bash
 git clone https://github.com/liustar2011-afk/CyberPPT.git CyberPPT
-```
-
-## 更新
-
-```powershell
 cd CyberPPT
-git pull
-```
-
-## PPTX 校验
-
-```bash
-.venv/bin/python3 scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manifest.json --visual-qa path/to/visual_qa_gate.json --strict --json-out path/to/report.json
-```
-
-## 本地工程入口
-
-仓库同时提供 Python CLI、npm scripts 和 Makefile。`docs/CYBERPPT_WORKFLOW.md` 是主流程总览和检索入口；`.agents/skills/` 保存各阶段唯一权威细则，CLI 负责确定性准备、校验和生产编排。
-
-Stage 01 的权威内容产物为 `script/foundation.json`、`script/deck-plan.json` 和 `script/dist/final-script.md`。用户交互在对话中完成，不新增确认文件、状态 JSON 或平行运行目录。
-
-目录归整规则见 [docs/repository-layout.md](docs/repository-layout.md)。正式项目优先放在 `projects/<project-name>/`，临时运行可放在 `image2pptx_runs/`；根目录 `images/` 只作为历史 scratch 位置，不再作为新流程默认输出目标。
-
-```bash
-.venv/bin/python3 -m cyberppt doctor
-.venv/bin/python3 -m cyberppt init projects/example
-.venv/bin/python3 -m cyberppt prepare-source-context projects/example
-.venv/bin/python3 -m cyberppt prepare-script-foundation projects/example --profile script
-.venv/bin/python3 -m script_engine.cli validate plan projects/example/script/deck-plan.json
-.venv/bin/python3 -m script_engine.cli audit-plan projects/example/script/deck-plan.json projects/example/script/foundation.json
-.venv/bin/python3 -m script_engine.cli audit-final projects/example/script/dist/final-script.json projects/example/script/deck-plan.json projects/example/script/foundation.json
-.venv/bin/python3 -m script_engine.cli lint projects/example/script/dist/final-script.json
-.venv/bin/python3 -m script_engine.cli check-sync projects/example/script/dist/final-script.json projects/example/script/dist/final-script.md
-.venv/bin/python3 -m cyberppt final-script-pages projects/example --script projects/example/script/dist/final-script.md --production-build --assembly-mode editable
-```
-
-若脚本来自仓库外部、另一个项目或人工编辑，可在 Stage 02 直接接收：
-
-```bash
-.venv/bin/python3 -m cyberppt final-script-pages projects/example --script /path/to/external-script.md --pages 1-8 --style-id 4 --external-script --production-build
-```
-
-正式项目的最终全稿经当前主 Agent 完成 AUTHOR，并通过 `audit-final`、`lint` 及必要的 `check-sync` 后，才进入 Stage 02。`final-script-pages --production-build` 是后续唯一正式编排入口。
-
-`final-script-pages` 默认按 `build_id` 创建新的构建目录，不覆盖既有版本；`workbench/artifact-ledger.json` 以追加方式记录每次产物，并用 `supersedes` 连接同一路径的历史版本。Stage 02 默认走 `image-to-editable-svg` 的可编辑分支：审计 full 图后准备无文字底图，将文字回写为原生 SVG，再组装 PPTX。PPTX 导出必须使用本次运行的明确输出路径，导出工程同时写入 `analysis/export_artifact.json`，续跑不会按文件修改时间猜测旧 PPTX。提示词发送默认 `--prompt-enrich off`，即消费已批准 Prompt 原文；只有明确指定 `deterministic` 或 `send` 才会进行发送时增强。
-
-默认 `strict/legacy` profile 与显式轻量 `script` profile 的选择、AUTHOR 写作要求和 Stage 02 门禁，以 [主流程总览](docs/CYBERPPT_WORKFLOW.md) 及其路由到的仓库级 Skill 为准；README 不复制阶段细则。
-
-常用开发检查：
-
-```bash
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -e '.[test]'
+```
+
+之后可以直接使用：
+
+```bash
+cyberppt build ./script.md
+```
+
+也可以不安装命令，直接从仓库运行：
+
+```bash
+.venv/bin/python -m cyberppt build ./script.md
+```
+
+## 常用开发检查
+
+```bash
 make env-check
 make doctor
 make test
@@ -134,10 +169,7 @@ make test-unittest
 make test-validate-pptx
 ```
 
-仓库内的 Make 目标会优先使用 `.venv/bin/python`，不依赖系统全局的
-`python3` 或 `pytest`。测试依赖通过 `pyproject.toml` 的 `test` extra
-安装；`make test` 是 pytest 全量入口，`make test-unittest` 保留用于
-兼容性回归。
+高级流程、内部合同和开发者约束统一放在 `docs/`、`AGENTS.md` 和 `.agents/skills/` 中维护，不再作为 README 的主使用路径。
 
 ## 许可
 
@@ -145,4 +177,4 @@ MIT。详见 [LICENSE](LICENSE)。
 
 ## Acknowledgments
 
-[SVG Repo](https://www.svgrepo.com/) · [Tabler Icons](https://github.com/tabler/tabler-icons) · [Simple Icons](https://github.com/simple-icons/simple-icons) · [Phosphor Icons](https://github.com/phosphor-icons/core) · [Robin Williams](https://en.wikipedia.org/wiki/Robin_Williams_(designer)) (CRAP principles)
+[SVG Repo](https://www.svgrepo.com/) · [Tabler Icons](https://github.com/tabler/tabler-icons) · [Simple Icons](https://github.com/simple-icons/simple-icons) · [Phosphor Icons](https://github.com/phosphor-icons/core)
