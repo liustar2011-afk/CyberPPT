@@ -1,0 +1,45 @@
+name: Apply D4b artifact copy patch
+
+on:
+  push:
+    branches:
+      - codex/stage02-d4b-artifact-copy-contract
+    paths:
+      - .github/workflows/apply-d4b-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/stage02-d4b-artifact-copy-contract
+      - name: Apply narrow artifact-spec copy policy patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('cyberppt/page_artifact_spec.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    copy_contract = (\n        build_copy_contract(visible_text_bindings, region_by_text_id=region_by_text_id)\n        if visible_text_bindings\n        else None\n    )\n'''
+          new = '''    rewriteable_source = str(handoff_page.get("onscreen_source") or "").strip()\n    rewriteable_text_ids = (\n        tuple(binding.text_id for binding in visible_text_bindings)\n        if rewriteable_source in {"full_copy_stage02_source", "external_content_stage02_source"}\n        else ()\n    )\n    copy_contract = (\n        build_copy_contract(\n            visible_text_bindings,\n            region_by_text_id=region_by_text_id,\n            explicit_rewriteable_text_ids=rewriteable_text_ids,\n        )\n        if visible_text_bindings\n        else None\n    )\n'''
+          if old not in text:
+              raise SystemExit('target copy_contract block not found exactly')
+          if text.count(old) != 1:
+              raise SystemExit(f'target copy_contract block count={text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          if git diff --quiet -- cyberppt/page_artifact_spec.py; then
+            echo "No patch produced" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cyberppt/page_artifact_spec.py
+          git commit -m "fix(stage2): project rewriteable runtime copy into artifact spec"
+          git push origin HEAD:codex/stage02-d4b-artifact-copy-contract
