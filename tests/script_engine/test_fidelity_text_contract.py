@@ -6,6 +6,7 @@ from script_engine.fidelity_text_contracts import (
     FIDELITY_TEXT_MAX_ITEMS,
     canonicalize_fidelity_text,
 )
+from script_engine.quality_policy import ADVISORY, classify_issue
 
 
 def _payload(*, fidelity_text: object = None, include_field: bool = True) -> dict:
@@ -65,7 +66,7 @@ def test_fidelity_text_rejects_invalid_visibility_duplicate_and_outside_copy() -
     assert any(issue.startswith("FIDELITY_TEXT_OUTSIDE_FULL_COPY:") for issue in issues)
 
 
-def test_fidelity_text_capacity_limits_are_explicit() -> None:
+def test_fidelity_text_capacity_limits_are_review_only() -> None:
     items = [
         {"text": f"值{i}", "visibility": "required"}
         for i in range(FIDELITY_TEXT_MAX_ITEMS + 1)
@@ -73,13 +74,19 @@ def test_fidelity_text_capacity_limits_are_explicit() -> None:
     payload = _payload(fidelity_text=items)
     payload["slides"][0]["full_copy"] += "".join(item["text"] for item in items)
     issues = check_fidelity_text_contract(payload)
-    assert any(issue.startswith("FIDELITY_TEXT_ITEM_LIMIT:") for issue in issues)
+    item_issue = next(
+        issue for issue in issues if issue.startswith("FIDELITY_TEXT_ITEM_LIMIT:")
+    )
+    assert classify_issue(item_issue)["severity"] == ADVISORY
 
     long_text = "保" * (FIDELITY_TEXT_MAX_EFFECTIVE_CHARS + 1)
     payload = _payload(fidelity_text=[{"text": long_text, "visibility": "required"}])
     payload["slides"][0]["full_copy"] += long_text
     issues = check_fidelity_text_contract(payload)
-    assert any(issue.startswith("FIDELITY_TEXT_CHAR_LIMIT:") for issue in issues)
+    char_issue = next(
+        issue for issue in issues if issue.startswith("FIDELITY_TEXT_CHAR_LIMIT:")
+    )
+    assert classify_issue(char_issue)["severity"] == ADVISORY
 
 
 def test_canonicalize_fidelity_text_deduplicates_without_inventing_visibility() -> None:
