@@ -126,9 +126,9 @@ def iter_final_script_text_fields(
 def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     """Collect banned-phrasing and deterministic semantic findings.
 
-    This function does not decide severity. Use ``quality_policy.partition_issues``
-    (or the CLI Final Script quality path) to distinguish blockers from review
-    advisories.
+    Final Script 1.2 removes Stage 01 ownership of presentation copy, so the
+    legacy onscreen-shape checks are intentionally not evaluated for that version.
+    Fidelity, source, full-copy, authoring and delivery-cleanliness checks remain.
     """
 
     rules = [
@@ -159,12 +159,14 @@ def lint_final_script(final_script: dict[str, Any]) -> list[str]:
     findings.extend(_full_copy.check_full_copy_structure(final_script))
     findings.extend(_full_copy.check_full_copy_topic_semantics(final_script))
     findings.extend(_full_copy.check_full_copy_parallel_subconclusions(final_script))
-    findings.extend(_onscreen.check_onscreen_heading_semantics(final_script))
-    findings.extend(_onscreen.check_onscreen_detail_semantics(final_script))
-    findings.extend(_onscreen.check_onscreen_projection_structure(final_script))
-    findings.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
-    findings.extend(_onscreen.check_onscreen_code_context(final_script))
-    findings.extend(_onscreen.check_onscreen_core_alignment(final_script))
+
+    if str(final_script.get("version") or "1.0").strip() in {"1.0", "1.1"}:
+        findings.extend(_onscreen.check_onscreen_heading_semantics(final_script))
+        findings.extend(_onscreen.check_onscreen_detail_semantics(final_script))
+        findings.extend(_onscreen.check_onscreen_projection_structure(final_script))
+        findings.extend(_onscreen.check_onscreen_hierarchy_punctuation(final_script))
+        findings.extend(_onscreen.check_onscreen_code_context(final_script))
+        findings.extend(_onscreen.check_onscreen_core_alignment(final_script))
     return findings
 
 
