@@ -114,3 +114,72 @@ def test_text_gate_uses_six_overlapping_tiles(tmp_path: Path) -> None:
     )
     assert image_counts == [6]
     assert "不得依据上下文" in prompts[0]
+
+
+def test_required_fidelity_exact_match_passes(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text="正文可以被重新组织，不构成逐字合同。",
+        fidelity_text=[{"text": "2028年", "visibility": "required"}],
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "到2028年完成", "confidence": .99, "bbox": []}
+        ],
+    )
+    assert result["valid"] is True
+    assert result["scope"] == "fidelity_and_typo_gibberish"
+
+
+def test_required_fidelity_missing_fails_even_when_ordinary_script_differs(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text="到2028年形成稳定服务能力。",
+        fidelity_text=[{"text": "2028年", "visibility": "required"}],
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "稳定服务能力", "confidence": .99, "bbox": []}
+        ],
+    )
+    assert result["valid"] is False
+    assert result["issues"][0]["type"] == "fidelity_required_missing"
+
+
+def test_if_rendered_fidelity_absent_passes(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text="正文不要求出现这个短语。",
+        fidelity_text=[{"text": "统一入口", "visibility": "if_rendered"}],
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "业务协同", "confidence": .99, "bbox": []}
+        ],
+    )
+    assert result["valid"] is True
+
+
+def test_if_rendered_fidelity_near_miss_fails(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text="正文不参与逐字比较。",
+        fidelity_text=[{"text": "统一入口", "visibility": "if_rendered"}],
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "统一人口", "confidence": .97, "bbox": []}
+        ],
+    )
+    assert result["valid"] is False
+    assert result["issues"][0]["type"] == "fidelity_if_rendered_mismatch"
+
+
+def test_ordinary_script_text_mismatch_still_does_not_create_exact_copy_failure(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text="到2028年覆盖80%的场景并投入100万元。",
+        fidelity_text=[],
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "场景服务", "confidence": .95, "bbox": []}
+        ],
+    )
+    assert result["valid"] is True
+    assert result["scope"] == "typo_and_gibberish_only"
