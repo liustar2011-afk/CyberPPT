@@ -25,11 +25,13 @@ from cyberppt.content_integrity_contract import (
 )
 from cyberppt.onscreen_expression import expression_constraints, resolve_onscreen_expression
 from cyberppt.script_quality.models import ScriptPage
-from cyberppt.script_quality.parsing import (
-    parse_script_markdown,
-    parse_stage02_semantic_annotations,
-)
+from cyberppt.script_quality.parsing import parse_stage02_semantic_annotations
 from cyberppt.semantic_verifier import verify_semantic_proposals
+from cyberppt.stage02_script_adapter import (
+    VALID_SOURCE_MODES,
+    parse_stage02_script,
+    project_stage02_runtime_page,
+)
 from cyberppt.stage02_semantic_intake import normalize_semantic_proposals
 from cyberppt.topology_resolver import resolve_semantic_topology
 from cyberppt.visual_structure_contract import normalize_page_id
@@ -168,8 +170,10 @@ def _reject_invalid_authoritative_relations(
 def _page_record(
     page: ScriptPage,
     *,
+    source_mode: str = "script_file",
     semantic_annotations: dict[str, object] | None = None,
 ) -> dict[str, Any]:
+    page = project_stage02_runtime_page(page, source_mode=source_mode)
     page_mission = str(page.page_mission or page.main_message)
     source_refs = tuple(page.source_refs)
     render_role = _render_role(page.page_type)
@@ -178,6 +182,7 @@ def _page_record(
     business_relationships = [
         dict(item) for item in page.content_relations if isinstance(item, dict)
     ]
+    fidelity_text = [dict(item) for item in page.fidelity_text]
 
     input_features = _relationship_features(
         business_relationships,
@@ -270,6 +275,8 @@ def _page_record(
         "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
+        "content_text": page.full_prose,
+        "fidelity_text": fidelity_text,
         "onscreen_text": page.onscreen_text,
         "onscreen_source": page.onscreen_source,
         "onscreen_items": _onscreen_items(page),
@@ -293,6 +300,7 @@ def _page_record(
         "expression_constraints": constraints,
         "field_provenance": {
             "content": "input_script",
+            "fidelity_text": "input_script",
             "onscreen_text": page.onscreen_source,
             "business_relationships": "input_script",
             "render_topology": "stage02_derived",
@@ -308,6 +316,8 @@ def _page_record(
         "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
+        "content_text": page.full_prose,
+        "fidelity_text": fidelity_text,
         "content_load": content_load,
         "argument_chain": page.argument_chain,
         "prompt_mode": prompt_mode,
@@ -419,18 +429,50 @@ def resolve_input_script(project: Path, source_script: Path) -> Path:
     )
 
 
-def build_stage02_input(project: Path, *, script: Path) -> dict[str, Any]:
+def stage02_input_semantic_sha256(payload: dict[str, Any]) -> str:
+    """Hash only deterministic Stage 02 input authority.
+
+    Timestamps, absolute project paths and external provenance paths are run
+    metadata.  The source bytes, source mode and canonical page records are the
+    production identity and therefore drive resume invalidation.
+    """
+
+    binding = (payload.get("source_bindings") or {}).get("script") or {}
+    authority = {
+        "schema": "cyberppt.stage02_script_input.semantic.v1",
+        "source_mode": payload.get("source_mode") or binding.get("source_mode") or "",
+        "source_script_sha256": binding.get("sha256") or "",
+        "page_order": payload.get("page_order") or [],
+        "pages": payload.get("pages") or [],
+    }
+    canonical = json.dumps(
+        authority,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def build_stage02_input(
+    project: Path,
+    *,
+    script: Path,
+    source_mode: str = "script_file",
+) -> dict[str, Any]:
     project = project.expanduser().resolve()
     source = script.expanduser().resolve()
     snapshot = snapshot_input_script(project, source)
 
-    # Parse exactly the snapshotted file and explicitly disable sidecar loading.
+    # Parse exactly the snapshotted file. External aliases are normalized only
+    # by the Stage 02 adapter; the Stage 01 parser contract remains unchanged.
     script_text = snapshot.read_text(encoding="utf-8-sig")
-    document = parse_script_markdown(script_text, page_contracts={})
+    document = parse_stage02_script(script_text, source_mode=source_mode)
     annotations_by_page = parse_stage02_semantic_annotations(script_text)
     records = [
         _page_record(
             page,
+            source_mode=source_mode,
             semantic_annotations=annotations_by_page.get(page.page_id),
         )
         for page in document.pages
@@ -443,19 +485,23 @@ def build_stage02_input(project: Path, *, script: Path) -> dict[str, Any]:
         # same raw file digest; Stage 02 does not invoke Stage 01 semantic digest.
         "semantic_sha256": _sha256(snapshot),
         "source_path": str(source),
+        "source_mode": source_mode,
     }
     if source.is_file():
         binding["source_sha256"] = _sha256(source)
         binding["source_semantic_sha256"] = _sha256(source)
 
-    return {
+    payload = {
         "schema": "cyberppt.stage02_script_input.v1",
         "project": str(project),
         "created_at": _utc_now(),
+        "source_mode": source_mode,
         "source_bindings": {"script": binding},
         "page_order": [record["page_id"] for record in records],
         "pages": records,
     }
+    payload["semantic_sha256"] = stage02_input_semantic_sha256(payload)
+    return payload
 
 
 def input_page_map(payload: dict[str, Any]) -> dict[int, dict[str, Any]]:
@@ -496,6 +542,14 @@ def audit_stage02_input(
         )
     else:
         binding = (payload.get("source_bindings") or {}).get("script") or {}
+        source_mode = str(payload.get("source_mode") or binding.get("source_mode") or "")
+        if source_mode not in VALID_SOURCE_MODES:
+            issues.append(
+                {
+                    "code": "INPUT_SOURCE_MODE_INVALID",
+                    "message": "Stage 02 input has no supported source mode.",
+                }
+            )
         snapshot = (project / str(binding.get("path") or INPUT_SCRIPT_PATH)).resolve()
         if not snapshot.is_file() or binding.get("sha256") != _sha256(snapshot):
             issues.append(
@@ -531,6 +585,18 @@ def audit_stage02_input(
                 }
             )
 
+        recorded_semantic_sha = str(payload.get("semantic_sha256") or "")
+        if (
+            not recorded_semantic_sha
+            or recorded_semantic_sha != stage02_input_semantic_sha256(payload)
+        ):
+            issues.append(
+                {
+                    "code": "INPUT_SEMANTIC_HASH_STALE",
+                    "message": "Stage 02 input semantic identity is missing or stale.",
+                }
+            )
+
     return {
         "schema": "cyberppt.stage02_script_input_audit.v1",
         "status": "passed" if not issues else "failed",
@@ -543,27 +609,32 @@ def prepare_stage02_input(
     *,
     script: Path,
     reuse_current: bool = True,
+    source_mode: str = "script_file",
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     source = script.expanduser().resolve()
     current = project / INPUT_JSON
+
+    if source_mode not in VALID_SOURCE_MODES:
+        raise ValueError(f"unsupported Stage 02 source_mode: {source_mode}")
 
     if reuse_current and current.is_file():
         existing = _load_current_input(project)
         binding = (existing or {}).get("source_bindings", {}).get("script", {})
         recorded = str(binding.get("source_path") or "").strip()
         same_source = bool(recorded) and Path(recorded).expanduser().resolve() == source
+        same_mode = str((existing or {}).get("source_mode") or binding.get("source_mode") or "") == source_mode
         source_fresh = (
             not source.is_file()
             or not binding.get("source_sha256")
             or binding.get("source_sha256") == _sha256(source)
         )
         report = audit_stage02_input(project, existing)
-        if same_source and source_fresh and report.get("status") == "passed":
+        if same_source and same_mode and source_fresh and report.get("status") == "passed":
             report["reused"] = True
             return report
 
-    payload = build_stage02_input(project, script=source)
+    payload = build_stage02_input(project, script=source, source_mode=source_mode)
     current.parent.mkdir(parents=True, exist_ok=True)
     write_json_atomic(current, payload)
     report = audit_stage02_input(project, payload)
@@ -615,4 +686,5 @@ __all__ = [
     "prepare_stage02_input",
     "resolve_input_script",
     "snapshot_input_script",
+    "stage02_input_semantic_sha256",
 ]

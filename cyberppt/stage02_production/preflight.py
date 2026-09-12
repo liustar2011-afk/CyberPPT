@@ -198,8 +198,22 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     semantic_plan_dir = options.semantic_plan_dir.expanduser().resolve() if options.semantic_plan_dir else None
     _require_ocr_if_needed(options)
 
+    # Source mode affects how the script bytes are interpreted, so it must be
+    # known before the canonical Stage 02 intake snapshot is built or reused.
+    source_mode = (
+        "autonomous_contract"
+        if options.autonomous_contract is not None
+        else "external_script"
+        if options.external_script
+        else "script_file"
+    )
     source_script = script
-    input_report = prepare_stage02_input(project, script=source_script, reuse_current=True)
+    input_report = prepare_stage02_input(
+        project,
+        script=source_script,
+        reuse_current=True,
+        source_mode=source_mode,
+    )
     if input_report.get("status") != "passed":
         codes = ", ".join(item.get("code", "INPUT_INVALID") for item in input_report.get("blocking_issues", []))
         raise ValueError(f"Stage 02 script input is invalid: {codes}")
@@ -218,14 +232,6 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
         if options.production_mode != autonomous_authority.production_mode:
             raise ValueError("autonomous contract production mode does not match the contract")
         validate_source_boundary(autonomous_authority)
-
-    source_mode = (
-        "autonomous_contract"
-        if autonomous_authority is not None
-        else "external_script"
-        if options.external_script
-        else "script_file"
-    )
 
     if options.production_mode not in PRODUCTION_MODES:
         raise ValueError(
@@ -265,6 +271,12 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     target_dir = explicit_output_dir(options.output_dir, resolved_build_id) if options.output_dir else versioned_output_dir(project, slug, resolved_build_id)
 
     script_input_path = project / INPUT_JSON
+    script_input_payload = read_json(script_input_path)
+    script_input_sha256 = str(
+        script_input_payload.get("semantic_sha256")
+        or sha256_file(script_input_path)
+        or ""
+    )
     return Stage02BuildContext(
         project=project,
         canonical_script=script,
@@ -274,7 +286,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
         build_dir=target_dir,
         style_lock=style_lock,
         source_script_sha256=sha256_file(script) or "",
-        script_input_sha256=sha256_file(script_input_path) or "",
+        script_input_sha256=script_input_sha256,
         # Stage 02 no longer has a visual-structure prerequisite. Keep the
         # field for build-context compatibility; it is intentionally empty.
         visual_spec_sha256="",
