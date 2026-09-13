@@ -76,6 +76,14 @@ canonical content or relationship decisions and recompile through the same entry
 再等待确认。同一已确认脚本的失败重试无需重复确认。确认发生在对话中，不新增
 审批文件、状态 JSON、回执或平行运行目录。
 
+## 生图目录报告
+
+每次开始生图或续跑生图前，必须向用户报告当前批次实际输出目录的绝对路径，
+使用可点击的目录链接。以正式编排返回的 `artifacts.output_dir` / build_dir 和
+manifest 中 `pairs[*].full.path` 为准，不猜测目录，不只说“已保存到项目”。
+生图完成后再次报告输出目录，并提供已生成图片的可点击绝对路径链接；
+部分失败时报告同一批次目录、成功图片及未完成页面，便于用户查看和续跑。
+
 ## Canonical text intake and fidelity contract
 
 When the user supplies an external manuscript, invoke the formal entry with

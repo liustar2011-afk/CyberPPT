@@ -189,6 +189,15 @@ def _materialize_body_scale(element: ET.Element, *, scale_x: float, scale_y: flo
     """
 
     tag = _local_tag(element)
+    frame = element.get("data-pptx-frame")
+    if frame is not None:
+        values = frame.replace(",", " ").split()
+        if len(values) != 4 or not all(_NUMBER_RE.fullmatch(value) for value in values):
+            raise ValueError("data-pptx-frame must contain four numeric coordinates")
+        element.set("data-pptx-frame", " ".join(
+            f"{float(value) * (scale_x if index % 2 == 0 else scale_y):.12g}"
+            for index, value in enumerate(values)
+        ))
     transform = element.get("transform")
     if transform:
         rotation = re.fullmatch(r"\s*rotate\(\s*([^()]*)\s*\)\s*", transform)
@@ -473,7 +482,7 @@ def assemble_template_pptx(svg_files: list[Path], output: Path, *, notes: dict[s
         pptx_structure="structured",
         # Defaults for new inherited text; authored page metrics stay explicit.
         master_text_style_spec=MasterTextStyleSpec(title_hpt=2400, body_hpt=1350),
-        text_flow="split",
+        text_flow="preserve",
         notes=notes,
         enable_notes=notes is not None,
     )
