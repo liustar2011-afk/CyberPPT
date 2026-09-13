@@ -282,6 +282,9 @@ def render_content_first_prompt(
         core_meaning_for_semantics,
         "",
     ]
+    from cyberppt.external_page_context import render_external_page_context
+
+    nonvisible_page_context.append(render_external_page_context(page))
     full_prose_context = page.full_prose.strip()
     runtime_content = page.onscreen_text.strip()
     if full_prose_context and full_prose_context != runtime_content:
@@ -484,6 +487,10 @@ def compile_page_prompt(
         if prompt_compiler != "content-first-v1" or visual_design is not None or enrichment_block.strip() or visual_structure_mode != "off":
             raise ValueError("agent relationship judgment requires the content-first production compiler")
         from cyberppt.visual_stage.relationship_judgment import render_relationship_judgment
+        from cyberppt.external_page_context import render_external_page_context
+
+        if page.delivery_mode_explicit is False:
+            raise ValueError("DELIVERY_MODE_REQUIRED: resolve external Deck Plan communication mode")
 
         fidelity, required, _conditional = _fidelity_prompt_contract(page, visual_context)
         selected_style = _selected_content_first_style(style_lock)
@@ -502,6 +509,7 @@ def compile_page_prompt(
             ("【完整语义背景｜不上屏】\n" + page.full_prose.strip())
             if page.full_prose.strip() != content else "",
             fidelity,
+            render_external_page_context(page),
             render_relationship_judgment(relationship_decision),
             IMAGEGEN_CANVAS_CONTRACT,
             render_content_first_style_contract(style_lock),

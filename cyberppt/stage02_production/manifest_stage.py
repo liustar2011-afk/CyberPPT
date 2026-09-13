@@ -17,7 +17,7 @@ from scripts.image_to_pptx_runtime.clean_base_policy import (
     SCHEMA as CLEAN_BASE_SCHEMA,
     is_reusable_clean_base,
 )
-from cyberppt.script_quality_contract import parse_script_path
+from cyberppt.stage02_script_adapter import parse_stage02_script_path as parse_script_path
 
 from .identity import input_fingerprint, input_identity_payload
 from .models import ManifestStageResult, Stage02BuildContext, Stage02RunOptions

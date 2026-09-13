@@ -264,6 +264,8 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
     from cyberppt.visual_stage.relationship_judgment import require_relationship_judgment, digest
 
     intake_pages = input_page_map(load_stage02_input(project, required=True))
+    if any(intake_pages[number].get("delivery_mode_explicit") is False for number in pages):
+        raise ValueError("DELIVERY_MODE_REQUIRED: external Deck Plan needs > 交流方式：presented or self_read before compilation")
     decisions = require_relationship_judgment(project, {
         number: intake_pages[number] for number in pages
         if intake_pages[number]["render_role"] == "content"

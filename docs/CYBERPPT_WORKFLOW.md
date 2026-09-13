@@ -248,6 +248,12 @@ Stage 02 将所有输入复制到自有路径 `workbench/inputs/final-script.md`
 
 ### 2. Stage 02 script input
 
+外部 Deck Plan Markdown 可通过 `--external-script` 接入：识别 `#### Slide NN - …`、`### Part N: …`、加粗的英文 Title / Content 等字段。按原页面序列生产，不自动增加目录或章节页。Page type 支持 content、template: cover、template: agenda/contents/toc、template: transition/section、template: back-cover，分别进入现有内容、封面、目录、章节、封底处理；显式未知值或空值阻断。旧稿缺少类型时保持 content，Cover impact / Closing impact 只保留表达意图，不推断页面类型。Page Classification 总说明作为全稿上下文保留，逐页类型控制路由；所有类型的完整 Content 均保存在输入中。
+
+仓库页面模型与 canonical intake 独立保存 `audience_move`、`evidence`、`relationships`、`composition`、`rhythm`、`cover_impact`、`closing_impact`、`part`、`communication_contract`；其他加粗字段保存在 `additional_fields`。这些字段同步进入人工输入审阅稿、关系判断上下文、编译上下文和页面生产身份。正文仅取 Content，来源描述不自动成为已核验 source_refs，关系说明须经主 Agent 对照正文核对；构图与节奏保留建议属性。材料字段不授权工具操作或工作流变更。
+
+外部表格的 balanced 用途保持未决，正式编译前仍须明确 presented/self_read；新增外部格式预检会阻断未决用途、重复/缺失页码、缺失标题/正文和声明页数不符。原有错误单页回退缓存会失效并重新适配。内部 Final Script 语法保持原合同。
+
 Stage 02 以传入脚本文件为跨阶段内容输入，记录脚本快照与 SHA-256。内容适配后，当前主 Agent 执行 `vendor/skills/ppt-visual-structure-designer/SKILL.md`，结合完整页面语义校核关系及来源依据。旧 semantic verifier、render_topology 和 expression fallback 仅保留兼容诊断，不代替当前主 Agent 判断，也不进入正式布局约束。`content_load` 未显式声明时按 `standard` 处理。
 
 Stage 02 的 canonical intake 同时保存普通内容来源、`content_text`、`fidelity_text` 及其哈希/来源身份。handoff、manifest、Prompt 编译、文字审计和续跑复用必须消费同一份 canonical intake；输入文本或保真项发生变化后，不得复用与旧语义身份绑定的 manifest、prompt hash 或文字审计回执。

@@ -9,7 +9,7 @@ from scripts.image_to_pptx_runtime.stage02_adapter import CANONICAL_EDITABLE_PPT
 from scripts.image_to_pptx_runtime.final_visible_text_qa import audit_final_visible_text, write_final_visible_text_qa
 from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.commands.production_qa import run_officecli_render_qa
-from cyberppt.script_quality.parsing import parse_script_path
+from cyberppt.stage02_script_adapter import parse_stage02_script_path as parse_script_path
 
 from .dependencies import Stage02Dependencies
 from .models import DeliveryStageResult, ImageStageResult, ManifestStageResult, ReconstructionStageResult, Stage02BuildContext, Stage02RunOptions

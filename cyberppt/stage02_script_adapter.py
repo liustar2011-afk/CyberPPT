@@ -8,6 +8,7 @@ parser because that would create two content authorities there.
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 import re
 
 from cyberppt.script_quality.models import ScriptDocument, ScriptPage
@@ -91,6 +92,12 @@ def parse_stage02_script(text: str, *, source_mode: str) -> ScriptDocument:
 
     if source_mode not in VALID_SOURCE_MODES:
         raise ValueError(f"unsupported Stage 02 source_mode: {source_mode}")
+    from cyberppt.external_deck_plan import is_deck_plan, parse_deck_plan
+
+    if is_deck_plan(text):
+        if source_mode != "external_script":
+            raise ValueError("Deck Plan Markdown requires --external-script")
+        return parse_deck_plan(text)
     normalized = normalize_external_script(text) if source_mode == "external_script" else text
     return parse_script_markdown(normalized, page_contracts={})
 
@@ -128,9 +135,23 @@ def project_stage02_runtime_page(page: ScriptPage, *, source_mode: str) -> Scrip
     )
 
 
+def parse_stage02_script_path(path: Path) -> ScriptDocument:
+    """Read a bound production snapshot, including external Deck Plan pages.
+
+    Intake owns source-mode authorization. File consumers use this after that
+    boundary; existing non-Deck-Plan path parsing retains its legacy contract.
+    """
+    from cyberppt.external_deck_plan import is_deck_plan, parse_deck_plan
+    from cyberppt.script_quality.parsing import parse_script_path
+
+    text = path.read_text(encoding="utf-8-sig")
+    return parse_deck_plan(text) if is_deck_plan(text) else parse_script_path(path)
+
+
 __all__ = [
     "VALID_SOURCE_MODES",
     "normalize_external_script",
     "parse_stage02_script",
+    "parse_stage02_script_path",
     "project_stage02_runtime_page",
 ]

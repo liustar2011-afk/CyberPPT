@@ -76,6 +76,13 @@ def _collapse_text(value: Any) -> str:
 
 def parse_page_blocks(script_path: Path) -> dict[int, PageBlock]:
     text = script_path.read_text(encoding="utf-8")
+    from cyberppt.external_deck_plan import is_deck_plan, parse_deck_plan
+
+    if is_deck_plan(text):
+        return {
+            page.sequence: PageBlock(page_number=page.sequence, title=page.title, text=page.content_text)
+            for page in parse_deck_plan(text).pages
+        }
     matches = list(PAGE_HEADING_RE.finditer(text))
     if not matches:
         plain_page = unnumbered_markdown_page(text)

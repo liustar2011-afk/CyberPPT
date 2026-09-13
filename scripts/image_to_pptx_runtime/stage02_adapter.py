@@ -13,7 +13,7 @@ from typing import Any, Mapping
 from PIL import Image
 
 from cyberppt.reconstruction_visual_authority import validate_reconstruction_visual_authority
-from cyberppt.script_quality.parsing import parse_script_path
+from cyberppt.stage02_script_adapter import parse_stage02_script_path as parse_script_path
 from scripts.presentation_qa.render_page import check_pptx_geometry, render_to_png
 from scripts.presentation_qa.text_content import build_text_content_qa
 from scripts.imagegen_pipeline.production_readiness import build_production_readiness

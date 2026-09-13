@@ -24,7 +24,7 @@ from cyberppt.content_integrity_contract import (
     extract_onscreen_line_items,
 )
 from cyberppt.onscreen_expression import expression_constraints, resolve_onscreen_expression
-from cyberppt.script_quality.models import ScriptPage
+from cyberppt.script_quality.models import EXTERNAL_PAGE_FIELDS, ScriptPage
 from cyberppt.script_quality.parsing import parse_stage02_semantic_annotations
 from cyberppt.semantic_verifier import verify_semantic_proposals
 from cyberppt.stage02_script_adapter import (
@@ -311,6 +311,8 @@ def _page_record(
             "style": "stage02_owned",
         },
     }
+    record.update({key: getattr(page, key) for key in EXTERNAL_PAGE_FIELDS
+                   if getattr(page, key) not in (None, "", {})})
     if render_role != "content":
         record["stage02_visual_input"] = None
         return record
@@ -464,6 +466,7 @@ def production_page_input(page: dict[str, Any]) -> dict[str, Any]:
         "argument_chain", "business_relationships", "semantic_annotations",
     )
     result = {key: page.get(key) for key in fields}
+    result.update({key: page[key] for key in EXTERNAL_PAGE_FIELDS if key in page})
     background = str(page.get("full_prose") or "").strip()
     result["full_prose"] = background if background != canonical_content_text(page) else ""
     return result
@@ -526,7 +529,9 @@ def build_stage02_input(
     # by the Stage 02 adapter; the Stage 01 parser contract remains unchanged.
     script_text = snapshot.read_text(encoding="utf-8-sig")
     document = parse_stage02_script(script_text, source_mode=source_mode)
-    annotations_by_page = parse_stage02_semantic_annotations(script_text)
+    from cyberppt.external_deck_plan import is_deck_plan
+
+    annotations_by_page = {} if is_deck_plan(script_text) else parse_stage02_semantic_annotations(script_text)
     records = [
         _page_record(
             page,
@@ -658,6 +663,28 @@ def audit_stage02_input(
                         "code": "INPUT_CONTENT_CONTRACT_INVALID",
                         "message": f"{page.get('page_id')}: invalid versioned content fields.",
                     })
+                for key in EXTERNAL_PAGE_FIELDS:
+                    if key not in page:
+                        continue
+                    value = page[key]
+                    valid = isinstance(value, str)
+                    if key in {"communication_contract", "additional_fields"}:
+                        valid = isinstance(value, dict) and all(isinstance(k, str) and isinstance(v, str) for k, v in value.items())
+                    elif key == "delivery_mode_explicit":
+                        valid = isinstance(value, bool)
+                    if not valid:
+                        issues.append({"code": "INPUT_EXTERNAL_CONTEXT_INVALID", "message": f"{page.get('page_id')}: invalid {key}"})
+
+        # Old parser caches could silently contain one fallback page for a
+        # twelve-slide external document. Source bytes alone cannot revive them.
+        if snapshot.is_file() and source_mode == "external_script":
+            from cyberppt.external_deck_plan import is_deck_plan
+
+            if is_deck_plan(snapshot.read_text(encoding="utf-8-sig")) and any(
+                not isinstance(page, dict) or page.get("external_format") != "deck-plan-v1"
+                for page in payload.get("pages") or []
+            ):
+                issues.append({"code": "INPUT_EXTERNAL_FORMAT_STALE", "message": "Rebuild external Deck Plan intake with current adapter."})
 
         recorded_semantic_sha = str(payload.get("semantic_sha256") or "")
         if (
@@ -715,16 +742,27 @@ def prepare_stage02_input(
     write_json_atomic(project / INPUT_AUDIT, report)
     (project / INPUT_REVIEW).write_text(
         "# Stage 02 script input\n\n"
-        + "\n".join(
-            f"- P{page['page_number']:02d} {page.get('title', '')}"
-            for page in payload.get("pages") or []
-        )
+        + "\n\n".join(render_input_page_review(page) for page in payload.get("pages") or [])
         + "\n",
         encoding="utf-8",
         newline="\n",
     )
     report["reused"] = False
     return report
+
+
+def render_input_page_review(page: dict[str, Any]) -> str:
+    """Human-readable body and separate imported fields for intake review."""
+    sections = [f"## P{page['page_number']:02d} {page.get('title', '')}",
+                f"页面类型：{page.get('render_role', 'content')}",
+                "### 内容", canonical_content_text(page)]
+    for key in ("core_message", *EXTERNAL_PAGE_FIELDS):
+        value = page.get(key)
+        if value is None or value == "" or value == {}:
+            continue
+        rendered = "\n".join(f"- {k}: {v}" for k, v in value.items()) if isinstance(value, dict) else str(value)
+        sections.extend([f"### {key}（上下文，不上屏）", rendered])
+    return "\n\n".join(sections)
 
 
 def load_stage02_input(

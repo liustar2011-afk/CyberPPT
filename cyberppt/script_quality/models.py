@@ -1,6 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
+# Stage 02 external-page context, kept separate from rewriteable body copy.
+EXTERNAL_PAGE_FIELDS = (
+    "part", "audience_move", "evidence", "relationships", "composition",
+    "rhythm", "cover_impact", "closing_impact", "communication_contract",
+    "additional_fields", "delivery_mode_explicit",
+    "external_format",
+)
 
 
 # ``semantic_only`` remains an ImageGen-facing legacy mode.  The two new
@@ -134,6 +143,18 @@ class ScriptPage:
     contract_receipt: dict[str, object] | None = None
     prose_paragraph_map: tuple[tuple[tuple[str, ...], str], ...] = ()
     delivery_mode: str = "self_read"
+    part: str = ""
+    audience_move: str = ""
+    evidence: str = ""
+    relationships: str = ""
+    composition: str = ""
+    rhythm: str = ""
+    cover_impact: str = ""
+    closing_impact: str = ""
+    communication_contract: dict[str, str] = field(default_factory=dict)
+    additional_fields: dict[str, str] = field(default_factory=dict)
+    delivery_mode_explicit: bool | None = None
+    external_format: str = ""
 
     def __post_init__(self) -> None:
         # Callers that predate the top-level/nested distinction (hand-built

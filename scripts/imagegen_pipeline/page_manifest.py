@@ -213,7 +213,6 @@ def _relationship_aware_canonical_prompts(
 ) -> dict[int, str]:
     """Compile strict prompts through the same page-intent path used for approval."""
 
-    from cyberppt.script_quality_contract import parse_script_markdown
     from scripts.imagegen_pipeline.imagegen_handoff import (
         _page_missions,
         _page_visual_contexts,
@@ -221,7 +220,11 @@ def _relationship_aware_canonical_prompts(
         compile_page_prompt,
     )
 
-    document = parse_script_markdown(script.read_text(encoding="utf-8"))
+    from cyberppt.stage02_script_adapter import parse_stage02_script
+    from cyberppt.external_deck_plan import is_deck_plan
+
+    script_text = script.read_text(encoding="utf-8")
+    document = parse_stage02_script(script_text, source_mode="external_script" if is_deck_plan(script_text) else "script_file")
     pages = {
         int(page.page_id[1:]): page
         for page in document.pages
@@ -290,6 +293,7 @@ def _relationship_aware_canonical_prompts(
         if input_page and prompt_compiler == DEFAULT_PROMPT_COMPILER:
             from dataclasses import replace
             from cyberppt.stage02_input import canonical_content_text
+            from cyberppt.script_quality.models import EXTERNAL_PAGE_FIELDS
 
             page = replace(
                 page,
@@ -298,6 +302,7 @@ def _relationship_aware_canonical_prompts(
                 delivery_mode=str(input_page.get("delivery_mode") or page.delivery_mode),
                 full_prose=str(input_page.get("full_prose") or ""),
                 fidelity_text=tuple(input_page.get("fidelity_text") or ()),
+                **{key: input_page[key] for key in EXTERNAL_PAGE_FIELDS if key in input_page},
             )
         if not page.onscreen_text.strip():
             # Bare Markdown manuscripts may not use Stage 01 field labels.
@@ -376,7 +381,6 @@ def build_manifest(
     output_variants = output_variants_for_mode(production_mode)
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
-    from cyberppt.script_quality_contract import parse_script_markdown
     from cyberppt.visual_prompt_consumer import (
         load_visual_design,
         load_visual_prompt_module,
@@ -387,9 +391,13 @@ def build_manifest(
         resolve_send_prompt,
     )
 
+    from cyberppt.stage02_script_adapter import parse_stage02_script
+    from cyberppt.external_deck_plan import is_deck_plan
+
+    script_text = script.read_text(encoding="utf-8")
     script_pages = {
         int(page.page_id[1:]): page
-        for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
+        for page in parse_stage02_script(script_text, source_mode="external_script" if is_deck_plan(script_text) else "script_file").pages
     }
     role_aliases = {
         "cover": "cover",
