@@ -280,6 +280,12 @@ advice fail review.
 
 ## 8. Stage 02 boundary and formal handoff
 
+Stage 02 owns on-screen expression and the existing compiled-script review checkpoint.
+Use the Stage 02 Skill's [on-screen copy reference](../cyberppt-stage02-editable-pptx/references/onscreen-copy-review.md)
+there; keep business grouping, natural detail sentences and density refinement downstream.
+Targeted Stage 01 edits continue through section 5 above; do not route to the retired
+`cyberppt-write-single-page` Skill or restore authored `onscreen` on 1.2 pages.
+
 Stage 01 owns three authoritative script artifacts:
 
 - `script/foundation.json`;

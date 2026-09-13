@@ -60,6 +60,14 @@ compatibility tools and do not satisfy the v4 production prerequisite.
 Post-compile prompt replacement and enrichment are unsupported in this route; revise the
 canonical content or relationship decisions and recompile through the same entry.
 
+## 上屏文字表达与审阅
+
+After canonical content adaptation and before prompt compilation, read
+[references/onscreen-copy-review.md](references/onscreen-copy-review.md). Apply its
+business-heading, natural-detail, enumeration and density guidance when judging
+content expression; reuse it when reviewing the actual compiled deliverable. It does
+not add an authored Stage 01 onscreen layer or another confirmation checkpoint.
+
 ## 送图脚本人工审阅停点
 
 生成正式送图脚本后，主 Agent 必须停下，将本次实际落盘的完整脚本展示给用户，

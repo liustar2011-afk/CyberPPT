@@ -10,7 +10,7 @@
 
 1. 新脚本项目涉及源材料、页面规划或脚本写作：默认使用快速、忠实的 `script` profile，先建立确定性来源索引，再调用 `cyberppt-script-understand` 生成 `foundation.json`。
 2. 合同、法规、逐事实核验、完整 Source Truth 或旧项目兼容场景：显式使用 `strict/legacy` profile，先调用 `cyberppt-source-foundation`。
-3. 只涉及已锁定最终脚本的单页写作：进入 `cyberppt-write-single-page`。
+3. 只涉及已锁定最终脚本的单页写作或修订：进入 `cyberppt-script-workflow` 的 Targeted page edit 路线，按当前作者模式回读来源并更新受影响的交付。
 4. 只涉及视觉结构、图片、SVG、ImageGen 或 PPTX QA：可以从对应 Stage 02 Skill 开始，不重复建立 Source Foundation。
 5. 涉及旧项目但已有已验证 Foundation 产物：先核对产物状态，再复用；不得因项目已存在而跳过 profile 与产物有效性检查。
 
@@ -259,6 +259,8 @@ Stage 02 的文字 QA 分为两层：一是通用字形质量，继续检查明�
 PNG 文件存在不等于提示词、批次或 QA 成功。必须检查实际落盘的 `prompts/pXX.txt`、manifest 和运行记录。
 
 ### 4.1 送图脚本审阅停点
+
+内容适配、编译和审阅时，按 [Stage 02 上屏文字表达与审阅](../.agents/skills/cyberppt-stage02-editable-pptx/references/onscreen-copy-review.md) 检查业务小标题、自然明细句、枚举压缩、密度与保护语义。复用本停点，不增加独立确认环节。审阅稿须区分可改写内容素材与实际已编写的上屏措辞；确认送图脚本不赋予普通正文逐字锁定语义。
 
 主 Agent 生成送图脚本后必须停下，在对话中展示实际逐页脚本全文，并提交
 `compiled_deliverable_prompt` 的绝对路径 Markdown 链接，等待用户明确确认后再生图。
