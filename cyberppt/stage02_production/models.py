@@ -26,6 +26,7 @@ class Stage02RunOptions:
     image_timeout: int = 600
     force_images: bool = False
     dry_run_images: bool = False
+    stop_after_images: bool = False
     prompt_enrich: str = "off"
     require_send_approval: bool = False
     build_id: str | None = None

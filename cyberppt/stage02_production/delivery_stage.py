@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from dataclasses import replace
 import shlex
 from typing import Any
 from xml.etree import ElementTree as ET
@@ -56,6 +57,7 @@ def _resume_command(context: Stage02BuildContext, options: Stage02RunOptions) ->
     for enabled, flag in (
         (options.generate_images or options.production_build, "--generate-images"),
         (options.production_build, "--production-build"),
+        (options.stop_after_images, "--stop-after-images"),
         (context.source_mode == "external_script", "--external-script"),
         (options.allow_script_edit_requested, "--allow-script-edit"),
         (options.allow_prompt_edit, "--allow-prompt-edit"),
@@ -249,18 +251,19 @@ def run_delivery_stage(
     options: Stage02RunOptions,
     dependencies: Stage02Dependencies | None = None,
 ) -> DeliveryStageResult:
-    officecli_render_qa, officecli_export_paths = _run_office_qa(
+    paused = reconstruction.status == "paused_after_images"
+    officecli_render_qa, officecli_export_paths = ({}, []) if paused else _run_office_qa(
         context=context,
         reconstruction=reconstruction,
         production_build=options.production_build,
         officecli_render_qa_fn=(dependencies.officecli_render_qa if dependencies is not None else None),
     )
-    final_visible_text_qa = _run_final_visible_text_qa(
+    final_visible_text_qa = {} if paused else _run_final_visible_text_qa(
         context=context,
         manifest_result=manifest_result,
         reports=officecli_render_qa,
     )
-    resume_command = _resume_command(context, options)
+    resume_command = _resume_command(context, replace(options, stop_after_images=False) if paused else options)
     stage_name = "02-production-build" if options.production_build else "02-blueprint-image-to-editable-svg"
     status = reconstruction.status
     build = reconstruction.build
@@ -283,6 +286,7 @@ def run_delivery_stage(
         "autonomous_contract": str(context.autonomous_contract) if context.autonomous_contract else None,
         "project_created": context.project_created,
         "status": status,
+        "stop_after_images": options.stop_after_images,
         "production_mode": context.production_mode,
         "assembly_mode": context.assembly_mode,
         "editable_pptx_route": CANONICAL_EDITABLE_PPTX_ROUTE,
@@ -316,6 +320,15 @@ def run_delivery_stage(
         "tool_consumption": reconstruction.tool_consumption,
         "production_readiness": reconstruction.production_readiness,
     }
+
+    if paused:
+        run_summary["next_steps"] = [
+            "Review the audited full images. After user confirmation, run resume_command to continue the same build.",
+        ]
+        run_summary["retry_command"] = _resume_command(context, options)
+        run_summary["artifacts"]["audited_images"] = [
+            str(pair["full"]["path"]) for pair in image_result.manifest.get("pairs", [])
+        ]
 
     build_context = {
         "schema": "cyberppt.build_context.v1",

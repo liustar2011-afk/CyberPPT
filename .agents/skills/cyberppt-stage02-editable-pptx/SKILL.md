@@ -108,6 +108,16 @@ not add an authored Stage 01 onscreen layer or another confirmation checkpoint.
 
 ## 生图目录报告
 
+用户要求“生图后暂停 / 先看图再继续”时，在本批次正式入口增加
+`--stop-after-images`，保留 `--generate-images --production-build` 与原组装模式。
+只编译时也可保存此选项，但不会报告图片已完成。全部内容页 full 图片完成尺寸归一化、
+通过图片文字审计后，运行返回 `paused_after_images`，在原 manifest 和运行记录保存状态，
+停止于节奏检查、视觉来源绑定、清底、SVG 重建与组装之前。
+向用户展示已审计图片并等待继续指令，不自动运行返回的 `resume_command`。
+该命令保留同一 build_id、目录、页面范围及生产参数，并去掉暂停选项；
+`retry_command` 保留暂停选项。审计失败仍按失败处理，不得报告为暂停完成。
+暂停控制不改变内容与图片身份，继续时复用有效图片与逐页审计回执。
+
 每次开始生图或续跑生图前，必须向用户报告当前批次实际输出目录的绝对路径，
 使用可点击的目录链接。以正式编排返回的 `artifacts.output_dir` / build_dir 和
 manifest 中 `pairs[*].full.path` 为准，不猜测目录，不只说“已保存到项目”。

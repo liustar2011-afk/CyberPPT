@@ -73,6 +73,8 @@ def run_production(
     dependencies: Stage02Dependencies | None = None,
 ) -> Stage02ProductionResult:
     deps = dependencies or default_stage02_dependencies()
+    if options.stop_after_images and options.skip_image_text_audit:
+        raise ValueError("--stop-after-images requires image text audit")
     context = prepare_preflight(options)
     options = resolve_image_model(options, context.build_dir)
     prior_manifest_path = context.build_dir / "page_image_pairs.json"
@@ -87,12 +89,27 @@ def run_production(
         build_context_path=manifest.build_context_path,
     )
     images = run_image_stage(context, manifest, options, deps)
-    if options.require_images or (options.production_build and not options.dry_run_images):
+    pause_after_images = options.stop_after_images and not options.dry_run_images and (
+        options.generate_images or options.require_images or options.production_build
+    )
+    if pause_after_images or options.require_images or (options.production_build and not options.dry_run_images):
         normalize_audited_manifest_images(
             images.manifest,
             ensure_output_size_fn=deps.ensure_output_size,
         )
         deps.require_generated(images.manifest)
+        if pause_after_images:
+            images.manifest["stage02_state"] = {
+                "state": "paused_after_images",
+                "note": "Review audited full images before continuing the same build.",
+            }
+            write_json(manifest.manifest_path, images.manifest)
+            reconstruction = ReconstructionStageResult(status="paused_after_images")
+            delivery = run_delivery_stage(context, manifest, images, reconstruction, options, deps)
+            return Stage02ProductionResult(
+                context=context, manifest=manifest, images=images,
+                reconstruction=reconstruction, delivery=delivery,
+            )
         if context.assembly_mode in {"editable", "both"}:
             rhythm_qa = run_full_image_rhythm_stage(
                 images.manifest,

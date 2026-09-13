@@ -483,6 +483,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             image_timeout=args.image_timeout,
             force_images=args.force_images,
             dry_run_images=args.dry_run_images,
+            stop_after_images=args.stop_after_images,
             prompt_enrich=args.prompt_enrich,
             require_send_approval=args.require_send_approval,
             build_id=args.build_id,
@@ -1038,6 +1039,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not pass the selected style reference image to the image backend.",
     )
     final_script_pages_parser.add_argument("--dry-run-images", action="store_true")
+    final_script_pages_parser.add_argument("--stop-after-images", action="store_true", help="Pause after all full images pass text audit, before reconstruction or assembly")
     final_script_pages_parser.add_argument(
         "--skip-image-text-audit",
         action="store_true",
