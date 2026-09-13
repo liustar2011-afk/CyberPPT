@@ -202,6 +202,46 @@ def _fidelity_exactly_present(literal: str, observed: list[str]) -> bool:
     return bool(joined and target in joined)
 
 
+def _fidelity_spatially_present(literal: str, items: list[dict[str, Any]]) -> bool:
+    """Join adjacent OCR runs despite unrelated reading-order entries."""
+    target = _normalize(literal)
+    regions = []
+    for item in items:
+        text = _normalize(str(item.get("text") or ""))
+        bbox = item.get("bbox")
+        if not text or not isinstance(bbox, list) or len(bbox) != 4:
+            continue
+        try:
+            xs, ys = zip(*bbox)
+            left, top, right, bottom = min(xs), min(ys), max(xs), max(ys)
+            if right > left and bottom > top:
+                regions.append((text, left, top, right, bottom))
+        except (TypeError, ValueError):
+            continue
+    for text, left, top, right, bottom in regions:
+        for next_text, next_left, next_top, next_right, next_bottom in regions:
+            if text + next_text != target:
+                continue
+            height, next_height = bottom - top, next_bottom - next_top
+            overlap = min(bottom, next_bottom) - max(top, next_top)
+            gap = next_left - right
+            if (
+                next_left > left and next_right > right
+                and overlap >= 0.7 * min(height, next_height)
+                and -0.3 * min(height, next_height) <= gap <= 0.6 * max(height, next_height)
+            ):
+                return True
+            horizontal_overlap = min(right, next_right) - max(left, next_left)
+            vertical_gap = next_top - bottom
+            if (
+                next_top > top and next_bottom > bottom
+                and horizontal_overlap >= 0.8 * min(right - left, next_right - next_left)
+                and -0.3 * min(height, next_height) <= vertical_gap <= 0.6 * min(height, next_height)
+            ):
+                return True
+    return False
+
+
 def _nearest_fidelity_candidate(literal: str, observed: list[str]) -> tuple[str, float] | None:
     """Return a plausible rendered-but-corrupted OCR candidate, if any."""
 
@@ -236,7 +276,7 @@ def _fidelity_issues(
     for item in fidelity_items:
         literal = item["text"]
         visibility = item["visibility"]
-        if _fidelity_exactly_present(literal, observed):
+        if _fidelity_exactly_present(literal, observed) or _fidelity_spatially_present(literal, items):
             continue
         nearest = _nearest_fidelity_candidate(literal, observed)
         if visibility == "required":

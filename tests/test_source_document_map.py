@@ -156,16 +156,47 @@ class SourceDocumentMapTests(unittest.TestCase):
         self.assertIn("paragraph", by_kind["caption"]["locator"])
         self.assertIn("formula_index", by_kind["formula"]["locator"])
 
-    def test_docx_without_heading_styles_is_flagged_instead_of_passing_silently(self) -> None:
+    def test_docx_without_heading_styles_warns_without_inventing_structure(self) -> None:
         _write_headingless_docx(self.project / "source" / "material.docx")
 
         report = prepare_source_map(self.project)
 
-        self.assertEqual("rewrite_required", report["status"])
+        self.assertEqual("passed", report["status"])
+        self.assertEqual([], report["issues"])
+        self.assertEqual([], report["headings"])
         self.assertIn(
             "SOURCE_HEADINGS_NOT_DETECTED",
-            {item["code"] for item in report["issues"]},
+            {item["code"] for item in report["warnings"]},
         )
+        units = load_source_units(self.project)
+        self.assertEqual(4, len(units))
+        self.assertTrue(all(item["kind"] == "paragraph" for item in units))
+        self.assertTrue(all(item["heading_path"] == [] for item in units))
+
+    def test_headingless_docx_reaches_foundation_task_with_stable_source_units(self) -> None:
+        from cyberppt.foundation_authoring import prepare_script_foundation
+
+        source = self.project / "source" / "material.docx"
+        _write_headingless_docx(source)
+        original = source.read_bytes()
+        first = prepare_source_context(self.project)
+        task = prepare_script_foundation(self.project, profile="script")
+        second = prepare_source_context(self.project)
+
+        self.assertEqual("passed", first["status"])
+        self.assertEqual(first["units"], second["units"])
+        self.assertEqual(first["source_hashes"], second["source_hashes"])
+        self.assertEqual(original, source.read_bytes())
+        self.assertIn("第一段正文说明。", task["authoring_task"])
+        self.assertIn("SOURCE_HEADINGS_NOT_DETECTED", {w["code"] for w in second["warnings"]})
+
+    def test_corrupt_docx_still_blocks_source_context(self) -> None:
+        (self.project / "source" / "material.docx").write_bytes(b"invalid docx")
+
+        report = prepare_source_context(self.project)
+
+        self.assertEqual("rewrite_required", report["status"])
+        self.assertIn("SOURCE_EXTRACTION_FAILED", {item["code"] for item in report["issues"]})
 
     def test_numbered_but_unstyled_docx_headings_are_heuristically_promoted(self) -> None:
         _write_numbered_but_unstyled_docx(self.project / "source" / "material.docx")

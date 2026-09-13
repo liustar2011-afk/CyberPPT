@@ -784,20 +784,16 @@ def collect_source_bundle(project: Path) -> dict[str, Any]:
                         }
                     )
                 else:
-                    # A silent zero-heading extraction is worse than an error:
-                    # every downstream stage that is supposed to preserve
-                    # source-native chapter structure treats an empty
-                    # required-heading list as "nothing to check" and passes
-                    # vacuously. Surface this here, at the earliest point it
-                    # can be diagnosed, instead of letting it resurface as an
-                    # unexplained structure problem much later.
-                    issues.append(
+                    # A continuous speech or letter can legitimately have no
+                    # chapter headings. Surface the ambiguity for UNDERSTAND
+                    # without rejecting intact text or inventing a hierarchy.
+                    warnings.append(
                         {
                             "code": "SOURCE_HEADINGS_NOT_DETECTED",
                             "message": (
                                 f"{relative} 有 {len(substantive_units)} 段正文内容，但未识别出任何标题层级；"
-                                "请确认标题是否使用了 Word 的标题段落样式（而不是仅加粗/放大字号），"
-                                "或该源文件确实不含章节结构。"
+                                "已保留全部来源单元及原始顺序。UNDERSTAND 须核对原文，"
+                                "区分连续正文与标题漏识别；无章节材料不得虚构来源章节。"
                             ),
                         }
                     )

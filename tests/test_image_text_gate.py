@@ -178,6 +178,53 @@ def test_required_fidelity_exact_match_passes(tmp_path: Path) -> None:
     assert result["scope"] == "fidelity_and_typo_gibberish"
 
 
+def test_required_fidelity_joins_adjacent_mixed_size_runs(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path), script_text="",
+        fidelity_text=[{"text": "1393张数据表", "visibility": "required"}],
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "1393", "bbox": [[1512, 65], [1621, 62], [1622, 112], [1513, 115]]},
+            {"text": "另一栏的正文", "bbox": [[40, 76], [837, 76], [837, 102], [40, 102]]},
+            {"text": "张数据表", "bbox": [[1617, 80], [1712, 84], [1711, 114], [1615, 111]]},
+        ],
+    )
+    assert result["valid"] is True
+
+
+def test_required_fidelity_does_not_join_distant_or_wrong_runs(tmp_path: Path) -> None:
+    for suffix, box in [
+        ("张数据表", [[300, 0], [400, 0], [400, 30], [300, 30]]),
+        ("张数据表", [[102, 70], [202, 70], [202, 100], [102, 100]]),
+        ("张数据袁", [[102, 0], [202, 0], [202, 30], [102, 30]]),
+    ]:
+        result = audit_generated_image_text(
+            _image(tmp_path), script_text="",
+            fidelity_text=[{"text": "1393张数据表", "visibility": "required"}],
+            vision_runner=_vision(),
+            ocr_runner=lambda _path: [
+                {"text": "1393", "bbox": [[0, 0], [100, 0], [100, 50], [0, 50]]},
+                {"text": "其他文字", "bbox": []},
+                {"text": suffix, "bbox": box},
+            ],
+        )
+        assert result["valid"] is False
+
+
+def test_required_fidelity_joins_stacked_statistic_and_label(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path), script_text="",
+        fidelity_text=[{"text": "22个业务域", "visibility": "required"}],
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "22个", "bbox": [[423, 574], [503, 579], [500, 622], [421, 618]]},
+            {"text": "45个", "bbox": [[638, 577], [717, 581], [715, 621], [635, 617]]},
+            {"text": "业务域", "bbox": [[424, 617], [493, 617], [493, 644], [424, 644]]},
+        ],
+    )
+    assert result["valid"] is True
+
+
 def test_required_fidelity_missing_fails_even_when_ordinary_script_differs(tmp_path: Path) -> None:
     result = audit_generated_image_text(
         _image(tmp_path),
