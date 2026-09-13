@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .contracts import load_json
+from .plan_quality import validate_plan_purpose
 from .source_freshness import (
     build_input_fingerprints,
     canonical_json_sha256,
@@ -114,6 +115,8 @@ def build_author_preflight(
     current_inputs = build_input_fingerprints(deck_plan, foundation, source_index)
     paths = packet_paths or {}
     global_issues = list(loader_issues or [])
+    if deck_plan.get("plan_contract_version") == 2:
+        global_issues.extend(validate_plan_purpose(dict(deck_plan)))
     page_results: list[dict[str, Any]] = []
 
     for page in deck_plan.get("pages") or []:

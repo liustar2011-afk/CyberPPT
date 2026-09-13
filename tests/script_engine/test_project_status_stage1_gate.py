@@ -46,6 +46,8 @@ def _project(tmp_path: Path) -> tuple[Path, Path, Path, Path, Path]:
     }
     plan = {
         "communication_goal": "说明平台覆盖情况。",
+        "delivery_mode": "self_read",
+        "pagination_rationale": "将覆盖数字与业务对象放在同一阅读单元。",
         "plan_contract_version": 2,
         "planning_profile": "lean",
         "authoring_mode": "faithful",

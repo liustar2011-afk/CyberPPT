@@ -4,6 +4,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
+from .plan_quality import DELIVERY_MODE_LABELS, PAGINATION_GUIDANCE, SINGLE_CORE_GUIDANCE, validate_plan_purpose
+
 
 _PAGE_ROLE_LABELS = {
     "cover": "封面", "agenda": "目录", "contents": "目录", "chapter": "章节过渡",
@@ -104,7 +106,7 @@ def render_plan_review(
 ) -> str:
     """Render the PLAN review boundary with compact source anchors, never AUTHOR prose."""
 
-    issues = list(issues or [])
+    issues = list(dict.fromkeys([*(issues or []), *validate_plan_purpose(plan)]))
     warnings = list(warnings or [])
     source_anchors = _foundation_anchor_map(foundation)
     chapters = [item for item in plan.get("chapters") or [] if isinstance(item, dict)]
@@ -124,6 +126,10 @@ def render_plan_review(
         "- 规划合同：v2 lean",
         f"- 写作模式：{'忠实分页整理' if plan.get('authoring_mode', 'faithful') == 'faithful' else '分析性深化'}",
         f"- 交流目标：{_text(plan.get('communication_goal'))}",
+        f"- 使用用途：{DELIVERY_MODE_LABELS.get(str(plan.get('delivery_mode')), '待明确')}",
+        f"- 分页策略：{_text(plan.get('pagination_rationale'))}",
+        f"- 共同分页原则：{SINGLE_CORE_GUIDANCE}",
+        f"- 用途审阅重点：{PAGINATION_GUIDANCE.get(str(plan.get('delivery_mode')), '先明确用途再确定分页。')}",
         f"- 汇报对象：{_text(plan.get('audience'))}",
         f"- 受众范围：{_text(plan.get('audience_scope'))}",
         f"- 来源结构：{_label(plan.get('source_structure_mode'), _STRUCTURE_MODE_LABELS)}",

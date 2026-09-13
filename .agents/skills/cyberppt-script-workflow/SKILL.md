@@ -67,7 +67,7 @@ Automatically:
 1. scaffold `projects/<slug>/` and retain source files;
 2. extract and index source structure;
 3. build a lightweight Foundation with source structure, facts, explicit relations and boundaries once per deck;
-4. preserve source chapters and plan PPT pages within that structure;
+4. resolve the user's intended use as described below, then preserve source chapters and plan PPT pages within that structure;
 5. present **脚本规划待确认**;
 6. after ordinary approval, resolve `authoring_mode` and execute the matching mandatory authoring reference;
 7. for each faithful `script`-profile page, require a current `cyberppt.source_index.v2`, generate the derived `page-source` packet, and pass Author Preflight before drafting; missing, stale, invalid or partially resolved exact-source evidence blocks AUTHOR;
@@ -82,6 +82,41 @@ surface, while `script` uses the lightweight UNDERSTAND route. Neither route
 pre-authors judgments, modules, evidence dispositions, visible-copy contracts,
 visual relations or speaker threads in PLAN. v1 strict Deck Plans must be
 migrated to v2 lean before entering this workflow.
+
+### 用途提问与分页策略（PLAN 前）
+
+新项目在首次 PLAN 前，若用户尚未明确用途，在对话中提问：
+**这套 PPT 主要用于现场演讲辅助，还是供读者独立阅读？如有汇报时长或页数要求，也请一并说明。**
+
+两种用途共同遵守“一页只表达一项核心内容”。`question` 与 `logic` 围绕同一业务主题；同一主题可以包含多条支撑事实、并列事项或完整流程，独立主题应拆分。来源没有总判断时保留来源结构，不强造结论。
+
+- **演讲辅助**（`presented`）：围绕核心内容突出关键支撑，按讲解节奏控制解释层级；展开解释由讲解补充，关键条件同页保留。
+- **独立阅读**（`self_read`）：围绕同一核心内容补足上下文、解释与条件；仅合并服务于该核心内容的信息，独立主题分别分页。
+
+同一核心内容复杂时，两种用途均可按不同子问题拆分，每页明确自身核心内容。
+
+等待用途回答后再确定分页；期间可继续来源解析与 UNDERSTAND。已有明确用途时直接沿用，
+继续项目不重复询问。兼顾两者时明确主要用途；解析器或模板默认的 `self_read` 不代表用户选择。
+时长和页数为可选约束，缺省时根据来源范围提出页数及理由，不追加无必要的提问。
+
+用途影响 PLAN 的章节内页数分配、页面 `logic` 和 `source_refs` 范围。
+Deck Plan v2 必填 `delivery_mode`（`presented` / `self_read`）和 `pagination_rationale`。
+后者说明与实际页面范围对应的拆分合并理由，并纳入已知时长、页数约束；不新增密度配额、上屏文案或确认文件。
+`review-plan` 展示两字段和用途对应的审阅重点；`audit-plan` 与 Author Preflight 阻断字段缺失或无效的当前版规划。
+代码对两种用途统一提供 `PLAN_SINGLE_CORE_REVIEW` 多主题审阅提示；独立阅读另检查相邻页阅读连续性。主 Agent 对照来源判断是否服务于同一核心内容，提示不自动切页或合并。
+`audit-final` 和 `render-stage02` 校验最终稿用途与规划一致。用途修改使现有预检绑定失效，须重新核对分页并刷新来源证据。
+已有 v2 规划缺少这两个字段时，依照已有用户意图补齐；用途未知则先提问，不自动填入默认值。
+演讲辅助不必然页数更多；结合讲解时长与信息关联度决定拆分。独立阅读同样避免堆积正文。
+页数或时长限制与必要内容覆盖冲突时，在规划审阅中明确冲突和可行调整，不静默删减事实。
+
+两种用途均保持来源覆盖、顺序、事实强度与完整语义。信息密度在 Stage 01 通过单页语义范围
+和分页调节，实际可见文字密度由 Stage 02 决定。AUTHOR 保留各页必要事实、责任、状态、
+数字、条件与范围，不按字数配额压缩 `full_copy`，不生成 1.2 的 authored `onscreen`。
+用途选择独立于 `authoring_mode`，演讲辅助不会自动启用 analytical。
+
+在既有“脚本规划待确认”中展示用途、已知时长/页数约束和用途对应的拆分合并理由，
+复用该规划确认。用户后来改变用途时，先复核现有分页；需要调整则回到同一规划审阅，
+再更新受影响页面及其来源证据，不重新运行全文理解。
 
 ### Faithful AUTHOR
 
@@ -181,8 +216,9 @@ CLI only resolves exact evidence; it does not author prose. Loading this router,
 creating schema-valid output, generating a page-source packet or passing lint does
 not execute AUTHOR.
 
-Every deck defaults to `deck.delivery_mode: self_read`. Use `presented` only when
-the user explicitly requests a presenter-led sparse deck.
+Set `deck.delivery_mode` from the user's resolved purpose: `presented` for
+演讲辅助 and `self_read` for 独立阅读. The legacy parser default remains `self_read`;
+it does not replace the new-project purpose question before PLAN.
 The delivery renderer carries this setting in the Markdown deck header
 `> 交流方式：self_read/presented`; Stage 02 reads it as context for visible density,
 with no change to full-copy completeness or fidelity-literal scope.
@@ -255,6 +291,7 @@ material changes.
 Show a readable **脚本规划待确认** containing:
 
 - source chapter structure;
+- the selected purpose, known duration/page constraints, and how they affect page scope and split/merge decisions;
 - page allocation by presentation chapter;
 - each page's tentative title, question, mission and source boundary;
 - compact source anchors for each page so the reviewer can see what the cited Foundation refs actually state;
@@ -284,6 +321,9 @@ advice fail review.
 ## 8. Stage 02 boundary and formal handoff
 
 Stage 02 owns on-screen expression and the existing compiled-script review checkpoint.
+Carry the Stage 01 purpose through `deck.delivery_mode` and the rendered Markdown
+header. Stage 02 reuses this explicit user choice without asking again; ask there
+only when the purpose is unresolved or the user requests a change.
 Use the Stage 02 Skill's [on-screen copy reference](../cyberppt-stage02-editable-pptx/references/onscreen-copy-review.md)
 there; keep business grouping, natural detail sentences and density refinement downstream.
 Targeted Stage 01 edits continue through section 5 above; do not route to the retired

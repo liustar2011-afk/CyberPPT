@@ -70,6 +70,7 @@ canonical content or relationship decisions and recompile through the same entry
 
 等待用户回答后再进行依赖交流类型的适配与编译；期间可以核对输入与资产。
 用户已在当前任务明确选择时直接沿用；同批次失败重试或续跑不重复提问。
+Stage 01 已明确选择并随最终脚本传递的用途直接沿用，无需在 Stage 02 再次提问。
 自动生成或解析缺省的 `self_read` 不代表用户已经选择。用户要求兼顾两者时，
 明确以现场讲解还是会后阅读为主，再映射到以上一种现有类型。
 

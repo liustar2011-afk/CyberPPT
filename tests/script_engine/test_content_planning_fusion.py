@@ -50,6 +50,8 @@ def _lean_plan() -> dict:
     return {
         "plan_contract_version": 2,
         "planning_profile": "lean",
+        "delivery_mode": "self_read",
+        "pagination_rationale": "将国家部署与标准验证分别组织为完整阅读单元。",
         "communication_goal": "说明标准体系研究在先行先试中的不可替代职责",
         "audience": "项目决策与实施团队",
         "audience_scope": "internal",

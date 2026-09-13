@@ -1,5 +1,7 @@
 {
   "communication_goal": "说明资源治理、可信使用与服务输出的来源内容及明确关系。",
+  "delivery_mode": "self_read",
+  "pagination_rationale": "将资源治理、可信使用和服务输出的相关解释合并为一个完整阅读单元，具体技术能力清单留到后续范围。",
   "plan_contract_version": 2,
   "planning_profile": "lean",
   "authoring_mode": "faithful",

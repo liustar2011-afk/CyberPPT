@@ -5,7 +5,7 @@ from difflib import SequenceMatcher
 import re
 
 from cyberppt.semantic_fidelity import audit_semantic_strength
-from script_engine.plan_quality import plan_critic_priorities
+from script_engine.plan_quality import plan_critic_priorities, validate_plan_purpose
 
 from .common import *
 
@@ -18,7 +18,7 @@ _ROOT_FIELDS = frozenset(
     {
         "communication_goal", "plan_contract_version", "planning_profile", "authoring_mode", "audience",
         "audience_scope", "source_structure_mode", "presentation_structure_mode",
-        "chapter_count_exception", "chapters", "pages",
+        "chapter_count_exception", "chapters", "pages", "delivery_mode", "pagination_rationale",
     }
 )
 _CHAPTER_FIELDS = frozenset(
@@ -109,7 +109,7 @@ def _source_heading_title_issues(
 
 
 def _contract_issues(plan: dict[str, Any]) -> list[str]:
-    issues: list[str] = []
+    issues: list[str] = validate_plan_purpose(plan)
     if plan.get("plan_contract_version") != 2:
         issues.append("PLAN_CONTRACT_VERSION_INVALID: only plan_contract_version=2 is supported")
     if plan.get("planning_profile") != "lean":

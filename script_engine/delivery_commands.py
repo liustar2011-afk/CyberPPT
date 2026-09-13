@@ -13,6 +13,7 @@ from .contracts import (
 )
 from .final_source_provenance import validate_final_source_provenance
 from .native_source_fidelity import native_source_fidelity_gate_issues
+from .plan_quality import validate_delivery_mode_alignment
 from .render import render_stage02_markdown
 from .text_io import write_text_lf
 
@@ -83,6 +84,7 @@ def render_stage02_delivery(
 
     payload = load_json(input_path)
     issues = validate_final_script(payload)
+    issues.extend(validate_delivery_mode_alignment(payload, load_json(plan_path)))
     if issues:
         return None, {"status": "failed", "issues": issues}, 1
 

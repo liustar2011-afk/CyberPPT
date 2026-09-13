@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from script_engine.plan_quality import validate_delivery_mode_alignment
+
 from .authorization import validate_authoring_mode_authorization
 from .compatibility import collect_provenance_compatibility_diagnostics
 from .content_route import collect_content_route_diagnostics
@@ -114,6 +116,7 @@ def audit_final_script_semantic_contract(
         dict.fromkeys(
             [
                 *authorization_issues,
+                *validate_delivery_mode_alignment(final_script, plan),
                 *source_scope_issues,
                 *relationship_issues,
                 *source_structure_issues,

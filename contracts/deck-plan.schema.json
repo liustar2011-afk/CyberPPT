@@ -5,6 +5,8 @@
   "type": "object",
   "required": [
     "communication_goal",
+    "delivery_mode",
+    "pagination_rationale",
     "plan_contract_version",
     "planning_profile",
     "source_structure_mode",
@@ -13,6 +15,8 @@
   ],
   "properties": {
     "communication_goal": {"type": "string", "minLength": 1},
+    "delivery_mode": {"type": "string", "enum": ["presented", "self_read"], "description": "User-selected purpose; no implicit default during PLAN."},
+    "pagination_rationale": {"type": "string", "pattern": "\\S", "description": "Explain page scope and split/merge choices for the selected purpose, including any known duration/page constraints. No visible-copy quota."},
     "plan_contract_version": {"const": 2},
     "planning_profile": {"const": "lean"},
     "authoring_mode": {
@@ -84,7 +88,7 @@
         "logic": {
           "type": "string",
           "minLength": 1,
-          "description": "PLAN-time page mission; AUTHOR owns the final proposition and prose."
+          "description": "PLAN-time mission for one core topic per page in both delivery modes; supporting facts or a complete process may share that topic. AUTHOR owns final prose; a synthesized conclusion is not required."
         },
         "page_role": {"type": "string", "minLength": 1},
         "source_refs": {

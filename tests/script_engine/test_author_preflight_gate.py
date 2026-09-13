@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from script_engine.audit_reports import final_audit_report
 from script_engine.author_preflight import author_preflight_gate_report, author_preflight_report
 from script_engine.delivery_commands import render_stage02_delivery
@@ -31,6 +33,8 @@ def _build_project(tmp_path: Path) -> dict[str, Path]:
 
     plan = {
         "communication_goal": "说明第一阶段工作完成情况。",
+        "delivery_mode": "self_read",
+        "pagination_rationale": "将第一阶段的完成状态与责任主体放在同一阅读单元。",
         "plan_contract_version": 2,
         "planning_profile": "lean",
         "authoring_mode": "faithful",
@@ -90,6 +94,7 @@ def _build_project(tmp_path: Path) -> dict[str, Path]:
         "deck": {
             "title": "工作进展",
             "communication_goal": "说明第一阶段工作完成情况。",
+            "delivery_mode": "self_read",
             "authoring_mode": "faithful",
         },
         "slides": [
@@ -151,6 +156,60 @@ def _prepare_gate(paths: dict[str, Path]) -> None:
         "P01",
     )
     _write_json(paths["final"], final_script)
+
+
+def test_changed_purpose_invalidates_existing_preflight(tmp_path):
+    paths = _build_project(tmp_path)
+    _prepare_gate(paths)
+    plan = json.loads(paths["plan"].read_text(encoding="utf-8"))
+    plan["delivery_mode"] = "presented"
+    _write_json(paths["plan"], plan)
+    report, code = author_preflight_gate_report(paths["plan"], paths["foundation"])
+    assert code == 1
+    assert "STALE" in str(report["issues"])
+
+
+@pytest.mark.parametrize("field", ["delivery_mode", "pagination_rationale"])
+def test_fresh_source_packets_cannot_bypass_missing_plan_purpose(tmp_path, field):
+    paths = _build_project(tmp_path)
+    plan = json.loads(paths["plan"].read_text(encoding="utf-8"))
+    plan.pop(field)
+    _write_json(paths["plan"], plan)
+    _, code = page_source_report(paths["plan"], paths["foundation"], "P01",
+                                 source_index_path=paths["source_index"], output_path=paths["packet"])
+    assert code == 0
+    report, code = author_preflight_report(paths["plan"], paths["foundation"])
+    assert code == 1
+    assert "PLAN_" in str(report["issues"])
+
+
+@pytest.mark.parametrize("mode", ["presented", "self_read"])
+def test_planned_purpose_reaches_delivery_and_mismatch_blocks_output(tmp_path, mode):
+    paths = _build_project(tmp_path)
+    plan = json.loads(paths["plan"].read_text(encoding="utf-8"))
+    plan["delivery_mode"] = mode
+    _write_json(paths["plan"], plan)
+    _prepare_gate(paths)
+    final = json.loads(paths["final"].read_text(encoding="utf-8"))
+    final["deck"]["delivery_mode"] = mode
+    _write_json(paths["final"], final)
+    output, report, code = render_stage02_delivery(
+        paths["final"], paths["output"], plan_path=paths["plan"],
+        foundation_path=paths["foundation"], final_lint_findings=lambda *_: ([], []))
+    assert code == 0, report
+    before = paths["output"].read_bytes()
+    assert f"> 交流方式：{mode}" in before.decode()
+    final["deck"]["delivery_mode"] = "self_read" if mode == "presented" else "presented"
+    _write_json(paths["final"], final)
+    _, report, code = render_stage02_delivery(
+        paths["final"], paths["output"], plan_path=paths["plan"],
+        foundation_path=paths["foundation"], final_lint_findings=lambda *_: ([], []))
+    assert code == 1
+    assert "FINAL_DELIVERY_MODE_MISMATCH" in str(report)
+    assert paths["output"].read_bytes() == before
+    audit, code = final_audit_report(paths["final"], paths["plan"], paths["foundation"])
+    assert code == 1
+    assert "FINAL_DELIVERY_MODE_MISMATCH" in str(audit)
 
 
 def test_gate_passes_when_manifest_and_packets_match_current_inputs(tmp_path: Path) -> None:

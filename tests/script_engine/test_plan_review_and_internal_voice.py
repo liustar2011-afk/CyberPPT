@@ -87,6 +87,8 @@ def _grouping_fixture(groups: list[list[str]]) -> tuple[dict, dict]:
     plan = {
         "communication_goal": "解释来源结构", "plan_contract_version": 2,
         "planning_profile": "lean", "audience_scope": "internal",
+        "delivery_mode": "self_read",
+        "pagination_rationale": "每个来源问题安排独立阅读单元，并保持章节顺序。",
         "source_structure_mode": "presentation_grouping",
         "presentation_structure_mode": "formal_chaptered",
         "chapters": chapters, "pages": pages,
@@ -116,4 +118,3 @@ def test_single_chapter_forbids_transition_page() -> None:
     })
     issues, _ = audit_deck_plan(plan, foundation)
     assert "PRESENTATION_SINGLE_CHAPTER_TRANSITION_FORBIDDEN" in issues
-

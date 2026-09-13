@@ -88,6 +88,18 @@ Deck Plan 的 `authoring_mode` 决定，不能回写或拔高 Foundation。
 
 ### 3. 将交流目标纳入规划停点
 
+首次 PLAN 前，若用途尚未明确，在对话中提问：“这套 PPT 主要用于现场演讲辅助，还是供读者独立阅读？如有汇报时长或页数要求，也请一并说明。”
+已有用户明确选择时沿用；用途待答期间可继续来源理解，收到回答后再确定分页。
+两种用途共同遵守“一页只表达一项核心内容”，独立主题分别分页。同一主题可包含多条支撑事实、并列事项或完整流程；复杂主题可按子问题拆分，不强造总判断。
+演讲辅助围绕核心内容突出关键支撑，独立阅读围绕同一核心内容补足上下文、解释与条件；仅合并服务于同一核心内容的信息。
+用途通过单页语义范围、章节内页数分配和来源边界影响信息密度，Stage 02 决定实际可见文字。
+两种用途均保留必要事实和完整语义，不按固定字数删减 `full_copy`，不改变来源顺序或自动启用分析模式。
+Deck Plan v2 通过必填 `delivery_mode` 与 `pagination_rationale` 记录用途及拆分合并理由，后者包含已知时长、页数约束；约束与内容覆盖冲突时明确提出调整。
+`audit-plan`、`review-plan` 和 Author Preflight 对缺失或无效的用途及分页理由返回阻断；审阅稿展示用途对应的分页重点。
+两种用途的多事项使命或多个问句均触发 `PLAN_SINGLE_CORE_REVIEW` 审阅提示，独立阅读的相邻页共享来源另触发连续性审阅提示；主 Agent 对照来源决定是否调整，代码不按字数切页。
+`audit-final` 与 `render-stage02` 校验最终稿用途与规划一致；修改用途后旧预检失效。已有 v2 规划在继续前按用户意图补齐两字段，不自动迁移用途。
+详细规则由 [Stage 01 Skill](../.agents/skills/cyberppt-script-workflow/SKILL.md) 执行，不新增确认文件。
+
 基于 Foundation 提出一个忠于源材料的交流目标方向，并与章节和页面提纲一并放入 **脚本规划待确认**。普通流程不设置独立的交流目标确认节点。
 
 交流目标中的受众、场景和行动要求，只有得到源材料直接支持时，才可以升级为源事实、源判断或页面结论。
@@ -171,7 +183,7 @@ strict/legacy Foundation 的 `source_consumption_policy: required` 继续服务�
 
 AUTHOR 对严格页面逐条验证完整稿锚点，并专门检查数字、日期、条件、责任主体、状态、分类层级以及保真项来源。严格 Foundation 缺合同或只使用宽泛主题词时均失败关闭；历史 Foundation 保留原有兼容逻辑。
 
-页面信息密度不使用固定字数或固定模块数门槛。Final Script 默认声明 `deck.delivery_mode: self_read`，内容页可在自身声明 `content_load`；Stage 01 保留完整语义，Stage 02 决定实际可见信息组织。用户明确选择演讲辅助型稿件时可声明 `presented`。Plan 不承担信息密度设计。
+页面信息密度不使用固定字数或固定模块数门槛。Final Script 按用户在规划前选择的用途声明 `deck.delivery_mode: self_read` 或 `presented`，内容页可在自身声明 `content_load`；Stage 01 保留完整语义，PLAN 按用途调整单页范围和分页，Stage 02 决定实际可见信息组织。解析缺省 `self_read` 仅用于兼容，不替代用途提问。Plan 不预制可见文字或视觉密度配额。
 
 faithful 页面关系只有在来源明确表达时才能进入 Final Script；analytical 页面可以在已批准的分析模式下保留 source-supported inferred relationship。`audit-final` 直接对照 Foundation 检查无来源关系、数字、责任、状态和边界，不要求关系先在轻量 Plan 中预写。
 

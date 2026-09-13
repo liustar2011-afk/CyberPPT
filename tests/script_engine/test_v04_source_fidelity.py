@@ -31,6 +31,8 @@ def _plan() -> dict:
         "communication_goal": "test",
         "plan_contract_version": 2,
         "planning_profile": "lean",
+        "delivery_mode": "self_read",
+        "pagination_rationale": "将相关事实保留在同一阅读单元，按来源章节组织。",
         "audience_scope": "external",
         "source_structure_mode": "preserve",
         "chapters": [
