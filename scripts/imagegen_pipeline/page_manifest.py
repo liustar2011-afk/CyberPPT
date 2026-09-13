@@ -266,6 +266,14 @@ def _relationship_aware_canonical_prompts(
     except (FileNotFoundError, ValueError):
         script_input = None
     input_pages = input_page_map(script_input) if script_input else {}
+    relationship_decisions = {}
+    if prompt_compiler == DEFAULT_PROMPT_COMPILER and script_input is not None:
+        from cyberppt.visual_stage.relationship_judgment import load_decisions
+
+        relationship_decisions = load_decisions(project_path, {
+            number: input_pages[number] for number in page_numbers
+            if number in input_pages and input_pages[number]["render_role"] == "content"
+        })
     # The final compiler owns content, Stage 02 semantics, and the selected
     # style together.  Nothing is appended after approval.
     canonical: dict[int, str] = {}
@@ -279,6 +287,16 @@ def _relationship_aware_canonical_prompts(
         input_page = input_pages.get(page_number) or {}
         page_mission = str(input_page.get("page_mission") or missions.get(page.page_id, ""))
         visual_context = dict(contexts.get(page.page_id) or {})
+        if input_page and prompt_compiler == DEFAULT_PROMPT_COMPILER:
+            from dataclasses import replace
+
+            page = replace(
+                page,
+                onscreen_text=str(input_page.get("content_text") or input_page.get("onscreen_text") or ""),
+                raw_onscreen_text=str(input_page.get("content_text") or input_page.get("onscreen_text") or ""),
+                full_prose=str(input_page.get("full_prose") or ""),
+                fidelity_text=tuple(input_page.get("fidelity_text") or ()),
+            )
         if not page.onscreen_text.strip():
             # Bare Markdown manuscripts may not use Stage 01 field labels.
             # Preserve their body as the source text for the normal compiler.
@@ -309,6 +327,7 @@ def _relationship_aware_canonical_prompts(
             prior_semantic_carriers=tuple(prior_semantic_carriers),
             visual_structure_mode="off",
             visual_design=None,
+            relationship_decision=relationship_decisions.get(page_number),
         )
         canonical[page_number] = compiled.prompt
         if compiled.presentation is not None:
@@ -346,6 +365,8 @@ def build_manifest(
         raise ValueError("artifact-spec-v2 requires project_path")
     if visual_source not in {"auto", "governed-json", "legacy-markdown"}:
         raise ValueError("visual_source must be auto, governed-json, or legacy-markdown")
+    if prompt_compiler == DEFAULT_PROMPT_COMPILER and project_path is not None and (allow_prompt_edit or prompt_enrich != "off"):
+        raise ValueError("agent relationship production prompts must be recompiled from canonical content and decisions; post-compile replacement is unsupported")
     if allow_prompt_edit and prompt_overrides_dir is None:
         raise ValueError("allow_prompt_edit requires prompt_overrides_dir")
     if (allow_script_edit or allow_prompt_edit) and prompt_enrich != "off":

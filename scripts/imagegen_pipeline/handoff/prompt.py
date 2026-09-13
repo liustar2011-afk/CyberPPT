@@ -403,6 +403,7 @@ def compile_page_prompt(
     visual_design: "VisualDesignIR | None" = None,
     enrichment_block: str = "",
     artifact_spec: PageArtifactSpec | None = None,
+    relationship_decision: dict | None = None,
 ) -> CompiledPagePrompt:
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
     if visual_structure_mode not in {"off", "review"}:
@@ -478,6 +479,36 @@ def compile_page_prompt(
             prompt_ir_version=FINAL_PROMPT_IR_VERSION,
             debug_receipt=debug_receipt,
             artifact_spec=artifact_spec,
+        )
+    if relationship_decision is not None:
+        if prompt_compiler != "content-first-v1" or visual_design is not None or enrichment_block.strip() or visual_structure_mode != "off":
+            raise ValueError("agent relationship judgment requires the content-first production compiler")
+        from cyberppt.visual_stage.relationship_judgment import render_relationship_judgment
+
+        fidelity, required, _conditional = _fidelity_prompt_contract(page, visual_context)
+        selected_style = _selected_content_first_style(style_lock)
+        content = page.onscreen_text.strip() or page.full_prose.strip()
+        prompt = "\n\n".join(filter(None, [
+            "【标题（不上屏）】\n" + page.title.strip(),
+            ("【页面使命（不上屏）】\n" + (page_mission or page.page_mission).strip())
+            if (page_mission or page.page_mission).strip() else "",
+            "【页面内容素材｜允许提炼、改写、重组】\n" + content,
+            ("【完整语义背景｜不上屏】\n" + page.full_prose.strip())
+            if page.full_prose.strip() != content else "",
+            fidelity,
+            render_relationship_judgment(relationship_decision),
+            IMAGEGEN_CANVAS_CONTRACT,
+            render_content_first_style_contract(style_lock),
+        ])) + "\n"
+        if int(selected_style.get("id") or 0) == 9:
+            from scripts.imagegen_pipeline.deliverable_prompt import enforce_style09_terminal_lock
+            prompt = enforce_style09_terminal_lock(prompt, style_lock)
+        assert_deliverable_prompt(prompt)
+        return CompiledPagePrompt(
+            prompt=prompt, compiler_version=prompt_compiler,
+            relation="agent_judgment",
+            injected_rule_ids=("semantic.agent_relationship_judgment", "content.copy_authoring", "style.selected_lock"),
+            image_locked_text=required, editable_body_text=content,
         )
     semantic_context = derive_page_semantics(
         page,

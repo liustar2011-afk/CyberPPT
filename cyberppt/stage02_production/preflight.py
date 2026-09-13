@@ -260,6 +260,14 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
 
     blocks = parse_page_blocks(script)
     pages = tuple(parse_pages(options.pages_raw, set(blocks)))
+    from cyberppt.stage02_input import input_page_map, load_stage02_input
+    from cyberppt.visual_stage.relationship_judgment import require_relationship_judgment, digest
+
+    intake_pages = input_page_map(load_stage02_input(project, required=True))
+    decisions = require_relationship_judgment(project, {
+        number: intake_pages[number] for number in pages
+        if intake_pages[number]["render_role"] == "content"
+    })
     slug = page_range_slug(pages)
     resolved_build_id = build_id_for(
         script=script,
@@ -287,9 +295,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
         style_lock=style_lock,
         source_script_sha256=sha256_file(script) or "",
         script_input_sha256=script_input_sha256,
-        # Stage 02 no longer has a visual-structure prerequisite. Keep the
-        # field for build-context compatibility; it is intentionally empty.
-        visual_spec_sha256="",
+        visual_spec_sha256=digest(decisions),
         style_lock_sha256=sha256_file(style_lock) or "",
         production_mode=options.production_mode,
         assembly_mode=options.assembly_mode,

@@ -1,0 +1,196 @@
+[
+  {
+    "id": "parallel",
+    "source": "甲组负责采集，乙组负责核验。两组独立开展工作。",
+    "status": "supported",
+    "statements": [
+      "甲组负责采集，乙组负责核验；两组独立开展工作。"
+    ],
+    "constraints": [
+      "保留两组职责，不增加甲组向乙组交接的流程。"
+    ],
+    "uncertainties": [],
+    "analysis": "两组独立已明示，采集与核验的动词无法单独证明交接。"
+  },
+  {
+    "id": "hierarchy",
+    "source": "资源分为设备和人才。设备包括主设备和辅助设备；人才包括技术人员。",
+    "status": "supported",
+    "statements": [
+      "设备与人才是资源的并列分类；主设备和辅助设备归属设备，技术人员归属人才。"
+    ],
+    "constraints": [
+      "保留分类归属与两层明细，不转为管理权限层级。"
+    ],
+    "uncertainties": [],
+    "analysis": "包括表达分类归属，同层类别没有上下级职责。"
+  },
+  {
+    "id": "flow",
+    "source": "申请人提交后，审核员核验；仅核验通过时由管理员发布，未通过退回申请人。",
+    "status": "supported",
+    "statements": [
+      "申请人提交后由审核员核验；通过后管理员发布，未通过退回申请人。"
+    ],
+    "constraints": [
+      "通过与未通过属于不同分支，保留三方责任；退回不等于自动重新提交。"
+    ],
+    "uncertainties": [],
+    "analysis": "先后、分支条件及各节点主体均有明示依据。"
+  },
+  {
+    "id": "mixed",
+    "source": "甲类含A和B，乙类含C。两类并行采集，完成核验后才能共享。",
+    "status": "supported",
+    "statements": [
+      "甲类包含A、B，乙类包含C，两类并行采集。",
+      "完成核验是共享的前提。"
+    ],
+    "constraints": [
+      "保留分类内归属及并行关系，共享条件适用于两类。"
+    ],
+    "uncertainties": [],
+    "analysis": "分类、并行与有条件共享共同存在，不压成单一顺序。"
+  },
+  {
+    "id": "ambiguous",
+    "source": "甲系统与乙系统协同，提升服务能力。",
+    "status": "ambiguous",
+    "statements": [
+      "甲系统与乙系统存在协同关系，来源未说明具体机制和方向。"
+    ],
+    "constraints": [
+      "保持方向中性，不新增主从、数据交换方向或因果步骤。"
+    ],
+    "uncertainties": [
+      "协同机制、数据方向与两系统职责未说明。"
+    ],
+    "analysis": "协同词没有提供方向与机制，不能据此画双向数据流或管理层级。"
+  },
+  {
+    "id": "none",
+    "source": "报告日期：2026年9月。",
+    "status": "none",
+    "statements": [],
+    "constraints": [],
+    "uncertainties": [],
+    "analysis": "仅有日期信息，无可表达的实体关系。"
+  },
+  {
+    "id": "parallel_set",
+    "source": "内容分为甲、乙、丙三类，三类分别维护，各自独立更新。",
+    "status": "supported",
+    "statements": [
+      "甲、乙、丙是并列分类，各自独立维护和更新。"
+    ],
+    "constraints": [
+      "分类序号不表示先后、优先级或管理关系。"
+    ],
+    "uncertainties": [],
+    "analysis": "来源明确分类及独立更新，没有类别之间的依赖。"
+  },
+  {
+    "id": "parallel_paraphrase",
+    "source": "甲类的维护和更新独立进行；乙类、丙类亦如此，任一类更新均不以其他类更新完成为前提。",
+    "status": "supported",
+    "statements": [
+      "甲、乙、丙各自维护和更新，相互没有完成前提依赖。"
+    ],
+    "constraints": [
+      "保留三类的独立性，不根据叙述先后增加处理流程。"
+    ],
+    "uncertainties": [],
+    "analysis": "改写后仍明确各类独立，句式改变不改变并列及无前提依赖的含义。"
+  },
+  {
+    "id": "flow_counterfactual",
+    "source": "甲组负责采集，乙组负责核验。甲组提交采集结果后，乙组才开始核验。",
+    "status": "supported",
+    "statements": [
+      "甲组先采集并提交结果，乙组随后开始核验。"
+    ],
+    "constraints": [
+      "保留结果提交这一触发条件，不补充退回或复核循环。"
+    ],
+    "uncertainties": [],
+    "analysis": "与独立职责案例使用相同主体和动作，新增提交前提使顺序获得依据。"
+  },
+  {
+    "id": "hierarchy_with_shared_responsibility",
+    "source": "组织设甲组、乙组。甲组下设第一、第二小组，乙组下设第三小组。任务X由甲组和乙组共同承担。",
+    "status": "supported",
+    "statements": [
+      "甲组与乙组同属该组织；第一、第二小组归属甲组，第三小组归属乙组。",
+      "任务X由甲组和乙组共同承担。"
+    ],
+    "constraints": [
+      "保留归属层级及跨组共担责任，不把共担关系解释为甲组领导乙组。"
+    ],
+    "uncertainties": [],
+    "analysis": "组织归属与跨组责任同时存在；只保留树状归属会遗漏任务共担关系。"
+  },
+  {
+    "id": "mixed_grouping_and_condition",
+    "source": "甲类与乙类分别处理。甲类按来源分组，乙类按状态分组；两类均须核验通过后发布。",
+    "status": "supported",
+    "statements": [
+      "甲类与乙类分别处理，分类维度分别为来源和状态。",
+      "两类内容发布均以核验通过为前提。"
+    ],
+    "constraints": [
+      "保留各类不同分组维度及共同发布条件，不把两类处理串联。"
+    ],
+    "uncertainties": [],
+    "analysis": "并列类别、各自分组与共同触发条件属于不同关系，不能压缩成单一流程。"
+  },
+  {
+    "id": "time_without_cause",
+    "source": "工厂周一上线监测系统，周三设备停机。停机原因仍在调查。",
+    "status": "ambiguous",
+    "statements": [
+      "监测系统周一上线，设备周三停机。"
+    ],
+    "constraints": [
+      "时间先后可以呈现；不能断言系统上线导致停机。"
+    ],
+    "uncertainties": [
+      "停机原因尚未确定。"
+    ],
+    "analysis": "同一来源明确时间先后且保留原因调查状态，时间关系不承担因果证明。"
+  },
+  {
+    "id": "cause_explicit",
+    "source": "调查确认设备停机由冷却泵故障导致；监测系统周一上线与此次停机无关。",
+    "status": "supported",
+    "statements": [
+      "冷却泵故障导致设备停机。"
+    ],
+    "constraints": [
+      "保持调查确认的因果；监测系统上线不得接入停机因果链。"
+    ],
+    "uncertainties": [],
+    "analysis": "同样出现系统与停机，调查结论明确支持泵故障因果并排除上线关联。"
+  },
+  {
+    "id": "conflicting_scope",
+    "source": "项目概览称所有站点均已接入；同日明细列出东站接入完成、西站尚未接入。两处口径差异未解释。",
+    "status": "ambiguous",
+    "statements": [],
+    "constraints": [
+      "保留总述与明细口径冲突，不能呈现全量接入完成或自行猜测范围解释。"
+    ],
+    "uncertainties": [
+      "西站接入状态与全量完成声明冲突，来源未说明哪一处已更新。"
+    ],
+    "analysis": "同日同范围的两个状态不相容，不能挑选更便于构图的一条当作事实。"
+  },
+  {
+    "id": "none_minimal",
+    "source": "欢迎参加年度交流会。",
+    "status": "none",
+    "statements": [],
+    "constraints": [],
+    "uncertainties": [],
+    "analysis": "只有欢迎语，无实体之间的业务关系；无需制造关系图或结论。"
+  }
+]

@@ -1,4 +1,4 @@
 interface:
-  display_name: "PPT视觉结构设计"
-  short_description: "将PPT内容转为可执行的页面构图、视觉结构与生图脚本"
-  default_prompt: "使用 $ppt-visual-structure-designer 读取整套PPT内容或脚本，先锁定终稿文字和业务关系，再完成逐页视觉结构设计，输出Markdown、JSON规格并运行校验。"
+  display_name: "PPT页面关系判断"
+  short_description: "校核页面完整语义中的关系依据与必要表达边界"
+  default_prompt: "使用 $ppt-visual-structure-designer，由主 Agent 读取适配后的完整页面语义，判断来源支持的关系及必要约束，按 v4 合同交给正式提示词编译；构图与视觉效果由当前风格和 Image2 决定。"

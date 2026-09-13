@@ -40,13 +40,41 @@ The only production route is `.venv/bin/python3 -m cyberppt final-script-pages` 
 by hand and do not call `run_stage02_reconstruction` directly.
 
 Default chain: final script + current `references/visual-system.md` style → canonical
-Stage 02 intake → audited full image → reconstruction visual-source binding → text-free
+Stage 02 intake → main-agent relationship judgment → compiled prompt → audited full image → reconstruction visual-source binding → text-free
 base → high-fidelity authored SVG reconstruction → vendored Quick assembly → render and
 final-visible-text QA. The audited full image is the visual source for the editable
 reconstruction; authored SVG may reconstruct and decompose it but must not introduce a
 second visual design.
 
-Stage 02 does not require or invoke a separate visual-structure preparation stage.
+After canonical content adaptation and before prompt compilation, the main agent executes
+`vendor/skills/ppt-visual-structure-designer/SKILL.md`. The formal entry requires current
+v4 decisions in `visual/visual-design-decisions.json`. If missing or stale, follow its
+`visual/skill-invocation.md`, read the full page semantics, author source-supported
+relationships and necessary reading boundaries, then repeat the same production command.
+This is an internal agent checkpoint with no new user confirmation. Existing images and
+assembly artifacts remain untouched while judgment is pending. The content-first compiler
+consumes the decisions directly and skips heuristic relationship/layout selection.
+Current style and Image2 retain composition freedom. Legacy v3 visual-spec commands are
+compatibility tools and do not satisfy the v4 production prerequisite.
+
+Post-compile prompt replacement and enrichment are unsupported in this route; revise the
+canonical content or relationship decisions and recompile through the same entry.
+
+## 送图脚本人工审阅停点
+
+生成正式送图脚本后，主 Agent 必须停下，将本次实际落盘的完整脚本展示给用户，
+提供 compiled_deliverable_prompt 的可点击绝对路径链接，并在对话中呈现逐页脚本正文。
+等待用户明确确认后再生图；请求制作 PPT 本身不视为已审阅尚未生成的送图脚本。
+
+复用同一个 `final-script-pages` 入口的只编译模式：审阅前不传 `--generate-images`、
+`--require-images` 或 `--production-build`，也不传图片导入参数。该调用只准备输入、
+提示词与 manifest；不调用生图或组装。关系判断仍由主 Agent 先行完成。
+用户确认后，保持同一脚本、风格、页面范围、build_id 与输出目录，通过同一入口增加
+`--generate-images --production-build` 和所选组装分支继续正式生产。
+
+用户修改脚本、关系或风格导致送图脚本实质变化时，重新编译并展示更新后的脚本，
+再等待确认。同一已确认脚本的失败重试无需重复确认。确认发生在对话中，不新增
+审批文件、状态 JSON、回执或平行运行目录。
 
 ## Canonical text intake and fidelity contract
 

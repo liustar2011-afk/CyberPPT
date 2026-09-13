@@ -144,6 +144,10 @@ def _reuse_prior_artifacts(*, manifest: dict[str, Any], prior_manifest: dict[str
         prior_pair = prior_pairs.get(int(pair.get("page_number")))
         if not isinstance(prior_pair, dict):
             continue
+        if pair.get("relationship_judgment_sha256") != prior_pair.get("relationship_judgment_sha256"):
+            # A source-supported relation change invalidates image and authored
+            # layers even within the same run; text-only QA cannot approve it.
+            continue
         prior_graphic_text_policy = prior_pair.get("graphic_text_policy")
         if (
             isinstance(prior_graphic_text_policy, dict)
@@ -438,6 +442,16 @@ def prepare_manifest(context: Stage02BuildContext, options: Stage02RunOptions) -
         prompt_overrides_dir=prompt_overrides_dir,
         persist=False,
     )
+    from cyberppt.stage02_input import input_page_map, load_stage02_input
+    from cyberppt.visual_stage.relationship_judgment import load_decisions, digest
+    intake = input_page_map(load_stage02_input(context.project, required=True))
+    decisions = load_decisions(context.project, {
+        n: intake[n] for n in page_numbers if intake[n]["render_role"] == "content"
+    })
+    for pair in manifest.get("pairs", []):
+        decision = decisions.get(int(pair["page_number"]))
+        if decision is not None:
+            pair["relationship_judgment_sha256"] = digest(decision)
     manifest["source_mode"] = context.source_mode
     manifest["source_script"] = str(context.canonical_script)
     manifest["source_script_sha256"] = context.source_script_sha256

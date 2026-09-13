@@ -57,7 +57,12 @@ def test_unrecorded_legacy_model_requires_explicit_selection(tmp_path):
 
 
 @pytest.mark.parametrize("model", [None, "gpt-image-2"])
-def test_official_facade_dry_run_persists_and_resumes_effective_model(tmp_path: Path, model):
+def test_official_facade_dry_run_persists_and_resumes_effective_model(tmp_path: Path, model, monkeypatch):
+    # Model persistence is independent of the agent checkpoint (tested unmocked
+    # in test_relationship_judgment_v4).
+    import cyberppt.visual_stage.relationship_judgment as judgment
+    monkeypatch.setattr(judgment, "require_relationship_judgment", lambda *_: {})
+    monkeypatch.setattr(judgment, "load_decisions", lambda *_: {})
     script = tmp_path / "script.md"
     script.write_text("""## P04 运营责任
 - 页面类型：内容页

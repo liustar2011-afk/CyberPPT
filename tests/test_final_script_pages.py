@@ -20,7 +20,17 @@ _FinalScriptPagesTestsBase.__test__ = False
 class FinalScriptPagesTests(_FinalScriptPagesTestsBase):
     __test__ = True
 
-    def test_external_script_full_copy_is_nonvisible_prompt_context(self) -> None:
+    def setUp(self):
+        super().setUp()
+        # This inherited suite isolates image/assembly behavior and legacy
+        # compiler expectations. The unmocked v4 gate + production round trip
+        # is covered by test_relationship_judgment_v4.
+        for name in ("require_relationship_judgment", "load_decisions"):
+            patcher = patch("cyberppt.visual_stage.relationship_judgment." + name, return_value={})
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_external_script_consumes_canonical_full_semantics(self) -> None:
         from cyberppt.commands.final_script_pages import run_final_script_pages
         from cyberppt.commands.init_project import init_project
 
@@ -46,11 +56,10 @@ class FinalScriptPagesTests(_FinalScriptPagesTestsBase):
             self.assertEqual("external_script", manifest["source_mode"])
             self.assertIn("--external-script", summary["resume_command"])
             self.assertEqual(original, script.read_bytes())
-            self.assertIn("【完整文字稿（不上屏）】", prompt)
-            self.assertEqual(1, prompt.count(full_copy))
+            self.assertEqual(1, prompt.count("补充条件仅用于理解业务边界。"))
             visible = prompt.split("【页面内容素材｜允许提炼、改写、重组】", 1)[1]
             self.assertIn("平台提供数据服务。", visible)
-            self.assertNotIn("补充条件仅用于理解业务边界", visible)
+            self.assertIn("补充条件仅用于理解业务边界", visible)
 
     def test_typo_audit_regenerates_before_enhancement(self) -> None:
         """Correction retry must operate on real image bytes before enhancement."""

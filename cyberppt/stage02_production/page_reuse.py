@@ -61,6 +61,8 @@ def _same_prompt_identity(
     prior_pair: dict[str, Any],
     production_mode: str,
 ) -> bool:
+    if current_pair.get("relationship_judgment_sha256") != prior_pair.get("relationship_judgment_sha256"):
+        return False
     for variant in output_variants_for_mode(production_mode):
         current_item = current_pair.get(variant)
         prior_item = prior_pair.get(variant)

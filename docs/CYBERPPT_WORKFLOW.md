@@ -226,9 +226,17 @@ Stage 02 将所有输入复制到自有路径 `workbench/inputs/final-script.md`
 
 ### 2. Stage 02 script input
 
-Stage 02 以传入脚本文件为唯一跨阶段输入，并在自身工作区记录脚本快照与 SHA-256。脚本文件发生变化后，Stage 02 自行判定已有视觉产物失效。`business_relationships`、`content_load` 等字段如果出现在输入文件中，Stage 02 将其视为文件合同的一部分；semantic verifier 只校验输入文件内部关系是否自洽，并派生 `render_topology` 供视觉布局使用。对 hard/strong 关系出现 rejected 或 unresolved 时，Stage 02 拒绝当前输入文件，不推测其上游生产过程，也不修改关系后继续。`content_load` 未显式声明时按 `standard` 处理。
+Stage 02 以传入脚本文件为跨阶段内容输入，记录脚本快照与 SHA-256。内容适配后，当前主 Agent 执行 `vendor/skills/ppt-visual-structure-designer/SKILL.md`，结合完整页面语义校核关系及来源依据。旧 semantic verifier、render_topology 和 expression fallback 仅保留兼容诊断，不代替当前主 Agent 判断，也不进入正式布局约束。`content_load` 未显式声明时按 `standard` 处理。
 
 Stage 02 的 canonical intake 同时保存普通内容来源、`content_text`、`fidelity_text` 及其哈希/来源身份。handoff、manifest、Prompt 编译、文字审计和续跑复用必须消费同一份 canonical intake；输入文本或保真项发生变化后，不得复用与旧语义身份绑定的 manifest、prompt hash 或文字审计回执。
+
+### 2.1 主 Agent 关系判断
+
+`final-script-pages` 在 canonical intake 完成后、正式提示词编译前检查现有 `visual/visual-design-decisions.json` 的 v4 合同。缺失或陈旧时生成现有 `visual/skill-invocation.md` 内部待办，主 Agent 读取完整语义、核对来源并写入判断，再重跑同一生产命令，保留批次和全部生产参数；无新增人工确认节点。
+
+判断允许并列、多层级、多主体、局部流程和混合关系共同存在；歧义与无关系输入有明确状态。每条采用的关系附原文定位；机器校验只证明定位和绑定，主 Agent 的语义复核负责判断质量。旧 v3 候选、分数、核心结论和宏观区域合同仅用于历史兼容，不迁入当前合同。
+
+正式 `content-first-v1` 直接消费关系陈述、必要约束与未决边界，并跳过关键词关系路由。当前风格文件和 Image2 决定具体构图与视觉效果。普通内容继续可改写，`fidelity_text` 独立。关系变化进入提示词哈希及既有复用身份，旧判断不会静默套用到新页面。后置 prompt override / enrichment 无法保留此消费保证，当前正式路线要求修改内容或判断后重新编译。
 
 ### 3. 直接锁定视觉风格
 
@@ -249,6 +257,18 @@ Prompt hash、input fingerprint、manifest 复用判断和文字审计回执必�
 Stage 02 的文字 QA 分为两层：一是通用字形质量，继续检查明确错字、乱码、伪中文和最终可读性；二是保真项验收，仅对 `fidelity_text` 执行可见性与字面准确性检查。`required` 缺失或错写时失败；`if_rendered` 可以缺失，但一旦出现必须准确。不得将 `full_copy` 或运行时 `onscreen_text` 与 OCR 做全文匹配、覆盖率或逐字一致性判定。
 
 PNG 文件存在不等于提示词、批次或 QA 成功。必须检查实际落盘的 `prompts/pXX.txt`、manifest 和运行记录。
+
+### 4.1 送图脚本审阅停点
+
+主 Agent 生成送图脚本后必须停下，在对话中展示实际逐页脚本全文，并提交
+`compiled_deliverable_prompt` 的绝对路径 Markdown 链接，等待用户明确确认后再生图。
+审阅前复用 `final-script-pages` 的只编译模式，不传 `--generate-images`、
+`--require-images`、`--production-build` 或图片导入参数；此时不生图、不组装。
+确认后保持同一脚本、风格、页面范围、build_id 和输出目录，再增加生图、
+`--production-build` 与所选组装分支参数继续正式生产。
+
+脚本、关系或风格发生实质修改后，重新编译并展示送图脚本；同一已确认脚本的
+失败重试直接续跑。确认保存在对话中，不新增审批文件或状态记录。
 
 ### 5. 图片生成和 QA
 
