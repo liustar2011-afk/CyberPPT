@@ -5,7 +5,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from cyberppt.stage02_input import input_page_map, load_stage02_input
+from cyberppt.stage02_input import input_page_map, load_stage02_input, production_page_input
 from scripts.imagegen_pipeline.page_manifest import output_variants_for_mode
 
 from .manifest_stage import _reuse_prior_artifacts
@@ -51,7 +51,7 @@ def attach_page_input_sha256(*, manifest: dict[str, Any], project: Path) -> bool
         page_number = int(pair["page_number"])
         page_input = pages.get(page_number)
         if isinstance(page_input, dict):
-            pair[PAGE_INPUT_SHA256_FIELD] = _stable_sha256(page_input)
+            pair[PAGE_INPUT_SHA256_FIELD] = _stable_sha256(production_page_input(page_input))
     return True
 
 

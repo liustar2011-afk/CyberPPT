@@ -230,11 +230,17 @@ Stage 02 以传入脚本文件为跨阶段内容输入，记录脚本快照与 S
 
 Stage 02 的 canonical intake 同时保存普通内容来源、`content_text`、`fidelity_text` 及其哈希/来源身份。handoff、manifest、Prompt 编译、文字审计和续跑复用必须消费同一份 canonical intake；输入文本或保真项发生变化后，不得复用与旧语义身份绑定的 manifest、prompt hash 或文字审计回执。
 
+当前新生成的页面声明 `content_contract_version: 2`：正式编译统一消费顶层 `content_text`。1.2 内部稿取完整稿，外部稿取适配正文，1.0/1.1 取已编写的上屏稿；不同于正文的 `full_prose` 作为额外完整背景保留。`onscreen_text`、`editable_body_text` 与嵌套正文仍供历史消费者读取，不新增作者填写要求。`deck.delivery_mode` 通过最终 Markdown 页前的 `> 交流方式：self_read/presented` 传到每页 intake 和正式提示词；缺省为 `self_read`，未知值阻断解析。
+
+完整 intake 的 `semantic_sha256` 继续校验全部持久化字段。新页面通过 `production_page_input` 生成版本化生产字段投影，关系判断、生产输入身份和逐页复用排除旧拓扑诊断及重复别名；内容、额外背景、交流方式、标题、使命、保真项与相关来源语义仍参与绑定。未声明内容版本的历史 intake 维持原有整页身份；新旧身份不得混用，旧缓存不会因版本升级被批量改写。风格和关系判断仍通过各自身份及最终 prompt hash 控制复用。
+
 ### 2.1 主 Agent 关系判断
 
 `final-script-pages` 在 canonical intake 完成后、正式提示词编译前检查现有 `visual/visual-design-decisions.json` 的 v4 合同。缺失或陈旧时生成现有 `visual/skill-invocation.md` 内部待办，主 Agent 读取完整语义、核对来源并写入判断，再重跑同一生产命令，保留批次和全部生产参数；无新增人工确认节点。
 
 判断允许并列、多层级、多主体、局部流程和混合关系共同存在；歧义与无关系输入有明确状态。每条采用的关系附原文定位；机器校验只证明定位和绑定，主 Agent 的语义复核负责判断质量。旧 v3 候选、分数、核心结论和宏观区域合同仅用于历史兼容，不迁入当前合同。
+
+复用 v4 `constraints` 保存必要的条件附着、责任与状态、数字所指和来源等权性，并在 analysis/source_check 中说明依据；不增加强制平台型、机制型、架构型或视觉焦点字段。普通保护语义不转成大段 fidelity_text。
 
 正式 `content-first-v1` 直接消费关系陈述、必要约束与未决边界，并跳过关键词关系路由。当前风格文件和 Image2 决定具体构图与视觉效果。普通内容继续可改写，`fidelity_text` 独立。关系变化进入提示词哈希及既有复用身份，旧判断不会静默套用到新页面。后置 prompt override / enrichment 无法保留此消费保证，当前正式路线要求修改内容或判断后重新编译。
 

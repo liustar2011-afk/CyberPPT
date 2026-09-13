@@ -260,7 +260,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
 
     blocks = parse_page_blocks(script)
     pages = tuple(parse_pages(options.pages_raw, set(blocks)))
-    from cyberppt.stage02_input import input_page_map, load_stage02_input
+    from cyberppt.stage02_input import input_page_map, load_stage02_input, stage02_production_input_sha256
     from cyberppt.visual_stage.relationship_judgment import require_relationship_judgment, digest
 
     intake_pages = input_page_map(load_stage02_input(project, required=True))
@@ -280,11 +280,7 @@ def prepare_preflight(options: Stage02RunOptions) -> Stage02BuildContext:
 
     script_input_path = project / INPUT_JSON
     script_input_payload = read_json(script_input_path)
-    script_input_sha256 = str(
-        script_input_payload.get("semantic_sha256")
-        or sha256_file(script_input_path)
-        or ""
-    )
+    script_input_sha256 = stage02_production_input_sha256(script_input_payload)
     return Stage02BuildContext(
         project=project,
         canonical_script=script,

@@ -487,9 +487,15 @@ def compile_page_prompt(
 
         fidelity, required, _conditional = _fidelity_prompt_contract(page, visual_context)
         selected_style = _selected_content_first_style(style_lock)
-        content = page.onscreen_text.strip() or page.full_prose.strip()
+        content = page.content_text
+        delivery_guidance = (
+            "演讲辅助：突出必要信息，说明可精炼；保留责任、状态、数字所指、条件与范围。"
+            if page.delivery_mode == "presented"
+            else "独立阅读：可见内容须能独立理解，保留必要解释、责任、状态、数字所指、条件与范围。"
+        )
         prompt = "\n\n".join(filter(None, [
             "【标题（不上屏）】\n" + page.title.strip(),
+            "【交流方式（不上屏）】\n" + delivery_guidance,
             ("【页面使命（不上屏）】\n" + (page_mission or page.page_mission).strip())
             if (page_mission or page.page_mission).strip() else "",
             "【页面内容素材｜允许提炼、改写、重组】\n" + content,
@@ -507,7 +513,7 @@ def compile_page_prompt(
         return CompiledPagePrompt(
             prompt=prompt, compiler_version=prompt_compiler,
             relation="agent_judgment",
-            injected_rule_ids=("semantic.agent_relationship_judgment", "content.copy_authoring", "style.selected_lock"),
+            injected_rule_ids=("semantic.agent_relationship_judgment", "content.copy_authoring", "content.delivery_mode", "style.selected_lock"),
             image_locked_text=required, editable_body_text=content,
         )
     semantic_context = derive_page_semantics(

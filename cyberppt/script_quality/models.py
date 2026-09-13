@@ -133,6 +133,7 @@ class ScriptPage:
     anchor_coverage_notes: str = ""
     contract_receipt: dict[str, object] | None = None
     prose_paragraph_map: tuple[tuple[tuple[str, ...], str], ...] = ()
+    delivery_mode: str = "self_read"
 
     def __post_init__(self) -> None:
         # Callers that predate the top-level/nested distinction (hand-built
@@ -146,6 +147,14 @@ class ScriptPage:
             )
         if self.content_load and self.content_load not in VALID_CONTENT_LOADS:
             raise ValueError(f"unsupported content_load: {self.content_load}")
+        if self.delivery_mode not in {"self_read", "presented"}:
+            raise ValueError(f"unsupported delivery_mode: {self.delivery_mode}")
+
+    @property
+    def content_text(self) -> str:
+        """Runtime copy source; legacy authored copy stays distinct from background."""
+
+        return self.onscreen_text.strip() or self.full_prose.strip()
 
     @property
     def core_message(self) -> str:

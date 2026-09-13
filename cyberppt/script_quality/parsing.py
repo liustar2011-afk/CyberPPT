@@ -588,6 +588,14 @@ def parse_script_markdown(
     text: str,
     page_contracts: dict[str, dict[str, object]] | None = None,
 ) -> ScriptDocument:
+    # Deck metadata is only recognized before the first numbered page. A quoted
+    # occurrence in a page's source prose must not alter the delivery policy.
+    first_page = PAGE_HEADING_RE.search(text)
+    prefix = text[:first_page.start()] if first_page else ""
+    modes = re.findall(r"(?m)^>\s*交流方式[：:]\s*([^\n]+?)\s*$", prefix)
+    if len(set(modes)) > 1:
+        raise ValueError("conflicting delivery_mode declarations")
+    delivery_mode = modes[0] if modes else "self_read"
     pages: list[ScriptPage] = []
     for sequence, heading, body in _page_sections(text):
         fields = _field_blocks(body)
@@ -643,6 +651,7 @@ def parse_script_markdown(
                 title=fields.get("页面标题", heading).strip(),
                 subtitle=fields.get("副标题", "").strip(),
                 content_load=fields.get("内容负载", "").strip(),
+                delivery_mode=delivery_mode,
                 page_mission=fields.get("页面使命", "").strip(),
                 main_message=(
                     fields.get("核心结论")

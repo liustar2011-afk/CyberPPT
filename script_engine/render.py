@@ -81,6 +81,9 @@ def render_stage02_markdown(payload: dict[str, Any]) -> str:
     title = _single_line(deck.get("title")); goal = _single_line(deck.get("communication_goal"))
     if title: lines.extend([f"# {title}", ""])
     if goal: lines.extend([f"> 交流目标：{goal}", ""])
+    delivery_mode = _single_line(deck.get("delivery_mode"))
+    if delivery_mode or version == "1.2":
+        lines.extend([f"> 交流方式：{delivery_mode or 'self_read'}", ""])
     for index, slide in enumerate(payload.get("slides") or [], start=1):
         if not isinstance(slide, dict): continue
         raw_id = _text(slide.get("id")) or f"P{index:02d}"

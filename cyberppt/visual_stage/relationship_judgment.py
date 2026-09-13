@@ -17,6 +17,10 @@ SKILL = Path(__file__).resolve().parents[2] / "vendor/skills/ppt-visual-structur
 
 
 def digest(value: Any) -> str:
+    if isinstance(value, dict) and "content_contract_version" in value:
+        from cyberppt.stage02_input import production_page_input
+
+        value = production_page_input(value)
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
 
 
@@ -55,7 +59,12 @@ def validate_decision(decision: dict[str, Any], page: dict[str, Any]) -> None:
             # Evidence must come from semantic source, never layout hints.
             if field not in {"full_prose", "content_text", "onscreen_text"}:
                 raise ValueError("evidence must cite canonical semantic text")
-            if not isinstance(quote, str) or not quote.strip() or quote not in str(page.get(field) or ""):
+            source_text = str(page.get(field) or "")
+            if field == "onscreen_text" and page.get("content_contract_version") == 2:
+                from cyberppt.stage02_input import canonical_content_text
+
+                source_text = canonical_content_text(page)
+            if not isinstance(quote, str) or not quote.strip() or quote not in source_text:
                 raise ValueError("relationship evidence quote is absent from canonical input")
 
 

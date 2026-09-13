@@ -265,6 +265,8 @@ def _page_record(
     )
 
     record: dict[str, Any] = {
+        "content_contract_version": 2,
+        "source_mode": source_mode,
         "page_id": normalize_page_id(page.page_id, page.sequence),
         "page_number": page.sequence,
         "render_role": render_role,
@@ -272,10 +274,11 @@ def _page_record(
         "title": page.title,
         "subtitle": page.subtitle,
         "content_load": content_load,
+        "delivery_mode": page.delivery_mode,
         "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
-        "content_text": page.full_prose,
+        "content_text": page.content_text,
         "fidelity_text": fidelity_text,
         "onscreen_text": page.onscreen_text,
         "onscreen_source": page.onscreen_source,
@@ -316,7 +319,8 @@ def _page_record(
         "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
-        "content_text": page.full_prose,
+        "content_text": page.content_text,
+        "delivery_mode": page.delivery_mode,
         "fidelity_text": fidelity_text,
         "content_load": content_load,
         "argument_chain": page.argument_chain,
@@ -429,12 +433,66 @@ def resolve_input_script(project: Path, source_script: Path) -> Path:
     )
 
 
+def canonical_content_text(page: dict[str, Any]) -> str:
+    """Read current content or adapt historical intake without losing authored copy."""
+
+    if page.get("content_contract_version") == 2:
+        return str(page.get("content_text") or "").strip()
+    # Historical intake stored full_prose in content_text even for authored
+    # 1.0/1.1 pages. Preserve that page's actual runtime copy on read.
+    return str(page.get("onscreen_text") or page.get("content_text") or page.get("full_prose") or "").strip()
+
+
+def production_page_input(page: dict[str, Any]) -> dict[str, Any]:
+    """Versioned production identity; old pages retain their complete identity.
+
+    New consumers use the top-level semantic fields. Repeated text aliases and
+    legacy topology diagnostics remain serialized for compatibility, but cannot
+    change a v2 relationship decision or page-local reuse identity.
+    """
+
+    version = page.get("content_contract_version")
+    if version is None:
+        return page
+    if version != 2:
+        raise ValueError(f"unsupported content_contract_version: {version}")
+    fields = (
+        "content_contract_version", "source_mode", "page_id", "page_number",
+        "render_role", "title", "subtitle", "delivery_mode", "content_load",
+        "page_mission", "core_message", "content_text", "fidelity_text",
+        "onscreen_source", "speaker_notes", "source_refs", "provenance_refs",
+        "argument_chain", "business_relationships", "semantic_annotations",
+    )
+    result = {key: page.get(key) for key in fields}
+    background = str(page.get("full_prose") or "").strip()
+    result["full_prose"] = background if background != canonical_content_text(page) else ""
+    return result
+
+
+def stage02_production_input_sha256(payload: dict[str, Any]) -> str:
+    """Keep snapshot integrity separate from the current production field set."""
+
+    pages = payload.get("pages") or []
+    if all(page.get("content_contract_version") is None for page in pages):
+        return stage02_input_semantic_sha256(payload)
+    binding = (payload.get("source_bindings") or {}).get("script") or {}
+    value = {
+        "schema": "cyberppt.stage02_script_input.production.v2",
+        "source_mode": payload.get("source_mode") or binding.get("source_mode") or "",
+        "source_script_sha256": binding.get("sha256") or "",
+        "page_order": payload.get("page_order") or [],
+        "pages": [production_page_input(page) for page in pages],
+    }
+    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
 def stage02_input_semantic_sha256(payload: dict[str, Any]) -> str:
     """Hash only deterministic Stage 02 input authority.
 
     Timestamps, absolute project paths and external provenance paths are run
     metadata.  The source bytes, source mode and canonical page records are the
-    production identity and therefore drive resume invalidation.
+    integrity identity. Production consumers additionally use the versioned
+    projection in stage02_production_input_sha256 to isolate legacy diagnostics.
     """
 
     binding = (payload.get("source_bindings") or {}).get("script") or {}
@@ -584,6 +642,22 @@ def audit_stage02_input(
                     "message": "Stage 02 script input contains no pages.",
                 }
             )
+        else:
+            for page in payload["pages"]:
+                if not isinstance(page, dict):
+                    issues.append({"code": "INPUT_PAGE_INVALID", "message": "Page must be an object."})
+                    continue
+                version = page.get("content_contract_version")
+                if version is None:
+                    continue  # Historical serialized pages retain their contract.
+                if (version != 2
+                        or page.get("delivery_mode") not in {"self_read", "presented"}
+                        or page.get("source_mode") != source_mode
+                        or not isinstance(page.get("content_text"), str)):
+                    issues.append({
+                        "code": "INPUT_CONTENT_CONTRACT_INVALID",
+                        "message": f"{page.get('page_id')}: invalid versioned content fields.",
+                    })
 
         recorded_semantic_sha = str(payload.get("semantic_sha256") or "")
         if (

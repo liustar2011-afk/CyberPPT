@@ -183,6 +183,9 @@ not execute AUTHOR.
 
 Every deck defaults to `deck.delivery_mode: self_read`. Use `presented` only when
 the user explicitly requests a presenter-led sparse deck.
+The delivery renderer carries this setting in the Markdown deck header
+`> 交流方式：self_read/presented`; Stage 02 reads it as context for visible density,
+with no change to full-copy completeness or fidelity-literal scope.
 
 ## 3. Re-plan
 

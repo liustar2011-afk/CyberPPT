@@ -108,6 +108,20 @@ For current Final Script 1.2 internal input:
 - never infer exact-copy authority from ordinary prose merely because it is visible in a
   prompt or generated page.
 
+New intake pages declare `content_contract_version: 2`. Current prompt compilation
+reads top-level `content_text`; repeated `onscreen_text`, `editable_body_text` and
+nested text remain compatibility aliases. Legacy 1.0/1.1 uses authored copy here
+and retains distinct `full_prose` as background. Consume `delivery_mode` from the
+page input: `self_read` needs independently understandable visible content;
+`presented` permits concise presenter support while preserving material conditions.
+The deck setting travels in the script header `> 交流方式：self_read/presented`;
+absence defaults to `self_read`.
+
+Keep full intake integrity validation. Production identity for versioned pages
+uses `production_page_input`, excluding old topology diagnostics and repeated
+aliases while retaining semantic inputs and fidelity. Historical unversioned
+pages keep whole-page identity; never copy an old hash into a new page contract.
+
 For external input:
 
 - prefer the structured `内容` field as runtime content;

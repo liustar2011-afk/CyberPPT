@@ -289,11 +289,13 @@ def _relationship_aware_canonical_prompts(
         visual_context = dict(contexts.get(page.page_id) or {})
         if input_page and prompt_compiler == DEFAULT_PROMPT_COMPILER:
             from dataclasses import replace
+            from cyberppt.stage02_input import canonical_content_text
 
             page = replace(
                 page,
-                onscreen_text=str(input_page.get("content_text") or input_page.get("onscreen_text") or ""),
-                raw_onscreen_text=str(input_page.get("content_text") or input_page.get("onscreen_text") or ""),
+                onscreen_text=canonical_content_text(input_page),
+                raw_onscreen_text=canonical_content_text(input_page),
+                delivery_mode=str(input_page.get("delivery_mode") or page.delivery_mode),
                 full_prose=str(input_page.get("full_prose") or ""),
                 fidelity_text=tuple(input_page.get("fidelity_text") or ()),
             )
