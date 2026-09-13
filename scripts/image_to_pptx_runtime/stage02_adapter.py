@@ -298,7 +298,10 @@ def _manifest_canvas(pair: Mapping[str, Any]) -> tuple[int, int]:
 def _page_title(script: Path, page_number: int) -> str:
     document = parse_script_path(script)
     page = next((item for item in document.pages if item.sequence == page_number), None)
-    return page.title.strip() if page is not None and page.title.strip() else f"第{page_number}页"
+    title = page.title.strip() if page is not None else ""
+    if title.startswith("**") and title.endswith("**") and len(title) > 4:
+        title = title[2:-2].strip()
+    return title or f"第{page_number}页"
 
 
 def _speaker_notes_by_page(script: Path, page_numbers: list[int]) -> dict[str, str]:
