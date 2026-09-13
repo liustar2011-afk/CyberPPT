@@ -60,6 +60,27 @@ compatibility tools and do not satisfy the v4 production prerequisite.
 Post-compile prompt replacement and enrichment are unsupported in this route; revise the
 canonical content or relationship decisions and recompile through the same entry.
 
+## 交流类型提问（首次编译前）
+
+进入 Stage 02 后、首次内容适配与送图脚本编译前，主 Agent 在对话中明确交流类型。
+若用户尚未明确选择，提问：**这套 PPT 主要用于哪种交流方式？**
+
+- **演讲辅助**（`presented`）：现场有人讲解，画面突出核心信息、关键事实与关系，展开解释由演讲补充；影响结论准确性的关键条件与范围仍须可见。
+- **独立阅读**（`self_read`）：读者自行阅读，画面提供理解主要内容所需的精炼文字与必要解释；允许提炼、改写和图表表达，避免整段搬用完整稿。
+
+等待用户回答后再进行依赖交流类型的适配与编译；期间可以核对输入与资产。
+用户已在当前任务明确选择时直接沿用；同批次失败重试或续跑不重复提问。
+自动生成或解析缺省的 `self_read` 不代表用户已经选择。用户要求兼顾两者时，
+明确以现场讲解还是会后阅读为主，再映射到以上一种现有类型。
+
+将选择写入现有最终脚本页前元数据 `> 交流方式：presented` 或
+`> 交流方式：self_read`。存在权威 JSON 镜像时同步其 `deck.delivery_mode`，
+通过现有渲染流程保持 Markdown 一致；完整正文与保真项保持原语义。
+外部脚本同样使用该页前元数据。通过正式入口重新适配和编译，
+不要手改运行快照、intake 或最终送图提示词。选择只记录在对话和现有脚本字段中，
+不新增确认文件。审阅送图脚本时核对实际“交流方式（不上屏）”区块与选择一致。
+类型变化后重新编译、展示并确认送图脚本，按当前输入身份使旧页面回执失效。
+
 ## 上屏文字表达与审阅
 
 After canonical content adaptation and before prompt compilation, read
@@ -115,7 +136,8 @@ and retains distinct `full_prose` as background. Consume `delivery_mode` from th
 page input: `self_read` needs independently understandable visible content;
 `presented` permits concise presenter support while preserving material conditions.
 The deck setting travels in the script header `> 交流方式：self_read/presented`;
-absence defaults to `self_read`.
+absence defaults to `self_read` for parser compatibility; the main agent must still
+resolve the user's choice before a new compilation as described above.
 
 Keep full intake integrity validation. Production identity for versioned pages
 uses `production_page_input`, excluding old topology diagnostics and repeated
